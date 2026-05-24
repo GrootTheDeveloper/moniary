@@ -356,10 +356,6 @@ class _CalendarDayCell extends StatelessWidget {
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
-import '../../../shared/widgets/supabase_image.dart';
-
-// ... (other imports)
-
             if (day.transactions.isNotEmpty)
               Positioned(
                 bottom: 0,
