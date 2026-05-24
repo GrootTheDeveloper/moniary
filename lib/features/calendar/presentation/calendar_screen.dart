@@ -642,14 +642,29 @@ class _MetricBlock extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 8),
           Text(
-            value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: color,
-                  fontSize: 24,
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w500,
                 ),
+          ),
+          const SizedBox(height: 4),
+          SizedBox(
+            width: double.infinity,
+            height: 32,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                value,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: color,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
           ),
         ],
       ),
@@ -801,7 +816,8 @@ class _RoundIconButton extends StatelessWidget {
 String _formatMoney(double amount, {required bool isNegative}) {
   final formatter = NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
   final sign = isNegative ? '-' : '+';
-  return '$sign${formatter.format(amount)}d';
+  final formatted = formatter.format(amount).trim();
+  return '$sign$formattedđ';
 }
 
 String _capitalize(String value) {
