@@ -14,9 +14,13 @@ class WalletRepository {
   final SupabaseClient _client;
 
   Future<List<Wallet>> fetchWallets() async {
+    final session = _client.auth.currentSession;
+    if (session == null) return [];
+
     final rows = await _client
         .from('wallets')
         .select()
+        .eq('user_id', session.user.id)
         .order('is_default', ascending: false)
         .order('created_at');
 
@@ -32,11 +36,15 @@ class WalletRepository {
     required double initialBalance,
     bool isDefault = false,
   }) async {
+    final session = _client.auth.currentSession;
+    if (session == null) throw Exception('Ban chua dang nhap');
+
     if (isDefault) {
-      await _clearDefaultWallets();
+      await _clearDefaultWallets(userId: session.user.id);
     }
 
     await _client.from('wallets').insert({
+      'user_id': session.user.id,
       'name': name,
       'type': type.value,
       'initial_balance': initialBalance,
@@ -52,8 +60,11 @@ class WalletRepository {
     required bool isDefault,
     required bool isActive,
   }) async {
+    final session = _client.auth.currentSession;
+    if (session == null) throw Exception('Ban chua dang nhap');
+
     if (isDefault) {
-      await _clearDefaultWallets(exceptWalletId: walletId);
+      await _clearDefaultWallets(userId: session.user.id, exceptWalletId: walletId);
     }
 
     await _client.from('wallets').update({
@@ -62,15 +73,15 @@ class WalletRepository {
       'initial_balance': initialBalance,
       'is_default': isDefault,
       'is_active': isActive,
-    }).eq('id', walletId);
+    }).eq('id', walletId).eq('user_id', session.user.id);
   }
 
-  Future<void> _clearDefaultWallets({String? exceptWalletId}) async {
+  Future<void> _clearDefaultWallets({required String userId, String? exceptWalletId}) async {
     var query = _client.from('wallets').update({'is_default': false});
     if (exceptWalletId != null) {
       query = query.neq('id', exceptWalletId);
     }
-    await query.eq('is_default', true);
+    await query.eq('user_id', userId).eq('is_default', true);
   }
 }
 

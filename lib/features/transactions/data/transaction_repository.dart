@@ -21,10 +21,14 @@ class TransactionRepository {
     String? walletId,
     String? categoryId,
   }) async {
+    final session = _client.auth.currentSession;
+    if (session == null) return [];
+
     final start = DateTime(month.year, month.month, 1);
     final end = DateTime(month.year, month.month + 1, 1);
 
     var query = _baseSelect()
+        .eq('user_id', session.user.id)
         .gte('transaction_date', start.toUtc().toIso8601String())
         .lt('transaction_date', end.toUtc().toIso8601String());
 
@@ -40,20 +44,42 @@ class TransactionRepository {
     return _mapList(rows);
   }
 
-  Future<List<TransactionEntry>> fetchTransactionsForDay(DateTime day) async {
+  Future<List<TransactionEntry>> fetchTransactionsForDay(
+    DateTime day, {
+    String? walletId,
+    String? categoryId,
+  }) async {
+    final session = _client.auth.currentSession;
+    if (session == null) return [];
+
     final start = DateTime(day.year, day.month, day.day);
     final end = start.add(const Duration(days: 1));
 
-    final rows = await _baseSelect()
+    var query = _baseSelect()
+        .eq('user_id', session.user.id)
         .gte('transaction_date', start.toUtc().toIso8601String())
-        .lt('transaction_date', end.toUtc().toIso8601String())
-        .order('transaction_date', ascending: false);
+        .lt('transaction_date', end.toUtc().toIso8601String());
+
+    if (walletId != null) {
+      query = query.eq('wallet_id', walletId);
+    }
+    if (categoryId != null) {
+      query = query.eq('category_id', categoryId);
+    }
+
+    final rows = await query.order('transaction_date', ascending: false);
 
     return _mapList(rows);
   }
 
   Future<TransactionEntry> fetchTransactionById(String transactionId) async {
-    final row = await _baseSelect().eq('id', transactionId).single();
+    final session = _client.auth.currentSession;
+    if (session == null) throw Exception('Ban chua dang nhap');
+
+    final row = await _baseSelect()
+        .eq('id', transactionId)
+        .eq('user_id', session.user.id)
+        .single();
     return TransactionEntry.fromMap(row);
   }
 
@@ -94,6 +120,9 @@ class TransactionRepository {
     required DateTime transactionDate,
     String? note,
   }) async {
+    final session = _client.auth.currentSession;
+    if (session == null) throw Exception('Ban chua dang nhap');
+
     await _client.from('transactions').update({
       'wallet_id': walletId,
       'category_id': categoryId,
@@ -101,15 +130,18 @@ class TransactionRepository {
       'type': type.value,
       'note': note,
       'transaction_date': transactionDate.toUtc().toIso8601String(),
-    }).eq('id', transactionId);
+    }).eq('id', transactionId).eq('user_id', session.user.id);
   }
 
   Future<void> deleteTransaction(String transactionId) async {
+    final session = _client.auth.currentSession;
+    if (session == null) throw Exception('Ban chua dang nhap');
+
     // 1. Fetch transaction to get image path
     final transaction = await fetchTransactionById(transactionId);
     
     // 2. Delete from database
-    await _client.from('transactions').delete().eq('id', transactionId);
+    await _client.from('transactions').delete().eq('id', transactionId).eq('user_id', session.user.id);
 
     // 3. Cleanup storage if needed
     if (transaction.imagePath != null) {
@@ -141,10 +173,13 @@ class TransactionRepository {
     required String? imagePath,
     required String status,
   }) async {
+    final session = _client.auth.currentSession;
+    if (session == null) throw Exception('Ban chua dang nhap');
+
     await _client.from('transactions').update({
       'image_path': imagePath,
       'image_upload_status': status,
-    }).eq('id', transactionId);
+    }).eq('id', transactionId).eq('user_id', session.user.id);
   }
 
   String getPublicImageUrl(String path) {

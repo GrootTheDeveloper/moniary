@@ -14,9 +14,13 @@ class CategoryRepository {
   final SupabaseClient _client;
 
   Future<List<Category>> fetchCategories() async {
+    final session = _client.auth.currentSession;
+    if (session == null) return [];
+
     final rows = await _client
         .from('categories')
         .select()
+        .eq('user_id', session.user.id)
         .order('type')
         .order('is_default', ascending: false)
         .order('created_at');
@@ -31,7 +35,11 @@ class CategoryRepository {
     required String name,
     required TransactionType type,
   }) async {
+    final session = _client.auth.currentSession;
+    if (session == null) throw Exception('Ban chua dang nhap');
+
     await _client.from('categories').insert({
+      'user_id': session.user.id,
       'name': name,
       'type': type.value,
     });
@@ -43,11 +51,14 @@ class CategoryRepository {
     required TransactionType type,
     required bool isActive,
   }) async {
+    final session = _client.auth.currentSession;
+    if (session == null) throw Exception('Ban chua dang nhap');
+
     await _client.from('categories').update({
       'name': name,
       'type': type.value,
       'is_active': isActive,
-    }).eq('id', categoryId);
+    }).eq('id', categoryId).eq('user_id', session.user.id);
   }
 }
 
