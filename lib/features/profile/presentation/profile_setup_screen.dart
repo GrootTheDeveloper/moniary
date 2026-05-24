@@ -70,12 +70,12 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'Thiet lap ho so',
+                        'Thiết lập hồ sơ',
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Hoan tat thong tin de bat dau',
+                        'Hoàn tất thông tin để bắt đầu',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       const SizedBox(height: 28),
@@ -111,17 +111,17 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                Text('Ten hien thi', style: Theme.of(context).textTheme.titleMedium),
+                Text('Tên hiển thị', style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 10),
                 TextField(
                   controller: _nameController,
                   decoration: const InputDecoration(
-                    hintText: 'Nhap ten cua ban',
+                    hintText: 'Nhập tên của bạn',
                     prefixIcon: Icon(Icons.person_outline_rounded),
                   ),
                 ),
                 const SizedBox(height: 20),
-                Text('Don vi tien te', style: Theme.of(context).textTheme.titleMedium),
+                Text('Đơn vị tiền tệ', style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
                   initialValue: _currency,
@@ -137,7 +137,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                 const Spacer(),
                 FilledButton(
                   onPressed: isLoading ? null : _submit,
-                  child: Text(isLoading ? 'Dang luu...' : 'Bat dau'),
+                  child: Text(isLoading ? 'Đang lưu...' : 'Bắt đầu'),
                 ),
               ],
             ),
@@ -151,7 +151,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     final messenger = ScaffoldMessenger.of(context);
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      messenger.showSnackBar(const SnackBar(content: Text('Nhap ten hien thi truoc.')));
+      messenger.showSnackBar(const SnackBar(content: Text('Nhập tên hiển thị trước.')));
       return;
     }
 

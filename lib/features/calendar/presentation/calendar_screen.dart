@@ -526,7 +526,7 @@ class _MonthlySummaryCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _MetricBlock(
-                  label: 'Tong chi thang',
+                  label: 'Tổng chi tháng',
                   value: _formatMoney(monthData.totalExpense, isNegative: true),
                   color: AppTheme.danger,
                 ),
@@ -534,7 +534,7 @@ class _MonthlySummaryCard extends StatelessWidget {
               const SizedBox(width: 14),
               Expanded(
                 child: _MetricBlock(
-                  label: 'Tong thu thang',
+                  label: 'Tổng thu tháng',
                   value: _formatMoney(monthData.totalIncome, isNegative: false),
                   color: AppTheme.mint,
                 ),
@@ -547,8 +547,8 @@ class _MonthlySummaryCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   monthData.isEmpty
-                      ? 'Chua co giao dich nao trong thang nay. Buoc tiep theo la them transaction de lich hien du lieu that.'
-                      : '${monthData.transactionCount} giao dich trong ${monthData.activeDays} ngay co hoat dong. Lich dang doc du lieu that tu Supabase.' ,
+                      ? 'Chưa có giao dịch nào trong tháng này. Bước tiếp theo là thêm giao dịch để lịch hiện dữ liệu thật.'
+                      : '${monthData.transactionCount} giao dịch trong ${monthData.activeDays} ngày có hoạt động. Lịch đang đọc dữ liệu thật từ Supabase.' ,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
@@ -584,7 +584,7 @@ class _CalendarErrorState extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Text(
-          'Khong tai duoc lich thang.\n$error',
+          'Không tải được lịch tháng.\n$error',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
@@ -641,14 +641,14 @@ class _BottomNavBar extends StatelessWidget {
         color: Color(0xFF0D1622),
         border: Border(top: BorderSide(color: AppTheme.outline)),
       ),
-      child: Row(
-        children: const [
+      child: const Row(
+        children: [
           SizedBox(width: 10),
-          _NavItem(icon: Icons.calendar_month_rounded, label: 'Lich', active: true),
-          _NavItem(icon: Icons.pie_chart_outline_rounded, label: 'Thong ke'),
+          _NavItem(icon: Icons.calendar_month_rounded, label: 'Lịch', active: true),
+          _NavItem(icon: Icons.pie_chart_outline_rounded, label: 'Thống kê'),
           SizedBox(width: 76),
-          _NavItem(icon: Icons.groups_2_outlined, label: 'Nhom'),
-          _NavItem(icon: Icons.person_outline_rounded, label: 'Ho so'),
+          _NavItem(icon: Icons.groups_2_outlined, label: 'Nhóm'),
+          _NavItem(icon: Icons.person_outline_rounded, label: 'Hồ sơ'),
           SizedBox(width: 10),
         ],
       ),

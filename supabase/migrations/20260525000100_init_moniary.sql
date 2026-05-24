@@ -366,12 +366,12 @@ begin
 
     insert into public.wallets
         (user_id, name, type, icon, color, initial_balance, is_default)
-    select v_user_id, 'Tien mat', 'cash', 'wallet', '#4CAF50', 0, true
+    select v_user_id, 'Tiền mặt', 'cash', 'wallet', '#4CAF50', 0, true
     where not exists (
         select 1
         from public.wallets w
         where w.user_id = v_user_id
-          and lower(w.name) = lower('Tien mat')
+          and lower(w.name) = lower('Tiền mặt')
     );
 
     select id into v_default_wallet_id
@@ -384,13 +384,13 @@ begin
     insert into public.categories
         (user_id, name, type, icon, color, is_default)
     values
-        (v_user_id, 'An uong', 'expense', 'restaurant', '#FF7043', true),
-        (v_user_id, 'Di chuyen', 'expense', 'directions_bus', '#42A5F5', true),
-        (v_user_id, 'Mua sam', 'expense', 'shopping_bag', '#AB47BC', true),
-        (v_user_id, 'Hoa don', 'expense', 'receipt_long', '#FFA726', true),
-        (v_user_id, 'Luong', 'income', 'payments', '#66BB6A', true),
-        (v_user_id, 'Thuong', 'income', 'savings', '#26A69A', true),
-        (v_user_id, 'Khac', 'income', 'more_horiz', '#78909C', true)
+        (v_user_id, 'Ăn uống', 'expense', 'restaurant', '#FF7043', true),
+        (v_user_id, 'Di chuyển', 'expense', 'directions_bus', '#42A5F5', true),
+        (v_user_id, 'Mua sắm', 'expense', 'shopping_bag', '#AB47BC', true),
+        (v_user_id, 'Hóa đơn', 'expense', 'receipt_long', '#FFA726', true),
+        (v_user_id, 'Lương', 'income', 'payments', '#66BB6A', true),
+        (v_user_id, 'Thưởng', 'income', 'savings', '#26A69A', true),
+        (v_user_id, 'Khác', 'income', 'more_horiz', '#78909C', true)
     on conflict (user_id, type, lower(name)) do nothing;
 
     return jsonb_build_object(

@@ -47,7 +47,7 @@ class TransactionEntry {
       walletName: (wallet['name'] ?? 'Wallet') as String,
       walletColor: wallet['color'] as String?,
       categoryId: (category['id'] ?? '') as String,
-      categoryName: (category['name'] ?? 'Khac') as String,
+      categoryName: (category['name'] ?? 'Khác') as String,
       categoryColor: category['color'] as String?,
     );
   }

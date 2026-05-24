@@ -41,19 +41,19 @@ class LoginScreen extends ConsumerWidget {
                 const _BrandTitle(),
                 const SizedBox(height: 8),
                 Text(
-                  'Ghi chi tieu bang anh',
+                  'Ghi chi tiêu bằng ảnh',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Colors.white,
                       ),
                 ),
                 const SizedBox(height: 40),
-                Text('Dang nhap', style: Theme.of(context).textTheme.headlineMedium),
+                Text('Đăng nhập', style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 24),
-                const _AuthButton(icon: Icons.g_mobiledata_rounded, label: 'Dang nhap voi Google', style: _AuthButtonStyle.light),
+                const _AuthButton(icon: Icons.g_mobiledata_rounded, label: 'Đăng nhập với Google', style: _AuthButtonStyle.light),
                 const SizedBox(height: 12),
-                const _AuthButton(icon: Icons.apple_rounded, label: 'Dang nhap voi Apple', style: _AuthButtonStyle.light),
+                const _AuthButton(icon: Icons.apple_rounded, label: 'Đăng nhập với Apple', style: _AuthButtonStyle.light),
                 const SizedBox(height: 12),
-                const _AuthButton(icon: Icons.email_outlined, label: 'Dang nhap voi Email', style: _AuthButtonStyle.dark),
+                const _AuthButton(icon: Icons.email_outlined, label: 'Đăng nhập với Email', style: _AuthButtonStyle.dark),
                 const SizedBox(height: 20),
                 const _OrDivider(),
                 const SizedBox(height: 20),
@@ -81,8 +81,8 @@ class LoginScreen extends ConsumerWidget {
                   icon: const Icon(Icons.verified_user_outlined),
                   label: Text(
                     authAction.isLoading
-                        ? 'Dang ket noi Supabase...'
-                        : 'Dung thu khong can dang nhap',
+                        ? 'Đang kết nối Supabase...'
+                        : 'Dùng thử không cần đăng nhập',
                   ),
                 ),
                 const Spacer(),
@@ -94,8 +94,8 @@ class LoginScreen extends ConsumerWidget {
                     Flexible(
                       child: Text(
                         hasSession
-                            ? 'Session da san sang. Ban co the vao thang Calendar.'
-                            : 'Du lieu cua ban duoc bao mat va dong bo voi Supabase.',
+                            ? 'Phiên đăng nhập đã sẵn sàng. Bạn có thể vào thẳng Lịch.'
+                            : 'Dữ liệu của bạn được bảo mật và đồng bộ với Supabase.',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
@@ -216,7 +216,7 @@ class _OrDivider extends StatelessWidget {
         Expanded(child: Container(height: 1, color: AppTheme.outline)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Text('hoac', style: Theme.of(context).textTheme.bodyMedium),
+          child: Text('hoặc', style: Theme.of(context).textTheme.bodyMedium),
         ),
         Expanded(child: Container(height: 1, color: AppTheme.outline)),
       ],

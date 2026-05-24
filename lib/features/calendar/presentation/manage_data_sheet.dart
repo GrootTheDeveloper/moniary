@@ -26,7 +26,7 @@ class ManageDataSheet extends StatelessWidget {
               ),
               const SizedBox(height: 18),
               Text(
-                'Quan ly du lieu',
+                'Quản lý dữ liệu',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
@@ -40,8 +40,8 @@ class ManageDataSheet extends StatelessWidget {
                 labelColor: Colors.white,
                 unselectedLabelColor: const Color(0xFF9CB0C2),
                 tabs: const [
-                  Tab(text: 'Wallets'),
-                  Tab(text: 'Categories'),
+                  Tab(text: 'Ví'),
+                  Tab(text: 'Danh mục'),
                 ],
               ),
               const SizedBox(height: 18),

@@ -40,7 +40,7 @@ class TransactionDetailScreen extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              'Khong tai duoc chi tiet giao dich.\n$error',
+              'Không tải được chi tiết giao dịch.\n$error',
               textAlign: TextAlign.center,
             ),
           ),
@@ -162,7 +162,7 @@ class _TransactionDetailBody extends ConsumerWidget {
             children: [
               Expanded(
                 child: _InfoItem(
-                  label: 'Danh muc',
+                  label: 'Danh mục',
                   value: transaction.categoryName,
                   color: accent,
                 ),
@@ -170,7 +170,7 @@ class _TransactionDetailBody extends ConsumerWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _InfoItem(
-                  label: 'Vi',
+                  label: 'Ví',
                   value: transaction.walletName,
                   color: AppColor.fromHex(transaction.walletColor, fallback: AppTheme.mint),
                 ),
@@ -183,12 +183,12 @@ class _TransactionDetailBody extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Ghi chu', style: Theme.of(context).textTheme.bodyMedium),
+              Text('Ghi chú', style: Theme.of(context).textTheme.bodyMedium),
               const SizedBox(height: 8),
               Text(
                 transaction.note?.trim().isNotEmpty == true
                     ? transaction.note!.trim()
-                    : 'Chua co ghi chu cho giao dich nay.',
+                    : 'Chưa có ghi chú cho giao dịch này.',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white),
               ),
             ],
@@ -220,16 +220,16 @@ class _TransactionDetailBody extends ConsumerWidget {
                     context: context,
                     builder: (context) => AlertDialog(
                       backgroundColor: AppTheme.surface,
-                      title: const Text('Xoa giao dich?'),
-                      content: const Text('Hanh dong nay khong the hoan tac.'),
+                      title: const Text('Xóa giao dịch?'),
+                      content: const Text('Hành động này không thể hoàn tác.'),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text('Huy'),
+                          child: const Text('Hủy'),
                         ),
                         FilledButton(
                           onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text('Xoa'),
+                          child: const Text('Xóa'),
                         ),
                       ],
                     ),
@@ -246,7 +246,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                   );
                 },
                 icon: const Icon(Icons.delete_outline_rounded),
-                label: const Text('Xoa'),
+                label: const Text('Xóa'),
               ),
             ),
           ],

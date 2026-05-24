@@ -32,7 +32,7 @@ class DayDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Column(
           children: [
-            const Text('Hom nay'),
+            const Text('Hôm nay'),
             Text(
               DateFormat('dd MMMM, yyyy', 'vi_VN').format(date),
               style: Theme.of(context).textTheme.bodyMedium,
@@ -47,7 +47,7 @@ class DayDetailScreen extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              'Khong tai duoc giao dich trong ngay.\n$error',
+              'Không tải được giao dịch trong ngày.\n$error',
               textAlign: TextAlign.center,
             ),
           ),
@@ -93,7 +93,7 @@ class _DayDetailBody extends ConsumerWidget {
           children: [
             Expanded(
               child: _SummaryCard(
-                label: 'Tong thu',
+                label: 'Tổng thu',
                 value: '+${_money(income)}',
                 color: AppTheme.success,
               ),
@@ -101,7 +101,7 @@ class _DayDetailBody extends ConsumerWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _SummaryCard(
-                label: 'Tong chi',
+                label: 'Tổng chi',
                 value: '-${_money(expense)}',
                 color: AppTheme.danger,
               ),
@@ -110,7 +110,7 @@ class _DayDetailBody extends ConsumerWidget {
         ),
         const SizedBox(height: 12),
         _SummaryCard(
-          label: 'Tong cong',
+          label: 'Tổng cộng',
           value: '${income - expense >= 0 ? '+' : '-'}${_money((income - expense).abs())}',
           color: income - expense >= 0 ? AppTheme.success : AppTheme.danger,
         ),
@@ -118,7 +118,7 @@ class _DayDetailBody extends ConsumerWidget {
         Row(
           children: [
             Text(
-              '${transactions.length} giao dich',
+              '${transactions.length} giao dịch',
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ],
@@ -133,7 +133,7 @@ class _DayDetailBody extends ConsumerWidget {
               border: Border.all(color: AppTheme.outline),
             ),
             child: Text(
-              'Ngay nay chua co giao dich. Ban co the bam nut + de them ngay.',
+              'Ngày này chưa có giao dịch. Bạn có thể bấm nút + để thêm ngay.',
               style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),

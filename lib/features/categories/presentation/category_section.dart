@@ -25,7 +25,7 @@ class CategorySection extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Categories',
+                    'Danh mục',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
@@ -34,20 +34,20 @@ class CategorySection extends ConsumerWidget {
                 TextButton.icon(
                   onPressed: () => _showCategoryForm(context, ref),
                   icon: const Icon(Icons.add),
-                  label: const Text('Them'),
+                  label: const Text('Thêm'),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              'CRUD danh muc thu/chi de chuan bi cho transaction form.',
+              'Quản lý danh mục thu/chi để chuẩn bị cho giao dịch.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
             categoriesAsync.when(
               data: (categories) {
                 if (categories.isEmpty) {
-                  return const Text('Chua co category nao.');
+                  return const Text('Chưa có danh mục nào.');
                 }
 
                 final expense = categories
@@ -107,7 +107,7 @@ class _CategoryGroup extends ConsumerWidget {
         ),
         const SizedBox(height: 8),
         if (categories.isEmpty)
-          const Text('Chua co du lieu.')
+          const Text('Chưa có dữ liệu.')
         else
           ...categories.map(
             (category) => Padding(
@@ -157,11 +157,11 @@ class _CategoryTile extends StatelessWidget {
             if (category.isDefault)
               const Padding(
                 padding: EdgeInsets.only(left: 8),
-                child: Chip(label: Text('Mac dinh')),
+                child: Chip(label: Text('Mặc định')),
               ),
           ],
         ),
-        subtitle: Text(category.isActive ? 'Dang dung' : 'Da an'),
+        subtitle: Text(category.isActive ? 'Đang dùng' : 'Đã ẩn'),
         trailing: IconButton(
           onPressed: onEdit,
           icon: const Icon(Icons.edit_outlined),
@@ -225,7 +225,7 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isEditing ? 'Sua category' : 'Tao category',
+              isEditing ? 'Sửa danh mục' : 'Tạo danh mục',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
@@ -233,7 +233,7 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
             const SizedBox(height: 16),
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Ten category'),
+              decoration: const InputDecoration(labelText: 'Tên danh mục'),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<TransactionType>(
@@ -250,19 +250,19 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
                 if (value == null) return;
                 setState(() => _selectedType = value);
               },
-              decoration: const InputDecoration(labelText: 'Loai category'),
+              decoration: const InputDecoration(labelText: 'Loại danh mục'),
             ),
             const SizedBox(height: 8),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               value: _isActive,
               onChanged: (value) => setState(() => _isActive = value),
-              title: const Text('Dang kich hoat'),
+              title: const Text('Đang kích hoạt'),
             ),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _isSubmitting ? null : _submit,
-              child: Text(_isSubmitting ? 'Dang luu...' : 'Luu category'),
+              child: Text(_isSubmitting ? 'Đang lưu...' : 'Lưu danh mục'),
             ),
           ],
         ),
@@ -276,7 +276,7 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
 
     if (name.isEmpty) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Ten category khong duoc rong.')),
+        const SnackBar(content: Text('Tên danh mục không được trống.')),
       );
       return;
     }
