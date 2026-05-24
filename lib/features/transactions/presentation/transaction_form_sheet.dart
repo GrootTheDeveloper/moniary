@@ -1,7 +1,9 @@
 ﻿import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -52,6 +54,7 @@ class TransactionFormScreen extends ConsumerStatefulWidget {
 class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
   late final TextEditingController _amountController;
   late final TextEditingController _noteController;
+  late final CurrencyTextInputFormatter _amountFormatter;
   late TransactionType _type;
   late DateTime _selectedDate;
   String? _selectedWalletId;
@@ -64,8 +67,16 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
   void initState() {
     super.initState();
     final transaction = widget.initialTransaction;
+
+    _amountFormatter = CurrencyTextInputFormatter.currency(
+      locale: 'vi_VN',
+      symbol: '',
+      decimalDigits: 0,
+    );
+
+    final initialAmount = transaction?.amount ?? 0;
     _amountController = TextEditingController(
-      text: transaction == null ? '' : transaction.amount.toStringAsFixed(0),
+      text: initialAmount > 0 ? _amountFormatter.formatDouble(initialAmount) : '',
     );
     _noteController = TextEditingController(text: transaction?.note ?? '');
     _type = transaction?.type ?? TransactionType.expense;
@@ -168,7 +179,10 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
               onPick: () => _showImageSourceOptions(context),
             ),
             const SizedBox(height: 24),
-            _AmountInput(controller: _amountController),
+            _AmountInput(
+              controller: _amountController,
+              formatter: _amountFormatter,
+            ),
             const SizedBox(height: 16),
             _TypeSelector(
               type: _type,
@@ -322,10 +336,9 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
 
   Future<void> _submit() async {
     final messenger = ScaffoldMessenger.of(context);
-    final amountText = _amountController.text.trim().replaceAll(',', '');
-    final amount = double.tryParse(amountText);
+    final amount = _amountFormatter.getUnformattedValue().toDouble();
 
-    if (amount == null || amount <= 0) {
+    if (amount <= 0) {
       messenger.showSnackBar(const SnackBar(content: Text('Nhập số tiền hợp lệ.')));
       return;
     }
@@ -437,8 +450,9 @@ class _ImagePreview extends StatelessWidget {
 }
 
 class _AmountInput extends StatelessWidget {
-  const _AmountInput({required this.controller});
+  const _AmountInput({required this.controller, required this.formatter});
   final TextEditingController controller;
+  final CurrencyTextInputFormatter formatter;
 
   @override
   Widget build(BuildContext context) {
@@ -459,6 +473,7 @@ class _AmountInput extends StatelessWidget {
             child: TextField(
               controller: controller,
               keyboardType: TextInputType.number,
+              inputFormatters: [formatter],
               textAlign: TextAlign.right,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
               decoration: const InputDecoration(
