@@ -78,6 +78,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     }
                     context.go(LoginScreen.routePath);
                   },
+                  onMonthSelect: (date) {
+                    setState(() {
+                      _visibleMonth = DateTime(date.year, date.month, 1);
+                    });
+                  },
                 ),
                 const SizedBox(height: 14),
                 _FilterRow(userId: userId),
@@ -184,6 +189,7 @@ class _CalendarHeader extends StatelessWidget {
     required this.onNextMonth,
     required this.onOpenManager,
     required this.onLogout,
+    required this.onMonthSelect,
   });
 
   final DateTime month;
@@ -191,6 +197,7 @@ class _CalendarHeader extends StatelessWidget {
   final VoidCallback onNextMonth;
   final VoidCallback onOpenManager;
   final VoidCallback onLogout;
+  final ValueChanged<DateTime> onMonthSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -210,10 +217,17 @@ class _CalendarHeader extends StatelessWidget {
                 icon: const Icon(Icons.chevron_left_rounded),
               ),
               Flexible(
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 24),
+                child: InkWell(
+                  onTap: () => _showMonthPicker(context),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 24),
+                    ),
+                  ),
                 ),
               ),
               IconButton(
@@ -223,10 +237,120 @@ class _CalendarHeader extends StatelessWidget {
             ],
           ),
         ),
-        _RoundIconButton(icon: Icons.calendar_month_outlined, onTap: () {}),
+        _RoundIconButton(
+          icon: Icons.calendar_month_outlined,
+          onTap: () {
+            onMonthSelect(DateTime.now());
+          },
+        ),
         const SizedBox(width: 8),
         _RoundIconButton(icon: Icons.logout_rounded, onTap: onLogout),
       ],
+    );
+  }
+
+  void _showMonthPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return _MonthPickerContent(
+          initialDate: month,
+          onSelected: (date) {
+            onMonthSelect(date);
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+}
+
+class _MonthPickerContent extends StatefulWidget {
+  const _MonthPickerContent({required this.initialDate, required this.onSelected});
+  final DateTime initialDate;
+  final ValueChanged<DateTime> onSelected;
+
+  @override
+  State<_MonthPickerContent> createState() => _MonthPickerContentState();
+}
+
+class _MonthPickerContentState extends State<_MonthPickerContent> {
+  late int _selectedYear;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedYear = widget.initialDate.year;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 380,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.chevron_left),
+                onPressed: () => setState(() => _selectedYear--),
+              ),
+              Text(
+                '$_selectedYear',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                icon: const Icon(Icons.chevron_right),
+                onPressed: () => setState(() => _selectedYear++),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: GridView.builder(
+              itemCount: 12,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: 1.5,
+              ),
+              itemBuilder: (context, index) {
+                final month = index + 1;
+                final isSelected = widget.initialDate.year == _selectedYear &&
+                    widget.initialDate.month == month;
+                return InkWell(
+                  onTap: () => widget.onSelected(DateTime(_selectedYear, month)),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppTheme.mint : Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isSelected ? AppTheme.mint : Colors.white10,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'T.$month',
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected ? Colors.black : Colors.white,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
