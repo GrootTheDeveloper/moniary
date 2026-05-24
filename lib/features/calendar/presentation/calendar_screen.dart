@@ -10,11 +10,18 @@ import '../../../shared/widgets/supabase_image.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../application/calendar_month_provider.dart';
 import '../domain/calendar_month_data.dart';
+import '../application/calendar_filter_provider.dart';
+import '../domain/calendar_filters.dart';
+import '../../categories/domain/category.dart';
+import '../../categories/presentation/categories_controller.dart';
+import '../../wallets/domain/wallet.dart';
+import '../../wallets/presentation/wallets_controller.dart';
 import 'manage_data_sheet.dart';
 import '../../transactions/domain/transaction_mutation_result.dart';
 import '../../transactions/presentation/camera_screen.dart';
 import '../../transactions/presentation/day_detail_screen.dart';
-import '../../transactions/presentation/transaction_form_sheet.dart';
+import '../../transactions/presentation/transaction_detail_screen.dart';
+import '../../transactions/presentation/transaction_route_args.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -224,40 +231,104 @@ class _CalendarHeader extends StatelessWidget {
   }
 }
 
-class _FilterRow extends StatelessWidget {
+class _FilterRow extends ConsumerWidget {
   const _FilterRow({required this.userId});
 
   final String userId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filters = ref.watch(calendarFilterProvider);
+    final walletsAsync = ref.watch(walletsControllerProvider);
+    final categoriesAsync = ref.watch(categoriesControllerProvider);
+
+    final selectedWallet = walletsAsync.value?.cast<Wallet?>().firstWhere(
+          (w) => w?.id == filters.walletId,
+          orElse: () => null,
+        );
+
+    final selectedCategory = categoriesAsync.value?.cast<Category?>().firstWhere(
+          (c) => c?.id == filters.categoryId,
+          orElse: () => null,
+        );
+
     return Row(
       children: [
-        const _PillButton(label: 'Tat ca vi', selected: true),
-        const SizedBox(width: 10),
-        const Expanded(
-          child: _PillButton(label: 'Tat ca danh muc', selected: false),
+        Expanded(
+          child: _PillButton(
+            label: selectedWallet?.name ?? 'Tất cả ví',
+            selected: filters.walletId != null,
+            onTap: () => _showWalletPicker(context, ref, walletsAsync.value ?? []),
+            onClear: filters.walletId != null
+                ? () => ref.read(calendarFilterProvider.notifier).update(
+                      (s) => s.copyWith(clearWallet: true),
+                    )
+                : null,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _PillButton(
+            label: selectedCategory?.name ?? 'Tất cả danh mục',
+            selected: filters.categoryId != null,
+            onTap: () => _showCategoryPicker(context, ref, categoriesAsync.value ?? []),
+            onClear: filters.categoryId != null
+                ? () => ref.read(calendarFilterProvider.notifier).update(
+                      (s) => s.copyWith(clearCategory: true),
+                    )
+                : null,
+          ),
         ),
         const SizedBox(width: 10),
-        _RoundIconButton(icon: Icons.tune_rounded, onTap: () {}),
-        if (userId.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Tooltip(
-              message: userId,
-              child: Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppTheme.surfaceRaised,
-                  border: Border.all(color: AppTheme.outline),
-                ),
-                child: const Icon(Icons.person_outline_rounded, size: 18),
-              ),
-            ),
-          ),
+        _RoundIconButton(
+          icon: Icons.tune_rounded,
+          onTap: () {
+            ref.read(calendarFilterProvider.notifier).state = const CalendarFilters();
+          },
+        ),
       ],
+    );
+  }
+
+  void _showWalletPicker(BuildContext context, WidgetRef ref, List<Wallet> wallets) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.surface,
+      builder: (context) => ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        children: [
+          const ListTile(title: Text('Chọn ví lọc', style: TextStyle(fontWeight: FontWeight.bold))),
+          ...wallets.map((w) => ListTile(
+                title: Text(w.name),
+                onTap: () {
+                  ref.read(calendarFilterProvider.notifier).update((s) => s.copyWith(walletId: w.id));
+                  Navigator.pop(context);
+                },
+              )),
+        ],
+      ),
+    );
+  }
+
+  void _showCategoryPicker(BuildContext context, WidgetRef ref, List<Category> categories) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.surface,
+      builder: (context) => ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        children: [
+          const ListTile(title: Text('Chọn danh mục lọc', style: TextStyle(fontWeight: FontWeight.bold))),
+          ...categories.map((c) => ListTile(
+                title: Text(c.name),
+                onTap: () {
+                  ref.read(calendarFilterProvider.notifier).update((s) => s.copyWith(categoryId: c.id));
+                  Navigator.pop(context);
+                },
+              )),
+        ],
+      ),
     );
   }
 }
@@ -620,34 +691,61 @@ class _NavItem extends StatelessWidget {
 }
 
 class _PillButton extends StatelessWidget {
-  const _PillButton({required this.label, required this.selected});
+  const _PillButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.onClear,
+  });
 
   final String label;
   final bool selected;
+  final VoidCallback onTap;
+  final VoidCallback? onClear;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: selected ? AppTheme.mint : AppTheme.surfaceRaised,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: selected ? AppTheme.mint : AppTheme.outline),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(width: 6),
-          Icon(
-            Icons.keyboard_arrow_down_rounded,
-            size: 18,
-            color: Colors.white.withValues(alpha: 0.9),
-          ),
-        ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? AppTheme.mint.withValues(alpha: 0.2) : AppTheme.surfaceRaised,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: selected ? AppTheme.mint : AppTheme.outline),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: selected ? AppTheme.mint : Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            if (selected && onClear != null)
+              GestureDetector(
+                onTap: (e) {
+                  // Prevent parent onTap
+                  onClear!();
+                },
+                child: const Icon(Icons.close_rounded, size: 16, color: AppTheme.mint),
+              )
+            else
+              Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 18,
+                color: selected ? AppTheme.mint : Colors.white.withValues(alpha: 0.9),
+              ),
+          ],
+        ),
       ),
     );
   }

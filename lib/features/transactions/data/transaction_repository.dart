@@ -16,14 +16,26 @@ class TransactionRepository {
 
   final SupabaseClient _client;
 
-  Future<List<TransactionEntry>> fetchTransactionsForMonth(DateTime month) async {
+  Future<List<TransactionEntry>> fetchTransactionsForMonth(
+    DateTime month, {
+    String? walletId,
+    String? categoryId,
+  }) async {
     final start = DateTime(month.year, month.month, 1);
     final end = DateTime(month.year, month.month + 1, 1);
 
-    final rows = await _baseSelect()
+    var query = _baseSelect()
         .gte('transaction_date', start.toUtc().toIso8601String())
-        .lt('transaction_date', end.toUtc().toIso8601String())
-        .order('transaction_date');
+        .lt('transaction_date', end.toUtc().toIso8601String());
+
+    if (walletId != null) {
+      query = query.eq('wallet_id', walletId);
+    }
+    if (categoryId != null) {
+      query = query.eq('category_id', categoryId);
+    }
+
+    final rows = await query.order('transaction_date');
 
     return _mapList(rows);
   }

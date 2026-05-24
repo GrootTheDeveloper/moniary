@@ -4,12 +4,19 @@ import '../../transactions/data/transaction_repository.dart';
 import '../../transactions/domain/transaction_entry.dart';
 import '../domain/calendar_month_data.dart';
 
+import 'calendar_filter_provider.dart';
+
 final calendarMonthProvider = FutureProvider.family<CalendarMonthData, DateTime>(
   (ref, month) async {
+    final filters = ref.watch(calendarFilterProvider);
     final normalizedMonth = DateTime(month.year, month.month, 1);
     final transactions = await ref
         .watch(transactionRepositoryProvider)
-        .fetchTransactionsForMonth(normalizedMonth);
+        .fetchTransactionsForMonth(
+          normalizedMonth,
+          walletId: filters.walletId,
+          categoryId: filters.categoryId,
+        );
 
     return _CalendarMonthBuilder.build(
       month: normalizedMonth,
