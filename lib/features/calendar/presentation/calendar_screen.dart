@@ -416,22 +416,26 @@ class _CalendarDayCell extends StatelessWidget {
       fallback: AppTheme.amber,
     );
 
+    final double dayExpense = day.transactions
+        .where((t) => t.isExpense)
+        .fold(0, (sum, t) => sum + t.amount);
+
     return InkWell(
       borderRadius: BorderRadius.circular(14),
       onTap: day.isCurrentMonth ? onTap : null,
       child: SizedBox(
-        height: 64,
+        height: 72,
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
             if (day.transactions.isNotEmpty)
               Positioned(
-                bottom: 0,
+                bottom: 14,
                 child: Container(
-                  width: 36,
-                  height: 36,
+                  width: 34,
+                  height: 34,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -445,13 +449,13 @@ class _CalendarDayCell extends StatelessWidget {
                     ),
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(11),
+                    borderRadius: BorderRadius.circular(9),
                     child: Stack(
                       children: [
                         SupabaseImage(
                           imagePath: day.transactions.first.imagePath,
-                          width: 36,
-                          height: 36,
+                          width: 34,
+                          height: 34,
                           fallbackIcon: Icons.receipt_long_rounded,
                         ),
                         if (day.transactions.length > 1)
@@ -475,11 +479,23 @@ class _CalendarDayCell extends StatelessWidget {
                   ),
                 ),
               ),
+            if (dayExpense > 0)
+              Positioned(
+                bottom: 0,
+                child: Text(
+                  _formatCompactMoney(dayExpense),
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white.withValues(alpha: 0.7),
+                  ),
+                ),
+              ),
             Positioned(
               top: 0,
               child: Container(
-                width: 26,
-                height: 26,
+                width: 24,
+                height: 24,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: day.isToday ? AppTheme.mint : Colors.transparent,
@@ -488,6 +504,7 @@ class _CalendarDayCell extends StatelessWidget {
                   child: Text(
                     '${day.date.day}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontSize: 12,
                           color: day.isToday
                               ? Colors.white
                               : day.isCurrentMonth
@@ -504,6 +521,16 @@ class _CalendarDayCell extends StatelessWidget {
       ),
     );
   }
+}
+
+String _formatCompactMoney(double amount) {
+  if (amount >= 1000000) {
+    return '${(amount / 1000000).toStringAsFixed(1)}M';
+  }
+  if (amount >= 1000) {
+    return '${(amount / 1000).toStringAsFixed(0)}k';
+  }
+  return amount.toStringAsFixed(0);
 }
 
 class _MonthlySummaryCard extends StatelessWidget {
