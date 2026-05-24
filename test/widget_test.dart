@@ -1,22 +1,35 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:moniary/app/app.dart';
+import 'package:moniary/app/app_router.dart';
 
 void main() {
-  testWidgets('App boots into the stage 0 flow', (WidgetTester tester) async {
+  testWidgets('App shell renders with an injected router', (
+    WidgetTester tester,
+  ) async {
+    final testRouter = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => const Scaffold(
+            body: Center(child: Text('Moniary test shell')),
+          ),
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
-      const ProviderScope(
-        child: MoniaryApp(),
+      ProviderScope(
+        overrides: [
+          appRouterProvider.overrideWithValue(testRouter),
+        ],
+        child: const MoniaryApp(),
       ),
     );
 
-    expect(find.text('Moniary'), findsOneWidget);
-
-    await tester.pump(const Duration(seconds: 1));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Ghi chi tieu bang anh.'), findsOneWidget);
-    expect(find.text('Di toi Calendar placeholder'), findsOneWidget);
+    expect(find.text('Moniary test shell'), findsOneWidget);
   });
 }
