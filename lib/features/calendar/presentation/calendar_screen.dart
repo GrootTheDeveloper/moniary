@@ -260,9 +260,7 @@ class _FilterRow extends ConsumerWidget {
             selected: filters.walletId != null,
             onTap: () => _showWalletPicker(context, ref, walletsAsync.value ?? []),
             onClear: filters.walletId != null
-                ? () => ref.read(calendarFilterProvider.notifier).update(
-                      (s) => s.copyWith(clearWallet: true),
-                    )
+                ? () => ref.read(calendarFilterProvider.notifier).clearWallet()
                 : null,
           ),
         ),
@@ -273,9 +271,7 @@ class _FilterRow extends ConsumerWidget {
             selected: filters.categoryId != null,
             onTap: () => _showCategoryPicker(context, ref, categoriesAsync.value ?? []),
             onClear: filters.categoryId != null
-                ? () => ref.read(calendarFilterProvider.notifier).update(
-                      (s) => s.copyWith(clearCategory: true),
-                    )
+                ? () => ref.read(calendarFilterProvider.notifier).clearCategory()
                 : null,
           ),
         ),
@@ -283,7 +279,7 @@ class _FilterRow extends ConsumerWidget {
         _RoundIconButton(
           icon: Icons.tune_rounded,
           onTap: () {
-            ref.read(calendarFilterProvider.notifier).state = const CalendarFilters();
+            ref.read(calendarFilterProvider.notifier).reset();
           },
         ),
       ],
@@ -302,7 +298,7 @@ class _FilterRow extends ConsumerWidget {
           ...wallets.map((w) => ListTile(
                 title: Text(w.name),
                 onTap: () {
-                  ref.read(calendarFilterProvider.notifier).update((s) => s.copyWith(walletId: w.id));
+                  ref.read(calendarFilterProvider.notifier).setWallet(w.id);
                   Navigator.pop(context);
                 },
               )),
@@ -323,7 +319,7 @@ class _FilterRow extends ConsumerWidget {
           ...categories.map((c) => ListTile(
                 title: Text(c.name),
                 onTap: () {
-                  ref.read(calendarFilterProvider.notifier).update((s) => s.copyWith(categoryId: c.id));
+                  ref.read(calendarFilterProvider.notifier).setCategory(c.id);
                   Navigator.pop(context);
                 },
               )),
@@ -732,8 +728,7 @@ class _PillButton extends StatelessWidget {
             const SizedBox(width: 4),
             if (selected && onClear != null)
               GestureDetector(
-                onTap: (e) {
-                  // Prevent parent onTap
+                onTap: () {
                   onClear!();
                 },
                 child: const Icon(Icons.close_rounded, size: 16, color: AppTheme.mint),

@@ -1,5 +1,3 @@
-import 'package:freezed_annotation/go_router.dart';
-
 class CalendarFilters {
   const CalendarFilters({
     this.walletId,
