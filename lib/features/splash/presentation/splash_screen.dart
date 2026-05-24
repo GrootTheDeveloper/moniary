@@ -1,13 +1,19 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/preferences/preferences_providers.dart';
 import '../../../core/supabase/supabase_providers.dart';
-import '../../calendar/presentation/calendar_screen.dart';
+import '../../../shared/widgets/aurora_background.dart';
 import '../../auth/presentation/login_screen.dart';
+import '../../calendar/presentation/calendar_screen.dart';
+import '../../onboarding/presentation/onboarding_screen.dart';
+import '../../profile/data/profile_repository.dart';
+import '../../profile/presentation/profile_setup_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -26,59 +32,128 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _bootstrap() async {
-    await Future<void>.delayed(const Duration(seconds: 1));
+    await Future<void>.delayed(const Duration(milliseconds: 1400));
 
     if (!mounted) {
       return;
     }
 
+    final onboardingSeen = ref.read(onboardingSeenProvider);
+    if (!onboardingSeen) {
+      context.go(OnboardingScreen.routePath);
+      return;
+    }
+
     final session = ref.read(currentSessionProvider);
+    if (session == null) {
+      context.go(LoginScreen.routePath);
+      return;
+    }
+
+    final profile = await ref.read(profileRepositoryProvider).fetchCurrentProfile();
+    if (!mounted) return;
+
     context.go(
-      session == null ? LoginScreen.routePath : CalendarScreen.routePath,
+      profile == null || profile.needsSetup
+          ? ProfileSetupScreen.routePath
+          : CalendarScreen.routePath,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 96,
-              height: 96,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.16),
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: Icon(
-                Icons.photo_library_outlined,
-                size: 44,
-                color: theme.colorScheme.primary,
-              ),
+      body: AuroraBackground(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28),
+            child: Column(
+              children: [
+                const Spacer(flex: 2),
+                const _SplashLogo(size: 132),
+                const SizedBox(height: 22),
+                RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.headlineLarge,
+                    children: const [
+                      TextSpan(text: 'Mon', style: TextStyle(color: Colors.white)),
+                      TextSpan(text: 'iary', style: TextStyle(color: AppTheme.mint)),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Ghi chi tieu bang anh',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.white,
+                      ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Chup lai khoan chi, luu vao lich,\nquan ly tien de nhu luu ky niem.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const Spacer(),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surface.withValues(alpha: 0.86),
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(color: AppTheme.outline),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.photo_camera_back_outlined, color: AppTheme.amber),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Dang khoi dong ${AppConstants.appName}...',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2.2),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+              ],
             ),
-            const SizedBox(height: 24),
-            Text(
-              AppConstants.appName,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.4,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Chup lai khoan chi, luu vao lich.',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 28),
-            const CircularProgressIndicator(),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class _SplashLogo extends StatelessWidget {
+  const _SplashLogo({required this.size});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(36),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.mint.withValues(alpha: 0.18),
+            blurRadius: 36,
+            offset: const Offset(0, 18),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(36),
+        child: Image.asset('logo.png', fit: BoxFit.cover),
       ),
     );
   }

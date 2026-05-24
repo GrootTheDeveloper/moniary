@@ -1,12 +1,15 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/supabase_providers.dart';
-import '../../../shared/widgets/placeholder_card.dart';
-import '../application/auth_controller.dart';
+import '../../../shared/widgets/aurora_background.dart';
 import '../../calendar/presentation/calendar_screen.dart';
+import '../../profile/data/profile_repository.dart';
+import '../../profile/presentation/profile_setup_screen.dart';
+import '../application/auth_controller.dart';
 
 class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
@@ -15,82 +18,208 @@ class LoginScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final authAction = ref.watch(authControllerProvider);
     final hasSession = ref.watch(currentSessionProvider) != null;
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppConstants.appName)),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Ghi chi tieu bang anh.',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+      body: AuroraBackground(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 10, 24, 18),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    onPressed: () => context.pop(),
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Stage 0 da san sang: app shell, router va Riverpod root da duoc dung. Buoc tiep theo la ket noi Supabase va anonymous login.',
-                style: theme.textTheme.bodyLarge?.copyWith(height: 1.45),
-              ),
-              const SizedBox(height: 24),
-              const PlaceholderCard(
-                title: 'Trang thai hien tai',
-                body:
-                    'Day la man Login tam thoi de khoa luong Splash -> Login -> Calendar trong giai doan 0.',
-              ),
-              const SizedBox(height: 16),
-              const PlaceholderCard(
-                title: 'Supabase config',
-                body:
-                    'App da duoc noi voi Supabase project hien tai. Ban van co the override bang --dart-define khi can doi environment.',
-              ),
-              const SizedBox(height: 16),
-              PlaceholderCard(
-                title: 'Ket noi',
-                body: hasSession
-                    ? 'Da co session Supabase. Router se tu dua ban vao Calendar khi auth state hop le.'
-                    : 'Chua co session. Nhan nut ben duoi de dang nhap anonymous tren Supabase.',
-              ),
-              const Spacer(),
-              FilledButton(
-                onPressed: authAction.isLoading
-                    ? null
-                    : () async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final router = GoRouter.of(context);
+                const SizedBox(height: 8),
+                const _BrandLogo(size: 102),
+                const SizedBox(height: 18),
+                const _BrandTitle(),
+                const SizedBox(height: 8),
+                Text(
+                  'Ghi chi tieu bang anh',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Colors.white,
+                      ),
+                ),
+                const SizedBox(height: 40),
+                Text('Dang nhap', style: Theme.of(context).textTheme.headlineMedium),
+                const SizedBox(height: 24),
+                const _AuthButton(icon: Icons.g_mobiledata_rounded, label: 'Dang nhap voi Google', style: _AuthButtonStyle.light),
+                const SizedBox(height: 12),
+                const _AuthButton(icon: Icons.apple_rounded, label: 'Dang nhap voi Apple', style: _AuthButtonStyle.light),
+                const SizedBox(height: 12),
+                const _AuthButton(icon: Icons.email_outlined, label: 'Dang nhap voi Email', style: _AuthButtonStyle.dark),
+                const SizedBox(height: 20),
+                const _OrDivider(),
+                const SizedBox(height: 20),
+                OutlinedButton.icon(
+                  onPressed: authAction.isLoading
+                      ? null
+                      : () async {
+                          final messenger = ScaffoldMessenger.of(context);
+                          final router = GoRouter.of(context);
 
-                        try {
-                          await ref
-                              .read(authControllerProvider.notifier)
-                              .signInAnonymously();
+                          try {
+                            await ref.read(authControllerProvider.notifier).signInAnonymously();
+                            final profile = await ref.read(profileRepositoryProvider).fetchCurrentProfile();
 
-                          if (!context.mounted) {
-                            return;
+                            if (!context.mounted) return;
+                            router.go(
+                              profile == null || profile.needsSetup
+                                  ? ProfileSetupScreen.routePath
+                                  : CalendarScreen.routePath,
+                            );
+                          } catch (error) {
+                            messenger.showSnackBar(SnackBar(content: Text(error.toString())));
                           }
-
-                          router.go(CalendarScreen.routePath);
-                        } catch (error) {
-                          messenger.showSnackBar(
-                            SnackBar(content: Text(error.toString())),
-                          );
-                        }
-                      },
-                child: Text(
-                  authAction.isLoading
-                      ? 'Dang ket noi Supabase...'
-                      : 'Dang nhap anonymous',
+                        },
+                  icon: const Icon(Icons.verified_user_outlined),
+                  label: Text(
+                    authAction.isLoading
+                        ? 'Dang ket noi Supabase...'
+                        : 'Dung thu khong can dang nhap',
+                  ),
                 ),
-              ),
-            ],
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.shield_outlined, size: 16, color: Color(0xFF8298AA)),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        hasSession
+                            ? 'Session da san sang. Ban co the vao thang Calendar.'
+                            : 'Du lieu cua ban duoc bao mat va dong bo voi Supabase.',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  AppConstants.appName,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xFF62788C),
+                      ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _BrandLogo extends StatelessWidget {
+  const _BrandLogo({required this.size});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(size * 0.28),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.mint.withValues(alpha: 0.14),
+            blurRadius: 30,
+            offset: const Offset(0, 14),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(size * 0.28),
+        child: Image.asset('logo.png', fit: BoxFit.cover),
+      ),
+    );
+  }
+}
+
+class _BrandTitle extends StatelessWidget {
+  const _BrandTitle();
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.headlineMedium?.copyWith(
+          fontSize: 24,
+          fontWeight: FontWeight.w800,
+        );
+
+    return RichText(
+      text: TextSpan(
+        style: style,
+        children: const [
+          TextSpan(text: 'Mon', style: TextStyle(color: Colors.white)),
+          TextSpan(text: 'iary', style: TextStyle(color: AppTheme.mint)),
+        ],
+      ),
+    );
+  }
+}
+
+enum _AuthButtonStyle { light, dark }
+
+class _AuthButton extends StatelessWidget {
+  const _AuthButton({required this.icon, required this.label, required this.style});
+
+  final IconData icon;
+  final String label;
+  final _AuthButtonStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    final isLight = style == _AuthButtonStyle.light;
+    return Container(
+      height: 58,
+      decoration: BoxDecoration(
+        color: isLight ? Colors.white : AppTheme.surfaceRaised,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: isLight ? Colors.transparent : AppTheme.outline),
+      ),
+      child: Row(
+        children: [
+          const SizedBox(width: 18),
+          Icon(icon, color: isLight ? Colors.black : Colors.white, size: 26),
+          const SizedBox(width: 16),
+          Text(
+            label,
+            style: TextStyle(
+              color: isLight ? Colors.black : Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OrDivider extends StatelessWidget {
+  const _OrDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: Container(height: 1, color: AppTheme.outline)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Text('hoac', style: Theme.of(context).textTheme.bodyMedium),
+        ),
+        Expanded(child: Container(height: 1, color: AppTheme.outline)),
+      ],
     );
   }
 }

@@ -1,84 +1,695 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
-import '../../../core/constants/app_constants.dart';
+import '../../../app/app_theme.dart';
+import '../../../core/constants/app_color.dart';
 import '../../../core/supabase/supabase_providers.dart';
-import '../../../shared/widgets/placeholder_card.dart';
+import '../../../shared/widgets/supabase_image.dart';
 import '../../auth/presentation/login_screen.dart';
+import '../application/calendar_month_provider.dart';
+import '../domain/calendar_month_data.dart';
+import 'manage_data_sheet.dart';
+import '../../transactions/domain/transaction_mutation_result.dart';
+import '../../transactions/presentation/day_detail_screen.dart';
+import '../../transactions/presentation/transaction_form_sheet.dart';
 
-class CalendarScreen extends ConsumerWidget {
+class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
 
   static const routePath = '/calendar';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final userId = ref.watch(currentSessionProvider)?.user.id;
+  ConsumerState<CalendarScreen> createState() => _CalendarScreenState();
+}
+
+class _CalendarScreenState extends ConsumerState<CalendarScreen> {
+  late DateTime _visibleMonth;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _visibleMonth = DateTime(now.year, now.month, 1);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final session = ref.watch(currentSessionProvider);
+    final userId = session?.user.id ?? '';
+    final monthAsync = ref.watch(calendarMonthProvider(_visibleMonth));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calendar'),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await ref.read(supabaseClientProvider).auth.signOut();
-
-              if (!context.mounted) {
-                return;
-              }
-
-              context.go(LoginScreen.routePath);
-            },
-            icon: const Icon(Icons.logout),
-            tooltip: 'Dang xuat',
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF0B1521),
+              AppTheme.background,
+              Color(0xFF08111B),
+            ],
           ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Column(
+              children: [
+                _CalendarHeader(
+                  month: _visibleMonth,
+                  onPreviousMonth: () => _changeMonth(-1),
+                  onNextMonth: () => _changeMonth(1),
+                  onOpenManager: () => _openManager(context),
+                  onLogout: () async {
+                    await ref.read(supabaseClientProvider).auth.signOut();
+                    if (!context.mounted) {
+                      return;
+                    }
+                    context.go(LoginScreen.routePath);
+                  },
+                ),
+                const SizedBox(height: 14),
+                _FilterRow(userId: userId),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: monthAsync.when(
+                    data: (monthData) => SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          _MonthCalendarCard(
+                            monthData: monthData,
+                            onDayTap: _openDayDetail,
+                          ),
+                          const SizedBox(height: 16),
+                          _MonthlySummaryCard(monthData: monthData),
+                          const SizedBox(height: 100),
+                        ],
+                      ),
+                    ),
+                    error: (error, stackTrace) => _CalendarErrorState(error: error),
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: SizedBox(
+        width: 66,
+        height: 66,
+        child: FloatingActionButton(
+          backgroundColor: AppTheme.mint,
+          foregroundColor: Colors.white,
+          shape: const CircleBorder(),
+          onPressed: () async {
+            final result = await showTransactionFormSheet(context, ref);
+            if (result == null || !context.mounted) {
+              return;
+            }
+            _applyMutationResult(result);
+          },
+          child: const Icon(Icons.add, size: 34),
+        ),
+      ),
+      bottomNavigationBar: const _BottomNavBar(),
+    );
+  }
+
+  void _changeMonth(int offset) {
+    setState(() {
+      _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month + offset, 1);
+    });
+  }
+
+  Future<void> _openManager(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => const ManageDataSheet(),
+    );
+  }
+
+  Future<void> _openDayDetail(DateTime date) async {
+    final result = await context.push<TransactionMutationResult>(
+      DayDetailScreen.routePath,
+      extra: date,
+    );
+    if (result == null || !mounted) {
+      return;
+    }
+    _applyMutationResult(result);
+  }
+
+  void _applyMutationResult(TransactionMutationResult result) {
+    final months = <DateTime>{
+      if (result.previousDate != null)
+        DateTime(result.previousDate!.year, result.previousDate!.month, 1),
+      if (result.currentDate != null)
+        DateTime(result.currentDate!.year, result.currentDate!.month, 1),
+    };
+
+    if (result.currentDate != null) {
+      setState(() {
+        _visibleMonth = DateTime(
+          result.currentDate!.year,
+          result.currentDate!.month,
+          1,
+        );
+      });
+    }
+
+    for (final month in months) {
+      ref.invalidate(calendarMonthProvider(month));
+    }
+  }
+}
+
+class _CalendarHeader extends StatelessWidget {
+  const _CalendarHeader({
+    required this.month,
+    required this.onPreviousMonth,
+    required this.onNextMonth,
+    required this.onOpenManager,
+    required this.onLogout,
+  });
+
+  final DateTime month;
+  final VoidCallback onPreviousMonth;
+  final VoidCallback onNextMonth;
+  final VoidCallback onOpenManager;
+  final VoidCallback onLogout;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = DateFormat.MMMM('vi_VN').format(month);
+    final title = '${_capitalize(label)} ${month.year}';
+
+    return Row(
+      children: [
+        _RoundIconButton(icon: Icons.menu_rounded, onTap: onOpenManager),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: onPreviousMonth,
+                icon: const Icon(Icons.chevron_left_rounded),
+              ),
+              Flexible(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 24),
+                ),
+              ),
+              IconButton(
+                onPressed: onNextMonth,
+                icon: const Icon(Icons.chevron_right_rounded),
+              ),
+            ],
+          ),
+        ),
+        _RoundIconButton(icon: Icons.calendar_month_outlined, onTap: () {}),
+        const SizedBox(width: 8),
+        _RoundIconButton(icon: Icons.logout_rounded, onTap: onLogout),
+      ],
+    );
+  }
+}
+
+class _FilterRow extends StatelessWidget {
+  const _FilterRow({required this.userId});
+
+  final String userId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const _PillButton(label: 'Tat ca vi', selected: true),
+        const SizedBox(width: 10),
+        const Expanded(
+          child: _PillButton(label: 'Tat ca danh muc', selected: false),
+        ),
+        const SizedBox(width: 10),
+        _RoundIconButton(icon: Icons.tune_rounded, onTap: () {}),
+        if (userId.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Center(
-              child: Text(
-                AppConstants.defaultTimezone,
-                style: theme.textTheme.labelMedium,
+            padding: const EdgeInsets.only(left: 10),
+            child: Tooltip(
+              message: userId,
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppTheme.surfaceRaised,
+                  border: Border.all(color: AppTheme.outline),
+                ),
+                child: const Icon(Icons.person_outline_rounded, size: 18),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _MonthCalendarCard extends ConsumerWidget {
+  const _MonthCalendarCard({
+    required this.monthData,
+    required this.onDayTap,
+  });
+
+  final CalendarMonthData monthData;
+  final Future<void> Function(DateTime date) onDayTap;
+
+  static const weekdays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 16, 14, 12),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: AppTheme.outline),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.16),
+            blurRadius: 26,
+            offset: const Offset(0, 14),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: weekdays
+                .map(
+                  (day) => Expanded(
+                    child: Center(
+                      child: Text(
+                        day,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+          const SizedBox(height: 10),
+          ...monthData.weeks.map(
+            (week) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: week
+                    .map(
+                      (day) => Expanded(
+                        child: _CalendarDayCell(
+                          day: day,
+                          onTap: () => onDayTap(day.date),
+                        ),
+                      ),
+                    )
+                    .toList(),
               ),
             ),
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          const PlaceholderCard(
-            title: 'Month view placeholder',
-            body:
-                'Man hinh nay se tro thanh trung tam MVP: lich thang, thumbnail giao dich, tong chi thang va bo loc.',
-          ),
-          const SizedBox(height: 16),
-          const PlaceholderCard(
-            title: 'Vertical slice tiep theo',
-            body:
-                'Giai doan 1 se them auth that, khoi tao user va route guard. Sau do moi hoan thien wallet/category/transaction.',
-          ),
-          const SizedBox(height: 16),
-          PlaceholderCard(
-            title: 'Auth session',
-            body: userId == null
-                ? 'Chua doc duoc session hien tai.'
-                : 'Supabase da ket noi. User hien tai: $userId',
-          ),
-          const SizedBox(height: 16),
-          const PlaceholderCard(
-            title: 'Structure da tao',
-            body:
-                'lib/app, lib/core, lib/features, lib/shared da san sang de mo rong theo module.',
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        label: const Text('Them giao dich'),
-        icon: const Icon(Icons.add_a_photo_outlined),
+    );
+  }
+}
+
+class _CalendarDayCell extends StatelessWidget {
+  const _CalendarDayCell({
+    required this.day,
+    required this.onTap,
+  });
+
+  final CalendarDayData day;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = AppColor.fromHex(
+      day.transactions.isNotEmpty
+          ? day.transactions.last.categoryColor ?? day.transactions.last.walletColor
+          : null,
+      fallback: AppTheme.amber,
+    );
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: day.isCurrentMonth ? onTap : null,
+      child: SizedBox(
+        height: 64,
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+import '../../../shared/widgets/supabase_image.dart';
+
+// ... (other imports)
+
+            if (day.transactions.isNotEmpty)
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        accent.withValues(alpha: 0.95),
+                        const Color(0xFF4F3629),
+                      ],
+                    ),
+                    border: Border.all(
+                      color: accent,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(11),
+                    child: Stack(
+                      children: [
+                        SupabaseImage(
+                          imagePath: day.transactions.first.imagePath,
+                          width: 36,
+                          height: 36,
+                          fallbackIcon: Icons.receipt_long_rounded,
+                        ),
+                        if (day.transactions.length > 1)
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Container(
+                              margin: const EdgeInsets.all(2),
+                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: accent == AppTheme.mint ? AppTheme.mint : AppTheme.pink,
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                '+${day.transactions.length}',
+                                style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w700),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            Positioned(
+              top: 0,
+              child: Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: day.isToday ? AppTheme.mint : Colors.transparent,
+                ),
+                child: Center(
+                  child: Text(
+                    '${day.date.day}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: day.isToday
+                              ? Colors.white
+                              : day.isCurrentMonth
+                                  ? Colors.white
+                                  : const Color(0xFF54687B),
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
+
+class _MonthlySummaryCard extends StatelessWidget {
+  const _MonthlySummaryCard({required this.monthData});
+
+  final CalendarMonthData monthData;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _MetricBlock(
+                  label: 'Tong chi thang',
+                  value: _formatMoney(monthData.totalExpense, isNegative: true),
+                  color: AppTheme.danger,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: _MetricBlock(
+                  label: 'Tong thu thang',
+                  value: _formatMoney(monthData.totalIncome, isNegative: false),
+                  color: AppTheme.mint,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  monthData.isEmpty
+                      ? 'Chua co giao dich nao trong thang nay. Buoc tiep theo la them transaction de lich hien du lieu that.'
+                      : '${monthData.transactionCount} giao dich trong ${monthData.activeDays} ngay co hoat dong. Lich dang doc du lieu that tu Supabase.' ,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppTheme.mint.withValues(alpha: 0.18),
+                ),
+                child: Icon(
+                  monthData.isEmpty ? Icons.inbox_outlined : Icons.insights_rounded,
+                  color: AppTheme.mint,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CalendarErrorState extends StatelessWidget {
+  const _CalendarErrorState({required this.error});
+
+  final Object error;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Text(
+          'Khong tai duoc lich thang.\n$error',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ),
+    );
+  }
+}
+
+class _MetricBlock extends StatelessWidget {
+  const _MetricBlock({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceRaised,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: color,
+                  fontSize: 24,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BottomNavBar extends StatelessWidget {
+  const _BottomNavBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 84,
+      decoration: const BoxDecoration(
+        color: Color(0xFF0D1622),
+        border: Border(top: BorderSide(color: AppTheme.outline)),
+      ),
+      child: Row(
+        children: const [
+          SizedBox(width: 10),
+          _NavItem(icon: Icons.calendar_month_rounded, label: 'Lich', active: true),
+          _NavItem(icon: Icons.pie_chart_outline_rounded, label: 'Thong ke'),
+          SizedBox(width: 76),
+          _NavItem(icon: Icons.groups_2_outlined, label: 'Nhom'),
+          _NavItem(icon: Icons.person_outline_rounded, label: 'Ho so'),
+          SizedBox(width: 10),
+        ],
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({required this.icon, required this.label, this.active = false});
+
+  final IconData icon;
+  final String label;
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = active ? AppTheme.mint : const Color(0xFF74889A);
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: color,
+                  fontSize: 11,
+                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PillButton extends StatelessWidget {
+  const _PillButton({required this.label, required this.selected});
+
+  final String label;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: selected ? AppTheme.mint : AppTheme.surfaceRaised,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: selected ? AppTheme.mint : AppTheme.outline),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(width: 6),
+          Icon(
+            Icons.keyboard_arrow_down_rounded,
+            size: 18,
+            color: Colors.white.withValues(alpha: 0.9),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RoundIconButton extends StatelessWidget {
+  const _RoundIconButton({required this.icon, required this.onTap});
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onTap,
+      child: Ink(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceRaised,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.outline),
+        ),
+        child: Icon(icon, size: 20),
+      ),
+    );
+  }
+}
+
+String _formatMoney(double amount, {required bool isNegative}) {
+  final formatter = NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
+  final sign = isNegative ? '-' : '+';
+  return '$sign${formatter.format(amount)}d';
+}
+
+String _capitalize(String value) {
+  if (value.isEmpty) {
+    return value;
+  }
+  return '${value[0].toUpperCase()}${value.substring(1)}';
 }
