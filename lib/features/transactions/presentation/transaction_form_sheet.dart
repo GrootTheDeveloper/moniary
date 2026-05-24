@@ -25,27 +25,30 @@ Future<TransactionMutationResult?> showTransactionFormSheet(
   return showModalBottomSheet<TransactionMutationResult>(
     context: context,
     isScrollControlled: true,
-    builder: (context) => _TransactionFormSheet(
+    builder: (context) => TransactionFormScreen(
       initialTransaction: initialTransaction,
       initialDateTime: initialDateTime,
     ),
   );
 }
 
-class _TransactionFormSheet extends ConsumerStatefulWidget {
-  const _TransactionFormSheet({
+class TransactionFormScreen extends ConsumerStatefulWidget {
+  const TransactionFormScreen({
+    super.key,
     this.initialTransaction,
     this.initialDateTime,
+    this.initialImagePath,
   });
 
   final TransactionEntry? initialTransaction;
   final DateTime? initialDateTime;
+  final String? initialImagePath;
 
   @override
-  ConsumerState<_TransactionFormSheet> createState() => _TransactionFormSheetState();
+  ConsumerState<TransactionFormScreen> createState() => _TransactionFormScreenState();
 }
 
-class _TransactionFormSheetState extends ConsumerState<_TransactionFormSheet> {
+class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
   late final TextEditingController _amountController;
   late final TextEditingController _noteController;
   late TransactionType _type;
@@ -68,6 +71,9 @@ class _TransactionFormSheetState extends ConsumerState<_TransactionFormSheet> {
     _selectedDate = transaction?.transactionDate ?? widget.initialDateTime ?? DateTime.now();
     _selectedWalletId = transaction?.walletId;
     _selectedCategoryId = transaction?.categoryId;
+    if (widget.initialImagePath != null) {
+      _pickedFile = XFile(widget.initialImagePath!);
+    }
   }
 
   @override
@@ -129,158 +135,108 @@ class _TransactionFormSheetState extends ConsumerState<_TransactionFormSheet> {
 
     final canSubmit = walletOptions.isNotEmpty && categoryOptions.isNotEmpty && !composerState.isLoading;
 
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          20,
-          12,
-          20,
-          MediaQuery.of(context).viewInsets.bottom + 20,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 48,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).dividerColor,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                _isEditing ? 'Sua giao dich' : 'Them giao dich',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Luu giao dich kèm ảnh để dễ dàng theo dõi chi tiêu của bạn.',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 20),
-              Wrap(
-                spacing: 10,
-                children: [
-                  _ChoiceChip(
-                    label: 'Chi',
-                    selected: _type == TransactionType.expense,
-                    onTap: () => setState(() => _type = TransactionType.expense),
-                  ),
-                  _ChoiceChip(
-                    label: 'Thu',
-                    selected: _type == TransactionType.income,
-                    onTap: () => setState(() => _type = TransactionType.income),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _ImagePickerPreview(
-                file: _pickedFile,
-                onPick: () => _showImageSourceOptions(context),
-                onClear: () => setState(() => _pickedFile = null),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _amountController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'So tien',
-                  hintText: '57000',
-                  prefixIcon: Icon(Icons.payments_outlined),
-                ),
-              ),
-              const SizedBox(height: 14),
-              DropdownButtonFormField<String>(
-                initialValue: _selectedWalletId,
-                items: walletOptions
-                    .map(
-                      (wallet) => DropdownMenuItem(
-                        value: wallet.id,
-                        child: Text(wallet.name),
-                      ),
-                    )
-                    .toList(),
-                onChanged: walletOptions.isEmpty
-                    ? null
-                    : (value) => setState(() => _selectedWalletId = value),
-                decoration: const InputDecoration(
-                  labelText: 'Wallet',
-                  prefixIcon: Icon(Icons.account_balance_wallet_outlined),
-                ),
-              ),
-              const SizedBox(height: 14),
-              DropdownButtonFormField<String>(
-                initialValue: _selectedCategoryId,
-                items: categoryOptions
-                    .map(
-                      (category) => DropdownMenuItem(
-                        value: category.id,
-                        child: Text(category.name),
-                      ),
-                    )
-                    .toList(),
-                onChanged: categoryOptions.isEmpty
-                    ? null
-                    : (value) => setState(() => _selectedCategoryId = value),
-                decoration: const InputDecoration(
-                  labelText: 'Category',
-                  prefixIcon: Icon(Icons.category_outlined),
-                ),
-              ),
-              const SizedBox(height: 14),
-              _DateTimeTile(value: _selectedDate, onTap: _pickDateTime),
-              const SizedBox(height: 14),
-              TextField(
-                controller: _noteController,
-                minLines: 2,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Ghi chu',
-                  hintText: 'Tra sua KOI / Luong freelance / ...',
-                  alignLabelWithHint: true,
-                ),
-              ),
-              if (walletsAsync.hasError || categoriesAsync.hasError) ...[
-                const SizedBox(height: 12),
-                Text(
-                  'Khong tai duoc wallet/category. Mo quan ly du lieu de kiem tra.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.danger,
-                      ),
-                ),
-              ],
-              if (walletOptions.isEmpty || categoryOptions.isEmpty) ...[
-                const SizedBox(height: 12),
-                Text(
-                  walletOptions.isEmpty
-                      ? 'Ban can it nhat 1 wallet dang hoat dong de tao giao dich.'
-                      : 'Ban can it nhat 1 category hop le cho loai giao dich nay.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.amber,
-                      ),
-                ),
-              ],
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: canSubmit ? _submit : null,
-                  child: Text(
-                    composerState.isLoading
-                        ? 'Dang luu...'
-                        : _isEditing
-                            ? 'Cap nhat giao dich'
-                            : 'Luu giao dich',
-                  ),
-                ),
-              ),
-            ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_isEditing ? 'Sửa giao dịch' : 'Thêm giao dịch'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.check_circle, color: AppTheme.mint, size: 30),
+            onPressed: canSubmit ? _submit : null,
           ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _ImagePickerPreview(
+              file: _pickedFile,
+              onPick: () => _showImageSourceOptions(context),
+              onClear: () => setState(() => _pickedFile = null),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                _ChoiceChip(
+                  label: 'Chi',
+                  selected: _type == TransactionType.expense,
+                  onTap: () => setState(() => _type = TransactionType.expense),
+                ),
+                const SizedBox(width: 10),
+                _ChoiceChip(
+                  label: 'Thu',
+                  selected: _type == TransactionType.income,
+                  onTap: () => setState(() => _type = TransactionType.income),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _amountController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.mint),
+              decoration: const InputDecoration(
+                labelText: 'Số tiền',
+                prefixIcon: Icon(Icons.payments_outlined),
+                suffixText: 'đ',
+              ),
+            ),
+            const SizedBox(height: 14),
+            DropdownButtonFormField<String>(
+              value: _selectedWalletId,
+              items: walletOptions
+                  .map(
+                    (wallet) => DropdownMenuItem(
+                      value: wallet.id,
+                      child: Text(wallet.name),
+                    ),
+                  )
+                  .toList(),
+              onChanged: walletOptions.isEmpty
+                  ? null
+                  : (value) => setState(() => _selectedWalletId = value),
+              decoration: const InputDecoration(
+                labelText: 'Ví / Tài khoản',
+                prefixIcon: Icon(Icons.account_balance_wallet_outlined),
+              ),
+            ),
+            const SizedBox(height: 14),
+            DropdownButtonFormField<String>(
+              value: _selectedCategoryId,
+              items: categoryOptions
+                  .map(
+                    (category) => DropdownMenuItem(
+                      value: category.id,
+                      child: Text(category.name),
+                    ),
+                  )
+                  .toList(),
+              onChanged: categoryOptions.isEmpty
+                  ? null
+                  : (value) => setState(() => _selectedCategoryId = value),
+              decoration: const InputDecoration(
+                labelText: 'Danh mục',
+                prefixIcon: Icon(Icons.category_outlined),
+              ),
+            ),
+            const SizedBox(height: 14),
+            _DateTimeTile(value: _selectedDate, onTap: _pickDateTime),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _noteController,
+              minLines: 2,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                labelText: 'Ghi chú',
+                hintText: 'Cà phê sáng / Ăn trưa...',
+                prefixIcon: Icon(Icons.notes),
+              ),
+            ),
+            const SizedBox(height: 32),
+            if (composerState.isLoading)
+              const Center(child: CircularProgressIndicator())
+          ],
         ),
       ),
     );
@@ -295,7 +251,7 @@ class _TransactionFormSheetState extends ConsumerState<_TransactionFormSheet> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt_outlined),
-              title: const Text('Chup anh moi'),
+              title: const Text('Chụp ảnh mới'),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.camera);
@@ -303,7 +259,7 @@ class _TransactionFormSheetState extends ConsumerState<_TransactionFormSheet> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Chon tu thu vien'),
+              title: const Text('Chọn từ thư viện'),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.gallery);
@@ -347,13 +303,13 @@ class _TransactionFormSheetState extends ConsumerState<_TransactionFormSheet> {
     final amount = double.tryParse(amountText);
 
     if (amount == null || amount <= 0) {
-      messenger.showSnackBar(const SnackBar(content: Text('Nhap so tien hop le.')));
+      messenger.showSnackBar(const SnackBar(content: Text('Nhập số tiền hợp lệ.')));
       return;
     }
 
     if (_selectedWalletId == null || _selectedCategoryId == null) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Chon wallet va category truoc khi luu.')),
+        const SnackBar(content: Text('Chọn ví và danh mục trước khi lưu.')),
       );
       return;
     }
@@ -393,12 +349,18 @@ class _TransactionFormSheetState extends ConsumerState<_TransactionFormSheet> {
       }
 
       if (!mounted) return;
-      Navigator.of(context).pop(
-        TransactionMutationResult(
-          previousDate: previousDate,
-          currentDate: _selectedDate,
-        ),
-      );
+      
+      // If it's a full screen (pushed), we should probably go back to calendar or previous screen
+      // But if it's a sheet, we pop result.
+      // Let's assume for now we go back to calendar.
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop(
+          TransactionMutationResult(
+            previousDate: previousDate,
+            currentDate: _selectedDate,
+          ),
+        );
+      }
     } catch (error) {
       messenger.showSnackBar(SnackBar(content: Text(error.toString())));
     }

@@ -11,8 +11,10 @@ import '../features/calendar/presentation/calendar_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
+import '../features/transactions/presentation/camera_screen.dart';
 import '../features/transactions/presentation/day_detail_screen.dart';
 import '../features/transactions/presentation/transaction_detail_screen.dart';
+import '../features/transactions/presentation/transaction_form_sheet.dart';
 import '../features/transactions/presentation/transaction_route_args.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -81,6 +83,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final args = state.extra as TransactionDetailRouteArgs;
           return TransactionDetailScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: CameraScreen.routePath,
+        builder: (context, state) => const CameraScreen(),
+      ),
+      GoRoute(
+        path: '/transaction-form',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final imagePath = extra?['imagePath'] as String?;
+          return TransactionFormScreen(initialImagePath: imagePath);
         },
       ),
     ],

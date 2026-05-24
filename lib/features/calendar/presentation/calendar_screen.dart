@@ -12,6 +12,7 @@ import '../application/calendar_month_provider.dart';
 import '../domain/calendar_month_data.dart';
 import 'manage_data_sheet.dart';
 import '../../transactions/domain/transaction_mutation_result.dart';
+import '../../transactions/presentation/camera_screen.dart';
 import '../../transactions/presentation/day_detail_screen.dart';
 import '../../transactions/presentation/transaction_form_sheet.dart';
 
@@ -107,8 +108,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           foregroundColor: Colors.white,
           shape: const CircleBorder(),
           onPressed: () async {
-            final result = await showTransactionFormSheet(context, ref);
-            if (result == null || !context.mounted) {
+            final result = await context.push<TransactionMutationResult>(CameraScreen.routePath);
+            if (result == null || !mounted) {
               return;
             }
             _applyMutationResult(result);
