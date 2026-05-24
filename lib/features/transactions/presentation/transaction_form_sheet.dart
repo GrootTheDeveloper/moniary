@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../core/constants/app_color.dart';
 import '../../categories/domain/category.dart';
 import '../../categories/presentation/categories_controller.dart';
 import '../../wallets/domain/wallet.dart';
@@ -124,120 +125,141 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       _selectedCategoryId = categoryOptions.first.id;
     }
 
-    if (_selectedWalletId != null && !walletOptions.any((wallet) => wallet.id == _selectedWalletId)) {
-      _selectedWalletId = walletOptions.isEmpty ? null : walletOptions.first.id;
-    }
-
-    if (_selectedCategoryId != null &&
-        !categoryOptions.any((category) => category.id == _selectedCategoryId)) {
-      _selectedCategoryId = categoryOptions.isEmpty ? null : categoryOptions.first.id;
-    }
-
     final canSubmit = walletOptions.isNotEmpty && categoryOptions.isNotEmpty && !composerState.isLoading;
 
+    final selectedCategory = allCategories.cast<Category?>().firstWhere(
+          (c) => c?.id == _selectedCategoryId,
+          orElse: () => null,
+        );
+    final selectedWallet = allWallets.cast<Wallet?>().firstWhere(
+          (w) => w?.id == _selectedWalletId,
+          orElse: () => null,
+        );
+
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left, size: 32),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(_isEditing ? 'Sửa giao dịch' : 'Thêm giao dịch'),
+        centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.check_circle, color: AppTheme.mint, size: 30),
+            icon: Icon(
+              Icons.check_circle,
+              color: canSubmit ? AppTheme.mint : Colors.grey,
+              size: 32,
+            ),
             onPressed: canSubmit ? _submit : null,
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ImagePickerPreview(
+            const SizedBox(height: 12),
+            _ImagePreview(
               file: _pickedFile,
-              onPick: () => _showImageSourceOptions(context),
               onClear: () => setState(() => _pickedFile = null),
+              onPick: () => _showImageSourceOptions(context),
             ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                _ChoiceChip(
-                  label: 'Chi',
-                  selected: _type == TransactionType.expense,
-                  onTap: () => setState(() => _type = TransactionType.expense),
-                ),
-                const SizedBox(width: 10),
-                _ChoiceChip(
-                  label: 'Thu',
-                  selected: _type == TransactionType.income,
-                  onTap: () => setState(() => _type = TransactionType.income),
-                ),
-              ],
-            ),
+            const SizedBox(height: 24),
+            _AmountInput(controller: _amountController),
             const SizedBox(height: 16),
-            TextField(
-              controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.mint),
-              decoration: const InputDecoration(
-                labelText: 'Số tiền',
-                prefixIcon: Icon(Icons.payments_outlined),
-                suffixText: 'đ',
-              ),
+            _TypeSelector(
+              type: _type,
+              onChanged: (newType) => setState(() {
+                _type = newType;
+                _selectedCategoryId = null; // Reset category when type changes
+              }),
             ),
-            const SizedBox(height: 14),
-            DropdownButtonFormField<String>(
-              value: _selectedWalletId,
-              items: walletOptions
-                  .map(
-                    (wallet) => DropdownMenuItem(
-                      value: wallet.id,
-                      child: Text(wallet.name),
-                    ),
-                  )
-                  .toList(),
-              onChanged: walletOptions.isEmpty
-                  ? null
-                  : (value) => setState(() => _selectedWalletId = value),
-              decoration: const InputDecoration(
-                labelText: 'Ví / Tài khoản',
-                prefixIcon: Icon(Icons.account_balance_wallet_outlined),
-              ),
+            const SizedBox(height: 24),
+            _FormTile(
+              label: 'Danh mục',
+              value: selectedCategory?.name ?? 'Chọn danh mục',
+              icon: Icons.category_outlined,
+              trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+              leadingWidget: selectedCategory != null
+                  ? _CategoryIcon(category: selectedCategory)
+                  : null,
+              onTap: () => _showCategoryPicker(context, categoryOptions),
             ),
-            const SizedBox(height: 14),
-            DropdownButtonFormField<String>(
-              value: _selectedCategoryId,
-              items: categoryOptions
-                  .map(
-                    (category) => DropdownMenuItem(
-                      value: category.id,
-                      child: Text(category.name),
-                    ),
-                  )
-                  .toList(),
-              onChanged: categoryOptions.isEmpty
-                  ? null
-                  : (value) => setState(() => _selectedCategoryId = value),
-              decoration: const InputDecoration(
-                labelText: 'Danh mục',
-                prefixIcon: Icon(Icons.category_outlined),
-              ),
+            const SizedBox(height: 12),
+            _FormTile(
+              label: 'Ví / Tài khoản',
+              value: selectedWallet?.name ?? 'Chọn ví',
+              icon: Icons.account_balance_wallet_outlined,
+              trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+              leadingWidget: selectedWallet != null
+                  ? _WalletIcon(wallet: selectedWallet)
+                  : null,
+              onTap: () => _showWalletPicker(context, walletOptions),
             ),
-            const SizedBox(height: 14),
-            _DateTimeTile(value: _selectedDate, onTap: _pickDateTime),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _noteController,
-              minLines: 2,
-              maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'Ghi chú',
-                hintText: 'Cà phê sáng / Ăn trưa...',
-                prefixIcon: Icon(Icons.notes),
-              ),
+            const SizedBox(height: 12),
+            _FormTile(
+              label: 'Ngày giờ',
+              value: DateFormat('dd/MM/yyyy  HH:mm', 'vi_VN').format(_selectedDate),
+              icon: Icons.calendar_today_outlined,
+              trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+              onTap: _pickDateTime,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 12),
+            _NoteInput(controller: _noteController),
+            const SizedBox(height: 40),
             if (composerState.isLoading)
-              const Center(child: CircularProgressIndicator())
+              const Center(child: CircularProgressIndicator(color: AppTheme.mint)),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showCategoryPicker(BuildContext context, List<Category> options) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        itemCount: options.length,
+        itemBuilder: (context, index) {
+          final category = options[index];
+          return ListTile(
+            leading: _CategoryIcon(category: category),
+            title: Text(category.name),
+            onTap: () {
+              setState(() => _selectedCategoryId = category.id);
+              Navigator.pop(context);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  void _showWalletPicker(BuildContext context, List<Wallet> options) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        itemCount: options.length,
+        itemBuilder: (context, index) {
+          final wallet = options[index];
+          return ListTile(
+            leading: _WalletIcon(wallet: wallet),
+            title: Text(wallet.name),
+            onTap: () {
+              setState(() => _selectedWalletId = wallet.id);
+              Navigator.pop(context);
+            },
+          );
+        },
       ),
     );
   }
@@ -245,6 +267,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
   void _showImageSourceOptions(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
+      backgroundColor: AppTheme.surface,
       builder: (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -307,13 +330,6 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       return;
     }
 
-    if (_selectedWalletId == null || _selectedCategoryId == null) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Chọn ví và danh mục trước khi lưu.')),
-      );
-      return;
-    }
-
     try {
       Uint8List? imageBytes;
       if (_pickedFile != null) {
@@ -349,101 +365,70 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       }
 
       if (!mounted) return;
-      
-      // If it's a full screen (pushed), we should probably go back to calendar or previous screen
-      // But if it's a sheet, we pop result.
-      // Let's assume for now we go back to calendar.
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop(
-          TransactionMutationResult(
-            previousDate: previousDate,
-            currentDate: _selectedDate,
-          ),
-        );
-      }
+      Navigator.of(context).pop(
+        TransactionMutationResult(
+          previousDate: previousDate,
+          currentDate: _selectedDate,
+        ),
+      );
     } catch (error) {
       messenger.showSnackBar(SnackBar(content: Text(error.toString())));
     }
   }
 }
 
-class _ImagePickerPreview extends StatelessWidget {
-  const _ImagePickerPreview({
-    required this.file,
-    required this.onPick,
-    required this.onClear,
-  });
-
+class _ImagePreview extends StatelessWidget {
+  const _ImagePreview({required this.file, required this.onClear, required this.onPick});
   final XFile? file;
-  final VoidCallback onPick;
   final VoidCallback onClear;
+  final VoidCallback onPick;
 
   @override
   Widget build(BuildContext context) {
-    if (file == null) {
-      return InkWell(
-        onTap: onPick,
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          width: double.infinity,
-          height: 120,
-          decoration: BoxDecoration(
-            color: AppTheme.surfaceRaised,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppTheme.outline, style: BorderStyle.solid),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.add_a_photo_outlined, size: 32, color: Color(0xFF74889A)),
-              const SizedBox(height: 8),
-              Text(
-                'Chụp hoặc chọn ảnh giao dịch',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: const Color(0xFF74889A),
-                    ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Stack(
+    return Column(
       children: [
         Container(
           width: double.infinity,
-          height: 200,
+          height: 320,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            image: DecorationImage(
-              image: FileImage(File(file!.path)),
-              fit: BoxFit.cover,
-            ),
+            color: AppTheme.surfaceRaised,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Stack(
+            children: [
+              if (file != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.file(File(file!.path), width: double.infinity, height: 320, fit: BoxFit.cover),
+                )
+              else
+                const Center(child: Icon(Icons.image_outlined, size: 64, color: Colors.grey)),
+              if (file != null)
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: GestureDetector(
+                    onTap: onClear,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+                      child: const Icon(Icons.close, color: Colors.white, size: 20),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
-        Positioned(
-          top: 8,
-          right: 8,
-          child: IconButton.filled(
-            onPressed: onClear,
-            icon: const Icon(Icons.close),
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.black.withValues(alpha: 0.5),
-              foregroundColor: Colors.white,
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 8,
-          right: 8,
-          child: IconButton.filled(
-            onPressed: onPick,
-            icon: const Icon(Icons.edit_outlined),
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.black.withValues(alpha: 0.5),
-              foregroundColor: Colors.white,
-            ),
+        const SizedBox(height: 12),
+        GestureDetector(
+          onTap: onPick,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.camera_alt_outlined, size: 20, color: Colors.grey),
+              const SizedBox(width: 8),
+              Text('Thay đổi ảnh', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey)),
+            ],
           ),
         ),
       ],
@@ -451,37 +436,110 @@ class _ImagePickerPreview extends StatelessWidget {
   }
 }
 
-class _DateTimeTile extends StatelessWidget {
-  const _DateTimeTile({required this.value, required this.onTap});
-
-  final DateTime value;
-  final VoidCallback onTap;
+class _AmountInput extends StatelessWidget {
+  const _AmountInput({required this.controller});
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Ink(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-        decoration: BoxDecoration(
-          color: AppTheme.surfaceRaised,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppTheme.outline),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.event_outlined),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                DateFormat('dd/MM/yyyy • HH:mm', 'vi_VN').format(value),
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.white,
-                    ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Row(
+        children: [
+          Text('Số tiền', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)),
+          const SizedBox(width: 16),
+          const Icon(Icons.monetization_on, color: Colors.grey),
+          const SizedBox(width: 12),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.right,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                hintText: '0',
+                hintStyle: TextStyle(color: Colors.grey),
               ),
             ),
-            const Icon(Icons.chevron_right_rounded),
+          ),
+          const SizedBox(width: 8),
+          const Text('đ', style: TextStyle(fontSize: 20, color: Colors.grey)),
+        ],
+      ),
+    );
+  }
+}
+
+class _TypeSelector extends StatelessWidget {
+  const _TypeSelector({required this.type, required this.onChanged});
+  final TransactionType type;
+  final ValueChanged<TransactionType> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _TypeButton(
+              label: 'Chi',
+              icon: Icons.south_east,
+              selected: type == TransactionType.expense,
+              onTap: () => onChanged(TransactionType.expense),
+              color: AppTheme.mint,
+            ),
+          ),
+          Expanded(
+            child: _TypeButton(
+              label: 'Thu',
+              icon: Icons.north_east,
+              selected: type == TransactionType.income,
+              onTap: () => onChanged(TransactionType.income),
+              color: AppTheme.mint,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TypeButton extends StatelessWidget {
+  const _TypeButton({required this.label, required this.icon, required this.selected, required this.onTap, required this.color});
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: selected ? color : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: selected ? Colors.black : Colors.grey, size: 20),
+            const SizedBox(width: 8),
+            Text(label, style: TextStyle(color: selected ? Colors.black : Colors.grey, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -489,36 +547,139 @@ class _DateTimeTile extends StatelessWidget {
   }
 }
 
-class _ChoiceChip extends StatelessWidget {
-  const _ChoiceChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
+class _FormTile extends StatelessWidget {
+  const _FormTile({required this.label, required this.value, required this.icon, this.trailing, this.leadingWidget, required this.onTap});
   final String label;
-  final bool selected;
+  final String value;
+  final IconData icon;
+  final Widget? trailing;
+  final Widget? leadingWidget;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(999),
-      child: Ink(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: selected ? AppTheme.mint : AppTheme.surfaceRaised,
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(
-            color: selected ? AppTheme.mint : AppTheme.outline,
-          ),
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.outline),
         ),
-        child: Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.w700),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.grey, size: 24),
+            const SizedBox(width: 12),
+            Expanded(child: Text(label, style: const TextStyle(color: Colors.grey))),
+            if (leadingWidget != null) ...[
+              leadingWidget!,
+              const SizedBox(width: 8),
+            ],
+            Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+            if (trailing != null) ...[
+              const SizedBox(width: 8),
+              trailing!,
+            ],
+          ],
         ),
       ),
     );
+  }
+}
+
+class _NoteInput extends StatelessWidget {
+  const _NoteInput({required this.controller});
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.notes, color: Colors.grey, size: 24),
+          const SizedBox(width: 12),
+          const Text('Ghi chú', style: TextStyle(color: Colors.grey)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              maxLines: null,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                hintText: 'Nhập ghi chú...',
+                hintStyle: TextStyle(color: Colors.grey),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () => controller.clear(),
+            child: const Icon(Icons.close, color: Colors.grey, size: 20),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CategoryIcon extends StatelessWidget {
+  const _CategoryIcon({required this.category});
+  final Category category;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = AppColor.fromHex(category.color, fallback: Colors.orange);
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      child: Icon(_getIconData(category.icon), color: Colors.white, size: 18),
+    );
+  }
+
+  IconData _getIconData(String? name) {
+    switch (name) {
+      case 'restaurant': return Icons.restaurant;
+      case 'directions_bus': return Icons.directions_bus;
+      case 'shopping_bag': return Icons.shopping_bag;
+      case 'receipt_long': return Icons.receipt_long;
+      case 'payments': return Icons.payments;
+      case 'savings': return Icons.savings;
+      default: return Icons.category;
+    }
+  }
+}
+
+class _WalletIcon extends StatelessWidget {
+  const _WalletIcon({required this.wallet});
+  final Wallet wallet;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = AppColor.fromHex(wallet.color, fallback: Colors.pink);
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      child: Icon(_getWalletIconData(wallet.icon), color: Colors.white, size: 18),
+    );
+  }
+
+  IconData _getWalletIconData(String? name) {
+    switch (name) {
+      case 'wallet': return Icons.account_balance_wallet;
+      default: return Icons.credit_card;
+    }
   }
 }
