@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
 import 'data_safety_screen.dart';
 import 'permission_rationale_screen.dart';
@@ -64,6 +65,14 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   subtitle: 'Tạo file CSV chứa toàn bộ giao dịch của tài khoản hiện tại.',
                   onTap: state.isLoading ? null : () => _exportCsv(context, ref),
                 ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.delete_forever_outlined,
+                  title: 'Xóa tài khoản',
+                  subtitle: 'Xóa hồ sơ, ví, danh mục, giao dịch và ảnh giao dịch đã lưu.',
+                  destructive: true,
+                  onTap: state.isLoading ? null : () => _confirmDelete(context, ref),
+                ),
               ],
             ),
             if (state.isLoading)
@@ -101,6 +110,22 @@ class PrivacyCenterScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => const _DeleteAccountDialog(),
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    await ref.read(accountActionsControllerProvider.notifier).deleteAccount();
+    if (context.mounted) {
+      context.go(LoginScreen.routePath);
+    }
   }
 }
 
@@ -148,15 +173,19 @@ class _PrivacyActionTile extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.destructive = false,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback? onTap;
+  final bool destructive;
 
   @override
   Widget build(BuildContext context) {
+    final color = destructive ? AppTheme.danger : AppTheme.mint;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(22),
@@ -173,27 +202,85 @@ class _PrivacyActionTile extends StatelessWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: AppTheme.mint.withValues(alpha: 0.14),
+                color: color.withValues(alpha: 0.14),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: AppTheme.mint, size: 22),
+              child: Icon(icon, color: color, size: 22),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: destructive ? AppTheme.danger : Colors.white,
+                        ),
+                  ),
                   const SizedBox(height: 4),
                   Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
                 ],
               ),
             ),
             const SizedBox(width: 10),
-            const Icon(Icons.chevron_right_rounded, color: AppTheme.mint),
+            Icon(Icons.chevron_right_rounded, color: color),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _DeleteAccountDialog extends StatefulWidget {
+  const _DeleteAccountDialog();
+
+  @override
+  State<_DeleteAccountDialog> createState() => _DeleteAccountDialogState();
+}
+
+class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final canDelete = _controller.text.trim().toUpperCase() == 'XOA';
+    return AlertDialog(
+      title: const Text('Xóa tài khoản?'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Thao tác này sẽ xóa hồ sơ, ví, danh mục, giao dịch và ảnh giao dịch của bạn. Hãy xuất CSV trước nếu cần giữ lại dữ liệu.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 14),
+          TextField(
+            controller: _controller,
+            decoration: const InputDecoration(labelText: 'Nhập XOA để xác nhận'),
+            textCapitalization: TextCapitalization.characters,
+            onChanged: (_) => setState(() {}),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('Hủy'),
+        ),
+        FilledButton(
+          onPressed: canDelete ? () => Navigator.of(context).pop(true) : null,
+          style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
+          child: const Text('Xóa'),
+        ),
+      ],
     );
   }
 }
