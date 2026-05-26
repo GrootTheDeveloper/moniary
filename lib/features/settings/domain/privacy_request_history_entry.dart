@@ -15,6 +15,17 @@ class PrivacyRequestHistoryEntry {
   final DateTime createdAt;
   final String path;
 
+  PrivacyRequestHistoryEntry copyWith({String? status}) {
+    return PrivacyRequestHistoryEntry(
+      id: id,
+      requestType: requestType,
+      message: message,
+      status: status ?? this.status,
+      createdAt: createdAt,
+      path: path,
+    );
+  }
+
   factory PrivacyRequestHistoryEntry.fromMap(Map<String, dynamic> map) {
     return PrivacyRequestHistoryEntry(
       id: map['id'] as String? ?? '',
@@ -38,4 +49,41 @@ class PrivacyRequestHistoryEntry {
       'path': path,
     };
   }
+}
+
+class PrivacyRequestStatusOption {
+  const PrivacyRequestStatusOption({
+    required this.id,
+    required this.label,
+    required this.description,
+  });
+
+  final String id;
+  final String label;
+  final String description;
+}
+
+const privacyRequestStatusOptions = [
+  PrivacyRequestStatusOption(
+    id: 'ready_to_send',
+    label: 'Sẵn sàng gửi',
+    description: 'File request đã được tạo và đang chờ người dùng gửi đi.',
+  ),
+  PrivacyRequestStatusOption(
+    id: 'sent_manually',
+    label: 'Đã gửi thủ công',
+    description: 'Người dùng đã gửi request qua email hoặc kênh hỗ trợ.',
+  ),
+  PrivacyRequestStatusOption(
+    id: 'resolved',
+    label: 'Đã xử lý',
+    description: 'Yêu cầu đã được xử lý xong hoặc không cần theo dõi nữa.',
+  ),
+];
+
+PrivacyRequestStatusOption privacyRequestStatusById(String id) {
+  return privacyRequestStatusOptions.firstWhere(
+    (status) => status.id == id,
+    orElse: () => privacyRequestStatusOptions.first,
+  );
 }

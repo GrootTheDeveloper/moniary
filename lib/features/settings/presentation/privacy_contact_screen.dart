@@ -314,6 +314,7 @@ class _PrivacyRequestHistoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final createdAt = DateFormat('dd/MM/yyyy HH:mm').format(entry.createdAt);
+    final status = privacyRequestStatusById(entry.status);
 
     return InkWell(
       onTap: onTap,
@@ -349,6 +350,13 @@ class _PrivacyRequestHistoryTile extends StatelessWidget {
                   Text(
                     createdAt,
                     style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    status.label,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: AppTheme.mint),
                   ),
                 ],
               ),

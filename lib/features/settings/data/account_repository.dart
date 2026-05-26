@@ -197,6 +197,21 @@ class AccountRepository {
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
+  Future<void> updatePrivacyRequestStatus({
+    required String id,
+    required String status,
+  }) async {
+    final history = await fetchPrivacyRequestHistory();
+    final updated = history
+        .map((entry) => entry.id == id ? entry.copyWith(status: status) : entry)
+        .map((entry) => entry.toMap())
+        .toList();
+    final historyFile = await _privacyRequestHistoryFile();
+    await historyFile.writeAsString(
+      const JsonEncoder.withIndent('  ').convert(updated),
+    );
+  }
+
   Future<DataTransparencySummary> fetchDataTransparencySummary() async {
     final session = _client.auth.currentSession;
     if (session == null) {
