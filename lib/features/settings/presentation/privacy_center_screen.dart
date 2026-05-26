@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import 'data_safety_screen.dart';
+import 'permission_rationale_screen.dart';
 import 'privacy_policy_screen.dart';
 
 class PrivacyCenterScreen extends StatelessWidget {
@@ -32,6 +33,13 @@ class PrivacyCenterScreen extends StatelessWidget {
               title: 'Data Safety',
               subtitle: 'Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong MVP.',
               onTap: () => context.push(DataSafetyScreen.routePath),
+            ),
+            const SizedBox(height: 12),
+            _PrivacyActionTile(
+              icon: Icons.admin_panel_settings_outlined,
+              title: 'Quyền truy cập',
+              subtitle: 'Giải thích lý do Moniary dùng hoặc không dùng từng quyền Android.',
+              onTap: () => context.push(PermissionRationaleScreen.routePath),
             ),
           ],
         ),
