@@ -14,6 +14,7 @@ import '../features/settings/presentation/data_deletion_policy_screen.dart';
 import '../features/settings/presentation/data_safety_screen.dart';
 import '../features/settings/presentation/permission_rationale_screen.dart';
 import '../features/settings/presentation/privacy_center_screen.dart';
+import '../features/settings/presentation/privacy_contact_screen.dart';
 import '../features/settings/presentation/privacy_policy_screen.dart';
 import '../features/settings/presentation/profile_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
@@ -87,6 +88,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: PrivacyCenterScreen.routePath,
         builder: (context, state) => const PrivacyCenterScreen(),
+      ),
+      GoRoute(
+        path: PrivacyContactScreen.routePath,
+        builder: (context, state) => const PrivacyContactScreen(),
       ),
       GoRoute(
         path: DataSafetyScreen.routePath,
