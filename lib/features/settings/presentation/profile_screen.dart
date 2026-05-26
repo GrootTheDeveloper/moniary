@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +6,7 @@ import '../../../app/app_theme.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
+import 'export_data_screen.dart';
 import 'privacy_center_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
@@ -51,9 +50,9 @@ class ProfileScreen extends ConsumerWidget {
                   children: [
                     _SettingsTile(
                       icon: Icons.file_download_outlined,
-                      title: 'Xuất dữ liệu CSV',
-                      subtitle: 'Tải toàn bộ giao dịch của tài khoản hiện tại.',
-                      onTap: state.isLoading ? null : () => _exportCsv(context, ref),
+                      title: 'Xuất dữ liệu',
+                      subtitle: 'Chọn CSV, Excel hoặc PDF để tải dữ liệu cá nhân.',
+                      onTap: () => context.push(ExportDataScreen.routePath),
                     ),
                     _SettingsTile(
                       icon: Icons.privacy_tip_outlined,
@@ -94,18 +93,6 @@ class ProfileScreen extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Future<void> _exportCsv(BuildContext context, WidgetRef ref) async {
-    final file = await ref.read(accountActionsControllerProvider.notifier).exportCsv();
-    if (!context.mounted || file == null) {
-      return;
-    }
-
-    await showDialog<void>(
-      context: context,
-      builder: (context) => _ExportCompleteDialog(file: file),
     );
   }
 
@@ -259,25 +246,3 @@ class _SettingsTile extends StatelessWidget {
   }
 }
 
-class _ExportCompleteDialog extends StatelessWidget {
-  const _ExportCompleteDialog({required this.file});
-
-  final File file;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Đã xuất CSV'),
-      content: Text(
-        'File đã được lưu tại:\n${file.path}',
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Đóng'),
-        ),
-      ],
-    );
-  }
-}
