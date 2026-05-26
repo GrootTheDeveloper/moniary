@@ -26,39 +26,30 @@ class AccountRepository {
       throw Exception('Ban chua dang nhap.');
     }
 
-    final rows = await _fetchTransactionRows(session.user.id, filters: filters);
+    final exportRows = await _buildExportRows(session.user.id, filters: filters);
 
     final csv = StringBuffer()
       ..writeln(
         [
+          'data_type',
           'id',
-          'loai',
-          'so_tien',
-          'vi',
-          'danh_muc',
-          'ghi_chu',
-          'ngay_giao_dich',
-          'duong_dan_anh',
-          'ngay_tao',
+          'name',
+          'type',
+          'amount',
+          'wallet',
+          'category',
+          'note',
+          'transaction_date',
+          'image_path',
+          'created_at',
+          'initial_balance',
+          'is_default',
+          'is_active',
         ].map(_csvCell).join(','),
       );
 
-    for (final row in (rows as List<dynamic>).cast<Map<String, dynamic>>()) {
-      final wallet = row['wallet'] as Map<String, dynamic>? ?? const {};
-      final category = row['category'] as Map<String, dynamic>? ?? const {};
-      csv.writeln(
-        [
-          row['id'],
-          row['type'] == 'income' ? 'Thu' : 'Chi',
-          row['amount'],
-          wallet['name'],
-          category['name'],
-          row['note'],
-          _formatDate(row['transaction_date'] as String?),
-          row['image_path'],
-          _formatDate(row['created_at'] as String?),
-        ].map(_csvCell).join(','),
-      );
+    for (final row in exportRows) {
+      csv.writeln(row.map(_csvCell).join(','));
     }
 
     final directory = await getApplicationDocumentsDirectory();
@@ -73,34 +64,25 @@ class AccountRepository {
       throw Exception('Ban chua dang nhap.');
     }
 
-    final rows = await _fetchTransactionRows(session.user.id, filters: filters);
+    final exportRows = await _buildExportRows(session.user.id, filters: filters);
     final workbookRows = <List<Object?>>[
       [
+        'Data type',
         'ID',
-        'Loại',
-        'Số tiền',
-        'Ví',
-        'Danh mục',
-        'Ghi chú',
-        'Ngày giao dịch',
-        'Đường dẫn ảnh',
-        'Ngày tạo',
+        'Name',
+        'Type',
+        'Amount',
+        'Wallet',
+        'Category',
+        'Note',
+        'Transaction date',
+        'Image path',
+        'Created at',
+        'Initial balance',
+        'Is default',
+        'Is active',
       ],
-      ...rows.map((row) {
-        final wallet = row['wallet'] as Map<String, dynamic>? ?? const {};
-        final category = row['category'] as Map<String, dynamic>? ?? const {};
-        return [
-          row['id'],
-          row['type'] == 'income' ? 'Thu' : 'Chi',
-          row['amount'],
-          wallet['name'],
-          category['name'],
-          row['note'],
-          _formatDate(row['transaction_date'] as String?),
-          row['image_path'],
-          _formatDate(row['created_at'] as String?),
-        ];
-      }),
+      ...exportRows,
     ];
 
     final bytes = XlsxWorkbook(sheetName: 'Transactions', rows: workbookRows).build();
@@ -116,22 +98,31 @@ class AccountRepository {
       throw Exception('Ban chua dang nhap.');
     }
 
-    final rows = await _fetchTransactionRows(session.user.id, filters: filters);
+    final transactions = filters.hasTransactions
+        ? await _fetchTransactionRows(session.user.id, filters: filters)
+        : <Map<String, dynamic>>[];
+    final wallets = filters.hasWallets ? await _fetchWalletRows(session.user.id) : <Map<String, dynamic>>[];
+    final categories = filters.hasCategories
+        ? await _fetchCategoryRows(session.user.id)
+        : <Map<String, dynamic>>[];
     final generatedAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
-    final income = rows
+    final income = transactions
         .where((row) => row['type'] == 'income')
         .fold<double>(0, (sum, row) => sum + (row['amount'] as num).toDouble());
-    final expense = rows
+    final expense = transactions
         .where((row) => row['type'] == 'expense')
         .fold<double>(0, (sum, row) => sum + (row['amount'] as num).toDouble());
 
     final lines = <String>[
       'Generated: $generatedAt',
-      'Transactions: ${rows.length}',
+      'Data types: ${filters.dataTypes.map((type) => type.label).join(', ')}',
+      'Transactions: ${transactions.length}',
+      'Wallets: ${wallets.length}',
+      'Categories: ${categories.length}',
       'Income total: ${income.toStringAsFixed(0)}',
       'Expense total: ${expense.toStringAsFixed(0)}',
       'Recent transactions:',
-      ...rows.take(24).map((row) {
+      ...transactions.take(20).map((row) {
         final wallet = row['wallet'] as Map<String, dynamic>? ?? const {};
         final category = row['category'] as Map<String, dynamic>? ?? const {};
         final type = row['type'] == 'income' ? 'Income' : 'Expense';
@@ -214,5 +205,102 @@ class AccountRepository {
     final rows = await query.order('transaction_date', ascending: false);
 
     return (rows as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchWalletRows(String userId) async {
+    final rows = await _client
+        .from('wallets')
+        .select('id,name,type,initial_balance,is_default,is_active,created_at')
+        .eq('user_id', userId)
+        .order('created_at', ascending: false);
+
+    return (rows as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchCategoryRows(String userId) async {
+    final rows = await _client
+        .from('categories')
+        .select('id,name,type,is_default,is_active,created_at')
+        .eq('user_id', userId)
+        .order('created_at', ascending: false);
+
+    return (rows as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<List<List<Object?>>> _buildExportRows(
+    String userId, {
+    required ExportFilters filters,
+  }) async {
+    final rows = <List<Object?>>[];
+
+    if (filters.hasTransactions) {
+      final transactions = await _fetchTransactionRows(userId, filters: filters);
+      for (final row in transactions) {
+        final wallet = row['wallet'] as Map<String, dynamic>? ?? const {};
+        final category = row['category'] as Map<String, dynamic>? ?? const {};
+        rows.add([
+          'transaction',
+          row['id'],
+          '',
+          row['type'] == 'income' ? 'Thu' : 'Chi',
+          row['amount'],
+          wallet['name'],
+          category['name'],
+          row['note'],
+          _formatDate(row['transaction_date'] as String?),
+          row['image_path'],
+          _formatDate(row['created_at'] as String?),
+          '',
+          '',
+          '',
+        ]);
+      }
+    }
+
+    if (filters.hasWallets) {
+      final wallets = await _fetchWalletRows(userId);
+      for (final row in wallets) {
+        rows.add([
+          'wallet',
+          row['id'],
+          row['name'],
+          row['type'],
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          _formatDate(row['created_at'] as String?),
+          row['initial_balance'],
+          row['is_default'],
+          row['is_active'],
+        ]);
+      }
+    }
+
+    if (filters.hasCategories) {
+      final categories = await _fetchCategoryRows(userId);
+      for (final row in categories) {
+        rows.add([
+          'category',
+          row['id'],
+          row['name'],
+          row['type'],
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          _formatDate(row['created_at'] as String?),
+          '',
+          row['is_default'],
+          row['is_active'],
+        ]);
+      }
+    }
+
+    return rows;
   }
 }

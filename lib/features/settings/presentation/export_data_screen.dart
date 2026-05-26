@@ -75,6 +75,13 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
                       ? () => setState(() => _filters = _filters.copyWith(clearDateRange: true))
                       : null,
                 ),
+                const SizedBox(height: 12),
+                _DataTypesCard(
+                  selectedTypes: _filters.dataTypes,
+                  onChanged: (types) {
+                    setState(() => _filters = _filters.copyWith(dataTypes: types));
+                  },
+                ),
                 const SizedBox(height: 8),
                 FilledButton.icon(
                   onPressed: state.isLoading ? null : _export,
@@ -139,6 +146,53 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
         endDate: picked.end,
       );
     });
+  }
+}
+
+class _DataTypesCard extends StatelessWidget {
+  const _DataTypesCard({
+    required this.selectedTypes,
+    required this.onChanged,
+  });
+
+  final Set<ExportDataType> selectedTypes;
+  final ValueChanged<Set<ExportDataType>> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Loại dữ liệu', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          ...ExportDataType.values.map(
+            (type) => CheckboxListTile(
+              value: selectedTypes.contains(type),
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              activeColor: AppTheme.mint,
+              title: Text(type.label),
+              onChanged: (selected) {
+                final next = {...selectedTypes};
+                if (selected == true) {
+                  next.add(type);
+                } else if (next.length > 1) {
+                  next.remove(type);
+                }
+                onChanged(next);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
