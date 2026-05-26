@@ -7,6 +7,7 @@ import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
 import 'data_deletion_policy_screen.dart';
 import 'data_safety_screen.dart';
+import 'export_data_screen.dart';
 import 'permission_rationale_screen.dart';
 import 'privacy_contact_screen.dart';
 import 'privacy_policy_screen.dart';
@@ -64,8 +65,8 @@ class PrivacyCenterScreen extends ConsumerWidget {
                 _PrivacyActionTile(
                   icon: Icons.file_download_outlined,
                   title: 'Xuất dữ liệu của tôi',
-                  subtitle: 'Tạo file CSV chứa toàn bộ giao dịch của tài khoản hiện tại.',
-                  onTap: state.isLoading ? null : () => _exportCsv(context, ref),
+                  subtitle: 'Chọn định dạng file và tạo bản sao dữ liệu cá nhân.',
+                  onTap: () => context.push(ExportDataScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
@@ -100,30 +101,6 @@ class PrivacyCenterScreen extends ConsumerWidget {
               ),
           ],
         ),
-      ),
-    );
-  }
-
-  Future<void> _exportCsv(BuildContext context, WidgetRef ref) async {
-    final file = await ref.read(accountActionsControllerProvider.notifier).exportCsv();
-    if (!context.mounted || file == null) {
-      return;
-    }
-
-    await showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Đã xuất CSV'),
-        content: Text(
-          'File đã được lưu tại:\n${file.path}',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Đóng'),
-          ),
-        ],
       ),
     );
   }
