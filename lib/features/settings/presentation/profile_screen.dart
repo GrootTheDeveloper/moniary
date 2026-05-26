@@ -9,6 +9,7 @@ import '../../../core/supabase/supabase_providers.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
 import 'privacy_center_screen.dart';
+import 'widgets/delete_account_dialog.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -118,7 +119,7 @@ class ProfileScreen extends ConsumerWidget {
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => const _DeleteAccountDialog(),
+      builder: (context) => const DeleteAccountDialog(),
     );
 
     if (confirmed != true) {
@@ -254,59 +255,6 @@ class _SettingsTile extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _DeleteAccountDialog extends StatefulWidget {
-  const _DeleteAccountDialog();
-
-  @override
-  State<_DeleteAccountDialog> createState() => _DeleteAccountDialogState();
-}
-
-class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final canDelete = _controller.text.trim().toUpperCase() == 'XOA';
-    return AlertDialog(
-      title: const Text('Xóa tài khoản?'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Thao tác này sẽ xóa hồ sơ, ví, danh mục, giao dịch và ảnh giao dịch của bạn. Hãy xuất CSV trước nếu cần giữ lại dữ liệu.',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 14),
-          TextField(
-            controller: _controller,
-            decoration: const InputDecoration(labelText: 'Nhập XOA để xác nhận'),
-            textCapitalization: TextCapitalization.characters,
-            onChanged: (_) => setState(() {}),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Hủy'),
-        ),
-        FilledButton(
-          onPressed: canDelete ? () => Navigator.of(context).pop(true) : null,
-          style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
-          child: const Text('Xóa'),
-        ),
-      ],
     );
   }
 }
