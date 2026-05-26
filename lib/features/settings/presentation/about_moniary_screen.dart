@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/app_theme.dart';
+import '../domain/app_release_info.dart';
 
 class AboutMoniaryScreen extends StatelessWidget {
   const AboutMoniaryScreen({super.key});
@@ -17,6 +18,8 @@ class AboutMoniaryScreen extends StatelessWidget {
           children: const [
             _AboutHero(),
             SizedBox(height: 16),
+            _BuildInfoCard(),
+            SizedBox(height: 12),
             _LicenseEntry(),
             SizedBox(height: 12),
             _AboutTile(
@@ -102,6 +105,54 @@ class _LicenseEntry extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _BuildInfoCard extends StatelessWidget {
+  const _BuildInfoCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Column(
+        children: [
+          _BuildInfoRow(label: 'Phiên bản', value: appReleaseInfo.version),
+          const Divider(height: 24),
+          _BuildInfoRow(label: 'Build', value: appReleaseInfo.buildNumber),
+          const Divider(height: 24),
+          _BuildInfoRow(
+            label: 'Kênh phát hành',
+            value: appReleaseInfo.releaseChannel,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BuildInfoRow extends StatelessWidget {
+  const _BuildInfoRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
+        ),
+        const SizedBox(width: 12),
+        Text(value, style: Theme.of(context).textTheme.titleSmall),
+      ],
     );
   }
 }
