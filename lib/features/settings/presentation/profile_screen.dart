@@ -8,6 +8,7 @@ import '../../../app/app_theme.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
+import 'privacy_policy_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -52,6 +53,12 @@ class ProfileScreen extends ConsumerWidget {
                       title: 'Xuất dữ liệu CSV',
                       subtitle: 'Tải toàn bộ giao dịch của tài khoản hiện tại.',
                       onTap: state.isLoading ? null : () => _exportCsv(context, ref),
+                    ),
+                    _SettingsTile(
+                      icon: Icons.privacy_tip_outlined,
+                      title: 'Chính sách bảo mật',
+                      subtitle: 'Nội dung privacy policy và Data Safety cho MVP.',
+                      onTap: () => context.push(PrivacyPolicyScreen.routePath),
                     ),
                   ],
                 ),
