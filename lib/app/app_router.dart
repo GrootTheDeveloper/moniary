@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +10,7 @@ import '../features/auth/presentation/login_screen.dart';
 import '../features/calendar/presentation/calendar_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
+import '../features/settings/presentation/profile_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
 import '../features/transactions/presentation/camera_screen.dart';
 import '../features/transactions/presentation/day_detail_screen.dart';
@@ -18,7 +19,10 @@ import '../features/transactions/presentation/transaction_form_sheet.dart';
 import '../features/transactions/presentation/transaction_route_args.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authStateStream = ref.watch(supabaseClientProvider).auth.onAuthStateChange;
+  final authStateStream = ref
+      .watch(supabaseClientProvider)
+      .auth
+      .onAuthStateChange;
   final authRefreshListenable = GoRouterRefreshStream(authStateStream);
 
   ref.onDispose(authRefreshListenable.dispose);
@@ -70,6 +74,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: CalendarScreen.routePath,
         builder: (context, state) => const CalendarScreen(),
+      ),
+      GoRoute(
+        path: ProfileScreen.routePath,
+        builder: (context, state) => const ProfileScreen(),
       ),
       GoRoute(
         path: DayDetailScreen.routePath,
