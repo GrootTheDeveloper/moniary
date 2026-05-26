@@ -101,6 +101,13 @@ class _Overview extends StatelessWidget {
         Text('Độ mới dữ liệu', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),
         _FreshnessCard(summary: summary),
+        const SizedBox(height: 22),
+        Text(
+          'Lưu ý dữ liệu nhạy cảm',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 12),
+        const _SensitiveDataNotice(),
       ],
     );
   }
@@ -361,6 +368,35 @@ class _FreshnessRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _SensitiveDataNotice extends StatelessWidget {
+  const _SensitiveDataNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.amber.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.amber.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.privacy_tip_outlined, color: AppTheme.amber),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Dữ liệu tài chính có thể gồm số tiền, ghi chú, ảnh hóa đơn và file đã xuất. Chỉ chia sẻ file export với người bạn tin cậy và xóa file cục bộ khi không còn cần dùng.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
