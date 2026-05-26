@@ -15,6 +15,7 @@ import 'export_history_screen.dart';
 import 'permission_rationale_screen.dart';
 import 'privacy_contact_screen.dart';
 import 'privacy_policy_screen.dart';
+import 'store_compliance_checklist_screen.dart';
 import 'terms_of_use_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
@@ -69,6 +70,15 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   subtitle:
                       'Xem phạm vi sử dụng, trách nhiệm người dùng và giới hạn của phiên bản MVP.',
                   onTap: () => context.push(TermsOfUseScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.fact_check_outlined,
+                  title: 'Checklist phát hành',
+                  subtitle:
+                      'Rà soát các mục privacy, data export, xóa tài khoản và contact trước khi lên Store.',
+                  onTap: () =>
+                      context.push(StoreComplianceChecklistScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
