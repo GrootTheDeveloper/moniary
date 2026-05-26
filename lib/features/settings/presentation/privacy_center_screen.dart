@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import 'data_safety_screen.dart';
 import 'privacy_policy_screen.dart';
 
 class PrivacyCenterScreen extends StatelessWidget {
@@ -24,6 +25,13 @@ class PrivacyCenterScreen extends StatelessWidget {
               title: 'Chính sách bảo mật',
               subtitle: 'Xem cách Moniary xử lý dữ liệu cá nhân, tài chính và ảnh giao dịch.',
               onTap: () => context.push(PrivacyPolicyScreen.routePath),
+            ),
+            const SizedBox(height: 12),
+            _PrivacyActionTile(
+              icon: Icons.verified_user_outlined,
+              title: 'Data Safety',
+              subtitle: 'Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong MVP.',
+              onTap: () => context.push(DataSafetyScreen.routePath),
             ),
           ],
         ),
