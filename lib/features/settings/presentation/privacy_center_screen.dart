@@ -17,6 +17,7 @@ import 'privacy_contact_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'store_compliance_checklist_screen.dart';
 import 'terms_of_use_screen.dart';
+import 'trust_safety_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
 class PrivacyCenterScreen extends ConsumerWidget {
@@ -79,6 +80,14 @@ class PrivacyCenterScreen extends ConsumerWidget {
                       'Rà soát các mục privacy, data export, xóa tài khoản và contact trước khi lên Store.',
                   onTap: () =>
                       context.push(StoreComplianceChecklistScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.health_and_safety_outlined,
+                  title: 'Tin cậy & an toàn',
+                  subtitle:
+                      'Xem ghi chú về giới hạn tư vấn tài chính, dữ liệu người dùng và chia sẻ file.',
+                  onTap: () => context.push(TrustSafetyScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(

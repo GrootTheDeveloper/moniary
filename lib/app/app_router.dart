@@ -26,6 +26,7 @@ import '../features/settings/presentation/privacy_request_detail_screen.dart';
 import '../features/settings/presentation/profile_screen.dart';
 import '../features/settings/presentation/store_compliance_checklist_screen.dart';
 import '../features/settings/presentation/terms_of_use_screen.dart';
+import '../features/settings/presentation/trust_safety_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
 import '../features/transactions/presentation/camera_screen.dart';
 import '../features/transactions/presentation/day_detail_screen.dart';
@@ -152,6 +153,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: StoreComplianceChecklistScreen.routePath,
         builder: (context, state) => const StoreComplianceChecklistScreen(),
+      ),
+      GoRoute(
+        path: TrustSafetyScreen.routePath,
+        builder: (context, state) => const TrustSafetyScreen(),
       ),
       GoRoute(
         path: DayDetailScreen.routePath,
