@@ -47,6 +47,39 @@ class _Overview extends StatelessWidget {
             _MetricItem('Có ảnh', summary.photoTransactionCount.toString()),
           ],
         ),
+        const SizedBox(height: 22),
+        Text('Nhóm dữ liệu đang lưu', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 12),
+        const _InventoryTile(
+          icon: Icons.person_outline_rounded,
+          title: 'Hồ sơ tài khoản',
+          description: 'Tên hiển thị, email, avatar, timezone và trạng thái đăng nhập.',
+        ),
+        const _InventoryTile(
+          icon: Icons.account_balance_wallet_outlined,
+          title: 'Ví',
+          description: 'Tên ví, loại ví, số dư ban đầu, trạng thái mặc định và hiển thị.',
+        ),
+        const _InventoryTile(
+          icon: Icons.category_outlined,
+          title: 'Danh mục',
+          description: 'Tên danh mục, loại thu/chi, trạng thái mặc định và hiển thị.',
+        ),
+        const _InventoryTile(
+          icon: Icons.receipt_long_outlined,
+          title: 'Giao dịch',
+          description: 'Số tiền, loại giao dịch, ví, danh mục, ghi chú và ngày giờ.',
+        ),
+        const _InventoryTile(
+          icon: Icons.image_outlined,
+          title: 'Ảnh giao dịch',
+          description: 'Đường dẫn ảnh trong Storage private bucket, hiển thị qua signed URL.',
+        ),
+        const _InventoryTile(
+          icon: Icons.notifications_none_rounded,
+          title: 'Thiết lập nhắc nhở',
+          description: 'Các tùy chọn nhắc ghi chi tiêu khi tính năng reminder được bật.',
+        ),
       ],
     );
   }
@@ -103,4 +136,54 @@ class _MetricItem {
 
   final String label;
   final String value;
+}
+
+class _InventoryTile extends StatelessWidget {
+  const _InventoryTile({
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
+
+  final IconData icon;
+  final String title;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: AppTheme.mint.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: AppTheme.mint, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 4),
+                Text(description, style: Theme.of(context).textTheme.bodyMedium),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
