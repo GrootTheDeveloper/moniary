@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
@@ -9,6 +10,7 @@ import '../application/account_actions_controller.dart';
 import '../domain/privacy_request_history_entry.dart';
 import '../domain/privacy_request_template.dart';
 import '../domain/privacy_request_type.dart';
+import 'privacy_request_detail_screen.dart';
 
 class PrivacyContactScreen extends ConsumerStatefulWidget {
   const PrivacyContactScreen({super.key});
@@ -284,7 +286,13 @@ class _PrivacyRequestHistorySection extends StatelessWidget {
               ...history.take(3).map((entry) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
-                  child: _PrivacyRequestHistoryTile(entry: entry),
+                  child: _PrivacyRequestHistoryTile(
+                    entry: entry,
+                    onTap: () => context.push(
+                      PrivacyRequestDetailScreen.routePath,
+                      extra: entry,
+                    ),
+                  ),
                 );
               }),
             ],
@@ -298,45 +306,58 @@ class _PrivacyRequestHistorySection extends StatelessWidget {
 }
 
 class _PrivacyRequestHistoryTile extends StatelessWidget {
-  const _PrivacyRequestHistoryTile({required this.entry});
+  const _PrivacyRequestHistoryTile({required this.entry, required this.onTap});
 
   final PrivacyRequestHistoryEntry entry;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final createdAt = DateFormat('dd/MM/yyyy HH:mm').format(entry.createdAt);
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 34,
-          height: 34,
-          decoration: BoxDecoration(
-            color: AppTheme.mint.withValues(alpha: 0.14),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.description_outlined,
-            color: AppTheme.mint,
-            size: 18,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                entry.requestType,
-                style: Theme.of(context).textTheme.bodyLarge,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: AppTheme.mint.withValues(alpha: 0.14),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 2),
-              Text(createdAt, style: Theme.of(context).textTheme.bodyMedium),
-            ],
-          ),
+              child: const Icon(
+                Icons.description_outlined,
+                color: AppTheme.mint,
+                size: 18,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    entry.requestType,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    createdAt,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(Icons.chevron_right_rounded, color: AppTheme.mint),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

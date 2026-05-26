@@ -10,6 +10,7 @@ import '../features/auth/presentation/login_screen.dart';
 import '../features/calendar/presentation/calendar_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
+import '../features/settings/domain/privacy_request_history_entry.dart';
 import '../features/settings/presentation/data_deletion_policy_screen.dart';
 import '../features/settings/presentation/data_safety_screen.dart';
 import '../features/settings/presentation/data_transparency_screen.dart';
@@ -20,6 +21,7 @@ import '../features/settings/presentation/permission_rationale_screen.dart';
 import '../features/settings/presentation/privacy_center_screen.dart';
 import '../features/settings/presentation/privacy_contact_screen.dart';
 import '../features/settings/presentation/privacy_policy_screen.dart';
+import '../features/settings/presentation/privacy_request_detail_screen.dart';
 import '../features/settings/presentation/profile_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
 import '../features/transactions/presentation/camera_screen.dart';
@@ -96,6 +98,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: PrivacyContactScreen.routePath,
         builder: (context, state) => const PrivacyContactScreen(),
+      ),
+      GoRoute(
+        path: PrivacyRequestDetailScreen.routePath,
+        builder: (context, state) {
+          final entry = state.extra as PrivacyRequestHistoryEntry;
+          return PrivacyRequestDetailScreen(entry: entry);
+        },
       ),
       GoRoute(
         path: DataSafetyScreen.routePath,
