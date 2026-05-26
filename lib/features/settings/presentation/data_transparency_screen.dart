@@ -8,6 +8,7 @@ import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
 import '../domain/data_transparency_summary.dart';
 import 'export_data_screen.dart';
+import 'export_history_screen.dart';
 import 'privacy_contact_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
@@ -164,6 +165,10 @@ class _Overview extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         const _SensitiveDataNotice(),
+        const SizedBox(height: 22),
+        Text('File cục bộ', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 12),
+        _LocalFilesCard(summary: summary),
         const SizedBox(height: 22),
         Text(
           'Kiểm soát dữ liệu',
@@ -480,6 +485,82 @@ class _SensitiveDataNotice extends StatelessWidget {
             child: Text(
               'Dữ liệu tài chính có thể gồm số tiền, ghi chú, ảnh hóa đơn và file đã xuất. Chỉ chia sẻ file export với người bạn tin cậy và xóa file cục bộ khi không còn cần dùng.',
               style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LocalFilesCard extends StatelessWidget {
+  const _LocalFilesCard({required this.summary});
+
+  final DataTransparencySummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final dateTimeFormat = DateFormat('dd/MM/yyyy HH:mm', 'vi_VN');
+    final latestExport = summary.latestExportDate == null
+        ? 'Chưa có file export'
+        : dateTimeFormat.format(summary.latestExportDate!.toLocal());
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: AppTheme.mint.withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.folder_copy_outlined,
+                  color: AppTheme.mint,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${summary.exportFileCount} file đã xuất',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Gần nhất: $latestExport',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Các file CSV, Excel và PDF được tạo trên thiết bị này. Bạn có thể mở lại, chia sẻ hoặc tự xóa file trong bộ nhớ cục bộ.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 12),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: () => context.push(ExportHistoryScreen.routePath),
+              icon: const Icon(Icons.history_rounded),
+              label: const Text('Xem lịch sử export'),
             ),
           ),
         ],
