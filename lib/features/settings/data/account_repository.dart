@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
+import 'pdf_report.dart';
 import 'xlsx_workbook.dart';
 
 final accountRepositoryProvider = Provider<AccountRepository>((ref) {
@@ -105,6 +106,44 @@ class AccountRepository {
     final directory = await getApplicationDocumentsDirectory();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
     final file = File('${directory.path}/moniary_export_$timestamp.xlsx');
+    return file.writeAsBytes(bytes, flush: true);
+  }
+
+  Future<File> exportTransactionsPdf() async {
+    final session = _client.auth.currentSession;
+    if (session == null) {
+      throw Exception('Ban chua dang nhap.');
+    }
+
+    final rows = await _fetchTransactionRows(session.user.id);
+    final generatedAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+    final income = rows
+        .where((row) => row['type'] == 'income')
+        .fold<double>(0, (sum, row) => sum + (row['amount'] as num).toDouble());
+    final expense = rows
+        .where((row) => row['type'] == 'expense')
+        .fold<double>(0, (sum, row) => sum + (row['amount'] as num).toDouble());
+
+    final lines = <String>[
+      'Generated: $generatedAt',
+      'Transactions: ${rows.length}',
+      'Income total: ${income.toStringAsFixed(0)}',
+      'Expense total: ${expense.toStringAsFixed(0)}',
+      'Recent transactions:',
+      ...rows.take(24).map((row) {
+        final wallet = row['wallet'] as Map<String, dynamic>? ?? const {};
+        final category = row['category'] as Map<String, dynamic>? ?? const {};
+        final type = row['type'] == 'income' ? 'Income' : 'Expense';
+        final amount = (row['amount'] as num).toStringAsFixed(0);
+        final date = _formatDate(row['transaction_date'] as String?);
+        return '$date | $type | $amount | ${wallet['name'] ?? ''} | ${category['name'] ?? ''}';
+      }),
+    ];
+
+    final bytes = PdfReport(lines: lines).build();
+    final directory = await getApplicationDocumentsDirectory();
+    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+    final file = File('${directory.path}/moniary_export_$timestamp.pdf');
     return file.writeAsBytes(bytes, flush: true);
   }
 

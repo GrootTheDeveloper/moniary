@@ -31,6 +31,15 @@ class AccountActionsController extends AsyncNotifier<void> {
     return exportedFile;
   }
 
+  Future<File?> exportPdf() async {
+    state = const AsyncLoading();
+    File? exportedFile;
+    state = await AsyncValue.guard(() async {
+      exportedFile = await ref.read(accountRepositoryProvider).exportTransactionsPdf();
+    });
+    return exportedFile;
+  }
+
   Future<void> deleteAccount() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(

@@ -59,7 +59,7 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
                     child: _FormatOption(
                       format: format,
                       selected: _format == format,
-                      enabled: format == ExportFormat.csv || format == ExportFormat.xlsx,
+                      enabled: true,
                       onTap: () => setState(() => _format = format),
                     ),
                   ),
@@ -86,17 +86,10 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
   }
 
   Future<void> _export() async {
-    if (_format == ExportFormat.pdf) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${_format.label} sẽ được bật ở bản cập nhật tiếp theo.')),
-      );
-      return;
-    }
-
     final file = switch (_format) {
       ExportFormat.csv => await ref.read(accountActionsControllerProvider.notifier).exportCsv(),
       ExportFormat.xlsx => await ref.read(accountActionsControllerProvider.notifier).exportXlsx(),
-      ExportFormat.pdf => null,
+      ExportFormat.pdf => await ref.read(accountActionsControllerProvider.notifier).exportPdf(),
     };
     if (!mounted || file == null) {
       return;
