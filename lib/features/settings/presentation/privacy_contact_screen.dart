@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -86,6 +87,8 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                       'Team cần cập nhật thời gian thực tế trước khi phát hành production.',
                 ),
                 const SizedBox(height: 8),
+                const _SupportShortcutsCard(),
+                const SizedBox(height: 12),
                 const _ResponseTimelineCard(),
                 const SizedBox(height: 12),
                 _PrivacyRequestHistorySection(historyAsync: historyAsync),
@@ -294,6 +297,67 @@ class _ResponseTimelineCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _SupportShortcutsCard extends StatelessWidget {
+  const _SupportShortcutsCard();
+
+  static const _privacyEmail = 'privacy@moniary.app';
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.contact_support_outlined, color: AppTheme.mint),
+              const SizedBox(width: 8),
+              Text(
+                'Lối tắt hỗ trợ',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Column(
+            children: [
+              OutlinedButton.icon(
+                onPressed: () =>
+                    _copy(context, _privacyEmail, 'Đã copy email support.'),
+                icon: const Icon(Icons.email_outlined),
+                label: const Text('Copy email'),
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: () => _copy(
+                  context,
+                  'Email: $_privacyEmail\nChủ đề: Moniary privacy request\nĐính kèm file request JSON đã tạo trong app.',
+                  'Đã copy hướng dẫn gửi request.',
+                ),
+                icon: const Icon(Icons.content_copy_outlined),
+                label: const Text('Copy hướng dẫn'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _copy(BuildContext context, String value, String message) {
+    Clipboard.setData(ClipboardData(text: value));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
@@ -62,6 +63,8 @@ class PrivacyRequestDetailScreen extends ConsumerWidget {
                         );
                   },
                 ),
+                const SizedBox(height: 12),
+                _RequestCopyActions(entry: currentEntry),
                 const SizedBox(height: 12),
                 _DetailTile(
                   icon: Icons.notes_outlined,
@@ -240,6 +243,45 @@ class _StatusActions extends StatelessWidget {
       icon: const Icon(Icons.task_alt_outlined),
       label: Text('Đánh dấu: ${next.label}'),
     );
+  }
+}
+
+class _RequestCopyActions extends StatelessWidget {
+  const _RequestCopyActions({required this.entry});
+
+  final PrivacyRequestHistoryEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final summary =
+        'Loại yêu cầu: ${entry.requestType}\n'
+        'Trạng thái: ${privacyRequestStatusById(entry.status).label}\n'
+        'Nội dung: ${entry.message.trim()}\n'
+        'File: ${entry.path}';
+
+    return Column(
+      children: [
+        OutlinedButton.icon(
+          onPressed: () =>
+              _copy(context, entry.path, 'Đã copy đường dẫn file request.'),
+          icon: const Icon(Icons.folder_copy_outlined),
+          label: const Text('Copy file path'),
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton.icon(
+          onPressed: () => _copy(context, summary, 'Đã copy nội dung request.'),
+          icon: const Icon(Icons.content_copy_outlined),
+          label: const Text('Copy request'),
+        ),
+      ],
+    );
+  }
+
+  void _copy(BuildContext context, String value, String message) {
+    Clipboard.setData(ClipboardData(text: value));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
