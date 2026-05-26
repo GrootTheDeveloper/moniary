@@ -173,6 +173,23 @@ class _ExportCompleteDialog extends StatelessWidget {
       actions: [
         TextButton.icon(
           onPressed: () async {
+            final shared = await ProviderScope.containerOf(context)
+                .read(fileActionServiceProvider)
+                .share(file);
+            if (!context.mounted) {
+              return;
+            }
+            if (!shared) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Chưa tìm thấy app phù hợp để chia sẻ file.')),
+              );
+            }
+          },
+          icon: const Icon(Icons.ios_share_rounded),
+          label: const Text('Chia sẻ'),
+        ),
+        TextButton.icon(
+          onPressed: () async {
             final opened = await ProviderScope.containerOf(context)
                 .read(fileActionServiceProvider)
                 .open(file);

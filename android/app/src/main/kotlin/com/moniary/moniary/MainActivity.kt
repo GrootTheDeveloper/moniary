@@ -21,6 +21,14 @@ class MainActivity : FlutterActivity() {
                         }
                         result.success(openFile(path))
                     }
+                    "shareFile" -> {
+                        val path = call.argument<String>("path")
+                        if (path.isNullOrBlank()) {
+                            result.success(false)
+                            return@setMethodCallHandler
+                        }
+                        result.success(shareFile(path))
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -38,6 +46,22 @@ class MainActivity : FlutterActivity() {
 
         if (intent.resolveActivity(packageManager) == null) return false
         startActivity(Intent.createChooser(intent, "Open exported file"))
+        return true
+    }
+
+    private fun shareFile(path: String): Boolean {
+        val file = File(path)
+        if (!file.exists()) return false
+
+        val uri = FileProvider.getUriForFile(this, "${applicationContext.packageName}.fileprovider", file)
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = mimeType(path)
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        if (intent.resolveActivity(packageManager) == null) return false
+        startActivity(Intent.createChooser(intent, "Share exported file"))
         return true
     }
 

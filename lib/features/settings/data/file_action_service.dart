@@ -22,4 +22,15 @@ class FileActionService {
     });
     return opened ?? false;
   }
+
+  Future<bool> share(File file) async {
+    if (!Platform.isAndroid) {
+      return false;
+    }
+
+    final shared = await _channel.invokeMethod<bool>('shareFile', {
+      'path': file.path,
+    });
+    return shared ?? false;
+  }
 }
