@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
+import 'xlsx_workbook.dart';
 
 final accountRepositoryProvider = Provider<AccountRepository>((ref) {
   return AccountRepository(ref.watch(supabaseClientProvider));
@@ -23,21 +24,7 @@ class AccountRepository {
       throw Exception('Ban chua dang nhap.');
     }
 
-    final rows = await _client
-        .from('transactions')
-        .select('''
-          id,
-          amount,
-          type,
-          note,
-          image_path,
-          transaction_date,
-          created_at,
-          wallet:wallets!inner(name),
-          category:categories!inner(name)
-        ''')
-        .eq('user_id', session.user.id)
-        .order('transaction_date', ascending: false);
+    final rows = await _fetchTransactionRows(session.user.id);
 
     final csv = StringBuffer()
       ..writeln(
@@ -78,6 +65,49 @@ class AccountRepository {
     return file.writeAsString(csv.toString(), encoding: utf8);
   }
 
+  Future<File> exportTransactionsXlsx() async {
+    final session = _client.auth.currentSession;
+    if (session == null) {
+      throw Exception('Ban chua dang nhap.');
+    }
+
+    final rows = await _fetchTransactionRows(session.user.id);
+    final workbookRows = <List<Object?>>[
+      [
+        'ID',
+        'Loại',
+        'Số tiền',
+        'Ví',
+        'Danh mục',
+        'Ghi chú',
+        'Ngày giao dịch',
+        'Đường dẫn ảnh',
+        'Ngày tạo',
+      ],
+      ...rows.map((row) {
+        final wallet = row['wallet'] as Map<String, dynamic>? ?? const {};
+        final category = row['category'] as Map<String, dynamic>? ?? const {};
+        return [
+          row['id'],
+          row['type'] == 'income' ? 'Thu' : 'Chi',
+          row['amount'],
+          wallet['name'],
+          category['name'],
+          row['note'],
+          _formatDate(row['transaction_date'] as String?),
+          row['image_path'],
+          _formatDate(row['created_at'] as String?),
+        ];
+      }),
+    ];
+
+    final bytes = XlsxWorkbook(sheetName: 'Transactions', rows: workbookRows).build();
+    final directory = await getApplicationDocumentsDirectory();
+    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+    final file = File('${directory.path}/moniary_export_$timestamp.xlsx');
+    return file.writeAsBytes(bytes, flush: true);
+  }
+
   Future<void> deleteAccount() async {
     final session = _client.auth.currentSession;
     if (session == null) {
@@ -102,5 +132,25 @@ class AccountRepository {
   static String _csvCell(Object? value) {
     final text = (value ?? '').toString().replaceAll('"', '""');
     return '"$text"';
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchTransactionRows(String userId) async {
+    final rows = await _client
+        .from('transactions')
+        .select('''
+          id,
+          amount,
+          type,
+          note,
+          image_path,
+          transaction_date,
+          created_at,
+          wallet:wallets!inner(name),
+          category:categories!inner(name)
+        ''')
+        .eq('user_id', userId)
+        .order('transaction_date', ascending: false);
+
+    return (rows as List<dynamic>).cast<Map<String, dynamic>>();
   }
 }
