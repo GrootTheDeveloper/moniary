@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
 import '../application/account_actions_controller.dart';
+import '../domain/privacy_request_history_entry.dart';
 import '../domain/privacy_request_template.dart';
 import '../domain/privacy_request_type.dart';
 
@@ -37,6 +39,7 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(accountActionsControllerProvider);
+    final historyAsync = ref.watch(privacyRequestHistoryProvider);
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -80,6 +83,8 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                       'Team cần cập nhật thời gian thực tế trước khi phát hành production.',
                 ),
                 const SizedBox(height: 8),
+                _PrivacyRequestHistorySection(historyAsync: historyAsync),
+                const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: _requestTypeId,
                   decoration: const InputDecoration(labelText: 'Loại yêu cầu'),
@@ -238,6 +243,100 @@ class _RequestPreviewCard extends StatelessWidget {
           Text(cleanMessage, style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
+    );
+  }
+}
+
+class _PrivacyRequestHistorySection extends StatelessWidget {
+  const _PrivacyRequestHistorySection({required this.historyAsync});
+
+  final AsyncValue<List<PrivacyRequestHistoryEntry>> historyAsync;
+
+  @override
+  Widget build(BuildContext context) {
+    return historyAsync.when(
+      data: (history) {
+        if (history.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: AppTheme.outline),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.history_rounded, color: AppTheme.mint),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Yêu cầu gần đây',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              ...history.take(3).map((entry) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _PrivacyRequestHistoryTile(entry: entry),
+                );
+              }),
+            ],
+          ),
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (error, stackTrace) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _PrivacyRequestHistoryTile extends StatelessWidget {
+  const _PrivacyRequestHistoryTile({required this.entry});
+
+  final PrivacyRequestHistoryEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final createdAt = DateFormat('dd/MM/yyyy HH:mm').format(entry.createdAt);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 34,
+          height: 34,
+          decoration: BoxDecoration(
+            color: AppTheme.mint.withValues(alpha: 0.14),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.description_outlined,
+            color: AppTheme.mint,
+            size: 18,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                entry.requestType,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 2),
+              Text(createdAt, style: Theme.of(context).textTheme.bodyMedium),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

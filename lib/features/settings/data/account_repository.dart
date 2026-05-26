@@ -10,6 +10,7 @@ import '../../../core/supabase/supabase_providers.dart';
 import '../domain/export_filters.dart';
 import '../domain/export_history_entry.dart';
 import '../domain/data_transparency_summary.dart';
+import '../domain/privacy_request_history_entry.dart';
 import 'pdf_report.dart';
 import 'xlsx_workbook.dart';
 
@@ -22,13 +23,18 @@ class AccountRepository {
 
   final SupabaseClient _client;
 
-  Future<File> exportTransactionsCsv({ExportFilters filters = const ExportFilters()}) async {
+  Future<File> exportTransactionsCsv({
+    ExportFilters filters = const ExportFilters(),
+  }) async {
     final session = _client.auth.currentSession;
     if (session == null) {
       throw Exception('Ban chua dang nhap.');
     }
 
-    final exportRows = await _buildExportRows(session.user.id, filters: filters);
+    final exportRows = await _buildExportRows(
+      session.user.id,
+      filters: filters,
+    );
 
     final csv = StringBuffer()
       ..writeln(
@@ -62,13 +68,18 @@ class AccountRepository {
     return saved;
   }
 
-  Future<File> exportTransactionsXlsx({ExportFilters filters = const ExportFilters()}) async {
+  Future<File> exportTransactionsXlsx({
+    ExportFilters filters = const ExportFilters(),
+  }) async {
     final session = _client.auth.currentSession;
     if (session == null) {
       throw Exception('Ban chua dang nhap.');
     }
 
-    final exportRows = await _buildExportRows(session.user.id, filters: filters);
+    final exportRows = await _buildExportRows(
+      session.user.id,
+      filters: filters,
+    );
     final workbookRows = <List<Object?>>[
       [
         'Data type',
@@ -89,7 +100,10 @@ class AccountRepository {
       ...exportRows,
     ];
 
-    final bytes = XlsxWorkbook(sheetName: 'Transactions', rows: workbookRows).build();
+    final bytes = XlsxWorkbook(
+      sheetName: 'Transactions',
+      rows: workbookRows,
+    ).build();
     final directory = await getApplicationDocumentsDirectory();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
     final file = File('${directory.path}/moniary_export_$timestamp.xlsx');
@@ -98,7 +112,9 @@ class AccountRepository {
     return saved;
   }
 
-  Future<File> exportTransactionsPdf({ExportFilters filters = const ExportFilters()}) async {
+  Future<File> exportTransactionsPdf({
+    ExportFilters filters = const ExportFilters(),
+  }) async {
     final session = _client.auth.currentSession;
     if (session == null) {
       throw Exception('Ban chua dang nhap.');
@@ -107,11 +123,15 @@ class AccountRepository {
     final transactions = filters.hasTransactions
         ? await _fetchTransactionRows(session.user.id, filters: filters)
         : <Map<String, dynamic>>[];
-    final wallets = filters.hasWallets ? await _fetchWalletRows(session.user.id) : <Map<String, dynamic>>[];
+    final wallets = filters.hasWallets
+        ? await _fetchWalletRows(session.user.id)
+        : <Map<String, dynamic>>[];
     final categories = filters.hasCategories
         ? await _fetchCategoryRows(session.user.id)
         : <Map<String, dynamic>>[];
-    final generatedAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+    final generatedAt = DateFormat(
+      'yyyy-MM-dd HH:mm:ss',
+    ).format(DateTime.now());
     final income = transactions
         .where((row) => row['type'] == 'income')
         .fold<double>(0, (sum, row) => sum + (row['amount'] as num).toDouble());
@@ -162,6 +182,21 @@ class AccountRepository {
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
+  Future<List<PrivacyRequestHistoryEntry>> fetchPrivacyRequestHistory() async {
+    final file = await _privacyRequestHistoryFile();
+    if (!await file.exists()) {
+      return const [];
+    }
+
+    final raw = await file.readAsString();
+    final decoded = jsonDecode(raw) as List<dynamic>;
+    return decoded
+        .cast<Map<String, dynamic>>()
+        .map(PrivacyRequestHistoryEntry.fromMap)
+        .toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
   Future<DataTransparencySummary> fetchDataTransparencySummary() async {
     final session = _client.auth.currentSession;
     if (session == null) {
@@ -173,7 +208,10 @@ class AccountRepository {
         .from('transactions')
         .select('id,image_path,transaction_date')
         .eq('user_id', userId);
-    final wallets = await _client.from('wallets').select('id').eq('user_id', userId);
+    final wallets = await _client
+        .from('wallets')
+        .select('id')
+        .eq('user_id', userId);
     final categories = await _client
         .from('categories')
         .select('id')
@@ -182,12 +220,16 @@ class AccountRepository {
 
     final transactionRows = (transactions as List<dynamic>)
         .cast<Map<String, dynamic>>();
-    final transactionDates = transactionRows
-        .map((row) => DateTime.tryParse(row['transaction_date'] as String? ?? ''))
-        .whereType<DateTime>()
-        .map((date) => date.toLocal())
-        .toList()
-      ..sort();
+    final transactionDates =
+        transactionRows
+            .map(
+              (row) =>
+                  DateTime.tryParse(row['transaction_date'] as String? ?? ''),
+            )
+            .whereType<DateTime>()
+            .map((date) => date.toLocal())
+            .toList()
+          ..sort();
 
     return DataTransparencySummary(
       transactionCount: transactionRows.length,
@@ -197,10 +239,12 @@ class AccountRepository {
           .where((row) => (row['image_path'] as String?)?.isNotEmpty == true)
           .length,
       exportFileCount: history.length,
-      oldestTransactionDate:
-          transactionDates.isEmpty ? null : transactionDates.first,
-      newestTransactionDate:
-          transactionDates.isEmpty ? null : transactionDates.last,
+      oldestTransactionDate: transactionDates.isEmpty
+          ? null
+          : transactionDates.first,
+      newestTransactionDate: transactionDates.isEmpty
+          ? null
+          : transactionDates.last,
       latestExportDate: history.isEmpty ? null : history.first.createdAt,
     );
   }
@@ -240,8 +284,20 @@ class AccountRepository {
 
     final directory = await getApplicationDocumentsDirectory();
     final fileTimestamp = DateFormat('yyyyMMdd_HHmmss').format(timestamp);
-    final file = File('${directory.path}/moniary_deletion_request_$fileTimestamp.json');
-    return file.writeAsString(const JsonEncoder.withIndent('  ').convert(payload));
+    final file = File(
+      '${directory.path}/moniary_deletion_request_$fileTimestamp.json',
+    );
+    final saved = await file.writeAsString(
+      const JsonEncoder.withIndent('  ').convert(payload),
+    );
+    await _recordPrivacyRequest(
+      requestType: 'Xóa dữ liệu',
+      message: reason,
+      status: 'ready_to_send',
+      file: saved,
+      timestamp: timestamp,
+    );
+    return saved;
   }
 
   Future<File> createPrivacyRequest({
@@ -266,8 +322,20 @@ class AccountRepository {
 
     final directory = await getApplicationDocumentsDirectory();
     final fileTimestamp = DateFormat('yyyyMMdd_HHmmss').format(timestamp);
-    final file = File('${directory.path}/moniary_privacy_request_$fileTimestamp.json');
-    return file.writeAsString(const JsonEncoder.withIndent('  ').convert(payload));
+    final file = File(
+      '${directory.path}/moniary_privacy_request_$fileTimestamp.json',
+    );
+    final saved = await file.writeAsString(
+      const JsonEncoder.withIndent('  ').convert(payload),
+    );
+    await _recordPrivacyRequest(
+      requestType: requestType,
+      message: message,
+      status: 'ready_to_send',
+      file: saved,
+      timestamp: timestamp,
+    );
+    return saved;
   }
 
   static String _formatDate(String? value) {
@@ -320,7 +388,10 @@ class AccountRepository {
         filters.endDate!.month,
         filters.endDate!.day,
       ).add(const Duration(days: 1));
-      query = query.lt('transaction_date', endExclusive.toUtc().toIso8601String());
+      query = query.lt(
+        'transaction_date',
+        endExclusive.toUtc().toIso8601String(),
+      );
     }
 
     final rows = await query.order('transaction_date', ascending: false);
@@ -355,7 +426,10 @@ class AccountRepository {
     final rows = <List<Object?>>[];
 
     if (filters.hasTransactions) {
-      final transactions = await _fetchTransactionRows(userId, filters: filters);
+      final transactions = await _fetchTransactionRows(
+        userId,
+        filters: filters,
+      );
       for (final row in transactions) {
         final wallet = row['wallet'] as Map<String, dynamic>? ?? const {};
         final category = row['category'] as Map<String, dynamic>? ?? const {};
@@ -440,13 +514,50 @@ class AccountRepository {
     );
 
     final fileHistory = await _exportHistoryFile();
-    final next = [entry, ...history].take(50).map((item) => item.toMap()).toList();
-    await fileHistory.writeAsString(const JsonEncoder.withIndent('  ').convert(next));
+    final next = [
+      entry,
+      ...history,
+    ].take(50).map((item) => item.toMap()).toList();
+    await fileHistory.writeAsString(
+      const JsonEncoder.withIndent('  ').convert(next),
+    );
   }
 
   Future<File> _exportHistoryFile() async {
     final directory = await getApplicationDocumentsDirectory();
     return File('${directory.path}/moniary_export_history.json');
+  }
+
+  Future<File> _privacyRequestHistoryFile() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return File('${directory.path}/moniary_privacy_request_history.json');
+  }
+
+  Future<void> _recordPrivacyRequest({
+    required String requestType,
+    required String message,
+    required String status,
+    required File file,
+    required DateTime timestamp,
+  }) async {
+    final history = await fetchPrivacyRequestHistory();
+    final entry = PrivacyRequestHistoryEntry(
+      id: DateFormat('yyyyMMddHHmmss').format(timestamp),
+      requestType: requestType,
+      message: message.trim(),
+      status: status,
+      createdAt: timestamp,
+      path: file.path,
+    );
+
+    final historyFile = await _privacyRequestHistoryFile();
+    final next = [
+      entry,
+      ...history,
+    ].take(50).map((item) => item.toMap()).toList();
+    await historyFile.writeAsString(
+      const JsonEncoder.withIndent('  ').convert(next),
+    );
   }
 
   static String _dateRangeLabel(ExportFilters filters) {
@@ -456,7 +567,9 @@ class AccountRepository {
     final start = filters.startDate == null
         ? '...'
         : DateFormat('dd/MM/yyyy').format(filters.startDate!);
-    final end = filters.endDate == null ? '...' : DateFormat('dd/MM/yyyy').format(filters.endDate!);
+    final end = filters.endDate == null
+        ? '...'
+        : DateFormat('dd/MM/yyyy').format(filters.endDate!);
     return '$start - $end';
   }
 }
