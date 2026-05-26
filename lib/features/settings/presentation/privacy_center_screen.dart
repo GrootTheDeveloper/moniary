@@ -15,6 +15,7 @@ import 'export_history_screen.dart';
 import 'permission_rationale_screen.dart';
 import 'privacy_contact_screen.dart';
 import 'privacy_policy_screen.dart';
+import 'terms_of_use_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
 class PrivacyCenterScreen extends ConsumerWidget {
@@ -60,6 +61,14 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   subtitle:
                       'Xem cách Moniary xử lý dữ liệu cá nhân, tài chính và ảnh giao dịch.',
                   onTap: () => context.push(PrivacyPolicyScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.gavel_outlined,
+                  title: 'Điều khoản sử dụng',
+                  subtitle:
+                      'Xem phạm vi sử dụng, trách nhiệm người dùng và giới hạn của phiên bản MVP.',
+                  onTap: () => context.push(TermsOfUseScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(

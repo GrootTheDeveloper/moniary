@@ -24,6 +24,7 @@ import '../features/settings/presentation/privacy_contact_screen.dart';
 import '../features/settings/presentation/privacy_policy_screen.dart';
 import '../features/settings/presentation/privacy_request_detail_screen.dart';
 import '../features/settings/presentation/profile_screen.dart';
+import '../features/settings/presentation/terms_of_use_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
 import '../features/transactions/presentation/camera_screen.dart';
 import '../features/transactions/presentation/day_detail_screen.dart';
@@ -142,6 +143,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: PrivacyPolicyScreen.routePath,
         builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+      GoRoute(
+        path: TermsOfUseScreen.routePath,
+        builder: (context, state) => const TermsOfUseScreen(),
       ),
       GoRoute(
         path: DayDetailScreen.routePath,
