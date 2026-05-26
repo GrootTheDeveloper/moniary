@@ -80,6 +80,10 @@ class _Overview extends StatelessWidget {
           title: 'Thiết lập nhắc nhở',
           description: 'Các tùy chọn nhắc ghi chi tiêu khi tính năng reminder được bật.',
         ),
+        const SizedBox(height: 22),
+        Text('Dữ liệu ảnh', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 12),
+        _PhotoSummaryCard(summary: summary),
       ],
     );
   }
@@ -184,6 +188,77 @@ class _InventoryTile extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _PhotoSummaryCard extends StatelessWidget {
+  const _PhotoSummaryCard({required this.summary});
+
+  final DataTransparencySummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final total = summary.transactionCount == 0 ? 1 : summary.transactionCount;
+    final ratio = summary.photoTransactionCount / total;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Ảnh giao dịch', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 10),
+          LinearProgressIndicator(
+            value: ratio.clamp(0, 1),
+            color: AppTheme.mint,
+            backgroundColor: AppTheme.outline,
+            minHeight: 8,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _PhotoCount(
+                  label: 'Có ảnh',
+                  value: summary.photoTransactionCount.toString(),
+                ),
+              ),
+              Expanded(
+                child: _PhotoCount(
+                  label: 'Không ảnh',
+                  value: summary.transactionWithoutPhotoCount.toString(),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PhotoCount extends StatelessWidget {
+  const _PhotoCount({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(value, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 2),
+        Text(label, style: Theme.of(context).textTheme.bodyMedium),
+      ],
     );
   }
 }
