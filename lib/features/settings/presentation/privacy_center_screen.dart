@@ -12,6 +12,7 @@ import 'data_transparency_screen.dart';
 import 'deletion_request_screen.dart';
 import 'export_data_screen.dart';
 import 'export_history_screen.dart';
+import 'legal_contact_screen.dart';
 import 'permission_rationale_screen.dart';
 import 'privacy_contact_screen.dart';
 import 'privacy_policy_screen.dart';
@@ -88,6 +89,14 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   subtitle:
                       'Xem ghi chú về giới hạn tư vấn tài chính, dữ liệu người dùng và chia sẻ file.',
                   onTap: () => context.push(TrustSafetyScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.contact_mail_outlined,
+                  title: 'Liên hệ pháp lý',
+                  subtitle:
+                      'Xem và copy email privacy, support và legal dùng cho phát hành Store.',
+                  onTap: () => context.push(LegalContactScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
