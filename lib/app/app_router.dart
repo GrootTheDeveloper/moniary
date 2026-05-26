@@ -11,6 +11,7 @@ import '../features/calendar/presentation/calendar_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
 import '../features/settings/domain/privacy_request_history_entry.dart';
+import '../features/settings/presentation/about_moniary_screen.dart';
 import '../features/settings/presentation/data_deletion_policy_screen.dart';
 import '../features/settings/presentation/data_safety_screen.dart';
 import '../features/settings/presentation/data_transparency_screen.dart';
@@ -94,6 +95,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: PrivacyCenterScreen.routePath,
         builder: (context, state) => const PrivacyCenterScreen(),
+      ),
+      GoRoute(
+        path: AboutMoniaryScreen.routePath,
+        builder: (context, state) => const AboutMoniaryScreen(),
       ),
       GoRoute(
         path: PrivacyContactScreen.routePath,

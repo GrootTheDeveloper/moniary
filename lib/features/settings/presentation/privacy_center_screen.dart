@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/app_theme.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
+import 'about_moniary_screen.dart';
 import 'data_deletion_policy_screen.dart';
 import 'data_safety_screen.dart';
 import 'data_transparency_screen.dart';
@@ -28,9 +29,9 @@ class PrivacyCenterScreen extends ConsumerWidget {
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error.toString())),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(error.toString())));
         },
       );
     });
@@ -46,73 +47,94 @@ class PrivacyCenterScreen extends ConsumerWidget {
                 const _PrivacyHero(),
                 const SizedBox(height: 18),
                 _PrivacyActionTile(
+                  icon: Icons.info_outline_rounded,
+                  title: 'Giới thiệu Moniary',
+                  subtitle:
+                      'Xem mục đích app, định hướng dữ liệu và trạng thái MVP trước khi phát hành.',
+                  onTap: () => context.push(AboutMoniaryScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
                   icon: Icons.privacy_tip_outlined,
                   title: 'Chính sách bảo mật',
-                  subtitle: 'Xem cách Moniary xử lý dữ liệu cá nhân, tài chính và ảnh giao dịch.',
+                  subtitle:
+                      'Xem cách Moniary xử lý dữ liệu cá nhân, tài chính và ảnh giao dịch.',
                   onTap: () => context.push(PrivacyPolicyScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
                   icon: Icons.verified_user_outlined,
                   title: 'Data Safety',
-                  subtitle: 'Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong MVP.',
+                  subtitle:
+                      'Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong MVP.',
                   onTap: () => context.push(DataSafetyScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
                   icon: Icons.dataset_outlined,
                   title: 'Dữ liệu của tôi',
-                  subtitle: 'Xem nhanh app đang lưu bao nhiêu dữ liệu trong tài khoản này.',
+                  subtitle:
+                      'Xem nhanh app đang lưu bao nhiêu dữ liệu trong tài khoản này.',
                   onTap: () => context.push(DataTransparencyScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
                   icon: Icons.admin_panel_settings_outlined,
                   title: 'Quyền truy cập',
-                  subtitle: 'Giải thích lý do Moniary dùng hoặc không dùng từng quyền Android.',
-                  onTap: () => context.push(PermissionRationaleScreen.routePath),
+                  subtitle:
+                      'Giải thích lý do Moniary dùng hoặc không dùng từng quyền Android.',
+                  onTap: () =>
+                      context.push(PermissionRationaleScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
                   icon: Icons.file_download_outlined,
                   title: 'Xuất dữ liệu của tôi',
-                  subtitle: 'Chọn định dạng file và tạo bản sao dữ liệu cá nhân.',
+                  subtitle:
+                      'Chọn định dạng file và tạo bản sao dữ liệu cá nhân.',
                   onTap: () => context.push(ExportDataScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
                   icon: Icons.history_rounded,
                   title: 'Lịch sử export',
-                  subtitle: 'Xem các file CSV, Excel hoặc PDF đã tạo từ tài khoản này.',
+                  subtitle:
+                      'Xem các file CSV, Excel hoặc PDF đã tạo từ tài khoản này.',
                   onTap: () => context.push(ExportHistoryScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
                   icon: Icons.delete_forever_outlined,
                   title: 'Xóa tài khoản',
-                  subtitle: 'Xóa hồ sơ, ví, danh mục, giao dịch và ảnh giao dịch đã lưu.',
+                  subtitle:
+                      'Xóa hồ sơ, ví, danh mục, giao dịch và ảnh giao dịch đã lưu.',
                   destructive: true,
-                  onTap: state.isLoading ? null : () => _confirmDelete(context, ref),
+                  onTap: state.isLoading
+                      ? null
+                      : () => _confirmDelete(context, ref),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
                   icon: Icons.policy_outlined,
                   title: 'Chính sách xóa dữ liệu',
-                  subtitle: 'Xem dữ liệu nào bị xóa và cách Moniary xử lý yêu cầu xóa.',
+                  subtitle:
+                      'Xem dữ liệu nào bị xóa và cách Moniary xử lý yêu cầu xóa.',
                   onTap: () => context.push(DataDeletionPolicyScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
                   icon: Icons.description_outlined,
                   title: 'Yêu cầu xóa dữ liệu',
-                  subtitle: 'Tạo file yêu cầu xóa thủ công nếu xóa trực tiếp không thành công.',
+                  subtitle:
+                      'Tạo file yêu cầu xóa thủ công nếu xóa trực tiếp không thành công.',
                   onTap: () => context.push(DeletionRequestScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
                   icon: Icons.support_agent_outlined,
                   title: 'Liên hệ quyền riêng tư',
-                  subtitle: 'Kênh hỗ trợ cho yêu cầu dữ liệu, xóa dữ liệu hoặc câu hỏi privacy.',
+                  subtitle:
+                      'Kênh hỗ trợ cho yêu cầu dữ liệu, xóa dữ liệu hoặc câu hỏi privacy.',
                   onTap: () => context.push(PrivacyContactScreen.routePath),
                 ),
               ],
@@ -173,7 +195,10 @@ class _PrivacyHero extends StatelessWidget {
             child: const Icon(Icons.shield_outlined, color: AppTheme.mint),
           ),
           const SizedBox(height: 14),
-          Text('Quyền riêng tư của bạn', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Quyền riêng tư của bạn',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 8),
           Text(
             'Quản lý các thông tin về dữ liệu, quyền truy cập và lựa chọn bảo mật trong Moniary.',
@@ -233,8 +258,8 @@ class _PrivacyActionTile extends StatelessWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: destructive ? AppTheme.danger : Colors.white,
-                        ),
+                      color: destructive ? AppTheme.danger : Colors.white,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
@@ -249,4 +274,3 @@ class _PrivacyActionTile extends StatelessWidget {
     );
   }
 }
-
