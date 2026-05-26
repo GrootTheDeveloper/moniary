@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_theme.dart';
 import '../application/account_actions_controller.dart';
+import '../domain/privacy_request_template.dart';
 import '../domain/privacy_request_type.dart';
 
 class PrivacyContactScreen extends ConsumerStatefulWidget {
@@ -20,6 +21,12 @@ class PrivacyContactScreen extends ConsumerStatefulWidget {
 class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
   final _messageController = TextEditingController();
   String _requestTypeId = privacyRequestTypes.first.id;
+
+  @override
+  void initState() {
+    super.initState();
+    _applyTemplate();
+  }
 
   @override
   void dispose() {
@@ -86,7 +93,10 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                       .toList(),
                   onChanged: (value) {
                     if (value != null) {
-                      setState(() => _requestTypeId = value);
+                      setState(() {
+                        _requestTypeId = value;
+                        _applyTemplate();
+                      });
                     }
                   },
                 ),
@@ -104,6 +114,12 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                     labelText: 'Nội dung yêu cầu',
                     hintText: 'Mô tả ngắn điều bạn muốn team hỗ trợ.',
                   ),
+                ),
+                const SizedBox(height: 8),
+                TextButton.icon(
+                  onPressed: _applyTemplate,
+                  icon: const Icon(Icons.auto_fix_high_outlined),
+                  label: const Text('Dùng mẫu nội dung'),
                 ),
                 const SizedBox(height: 16),
                 FilledButton.icon(
@@ -123,6 +139,16 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _applyTemplate() {
+    final template = privacyRequestTemplateFor(
+      privacyRequestTypeById(_requestTypeId),
+    );
+    _messageController.text = template;
+    _messageController.selection = TextSelection.collapsed(
+      offset: _messageController.text.length,
     );
   }
 
