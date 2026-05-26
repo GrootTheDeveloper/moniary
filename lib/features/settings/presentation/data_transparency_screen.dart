@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
+import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
 import '../domain/data_transparency_summary.dart';
+import 'export_data_screen.dart';
+import 'privacy_contact_screen.dart';
+import 'widgets/delete_account_dialog.dart';
 
 class DataTransparencyScreen extends ConsumerWidget {
   const DataTransparencyScreen({super.key});
@@ -14,24 +19,75 @@ class DataTransparencyScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final summaryAsync = ref.watch(dataTransparencySummaryProvider);
+    final actionState = ref.watch(accountActionsControllerProvider);
+
+    ref.listen(accountActionsControllerProvider, (previous, next) {
+      next.whenOrNull(
+        error: (error, stackTrace) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(error.toString())));
+        },
+      );
+    });
 
     return Scaffold(
       appBar: AppBar(title: const Text('Dữ liệu của tôi')),
       body: SafeArea(
-        child: summaryAsync.when(
-          data: (summary) => _Overview(summary: summary),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stackTrace) => Center(child: Text(error.toString())),
+        child: Stack(
+          children: [
+            summaryAsync.when(
+              data: (summary) => _Overview(
+                summary: summary,
+                isBusy: actionState.isLoading,
+                onDeleteAccount: actionState.isLoading
+                    ? null
+                    : () => _confirmDelete(context, ref),
+              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stackTrace) =>
+                  Center(child: Text(error.toString())),
+            ),
+            if (actionState.isLoading)
+              const Positioned.fill(
+                child: ColoredBox(
+                  color: Color(0x66000000),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              ),
+          ],
         ),
       ),
     );
   }
+
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => const DeleteAccountDialog(),
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    await ref.read(accountActionsControllerProvider.notifier).deleteAccount();
+    if (context.mounted) {
+      context.go(LoginScreen.routePath);
+    }
+  }
 }
 
 class _Overview extends StatelessWidget {
-  const _Overview({required this.summary});
+  const _Overview({
+    required this.summary,
+    required this.isBusy,
+    required this.onDeleteAccount,
+  });
 
   final DataTransparencySummary summary;
+  final bool isBusy;
+  final VoidCallback? onDeleteAccount;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +164,37 @@ class _Overview extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         const _SensitiveDataNotice(),
+        const SizedBox(height: 22),
+        Text(
+          'Kiểm soát dữ liệu',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 12),
+        _ControlShortcutTile(
+          icon: Icons.file_download_outlined,
+          title: 'Xuất dữ liệu',
+          description: 'Tạo file CSV, Excel hoặc PDF từ dữ liệu tài khoản.',
+          onTap: isBusy ? null : () => context.push(ExportDataScreen.routePath),
+        ),
+        const SizedBox(height: 12),
+        _ControlShortcutTile(
+          icon: Icons.support_agent_outlined,
+          title: 'Liên hệ quyền riêng tư',
+          description:
+              'Tạo yêu cầu hỗ trợ về dữ liệu, quyền riêng tư hoặc xóa dữ liệu.',
+          onTap: isBusy
+              ? null
+              : () => context.push(PrivacyContactScreen.routePath),
+        ),
+        const SizedBox(height: 12),
+        _ControlShortcutTile(
+          icon: Icons.delete_forever_outlined,
+          title: 'Xóa tài khoản',
+          description:
+              'Mở xác nhận xóa tài khoản và toàn bộ dữ liệu liên quan.',
+          destructive: true,
+          onTap: onDeleteAccount,
+        ),
       ],
     );
   }
@@ -396,6 +483,74 @@ class _SensitiveDataNotice extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ControlShortcutTile extends StatelessWidget {
+  const _ControlShortcutTile({
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.onTap,
+    this.destructive = false,
+  });
+
+  final IconData icon;
+  final String title;
+  final String description;
+  final VoidCallback? onTap;
+  final bool destructive;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = destructive ? AppTheme.danger : AppTheme.mint;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppTheme.outline),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.14),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: destructive ? AppTheme.danger : Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            Icon(Icons.chevron_right_rounded, color: color),
+          ],
+        ),
       ),
     );
   }
