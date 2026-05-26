@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_theme.dart';
 import '../application/account_actions_controller.dart';
+import '../domain/privacy_request_type.dart';
 
 class PrivacyContactScreen extends ConsumerStatefulWidget {
   const PrivacyContactScreen({super.key});
@@ -12,12 +13,13 @@ class PrivacyContactScreen extends ConsumerStatefulWidget {
   static const routePath = '/privacy-contact';
 
   @override
-  ConsumerState<PrivacyContactScreen> createState() => _PrivacyContactScreenState();
+  ConsumerState<PrivacyContactScreen> createState() =>
+      _PrivacyContactScreenState();
 }
 
 class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
   final _messageController = TextEditingController();
-  String _requestType = 'Data access';
+  String _requestTypeId = privacyRequestTypes.first.id;
 
   @override
   void dispose() {
@@ -32,9 +34,9 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error.toString())),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(error.toString())));
         },
       );
     });
@@ -53,35 +55,45 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                   icon: Icons.email_outlined,
                   title: 'Email hỗ trợ',
                   value: 'privacy@moniary.app',
-                  description: 'Dùng cho yêu cầu xóa dữ liệu, xuất dữ liệu hoặc câu hỏi về quyền riêng tư.',
+                  description:
+                      'Dùng cho yêu cầu xóa dữ liệu, xuất dữ liệu hoặc câu hỏi về quyền riêng tư.',
                 ),
                 const _ContactInfoTile(
                   icon: Icons.info_outline_rounded,
                   title: 'Thông tin cần gửi',
                   value: 'User ID hoặc email đăng nhập',
-                  description: 'Không gửi mật khẩu, access token, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.',
+                  description:
+                      'Không gửi mật khẩu, access token, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.',
                 ),
                 const _ContactInfoTile(
                   icon: Icons.schedule_outlined,
                   title: 'Thời gian phản hồi',
                   value: 'Trong vòng 7 ngày làm việc',
-                  description: 'Team cần cập nhật thời gian thực tế trước khi phát hành production.',
+                  description:
+                      'Team cần cập nhật thời gian thực tế trước khi phát hành production.',
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  initialValue: _requestType,
+                  initialValue: _requestTypeId,
                   decoration: const InputDecoration(labelText: 'Loại yêu cầu'),
-                  items: const [
-                    DropdownMenuItem(value: 'Data access', child: Text('Xem dữ liệu đang lưu')),
-                    DropdownMenuItem(value: 'Data export help', child: Text('Hỗ trợ xuất dữ liệu')),
-                    DropdownMenuItem(value: 'Data correction', child: Text('Sửa thông tin dữ liệu')),
-                    DropdownMenuItem(value: 'Privacy question', child: Text('Câu hỏi quyền riêng tư')),
-                  ],
+                  items: privacyRequestTypes
+                      .map(
+                        (type) => DropdownMenuItem(
+                          value: type.id,
+                          child: Text(type.label),
+                        ),
+                      )
+                      .toList(),
                   onChanged: (value) {
                     if (value != null) {
-                      setState(() => _requestType = value);
+                      setState(() => _requestTypeId = value);
                     }
                   },
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  privacyRequestTypeById(_requestTypeId).description,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -115,8 +127,10 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
   }
 
   Future<void> _createPrivacyRequest() async {
-    final file = await ref.read(accountActionsControllerProvider.notifier).createPrivacyRequest(
-          requestType: _requestType,
+    final file = await ref
+        .read(accountActionsControllerProvider.notifier)
+        .createPrivacyRequest(
+          requestType: privacyRequestTypeById(_requestTypeId).label,
           message: _messageController.text,
         );
     if (!mounted || file == null) {
@@ -168,9 +182,16 @@ class _ContactHero extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.support_agent_rounded, color: AppTheme.mint, size: 34),
+          const Icon(
+            Icons.support_agent_rounded,
+            color: AppTheme.mint,
+            size: 34,
+          ),
           const SizedBox(height: 12),
-          Text('Yêu cầu về dữ liệu cá nhân', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Yêu cầu về dữ liệu cá nhân',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 8),
           Text(
             'Nếu không thể xử lý trực tiếp trong app, người dùng có thể liên hệ team để yêu cầu hỗ trợ về dữ liệu.',
@@ -226,7 +247,10 @@ class _ContactInfoTile extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(value, style: Theme.of(context).textTheme.bodyLarge),
                 const SizedBox(height: 6),
-                Text(description, style: Theme.of(context).textTheme.bodyMedium),
+                Text(
+                  description,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ],
             ),
           ),
