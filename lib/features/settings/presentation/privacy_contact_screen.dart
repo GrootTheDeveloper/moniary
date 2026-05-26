@@ -25,7 +25,7 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
   @override
   void initState() {
     super.initState();
-    _applyTemplate();
+    _applyTemplate(notify: false);
   }
 
   @override
@@ -93,10 +93,8 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                       .toList(),
                   onChanged: (value) {
                     if (value != null) {
-                      setState(() {
-                        _requestTypeId = value;
-                        _applyTemplate();
-                      });
+                      _requestTypeId = value;
+                      _applyTemplate();
                     }
                   },
                 ),
@@ -110,6 +108,7 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                   controller: _messageController,
                   minLines: 4,
                   maxLines: 6,
+                  onChanged: (_) => setState(() {}),
                   decoration: const InputDecoration(
                     labelText: 'Nội dung yêu cầu',
                     hintText: 'Mô tả ngắn điều bạn muốn team hỗ trợ.',
@@ -120,6 +119,11 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                   onPressed: _applyTemplate,
                   icon: const Icon(Icons.auto_fix_high_outlined),
                   label: const Text('Dùng mẫu nội dung'),
+                ),
+                const SizedBox(height: 8),
+                _RequestPreviewCard(
+                  requestType: privacyRequestTypeById(_requestTypeId),
+                  message: _messageController.text,
                 ),
                 const SizedBox(height: 16),
                 FilledButton.icon(
@@ -142,7 +146,7 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
     );
   }
 
-  void _applyTemplate() {
+  void _applyTemplate({bool notify = true}) {
     final template = privacyRequestTemplateFor(
       privacyRequestTypeById(_requestTypeId),
     );
@@ -150,6 +154,9 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
     _messageController.selection = TextSelection.collapsed(
       offset: _messageController.text.length,
     );
+    if (notify && mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _createPrivacyRequest() async {
@@ -189,6 +196,48 @@ class _PrivacyRequestDialog extends StatelessWidget {
           child: const Text('Đóng'),
         ),
       ],
+    );
+  }
+}
+
+class _RequestPreviewCard extends StatelessWidget {
+  const _RequestPreviewCard({required this.requestType, required this.message});
+
+  final PrivacyRequestType requestType;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final cleanMessage = message.trim().isEmpty
+        ? 'Chưa nhập nội dung yêu cầu.'
+        : message.trim();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.preview_outlined, color: AppTheme.mint),
+              const SizedBox(width: 8),
+              Text(
+                'Xem trước yêu cầu',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(requestType.label, style: Theme.of(context).textTheme.bodyLarge),
+          const SizedBox(height: 8),
+          Text(cleanMessage, style: Theme.of(context).textTheme.bodyMedium),
+        ],
+      ),
     );
   }
 }
