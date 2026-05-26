@@ -171,6 +171,13 @@ class _Overview extends StatelessWidget {
         _LocalFilesCard(summary: summary),
         const SizedBox(height: 22),
         Text(
+          'Báo cáo minh bạch',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 12),
+        _TransparencyReportCard(summary: summary),
+        const SizedBox(height: 22),
+        Text(
           'Kiểm soát dữ liệu',
           style: Theme.of(context).textTheme.titleLarge,
         ),
@@ -565,6 +572,77 @@ class _LocalFilesCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _TransparencyReportCard extends StatelessWidget {
+  const _TransparencyReportCard({required this.summary});
+
+  final DataTransparencySummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final photoPercent = summary.transactionCount == 0
+        ? 0
+        : (summary.photoTransactionCount / summary.transactionCount * 100)
+              .round();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceRaised,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Tài khoản này hiện có ${summary.transactionCount} giao dịch, ${summary.walletCount} ví và ${summary.categoryCount} danh mục.',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 14),
+          _ReportLine(
+            icon: Icons.image_search_outlined,
+            text:
+                '$photoPercent% giao dịch đang có ảnh đính kèm trong dữ liệu của bạn.',
+          ),
+          const SizedBox(height: 10),
+          _ReportLine(
+            icon: Icons.folder_open_outlined,
+            text:
+                '${summary.exportFileCount} file export đã được ghi nhận trên thiết bị này.',
+          ),
+          const SizedBox(height: 10),
+          const _ReportLine(
+            icon: Icons.lock_outline_rounded,
+            text:
+                'Moniary không bán dữ liệu cá nhân và chỉ dùng dữ liệu để vận hành trải nghiệm quản lý chi tiêu.',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReportLine extends StatelessWidget {
+  const _ReportLine({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: AppTheme.mint, size: 20),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
+        ),
+      ],
     );
   }
 }
