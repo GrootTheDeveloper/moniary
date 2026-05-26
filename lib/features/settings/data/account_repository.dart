@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
 import '../domain/export_filters.dart';
+import '../domain/export_history_entry.dart';
 import 'pdf_report.dart';
 import 'xlsx_workbook.dart';
 
@@ -55,7 +56,9 @@ class AccountRepository {
     final directory = await getApplicationDocumentsDirectory();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
     final file = File('${directory.path}/moniary_export_$timestamp.csv');
-    return file.writeAsString(csv.toString(), encoding: utf8);
+    final saved = await file.writeAsString(csv.toString(), encoding: utf8);
+    await _recordExport(format: 'CSV', file: saved, filters: filters);
+    return saved;
   }
 
   Future<File> exportTransactionsXlsx({ExportFilters filters = const ExportFilters()}) async {
@@ -89,7 +92,9 @@ class AccountRepository {
     final directory = await getApplicationDocumentsDirectory();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
     final file = File('${directory.path}/moniary_export_$timestamp.xlsx');
-    return file.writeAsBytes(bytes, flush: true);
+    final saved = await file.writeAsBytes(bytes, flush: true);
+    await _recordExport(format: 'XLSX', file: saved, filters: filters);
+    return saved;
   }
 
   Future<File> exportTransactionsPdf({ExportFilters filters = const ExportFilters()}) async {
@@ -136,7 +141,24 @@ class AccountRepository {
     final directory = await getApplicationDocumentsDirectory();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
     final file = File('${directory.path}/moniary_export_$timestamp.pdf');
-    return file.writeAsBytes(bytes, flush: true);
+    final saved = await file.writeAsBytes(bytes, flush: true);
+    await _recordExport(format: 'PDF', file: saved, filters: filters);
+    return saved;
+  }
+
+  Future<List<ExportHistoryEntry>> fetchExportHistory() async {
+    final file = await _exportHistoryFile();
+    if (!await file.exists()) {
+      return const [];
+    }
+
+    final raw = await file.readAsString();
+    final decoded = jsonDecode(raw) as List<dynamic>;
+    return decoded
+        .cast<Map<String, dynamic>>()
+        .map(ExportHistoryEntry.fromMap)
+        .toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
   Future<void> deleteAccount() async {
@@ -357,5 +379,40 @@ class AccountRepository {
     }
 
     return rows;
+  }
+
+  Future<void> _recordExport({
+    required String format,
+    required File file,
+    required ExportFilters filters,
+  }) async {
+    final history = await fetchExportHistory();
+    final entry = ExportHistoryEntry(
+      format: format,
+      path: file.path,
+      createdAt: DateTime.now(),
+      dataTypes: filters.dataTypes.map((type) => type.label).toList(),
+      dateRange: _dateRangeLabel(filters),
+    );
+
+    final fileHistory = await _exportHistoryFile();
+    final next = [entry, ...history].take(50).map((item) => item.toMap()).toList();
+    await fileHistory.writeAsString(const JsonEncoder.withIndent('  ').convert(next));
+  }
+
+  Future<File> _exportHistoryFile() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return File('${directory.path}/moniary_export_history.json');
+  }
+
+  static String _dateRangeLabel(ExportFilters filters) {
+    if (!filters.hasDateRange) {
+      return 'Tất cả thời gian';
+    }
+    final start = filters.startDate == null
+        ? '...'
+        : DateFormat('dd/MM/yyyy').format(filters.startDate!);
+    final end = filters.endDate == null ? '...' : DateFormat('dd/MM/yyyy').format(filters.endDate!);
+    return '$start - $end';
   }
 }

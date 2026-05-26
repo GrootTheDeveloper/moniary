@@ -9,6 +9,7 @@ import 'data_deletion_policy_screen.dart';
 import 'data_safety_screen.dart';
 import 'deletion_request_screen.dart';
 import 'export_data_screen.dart';
+import 'export_history_screen.dart';
 import 'permission_rationale_screen.dart';
 import 'privacy_contact_screen.dart';
 import 'privacy_policy_screen.dart';
@@ -69,6 +70,13 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   title: 'Xuất dữ liệu của tôi',
                   subtitle: 'Chọn định dạng file và tạo bản sao dữ liệu cá nhân.',
                   onTap: () => context.push(ExportDataScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.history_rounded,
+                  title: 'Lịch sử export',
+                  subtitle: 'Xem các file CSV, Excel hoặc PDF đã tạo từ tài khoản này.',
+                  onTap: () => context.push(ExportHistoryScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
