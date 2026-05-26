@@ -1,48 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import '../application/account_actions_controller.dart';
 import 'data_safety_screen.dart';
 import 'permission_rationale_screen.dart';
 import 'privacy_policy_screen.dart';
 
-class PrivacyCenterScreen extends StatelessWidget {
+class PrivacyCenterScreen extends ConsumerWidget {
   const PrivacyCenterScreen({super.key});
 
   static const routePath = '/privacy-center';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(accountActionsControllerProvider);
+
+    ref.listen(accountActionsControllerProvider, (previous, next) {
+      next.whenOrNull(
+        error: (error, stackTrace) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error.toString())),
+          );
+        },
+      );
+    });
+
     return Scaffold(
       appBar: AppBar(title: const Text('Trung tâm riêng tư')),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+        child: Stack(
           children: [
-            const _PrivacyHero(),
-            const SizedBox(height: 18),
-            _PrivacyActionTile(
-              icon: Icons.privacy_tip_outlined,
-              title: 'Chính sách bảo mật',
-              subtitle: 'Xem cách Moniary xử lý dữ liệu cá nhân, tài chính và ảnh giao dịch.',
-              onTap: () => context.push(PrivacyPolicyScreen.routePath),
+            ListView(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+              children: [
+                const _PrivacyHero(),
+                const SizedBox(height: 18),
+                _PrivacyActionTile(
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'Chính sách bảo mật',
+                  subtitle: 'Xem cách Moniary xử lý dữ liệu cá nhân, tài chính và ảnh giao dịch.',
+                  onTap: () => context.push(PrivacyPolicyScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.verified_user_outlined,
+                  title: 'Data Safety',
+                  subtitle: 'Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong MVP.',
+                  onTap: () => context.push(DataSafetyScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.admin_panel_settings_outlined,
+                  title: 'Quyền truy cập',
+                  subtitle: 'Giải thích lý do Moniary dùng hoặc không dùng từng quyền Android.',
+                  onTap: () => context.push(PermissionRationaleScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.file_download_outlined,
+                  title: 'Xuất dữ liệu của tôi',
+                  subtitle: 'Tạo file CSV chứa toàn bộ giao dịch của tài khoản hiện tại.',
+                  onTap: state.isLoading ? null : () => _exportCsv(context, ref),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            _PrivacyActionTile(
-              icon: Icons.verified_user_outlined,
-              title: 'Data Safety',
-              subtitle: 'Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong MVP.',
-              onTap: () => context.push(DataSafetyScreen.routePath),
-            ),
-            const SizedBox(height: 12),
-            _PrivacyActionTile(
-              icon: Icons.admin_panel_settings_outlined,
-              title: 'Quyền truy cập',
-              subtitle: 'Giải thích lý do Moniary dùng hoặc không dùng từng quyền Android.',
-              onTap: () => context.push(PermissionRationaleScreen.routePath),
-            ),
+            if (state.isLoading)
+              const Positioned.fill(
+                child: ColoredBox(
+                  color: Color(0x66000000),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              ),
           ],
         ),
+      ),
+    );
+  }
+
+  Future<void> _exportCsv(BuildContext context, WidgetRef ref) async {
+    final file = await ref.read(accountActionsControllerProvider.notifier).exportCsv();
+    if (!context.mounted || file == null) {
+      return;
+    }
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Đã xuất CSV'),
+        content: Text(
+          'File đã được lưu tại:\n${file.path}',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Đóng'),
+          ),
+        ],
       ),
     );
   }
@@ -97,7 +153,7 @@ class _PrivacyActionTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
