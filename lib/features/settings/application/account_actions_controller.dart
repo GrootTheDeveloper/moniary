@@ -64,4 +64,19 @@ class AccountActionsController extends AsyncNotifier<void> {
     });
     return requestFile;
   }
+
+  Future<File?> createPrivacyRequest({
+    required String requestType,
+    required String message,
+  }) async {
+    state = const AsyncLoading();
+    File? requestFile;
+    state = await AsyncValue.guard(() async {
+      requestFile = await ref.read(accountRepositoryProvider).createPrivacyRequest(
+            requestType: requestType,
+            message: message,
+          );
+    });
+    return requestFile;
+  }
 }

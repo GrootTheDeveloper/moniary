@@ -1,43 +1,154 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_theme.dart';
+import '../application/account_actions_controller.dart';
 
-class PrivacyContactScreen extends StatelessWidget {
+class PrivacyContactScreen extends ConsumerStatefulWidget {
   const PrivacyContactScreen({super.key});
 
   static const routePath = '/privacy-contact';
 
   @override
+  ConsumerState<PrivacyContactScreen> createState() => _PrivacyContactScreenState();
+}
+
+class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
+  final _messageController = TextEditingController();
+  String _requestType = 'Data access';
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final state = ref.watch(accountActionsControllerProvider);
+
+    ref.listen(accountActionsControllerProvider, (previous, next) {
+      next.whenOrNull(
+        error: (error, stackTrace) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error.toString())),
+          );
+        },
+      );
+    });
+
     return Scaffold(
       appBar: AppBar(title: const Text('Liên hệ quyền riêng tư')),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: const [
-            _ContactHero(),
-            SizedBox(height: 16),
-            _ContactInfoTile(
-              icon: Icons.email_outlined,
-              title: 'Email hỗ trợ',
-              value: 'privacy@moniary.app',
-              description: 'Dùng cho yêu cầu xóa dữ liệu, xuất dữ liệu hoặc câu hỏi về quyền riêng tư.',
+        child: Stack(
+          children: [
+            ListView(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+              children: [
+                const _ContactHero(),
+                const SizedBox(height: 16),
+                const _ContactInfoTile(
+                  icon: Icons.email_outlined,
+                  title: 'Email hỗ trợ',
+                  value: 'privacy@moniary.app',
+                  description: 'Dùng cho yêu cầu xóa dữ liệu, xuất dữ liệu hoặc câu hỏi về quyền riêng tư.',
+                ),
+                const _ContactInfoTile(
+                  icon: Icons.info_outline_rounded,
+                  title: 'Thông tin cần gửi',
+                  value: 'User ID hoặc email đăng nhập',
+                  description: 'Không gửi mật khẩu, access token, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.',
+                ),
+                const _ContactInfoTile(
+                  icon: Icons.schedule_outlined,
+                  title: 'Thời gian phản hồi',
+                  value: 'Trong vòng 7 ngày làm việc',
+                  description: 'Team cần cập nhật thời gian thực tế trước khi phát hành production.',
+                ),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  initialValue: _requestType,
+                  decoration: const InputDecoration(labelText: 'Loại yêu cầu'),
+                  items: const [
+                    DropdownMenuItem(value: 'Data access', child: Text('Xem dữ liệu đang lưu')),
+                    DropdownMenuItem(value: 'Data export help', child: Text('Hỗ trợ xuất dữ liệu')),
+                    DropdownMenuItem(value: 'Data correction', child: Text('Sửa thông tin dữ liệu')),
+                    DropdownMenuItem(value: 'Privacy question', child: Text('Câu hỏi quyền riêng tư')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _requestType = value);
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _messageController,
+                  minLines: 4,
+                  maxLines: 6,
+                  decoration: const InputDecoration(
+                    labelText: 'Nội dung yêu cầu',
+                    hintText: 'Mô tả ngắn điều bạn muốn team hỗ trợ.',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: state.isLoading ? null : _createPrivacyRequest,
+                  icon: const Icon(Icons.mark_email_read_outlined),
+                  label: const Text('Tạo yêu cầu privacy'),
+                ),
+              ],
             ),
-            _ContactInfoTile(
-              icon: Icons.info_outline_rounded,
-              title: 'Thông tin cần gửi',
-              value: 'User ID hoặc email đăng nhập',
-              description: 'Không gửi mật khẩu, access token, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.',
-            ),
-            _ContactInfoTile(
-              icon: Icons.schedule_outlined,
-              title: 'Thời gian phản hồi',
-              value: 'Trong vòng 7 ngày làm việc',
-              description: 'Team cần cập nhật thời gian thực tế trước khi phát hành production.',
-            ),
+            if (state.isLoading)
+              const Positioned.fill(
+                child: ColoredBox(
+                  color: Color(0x66000000),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              ),
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _createPrivacyRequest() async {
+    final file = await ref.read(accountActionsControllerProvider.notifier).createPrivacyRequest(
+          requestType: _requestType,
+          message: _messageController.text,
+        );
+    if (!mounted || file == null) {
+      return;
+    }
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) => _PrivacyRequestDialog(file: file),
+    );
+  }
+}
+
+class _PrivacyRequestDialog extends StatelessWidget {
+  const _PrivacyRequestDialog({required this.file});
+
+  final File file;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Đã tạo yêu cầu'),
+      content: Text(
+        'File yêu cầu đã được lưu tại:\n${file.path}',
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Đóng'),
+        ),
+      ],
     );
   }
 }
