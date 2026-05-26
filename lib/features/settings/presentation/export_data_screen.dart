@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_theme.dart';
 import '../application/account_actions_controller.dart';
+import '../data/file_action_service.dart';
 
 enum ExportFormat {
   csv('CSV', 'Bảng dữ liệu nhẹ, mở được bằng Excel hoặc Google Sheets.'),
@@ -170,6 +171,23 @@ class _ExportCompleteDialog extends StatelessWidget {
         style: Theme.of(context).textTheme.bodyMedium,
       ),
       actions: [
+        TextButton.icon(
+          onPressed: () async {
+            final opened = await ProviderScope.containerOf(context)
+                .read(fileActionServiceProvider)
+                .open(file);
+            if (!context.mounted) {
+              return;
+            }
+            if (!opened) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Chưa tìm thấy app phù hợp để mở file.')),
+              );
+            }
+          },
+          icon: const Icon(Icons.open_in_new_rounded),
+          label: const Text('Mở'),
+        ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Đóng'),
