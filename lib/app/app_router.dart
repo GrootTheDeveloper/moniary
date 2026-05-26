@@ -10,6 +10,7 @@ import '../features/auth/presentation/login_screen.dart';
 import '../features/calendar/presentation/calendar_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
+import '../features/settings/presentation/data_deletion_policy_screen.dart';
 import '../features/settings/presentation/data_safety_screen.dart';
 import '../features/settings/presentation/permission_rationale_screen.dart';
 import '../features/settings/presentation/privacy_center_screen.dart';
@@ -90,6 +91,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: DataSafetyScreen.routePath,
         builder: (context, state) => const DataSafetyScreen(),
+      ),
+      GoRoute(
+        path: DataDeletionPolicyScreen.routePath,
+        builder: (context, state) => const DataDeletionPolicyScreen(),
       ),
       GoRoute(
         path: PermissionRationaleScreen.routePath,

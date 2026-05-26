@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/app_theme.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
+import 'data_deletion_policy_screen.dart';
 import 'data_safety_screen.dart';
 import 'permission_rationale_screen.dart';
 import 'privacy_policy_screen.dart';
@@ -72,6 +73,13 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   subtitle: 'Xóa hồ sơ, ví, danh mục, giao dịch và ảnh giao dịch đã lưu.',
                   destructive: true,
                   onTap: state.isLoading ? null : () => _confirmDelete(context, ref),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.policy_outlined,
+                  title: 'Chính sách xóa dữ liệu',
+                  subtitle: 'Xem dữ liệu nào bị xóa và cách Moniary xử lý yêu cầu xóa.',
+                  onTap: () => context.push(DataDeletionPolicyScreen.routePath),
                 ),
               ],
             ),
