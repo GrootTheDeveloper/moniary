@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../../../app/app_theme.dart';
 import '../application/account_actions_controller.dart';
 import '../domain/privacy_request_history_entry.dart';
+import '../domain/privacy_request_sla.dart';
 import '../domain/privacy_request_template.dart';
 import '../domain/privacy_request_type.dart';
 import 'privacy_request_detail_screen.dart';
@@ -85,6 +86,8 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                       'Team cần cập nhật thời gian thực tế trước khi phát hành production.',
                 ),
                 const SizedBox(height: 8),
+                const _ResponseTimelineCard(),
+                const SizedBox(height: 12),
                 _PrivacyRequestHistorySection(historyAsync: historyAsync),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
@@ -243,6 +246,93 @@ class _RequestPreviewCard extends StatelessWidget {
           Text(requestType.label, style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 8),
           Text(cleanMessage, style: Theme.of(context).textTheme.bodyMedium),
+        ],
+      ),
+    );
+  }
+}
+
+class _ResponseTimelineCard extends StatelessWidget {
+  const _ResponseTimelineCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.timeline_outlined, color: AppTheme.mint),
+              const SizedBox(width: 8),
+              Text(
+                'Quy trình phản hồi',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const _TimelineStep(
+            label: 'Tạo request trong app',
+            description: 'App tạo file JSON để bạn gửi cho kênh hỗ trợ.',
+          ),
+          const _TimelineStep(
+            label: 'Gửi request thủ công',
+            description: 'Gửi file qua email privacy@moniary.app.',
+          ),
+          _TimelineStep(
+            label: 'Theo dõi phản hồi',
+            description:
+                'Mốc phản hồi dự kiến là $privacyRequestResponseBusinessDays ngày làm việc.',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TimelineStep extends StatelessWidget {
+  const _TimelineStep({required this.label, required this.description});
+
+  final String label;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            margin: const EdgeInsets.only(top: 7),
+            decoration: const BoxDecoration(
+              color: AppTheme.mint,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: Theme.of(context).textTheme.bodyLarge),
+                const SizedBox(height: 2),
+                Text(
+                  description,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

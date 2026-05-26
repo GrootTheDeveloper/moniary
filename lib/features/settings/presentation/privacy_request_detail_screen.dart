@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../app/app_theme.dart';
 import '../application/account_actions_controller.dart';
 import '../domain/privacy_request_history_entry.dart';
+import '../domain/privacy_request_sla.dart';
 
 class PrivacyRequestDetailScreen extends ConsumerWidget {
   const PrivacyRequestDetailScreen({required this.entry, super.key});
@@ -27,6 +28,9 @@ class PrivacyRequestDetailScreen extends ConsumerWidget {
     final createdAt = DateFormat(
       'dd/MM/yyyy HH:mm',
     ).format(currentEntry.createdAt);
+    final dueDate = DateFormat(
+      'dd/MM/yyyy',
+    ).format(privacyRequestDueDate(currentEntry.createdAt));
     final status = privacyRequestStatusById(currentEntry.status);
 
     return Scaffold(
@@ -39,6 +43,8 @@ class PrivacyRequestDetailScreen extends ConsumerWidget {
               children: [
                 _DetailHero(entry: currentEntry, createdAt: createdAt),
                 const SizedBox(height: 16),
+                _DueDateTile(dueDate: dueDate),
+                const SizedBox(height: 12),
                 _StatusTile(
                   label: status.label,
                   description: status.description,
@@ -152,6 +158,47 @@ class _StatusTile extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   description,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DueDateTile extends StatelessWidget {
+  const _DueDateTile({required this.dueDate});
+
+  final String dueDate;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.event_available_outlined, color: AppTheme.mint),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Dự kiến phản hồi',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '$dueDate hoặc trong $privacyRequestResponseBusinessDays ngày làm việc sau khi gửi.',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
