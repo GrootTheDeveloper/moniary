@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/account_repository.dart';
@@ -10,6 +12,15 @@ final accountActionsControllerProvider =
 class AccountActionsController extends AsyncNotifier<void> {
   @override
   Future<void> build() async {}
+
+  Future<File?> exportCsv() async {
+    state = const AsyncLoading();
+    File? exportedFile;
+    state = await AsyncValue.guard(() async {
+      exportedFile = await ref.read(accountRepositoryProvider).exportTransactionsCsv();
+    });
+    return exportedFile;
+  }
 
   Future<void> deleteAccount() async {
     state = const AsyncLoading();

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -43,6 +45,18 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 20),
                 _SettingsGroup(
+                  title: 'Dữ liệu của tôi',
+                  children: [
+                    _SettingsTile(
+                      icon: Icons.file_download_outlined,
+                      title: 'Xuất dữ liệu CSV',
+                      subtitle: 'Tải toàn bộ giao dịch của tài khoản hiện tại.',
+                      onTap: state.isLoading ? null : () => _exportCsv(context, ref),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _SettingsGroup(
                   title: 'Tài khoản',
                   children: [
                     _SettingsTile(
@@ -72,6 +86,18 @@ class ProfileScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _exportCsv(BuildContext context, WidgetRef ref) async {
+    final file = await ref.read(accountActionsControllerProvider.notifier).exportCsv();
+    if (!context.mounted || file == null) {
+      return;
+    }
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) => _ExportCompleteDialog(file: file),
     );
   }
 
@@ -251,7 +277,7 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thao tác này sẽ xóa hồ sơ, ví, danh mục, giao dịch và ảnh giao dịch của bạn.',
+            'Thao tác này sẽ xóa hồ sơ, ví, danh mục, giao dịch và ảnh giao dịch của bạn. Hãy xuất CSV trước nếu cần giữ lại dữ liệu.',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 14),
@@ -272,6 +298,29 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
           onPressed: canDelete ? () => Navigator.of(context).pop(true) : null,
           style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
           child: const Text('Xóa'),
+        ),
+      ],
+    );
+  }
+}
+
+class _ExportCompleteDialog extends StatelessWidget {
+  const _ExportCompleteDialog({required this.file});
+
+  final File file;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Đã xuất CSV'),
+      content: Text(
+        'File đã được lưu tại:\n${file.path}',
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Đóng'),
         ),
       ],
     );
