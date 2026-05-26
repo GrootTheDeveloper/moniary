@@ -17,6 +17,8 @@ class AboutMoniaryScreen extends StatelessWidget {
           children: const [
             _AboutHero(),
             SizedBox(height: 16),
+            _LicenseEntry(),
+            SizedBox(height: 12),
             _AboutTile(
               icon: Icons.account_balance_wallet_outlined,
               title: 'Mục đích',
@@ -35,6 +37,68 @@ class AboutMoniaryScreen extends StatelessWidget {
               description:
                   'Phiên bản hiện tại tập trung vào ghi chép chi tiêu, minh bạch dữ liệu và các yêu cầu cần thiết để chuẩn bị phát hành Store.',
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LicenseEntry extends StatelessWidget {
+  const _LicenseEntry();
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        showLicensePage(
+          context: context,
+          applicationName: 'Moniary',
+          applicationLegalese: 'MVP build for personal finance tracking.',
+        );
+      },
+      borderRadius: BorderRadius.circular(22),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppTheme.outline),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: AppTheme.mint.withValues(alpha: 0.14),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.article_outlined,
+                color: AppTheme.mint,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Giấy phép mã nguồn mở',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Xem license của Flutter và các package đang dùng trong app.',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Icon(Icons.chevron_right_rounded, color: AppTheme.mint),
           ],
         ),
       ),
