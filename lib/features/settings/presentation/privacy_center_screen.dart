@@ -7,6 +7,7 @@ import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
 import 'data_deletion_policy_screen.dart';
 import 'data_safety_screen.dart';
+import 'data_transparency_screen.dart';
 import 'deletion_request_screen.dart';
 import 'export_data_screen.dart';
 import 'export_history_screen.dart';
@@ -56,6 +57,13 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   title: 'Data Safety',
                   subtitle: 'Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong MVP.',
                   onTap: () => context.push(DataSafetyScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.dataset_outlined,
+                  title: 'Dữ liệu của tôi',
+                  subtitle: 'Xem nhanh app đang lưu bao nhiêu dữ liệu trong tài khoản này.',
+                  onTap: () => context.push(DataTransparencyScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(

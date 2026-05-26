@@ -3,11 +3,17 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/account_repository.dart';
+import '../domain/data_transparency_summary.dart';
 import '../domain/export_filters.dart';
 import '../domain/export_history_entry.dart';
 
 final exportHistoryProvider = FutureProvider<List<ExportHistoryEntry>>((ref) {
   return ref.watch(accountRepositoryProvider).fetchExportHistory();
+});
+
+final dataTransparencySummaryProvider =
+    FutureProvider<DataTransparencySummary>((ref) {
+  return ref.watch(accountRepositoryProvider).fetchDataTransparencySummary();
 });
 
 final accountActionsControllerProvider =

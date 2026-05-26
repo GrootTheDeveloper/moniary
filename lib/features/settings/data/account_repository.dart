@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../domain/export_filters.dart';
 import '../domain/export_history_entry.dart';
+import '../domain/data_transparency_summary.dart';
 import 'pdf_report.dart';
 import 'xlsx_workbook.dart';
 
@@ -159,6 +160,49 @@ class AccountRepository {
         .map(ExportHistoryEntry.fromMap)
         .toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
+  Future<DataTransparencySummary> fetchDataTransparencySummary() async {
+    final session = _client.auth.currentSession;
+    if (session == null) {
+      throw Exception('Ban chua dang nhap.');
+    }
+
+    final userId = session.user.id;
+    final transactions = await _client
+        .from('transactions')
+        .select('id,image_path,transaction_date')
+        .eq('user_id', userId);
+    final wallets = await _client.from('wallets').select('id').eq('user_id', userId);
+    final categories = await _client
+        .from('categories')
+        .select('id')
+        .eq('user_id', userId);
+    final history = await fetchExportHistory();
+
+    final transactionRows = (transactions as List<dynamic>)
+        .cast<Map<String, dynamic>>();
+    final transactionDates = transactionRows
+        .map((row) => DateTime.tryParse(row['transaction_date'] as String? ?? ''))
+        .whereType<DateTime>()
+        .map((date) => date.toLocal())
+        .toList()
+      ..sort();
+
+    return DataTransparencySummary(
+      transactionCount: transactionRows.length,
+      walletCount: (wallets as List<dynamic>).length,
+      categoryCount: (categories as List<dynamic>).length,
+      photoTransactionCount: transactionRows
+          .where((row) => (row['image_path'] as String?)?.isNotEmpty == true)
+          .length,
+      exportFileCount: history.length,
+      oldestTransactionDate:
+          transactionDates.isEmpty ? null : transactionDates.first,
+      newestTransactionDate:
+          transactionDates.isEmpty ? null : transactionDates.last,
+      latestExportDate: history.isEmpty ? null : history.first.createdAt,
+    );
   }
 
   Future<void> deleteAccount() async {
