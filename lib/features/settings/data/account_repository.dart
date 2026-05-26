@@ -149,6 +149,35 @@ class AccountRepository {
     await _client.auth.signOut();
   }
 
+  Future<File> createDeletionRequest({required String reason}) async {
+    final session = _client.auth.currentSession;
+    if (session == null) {
+      throw Exception('Ban chua dang nhap.');
+    }
+
+    final timestamp = DateTime.now();
+    final payload = {
+      'type': 'account_deletion_request',
+      'status': 'pending_manual_review',
+      'created_at': timestamp.toIso8601String(),
+      'user_id': session.user.id,
+      'email': session.user.email,
+      'reason': reason.trim(),
+      'requested_scope': [
+        'profile',
+        'wallets',
+        'categories',
+        'transactions',
+        'transaction_images',
+      ],
+    };
+
+    final directory = await getApplicationDocumentsDirectory();
+    final fileTimestamp = DateFormat('yyyyMMdd_HHmmss').format(timestamp);
+    final file = File('${directory.path}/moniary_deletion_request_$fileTimestamp.json');
+    return file.writeAsString(const JsonEncoder.withIndent('  ').convert(payload));
+  }
+
   static String _formatDate(String? value) {
     if (value == null || value.isEmpty) {
       return '';

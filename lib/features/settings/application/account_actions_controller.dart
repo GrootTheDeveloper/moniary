@@ -53,4 +53,15 @@ class AccountActionsController extends AsyncNotifier<void> {
       () => ref.read(accountRepositoryProvider).deleteAccount(),
     );
   }
+
+  Future<File?> createDeletionRequest({required String reason}) async {
+    state = const AsyncLoading();
+    File? requestFile;
+    state = await AsyncValue.guard(() async {
+      requestFile = await ref.read(accountRepositoryProvider).createDeletionRequest(
+            reason: reason,
+          );
+    });
+    return requestFile;
+  }
 }

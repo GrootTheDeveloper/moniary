@@ -7,6 +7,7 @@ import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
 import 'data_deletion_policy_screen.dart';
 import 'data_safety_screen.dart';
+import 'deletion_request_screen.dart';
 import 'export_data_screen.dart';
 import 'permission_rationale_screen.dart';
 import 'privacy_contact_screen.dart';
@@ -83,6 +84,13 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   title: 'Chính sách xóa dữ liệu',
                   subtitle: 'Xem dữ liệu nào bị xóa và cách Moniary xử lý yêu cầu xóa.',
                   onTap: () => context.push(DataDeletionPolicyScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.description_outlined,
+                  title: 'Yêu cầu xóa dữ liệu',
+                  subtitle: 'Tạo file yêu cầu xóa thủ công nếu xóa trực tiếp không thành công.',
+                  onTap: () => context.push(DeletionRequestScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
