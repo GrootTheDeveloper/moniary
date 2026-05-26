@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/account_repository.dart';
+import '../domain/export_filters.dart';
 
 final accountActionsControllerProvider =
     AsyncNotifierProvider<AccountActionsController, void>(
@@ -13,29 +14,35 @@ class AccountActionsController extends AsyncNotifier<void> {
   @override
   Future<void> build() async {}
 
-  Future<File?> exportCsv() async {
+  Future<File?> exportCsv({ExportFilters filters = const ExportFilters()}) async {
     state = const AsyncLoading();
     File? exportedFile;
     state = await AsyncValue.guard(() async {
-      exportedFile = await ref.read(accountRepositoryProvider).exportTransactionsCsv();
+      exportedFile = await ref.read(accountRepositoryProvider).exportTransactionsCsv(
+            filters: filters,
+          );
     });
     return exportedFile;
   }
 
-  Future<File?> exportXlsx() async {
+  Future<File?> exportXlsx({ExportFilters filters = const ExportFilters()}) async {
     state = const AsyncLoading();
     File? exportedFile;
     state = await AsyncValue.guard(() async {
-      exportedFile = await ref.read(accountRepositoryProvider).exportTransactionsXlsx();
+      exportedFile = await ref.read(accountRepositoryProvider).exportTransactionsXlsx(
+            filters: filters,
+          );
     });
     return exportedFile;
   }
 
-  Future<File?> exportPdf() async {
+  Future<File?> exportPdf({ExportFilters filters = const ExportFilters()}) async {
     state = const AsyncLoading();
     File? exportedFile;
     state = await AsyncValue.guard(() async {
-      exportedFile = await ref.read(accountRepositoryProvider).exportTransactionsPdf();
+      exportedFile = await ref.read(accountRepositoryProvider).exportTransactionsPdf(
+            filters: filters,
+          );
     });
     return exportedFile;
   }

@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
+import '../domain/export_filters.dart';
 import 'pdf_report.dart';
 import 'xlsx_workbook.dart';
 
@@ -19,13 +20,13 @@ class AccountRepository {
 
   final SupabaseClient _client;
 
-  Future<File> exportTransactionsCsv() async {
+  Future<File> exportTransactionsCsv({ExportFilters filters = const ExportFilters()}) async {
     final session = _client.auth.currentSession;
     if (session == null) {
       throw Exception('Ban chua dang nhap.');
     }
 
-    final rows = await _fetchTransactionRows(session.user.id);
+    final rows = await _fetchTransactionRows(session.user.id, filters: filters);
 
     final csv = StringBuffer()
       ..writeln(
@@ -66,13 +67,13 @@ class AccountRepository {
     return file.writeAsString(csv.toString(), encoding: utf8);
   }
 
-  Future<File> exportTransactionsXlsx() async {
+  Future<File> exportTransactionsXlsx({ExportFilters filters = const ExportFilters()}) async {
     final session = _client.auth.currentSession;
     if (session == null) {
       throw Exception('Ban chua dang nhap.');
     }
 
-    final rows = await _fetchTransactionRows(session.user.id);
+    final rows = await _fetchTransactionRows(session.user.id, filters: filters);
     final workbookRows = <List<Object?>>[
       [
         'ID',
@@ -109,13 +110,13 @@ class AccountRepository {
     return file.writeAsBytes(bytes, flush: true);
   }
 
-  Future<File> exportTransactionsPdf() async {
+  Future<File> exportTransactionsPdf({ExportFilters filters = const ExportFilters()}) async {
     final session = _client.auth.currentSession;
     if (session == null) {
       throw Exception('Ban chua dang nhap.');
     }
 
-    final rows = await _fetchTransactionRows(session.user.id);
+    final rows = await _fetchTransactionRows(session.user.id, filters: filters);
     final generatedAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
     final income = rows
         .where((row) => row['type'] == 'income')
@@ -173,8 +174,11 @@ class AccountRepository {
     return '"$text"';
   }
 
-  Future<List<Map<String, dynamic>>> _fetchTransactionRows(String userId) async {
-    final rows = await _client
+  Future<List<Map<String, dynamic>>> _fetchTransactionRows(
+    String userId, {
+    ExportFilters filters = const ExportFilters(),
+  }) async {
+    var query = _client
         .from('transactions')
         .select('''
           id,
@@ -187,8 +191,27 @@ class AccountRepository {
           wallet:wallets!inner(name),
           category:categories!inner(name)
         ''')
-        .eq('user_id', userId)
-        .order('transaction_date', ascending: false);
+        .eq('user_id', userId);
+
+    if (filters.startDate != null) {
+      final start = DateTime(
+        filters.startDate!.year,
+        filters.startDate!.month,
+        filters.startDate!.day,
+      );
+      query = query.gte('transaction_date', start.toUtc().toIso8601String());
+    }
+
+    if (filters.endDate != null) {
+      final endExclusive = DateTime(
+        filters.endDate!.year,
+        filters.endDate!.month,
+        filters.endDate!.day,
+      ).add(const Duration(days: 1));
+      query = query.lt('transaction_date', endExclusive.toUtc().toIso8601String());
+    }
+
+    final rows = await query.order('transaction_date', ascending: false);
 
     return (rows as List<dynamic>).cast<Map<String, dynamic>>();
   }

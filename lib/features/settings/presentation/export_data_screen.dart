@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/app_theme.dart';
 import '../application/account_actions_controller.dart';
 import '../data/file_action_service.dart';
+import '../domain/export_filters.dart';
 
 enum ExportFormat {
   csv('CSV', 'Bảng dữ liệu nhẹ, mở được bằng Excel hoặc Google Sheets.'),
@@ -29,6 +30,7 @@ class ExportDataScreen extends ConsumerStatefulWidget {
 
 class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
   ExportFormat _format = ExportFormat.csv;
+  ExportFilters _filters = const ExportFilters();
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +68,14 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
+                _DateRangeCard(
+                  filters: _filters,
+                  onPick: _pickDateRange,
+                  onClear: _filters.hasDateRange
+                      ? () => setState(() => _filters = _filters.copyWith(clearDateRange: true))
+                      : null,
+                ),
+                const SizedBox(height: 8),
                 FilledButton.icon(
                   onPressed: state.isLoading ? null : _export,
                   icon: const Icon(Icons.file_download_outlined),
@@ -88,9 +98,15 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
 
   Future<void> _export() async {
     final file = switch (_format) {
-      ExportFormat.csv => await ref.read(accountActionsControllerProvider.notifier).exportCsv(),
-      ExportFormat.xlsx => await ref.read(accountActionsControllerProvider.notifier).exportXlsx(),
-      ExportFormat.pdf => await ref.read(accountActionsControllerProvider.notifier).exportPdf(),
+      ExportFormat.csv => await ref.read(accountActionsControllerProvider.notifier).exportCsv(
+            filters: _filters,
+          ),
+      ExportFormat.xlsx => await ref.read(accountActionsControllerProvider.notifier).exportXlsx(
+            filters: _filters,
+          ),
+      ExportFormat.pdf => await ref.read(accountActionsControllerProvider.notifier).exportPdf(
+            filters: _filters,
+          ),
     };
     if (!mounted || file == null) {
       return;
@@ -100,6 +116,29 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
       context: context,
       builder: (context) => _ExportCompleteDialog(file: file),
     );
+  }
+
+  Future<void> _pickDateRange() async {
+    final now = DateTime.now();
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(now.year - 5),
+      lastDate: DateTime(now.year + 1, 12, 31),
+      initialDateRange: _filters.startDate != null && _filters.endDate != null
+          ? DateTimeRange(start: _filters.startDate!, end: _filters.endDate!)
+          : null,
+    );
+
+    if (picked == null || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _filters = _filters.copyWith(
+        startDate: picked.start,
+        endDate: picked.end,
+      );
+    });
   }
 }
 
@@ -154,6 +193,66 @@ class _FormatOption extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _DateRangeCard extends StatelessWidget {
+  const _DateRangeCard({
+    required this.filters,
+    required this.onPick,
+    required this.onClear,
+  });
+
+  final ExportFilters filters;
+  final VoidCallback onPick;
+  final VoidCallback? onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = filters.hasDateRange
+        ? '${_dateLabel(filters.startDate)} - ${_dateLabel(filters.endDate)}'
+        : 'Tất cả thời gian';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.date_range_rounded, color: AppTheme.mint),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Khoảng ngày', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 4),
+                Text(label, style: Theme.of(context).textTheme.bodyMedium),
+              ],
+            ),
+          ),
+          if (onClear != null)
+            IconButton(
+              onPressed: onClear,
+              icon: const Icon(Icons.close_rounded),
+            ),
+          TextButton(
+            onPressed: onPick,
+            child: const Text('Chọn'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _dateLabel(DateTime? date) {
+    if (date == null) {
+      return '...';
+    }
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 }
 
