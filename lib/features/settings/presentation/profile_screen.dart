@@ -8,7 +8,7 @@ import '../../../app/app_theme.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
-import 'privacy_policy_screen.dart';
+import 'privacy_center_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -56,9 +56,9 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                     _SettingsTile(
                       icon: Icons.privacy_tip_outlined,
-                      title: 'Chính sách bảo mật',
-                      subtitle: 'Nội dung privacy policy và Data Safety cho MVP.',
-                      onTap: () => context.push(PrivacyPolicyScreen.routePath),
+                      title: 'Trung tâm riêng tư',
+                      subtitle: 'Quản lý privacy policy, dữ liệu và quyền truy cập.',
+                      onTap: () => context.push(PrivacyCenterScreen.routePath),
                     ),
                   ],
                 ),

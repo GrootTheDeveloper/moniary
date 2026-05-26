@@ -10,6 +10,7 @@ import '../features/auth/presentation/login_screen.dart';
 import '../features/calendar/presentation/calendar_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
+import '../features/settings/presentation/privacy_center_screen.dart';
 import '../features/settings/presentation/privacy_policy_screen.dart';
 import '../features/settings/presentation/profile_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
@@ -79,6 +80,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: ProfileScreen.routePath,
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: PrivacyCenterScreen.routePath,
+        builder: (context, state) => const PrivacyCenterScreen(),
       ),
       GoRoute(
         path: PrivacyPolicyScreen.routePath,
