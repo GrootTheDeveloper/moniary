@@ -19,6 +19,7 @@ import 'privacy_contact_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'store_compliance_checklist_screen.dart';
 import 'terms_of_use_screen.dart';
+import 'third_party_services_screen.dart';
 import 'trust_safety_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
@@ -82,6 +83,14 @@ class PrivacyCenterScreen extends ConsumerWidget {
                       'Xem dữ liệu nào được lưu trên cloud, dữ liệu nào nằm cục bộ và cách xử lý sau khi xóa tài khoản.',
                   onTap: () =>
                       context.push(DataRetentionPolicyScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.hub_outlined,
+                  title: 'Dịch vụ bên thứ ba',
+                  subtitle:
+                      'Xem app đang dùng Supabase, Flutter/package và bộ nhớ thiết bị như thế nào.',
+                  onTap: () => context.push(ThirdPartyServicesScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
