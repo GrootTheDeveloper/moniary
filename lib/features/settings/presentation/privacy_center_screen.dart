@@ -13,6 +13,7 @@ import 'data_transparency_screen.dart';
 import 'deletion_request_screen.dart';
 import 'export_data_screen.dart';
 import 'export_history_screen.dart';
+import 'financial_disclaimer_screen.dart';
 import 'legal_contact_screen.dart';
 import 'permission_rationale_screen.dart';
 import 'privacy_contact_screen.dart';
@@ -108,6 +109,15 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   subtitle:
                       'Xem ghi chú về giới hạn tư vấn tài chính, dữ liệu người dùng và chia sẻ file.',
                   onTap: () => context.push(TrustSafetyScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.account_balance_outlined,
+                  title: 'Miễn trừ tài chính',
+                  subtitle:
+                      'Xem giới hạn trách nhiệm: app không phải tư vấn đầu tư, thuế, kế toán hoặc pháp lý.',
+                  onTap: () =>
+                      context.push(FinancialDisclaimerScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
