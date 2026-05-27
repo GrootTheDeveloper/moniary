@@ -14,6 +14,7 @@ import 'deletion_request_screen.dart';
 import 'export_data_screen.dart';
 import 'export_history_screen.dart';
 import 'financial_disclaimer_screen.dart';
+import 'help_center_screen.dart';
 import 'legal_contact_screen.dart';
 import 'permission_rationale_screen.dart';
 import 'policy_acceptance_notice_screen.dart';
@@ -56,6 +57,14 @@ class PrivacyCenterScreen extends ConsumerWidget {
               children: [
                 const _PrivacyHero(),
                 const SizedBox(height: 18),
+                _PrivacyActionTile(
+                  icon: Icons.help_outline_rounded,
+                  title: 'Trung tâm trợ giúp',
+                  subtitle:
+                      'Tìm hướng dẫn về privacy, tài khoản, export dữ liệu và cách liên hệ hỗ trợ.',
+                  onTap: () => context.push(HelpCenterScreen.routePath),
+                ),
+                const SizedBox(height: 12),
                 _PrivacyActionTile(
                   icon: Icons.info_outline_rounded,
                   title: 'Giới thiệu Moniary',
