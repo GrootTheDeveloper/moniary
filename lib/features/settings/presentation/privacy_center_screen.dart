@@ -23,6 +23,7 @@ import 'store_compliance_checklist_screen.dart';
 import 'terms_of_use_screen.dart';
 import 'third_party_services_screen.dart';
 import 'trust_safety_screen.dart';
+import 'user_rights_summary_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
 class PrivacyCenterScreen extends ConsumerWidget {
@@ -127,6 +128,14 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   subtitle:
                       'Xem các mốc cập nhật privacy, legal và store readiness trong app.',
                   onTap: () => context.push(PolicyChangelogScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.assignment_ind_outlined,
+                  title: 'Quyền dữ liệu của người dùng',
+                  subtitle:
+                      'Tóm tắt quyền xem dữ liệu, xuất dữ liệu, yêu cầu sửa/xóa và liên hệ privacy.',
+                  onTap: () => context.push(UserRightsSummaryScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
