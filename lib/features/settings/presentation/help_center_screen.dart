@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import '../domain/app_release_info.dart';
 import 'delete_account_help_screen.dart';
 import 'export_data_screen.dart';
 import 'export_troubleshooting_screen.dart';
@@ -23,6 +25,8 @@ class HelpCenterScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: [
             const _HelpHero(),
+            const SizedBox(height: 16),
+            const _DiagnosticCard(),
             const SizedBox(height: 16),
             _HelpTopic(
               icon: Icons.privacy_tip_outlined,
@@ -88,6 +92,61 @@ class _HelpHero extends StatelessWidget {
       child: Text(
         'Tìm nhanh các hướng dẫn liên quan đến dữ liệu, quyền riêng tư, export và hỗ trợ tài khoản trong Moniary.',
         style: Theme.of(context).textTheme.bodyLarge,
+      ),
+    );
+  }
+}
+
+class _DiagnosticCard extends StatelessWidget {
+  const _DiagnosticCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final diagnostic =
+        'App: ${appReleaseInfo.name}\n'
+        'Version: ${appReleaseInfo.version}\n'
+        'Build: ${appReleaseInfo.buildNumber}\n'
+        'Channel: ${appReleaseInfo.releaseChannel}\n'
+        'Support: support@moniary.app\n'
+        'Privacy: privacy@moniary.app';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.bug_report_outlined, color: AppTheme.mint),
+              const SizedBox(width: 8),
+              Text(
+                'Thông tin gửi support',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Copy version, build và kênh liên hệ để gửi kèm khi báo lỗi.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: diagnostic));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Đã copy thông tin support.')),
+              );
+            },
+            icon: const Icon(Icons.content_copy_outlined),
+            label: const Text('Copy diagnostic info'),
+          ),
+        ],
       ),
     );
   }
