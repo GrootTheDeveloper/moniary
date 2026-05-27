@@ -9,6 +9,7 @@ import 'export_data_screen.dart';
 import 'export_troubleshooting_screen.dart';
 import 'privacy_account_faq_screen.dart';
 import 'privacy_contact_screen.dart';
+import 'support_request_checklist_screen.dart';
 import 'user_rights_summary_screen.dart';
 
 class HelpCenterScreen extends StatelessWidget {
@@ -69,6 +70,14 @@ class HelpCenterScreen extends StatelessWidget {
               description:
                   'Chuẩn bị trước khi xóa, hiểu dữ liệu bị ảnh hưởng và fallback khi có lỗi.',
               onTap: () => context.push(DeleteAccountHelpScreen.routePath),
+            ),
+            _HelpTopic(
+              icon: Icons.fact_check_outlined,
+              title: 'Checklist gửi hỗ trợ',
+              description:
+                  'Chuẩn bị mô tả lỗi, file liên quan và diagnostic info trước khi gửi request.',
+              onTap: () =>
+                  context.push(SupportRequestChecklistScreen.routePath),
             ),
           ],
         ),

@@ -34,6 +34,7 @@ import '../features/settings/presentation/privacy_policy_screen.dart';
 import '../features/settings/presentation/privacy_request_detail_screen.dart';
 import '../features/settings/presentation/profile_screen.dart';
 import '../features/settings/presentation/store_compliance_checklist_screen.dart';
+import '../features/settings/presentation/support_request_checklist_screen.dart';
 import '../features/settings/presentation/terms_of_use_screen.dart';
 import '../features/settings/presentation/third_party_services_screen.dart';
 import '../features/settings/presentation/trust_safety_screen.dart';
@@ -125,6 +126,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: DeleteAccountHelpScreen.routePath,
         builder: (context, state) => const DeleteAccountHelpScreen(),
+      ),
+      GoRoute(
+        path: SupportRequestChecklistScreen.routePath,
+        builder: (context, state) => const SupportRequestChecklistScreen(),
       ),
       GoRoute(
         path: AboutMoniaryScreen.routePath,
