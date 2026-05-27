@@ -90,6 +90,8 @@ class TransactionRepository {
     required String categoryId,
     required DateTime transactionDate,
     String? note,
+    String? merchantName,
+    String source = 'manual',
   }) async {
     final session = _client.auth.currentSession;
     if (session == null) {
@@ -103,8 +105,9 @@ class TransactionRepository {
       'amount': amount,
       'type': type.value,
       'note': note,
+      'merchant_name': merchantName,
       'transaction_date': transactionDate.toUtc().toIso8601String(),
-      'source': 'manual',
+      'source': source,
       'image_upload_status': 'pending',
     }).select('id').single();
 

@@ -8,8 +8,14 @@ import '../core/preferences/preferences_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/calendar/presentation/calendar_screen.dart';
+import '../features/groups/presentation/debt_summary_screen.dart';
+import '../features/groups/presentation/group_detail_screen.dart';
+import '../features/groups/presentation/group_expense_form_screen.dart';
+import '../features/groups/presentation/groups_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
+import '../features/scanning/presentation/ocr_review_screen.dart';
+import '../features/scanning/presentation/scanning_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
 import '../features/transactions/presentation/camera_screen.dart';
 import '../features/transactions/presentation/day_detail_screen.dart';
@@ -70,6 +76,39 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: CalendarScreen.routePath,
         builder: (context, state) => const CalendarScreen(),
+      ),
+      GoRoute(
+        path: ScanningScreen.routePath,
+        builder: (context, state) => const ScanningScreen(),
+      ),
+      GoRoute(
+        path: OcrReviewScreen.routePath,
+        builder: (context, state) {
+          final args = state.extra as OcrReviewArgs;
+          return OcrReviewScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: GroupsScreen.routePath,
+        builder: (context, state) => const GroupsScreen(),
+      ),
+      GoRoute(
+        path: GroupDetailScreen.routePath,
+        builder: (context, state) {
+          return GroupDetailScreen(groupId: state.extra as String);
+        },
+      ),
+      GoRoute(
+        path: GroupExpenseFormScreen.routePath,
+        builder: (context, state) {
+          return GroupExpenseFormScreen(args: state.extra as GroupExpenseFormArgs);
+        },
+      ),
+      GoRoute(
+        path: DebtSummaryScreen.routePath,
+        builder: (context, state) {
+          return DebtSummaryScreen(groupId: state.extra as String);
+        },
       ),
       GoRoute(
         path: DayDetailScreen.routePath,

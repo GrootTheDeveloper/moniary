@@ -21,6 +21,8 @@ class TransactionComposerController extends AsyncNotifier<void> {
     required String categoryId,
     required DateTime transactionDate,
     String? note,
+    String? merchantName,
+    String source = 'manual',
     Uint8List? imageBytes,
   }) async {
     state = const AsyncLoading();
@@ -36,6 +38,8 @@ class TransactionComposerController extends AsyncNotifier<void> {
         categoryId: categoryId,
         transactionDate: transactionDate,
         note: note,
+        merchantName: merchantName,
+        source: source,
       );
 
       // 2. If no image, we are done (but status is pending, maybe we should update to uploaded if no image? 
@@ -67,6 +71,9 @@ class TransactionComposerController extends AsyncNotifier<void> {
         rethrow;
       }
     });
+    if (state.hasError) {
+      throw state.error!;
+    }
   }
 
   Future<void> updateTransaction({

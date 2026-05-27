@@ -11,17 +11,15 @@ import '../../auth/presentation/login_screen.dart';
 import '../application/calendar_month_provider.dart';
 import '../domain/calendar_month_data.dart';
 import '../application/calendar_filter_provider.dart';
-import '../domain/calendar_filters.dart';
 import '../../categories/domain/category.dart';
 import '../../categories/presentation/categories_controller.dart';
+import '../../groups/presentation/groups_screen.dart';
+import '../../scanning/presentation/scanning_screen.dart';
 import '../../wallets/domain/wallet.dart';
 import '../../wallets/presentation/wallets_controller.dart';
 import 'manage_data_sheet.dart';
 import '../../transactions/domain/transaction_mutation_result.dart';
-import '../../transactions/presentation/camera_screen.dart';
 import '../../transactions/presentation/day_detail_screen.dart';
-import '../../transactions/presentation/transaction_detail_screen.dart';
-import '../../transactions/presentation/transaction_route_args.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -120,7 +118,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           foregroundColor: Colors.white,
           shape: const CircleBorder(),
           onPressed: () async {
-            final result = await context.push<TransactionMutationResult>(CameraScreen.routePath);
+            final result = await context.push<TransactionMutationResult>(ScanningScreen.routePath);
             if (result == null || !mounted) {
               return;
             }
@@ -129,7 +127,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           child: const Icon(Icons.add, size: 34),
         ),
       ),
-      bottomNavigationBar: const _BottomNavBar(),
+      bottomNavigationBar: _BottomNavBar(
+        onGroups: () => context.push(GroupsScreen.routePath),
+      ),
     );
   }
 
@@ -797,7 +797,9 @@ class _MetricBlock extends StatelessWidget {
 }
 
 class _BottomNavBar extends StatelessWidget {
-  const _BottomNavBar();
+  const _BottomNavBar({required this.onGroups});
+
+  final VoidCallback onGroups;
 
   @override
   Widget build(BuildContext context) {
@@ -807,15 +809,15 @@ class _BottomNavBar extends StatelessWidget {
         color: Color(0xFF0D1622),
         border: Border(top: BorderSide(color: AppTheme.outline)),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          SizedBox(width: 10),
-          _NavItem(icon: Icons.calendar_month_rounded, label: 'Lịch', active: true),
-          _NavItem(icon: Icons.pie_chart_outline_rounded, label: 'Thống kê'),
-          SizedBox(width: 76),
-          _NavItem(icon: Icons.groups_2_outlined, label: 'Nhóm'),
-          _NavItem(icon: Icons.person_outline_rounded, label: 'Hồ sơ'),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
+          const _NavItem(icon: Icons.calendar_month_rounded, label: 'Lịch', active: true),
+          const _NavItem(icon: Icons.pie_chart_outline_rounded, label: 'Thống kê'),
+          const SizedBox(width: 76),
+          _NavItem(icon: Icons.groups_2_outlined, label: 'Nhóm', onTap: onGroups),
+          const _NavItem(icon: Icons.person_outline_rounded, label: 'Hồ sơ'),
+          const SizedBox(width: 10),
         ],
       ),
     );
@@ -823,30 +825,34 @@ class _BottomNavBar extends StatelessWidget {
 }
 
 class _NavItem extends StatelessWidget {
-  const _NavItem({required this.icon, required this.label, this.active = false});
+  const _NavItem({required this.icon, required this.label, this.active = false, this.onTap});
 
   final IconData icon;
   final String label;
   final bool active;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final color = active ? AppTheme.mint : const Color(0xFF74889A);
     return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: color,
-                  fontSize: 11,
-                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                ),
-          ),
-        ],
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: color,
+                    fontSize: 11,
+                    fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                  ),
+            ),
+          ],
+        ),
       ),
     );
   }
