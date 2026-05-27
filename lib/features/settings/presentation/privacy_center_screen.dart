@@ -16,6 +16,7 @@ import 'export_history_screen.dart';
 import 'financial_disclaimer_screen.dart';
 import 'legal_contact_screen.dart';
 import 'permission_rationale_screen.dart';
+import 'policy_changelog_screen.dart';
 import 'privacy_contact_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'store_compliance_checklist_screen.dart';
@@ -118,6 +119,14 @@ class PrivacyCenterScreen extends ConsumerWidget {
                       'Xem giới hạn trách nhiệm: app không phải tư vấn đầu tư, thuế, kế toán hoặc pháp lý.',
                   onTap: () =>
                       context.push(FinancialDisclaimerScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.manage_history_outlined,
+                  title: 'Lịch sử chính sách',
+                  subtitle:
+                      'Xem các mốc cập nhật privacy, legal và store readiness trong app.',
+                  onTap: () => context.push(PolicyChangelogScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(

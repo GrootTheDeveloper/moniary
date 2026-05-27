@@ -22,6 +22,7 @@ import '../features/settings/presentation/export_history_screen.dart';
 import '../features/settings/presentation/financial_disclaimer_screen.dart';
 import '../features/settings/presentation/legal_contact_screen.dart';
 import '../features/settings/presentation/permission_rationale_screen.dart';
+import '../features/settings/presentation/policy_changelog_screen.dart';
 import '../features/settings/presentation/privacy_center_screen.dart';
 import '../features/settings/presentation/privacy_contact_screen.dart';
 import '../features/settings/presentation/privacy_policy_screen.dart';
@@ -141,6 +142,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: FinancialDisclaimerScreen.routePath,
         builder: (context, state) => const FinancialDisclaimerScreen(),
+      ),
+      GoRoute(
+        path: PolicyChangelogScreen.routePath,
+        builder: (context, state) => const PolicyChangelogScreen(),
       ),
       GoRoute(
         path: DeletionRequestScreen.routePath,
