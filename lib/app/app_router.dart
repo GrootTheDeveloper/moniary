@@ -26,6 +26,7 @@ import '../features/settings/presentation/permission_rationale_screen.dart';
 import '../features/settings/presentation/policy_acceptance_notice_screen.dart';
 import '../features/settings/presentation/policy_changelog_screen.dart';
 import '../features/settings/presentation/privacy_center_screen.dart';
+import '../features/settings/presentation/privacy_account_faq_screen.dart';
 import '../features/settings/presentation/privacy_contact_screen.dart';
 import '../features/settings/presentation/privacy_policy_screen.dart';
 import '../features/settings/presentation/privacy_request_detail_screen.dart';
@@ -110,6 +111,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: HelpCenterScreen.routePath,
         builder: (context, state) => const HelpCenterScreen(),
+      ),
+      GoRoute(
+        path: PrivacyAccountFaqScreen.routePath,
+        builder: (context, state) => const PrivacyAccountFaqScreen(),
       ),
       GoRoute(
         path: AboutMoniaryScreen.routePath,

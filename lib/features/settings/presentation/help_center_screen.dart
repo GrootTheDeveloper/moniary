@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import 'export_data_screen.dart';
+import 'privacy_account_faq_screen.dart';
 import 'privacy_contact_screen.dart';
 import 'user_rights_summary_screen.dart';
 
@@ -26,6 +27,13 @@ class HelpCenterScreen extends StatelessWidget {
               title: 'Privacy & tài khoản',
               description:
                   'Xem quyền dữ liệu, yêu cầu privacy và các lựa chọn liên quan tài khoản.',
+              onTap: () => context.push(PrivacyAccountFaqScreen.routePath),
+            ),
+            _HelpTopic(
+              icon: Icons.assignment_ind_outlined,
+              title: 'Quyền dữ liệu',
+              description:
+                  'Tóm tắt quyền xem, xuất, sửa/xóa dữ liệu và liên hệ privacy.',
               onTap: () => context.push(UserRightsSummaryScreen.routePath),
             ),
             _HelpTopic(
