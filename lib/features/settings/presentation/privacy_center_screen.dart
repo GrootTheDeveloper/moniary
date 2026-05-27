@@ -16,6 +16,7 @@ import 'export_history_screen.dart';
 import 'financial_disclaimer_screen.dart';
 import 'legal_contact_screen.dart';
 import 'permission_rationale_screen.dart';
+import 'policy_acceptance_notice_screen.dart';
 import 'policy_changelog_screen.dart';
 import 'privacy_contact_screen.dart';
 import 'privacy_policy_screen.dart';
@@ -136,6 +137,15 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   subtitle:
                       'Tóm tắt quyền xem dữ liệu, xuất dữ liệu, yêu cầu sửa/xóa và liên hệ privacy.',
                   onTap: () => context.push(UserRightsSummaryScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.verified_outlined,
+                  title: 'Thông báo đồng ý chính sách',
+                  subtitle:
+                      'Giải thích rằng việc tiếp tục sử dụng app áp dụng theo chính sách và điều khoản hiện tại.',
+                  onTap: () =>
+                      context.push(PolicyAcceptanceNoticeScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
