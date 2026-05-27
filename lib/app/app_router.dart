@@ -19,6 +19,7 @@ import '../features/settings/presentation/data_transparency_screen.dart';
 import '../features/settings/presentation/deletion_request_screen.dart';
 import '../features/settings/presentation/export_data_screen.dart';
 import '../features/settings/presentation/export_history_screen.dart';
+import '../features/settings/presentation/export_troubleshooting_screen.dart';
 import '../features/settings/presentation/financial_disclaimer_screen.dart';
 import '../features/settings/presentation/help_center_screen.dart';
 import '../features/settings/presentation/legal_contact_screen.dart';
@@ -115,6 +116,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: PrivacyAccountFaqScreen.routePath,
         builder: (context, state) => const PrivacyAccountFaqScreen(),
+      ),
+      GoRoute(
+        path: ExportTroubleshootingScreen.routePath,
+        builder: (context, state) => const ExportTroubleshootingScreen(),
       ),
       GoRoute(
         path: AboutMoniaryScreen.routePath,

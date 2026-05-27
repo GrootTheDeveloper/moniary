@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import 'export_data_screen.dart';
+import 'export_troubleshooting_screen.dart';
 import 'privacy_account_faq_screen.dart';
 import 'privacy_contact_screen.dart';
 import 'user_rights_summary_screen.dart';
@@ -40,7 +41,14 @@ class HelpCenterScreen extends StatelessWidget {
               icon: Icons.file_download_outlined,
               title: 'Xuất dữ liệu',
               description:
-                  'Mở luồng export CSV, Excel hoặc PDF khi cần tạo bản sao dữ liệu.',
+                  'Xử lý khi export CSV, Excel hoặc PDF lỗi, trống hoặc không tìm thấy file.',
+              onTap: () => context.push(ExportTroubleshootingScreen.routePath),
+            ),
+            _HelpTopic(
+              icon: Icons.download_done_outlined,
+              title: 'Tạo file export',
+              description:
+                  'Mở luồng export khi cần tạo bản sao dữ liệu cá nhân.',
               onTap: () => context.push(ExportDataScreen.routePath),
             ),
             _HelpTopic(
