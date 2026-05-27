@@ -24,7 +24,8 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
   @override
   Widget build(BuildContext context) {
     final canDelete =
-        _understood && _controller.text.trim().toUpperCase() == confirmationText;
+        _understood &&
+        _controller.text.trim().toUpperCase() == confirmationText;
 
     return AlertDialog(
       title: const Text('Xóa tài khoản?'),
@@ -36,14 +37,20 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             Text(
               'Thao tác này không thể hoàn tác trong app.',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppTheme.danger,
-                    fontWeight: FontWeight.w700,
-                  ),
+                color: AppTheme.danger,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 12),
-            const _DeleteConsequence(text: 'Xóa hồ sơ và phiên đăng nhập hiện tại.'),
-            const _DeleteConsequence(text: 'Xóa ví, danh mục và toàn bộ giao dịch.'),
-            const _DeleteConsequence(text: 'Xóa ảnh giao dịch trong Storage theo user ID.'),
+            const _DeleteConsequence(
+              text: 'Xóa hồ sơ và phiên đăng nhập hiện tại.',
+            ),
+            const _DeleteConsequence(
+              text: 'Xóa ví, danh mục và toàn bộ giao dịch.',
+            ),
+            const _DeleteConsequence(
+              text: 'Xóa ảnh giao dịch trong Storage theo user ID.',
+            ),
             const SizedBox(height: 10),
             CheckboxListTile(
               value: _understood,
@@ -54,7 +61,8 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
                 'Tôi hiểu dữ liệu sẽ bị xóa khỏi tài khoản này.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              onChanged: (value) => setState(() => _understood = value ?? false),
+              onChanged: (value) =>
+                  setState(() => _understood = value ?? false),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -97,10 +105,16 @@ class _DeleteConsequence extends StatelessWidget {
         children: [
           const Padding(
             padding: EdgeInsets.only(top: 5),
-            child: Icon(Icons.remove_circle_outline, color: AppTheme.danger, size: 16),
+            child: Icon(
+              Icons.remove_circle_outline,
+              color: AppTheme.danger,
+              size: 16,
+            ),
           ),
           const SizedBox(width: 8),
-          Expanded(child: Text(text, style: Theme.of(context).textTheme.bodyMedium)),
+          Expanded(
+            child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
+          ),
         ],
       ),
     );

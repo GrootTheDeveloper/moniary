@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../auth/presentation/login_screen.dart';
-import '../application/account_actions_controller.dart';
-import 'export_data_screen.dart';
-import 'privacy_center_screen.dart';
+import '../application/account/account_actions_controller.dart';
+import 'export/export_data_screen.dart';
+import 'privacy/privacy_center_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -23,9 +23,9 @@ class ProfileScreen extends ConsumerWidget {
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error.toString())),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(error.toString())));
         },
       );
     });
@@ -39,7 +39,8 @@ class ProfileScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
               children: [
                 _ProfileHeader(
-                  title: user?.userMetadata?['full_name']?.toString() ??
+                  title:
+                      user?.userMetadata?['full_name']?.toString() ??
                       user?.email ??
                       'Người dùng Moniary',
                   subtitle: user?.email ?? 'Tài khoản dùng thử ẩn danh',
@@ -51,13 +52,15 @@ class ProfileScreen extends ConsumerWidget {
                     _SettingsTile(
                       icon: Icons.file_download_outlined,
                       title: 'Xuất dữ liệu',
-                      subtitle: 'Chọn CSV, Excel hoặc PDF để tải dữ liệu cá nhân.',
+                      subtitle:
+                          'Chọn CSV, Excel hoặc PDF để tải dữ liệu cá nhân.',
                       onTap: () => context.push(ExportDataScreen.routePath),
                     ),
                     _SettingsTile(
                       icon: Icons.privacy_tip_outlined,
                       title: 'Trung tâm riêng tư',
-                      subtitle: 'Quản lý privacy policy, dữ liệu và quyền truy cập.',
+                      subtitle:
+                          'Quản lý privacy policy, dữ liệu và quyền truy cập.',
                       onTap: () => context.push(PrivacyCenterScreen.routePath),
                     ),
                   ],
@@ -69,15 +72,20 @@ class ProfileScreen extends ConsumerWidget {
                     _SettingsTile(
                       icon: Icons.logout_rounded,
                       title: 'Đăng xuất',
-                      subtitle: 'Thoát khỏi tài khoản hiện tại trên thiết bị này.',
-                      onTap: state.isLoading ? null : () => _signOut(context, ref),
+                      subtitle:
+                          'Thoát khỏi tài khoản hiện tại trên thiết bị này.',
+                      onTap: state.isLoading
+                          ? null
+                          : () => _signOut(context, ref),
                     ),
                     _SettingsTile(
                       icon: Icons.delete_forever_outlined,
                       title: 'Xóa tài khoản',
                       subtitle: 'Xóa dữ liệu cá nhân, giao dịch và ảnh đã lưu.',
                       destructive: true,
-                      onTap: state.isLoading ? null : () => _confirmDelete(context, ref),
+                      onTap: state.isLoading
+                          ? null
+                          : () => _confirmDelete(context, ref),
                     ),
                   ],
                 ),
@@ -229,8 +237,8 @@ class _SettingsTile extends StatelessWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: destructive ? AppTheme.danger : Colors.white,
-                        ),
+                      color: destructive ? AppTheme.danger : Colors.white,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
@@ -245,4 +253,3 @@ class _SettingsTile extends StatelessWidget {
     );
   }
 }
-
