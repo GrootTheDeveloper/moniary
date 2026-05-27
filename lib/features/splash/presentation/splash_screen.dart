@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +10,7 @@ import '../../../core/preferences/preferences_providers.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../auth/presentation/login_screen.dart';
-import '../../calendar/presentation/calendar_screen.dart';
+import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../onboarding/presentation/onboarding_screen.dart';
 import '../../profile/data/profile_repository.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
@@ -50,7 +50,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       return;
     }
 
-    final profile = await ref.read(profileRepositoryProvider).fetchCurrentProfile();
+    final profile = await ref
+        .read(profileRepositoryProvider)
+        .fetchCurrentProfile();
     if (!mounted) return;
 
     context.go(
@@ -76,17 +78,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   text: TextSpan(
                     style: Theme.of(context).textTheme.headlineLarge,
                     children: const [
-                      TextSpan(text: 'Mon', style: TextStyle(color: Colors.white)),
-                      TextSpan(text: 'iary', style: TextStyle(color: AppTheme.mint)),
+                      TextSpan(
+                        text: 'Mon',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      TextSpan(
+                        text: 'iary',
+                        style: TextStyle(color: AppTheme.mint),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   'Ghi chi tieu bang anh',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.white,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 24),
                 Text(
@@ -105,7 +113,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.photo_camera_back_outlined, color: AppTheme.amber),
+                      const Icon(
+                        Icons.photo_camera_back_outlined,
+                        color: AppTheme.amber,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(

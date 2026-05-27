@@ -6,13 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
-import '../../calendar/application/calendar_month_provider.dart';
-import '../../categories/domain/category.dart';
-import '../../categories/presentation/categories_controller.dart';
-import '../../transactions/domain/transaction_mutation_result.dart';
-import '../../transactions/presentation/transaction_composer_controller.dart';
-import '../../wallets/domain/wallet.dart';
-import '../../wallets/presentation/wallets_controller.dart';
+import '../../calendar/application/month/calendar_month_provider.dart';
+import '../../categories/application/categories_controller.dart';
+import '../../categories/domain/models/category.dart';
+import '../../transactions/application/composer/transaction_composer_controller.dart';
+import '../../transactions/domain/models/transaction_mutation_result.dart';
+import '../../wallets/application/wallets_controller.dart';
+import '../../wallets/domain/models/wallet.dart';
 import '../domain/ocr_result.dart';
 
 class OcrReviewArgs {

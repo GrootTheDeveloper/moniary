@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,7 +40,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     (
       title1: 'Thống kê',
       title2: 'dễ hiểu',
-      subtitle: 'Theo dõi thu chi và thói quen tiêu dùng không cần bảng biểu khó',
+      subtitle:
+          'Theo dõi thu chi và thói quen tiêu dùng không cần bảng biểu khó',
       caption: 'Moniary giúp bạn nhìn tiền theo ngữ cảnh sống thật.',
       icon: Icons.pie_chart_rounded,
       accent: AppTheme.pink,
@@ -78,9 +79,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
                 Text(
                   page.title2,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: AppTheme.mint,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.headlineMedium?.copyWith(color: AppTheme.mint),
                 ),
                 const SizedBox(height: 10),
                 Text(
@@ -92,7 +93,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 Expanded(
                   child: PageView.builder(
                     controller: _controller,
-                    onPageChanged: (index) => setState(() => _pageIndex = index),
+                    onPageChanged: (index) =>
+                        setState(() => _pageIndex = index),
                     itemCount: _pages.length,
                     itemBuilder: (context, index) {
                       final item = _pages[index];
@@ -101,7 +103,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         children: [
                           Container(
                             width: 320,
-                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 18,
+                            ),
                             decoration: BoxDecoration(
                               color: AppTheme.surface,
                               borderRadius: BorderRadius.circular(32),
@@ -110,15 +115,30 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             child: Column(
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Icon(Icons.chevron_left_rounded, color: Colors.white70),
-                                    Text('Tháng 5', style: Theme.of(context).textTheme.titleMedium),
-                                    const Icon(Icons.chevron_right_rounded, color: Colors.white70),
+                                    const Icon(
+                                      Icons.chevron_left_rounded,
+                                      color: Colors.white70,
+                                    ),
+                                    Text(
+                                      'Tháng 5',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleMedium,
+                                    ),
+                                    const Icon(
+                                      Icons.chevron_right_rounded,
+                                      color: Colors.white70,
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 16),
-                                _MockFeatureCard(icon: item.icon, accent: item.accent),
+                                _MockFeatureCard(
+                                  icon: item.icon,
+                                  accent: item.accent,
+                                ),
                               ],
                             ),
                           ),
@@ -143,7 +163,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       width: _pageIndex == index ? 18 : 7,
                       height: 7,
                       decoration: BoxDecoration(
-                        color: _pageIndex == index ? AppTheme.mint : const Color(0xFF3A4A5E),
+                        color: _pageIndex == index
+                            ? AppTheme.mint
+                            : const Color(0xFF3A4A5E),
                         borderRadius: BorderRadius.circular(999),
                       ),
                     ),
@@ -151,8 +173,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
                 const SizedBox(height: 18),
                 FilledButton(
-                  onPressed: _pageIndex == _pages.length - 1 ? _finish : _nextPage,
-                  child: Text(_pageIndex == _pages.length - 1 ? 'Tiếp tục' : 'Xem tiếp'),
+                  onPressed: _pageIndex == _pages.length - 1
+                      ? _finish
+                      : _nextPage,
+                  child: Text(
+                    _pageIndex == _pages.length - 1 ? 'Tiếp tục' : 'Xem tiếp',
+                  ),
                 ),
               ],
             ),
@@ -213,7 +239,11 @@ class _MockFeatureCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(22),
               ),
               child: const Center(
-                child: Icon(Icons.image_outlined, color: Colors.white24, size: 64),
+                child: Icon(
+                  Icons.image_outlined,
+                  color: Colors.white24,
+                  size: 64,
+                ),
               ),
             ),
           ),
@@ -222,9 +252,18 @@ class _MockFeatureCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: const [
-                _FeaturePill(icon: Icons.camera_alt_outlined, label: 'Chụp & lưu'),
-                _FeaturePill(icon: Icons.today_outlined, label: 'Xem theo ngày'),
-                _FeaturePill(icon: Icons.pie_chart_outline_rounded, label: 'Thống kê'),
+                _FeaturePill(
+                  icon: Icons.camera_alt_outlined,
+                  label: 'Chụp & lưu',
+                ),
+                _FeaturePill(
+                  icon: Icons.today_outlined,
+                  label: 'Xem theo ngày',
+                ),
+                _FeaturePill(
+                  icon: Icons.pie_chart_outline_rounded,
+                  label: 'Thống kê',
+                ),
               ],
             ),
           ),

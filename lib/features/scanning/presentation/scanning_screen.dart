@@ -6,8 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../app/app_theme.dart';
-import '../../transactions/domain/transaction_mutation_result.dart';
-import '../../transactions/presentation/camera_screen.dart';
+import '../../transactions/domain/models/transaction_mutation_result.dart';
+import '../../transactions/presentation/camera/camera_screen.dart';
 import '../application/scanning_controller.dart';
 import 'ocr_review_screen.dart';
 

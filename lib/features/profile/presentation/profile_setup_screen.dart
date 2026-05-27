@@ -1,10 +1,10 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../core/preferences/preferences_providers.dart';
-import '../../../features/calendar/presentation/calendar_screen.dart';
+import '../../../features/calendar/presentation/month/calendar_screen.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../application/profile_setup_controller.dart';
@@ -42,7 +42,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
     profileAsync.whenData((profile) {
       final currentName = profile?.fullName?.trim() ?? '';
-      if (_nameController.text.isEmpty && currentName.isNotEmpty && currentName.toLowerCase() != 'guest') {
+      if (_nameController.text.isEmpty &&
+          currentName.isNotEmpty &&
+          currentName.toLowerCase() != 'guest') {
         _nameController.text = currentName;
       }
     });
@@ -93,7 +95,11 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                                 colors: [Color(0xFF68E5D8), AppTheme.mint],
                               ),
                             ),
-                            child: const Icon(Icons.face_rounded, size: 84, color: Color(0xFF10333B)),
+                            child: const Icon(
+                              Icons.face_rounded,
+                              size: 84,
+                              color: Color(0xFF10333B),
+                            ),
                           ),
                           Container(
                             width: 48,
@@ -101,9 +107,15 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: AppTheme.mint,
-                              border: Border.all(color: AppTheme.background, width: 4),
+                              border: Border.all(
+                                color: AppTheme.background,
+                                width: 4,
+                              ),
                             ),
-                            child: const Icon(Icons.camera_alt_outlined, size: 22),
+                            child: const Icon(
+                              Icons.camera_alt_outlined,
+                              size: 22,
+                            ),
                           ),
                         ],
                       ),
@@ -111,7 +123,10 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                Text('Tên hiển thị', style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  'Tên hiển thị',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const SizedBox(height: 10),
                 TextField(
                   controller: _nameController,
@@ -121,13 +136,21 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Text('Đơn vị tiền tệ', style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  'Đơn vị tiền tệ',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
                   initialValue: _currency,
                   decoration: const InputDecoration(),
                   items: _currencies
-                      .map((currency) => DropdownMenuItem(value: currency, child: Text(currency)))
+                      .map(
+                        (currency) => DropdownMenuItem(
+                          value: currency,
+                          child: Text(currency),
+                        ),
+                      )
                       .toList(),
                   onChanged: (value) {
                     if (value == null) return;
@@ -151,16 +174,17 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     final messenger = ScaffoldMessenger.of(context);
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      messenger.showSnackBar(const SnackBar(content: Text('Nhập tên hiển thị trước.')));
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Nhập tên hiển thị trước.')),
+      );
       return;
     }
 
     try {
       await ref.read(preferredCurrencyProvider.notifier).setCurrency(_currency);
-      await ref.read(profileSetupControllerProvider.notifier).saveProfile(
-            fullName: name,
-            timezone: 'Asia/Ho_Chi_Minh',
-          );
+      await ref
+          .read(profileSetupControllerProvider.notifier)
+          .saveProfile(fullName: name, timezone: 'Asia/Ho_Chi_Minh');
       if (!mounted) return;
       context.go(CalendarScreen.routePath);
     } catch (error) {
