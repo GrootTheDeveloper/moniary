@@ -13,6 +13,7 @@ import '../features/profile/presentation/profile_setup_screen.dart';
 import '../features/settings/domain/privacy_request_history_entry.dart';
 import '../features/settings/presentation/about_moniary_screen.dart';
 import '../features/settings/presentation/data_deletion_policy_screen.dart';
+import '../features/settings/presentation/data_retention_policy_screen.dart';
 import '../features/settings/presentation/data_safety_screen.dart';
 import '../features/settings/presentation/data_transparency_screen.dart';
 import '../features/settings/presentation/deletion_request_screen.dart';
@@ -126,6 +127,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: DataDeletionPolicyScreen.routePath,
         builder: (context, state) => const DataDeletionPolicyScreen(),
+      ),
+      GoRoute(
+        path: DataRetentionPolicyScreen.routePath,
+        builder: (context, state) => const DataRetentionPolicyScreen(),
       ),
       GoRoute(
         path: DeletionRequestScreen.routePath,

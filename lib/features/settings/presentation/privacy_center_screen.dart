@@ -7,6 +7,7 @@ import '../../auth/presentation/login_screen.dart';
 import '../application/account_actions_controller.dart';
 import 'about_moniary_screen.dart';
 import 'data_deletion_policy_screen.dart';
+import 'data_retention_policy_screen.dart';
 import 'data_safety_screen.dart';
 import 'data_transparency_screen.dart';
 import 'deletion_request_screen.dart';
@@ -72,6 +73,15 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   subtitle:
                       'Xem phạm vi sử dụng, trách nhiệm người dùng và giới hạn của phiên bản MVP.',
                   onTap: () => context.push(TermsOfUseScreen.routePath),
+                ),
+                const SizedBox(height: 12),
+                _PrivacyActionTile(
+                  icon: Icons.inventory_2_outlined,
+                  title: 'Chính sách lưu giữ dữ liệu',
+                  subtitle:
+                      'Xem dữ liệu nào được lưu trên cloud, dữ liệu nào nằm cục bộ và cách xử lý sau khi xóa tài khoản.',
+                  onTap: () =>
+                      context.push(DataRetentionPolicyScreen.routePath),
                 ),
                 const SizedBox(height: 12),
                 _PrivacyActionTile(
