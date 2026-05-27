@@ -1,7 +1,7 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
-import '../../categories/presentation/category_section.dart';
-import '../../wallets/presentation/wallet_section.dart';
+import '../../../categories/presentation/category_section.dart';
+import '../../../wallets/presentation/wallet_section.dart';
 
 class ManageDataSheet extends StatelessWidget {
   const ManageDataSheet({super.key});

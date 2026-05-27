@@ -1,15 +1,15 @@
-﻿enum TransactionType { income, expense }
+enum TransactionType { income, expense }
 
 extension TransactionTypeX on TransactionType {
   String get value => switch (this) {
-        TransactionType.income => 'income',
-        TransactionType.expense => 'expense',
-      };
+    TransactionType.income => 'income',
+    TransactionType.expense => 'expense',
+  };
 
   String get label => switch (this) {
-        TransactionType.income => 'Thu',
-        TransactionType.expense => 'Chi',
-      };
+    TransactionType.income => 'Thu',
+    TransactionType.expense => 'Chi',
+  };
 
   static TransactionType fromValue(String value) {
     return TransactionType.values.firstWhere(
@@ -53,4 +53,3 @@ class Category {
     );
   }
 }
-

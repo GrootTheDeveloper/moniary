@@ -1,8 +1,8 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/supabase/supabase_providers.dart';
-import '../domain/wallet.dart';
+import '../../../../core/supabase/supabase_providers.dart';
+import '../../domain/models/wallet.dart';
 
 final walletRepositoryProvider = Provider<WalletRepository>((ref) {
   return WalletRepository(ref.watch(supabaseClientProvider));
@@ -64,19 +64,29 @@ class WalletRepository {
     if (session == null) throw Exception('Ban chua dang nhap');
 
     if (isDefault) {
-      await _clearDefaultWallets(userId: session.user.id, exceptWalletId: walletId);
+      await _clearDefaultWallets(
+        userId: session.user.id,
+        exceptWalletId: walletId,
+      );
     }
 
-    await _client.from('wallets').update({
-      'name': name,
-      'type': type.value,
-      'initial_balance': initialBalance,
-      'is_default': isDefault,
-      'is_active': isActive,
-    }).eq('id', walletId).eq('user_id', session.user.id);
+    await _client
+        .from('wallets')
+        .update({
+          'name': name,
+          'type': type.value,
+          'initial_balance': initialBalance,
+          'is_default': isDefault,
+          'is_active': isActive,
+        })
+        .eq('id', walletId)
+        .eq('user_id', session.user.id);
   }
 
-  Future<void> _clearDefaultWallets({required String userId, String? exceptWalletId}) async {
+  Future<void> _clearDefaultWallets({
+    required String userId,
+    String? exceptWalletId,
+  }) async {
     var query = _client.from('wallets').update({'is_default': false});
     if (exceptWalletId != null) {
       query = query.neq('id', exceptWalletId);
@@ -84,4 +94,3 @@ class WalletRepository {
     await query.eq('user_id', userId).eq('is_default', true);
   }
 }
-

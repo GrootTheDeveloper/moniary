@@ -1,10 +1,10 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_color.dart';
-import '../domain/wallet.dart';
-import 'wallets_controller.dart';
+import '../domain/models/wallet.dart';
+import '../application/wallets_controller.dart';
 
 class WalletSection extends ConsumerWidget {
   const WalletSection({super.key});
@@ -19,66 +19,65 @@ class WalletSection extends ConsumerWidget {
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Ví / Tài khoản',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Ví / Tài khoản',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
-                ),
-                TextButton.icon(
-                  onPressed: () => _showWalletForm(context, ref),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Thêm'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Quản lý ví mặc định, số dư khởi tạo và trạng thái kích hoạt.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            walletsAsync.when(
-              data: (wallets) {
-                if (wallets.isEmpty) {
-                  return const Text('Chưa có ví nào.');
-                }
+                  TextButton.icon(
+                    onPressed: () => _showWalletForm(context, ref),
+                    icon: const Icon(Icons.add),
+                    label: const Text('Thêm'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Quản lý ví mặc định, số dư khởi tạo và trạng thái kích hoạt.',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 16),
+              walletsAsync.when(
+                data: (wallets) {
+                  if (wallets.isEmpty) {
+                    return const Text('Chưa có ví nào.');
+                  }
 
-                return Column(
-                  children: wallets
-                      .map(
-                        (wallet) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _WalletTile(
-                            wallet: wallet,
-                            balanceLabel: currency.format(wallet.initialBalance),
-                            onEdit: () => _showWalletForm(
-                              context,
-                              ref,
+                  return Column(
+                    children: wallets
+                        .map(
+                          (wallet) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _WalletTile(
                               wallet: wallet,
+                              balanceLabel: currency.format(
+                                wallet.initialBalance,
+                              ),
+                              onEdit: () =>
+                                  _showWalletForm(context, ref, wallet: wallet),
                             ),
                           ),
-                        ),
-                      )
-                      .toList(),
-                );
-              },
-              error: (error, stackTrace) => Text('Lỗi ví: $error'),
-              loading: () => const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: LinearProgressIndicator(),
+                        )
+                        .toList(),
+                  );
+                },
+                error: (error, stackTrace) => Text('Lỗi ví: $error'),
+                loading: () => const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: LinearProgressIndicator(),
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
         ),
       ),
     );
@@ -98,7 +97,10 @@ class _WalletTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColor.fromHex(wallet.color, fallback: const Color(0xFF4EA1FF));
+    final color = AppColor.fromHex(
+      wallet.color,
+      fallback: const Color(0xFF4EA1FF),
+    );
 
     return Container(
       decoration: BoxDecoration(
@@ -199,9 +201,9 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
           children: [
             Text(
               isEditing ? 'Sửa ví' : 'Tạo ví',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -213,10 +215,8 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
               initialValue: _selectedType,
               items: WalletType.values
                   .map(
-                    (type) => DropdownMenuItem(
-                      value: type,
-                      child: Text(type.label),
-                    ),
+                    (type) =>
+                        DropdownMenuItem(value: type, child: Text(type.label)),
                   )
                   .toList(),
               onChanged: (value) {
@@ -228,7 +228,9 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
             const SizedBox(height: 12),
             TextField(
               controller: _balanceController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: const InputDecoration(labelText: 'Số dư ban đầu'),
             ),
             const SizedBox(height: 8),
@@ -300,4 +302,3 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
     }
   }
 }
-

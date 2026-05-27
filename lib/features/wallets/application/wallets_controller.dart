@@ -1,12 +1,12 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/wallet_repository.dart';
-import '../domain/wallet.dart';
+import '../data/repositories/wallet_repository.dart';
+import '../domain/models/wallet.dart';
 
 final walletsControllerProvider =
     AsyncNotifierProvider<WalletsController, List<Wallet>>(
-  WalletsController.new,
-);
+      WalletsController.new,
+    );
 
 class WalletsController extends AsyncNotifier<List<Wallet>> {
   @override
@@ -30,13 +30,17 @@ class WalletsController extends AsyncNotifier<List<Wallet>> {
     state = const AsyncLoading();
 
     try {
-      await ref.read(walletRepositoryProvider).createWallet(
+      await ref
+          .read(walletRepositoryProvider)
+          .createWallet(
             name: name,
             type: type,
             initialBalance: initialBalance,
             isDefault: isDefault,
           );
-      state = AsyncData(await ref.read(walletRepositoryProvider).fetchWallets());
+      state = AsyncData(
+        await ref.read(walletRepositoryProvider).fetchWallets(),
+      );
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
       rethrow;
@@ -54,7 +58,9 @@ class WalletsController extends AsyncNotifier<List<Wallet>> {
     state = const AsyncLoading();
 
     try {
-      await ref.read(walletRepositoryProvider).updateWallet(
+      await ref
+          .read(walletRepositoryProvider)
+          .updateWallet(
             walletId: walletId,
             name: name,
             type: type,
@@ -62,11 +68,12 @@ class WalletsController extends AsyncNotifier<List<Wallet>> {
             isDefault: isDefault,
             isActive: isActive,
           );
-      state = AsyncData(await ref.read(walletRepositoryProvider).fetchWallets());
+      state = AsyncData(
+        await ref.read(walletRepositoryProvider).fetchWallets(),
+      );
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
       rethrow;
     }
   }
 }
-

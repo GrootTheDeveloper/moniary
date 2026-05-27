@@ -1,4 +1,4 @@
-﻿import '../../transactions/domain/transaction_entry.dart';
+import '../../../transactions/domain/models/transaction_entry.dart';
 
 class CalendarDayData {
   const CalendarDayData({
@@ -13,7 +13,9 @@ class CalendarDayData {
 
   bool get isToday {
     final now = DateTime.now();
-    return now.year == date.year && now.month == date.month && now.day == date.day;
+    return now.year == date.year &&
+        now.month == date.month &&
+        now.day == date.day;
   }
 
   double get incomeTotal => transactions

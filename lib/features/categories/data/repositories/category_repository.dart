@@ -1,8 +1,8 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/supabase/supabase_providers.dart';
-import '../domain/category.dart';
+import '../../../../core/supabase/supabase_providers.dart';
+import '../../domain/models/category.dart';
 
 final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
   return CategoryRepository(ref.watch(supabaseClientProvider));
@@ -54,11 +54,10 @@ class CategoryRepository {
     final session = _client.auth.currentSession;
     if (session == null) throw Exception('Ban chua dang nhap');
 
-    await _client.from('categories').update({
-      'name': name,
-      'type': type.value,
-      'is_active': isActive,
-    }).eq('id', categoryId).eq('user_id', session.user.id);
+    await _client
+        .from('categories')
+        .update({'name': name, 'type': type.value, 'is_active': isActive})
+        .eq('id', categoryId)
+        .eq('user_id', session.user.id);
   }
 }
-

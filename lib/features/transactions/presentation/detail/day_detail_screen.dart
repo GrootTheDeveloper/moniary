@@ -1,23 +1,20 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../app/app_theme.dart';
-import '../../../core/constants/app_color.dart';
-import '../../../shared/widgets/supabase_image.dart';
-import '../application/transaction_queries.dart';
-import '../domain/transaction_mutation_result.dart';
-import '../domain/transaction_entry.dart';
-import 'transaction_form_sheet.dart';
+import '../../../../app/app_theme.dart';
+import '../../../../core/constants/app_color.dart';
+import '../../../../shared/widgets/supabase_image.dart';
+import '../../application/queries/transaction_queries.dart';
+import '../../domain/models/transaction_mutation_result.dart';
+import '../../domain/models/transaction_entry.dart';
+import '../form/transaction_form_sheet.dart';
 import 'transaction_detail_screen.dart';
 import 'transaction_route_args.dart';
 
 class DayDetailScreen extends ConsumerWidget {
-  const DayDetailScreen({
-    required this.date,
-    super.key,
-  });
+  const DayDetailScreen({required this.date, super.key});
 
   static const routePath = '/day-detail';
 
@@ -41,7 +38,8 @@ class DayDetailScreen extends ConsumerWidget {
         ),
       ),
       body: transactionsAsync.when(
-        data: (transactions) => _DayDetailBody(date: date, transactions: transactions),
+        data: (transactions) =>
+            _DayDetailBody(date: date, transactions: transactions),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
           child: Padding(
@@ -111,7 +109,8 @@ class _DayDetailBody extends ConsumerWidget {
         const SizedBox(height: 12),
         _SummaryCard(
           label: 'Tổng cộng',
-          value: '${income - expense >= 0 ? '+' : '-'}${_money((income - expense).abs())}',
+          value:
+              '${income - expense >= 0 ? '+' : '-'}${_money((income - expense).abs())}',
           color: income - expense >= 0 ? AppTheme.success : AppTheme.danger,
         ),
         const SizedBox(height: 18),
@@ -164,7 +163,11 @@ class _DayDetailBody extends ConsumerWidget {
 }
 
 class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({required this.label, required this.value, required this.color});
+  const _SummaryCard({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   final String label;
   final String value;
@@ -186,7 +189,9 @@ class _SummaryCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(color: color),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(color: color),
           ),
         ],
       ),
@@ -257,7 +262,9 @@ class _TransactionTile extends StatelessWidget {
                     runSpacing: 6,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Text(DateFormat('HH:mm').format(transaction.transactionDate)),
+                      Text(
+                        DateFormat('HH:mm').format(transaction.transactionDate),
+                      ),
                       _MiniTag(label: transaction.categoryName, color: accent),
                       Text(transaction.walletName),
                     ],
@@ -269,8 +276,10 @@ class _TransactionTile extends StatelessWidget {
             Text(
               '${transaction.isIncome ? '+' : '-'}${_money(transaction.amount)}',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: transaction.isIncome ? AppTheme.success : AppTheme.danger,
-                  ),
+                color: transaction.isIncome
+                    ? AppTheme.success
+                    : AppTheme.danger,
+              ),
             ),
           ],
         ),
@@ -296,9 +305,9 @@ class _MiniTag extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
+          color: color,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }

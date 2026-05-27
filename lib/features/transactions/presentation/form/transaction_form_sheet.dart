@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
@@ -9,15 +9,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-import '../../../app/app_theme.dart';
-import '../../../core/constants/app_color.dart';
-import '../../categories/domain/category.dart';
-import '../../categories/presentation/categories_controller.dart';
-import '../../wallets/domain/wallet.dart';
-import '../../wallets/presentation/wallets_controller.dart';
-import '../domain/transaction_entry.dart';
-import '../domain/transaction_mutation_result.dart';
-import 'transaction_composer_controller.dart';
+import '../../../../app/app_theme.dart';
+import '../../../../core/constants/app_color.dart';
+import '../../../categories/domain/models/category.dart';
+import '../../../categories/application/categories_controller.dart';
+import '../../../wallets/domain/models/wallet.dart';
+import '../../../wallets/application/wallets_controller.dart';
+import '../../domain/models/transaction_entry.dart';
+import '../../domain/models/transaction_mutation_result.dart';
+import '../../application/composer/transaction_composer_controller.dart';
 
 Future<TransactionMutationResult?> showTransactionFormSheet(
   BuildContext context,
@@ -48,7 +48,8 @@ class TransactionFormScreen extends ConsumerStatefulWidget {
   final String? initialImagePath;
 
   @override
-  ConsumerState<TransactionFormScreen> createState() => _TransactionFormScreenState();
+  ConsumerState<TransactionFormScreen> createState() =>
+      _TransactionFormScreenState();
 }
 
 class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
@@ -76,11 +77,16 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
 
     final initialAmount = transaction?.amount ?? 0;
     _amountController = TextEditingController(
-      text: initialAmount > 0 ? _amountFormatter.formatDouble(initialAmount) : '',
+      text: initialAmount > 0
+          ? _amountFormatter.formatDouble(initialAmount)
+          : '',
     );
     _noteController = TextEditingController(text: transaction?.note ?? '');
     _type = transaction?.type ?? TransactionType.expense;
-    _selectedDate = transaction?.transactionDate ?? widget.initialDateTime ?? DateTime.now();
+    _selectedDate =
+        transaction?.transactionDate ??
+        widget.initialDateTime ??
+        DateTime.now();
     _selectedWalletId = transaction?.walletId;
     _selectedCategoryId = transaction?.categoryId;
     if (widget.initialImagePath != null) {
@@ -121,31 +127,37 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     final allCategories = categoriesAsync.asData?.value ?? const <Category>[];
     final categoryOptions = allCategories
         .where(
-          (category) => category.type == _type && (_isEditing || category.isActive),
+          (category) =>
+              category.type == _type && (_isEditing || category.isActive),
         )
         .toList();
 
     if (_selectedWalletId == null && walletOptions.isNotEmpty) {
-      _selectedWalletId = walletOptions.firstWhere(
-        (wallet) => wallet.isDefault,
-        orElse: () => walletOptions.first,
-      ).id;
+      _selectedWalletId = walletOptions
+          .firstWhere(
+            (wallet) => wallet.isDefault,
+            orElse: () => walletOptions.first,
+          )
+          .id;
     }
 
     if (_selectedCategoryId == null && categoryOptions.isNotEmpty) {
       _selectedCategoryId = categoryOptions.first.id;
     }
 
-    final canSubmit = walletOptions.isNotEmpty && categoryOptions.isNotEmpty && !composerState.isLoading;
+    final canSubmit =
+        walletOptions.isNotEmpty &&
+        categoryOptions.isNotEmpty &&
+        !composerState.isLoading;
 
     final selectedCategory = allCategories.cast<Category?>().firstWhere(
-          (c) => c?.id == _selectedCategoryId,
-          orElse: () => null,
-        );
+      (c) => c?.id == _selectedCategoryId,
+      orElse: () => null,
+    );
     final selectedWallet = allWallets.cast<Wallet?>().firstWhere(
-          (w) => w?.id == _selectedWalletId,
-          orElse: () => null,
-        );
+      (w) => w?.id == _selectedWalletId,
+      orElse: () => null,
+    );
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -216,7 +228,10 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             const SizedBox(height: 12),
             _FormTile(
               label: 'Ngày giờ',
-              value: DateFormat('dd/MM/yyyy  HH:mm', 'vi_VN').format(_selectedDate),
+              value: DateFormat(
+                'dd/MM/yyyy  HH:mm',
+                'vi_VN',
+              ).format(_selectedDate),
               icon: Icons.calendar_today_outlined,
               trailing: const Icon(Icons.chevron_right, color: Colors.grey),
               onTap: _pickDateTime,
@@ -225,7 +240,9 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             _NoteInput(controller: _noteController),
             const SizedBox(height: 40),
             if (composerState.isLoading)
-              const Center(child: CircularProgressIndicator(color: AppTheme.mint)),
+              const Center(
+                child: CircularProgressIndicator(color: AppTheme.mint),
+              ),
           ],
         ),
       ),
@@ -236,7 +253,9 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.surface,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (context) => ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 20),
         itemCount: options.length,
@@ -259,7 +278,9 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.surface,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (context) => ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 20),
         itemCount: options.length,
@@ -339,7 +360,9 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     final amount = _amountFormatter.getUnformattedValue().toDouble();
 
     if (amount <= 0) {
-      messenger.showSnackBar(const SnackBar(content: Text('Nhập số tiền hợp lệ.')));
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Nhập số tiền hợp lệ.')),
+      );
       return;
     }
 
@@ -355,24 +378,32 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
 
       final previousDate = widget.initialTransaction?.transactionDate;
       if (_isEditing) {
-        await ref.read(transactionComposerProvider.notifier).updateTransaction(
+        await ref
+            .read(transactionComposerProvider.notifier)
+            .updateTransaction(
               transactionId: widget.initialTransaction!.id,
               amount: amount,
               type: _type,
               walletId: _selectedWalletId!,
               categoryId: _selectedCategoryId!,
               transactionDate: _selectedDate,
-              note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
+              note: _noteController.text.trim().isEmpty
+                  ? null
+                  : _noteController.text.trim(),
               imageBytes: imageBytes,
             );
       } else {
-        await ref.read(transactionComposerProvider.notifier).createTransaction(
+        await ref
+            .read(transactionComposerProvider.notifier)
+            .createTransaction(
               amount: amount,
               type: _type,
               walletId: _selectedWalletId!,
               categoryId: _selectedCategoryId!,
               transactionDate: _selectedDate,
-              note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
+              note: _noteController.text.trim().isEmpty
+                  ? null
+                  : _noteController.text.trim(),
               imageBytes: imageBytes,
             );
       }
@@ -391,7 +422,11 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
 }
 
 class _ImagePreview extends StatelessWidget {
-  const _ImagePreview({required this.file, required this.onClear, required this.onPick});
+  const _ImagePreview({
+    required this.file,
+    required this.onClear,
+    required this.onPick,
+  });
   final XFile? file;
   final VoidCallback onClear;
   final VoidCallback onPick;
@@ -412,10 +447,21 @@ class _ImagePreview extends StatelessWidget {
               if (file != null)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(24),
-                  child: Image.file(File(file!.path), width: double.infinity, height: 320, fit: BoxFit.cover),
+                  child: Image.file(
+                    File(file!.path),
+                    width: double.infinity,
+                    height: 320,
+                    fit: BoxFit.cover,
+                  ),
                 )
               else
-                const Center(child: Icon(Icons.image_outlined, size: 64, color: Colors.grey)),
+                const Center(
+                  child: Icon(
+                    Icons.image_outlined,
+                    size: 64,
+                    color: Colors.grey,
+                  ),
+                ),
               if (file != null)
                 Positioned(
                   top: 12,
@@ -424,8 +470,15 @@ class _ImagePreview extends StatelessWidget {
                     onTap: onClear,
                     child: Container(
                       padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
-                      child: const Icon(Icons.close, color: Colors.white, size: 20),
+                      decoration: const BoxDecoration(
+                        color: Colors.black54,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ),
@@ -438,9 +491,18 @@ class _ImagePreview extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.camera_alt_outlined, size: 20, color: Colors.grey),
+              const Icon(
+                Icons.camera_alt_outlined,
+                size: 20,
+                color: Colors.grey,
+              ),
               const SizedBox(width: 8),
-              Text('Thay đổi ảnh', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey)),
+              Text(
+                'Thay đổi ảnh',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+              ),
             ],
           ),
         ),
@@ -465,7 +527,12 @@ class _AmountInput extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text('Số tiền', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)),
+          Text(
+            'Số tiền',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
+          ),
           const SizedBox(width: 16),
           const Icon(Icons.monetization_on, color: Colors.grey),
           const SizedBox(width: 12),
@@ -475,7 +542,11 @@ class _AmountInput extends StatelessWidget {
               keyboardType: TextInputType.number,
               inputFormatters: [formatter],
               textAlign: TextAlign.right,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
               decoration: const InputDecoration(
                 border: InputBorder.none,
                 hintText: '0',
@@ -532,7 +603,13 @@ class _TypeSelector extends StatelessWidget {
 }
 
 class _TypeButton extends StatelessWidget {
-  const _TypeButton({required this.label, required this.icon, required this.selected, required this.onTap, required this.color});
+  const _TypeButton({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+    required this.color,
+  });
   final String label;
   final IconData icon;
   final bool selected;
@@ -554,7 +631,13 @@ class _TypeButton extends StatelessWidget {
           children: [
             Icon(icon, color: selected ? Colors.black : Colors.grey, size: 20),
             const SizedBox(width: 8),
-            Text(label, style: TextStyle(color: selected ? Colors.black : Colors.grey, fontWeight: FontWeight.bold)),
+            Text(
+              label,
+              style: TextStyle(
+                color: selected ? Colors.black : Colors.grey,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
       ),
@@ -563,7 +646,14 @@ class _TypeButton extends StatelessWidget {
 }
 
 class _FormTile extends StatelessWidget {
-  const _FormTile({required this.label, required this.value, required this.icon, this.trailing, this.leadingWidget, required this.onTap});
+  const _FormTile({
+    required this.label,
+    required this.value,
+    required this.icon,
+    this.trailing,
+    this.leadingWidget,
+    required this.onTap,
+  });
   final String label;
   final String value;
   final IconData icon;
@@ -587,16 +677,21 @@ class _FormTile extends StatelessWidget {
           children: [
             Icon(icon, color: Colors.grey, size: 24),
             const SizedBox(width: 12),
-            Expanded(child: Text(label, style: const TextStyle(color: Colors.grey))),
+            Expanded(
+              child: Text(label, style: const TextStyle(color: Colors.grey)),
+            ),
             if (leadingWidget != null) ...[
               leadingWidget!,
               const SizedBox(width: 8),
             ],
-            Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
-            if (trailing != null) ...[
-              const SizedBox(width: 8),
-              trailing!,
-            ],
+            Text(
+              value,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            if (trailing != null) ...[const SizedBox(width: 8), trailing!],
           ],
         ),
       ),
@@ -665,13 +760,20 @@ class _CategoryIcon extends StatelessWidget {
 
   IconData _getIconData(String? name) {
     switch (name) {
-      case 'restaurant': return Icons.restaurant;
-      case 'directions_bus': return Icons.directions_bus;
-      case 'shopping_bag': return Icons.shopping_bag;
-      case 'receipt_long': return Icons.receipt_long;
-      case 'payments': return Icons.payments;
-      case 'savings': return Icons.savings;
-      default: return Icons.category;
+      case 'restaurant':
+        return Icons.restaurant;
+      case 'directions_bus':
+        return Icons.directions_bus;
+      case 'shopping_bag':
+        return Icons.shopping_bag;
+      case 'receipt_long':
+        return Icons.receipt_long;
+      case 'payments':
+        return Icons.payments;
+      case 'savings':
+        return Icons.savings;
+      default:
+        return Icons.category;
     }
   }
 }
@@ -687,14 +789,20 @@ class _WalletIcon extends StatelessWidget {
       width: 32,
       height: 32,
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      child: Icon(_getWalletIconData(wallet.icon), color: Colors.white, size: 18),
+      child: Icon(
+        _getWalletIconData(wallet.icon),
+        color: Colors.white,
+        size: 18,
+      ),
     );
   }
 
   IconData _getWalletIconData(String? name) {
     switch (name) {
-      case 'wallet': return Icons.account_balance_wallet;
-      default: return Icons.credit_card;
+      case 'wallet':
+        return Icons.account_balance_wallet;
+      default:
+        return Icons.credit_card;
     }
   }
 }

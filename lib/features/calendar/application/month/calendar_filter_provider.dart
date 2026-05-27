@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../domain/calendar_filters.dart';
+import '../../domain/month/calendar_filters.dart';
 
 class CalendarFilterNotifier extends Notifier<CalendarFilters> {
   @override
@@ -32,6 +32,7 @@ class CalendarFilterNotifier extends Notifier<CalendarFilters> {
   }
 }
 
-final calendarFilterProvider = NotifierProvider<CalendarFilterNotifier, CalendarFilters>(
-  CalendarFilterNotifier.new,
-);
+final calendarFilterProvider =
+    NotifierProvider<CalendarFilterNotifier, CalendarFilters>(
+      CalendarFilterNotifier.new,
+    );

@@ -1,11 +1,11 @@
-﻿import 'dart:typed_data';
+import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/supabase/supabase_providers.dart';
-import '../../categories/domain/category.dart';
-import '../domain/transaction_entry.dart';
+import '../../../../core/supabase/supabase_providers.dart';
+import '../../../categories/domain/models/category.dart';
+import '../../domain/models/transaction_entry.dart';
 
 final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
   return TransactionRepository(ref.watch(supabaseClientProvider));
@@ -96,17 +96,21 @@ class TransactionRepository {
       throw Exception('Ban chua dang nhap.');
     }
 
-    final row = await _client.from('transactions').insert({
-      'user_id': session.user.id,
-      'wallet_id': walletId,
-      'category_id': categoryId,
-      'amount': amount,
-      'type': type.value,
-      'note': note,
-      'transaction_date': transactionDate.toUtc().toIso8601String(),
-      'source': 'manual',
-      'image_upload_status': 'pending',
-    }).select('id').single();
+    final row = await _client
+        .from('transactions')
+        .insert({
+          'user_id': session.user.id,
+          'wallet_id': walletId,
+          'category_id': categoryId,
+          'amount': amount,
+          'type': type.value,
+          'note': note,
+          'transaction_date': transactionDate.toUtc().toIso8601String(),
+          'source': 'manual',
+          'image_upload_status': 'pending',
+        })
+        .select('id')
+        .single();
 
     return row['id'] as String;
   }
@@ -123,14 +127,18 @@ class TransactionRepository {
     final session = _client.auth.currentSession;
     if (session == null) throw Exception('Ban chua dang nhap');
 
-    await _client.from('transactions').update({
-      'wallet_id': walletId,
-      'category_id': categoryId,
-      'amount': amount,
-      'type': type.value,
-      'note': note,
-      'transaction_date': transactionDate.toUtc().toIso8601String(),
-    }).eq('id', transactionId).eq('user_id', session.user.id);
+    await _client
+        .from('transactions')
+        .update({
+          'wallet_id': walletId,
+          'category_id': categoryId,
+          'amount': amount,
+          'type': type.value,
+          'note': note,
+          'transaction_date': transactionDate.toUtc().toIso8601String(),
+        })
+        .eq('id', transactionId)
+        .eq('user_id', session.user.id);
   }
 
   Future<void> deleteTransaction(String transactionId) async {
@@ -139,32 +147,46 @@ class TransactionRepository {
 
     // 1. Fetch transaction to get image path
     final transaction = await fetchTransactionById(transactionId);
-    
+
     // 2. Delete from database
-    await _client.from('transactions').delete().eq('id', transactionId).eq('user_id', session.user.id);
+    await _client
+        .from('transactions')
+        .delete()
+        .eq('id', transactionId)
+        .eq('user_id', session.user.id);
 
     // 3. Cleanup storage if needed
     if (transaction.imagePath != null) {
       try {
-        await _client.storage.from('transaction-images').remove([transaction.imagePath!]);
+        await _client.storage.from('transaction-images').remove([
+          transaction.imagePath!,
+        ]);
       } catch (e) {
         // Log error but don't fail transaction deletion
       }
     }
   }
 
-  Future<String> uploadTransactionImage(String transactionId, Uint8List bytes) async {
+  Future<String> uploadTransactionImage(
+    String transactionId,
+    Uint8List bytes,
+  ) async {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) throw Exception('User not authenticated');
 
     final path = 'transactions/$userId/$transactionId.jpg';
-    
-    await _client.storage.from('transaction-images').uploadBinary(
+
+    await _client.storage
+        .from('transaction-images')
+        .uploadBinary(
           path,
           bytes,
-          fileOptions: const FileOptions(contentType: 'image/jpeg', upsert: true),
+          fileOptions: const FileOptions(
+            contentType: 'image/jpeg',
+            upsert: true,
+          ),
         );
-    
+
     return path;
   }
 
@@ -176,15 +198,16 @@ class TransactionRepository {
     final session = _client.auth.currentSession;
     if (session == null) throw Exception('Ban chua dang nhap');
 
-    await _client.from('transactions').update({
-      'image_path': imagePath,
-      'image_upload_status': status,
-    }).eq('id', transactionId).eq('user_id', session.user.id);
+    await _client
+        .from('transactions')
+        .update({'image_path': imagePath, 'image_upload_status': status})
+        .eq('id', transactionId)
+        .eq('user_id', session.user.id);
   }
 
   String getPublicImageUrl(String path) {
     // Since the bucket is private, we should ideally use createSignedUrl
-    // but for simplicity in MVP we might use a short-lived signed URL or 
+    // but for simplicity in MVP we might use a short-lived signed URL or
     // the user might have some specific requirement.
     // The PRD says "App tạo signed URL từ imagePath khi cần hiển thị ảnh"
     return _client.storage.from('transaction-images').getPublicUrl(path);

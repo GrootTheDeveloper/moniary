@@ -1,21 +1,21 @@
-﻿enum WalletType { cash, bank, ewallet, credit, other }
+enum WalletType { cash, bank, ewallet, credit, other }
 
 extension WalletTypeX on WalletType {
   String get value => switch (this) {
-        WalletType.cash => 'cash',
-        WalletType.bank => 'bank',
-        WalletType.ewallet => 'ewallet',
-        WalletType.credit => 'credit',
-        WalletType.other => 'other',
-      };
+    WalletType.cash => 'cash',
+    WalletType.bank => 'bank',
+    WalletType.ewallet => 'ewallet',
+    WalletType.credit => 'credit',
+    WalletType.other => 'other',
+  };
 
   String get label => switch (this) {
-        WalletType.cash => 'Tiền mặt',
-        WalletType.bank => 'Ngân hàng',
-        WalletType.ewallet => 'Ví điện tử',
-        WalletType.credit => 'Thẻ tín dụng',
-        WalletType.other => 'Khác',
-      };
+    WalletType.cash => 'Tiền mặt',
+    WalletType.bank => 'Ngân hàng',
+    WalletType.ewallet => 'Ví điện tử',
+    WalletType.credit => 'Thẻ tín dụng',
+    WalletType.other => 'Khác',
+  };
 
   static WalletType fromValue(String value) {
     return WalletType.values.firstWhere(
@@ -62,4 +62,3 @@ class Wallet {
     );
   }
 }
-

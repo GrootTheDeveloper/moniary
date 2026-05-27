@@ -1,9 +1,9 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_color.dart';
-import '../domain/category.dart';
-import 'categories_controller.dart';
+import '../domain/models/category.dart';
+import '../application/categories_controller.dart';
 
 class CategorySection extends ConsumerWidget {
   const CategorySection({super.key});
@@ -17,68 +17,66 @@ class CategorySection extends ConsumerWidget {
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Danh mục',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Danh mục',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
-                ),
-                TextButton.icon(
-                  onPressed: () => _showCategoryForm(context, ref),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Thêm'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Quản lý danh mục thu/chi để chuẩn bị cho giao dịch.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            categoriesAsync.when(
-              data: (categories) {
-                if (categories.isEmpty) {
-                  return const Text('Chưa có danh mục nào.');
-                }
-
-                final expense = categories
-                    .where((category) => category.type == TransactionType.expense)
-                    .toList();
-                final income = categories
-                    .where((category) => category.type == TransactionType.income)
-                    .toList();
-
-                return Column(
-                  children: [
-                    _CategoryGroup(
-                      title: 'Chi',
-                      categories: expense,
-                    ),
-                    const SizedBox(height: 12),
-                    _CategoryGroup(
-                      title: 'Thu',
-                      categories: income,
-                    ),
-                  ],
-                );
-              },
-              error: (error, stackTrace) => Text('Category error: $error'),
-              loading: () => const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: LinearProgressIndicator(),
+                  TextButton.icon(
+                    onPressed: () => _showCategoryForm(context, ref),
+                    icon: const Icon(Icons.add),
+                    label: const Text('Thêm'),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
+              const SizedBox(height: 8),
+              Text(
+                'Quản lý danh mục thu/chi để chuẩn bị cho giao dịch.',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 16),
+              categoriesAsync.when(
+                data: (categories) {
+                  if (categories.isEmpty) {
+                    return const Text('Chưa có danh mục nào.');
+                  }
+
+                  final expense = categories
+                      .where(
+                        (category) => category.type == TransactionType.expense,
+                      )
+                      .toList();
+                  final income = categories
+                      .where(
+                        (category) => category.type == TransactionType.income,
+                      )
+                      .toList();
+
+                  return Column(
+                    children: [
+                      _CategoryGroup(title: 'Chi', categories: expense),
+                      const SizedBox(height: 12),
+                      _CategoryGroup(title: 'Thu', categories: income),
+                    ],
+                  );
+                },
+                error: (error, stackTrace) => Text('Category error: $error'),
+                loading: () => const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: LinearProgressIndicator(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -86,10 +84,7 @@ class CategorySection extends ConsumerWidget {
 }
 
 class _CategoryGroup extends ConsumerWidget {
-  const _CategoryGroup({
-    required this.title,
-    required this.categories,
-  });
+  const _CategoryGroup({required this.title, required this.categories});
 
   final String title;
   final List<Category> categories;
@@ -101,9 +96,9 @@ class _CategoryGroup extends ConsumerWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
         if (categories.isEmpty)
@@ -114,11 +109,8 @@ class _CategoryGroup extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: 12),
               child: _CategoryTile(
                 category: category,
-                onEdit: () => _showCategoryForm(
-                  context,
-                  ref,
-                  category: category,
-                ),
+                onEdit: () =>
+                    _showCategoryForm(context, ref, category: category),
               ),
             ),
           ),
@@ -128,17 +120,17 @@ class _CategoryGroup extends ConsumerWidget {
 }
 
 class _CategoryTile extends StatelessWidget {
-  const _CategoryTile({
-    required this.category,
-    required this.onEdit,
-  });
+  const _CategoryTile({required this.category, required this.onEdit});
 
   final Category category;
   final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColor.fromHex(category.color, fallback: const Color(0xFF4EA1FF));
+    final color = AppColor.fromHex(
+      category.color,
+      fallback: const Color(0xFF4EA1FF),
+    );
 
     return Container(
       decoration: BoxDecoration(
@@ -226,9 +218,9 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
           children: [
             Text(
               isEditing ? 'Sửa danh mục' : 'Tạo danh mục',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -240,10 +232,8 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
               initialValue: _selectedType,
               items: TransactionType.values
                   .map(
-                    (type) => DropdownMenuItem(
-                      value: type,
-                      child: Text(type.label),
-                    ),
+                    (type) =>
+                        DropdownMenuItem(value: type, child: Text(type.label)),
                   )
                   .toList(),
               onChanged: (value) {
@@ -286,10 +276,7 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
     try {
       final controller = ref.read(categoriesControllerProvider.notifier);
       if (widget.category == null) {
-        await controller.createCategory(
-          name: name,
-          type: _selectedType,
-        );
+        await controller.createCategory(name: name, type: _selectedType);
       } else {
         await controller.updateCategory(
           categoryId: widget.category!.id,
@@ -310,4 +297,3 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
     }
   }
 }
-

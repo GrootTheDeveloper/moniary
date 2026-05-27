@@ -1,12 +1,12 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/category_repository.dart';
-import '../domain/category.dart';
+import '../data/repositories/category_repository.dart';
+import '../domain/models/category.dart';
 
 final categoriesControllerProvider =
     AsyncNotifierProvider<CategoriesController, List<Category>>(
-  CategoriesController.new,
-);
+      CategoriesController.new,
+    );
 
 class CategoriesController extends AsyncNotifier<List<Category>> {
   @override
@@ -28,12 +28,12 @@ class CategoriesController extends AsyncNotifier<List<Category>> {
     state = const AsyncLoading();
 
     try {
-      await ref.read(categoryRepositoryProvider).createCategory(
-            name: name,
-            type: type,
-          );
-      state =
-          AsyncData(await ref.read(categoryRepositoryProvider).fetchCategories());
+      await ref
+          .read(categoryRepositoryProvider)
+          .createCategory(name: name, type: type);
+      state = AsyncData(
+        await ref.read(categoryRepositoryProvider).fetchCategories(),
+      );
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
       rethrow;
@@ -49,18 +49,20 @@ class CategoriesController extends AsyncNotifier<List<Category>> {
     state = const AsyncLoading();
 
     try {
-      await ref.read(categoryRepositoryProvider).updateCategory(
+      await ref
+          .read(categoryRepositoryProvider)
+          .updateCategory(
             categoryId: categoryId,
             name: name,
             type: type,
             isActive: isActive,
           );
-      state =
-          AsyncData(await ref.read(categoryRepositoryProvider).fetchCategories());
+      state = AsyncData(
+        await ref.read(categoryRepositoryProvider).fetchCategories(),
+      );
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
       rethrow;
     }
   }
 }
-

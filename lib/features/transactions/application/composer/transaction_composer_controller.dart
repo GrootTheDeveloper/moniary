@@ -1,14 +1,14 @@
-﻿import 'dart:typed_data';
+import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../categories/domain/category.dart';
-import '../data/transaction_repository.dart';
+import '../../../categories/domain/models/category.dart';
+import '../../data/repositories/transaction_repository.dart';
 
 final transactionComposerProvider =
     AsyncNotifierProvider<TransactionComposerController, void>(
-  TransactionComposerController.new,
-);
+      TransactionComposerController.new,
+    );
 
 class TransactionComposerController extends AsyncNotifier<void> {
   @override
@@ -24,9 +24,9 @@ class TransactionComposerController extends AsyncNotifier<void> {
     Uint8List? imageBytes,
   }) async {
     state = const AsyncLoading();
-    
+
     final repo = ref.read(transactionRepositoryProvider);
-    
+
     state = await AsyncValue.guard(() async {
       // 1. Create transaction record (pending status)
       final transactionId = await repo.createTransaction(
@@ -38,8 +38,8 @@ class TransactionComposerController extends AsyncNotifier<void> {
         note: note,
       );
 
-      // 2. If no image, we are done (but status is pending, maybe we should update to uploaded if no image? 
-      // The constraint says image_path null and status pending/failed is ok. 
+      // 2. If no image, we are done (but status is pending, maybe we should update to uploaded if no image?
+      // The constraint says image_path null and status pending/failed is ok.
       // Actually image_path is null and status pending is fine for "no image" or "uploading".)
       if (imageBytes == null) {
         // Update to 'uploaded' even if no image? Or just leave it?
@@ -49,8 +49,11 @@ class TransactionComposerController extends AsyncNotifier<void> {
 
       // 3. Upload image
       try {
-        final imagePath = await repo.uploadTransactionImage(transactionId, imageBytes);
-        
+        final imagePath = await repo.uploadTransactionImage(
+          transactionId,
+          imageBytes,
+        );
+
         // 4. Update metadata
         await repo.updateTransactionImageMetadata(
           transactionId: transactionId,
@@ -95,7 +98,10 @@ class TransactionComposerController extends AsyncNotifier<void> {
 
       if (imageBytes != null) {
         try {
-          final imagePath = await repo.uploadTransactionImage(transactionId, imageBytes);
+          final imagePath = await repo.uploadTransactionImage(
+            transactionId,
+            imageBytes,
+          );
           await repo.updateTransactionImageMetadata(
             transactionId: transactionId,
             imagePath: imagePath,
@@ -116,7 +122,9 @@ class TransactionComposerController extends AsyncNotifier<void> {
   Future<void> deleteTransaction(String transactionId) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(transactionRepositoryProvider).deleteTransaction(transactionId),
+      () => ref
+          .read(transactionRepositoryProvider)
+          .deleteTransaction(transactionId),
     );
   }
 }

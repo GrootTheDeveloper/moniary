@@ -2,8 +2,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../main.dart';
-import '../domain/transaction_mutation_result.dart';
+import '../../../../main.dart';
+import '../../domain/models/transaction_mutation_result.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -47,7 +47,7 @@ class _CameraScreenState extends State<CameraScreen> {
         '/transaction-form',
         extra: {'imagePath': image.path},
       );
-      
+
       if (result != null && mounted) {
         context.pop(result);
       }
@@ -64,7 +64,7 @@ class _CameraScreenState extends State<CameraScreen> {
         '/transaction-form',
         extra: {'imagePath': image.path},
       );
-      
+
       if (result != null && mounted) {
         context.pop(result);
       }
@@ -89,15 +89,16 @@ class _CameraScreenState extends State<CameraScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          Center(
-            child: CameraPreview(_controller!),
-          ),
+          Center(child: CameraPreview(_controller!)),
           // Custom Overlay
           SafeArea(
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -107,7 +108,11 @@ class _CameraScreenState extends State<CameraScreen> {
                       ),
                       const Text(
                         'Chụp hóa đơn',
-                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       IconButton(
                         icon: Icon(
@@ -139,10 +144,17 @@ class _CameraScreenState extends State<CameraScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.photo_library, color: Colors.white, size: 32),
+                            icon: const Icon(
+                              Icons.photo_library,
+                              color: Colors.white,
+                              size: 32,
+                            ),
                             onPressed: _pickFromAlbum,
                           ),
-                          const Text('Album', style: TextStyle(color: Colors.white, fontSize: 12)),
+                          const Text(
+                            'Album',
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
                         ],
                       ),
                       GestureDetector(
@@ -170,7 +182,10 @@ class _CameraScreenState extends State<CameraScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.flash_on, color: Colors.white, size: 32),
-                          Text('Đèn', style: TextStyle(color: Colors.white, fontSize: 12)),
+                          Text(
+                            'Đèn',
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
                         ],
                       ),
                     ],

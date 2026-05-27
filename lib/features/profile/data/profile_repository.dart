@@ -1,4 +1,4 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
@@ -38,10 +38,7 @@ class ProfileRepository {
 
     final row = await _client
         .from('profiles')
-        .update({
-          'full_name': fullName,
-          'timezone': timezone,
-        })
+        .update({'full_name': fullName, 'timezone': timezone})
         .eq('id', session.user.id)
         .select()
         .single();

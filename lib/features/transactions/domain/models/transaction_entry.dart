@@ -1,4 +1,4 @@
-﻿import '../../categories/domain/category.dart';
+import '../../../categories/domain/models/category.dart';
 
 class TransactionEntry {
   const TransactionEntry({
@@ -42,7 +42,9 @@ class TransactionEntry {
       type: TransactionTypeX.fromValue(map['type'] as String),
       note: map['note'] as String?,
       imagePath: map['image_path'] as String?,
-      transactionDate: DateTime.parse(map['transaction_date'] as String).toLocal(),
+      transactionDate: DateTime.parse(
+        map['transaction_date'] as String,
+      ).toLocal(),
       walletId: (wallet['id'] ?? '') as String,
       walletName: (wallet['name'] ?? 'Wallet') as String,
       walletColor: wallet['color'] as String?,

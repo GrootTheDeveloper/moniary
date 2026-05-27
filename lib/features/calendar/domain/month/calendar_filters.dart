@@ -1,8 +1,5 @@
 class CalendarFilters {
-  const CalendarFilters({
-    this.walletId,
-    this.categoryId,
-  });
+  const CalendarFilters({this.walletId, this.categoryId});
 
   final String? walletId;
   final String? categoryId;

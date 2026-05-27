@@ -1,23 +1,20 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../app/app_theme.dart';
-import '../../../core/constants/app_color.dart';
-import '../../../shared/widgets/supabase_image.dart';
-import '../application/transaction_queries.dart';
-import '../domain/transaction_mutation_result.dart';
-import '../domain/transaction_entry.dart';
-import 'transaction_composer_controller.dart';
-import 'transaction_form_sheet.dart';
+import '../../../../app/app_theme.dart';
+import '../../../../core/constants/app_color.dart';
+import '../../../../shared/widgets/supabase_image.dart';
+import '../../application/queries/transaction_queries.dart';
+import '../../domain/models/transaction_mutation_result.dart';
+import '../../domain/models/transaction_entry.dart';
+import '../../application/composer/transaction_composer_controller.dart';
+import '../form/transaction_form_sheet.dart';
 import 'transaction_route_args.dart';
 
 class TransactionDetailScreen extends ConsumerWidget {
-  const TransactionDetailScreen({
-    required this.args,
-    super.key,
-  });
+  const TransactionDetailScreen({required this.args, super.key});
 
   static const routePath = '/transaction-detail';
 
@@ -25,16 +22,16 @@ class TransactionDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final transactionAsync = ref.watch(transactionByIdProvider(args.transactionId));
+    final transactionAsync = ref.watch(
+      transactionByIdProvider(args.transactionId),
+    );
 
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(),
       body: transactionAsync.when(
-        data: (transaction) => _TransactionDetailBody(
-          transaction: transaction,
-          day: args.day,
-        ),
+        data: (transaction) =>
+            _TransactionDetailBody(transaction: transaction, day: args.day),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
           child: Padding(
@@ -73,10 +70,7 @@ class _TransactionDetailBody extends ConsumerWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                accent.withValues(alpha: 0.92),
-                const Color(0xFF151F2B),
-              ],
+              colors: [accent.withValues(alpha: 0.92), const Color(0xFF151F2B)],
             ),
           ),
           child: Stack(
@@ -109,16 +103,18 @@ class _TransactionDetailBody extends ConsumerWidget {
                   Text(
                     '${transaction.isIncome ? '+' : '-'}${_money(transaction.amount)}',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: transaction.isIncome ? AppTheme.success : AppTheme.danger,
-                          fontWeight: FontWeight.bold,
-                          shadows: [
-                            const Shadow(
-                              offset: Offset(0, 2),
-                              blurRadius: 10,
-                              color: Colors.black54,
-                            ),
-                          ],
+                      color: transaction.isIncome
+                          ? AppTheme.success
+                          : AppTheme.danger,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        const Shadow(
+                          offset: Offset(0, 2),
+                          blurRadius: 10,
+                          color: Colors.black54,
                         ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Text(
@@ -126,30 +122,33 @@ class _TransactionDetailBody extends ConsumerWidget {
                         ? transaction.note!.trim()
                         : transaction.categoryName,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
-                          shadows: [
-                            const Shadow(
-                              offset: Offset(0, 2),
-                              blurRadius: 10,
-                              color: Colors.black54,
-                            ),
-                          ],
+                      color: Colors.white,
+                      shadows: [
+                        const Shadow(
+                          offset: Offset(0, 2),
+                          blurRadius: 10,
+                          color: Colors.black54,
                         ),
+                      ],
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    DateFormat('dd MMMM yyyy • HH:mm', 'vi_VN').format(transaction.transactionDate),
+                    DateFormat(
+                      'dd MMMM yyyy • HH:mm',
+                      'vi_VN',
+                    ).format(transaction.transactionDate),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.white70,
-                          shadows: [
-                            const Shadow(
-                              offset: Offset(0, 2),
-                              blurRadius: 4,
-                              color: Colors.black54,
-                            ),
-                          ],
+                      color: Colors.white70,
+                      shadows: [
+                        const Shadow(
+                          offset: Offset(0, 2),
+                          blurRadius: 4,
+                          color: Colors.black54,
                         ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -172,7 +171,10 @@ class _TransactionDetailBody extends ConsumerWidget {
                 child: _InfoItem(
                   label: 'Ví',
                   value: transaction.walletName,
-                  color: AppColor.fromHex(transaction.walletColor, fallback: AppTheme.mint),
+                  color: AppColor.fromHex(
+                    transaction.walletColor,
+                    fallback: AppTheme.mint,
+                  ),
                 ),
               ),
             ],
@@ -189,7 +191,9 @@ class _TransactionDetailBody extends ConsumerWidget {
                 transaction.note?.trim().isNotEmpty == true
                     ? transaction.note!.trim()
                     : 'Chưa có ghi chú cho giao dịch này.',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: Colors.white),
               ),
             ],
           ),
@@ -236,7 +240,9 @@ class _TransactionDetailBody extends ConsumerWidget {
                   );
 
                   if (confirmed != true) return;
-                  await ref.read(transactionComposerProvider.notifier).deleteTransaction(transaction.id);
+                  await ref
+                      .read(transactionComposerProvider.notifier)
+                      .deleteTransaction(transaction.id);
                   if (!context.mounted) return;
                   context.pop(
                     TransactionMutationResult(
@@ -276,7 +282,11 @@ class _InfoCard extends StatelessWidget {
 }
 
 class _InfoItem extends StatelessWidget {
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   final String label;
   final String value;
@@ -297,7 +307,9 @@ class _InfoItem extends StatelessWidget {
           ),
           child: Text(
             value,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: color),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(color: color),
           ),
         ),
       ],

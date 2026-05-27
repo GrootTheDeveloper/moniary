@@ -1,13 +1,13 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../../app/app_theme.dart';
-import '../../categories/domain/category.dart';
-import '../../categories/presentation/categories_controller.dart';
-import '../../wallets/domain/wallet.dart';
-import '../../wallets/presentation/wallets_controller.dart';
-import 'transaction_composer_controller.dart';
+import '../../../../app/app_theme.dart';
+import '../../../categories/domain/models/category.dart';
+import '../../../categories/application/categories_controller.dart';
+import '../../../wallets/domain/models/wallet.dart';
+import '../../../wallets/application/wallets_controller.dart';
+import '../../application/composer/transaction_composer_controller.dart';
 
 Future<DateTime?> showCreateTransactionSheet(
   BuildContext context,
@@ -24,10 +24,12 @@ class _CreateTransactionSheet extends ConsumerStatefulWidget {
   const _CreateTransactionSheet();
 
   @override
-  ConsumerState<_CreateTransactionSheet> createState() => _CreateTransactionSheetState();
+  ConsumerState<_CreateTransactionSheet> createState() =>
+      _CreateTransactionSheetState();
 }
 
-class _CreateTransactionSheetState extends ConsumerState<_CreateTransactionSheet> {
+class _CreateTransactionSheetState
+    extends ConsumerState<_CreateTransactionSheet> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
   TransactionType _type = TransactionType.expense;
@@ -48,9 +50,13 @@ class _CreateTransactionSheetState extends ConsumerState<_CreateTransactionSheet
     final categoriesAsync = ref.watch(categoriesControllerProvider);
     final composerState = ref.watch(transactionComposerProvider);
 
-    final wallets = walletsAsync.asData?.value.where((wallet) => wallet.isActive).toList() ??
+    final wallets =
+        walletsAsync.asData?.value
+            .where((wallet) => wallet.isActive)
+            .toList() ??
         const <Wallet>[];
-    final categories = categoriesAsync.asData?.value
+    final categories =
+        categoriesAsync.asData?.value
             .where((category) => category.isActive && category.type == _type)
             .toList() ??
         const <Category>[];
@@ -62,11 +68,13 @@ class _CreateTransactionSheetState extends ConsumerState<_CreateTransactionSheet
           )).id
         : null;
 
-    if (categories.isNotEmpty && !categories.any((category) => category.id == _selectedCategoryId)) {
+    if (categories.isNotEmpty &&
+        !categories.any((category) => category.id == _selectedCategoryId)) {
       _selectedCategoryId = categories.first.id;
     }
 
-    final canSubmit = wallets.isNotEmpty && categories.isNotEmpty && !composerState.isLoading;
+    final canSubmit =
+        wallets.isNotEmpty && categories.isNotEmpty && !composerState.isLoading;
 
     return SafeArea(
       child: Padding(
@@ -92,7 +100,10 @@ class _CreateTransactionSheetState extends ConsumerState<_CreateTransactionSheet
                 ),
               ),
               const SizedBox(height: 18),
-              Text('Them giao dich', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                'Them giao dich',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: 8),
               Text(
                 'Luu giao dich truoc, phan anh se duoc them o buoc tiep theo.',
@@ -105,7 +116,8 @@ class _CreateTransactionSheetState extends ConsumerState<_CreateTransactionSheet
                   _ChoiceChip(
                     label: 'Chi',
                     selected: _type == TransactionType.expense,
-                    onTap: () => setState(() => _type = TransactionType.expense),
+                    onTap: () =>
+                        setState(() => _type = TransactionType.expense),
                   ),
                   _ChoiceChip(
                     label: 'Thu',
@@ -117,7 +129,9 @@ class _CreateTransactionSheetState extends ConsumerState<_CreateTransactionSheet
               const SizedBox(height: 16),
               TextField(
                 controller: _amountController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: const InputDecoration(
                   labelText: 'So tien',
                   hintText: '57000',
@@ -163,10 +177,7 @@ class _CreateTransactionSheetState extends ConsumerState<_CreateTransactionSheet
                 ),
               ),
               const SizedBox(height: 14),
-              _DateTimeTile(
-                value: _selectedDate,
-                onTap: _pickDateTime,
-              ),
+              _DateTimeTile(value: _selectedDate, onTap: _pickDateTime),
               const SizedBox(height: 14),
               TextField(
                 controller: _noteController,
@@ -182,9 +193,9 @@ class _CreateTransactionSheetState extends ConsumerState<_CreateTransactionSheet
                 const SizedBox(height: 12),
                 Text(
                   'Khong tai duoc wallet/category. Mo quan ly du lieu de kiem tra.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.danger,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: AppTheme.danger),
                 ),
               ],
               if (wallets.isEmpty || categories.isEmpty) ...[
@@ -193,15 +204,17 @@ class _CreateTransactionSheetState extends ConsumerState<_CreateTransactionSheet
                   wallets.isEmpty
                       ? 'Ban can it nhat 1 wallet dang hoat dong de tao giao dich.'
                       : 'Ban can it nhat 1 category dang hoat dong cho loai giao dich nay.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.amber,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: AppTheme.amber),
                 ),
               ],
               const SizedBox(height: 20),
               FilledButton(
                 onPressed: canSubmit ? _submit : null,
-                child: Text(composerState.isLoading ? 'Dang luu...' : 'Luu giao dich'),
+                child: Text(
+                  composerState.isLoading ? 'Dang luu...' : 'Luu giao dich',
+                ),
               ),
             ],
           ),
@@ -238,10 +251,14 @@ class _CreateTransactionSheetState extends ConsumerState<_CreateTransactionSheet
 
   Future<void> _submit() async {
     final messenger = ScaffoldMessenger.of(context);
-    final amount = double.tryParse(_amountController.text.trim().replaceAll(',', ''));
+    final amount = double.tryParse(
+      _amountController.text.trim().replaceAll(',', ''),
+    );
 
     if (amount == null || amount <= 0) {
-      messenger.showSnackBar(const SnackBar(content: Text('Nhap so tien hop le.')));
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Nhap so tien hop le.')),
+      );
       return;
     }
 
@@ -253,13 +270,17 @@ class _CreateTransactionSheetState extends ConsumerState<_CreateTransactionSheet
     }
 
     try {
-      await ref.read(transactionComposerProvider.notifier).createTransaction(
+      await ref
+          .read(transactionComposerProvider.notifier)
+          .createTransaction(
             amount: amount,
             type: _type,
             walletId: _selectedWalletId!,
             categoryId: _selectedCategoryId!,
             transactionDate: _selectedDate,
-            note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
+            note: _noteController.text.trim().isEmpty
+                ? null
+                : _noteController.text.trim(),
           );
 
       if (!mounted) return;
@@ -295,9 +316,9 @@ class _DateTimeTile extends StatelessWidget {
             Expanded(
               child: Text(
                 DateFormat('dd/MM/yyyy • HH:mm', 'vi_VN').format(value),
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.white,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: Colors.white),
               ),
             ),
             const Icon(Icons.chevron_right_rounded),
@@ -333,12 +354,8 @@ class _ChoiceChip extends StatelessWidget {
             color: selected ? AppTheme.mint : AppTheme.outline,
           ),
         ),
-        child: Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.w700),
-        ),
+        child: Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
       ),
     );
   }
 }
-

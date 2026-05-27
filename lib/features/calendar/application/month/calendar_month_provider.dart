@@ -1,29 +1,28 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../transactions/data/transaction_repository.dart';
-import '../../transactions/domain/transaction_entry.dart';
-import '../domain/calendar_month_data.dart';
+import '../../../transactions/data/repositories/transaction_repository.dart';
+import '../../../transactions/domain/models/transaction_entry.dart';
+import '../../domain/month/calendar_month_data.dart';
 
 import 'calendar_filter_provider.dart';
 
-final calendarMonthProvider = FutureProvider.family<CalendarMonthData, DateTime>(
-  (ref, month) async {
-    final filters = ref.watch(calendarFilterProvider);
-    final normalizedMonth = DateTime(month.year, month.month, 1);
-    final transactions = await ref
-        .watch(transactionRepositoryProvider)
-        .fetchTransactionsForMonth(
-          normalizedMonth,
-          walletId: filters.walletId,
-          categoryId: filters.categoryId,
-        );
+final calendarMonthProvider =
+    FutureProvider.family<CalendarMonthData, DateTime>((ref, month) async {
+      final filters = ref.watch(calendarFilterProvider);
+      final normalizedMonth = DateTime(month.year, month.month, 1);
+      final transactions = await ref
+          .watch(transactionRepositoryProvider)
+          .fetchTransactionsForMonth(
+            normalizedMonth,
+            walletId: filters.walletId,
+            categoryId: filters.categoryId,
+          );
 
-    return _CalendarMonthBuilder.build(
-      month: normalizedMonth,
-      transactions: transactions,
-    );
-  },
-);
+      return _CalendarMonthBuilder.build(
+        month: normalizedMonth,
+        transactions: transactions,
+      );
+    });
 
 class _CalendarMonthBuilder {
   static CalendarMonthData build({
@@ -31,7 +30,9 @@ class _CalendarMonthBuilder {
     required List<TransactionEntry> transactions,
   }) {
     final firstDay = DateTime(month.year, month.month, 1);
-    final calendarStart = firstDay.subtract(Duration(days: firstDay.weekday - 1));
+    final calendarStart = firstDay.subtract(
+      Duration(days: firstDay.weekday - 1),
+    );
     final grouped = <String, List<TransactionEntry>>{};
 
     for (final transaction in transactions) {
@@ -44,7 +45,9 @@ class _CalendarMonthBuilder {
     for (var weekIndex = 0; weekIndex < 6; weekIndex++) {
       final week = <CalendarDayData>[];
       for (var dayIndex = 0; dayIndex < 7; dayIndex++) {
-        final date = calendarStart.add(Duration(days: (weekIndex * 7) + dayIndex));
+        final date = calendarStart.add(
+          Duration(days: (weekIndex * 7) + dayIndex),
+        );
         final key = _dateKey(date);
         week.add(
           CalendarDayData(

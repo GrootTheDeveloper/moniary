@@ -1,4 +1,4 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
 import '../data/profile_repository.dart';
@@ -11,8 +11,8 @@ final currentProfileProvider = FutureProvider<UserProfile?>((ref) async {
 
 final profileSetupControllerProvider =
     AsyncNotifierProvider<ProfileSetupController, UserProfile?>(
-  ProfileSetupController.new,
-);
+      ProfileSetupController.new,
+    );
 
 class ProfileSetupController extends AsyncNotifier<UserProfile?> {
   @override
@@ -26,10 +26,9 @@ class ProfileSetupController extends AsyncNotifier<UserProfile?> {
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(profileRepositoryProvider).upsertProfile(
-            fullName: fullName,
-            timezone: timezone,
-          ),
+      () => ref
+          .read(profileRepositoryProvider)
+          .upsertProfile(fullName: fullName, timezone: timezone),
     );
     ref.invalidate(currentProfileProvider);
   }

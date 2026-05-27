@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../core/preferences/preferences_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
-import '../features/calendar/presentation/calendar_screen.dart';
+import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
 import '../features/settings/domain/privacy_requests/privacy_request_history_entry.dart';
@@ -40,11 +40,11 @@ import '../features/settings/presentation/legal/third_party_services_screen.dart
 import '../features/settings/presentation/store/trust_safety_screen.dart';
 import '../features/settings/presentation/legal/user_rights_summary_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
-import '../features/transactions/presentation/camera_screen.dart';
-import '../features/transactions/presentation/day_detail_screen.dart';
-import '../features/transactions/presentation/transaction_detail_screen.dart';
-import '../features/transactions/presentation/transaction_form_sheet.dart';
-import '../features/transactions/presentation/transaction_route_args.dart';
+import '../features/transactions/presentation/camera/camera_screen.dart';
+import '../features/transactions/presentation/detail/day_detail_screen.dart';
+import '../features/transactions/presentation/detail/transaction_detail_screen.dart';
+import '../features/transactions/presentation/form/transaction_form_sheet.dart';
+import '../features/transactions/presentation/detail/transaction_route_args.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authStateStream = ref
