@@ -16,6 +16,7 @@ import '../features/settings/presentation/data_deletion_policy_screen.dart';
 import '../features/settings/presentation/data_retention_policy_screen.dart';
 import '../features/settings/presentation/data_safety_screen.dart';
 import '../features/settings/presentation/data_transparency_screen.dart';
+import '../features/settings/presentation/delete_account_help_screen.dart';
 import '../features/settings/presentation/deletion_request_screen.dart';
 import '../features/settings/presentation/export_data_screen.dart';
 import '../features/settings/presentation/export_history_screen.dart';
@@ -120,6 +121,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: ExportTroubleshootingScreen.routePath,
         builder: (context, state) => const ExportTroubleshootingScreen(),
+      ),
+      GoRoute(
+        path: DeleteAccountHelpScreen.routePath,
+        builder: (context, state) => const DeleteAccountHelpScreen(),
       ),
       GoRoute(
         path: AboutMoniaryScreen.routePath,

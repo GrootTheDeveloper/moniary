@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import 'delete_account_help_screen.dart';
 import 'export_data_screen.dart';
 import 'export_troubleshooting_screen.dart';
 import 'privacy_account_faq_screen.dart';
@@ -57,6 +58,13 @@ class HelpCenterScreen extends StatelessWidget {
               description:
                   'Tạo request privacy hoặc copy thông tin liên hệ để gửi cho team hỗ trợ.',
               onTap: () => context.push(PrivacyContactScreen.routePath),
+            ),
+            _HelpTopic(
+              icon: Icons.delete_forever_outlined,
+              title: 'Xóa tài khoản',
+              description:
+                  'Chuẩn bị trước khi xóa, hiểu dữ liệu bị ảnh hưởng và fallback khi có lỗi.',
+              onTap: () => context.push(DeleteAccountHelpScreen.routePath),
             ),
           ],
         ),
