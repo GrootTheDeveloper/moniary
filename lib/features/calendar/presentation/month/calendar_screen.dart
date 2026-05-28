@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../core/supabase/supabase_providers.dart';
-import '../../../../shared/widgets/supabase_image.dart';
 import '../../../auth/presentation/login_screen.dart';
 import '../../../categories/domain/models/category.dart';
 import '../../../categories/application/categories_controller.dart';
@@ -593,58 +592,13 @@ class _CalendarDayCell extends StatelessWidget {
           children: [
             if (day.transactions.isNotEmpty)
               Positioned(
-                bottom: 14,
+                bottom: 18,
                 child: Container(
-                  width: 34,
-                  height: 34,
+                  width: 6,
+                  height: 6,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        accent.withValues(alpha: 0.95),
-                        const Color(0xFF4F3629),
-                      ],
-                    ),
-                    border: Border.all(color: accent),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(9),
-                    child: Stack(
-                      children: [
-                        SupabaseImage(
-                          imagePath: day.transactions.first.imagePath,
-                          width: 34,
-                          height: 34,
-                          fallbackIcon: Icons.receipt_long_rounded,
-                        ),
-                        if (day.transactions.length > 1)
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Container(
-                              margin: const EdgeInsets.all(2),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 1,
-                              ),
-                              decoration: BoxDecoration(
-                                color: accent == AppTheme.mint
-                                    ? AppTheme.mint
-                                    : AppTheme.pink,
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Text(
-                                '+${day.transactions.length}',
-                                style: const TextStyle(
-                                  fontSize: 8,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
+                    shape: BoxShape.circle,
+                    color: accent,
                   ),
                 ),
               ),

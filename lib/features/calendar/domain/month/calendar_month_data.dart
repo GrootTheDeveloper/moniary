@@ -1,7 +1,7 @@
 import '../../../transactions/domain/models/transaction_entry.dart';
 
 class CalendarDayData {
-  const CalendarDayData({
+  CalendarDayData({
     required this.date,
     required this.isCurrentMonth,
     required this.transactions,
@@ -18,17 +18,17 @@ class CalendarDayData {
         now.day == date.day;
   }
 
-  double get incomeTotal => transactions
+  late final double incomeTotal = transactions
       .where((transaction) => transaction.isIncome)
       .fold(0, (sum, transaction) => sum + transaction.amount);
 
-  double get expenseTotal => transactions
+  late final double expenseTotal = transactions
       .where((transaction) => transaction.isExpense)
       .fold(0, (sum, transaction) => sum + transaction.amount);
 }
 
 class CalendarMonthData {
-  const CalendarMonthData({
+  CalendarMonthData({
     required this.month,
     required this.weeks,
     required this.transactions,
@@ -48,7 +48,7 @@ class CalendarMonthData {
 
   int get transactionCount => transactions.length;
 
-  int get activeDays => weeks
+  late final int activeDays = weeks
       .expand((week) => week)
       .where((day) => day.transactions.isNotEmpty)
       .length;

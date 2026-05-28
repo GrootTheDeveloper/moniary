@@ -89,47 +89,55 @@ class _DayDetailBody extends ConsumerWidget {
         .where((transaction) => transaction.isExpense)
         .fold<double>(0, (sum, item) => sum + item.amount);
 
-    return ListView(
+    return ListView.builder(
       padding: const EdgeInsets.all(16),
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _SummaryCard(
-                label: 'Tổng thu',
-                value: '+${formatVnd(income)}',
-                color: AppTheme.success,
+      itemCount: 6 + (transactions.isEmpty ? 1 : transactions.length),
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return Row(
+            children: [
+              Expanded(
+                child: _SummaryCard(
+                  label: 'Tổng thu',
+                  value: '+${formatVnd(income)}',
+                  color: AppTheme.success,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _SummaryCard(
-                label: 'Tổng chi',
-                value: '-${formatVnd(expense)}',
-                color: AppTheme.danger,
+              const SizedBox(width: 12),
+              Expanded(
+                child: _SummaryCard(
+                  label: 'Tổng chi',
+                  value: '-${formatVnd(expense)}',
+                  color: AppTheme.danger,
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _SummaryCard(
-          label: 'Tổng cộng',
-          value:
-              '${income - expense >= 0 ? '+' : '-'}${formatVnd((income - expense).abs())}',
-          color: income - expense >= 0 ? AppTheme.success : AppTheme.danger,
-        ),
-        const SizedBox(height: 18),
-        Row(
-          children: [
-            Text(
-              '${transactions.length} giao dịch',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        if (transactions.isEmpty)
-          Container(
+            ],
+          );
+        }
+        if (index == 1) return const SizedBox(height: 12);
+        if (index == 2) {
+          return _SummaryCard(
+            label: 'Tổng cộng',
+            value:
+                '${income - expense >= 0 ? '+' : '-'}${formatVnd((income - expense).abs())}',
+            color: income - expense >= 0 ? AppTheme.success : AppTheme.danger,
+          );
+        }
+        if (index == 3) return const SizedBox(height: 18);
+        if (index == 4) {
+          return Row(
+            children: [
+              Text(
+                '${transactions.length} giao dịch',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
+          );
+        }
+        if (index == 5) return const SizedBox(height: 12);
+
+        if (transactions.isEmpty) {
+          return Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: AppTheme.surface,
@@ -141,28 +149,28 @@ class _DayDetailBody extends ConsumerWidget {
               style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
-          )
-        else
-          ...transactions.map(
-            (transaction) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _TransactionTile(
-                transaction: transaction,
-                onTap: () async {
-                  final result = await context.push<TransactionMutationResult>(
-                    TransactionDetailScreen.routePath,
-                    extra: TransactionDetailRouteArgs(
-                      transactionId: transaction.id,
-                      day: date,
-                    ),
-                  );
-                  if (result == null || !context.mounted) return;
-                  _applyMutation(ref, result);
-                },
-              ),
-            ),
+          );
+        }
+
+        final transaction = transactions[index - 6];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _TransactionTile(
+            transaction: transaction,
+            onTap: () async {
+              final result = await context.push<TransactionMutationResult>(
+                TransactionDetailScreen.routePath,
+                extra: TransactionDetailRouteArgs(
+                  transactionId: transaction.id,
+                  day: date,
+                ),
+              );
+              if (result == null || !context.mounted) return;
+              _applyMutation(ref, result);
+            },
           ),
-      ],
+        );
+      },
     );
   }
 }

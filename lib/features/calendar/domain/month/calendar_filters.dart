@@ -17,4 +17,15 @@ class CalendarFilters {
   }
 
   bool get isEmpty => walletId == null && categoryId == null;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is CalendarFilters &&
+        other.walletId == walletId &&
+        other.categoryId == categoryId;
+  }
+
+  @override
+  int get hashCode => Object.hash(walletId, categoryId);
 }
