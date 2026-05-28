@@ -25,6 +25,8 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
+  bool _hasError = false;
+
   @override
   void initState() {
     super.initState();
@@ -38,28 +40,35 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       return;
     }
 
-    final onboardingSeen = ref.read(onboardingSeenProvider);
-    if (!onboardingSeen) {
-      context.go(OnboardingScreen.routePath);
-      return;
+    try {
+      final onboardingSeen = ref.read(onboardingSeenProvider);
+      if (!onboardingSeen) {
+        context.go(OnboardingScreen.routePath);
+        return;
+      }
+
+      final session = ref.read(currentSessionProvider);
+      if (session == null) {
+        context.go(LoginScreen.routePath);
+        return;
+      }
+
+      final profile = await ref
+          .read(profileRepositoryProvider)
+          .fetchCurrentProfile();
+      if (!mounted) return;
+
+      context.go(
+        profile == null || profile.needsSetup
+            ? ProfileSetupScreen.routePath
+            : CalendarScreen.routePath,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _hasError = true;
+      });
     }
-
-    final session = ref.read(currentSessionProvider);
-    if (session == null) {
-      context.go(LoginScreen.routePath);
-      return;
-    }
-
-    final profile = await ref
-        .read(profileRepositoryProvider)
-        .fetchCurrentProfile();
-    if (!mounted) return;
-
-    context.go(
-      profile == null || profile.needsSetup
-          ? ProfileSetupScreen.routePath
-          : CalendarScreen.routePath,
-    );
   }
 
   @override
@@ -91,47 +100,70 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Ghi chi tieu bang anh',
+                  'Ghi chi tiêu bằng ảnh',
                   style: Theme.of(
                     context,
                   ).textTheme.titleMedium?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Chup lai khoan chi, luu vao lich,\nquan ly tien de nhu luu ky niem.',
+                  'Chụp lại khoản chi, lưu vào lịch,\nquản lý tiền dễ như lưu kỷ niệm.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const Spacer(),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surface.withValues(alpha: 0.86),
-                    borderRadius: BorderRadius.circular(28),
-                    border: Border.all(color: AppTheme.outline),
-                  ),
-                  child: Row(
+                if (_hasError)
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
-                        Icons.photo_camera_back_outlined,
-                        color: AppTheme.amber,
+                      const Icon(Icons.error_outline, color: AppTheme.danger, size: 48),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Không thể kết nối',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppTheme.danger),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Dang khoi dong ${AppConstants.appName}...',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2.2),
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        onPressed: () {
+                          setState(() {
+                            _hasError = false;
+                          });
+                          unawaited(_bootstrap());
+                        },
+                        child: const Text('Thử lại'),
                       ),
                     ],
+                  )
+                else
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surface.withValues(alpha: 0.86),
+                      borderRadius: BorderRadius.circular(28),
+                      border: Border.all(color: AppTheme.outline),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.photo_camera_back_outlined,
+                          color: AppTheme.amber,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Đang khởi động ${AppConstants.appName}...',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2.2),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
                 const Spacer(),
               ],
             ),

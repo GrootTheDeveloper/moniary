@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -22,9 +23,7 @@ class AuthController extends AsyncNotifier<void> {
         await client.rpc('initialize_user');
       } on PostgrestException catch (error) {
         // Allow auth to succeed even if the database migration/RPC is not ready yet.
-        throw Exception(
-          'Dang nhap thanh cong nhung chua goi duoc initialize_user(): ${error.message}',
-        );
+        debugPrint('initialize_user() failed (non-blocking): ${error.message}');
       }
     });
   }
