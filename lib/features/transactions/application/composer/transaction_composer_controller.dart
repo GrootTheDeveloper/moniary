@@ -74,9 +74,6 @@ class TransactionComposerController extends AsyncNotifier<void> {
         rethrow;
       }
     });
-    if (state.hasError) {
-      throw state.error!;
-    }
   }
 
   Future<void> updateTransaction({

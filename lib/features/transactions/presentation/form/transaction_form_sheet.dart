@@ -90,6 +90,50 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     if (widget.initialImagePath != null) {
       _pickedFile = XFile(widget.initialImagePath!);
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _setDefaultSelections();
+    });
+  }
+
+  void _setDefaultSelections() {
+    final walletsAsync = ref.read(walletsControllerProvider);
+    final categoriesAsync = ref.read(categoriesControllerProvider);
+
+    final allWallets = walletsAsync.asData?.value ?? const <Wallet>[];
+    final walletOptions = _isEditing
+        ? allWallets
+        : allWallets.where((wallet) => wallet.isActive).toList();
+
+    final allCategories = categoriesAsync.asData?.value ?? const <Category>[];
+    final categoryOptions = allCategories
+        .where(
+          (category) =>
+              category.type == _type && (_isEditing || category.isActive),
+        )
+        .toList();
+
+    bool needsUpdate = false;
+
+    if (_selectedWalletId == null && walletOptions.isNotEmpty) {
+      _selectedWalletId = walletOptions
+          .firstWhere(
+            (wallet) => wallet.isDefault,
+            orElse: () => walletOptions.first,
+          )
+          .id;
+      needsUpdate = true;
+    }
+
+    if (_selectedCategoryId == null && categoryOptions.isNotEmpty) {
+      _selectedCategoryId = categoryOptions.first.id;
+      needsUpdate = true;
+    }
+
+    if (needsUpdate) {
+      setState(() {});
+    }
   }
 
   @override
@@ -129,19 +173,6 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
               category.type == _type && (_isEditing || category.isActive),
         )
         .toList();
-
-    if (_selectedWalletId == null && walletOptions.isNotEmpty) {
-      _selectedWalletId = walletOptions
-          .firstWhere(
-            (wallet) => wallet.isDefault,
-            orElse: () => walletOptions.first,
-          )
-          .id;
-    }
-
-    if (_selectedCategoryId == null && categoryOptions.isNotEmpty) {
-      _selectedCategoryId = categoryOptions.first.id;
-    }
 
     final canSubmit =
         walletOptions.isNotEmpty &&
@@ -196,10 +227,15 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             const SizedBox(height: 16),
             _TypeSelector(
               type: _type,
-              onChanged: (newType) => setState(() {
-                _type = newType;
-                _selectedCategoryId = null; // Reset category when type changes
-              }),
+              onChanged: (newType) {
+                setState(() {
+                  _type = newType;
+                  _selectedCategoryId = null; // Reset category when type changes
+                });
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) _setDefaultSelections();
+                });
+              },
             ),
             const SizedBox(height: 24),
             _FormTile(
