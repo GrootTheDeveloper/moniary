@@ -14,33 +14,54 @@ class CameraScreen extends StatefulWidget {
   State<CameraScreen> createState() => _CameraScreenState();
 }
 
-class _CameraScreenState extends State<CameraScreen> {
+class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver {
   CameraController? _controller;
   bool _isFlashOn = false;
 
   @override
   void initState() {
     super.initState();
-    if (cameras.isNotEmpty) {
-      _controller = CameraController(cameras[0], ResolutionPreset.high);
-      _controller!.initialize().then((_) {
-        if (!mounted) return;
-        setState(() {});
-      });
+    WidgetsBinding.instance.addObserver(this);
+    _initializeCamera();
+  }
+
+  void _initializeCamera() {
+    if (cameras.isEmpty) return;
+    if (_controller != null) return;
+
+    final controller = CameraController(cameras[0], ResolutionPreset.high);
+    _controller = controller;
+    controller.initialize().then((_) {
+      if (!mounted) return;
+      if (_controller != controller) return;
+      setState(() {});
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive) {
+      _controller?.dispose();
+      _controller = null;
+      setState(() {});
+    } else if (state == AppLifecycleState.resumed) {
+      _initializeCamera();
     }
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
     super.dispose();
   }
 
   Future<void> _takePicture() async {
-    if (_controller == null || !_controller!.value.isInitialized) return;
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) return;
 
     try {
-      final image = await _controller!.takePicture();
+      final image = await controller.takePicture();
       if (!mounted) return;
 
       final result = await context.push<TransactionMutationResult>(
@@ -72,16 +93,18 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   void _toggleFlash() {
-    if (_controller == null) return;
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) return;
     setState(() {
       _isFlashOn = !_isFlashOn;
-      _controller!.setFlashMode(_isFlashOn ? FlashMode.torch : FlashMode.off);
+      controller.setFlashMode(_isFlashOn ? FlashMode.torch : FlashMode.off);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_controller == null || !_controller!.value.isInitialized) {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
@@ -89,7 +112,7 @@ class _CameraScreenState extends State<CameraScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          Center(child: CameraPreview(_controller!)),
+          Center(child: CameraPreview(controller)),
           // Custom Overlay
           SafeArea(
             child: Column(
