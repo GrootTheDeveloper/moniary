@@ -184,7 +184,10 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       await ref.read(preferredCurrencyProvider.notifier).setCurrency(_currency);
       await ref
           .read(profileSetupControllerProvider.notifier)
-          .saveProfile(fullName: name, timezone: 'Asia/Ho_Chi_Minh');
+          .saveProfile(
+            fullName: name,
+            timezone: 'Asia/Ho_Chi_Minh', // TODO: detect timezone from device
+          );
       if (!mounted) return;
       context.go(CalendarScreen.routePath);
     } catch (error) {

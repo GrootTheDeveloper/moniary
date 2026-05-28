@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class AppTheme {
   static const background = Color(0xFF09111B);
@@ -52,12 +52,12 @@ class AppTheme {
         ),
         bodyLarge: TextStyle(
           fontSize: 15,
-          color: Color(0xFFBECCD9),
+          color: Color(0xFFBECCD9), // Custom onSurfaceVariant — design token
           height: 1.45,
         ),
         bodyMedium: TextStyle(
           fontSize: 13,
-          color: Color(0xFF9CB0C2),
+          color: Color(0xFF9CB0C2), // Custom onSurfaceVariant — design token
           height: 1.4,
         ),
         labelLarge: TextStyle(
