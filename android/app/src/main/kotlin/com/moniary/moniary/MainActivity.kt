@@ -45,7 +45,7 @@ class MainActivity : FlutterActivity() {
         }
 
         if (intent.resolveActivity(packageManager) == null) return false
-        startActivity(Intent.createChooser(intent, "Open exported file"))
+        startActivity(Intent.createChooser(intent, "Mở file đã xuất"))
         return true
     }
 
@@ -61,7 +61,7 @@ class MainActivity : FlutterActivity() {
         }
 
         if (intent.resolveActivity(packageManager) == null) return false
-        startActivity(Intent.createChooser(intent, "Share exported file"))
+        startActivity(Intent.createChooser(intent, "Chia sẻ file"))
         return true
     }
 

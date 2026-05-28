@@ -101,12 +101,12 @@ class _CreateTransactionSheetState
               ),
               const SizedBox(height: 18),
               Text(
-                'Them giao dich',
+                'Thêm giao dịch',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
               Text(
-                'Luu giao dich truoc, phan anh se duoc them o buoc tiep theo.',
+                'Lưu giao dịch trước, phần ảnh sẽ được thêm ở bước tiếp theo.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 20),
@@ -133,7 +133,7 @@ class _CreateTransactionSheetState
                   decimal: true,
                 ),
                 decoration: const InputDecoration(
-                  labelText: 'So tien',
+                  labelText: 'Số tiền',
                   hintText: '57000',
                   prefixIcon: Icon(Icons.payments_outlined),
                 ),
@@ -184,7 +184,7 @@ class _CreateTransactionSheetState
                 minLines: 2,
                 maxLines: 4,
                 decoration: const InputDecoration(
-                  labelText: 'Ghi chu',
+                  labelText: 'Ghi chú',
                   hintText: 'Tra sua KOI / Luong freelance / ...',
                   alignLabelWithHint: true,
                 ),
@@ -192,7 +192,7 @@ class _CreateTransactionSheetState
               if (walletsAsync.hasError || categoriesAsync.hasError) ...[
                 const SizedBox(height: 12),
                 Text(
-                  'Khong tai duoc wallet/category. Mo quan ly du lieu de kiem tra.',
+                  'Không tải được wallet/category. Mở quản lý dữ liệu để kiểm tra.',
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: AppTheme.danger),
@@ -202,8 +202,8 @@ class _CreateTransactionSheetState
                 const SizedBox(height: 12),
                 Text(
                   wallets.isEmpty
-                      ? 'Ban can it nhat 1 wallet dang hoat dong de tao giao dich.'
-                      : 'Ban can it nhat 1 category dang hoat dong cho loai giao dich nay.',
+                      ? 'Bạn cần ít nhất 1 wallet đang hoạt động để tạo giao dịch.'
+                      : 'Bạn cần ít nhất 1 category đang hoạt động cho loại giao dịch này.',
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: AppTheme.amber),
@@ -213,7 +213,7 @@ class _CreateTransactionSheetState
               FilledButton(
                 onPressed: canSubmit ? _submit : null,
                 child: Text(
-                  composerState.isLoading ? 'Dang luu...' : 'Luu giao dich',
+                  composerState.isLoading ? 'Đang lưu...' : 'Lưu giao dịch',
                 ),
               ),
             ],
@@ -257,14 +257,14 @@ class _CreateTransactionSheetState
 
     if (amount == null || amount <= 0) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Nhap so tien hop le.')),
+        const SnackBar(content: Text('Nhập số tiền hợp lệ.')),
       );
       return;
     }
 
     if (_selectedWalletId == null || _selectedCategoryId == null) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Chon wallet va category truoc khi luu.')),
+        const SnackBar(content: Text('Chọn wallet và category trước khi lưu.')),
       );
       return;
     }

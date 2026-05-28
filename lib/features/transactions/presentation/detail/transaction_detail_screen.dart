@@ -213,7 +213,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                   context.pop(result);
                 },
                 icon: const Icon(Icons.edit_outlined),
-                label: const Text('Sua'),
+                label: const Text('Sửa'),
               ),
             ),
             const SizedBox(width: 12),

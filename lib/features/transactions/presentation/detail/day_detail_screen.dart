@@ -29,7 +29,11 @@ class DayDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Column(
           children: [
-            const Text('Hôm nay'),
+            Text(
+              DateUtils.isSameDay(date, DateTime.now())
+                  ? 'Hôm nay'
+                  : DateFormat('EEEE, d/M', 'vi_VN').format(date),
+            ),
             Text(
               DateFormat('dd MMMM, yyyy', 'vi_VN').format(date),
               style: Theme.of(context).textTheme.bodyMedium,

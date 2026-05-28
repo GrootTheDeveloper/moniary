@@ -52,22 +52,31 @@ class LoginScreen extends ConsumerWidget {
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 24),
-                const _AuthButton(
-                  icon: Icons.g_mobiledata_rounded,
-                  label: 'Đăng nhập với Google',
-                  style: _AuthButtonStyle.light,
+                const Opacity(
+                  opacity: 0.5,
+                  child: _AuthButton(
+                    icon: Icons.g_mobiledata_rounded,
+                    label: 'Đăng nhập với Google (Sắp có)',
+                    style: _AuthButtonStyle.light,
+                  ),
                 ),
                 const SizedBox(height: 12),
-                const _AuthButton(
-                  icon: Icons.apple_rounded,
-                  label: 'Đăng nhập với Apple',
-                  style: _AuthButtonStyle.light,
+                const Opacity(
+                  opacity: 0.5,
+                  child: _AuthButton(
+                    icon: Icons.apple_rounded,
+                    label: 'Đăng nhập với Apple (Sắp có)',
+                    style: _AuthButtonStyle.light,
+                  ),
                 ),
                 const SizedBox(height: 12),
-                const _AuthButton(
-                  icon: Icons.email_outlined,
-                  label: 'Đăng nhập với Email',
-                  style: _AuthButtonStyle.dark,
+                const Opacity(
+                  opacity: 0.5,
+                  child: _AuthButton(
+                    icon: Icons.email_outlined,
+                    label: 'Đăng nhập với Email (Sắp có)',
+                    style: _AuthButtonStyle.dark,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 const _OrDivider(),
