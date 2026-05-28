@@ -66,7 +66,7 @@ void main() {
       ],
     );
 
-    expect(wrongTotal, contains('Tổng phần chia'));
-    expect(negative, contains('không được âm'));
+    expect(wrongTotal, GroupExpenseValidationError.splitMismatch);
+    expect(negative, GroupExpenseValidationError.negativeSplit);
   });
 }

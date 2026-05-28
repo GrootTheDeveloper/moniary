@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../shared/utils/error_helpers.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../../domain/privacy_requests/privacy_request_history_entry.dart';
 import '../../domain/privacy_requests/privacy_request_sla.dart';
@@ -50,7 +52,7 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
         error: (error, stackTrace) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(error.toString())));
+          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
         },
       );
     });
@@ -68,7 +70,7 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                 const _ContactInfoTile(
                   icon: Icons.email_outlined,
                   title: 'Email hỗ trợ',
-                  value: 'privacy@moniary.app',
+                  value: AppConstants.privacyEmail,
                   description:
                       'Dùng cho yêu cầu xóa dữ liệu, xuất dữ liệu hoặc câu hỏi về quyền riêng tư.',
                 ),
@@ -287,7 +289,7 @@ class _ResponseTimelineCard extends StatelessWidget {
           ),
           const _TimelineStep(
             label: 'Gửi request thủ công',
-            description: 'Gửi file qua email privacy@moniary.app.',
+            description: 'Gửi file qua email ${AppConstants.privacyEmail}.',
           ),
           _TimelineStep(
             label: 'Theo dõi phản hồi',
@@ -303,7 +305,6 @@ class _ResponseTimelineCard extends StatelessWidget {
 class _SupportShortcutsCard extends StatelessWidget {
   const _SupportShortcutsCard();
 
-  static const _privacyEmail = 'privacy@moniary.app';
 
   @override
   Widget build(BuildContext context) {
@@ -332,7 +333,7 @@ class _SupportShortcutsCard extends StatelessWidget {
             children: [
               OutlinedButton.icon(
                 onPressed: () =>
-                    _copy(context, _privacyEmail, 'Đã copy email support.'),
+                    _copy(context, AppConstants.privacyEmail, 'Đã copy email support.'),
                 icon: const Icon(Icons.email_outlined),
                 label: const Text('Copy email'),
               ),
@@ -340,7 +341,7 @@ class _SupportShortcutsCard extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: () => _copy(
                   context,
-                  'Email: $_privacyEmail\nChủ đề: Moniary privacy request\nĐính kèm file request JSON đã tạo trong app.',
+                  'Email: ${AppConstants.privacyEmail}\nChủ đề: Moniary privacy request\nĐính kèm file request JSON đã tạo trong app.',
                   'Đã copy hướng dẫn gửi request.',
                 ),
                 icon: const Icon(Icons.content_copy_outlined),

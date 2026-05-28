@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../l10n/l10n_extension.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/preferences/preferences_providers.dart';
 import '../../../core/supabase/supabase_providers.dart';
@@ -100,14 +101,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Ghi chi tiêu bằng ảnh',
+                  context.l10n.splashSubtitle,
                   style: Theme.of(
                     context,
                   ).textTheme.titleMedium?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Chụp lại khoản chi, lưu vào lịch,\nquản lý tiền dễ như lưu kỷ niệm.',
+                  context.l10n.splashDescription,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
@@ -119,7 +120,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                       const Icon(Icons.error_outline, color: AppTheme.danger, size: 48),
                       const SizedBox(height: 16),
                       Text(
-                        'Không thể kết nối',
+                        context.l10n.splashErrorConnecting,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppTheme.danger),
                       ),
                       const SizedBox(height: 16),
@@ -130,7 +131,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                           });
                           unawaited(_bootstrap());
                         },
-                        child: const Text('Thử lại'),
+                        child: Text(context.l10n.splashRetry),
                       ),
                     ],
                   )
@@ -152,7 +153,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'Đang khởi động ${AppConstants.appName}...',
+                            context.l10n.splashStarting(AppConstants.appName),
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ),

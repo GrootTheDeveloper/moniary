@@ -3,21 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../auth/presentation/login_screen.dart';
 import '../../../categories/domain/models/category.dart';
 import '../../../categories/application/categories_controller.dart';
-import '../../../groups/presentation/groups_screen.dart';
-import '../../../scanning/presentation/scanning_screen.dart';
-import '../../../settings/presentation/profile_screen.dart';
 import '../../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../../transactions/presentation/detail/day_detail_screen.dart';
 import '../../../wallets/domain/models/wallet.dart';
 import '../../../wallets/application/wallets_controller.dart';
 import '../../application/month/calendar_filter_provider.dart';
 import '../../application/month/calendar_month_provider.dart';
+import '../../application/month/calendar_visible_month_provider.dart';
 import '../../domain/month/calendar_month_data.dart';
 import 'manage_data_sheet.dart';
 
@@ -31,20 +30,12 @@ class CalendarScreen extends ConsumerStatefulWidget {
 }
 
 class _CalendarScreenState extends ConsumerState<CalendarScreen> {
-  late DateTime _visibleMonth;
-
-  @override
-  void initState() {
-    super.initState();
-    final now = DateTime.now();
-    _visibleMonth = DateTime(now.year, now.month, 1);
-  }
-
   @override
   Widget build(BuildContext context) {
     final session = ref.watch(currentSessionProvider);
     final userId = session?.user.id ?? '';
-    final monthAsync = ref.watch(calendarMonthProvider(_visibleMonth));
+    final visibleMonth = ref.watch(calendarVisibleMonthProvider);
+    final monthAsync = ref.watch(calendarMonthProvider(visibleMonth));
 
     return Scaffold(
       body: DecoratedBox(
@@ -61,7 +52,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             child: Column(
               children: [
                 _CalendarHeader(
-                  month: _visibleMonth,
+                  month: visibleMonth,
                   onPreviousMonth: () => _changeMonth(-1),
                   onNextMonth: () => _changeMonth(1),
                   onOpenManager: () => _openManager(context),
@@ -73,9 +64,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     context.go(LoginScreen.routePath);
                   },
                   onMonthSelect: (date) {
-                    setState(() {
-                      _visibleMonth = DateTime(date.year, date.month, 1);
-                    });
+                    ref.read(calendarVisibleMonthProvider.notifier).setMonth(date);
                   },
                 ),
                 const SizedBox(height: 14),
@@ -107,40 +96,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: SizedBox(
-        width: 66,
-        height: 66,
-        child: FloatingActionButton(
-          backgroundColor: AppTheme.mint,
-          foregroundColor: Colors.white,
-          shape: const CircleBorder(),
-          onPressed: () async {
-            final result = await context.push<TransactionMutationResult>(
-              ScanningScreen.routePath,
-            );
-            if (result == null || !mounted) {
-              return;
-            }
-            _applyMutationResult(result);
-          },
-          child: const Icon(Icons.add, size: 34),
-        ),
-      ),
-      bottomNavigationBar: _BottomNavBar(
-        onGroups: () => context.push(GroupsScreen.routePath),
-      ),
     );
   }
 
   void _changeMonth(int offset) {
-    setState(() {
-      _visibleMonth = DateTime(
-        _visibleMonth.year,
-        _visibleMonth.month + offset,
-        1,
-      );
-    });
+    ref.read(calendarVisibleMonthProvider.notifier).changeMonth(offset);
   }
 
   Future<void> _openManager(BuildContext context) {
@@ -171,13 +131,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     };
 
     if (result.currentDate != null) {
-      setState(() {
-        _visibleMonth = DateTime(
-          result.currentDate!.year,
-          result.currentDate!.month,
-          1,
-        );
-      });
+      ref.read(calendarVisibleMonthProvider.notifier).setMonth(result.currentDate!);
     }
 
     for (final month in months) {
@@ -205,7 +159,8 @@ class _CalendarHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = DateFormat.MMMM('vi_VN').format(month);
+    final localeName = Localizations.localeOf(context).toString();
+    final label = DateFormat.MMMM(localeName).format(month);
     final title = '${_capitalize(label)} ${month.year}';
 
     return Row(
@@ -355,7 +310,8 @@ class _MonthPickerContentState extends State<_MonthPickerContent> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'T.$month',
+                      DateFormat.MMM(Localizations.localeOf(context).toString())
+                          .format(DateTime(_selectedYear, month)),
                       style: TextStyle(
                         fontWeight: isSelected
                             ? FontWeight.bold
@@ -398,7 +354,7 @@ class _FilterRow extends ConsumerWidget {
       children: [
         Expanded(
           child: _PillButton(
-            label: selectedWallet?.name ?? 'Tất cả ví',
+            label: selectedWallet?.name ?? context.l10n.calendarAllWallets,
             selected: filters.walletId != null,
             onTap: () =>
                 _showWalletPicker(context, ref, walletsAsync.value ?? []),
@@ -410,7 +366,7 @@ class _FilterRow extends ConsumerWidget {
         const SizedBox(width: 8),
         Expanded(
           child: _PillButton(
-            label: selectedCategory?.name ?? 'Tất cả danh mục',
+            label: selectedCategory?.name ?? context.l10n.calendarAllCategories,
             selected: filters.categoryId != null,
             onTap: () =>
                 _showCategoryPicker(context, ref, categoriesAsync.value ?? []),
@@ -443,10 +399,10 @@ class _FilterRow extends ConsumerWidget {
         shrinkWrap: true,
         padding: const EdgeInsets.symmetric(vertical: 20),
         children: [
-          const ListTile(
+          ListTile(
             title: Text(
-              'Chọn ví lọc',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              context.l10n.calendarSelectWalletFilter,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           ...wallets.map(
@@ -475,10 +431,10 @@ class _FilterRow extends ConsumerWidget {
         shrinkWrap: true,
         padding: const EdgeInsets.symmetric(vertical: 20),
         children: [
-          const ListTile(
+          ListTile(
             title: Text(
-              'Chọn danh mục lọc',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              context.l10n.calendarSelectCategoryFilter,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           ...categories.map(
@@ -502,10 +458,18 @@ class _MonthCalendarCard extends ConsumerWidget {
   final CalendarMonthData monthData;
   final Future<void> Function(DateTime date) onDayTap;
 
-  static const weekdays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final weekdayLabels = [
+      context.l10n.calendarMon,
+      context.l10n.calendarTue,
+      context.l10n.calendarWed,
+      context.l10n.calendarThu,
+      context.l10n.calendarFri,
+      context.l10n.calendarSat,
+      context.l10n.calendarSun,
+    ];
+
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 16, 14, 12),
       decoration: BoxDecoration(
@@ -523,7 +487,7 @@ class _MonthCalendarCard extends ConsumerWidget {
       child: Column(
         children: [
           Row(
-            children: weekdays
+            children: weekdayLabels
                 .map(
                   (day) => Expanded(
                     child: Center(
@@ -676,7 +640,7 @@ class _MonthlySummaryCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _MetricBlock(
-                  label: 'Tổng chi tháng',
+                  label: context.l10n.calendarMonthlyExpense,
                   value: _formatMoney(monthData.totalExpense, isNegative: true),
                   color: AppTheme.danger,
                 ),
@@ -684,7 +648,7 @@ class _MonthlySummaryCard extends StatelessWidget {
               const SizedBox(width: 14),
               Expanded(
                 child: _MetricBlock(
-                  label: 'Tổng thu tháng',
+                  label: context.l10n.calendarMonthlyIncome,
                   value: _formatMoney(monthData.totalIncome, isNegative: false),
                   color: AppTheme.mint,
                 ),
@@ -697,8 +661,11 @@ class _MonthlySummaryCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   monthData.isEmpty
-                      ? 'Chưa có giao dịch nào trong tháng này. Bước tiếp theo là thêm giao dịch để lịch hiện dữ liệu thật.'
-                      : '${monthData.transactionCount} giao dịch trong ${monthData.activeDays} ngày có hoạt động. Lịch đang đọc dữ liệu thật từ Supabase.',
+                      ? context.l10n.calendarEmptyMessage
+                      : context.l10n.calendarStatsMessage(
+                          monthData.transactionCount,
+                          monthData.activeDays,
+                        ),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
@@ -736,7 +703,7 @@ class _CalendarErrorState extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Text(
-          'Không tải được lịch tháng.\n$error',
+          context.l10n.calendarLoadError(error.toString()),
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
@@ -797,87 +764,7 @@ class _MetricBlock extends StatelessWidget {
   }
 }
 
-class _BottomNavBar extends StatelessWidget {
-  const _BottomNavBar({required this.onGroups});
 
-  final VoidCallback onGroups;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 84,
-      decoration: const BoxDecoration(
-        color: Color(0xFF0D1622),
-        border: Border(top: BorderSide(color: AppTheme.outline)),
-      ),
-      child: Row(
-        children: [
-          const SizedBox(width: 10),
-          const _NavItem(
-            icon: Icons.calendar_month_rounded,
-            label: 'Lịch',
-            active: true,
-          ),
-          const _NavItem(
-            icon: Icons.pie_chart_outline_rounded,
-            label: 'Thống kê',
-          ),
-          const SizedBox(width: 76),
-          _NavItem(
-            icon: Icons.groups_2_outlined,
-            label: 'Nhóm',
-            onTap: onGroups,
-          ),
-          _NavItem(
-            icon: Icons.person_outline_rounded,
-            label: 'Hồ sơ',
-            onTap: () => context.push(ProfileScreen.routePath),
-          ),
-          const SizedBox(width: 10),
-        ],
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    this.active = false,
-    this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool active;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = active ? AppTheme.mint : const Color(0xFF74889A);
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: color,
-                fontSize: 11,
-                fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _PillButton extends StatelessWidget {
   const _PillButton({

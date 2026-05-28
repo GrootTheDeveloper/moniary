@@ -6,7 +6,12 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
+import '../../../categories/data/repositories/category_repository.dart';
+import '../../../transactions/data/repositories/transaction_repository.dart';
+import '../../../wallets/data/repositories/wallet_repository.dart';
 import '../../domain/export/export_filters.dart';
 import '../../domain/export/export_history_entry.dart';
 import '../../domain/transparency/data_transparency_summary.dart';
@@ -28,7 +33,7 @@ class AccountRepository {
   }) async {
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw Exception('Ban chua dang nhap.');
+      throw const AppException('Bạn chưa đăng nhập.');
     }
 
     final exportRows = await _buildExportRows(
@@ -73,7 +78,7 @@ class AccountRepository {
   }) async {
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw Exception('Ban chua dang nhap.');
+      throw const AppException('Bạn chưa đăng nhập.');
     }
 
     final exportRows = await _buildExportRows(
@@ -117,7 +122,7 @@ class AccountRepository {
   }) async {
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw Exception('Ban chua dang nhap.');
+      throw const AppException('Bạn chưa đăng nhập.');
     }
 
     final transactions = filters.hasTransactions
@@ -213,9 +218,36 @@ class AccountRepository {
   }
 
   Future<DataTransparencySummary> fetchDataTransparencySummary() async {
+    if (!AppConstants.hasSupabaseConfig) {
+      final txs = TransactionRepository.mockTransactions;
+      final wallets = WalletRepository.mockWallets;
+      final categories = CategoryRepository.mockCategories;
+      
+      final transactionDates = txs
+          .map((t) => t.transactionDate)
+          .toList()
+        ..sort();
+
+      return DataTransparencySummary(
+        transactionCount: txs.length,
+        walletCount: wallets.length,
+        categoryCount: categories.length,
+        photoTransactionCount: txs
+            .where((row) => row.imagePath?.isNotEmpty == true)
+            .length,
+        exportFileCount: 0,
+        oldestTransactionDate: transactionDates.isEmpty
+            ? null
+            : transactionDates.first,
+        newestTransactionDate: transactionDates.isEmpty
+            ? null
+            : transactionDates.last,
+        latestExportDate: null,
+      );
+    }
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw Exception('Ban chua dang nhap.');
+      throw const AppException('Bạn chưa đăng nhập.');
     }
 
     final userId = session.user.id;
@@ -265,9 +297,13 @@ class AccountRepository {
   }
 
   Future<void> deleteAccount() async {
+    if (!AppConstants.hasSupabaseConfig) {
+      await _client.auth.signOut();
+      return;
+    }
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw Exception('Ban chua dang nhap.');
+      throw const AppException('Bạn chưa đăng nhập.');
     }
 
     await _client.functions.invoke('delete-account');
@@ -277,7 +313,7 @@ class AccountRepository {
   Future<File> createDeletionRequest({required String reason}) async {
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw Exception('Ban chua dang nhap.');
+      throw const AppException('Bạn chưa đăng nhập.');
     }
 
     final timestamp = DateTime.now();
@@ -321,7 +357,7 @@ class AccountRepository {
   }) async {
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw Exception('Ban chua dang nhap.');
+      throw const AppException('Bạn chưa đăng nhập.');
     }
 
     final timestamp = DateTime.now();
@@ -373,6 +409,24 @@ class AccountRepository {
     String userId, {
     ExportFilters filters = const ExportFilters(),
   }) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      final txs = TransactionRepository.mockTransactions;
+      return txs.where((t) {
+        if (filters.startDate != null && t.transactionDate.isBefore(filters.startDate!)) return false;
+        if (filters.endDate != null && t.transactionDate.isAfter(filters.endDate!)) return false;
+        return true;
+      }).map((t) => {
+        'id': t.id,
+        'amount': t.amount,
+        'type': t.type.name,
+        'note': t.note,
+        'image_path': t.imagePath,
+        'transaction_date': t.transactionDate.toIso8601String(),
+        'created_at': t.transactionDate.toIso8601String(),
+        'wallet': {'name': t.walletName},
+        'category': {'name': t.categoryName},
+      }).toList();
+    }
     var query = _client
         .from('transactions')
         .select('''
@@ -415,6 +469,17 @@ class AccountRepository {
   }
 
   Future<List<Map<String, dynamic>>> _fetchWalletRows(String userId) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      return WalletRepository.mockWallets.map((w) => {
+        'id': w.id,
+        'name': w.name,
+        'type': w.type.name,
+        'initial_balance': w.initialBalance,
+        'is_default': w.isDefault,
+        'is_active': w.isActive,
+        'created_at': w.createdAt.toIso8601String(),
+      }).toList();
+    }
     final rows = await _client
         .from('wallets')
         .select('id,name,type,initial_balance,is_default,is_active,created_at')
@@ -425,6 +490,16 @@ class AccountRepository {
   }
 
   Future<List<Map<String, dynamic>>> _fetchCategoryRows(String userId) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      return CategoryRepository.mockCategories.map((c) => {
+        'id': c.id,
+        'name': c.name,
+        'type': c.type.name,
+        'is_default': c.isDefault,
+        'is_active': c.isActive,
+        'created_at': c.createdAt.toIso8601String(),
+      }).toList();
+    }
     final rows = await _client
         .from('categories')
         .select('id,name,type,is_default,is_active,created_at')

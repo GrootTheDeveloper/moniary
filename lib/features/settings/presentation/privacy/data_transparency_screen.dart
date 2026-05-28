@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../shared/utils/error_helpers.dart';
 import '../../../auth/presentation/login_screen.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../../domain/transparency/data_transparency_summary.dart';
@@ -27,7 +28,7 @@ class DataTransparencyScreen extends ConsumerWidget {
         error: (error, stackTrace) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(error.toString())));
+          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
         },
       );
     });
@@ -47,7 +48,7 @@ class DataTransparencyScreen extends ConsumerWidget {
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stackTrace) =>
-                  Center(child: Text(error.toString())),
+                  Center(child: Text(userFriendlyMessage(error))),
             ),
             if (actionState.isLoading)
               const Positioned.fill(

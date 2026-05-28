@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'main_shell_screen.dart';
+import '../l10n/l10n_extension.dart';
 import '../core/preferences/preferences_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
@@ -69,11 +71,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Trang không tồn tại'),
+            Text(context.l10n.routeNotFound),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: () => context.go('/'),
-              child: const Text('Quay về trang chính'),
+              child: Text(context.l10n.routeGoBack),
             ),
           ],
         ),
@@ -120,208 +122,345 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: ProfileSetupScreen.routePath,
         builder: (context, state) => const ProfileSetupScreen(),
       ),
-      GoRoute(
-        path: CalendarScreen.routePath,
-        builder: (context, state) => const CalendarScreen(),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return MainShellScreen(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: CalendarScreen.routePath,
+                builder: (context, state) => const CalendarScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: GroupsScreen.routePath,
+                builder: (context, state) => const GroupsScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: ProfileScreen.routePath,
+                builder: (context, state) => const ProfileScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
       GoRoute(
         path: ScanningScreen.routePath,
-        builder: (context, state) => const ScanningScreen(),
+        pageBuilder: (context, state) => buildSlideUpTransitionPage(
+          state: state,
+          child: const ScanningScreen(),
+        ),
       ),
       GoRoute(
         path: OcrReviewScreen.routePath,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final args = state.extra as OcrReviewArgs?;
-          if (args == null) {
-            return const CalendarScreen();
-          }
-          return OcrReviewScreen(args: args);
+          final child = args == null ? const CalendarScreen() : OcrReviewScreen(args: args);
+          return buildSlideUpTransitionPage(state: state, child: child);
         },
       ),
       GoRoute(
-        path: GroupsScreen.routePath,
-        builder: (context, state) => const GroupsScreen(),
-      ),
-      GoRoute(
         path: GroupDetailScreen.routePath,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final groupId = state.extra as String?;
-          if (groupId == null) {
-            return const GroupsScreen();
-          }
-          return GroupDetailScreen(groupId: groupId);
+          final child = groupId == null ? const GroupsScreen() : GroupDetailScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
         },
       ),
       GoRoute(
         path: GroupExpenseFormScreen.routePath,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final args = state.extra as GroupExpenseFormArgs?;
-          if (args == null) {
-            return const GroupsScreen();
-          }
-          return GroupExpenseFormScreen(args: args);
+          final child = args == null ? const GroupsScreen() : GroupExpenseFormScreen(args: args);
+          return buildSlideUpTransitionPage(state: state, child: child);
         },
       ),
       GoRoute(
         path: DebtSummaryScreen.routePath,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final groupId = state.extra as String?;
-          if (groupId == null) {
-            return const GroupsScreen();
-          }
-          return DebtSummaryScreen(groupId: groupId);
+          final child = groupId == null ? const GroupsScreen() : DebtSummaryScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
         },
       ),
       GoRoute(
-        path: ProfileScreen.routePath,
-        builder: (context, state) => const ProfileScreen(),
-      ),
-      GoRoute(
         path: PrivacyCenterScreen.routePath,
-        builder: (context, state) => const PrivacyCenterScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const PrivacyCenterScreen(),
+        ),
       ),
       GoRoute(
         path: HelpCenterScreen.routePath,
-        builder: (context, state) => const HelpCenterScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const HelpCenterScreen(),
+        ),
       ),
       GoRoute(
         path: PrivacyAccountFaqScreen.routePath,
-        builder: (context, state) => const PrivacyAccountFaqScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const PrivacyAccountFaqScreen(),
+        ),
       ),
       GoRoute(
         path: ExportTroubleshootingScreen.routePath,
-        builder: (context, state) => const ExportTroubleshootingScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const ExportTroubleshootingScreen(),
+        ),
       ),
       GoRoute(
         path: DeleteAccountHelpScreen.routePath,
-        builder: (context, state) => const DeleteAccountHelpScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const DeleteAccountHelpScreen(),
+        ),
       ),
       GoRoute(
         path: SupportRequestChecklistScreen.routePath,
-        builder: (context, state) => const SupportRequestChecklistScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const SupportRequestChecklistScreen(),
+        ),
       ),
       GoRoute(
         path: AboutMoniaryScreen.routePath,
-        builder: (context, state) => const AboutMoniaryScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const AboutMoniaryScreen(),
+        ),
       ),
       GoRoute(
         path: PrivacyContactScreen.routePath,
-        builder: (context, state) => const PrivacyContactScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const PrivacyContactScreen(),
+        ),
       ),
       GoRoute(
         path: PrivacyRequestDetailScreen.routePath,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final entry = state.extra as PrivacyRequestHistoryEntry?;
-          if (entry == null) {
-            return const PrivacyCenterScreen();
-          }
-          return PrivacyRequestDetailScreen(entry: entry);
+          final child = entry == null ? const PrivacyCenterScreen() : PrivacyRequestDetailScreen(entry: entry);
+          return buildSlideTransitionPage(state: state, child: child);
         },
       ),
       GoRoute(
         path: DataSafetyScreen.routePath,
-        builder: (context, state) => const DataSafetyScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const DataSafetyScreen(),
+        ),
       ),
       GoRoute(
         path: DataTransparencyScreen.routePath,
-        builder: (context, state) => const DataTransparencyScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const DataTransparencyScreen(),
+        ),
       ),
       GoRoute(
         path: DataDeletionPolicyScreen.routePath,
-        builder: (context, state) => const DataDeletionPolicyScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const DataDeletionPolicyScreen(),
+        ),
       ),
       GoRoute(
         path: DataRetentionPolicyScreen.routePath,
-        builder: (context, state) => const DataRetentionPolicyScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const DataRetentionPolicyScreen(),
+        ),
       ),
       GoRoute(
         path: ThirdPartyServicesScreen.routePath,
-        builder: (context, state) => const ThirdPartyServicesScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const ThirdPartyServicesScreen(),
+        ),
       ),
       GoRoute(
         path: FinancialDisclaimerScreen.routePath,
-        builder: (context, state) => const FinancialDisclaimerScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const FinancialDisclaimerScreen(),
+        ),
       ),
       GoRoute(
         path: PolicyChangelogScreen.routePath,
-        builder: (context, state) => const PolicyChangelogScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const PolicyChangelogScreen(),
+        ),
       ),
       GoRoute(
         path: UserRightsSummaryScreen.routePath,
-        builder: (context, state) => const UserRightsSummaryScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const UserRightsSummaryScreen(),
+        ),
       ),
       GoRoute(
         path: PolicyAcceptanceNoticeScreen.routePath,
-        builder: (context, state) => const PolicyAcceptanceNoticeScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const PolicyAcceptanceNoticeScreen(),
+        ),
       ),
       GoRoute(
         path: DeletionRequestScreen.routePath,
-        builder: (context, state) => const DeletionRequestScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const DeletionRequestScreen(),
+        ),
       ),
       GoRoute(
         path: ExportDataScreen.routePath,
-        builder: (context, state) => const ExportDataScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const ExportDataScreen(),
+        ),
       ),
       GoRoute(
         path: ExportHistoryScreen.routePath,
-        builder: (context, state) => const ExportHistoryScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const ExportHistoryScreen(),
+        ),
       ),
       GoRoute(
         path: PermissionRationaleScreen.routePath,
-        builder: (context, state) => const PermissionRationaleScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const PermissionRationaleScreen(),
+        ),
       ),
       GoRoute(
         path: PrivacyPolicyScreen.routePath,
-        builder: (context, state) => const PrivacyPolicyScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const PrivacyPolicyScreen(),
+        ),
       ),
       GoRoute(
         path: TermsOfUseScreen.routePath,
-        builder: (context, state) => const TermsOfUseScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const TermsOfUseScreen(),
+        ),
       ),
       GoRoute(
         path: StoreComplianceChecklistScreen.routePath,
-        builder: (context, state) => const StoreComplianceChecklistScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const StoreComplianceChecklistScreen(),
+        ),
       ),
       GoRoute(
         path: TrustSafetyScreen.routePath,
-        builder: (context, state) => const TrustSafetyScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const TrustSafetyScreen(),
+        ),
       ),
       GoRoute(
         path: LegalContactScreen.routePath,
-        builder: (context, state) => const LegalContactScreen(),
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const LegalContactScreen(),
+        ),
       ),
       GoRoute(
         path: DayDetailScreen.routePath,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final date = state.extra as DateTime? ?? DateTime.now();
-          return DayDetailScreen(date: date);
+          return buildSlideTransitionPage(
+            state: state,
+            child: DayDetailScreen(date: date),
+          );
         },
       ),
       GoRoute(
         path: TransactionDetailScreen.routePath,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final args = state.extra as TransactionDetailRouteArgs?;
-          if (args == null) {
-            return const CalendarScreen();
-          }
-          return TransactionDetailScreen(args: args);
+          final child = args == null ? const CalendarScreen() : TransactionDetailScreen(args: args);
+          return buildSlideTransitionPage(state: state, child: child);
         },
       ),
       GoRoute(
         path: CameraScreen.routePath,
-        builder: (context, state) => const CameraScreen(),
+        pageBuilder: (context, state) => buildSlideUpTransitionPage(
+          state: state,
+          child: const CameraScreen(),
+        ),
       ),
       GoRoute(
         path: '/transaction-form',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           final imagePath = extra?['imagePath'] as String?;
-          return TransactionFormScreen(initialImagePath: imagePath);
+          return buildSlideUpTransitionPage(
+            state: state,
+            child: TransactionFormScreen(initialImagePath: imagePath),
+          );
         },
       ),
     ],
   );
 });
+
+CustomTransitionPage<void> buildSlideTransitionPage({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(1.0, 0.0);
+      const end = Offset.zero;
+      const curve = Curves.easeInOutCubic;
+      final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
+}
+
+CustomTransitionPage<T> buildSlideUpTransitionPage<T>({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<T>(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(0.0, 1.0);
+      const end = Offset.zero;
+      const curve = Curves.easeInOutCubic;
+      final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
+}
 
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {

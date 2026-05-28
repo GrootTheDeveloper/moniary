@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../shared/utils/error_helpers.dart';
+import '../../../l10n/l10n_extension.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../application/group_controller.dart';
 import '../domain/expense_group.dart';
@@ -19,36 +21,52 @@ class GroupsScreen extends ConsumerWidget {
     final groupsAsync = ref.watch(groupsControllerProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Nhóm chi tiêu')),
-      body: groupsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => _GroupsError(
-          onRetry: () => ref.invalidate(groupsControllerProvider),
-        ),
-        data: (groups) {
-          if (groups.isEmpty) {
-            return const _EmptyGroups();
-          }
-          return ListView.separated(
-            padding: const EdgeInsets.all(20),
-            itemCount: groups.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) => _GroupCard(
-              group: groups[index],
-              onTap: () => context.push(
-                GroupDetailScreen.routePath,
-                extra: groups[index].id,
-              ),
-            ),
-          );
-        },
+      appBar: AppBar(
+        title: Text(context.l10n.groupTitle),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.group_add_outlined, size: 28),
+            onPressed: () => _createGroup(context, ref),
+            tooltip: context.l10n.groupCreate,
+          ),
+          const SizedBox(width: 12),
+        ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppTheme.mint,
-        foregroundColor: Colors.white,
-        onPressed: () => _createGroup(context, ref),
-        icon: const Icon(Icons.group_add_outlined),
-        label: const Text('Tạo nhóm'),
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF0B1521), AppTheme.background, Color(0xFF08111B)],
+          ),
+        ),
+        child: SafeArea(
+          child: groupsAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stackTrace) => _GroupsError(
+              onRetry: () => ref.invalidate(groupsControllerProvider),
+            ),
+            data: (groups) {
+              if (groups.isEmpty) {
+                return const _EmptyGroups();
+              }
+              return ListView.separated(
+                padding: const EdgeInsets.all(20),
+                itemCount: groups.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                itemBuilder: (context, index) => _GroupCard(
+                  group: groups[index],
+                  onTap: () => context.push(
+                    GroupDetailScreen.routePath,
+                    extra: groups[index].id,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -57,7 +75,7 @@ class GroupsScreen extends ConsumerWidget {
     final userId = ref.read(currentSessionProvider)?.user.id;
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bạn cần đăng nhập để tạo nhóm.')),
+        SnackBar(content: Text(context.l10n.groupNeedLogin)),
       );
       return;
     }
@@ -65,20 +83,20 @@ class GroupsScreen extends ConsumerWidget {
     final name = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Tạo nhóm mới'),
+        title: Text(context.l10n.groupCreateDialog),
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(labelText: 'Tên nhóm'),
+          decoration: InputDecoration(labelText: context.l10n.groupNameLabel),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child: Text(context.l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Tạo'),
+            child: Text(context.l10n.commonCreate),
           ),
         ],
       ),
@@ -95,7 +113,7 @@ class GroupsScreen extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Không tạo được nhóm: $error')));
+        ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
       }
     }
   }
@@ -123,7 +141,7 @@ class _GroupCard extends StatelessWidget {
         ),
         title: Text(group.name, style: Theme.of(context).textTheme.titleMedium),
         subtitle: Text(
-          '${group.members.length} thành viên • ${DateFormat('dd/MM/yyyy').format(group.createdAt)}',
+          '${context.l10n.groupMemberCount(group.members.length)} • ${DateFormat('dd/MM/yyyy').format(group.createdAt)}',
         ),
         trailing: const Icon(Icons.chevron_right),
       ),
@@ -145,12 +163,12 @@ class _EmptyGroups extends StatelessWidget {
             const Icon(Icons.groups_2_outlined, size: 70, color: AppTheme.mint),
             const SizedBox(height: 16),
             Text(
-              'Chưa có nhóm chi tiêu',
+              context.l10n.groupEmpty,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             Text(
-              'Tạo nhóm để cùng theo dõi hóa đơn và chia tiền.',
+              context.l10n.groupEmptySubtitle,
               style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
@@ -172,9 +190,9 @@ class _GroupsError extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Không tải được danh sách nhóm.'),
+          Text(context.l10n.groupLoadError),
           const SizedBox(height: 12),
-          OutlinedButton(onPressed: onRetry, child: const Text('Thử lại')),
+          OutlinedButton(onPressed: onRetry, child: Text(context.l10n.commonRetry)),
         ],
       ),
     );

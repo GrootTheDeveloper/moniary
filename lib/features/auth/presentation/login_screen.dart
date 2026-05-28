@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../l10n/l10n_extension.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/supabase_providers.dart';
+import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../profile/data/profile_repository.dart';
@@ -41,40 +43,40 @@ class LoginScreen extends ConsumerWidget {
                 const _BrandTitle(),
                 const SizedBox(height: 8),
                 Text(
-                  'Ghi chi tiêu bằng ảnh',
+                  context.l10n.loginFeatureSubtitle,
                   style: Theme.of(
                     context,
                   ).textTheme.bodyLarge?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 40),
                 Text(
-                  'Đăng nhập',
+                  context.l10n.loginHeader,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 24),
-                const Opacity(
+                Opacity(
                   opacity: 0.5,
                   child: _AuthButton(
                     icon: Icons.g_mobiledata_rounded,
-                    label: 'Đăng nhập với Google (Sắp có)',
+                    label: context.l10n.loginGoogle,
                     style: _AuthButtonStyle.light,
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Opacity(
+                Opacity(
                   opacity: 0.5,
                   child: _AuthButton(
                     icon: Icons.apple_rounded,
-                    label: 'Đăng nhập với Apple (Sắp có)',
+                    label: context.l10n.loginApple,
                     style: _AuthButtonStyle.light,
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Opacity(
+                Opacity(
                   opacity: 0.5,
                   child: _AuthButton(
                     icon: Icons.email_outlined,
-                    label: 'Đăng nhập với Email (Sắp có)',
+                    label: context.l10n.loginEmail,
                     style: _AuthButtonStyle.dark,
                   ),
                 ),
@@ -104,15 +106,15 @@ class LoginScreen extends ConsumerWidget {
                             );
                           } catch (error) {
                             messenger.showSnackBar(
-                              SnackBar(content: Text(error.toString())),
+                              SnackBar(content: Text(userFriendlyMessage(error))),
                             );
                           }
                         },
                   icon: const Icon(Icons.verified_user_outlined),
                   label: Text(
                     authAction.isLoading
-                        ? 'Đang kết nối Supabase...'
-                        : 'Dùng thử không cần đăng nhập',
+                        ? context.l10n.loginConnecting
+                        : context.l10n.loginTryWithoutAuth,
                   ),
                 ),
                 const Spacer(),
@@ -128,8 +130,8 @@ class LoginScreen extends ConsumerWidget {
                     Flexible(
                       child: Text(
                         hasSession
-                            ? 'Phiên đăng nhập đã sẵn sàng. Bạn có thể vào thẳng Lịch.'
-                            : 'Dữ liệu của bạn được bảo mật và đồng bộ với Supabase.',
+                            ? context.l10n.loginSessionReady
+                            : context.l10n.loginDataSecure,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
@@ -262,7 +264,7 @@ class _OrDivider extends StatelessWidget {
         Expanded(child: Container(height: 1, color: AppTheme.outline)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Text('hoặc', style: Theme.of(context).textTheme.bodyMedium),
+          child: Text(context.l10n.loginOr, style: Theme.of(context).textTheme.bodyMedium),
         ),
         Expanded(child: Container(height: 1, color: AppTheme.outline)),
       ],

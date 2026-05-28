@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../l10n/l10n_extension.dart';
 import '../../../core/preferences/preferences_providers.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../auth/presentation/login_screen.dart';
@@ -20,33 +21,34 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _controller = PageController();
   int _pageIndex = 0;
 
-  static const _pages = [
-    (
-      title1: 'Ghi chi tiêu',
-      title2: 'bằng ảnh',
-      subtitle: 'Nhanh gọn  •  Dễ nhớ  •  Không bỏ sót',
-      caption: 'Lưu khoảnh khắc chi tiêu như một cuốn nhật ký mini.',
-      icon: Icons.camera_alt_rounded,
-      accent: AppTheme.amber,
-    ),
-    (
-      title1: 'Xem lịch tháng',
-      title2: 'trực quan',
-      subtitle: 'Ảnh, tổng chi, bộ lọc và nhắc nhở trong một màn hình',
-      caption: 'Mỗi ngày là một ô nhỏ, mỗi giao dịch là một kỷ niệm.',
-      icon: Icons.calendar_month_rounded,
-      accent: AppTheme.mint,
-    ),
-    (
-      title1: 'Thống kê',
-      title2: 'dễ hiểu',
-      subtitle:
-          'Theo dõi thu chi và thói quen tiêu dùng không cần bảng biểu khó',
-      caption: 'Moniary giúp bạn nhìn tiền theo ngữ cảnh sống thật.',
-      icon: Icons.pie_chart_rounded,
-      accent: AppTheme.pink,
-    ),
-  ];
+  List<({String title1, String title2, String subtitle, String caption, IconData icon, Color accent})> _getPages(BuildContext context) {
+    return [
+      (
+        title1: context.l10n.onboardingPage1Title1,
+        title2: context.l10n.onboardingPage1Title2,
+        subtitle: context.l10n.onboardingPage1Subtitle,
+        caption: context.l10n.onboardingPage1Caption,
+        icon: Icons.camera_alt_rounded,
+        accent: AppTheme.amber,
+      ),
+      (
+        title1: context.l10n.onboardingPage2Title1,
+        title2: context.l10n.onboardingPage2Title2,
+        subtitle: context.l10n.onboardingPage2Subtitle,
+        caption: context.l10n.onboardingPage2Caption,
+        icon: Icons.calendar_month_rounded,
+        accent: AppTheme.mint,
+      ),
+      (
+        title1: context.l10n.onboardingPage3Title1,
+        title2: context.l10n.onboardingPage3Title2,
+        subtitle: context.l10n.onboardingPage3Subtitle,
+        caption: context.l10n.onboardingPage3Caption,
+        icon: Icons.pie_chart_rounded,
+        accent: AppTheme.pink,
+      ),
+    ];
+  }
 
   @override
   void dispose() {
@@ -56,7 +58,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final page = _pages[_pageIndex];
+    final pages = _getPages(context);
+    final page = pages[_pageIndex];
 
     return Scaffold(
       body: AuroraBackground(
@@ -69,7 +72,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: _finish,
-                    child: const Text('Bỏ qua'),
+                    child: Text(context.l10n.onboardingSkip),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -95,9 +98,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     controller: _controller,
                     onPageChanged: (index) =>
                         setState(() => _pageIndex = index),
-                    itemCount: _pages.length,
+                    itemCount: pages.length,
                     itemBuilder: (context, index) {
-                      final item = _pages[index];
+                      final item = pages[index];
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -123,7 +126,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                       color: Colors.white70,
                                     ),
                                     Text(
-                                      'Tháng 5',
+                                      context.l10n.onboardingMonthMock,
                                       style: Theme.of(
                                         context,
                                       ).textTheme.titleMedium,
@@ -156,7 +159,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
-                    _pages.length,
+                    pages.length,
                     (index) => AnimatedContainer(
                       duration: const Duration(milliseconds: 220),
                       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -173,11 +176,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
                 const SizedBox(height: 18),
                 FilledButton(
-                  onPressed: _pageIndex == _pages.length - 1
+                  onPressed: _pageIndex == pages.length - 1
                       ? _finish
                       : _nextPage,
                   child: Text(
-                    _pageIndex == _pages.length - 1 ? 'Tiếp tục' : 'Xem tiếp',
+                    _pageIndex == pages.length - 1 ? context.l10n.onboardingFinish : context.l10n.onboardingNextPage,
                   ),
                 ),
               ],
@@ -211,7 +214,7 @@ class _MockFeatureCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 340,
+      height: 270,
       decoration: BoxDecoration(
         color: const Color(0xFF0F1824),
         borderRadius: BorderRadius.circular(26),
@@ -220,20 +223,20 @@ class _MockFeatureCard extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            top: 22,
-            left: 22,
+            top: 16,
+            left: 20,
             child: CircleAvatar(
-              radius: 26,
+              radius: 24,
               backgroundColor: accent,
               child: Icon(icon, color: Colors.white),
             ),
           ),
           Positioned(
-            top: 86,
-            left: 18,
-            right: 18,
+            top: 76,
+            left: 16,
+            right: 16,
             child: Container(
-              height: 190,
+              height: 110,
               decoration: BoxDecoration(
                 color: const Color(0xFF152231),
                 borderRadius: BorderRadius.circular(22),
@@ -242,27 +245,29 @@ class _MockFeatureCard extends StatelessWidget {
                 child: Icon(
                   Icons.image_outlined,
                   color: Colors.white24,
-                  size: 64,
+                  size: 48,
                 ),
               ),
             ),
           ),
           Positioned(
-            bottom: 18,
+            bottom: 12,
+            left: 0,
+            right: 0,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
+              children: [
                 _FeaturePill(
                   icon: Icons.camera_alt_outlined,
-                  label: 'Chụp & lưu',
+                  label: context.l10n.onboardingPillCapture,
                 ),
                 _FeaturePill(
                   icon: Icons.today_outlined,
-                  label: 'Xem theo ngày',
+                  label: context.l10n.onboardingPillCalendar,
                 ),
                 _FeaturePill(
                   icon: Icons.pie_chart_outline_rounded,
-                  label: 'Thống kê',
+                  label: context.l10n.onboardingPillStats,
                 ),
               ],
             ),
@@ -294,7 +299,10 @@ class _FeaturePill extends StatelessWidget {
           child: Icon(icon, size: 22),
         ),
         const SizedBox(height: 8),
-        Text(label, style: Theme.of(context).textTheme.bodyMedium),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 11),
+        ),
       ],
     );
   }

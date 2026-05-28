@@ -45,3 +45,11 @@ app.*.map.json
 /android/app/release
 
 README.md
+
+# Secrets & signing
+key.properties
+*.jks
+*.keystore
+.env
+*.env
+.gemini/

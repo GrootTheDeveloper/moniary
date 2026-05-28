@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/currency_formatter.dart';
 import '../application/group_controller.dart';
 import '../data/debt_calculator_service.dart';
@@ -18,15 +19,15 @@ class DebtSummaryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final groupsAsync = ref.watch(groupsControllerProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Tổng kết công nợ')),
+      appBar: AppBar(title: Text(context.l10n.debtSummaryAppBarTitle)),
       body: groupsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) =>
-            const Center(child: Text('Không tải được nhóm.')),
+            Center(child: Text(context.l10n.groupLoadSingleError)),
         data: (groups) {
           final matches = groups.where((group) => group.id == groupId);
           if (matches.isEmpty) {
-            return const Center(child: Text('Không tìm thấy nhóm.'));
+            return Center(child: Text(context.l10n.groupNotExists));
           }
           return _DebtBody(group: matches.first);
         },
@@ -46,7 +47,7 @@ class _DebtBody extends ConsumerWidget {
     return expensesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) =>
-          const Center(child: Text('Không tính được công nợ.')),
+          Center(child: Text(context.l10n.debtLoadError)),
       data: (expenses) {
         final calculator = const DebtCalculatorService();
         final balances = calculator.calculateBalances(expenses);
@@ -57,7 +58,7 @@ class _DebtBody extends ConsumerWidget {
             Text(group.name, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 6),
             Text(
-              'Số dương là số tiền cần nhận, số âm là số tiền cần trả.',
+              context.l10n.debtExplanation,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 18),
@@ -67,7 +68,7 @@ class _DebtBody extends ConsumerWidget {
             }),
             const SizedBox(height: 22),
             Text(
-              'Gợi ý thanh toán',
+              context.l10n.debtSettlementTitle,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 10),
@@ -76,8 +77,10 @@ class _DebtBody extends ConsumerWidget {
             else
               ...settlements.map(
                 (settlement) => _SettlementCard(
-                  text:
-                      '${_name(settlement.fromMemberId)} trả ${_name(settlement.toMemberId)}',
+                  text: context.l10n.debtOwesPayerToPayee(
+                    _name(settlement.fromMemberId, context),
+                    _name(settlement.toMemberId, context),
+                  ),
                   amount: settlement.amount,
                 ),
               ),
@@ -87,9 +90,9 @@ class _DebtBody extends ConsumerWidget {
     );
   }
 
-  String _name(String memberId) {
+  String _name(String memberId, BuildContext context) {
     final member = group.members.where((entry) => entry.id == memberId);
-    return member.isEmpty ? 'Thành viên' : member.first.displayName;
+    return member.isEmpty ? context.l10n.debtMember : member.first.displayName;
   }
 }
 
@@ -112,7 +115,7 @@ class _BalanceCard extends StatelessWidget {
           child: Icon(positive ? Icons.arrow_downward : Icons.arrow_upward),
         ),
         title: Text(name),
-        subtitle: Text(positive ? 'Sẽ nhận' : 'Cần trả'),
+        subtitle: Text(positive ? context.l10n.debtToReceive : context.l10n.debtToPay),
         trailing: Text(
           '${positive ? '+' : '-'}${formatVnd(value.abs())}',
           style: TextStyle(color: color, fontWeight: FontWeight.w700),
@@ -164,10 +167,10 @@ class _SettledCard extends StatelessWidget {
         color: AppTheme.success.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(18),
       ),
-      child: const Text(
-        'Không có khoản cần thanh toán.',
+      child: Text(
+        context.l10n.debtNoSettlement,
         textAlign: TextAlign.center,
-        style: TextStyle(color: AppTheme.success),
+        style: const TextStyle(color: AppTheme.success),
       ),
     );
   }

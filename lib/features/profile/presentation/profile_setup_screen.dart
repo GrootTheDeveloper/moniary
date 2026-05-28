@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../l10n/l10n_extension.dart';
+import '../../../shared/utils/error_helpers.dart';
 import '../../../core/preferences/preferences_providers.dart';
 import '../../../features/calendar/presentation/month/calendar_screen.dart';
 import '../../../shared/widgets/aurora_background.dart';
@@ -72,12 +74,12 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'Thiết lập hồ sơ',
+                        context.l10n.profileSetupTitle,
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Hoàn tất thông tin để bắt đầu',
+                        context.l10n.profileSetupSubtitle,
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       const SizedBox(height: 28),
@@ -124,20 +126,20 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                 ),
                 const SizedBox(height: 32),
                 Text(
-                  'Tên hiển thị',
+                  context.l10n.profileSetupDisplayName,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 10),
                 TextField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    hintText: 'Nhập tên của bạn',
-                    prefixIcon: Icon(Icons.person_outline_rounded),
+                  decoration: InputDecoration(
+                    hintText: context.l10n.profileSetupDisplayNameHint,
+                    prefixIcon: const Icon(Icons.person_outline_rounded),
                   ),
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Đơn vị tiền tệ',
+                  context.l10n.profileSetupCurrency,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 10),
@@ -160,7 +162,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                 const Spacer(),
                 FilledButton(
                   onPressed: isLoading ? null : _submit,
-                  child: Text(isLoading ? 'Đang lưu...' : 'Bắt đầu'),
+                  child: Text(isLoading ? context.l10n.commonSaving : context.l10n.profileSetupStart),
                 ),
               ],
             ),
@@ -175,7 +177,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Nhập tên hiển thị trước.')),
+        SnackBar(content: Text(context.l10n.profileSetupNameRequired)),
       );
       return;
     }
@@ -191,7 +193,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       if (!mounted) return;
       context.go(CalendarScreen.routePath);
     } catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(error.toString())));
+      messenger.showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
     }
   }
 }

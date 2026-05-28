@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../l10n/l10n_extension.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../shared/utils/currency_formatter.dart';
 import '../../calendar/application/month/calendar_month_provider.dart';
 import '../../categories/application/categories_controller.dart';
@@ -91,7 +93,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
     final loading = composer.isLoading;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Kiểm tra hóa đơn')),
+      appBar: AppBar(title: Text(context.l10n.scanReviewTitle)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
@@ -99,19 +101,19 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
           const SizedBox(height: 18),
           TextField(
             controller: _merchantController,
-            decoration: const InputDecoration(
-              labelText: 'Cửa hàng',
-              prefixIcon: Icon(Icons.storefront_outlined),
+            decoration: InputDecoration(
+              labelText: context.l10n.scanMerchant,
+              prefixIcon: const Icon(Icons.storefront_outlined),
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _amountController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(
-              labelText: 'Số tiền',
-              suffixText: 'đ',
-              prefixIcon: Icon(Icons.payments_outlined),
+            decoration: InputDecoration(
+              labelText: context.l10n.transactionAmount,
+              suffixText: context.l10n.transactionAmountSuffix,
+              prefixIcon: const Icon(Icons.payments_outlined),
             ),
           ),
           const SizedBox(height: 12),
@@ -132,9 +134,9 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
             onChanged: loading
                 ? null
                 : (value) => setState(() => _walletId = value),
-            decoration: const InputDecoration(
-              labelText: 'Ví / Tài khoản',
-              prefixIcon: Icon(Icons.account_balance_wallet_outlined),
+            decoration: InputDecoration(
+              labelText: context.l10n.transactionWalletAccount,
+              prefixIcon: const Icon(Icons.account_balance_wallet_outlined),
             ),
           ),
           const SizedBox(height: 12),
@@ -154,9 +156,9 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
             onChanged: loading
                 ? null
                 : (value) => setState(() => _categoryId = value),
-            decoration: const InputDecoration(
-              labelText: 'Danh mục chi',
-              prefixIcon: Icon(Icons.category_outlined),
+            decoration: InputDecoration(
+              labelText: context.l10n.transactionExpenseCategory,
+              prefixIcon: const Icon(Icons.category_outlined),
             ),
           ),
           const SizedBox(height: 12),
@@ -164,22 +166,22 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
             controller: _noteController,
             minLines: 2,
             maxLines: 4,
-            decoration: const InputDecoration(
-              labelText: 'Ghi chú',
+            decoration: InputDecoration(
+              labelText: context.l10n.transactionNote,
               alignLabelWithHint: true,
-              prefixIcon: Icon(Icons.notes_outlined),
+              prefixIcon: const Icon(Icons.notes_outlined),
             ),
           ),
           if (walletsAsync.isLoading || categoriesAsync.isLoading) ...[
             const SizedBox(height: 18),
             const LinearProgressIndicator(color: AppTheme.mint),
             const SizedBox(height: 8),
-            const Text('Đang tải ví và danh mục...'),
+            Text(context.l10n.transactionLoadingWalletCategory),
           ],
           if (widget.args.result.items.isNotEmpty) ...[
             const SizedBox(height: 18),
             Text(
-              'Mục nhận diện',
+              context.l10n.scanItemsTitle,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -189,22 +191,22 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
                 title: Text(item.name),
                 subtitle: item.quantity == null
                     ? null
-                    : Text('Số lượng: ${item.quantity}'),
+                    : Text(context.l10n.scanQuantity(item.quantity!)),
                 trailing: item.price == null ? null : Text(formatVnd(item.price!)),
               ),
             ),
           ],
           if (walletsAsync.hasError || categoriesAsync.hasError) ...[
             const SizedBox(height: 14),
-            const Text(
-              'Không tải được ví hoặc danh mục. Vui lòng thử lại.',
-              style: TextStyle(color: AppTheme.danger),
+            Text(
+              context.l10n.transactionWalletCategoryError,
+              style: const TextStyle(color: AppTheme.danger),
             ),
           ] else if (wallets.isEmpty || categories.isEmpty) ...[
             const SizedBox(height: 14),
-            const Text(
-              'Cần có ví và danh mục chi đang hoạt động trước khi lưu.',
-              style: TextStyle(color: AppTheme.amber),
+            Text(
+              context.l10n.transactionWalletCategoryRequired,
+              style: const TextStyle(color: AppTheme.amber),
             ),
           ],
           const SizedBox(height: 24),
@@ -212,7 +214,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
             onPressed: loading || wallets.isEmpty || categories.isEmpty
                 ? null
                 : _save,
-            child: Text(loading ? 'Đang lưu...' : 'Lưu giao dịch'),
+            child: Text(loading ? context.l10n.transactionSaving : context.l10n.transactionSaveTransaction),
           ),
         ],
       ),
@@ -256,13 +258,13 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
     );
     if (amount == null || amount <= 0) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Nhập số tiền lớn hơn 0.')),
+        SnackBar(content: Text(context.l10n.transactionAmountPositive)),
       );
       return;
     }
     if (_walletId == null || _categoryId == null) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Chọn ví và danh mục trước khi lưu.')),
+        SnackBar(content: Text(context.l10n.transactionSelectWalletCategory)),
       );
       return;
     }
@@ -270,7 +272,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
     try {
       final Uint8List? bytes = await FlutterImageCompress.compressWithFile(
         widget.args.imagePath,
-        quality: 70,
+        quality: AppConstants.imageCompressQuality,
         format: CompressFormat.jpeg,
       );
       await ref
@@ -299,7 +301,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
       Navigator.of(context).pop(TransactionMutationResult(currentDate: _date));
     } catch (error) {
       messenger.showSnackBar(
-        SnackBar(content: Text('Không lưu được giao dịch: $error')),
+        SnackBar(content: Text(context.l10n.transactionSaveError(error.toString()))),
       );
     }
   }
@@ -326,7 +328,7 @@ class _ConfidenceCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Độ tin cậy OCR: $percent%. Hãy kiểm tra thông tin trước khi lưu.',
+              context.l10n.scanOcrConfidence(percent),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
@@ -352,8 +354,8 @@ class _DateTile extends StatelessWidget {
       ),
       tileColor: AppTheme.surfaceRaised,
       leading: const Icon(Icons.event_outlined),
-      title: const Text('Ngày giao dịch'),
-      trailing: Text(DateFormat('dd/MM/yyyy', 'vi_VN').format(date)),
+      title: Text(context.l10n.transactionDate),
+      trailing: Text(DateFormat('dd/MM/yyyy', Localizations.localeOf(context).toString()).format(date)),
     );
   }
 }

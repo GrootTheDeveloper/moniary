@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../l10n/l10n_extension.dart';
 import '../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../transactions/presentation/camera/camera_screen.dart';
 import '../application/scanning_controller.dart';
@@ -22,7 +23,7 @@ class ScanningScreen extends ConsumerWidget {
     final busy = state.status == ScanningStatus.scanning;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Quét hóa đơn')),
+      appBar: AppBar(title: Text(context.l10n.scanTitle)),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -43,7 +44,7 @@ class ScanningScreen extends ConsumerWidget {
                       ? null
                       : () => _pickImage(ref, ImageSource.camera),
                   icon: const Icon(Icons.camera_alt_outlined),
-                  label: const Text('Chụp ảnh'),
+                  label: Text(context.l10n.scanTakePhoto),
                 ),
               ),
               const SizedBox(width: 12),
@@ -53,16 +54,16 @@ class ScanningScreen extends ConsumerWidget {
                       ? null
                       : () => _pickImage(ref, ImageSource.gallery),
                   icon: const Icon(Icons.photo_library_outlined),
-                  label: const Text('Thư viện'),
+                  label: Text(context.l10n.scanChooseGallery),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 22),
           if (busy)
-            const _StatusCard(
-              icon: CircularProgressIndicator(color: AppTheme.mint),
-              text: 'Đang trích xuất dữ liệu...',
+            _StatusCard(
+              icon: const CircularProgressIndicator(color: AppTheme.mint),
+              text: context.l10n.scanExtracting,
             )
           else if (state.status == ScanningStatus.failure)
             _StatusCard(
@@ -73,17 +74,17 @@ class ScanningScreen extends ConsumerWidget {
               ),
               text:
                   state.errorMessage ??
-                  'Không thể đọc hóa đơn. Vui lòng thử lại.',
+                  context.l10n.scanFailed,
             )
           else if (state.status == ScanningStatus.success)
-            const _StatusCard(
-              icon: Icon(
+            _StatusCard(
+              icon: const Icon(
                 Icons.check_circle_outline,
                 color: AppTheme.success,
                 size: 30,
               ),
               text:
-                  'Đã đọc hóa đơn. Bạn có thể kiểm tra và chỉnh sửa thông tin.',
+                  context.l10n.scanSuccessMessage,
             ),
           const SizedBox(height: 18),
           FilledButton.icon(
@@ -91,13 +92,13 @@ class ScanningScreen extends ConsumerWidget {
                 ? null
                 : () => _extract(context, ref),
             icon: const Icon(Icons.document_scanner_outlined),
-            label: Text(busy ? 'Đang quét...' : 'Trích xuất dữ liệu'),
+            label: Text(busy ? context.l10n.scanScanning : context.l10n.scanExtractButton),
           ),
           const SizedBox(height: 12),
           TextButton.icon(
             onPressed: busy ? null : () => _openManualEntry(context),
             icon: const Icon(Icons.edit_note_outlined),
-            label: const Text('Nhập giao dịch thủ công'),
+            label: Text(context.l10n.scanManualEntry),
           ),
         ],
       ),
@@ -174,12 +175,12 @@ class _ReceiptPreview extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Chưa có ảnh hóa đơn',
+                  context.l10n.scanNoReceipt,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Chụp ảnh hoặc chọn ảnh từ thư viện để bắt đầu.',
+                  context.l10n.scanNoReceiptSubtitle,
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -193,8 +194,8 @@ class _ReceiptPreview extends StatelessWidget {
                   child: Image.file(
                     File(imagePath!),
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Center(
-                      child: Text('Không thể hiển thị ảnh đã chọn.'),
+                    errorBuilder: (context, error, stackTrace) => Center(
+                      child: Text(context.l10n.scanImageError),
                     ),
                   ),
                 ),

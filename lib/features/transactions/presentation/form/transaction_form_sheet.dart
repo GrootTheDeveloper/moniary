@@ -8,9 +8,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../l10n/l10n_extension.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../shared/utils/error_helpers.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../categories/domain/models/category.dart';
 import '../../../categories/application/categories_controller.dart';
+import '../../../scanning/application/scanning_controller.dart';
 import '../../../wallets/domain/models/wallet.dart';
 import '../../../wallets/application/wallets_controller.dart';
 import '../../domain/models/transaction_entry.dart';
@@ -59,6 +63,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
   String? _selectedWalletId;
   String? _selectedCategoryId;
   XFile? _pickedFile;
+  bool _isOcrExtracting = false;
 
   bool get _isEditing => widget.initialTransaction != null;
 
@@ -155,6 +160,57 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     }
   }
 
+  Future<void> _runOcr() async {
+    if (_pickedFile == null) return;
+    setState(() {
+      _isOcrExtracting = true;
+    });
+
+    try {
+      final ocrResult = await ref
+          .read(ocrServiceProvider)
+          .extractFromImage(_pickedFile!.path);
+
+      if (!mounted) return;
+
+      setState(() {
+        if (ocrResult.totalAmount != null) {
+          _amountController.text =
+              _amountFormatter.formatDouble(ocrResult.totalAmount!);
+        }
+        if (ocrResult.note != null) {
+          _noteController.text = ocrResult.note!;
+        } else if (ocrResult.merchantName != null) {
+          _noteController.text = ocrResult.merchantName!;
+        }
+        if (ocrResult.transactionDate != null) {
+          _selectedDate = ocrResult.transactionDate!;
+        }
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Tự động trích xuất dữ liệu thành công!'),
+          backgroundColor: AppTheme.success,
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Không thể đọc hóa đơn. Vui lòng thử lại: $error'),
+          backgroundColor: AppTheme.danger,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isOcrExtracting = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final walletsAsync = ref.watch(walletsControllerProvider);
@@ -177,7 +233,8 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     final canSubmit =
         walletOptions.isNotEmpty &&
         categoryOptions.isNotEmpty &&
-        !composerState.isLoading;
+        !composerState.isLoading &&
+        !_isOcrExtracting;
 
     final selectedCategory = allCategories.cast<Category?>().firstWhere(
       (c) => c?.id == _selectedCategoryId,
@@ -195,7 +252,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
           icon: const Icon(Icons.chevron_left, size: 32),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(_isEditing ? 'Sửa giao dịch' : 'Thêm giao dịch'),
+        title: Text(_isEditing ? context.l10n.transactionEditTitle : context.l10n.transactionCreateTitle),
         centerTitle: true,
         actions: [
           IconButton(
@@ -219,6 +276,57 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
               onClear: () => setState(() => _pickedFile = null),
               onPick: () => _showImageSourceOptions(context),
             ),
+            if (_pickedFile != null) ...[
+              const SizedBox(height: 12),
+              if (_isOcrExtracting)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: AppTheme.mint,
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Text(
+                          'Đang trích xuất dữ liệu...',
+                          style: TextStyle(
+                            color: AppTheme.mint,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppTheme.mint,
+                      side: const BorderSide(color: AppTheme.mint, width: 1.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    onPressed: _runOcr,
+                    icon: const Icon(Icons.document_scanner_outlined),
+                    label: const Text(
+                      'Quét hóa đơn bằng AI (OCR)',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+            ],
             const SizedBox(height: 24),
             _AmountInput(
               controller: _amountController,
@@ -239,8 +347,8 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             ),
             const SizedBox(height: 24),
             _FormTile(
-              label: 'Danh mục',
-              value: selectedCategory?.name ?? 'Chọn danh mục',
+              label: context.l10n.transactionCategory,
+              value: selectedCategory?.name ?? context.l10n.transactionSelectCategory,
               icon: Icons.category_outlined,
               trailing: const Icon(Icons.chevron_right, color: Colors.grey),
               leadingWidget: selectedCategory != null
@@ -250,8 +358,8 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             ),
             const SizedBox(height: 12),
             _FormTile(
-              label: 'Ví / Tài khoản',
-              value: selectedWallet?.name ?? 'Chọn ví',
+              label: context.l10n.transactionWalletAccount,
+              value: selectedWallet?.name ?? context.l10n.transactionSelectWallet,
               icon: Icons.account_balance_wallet_outlined,
               trailing: const Icon(Icons.chevron_right, color: Colors.grey),
               leadingWidget: selectedWallet != null
@@ -261,10 +369,10 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             ),
             const SizedBox(height: 12),
             _FormTile(
-              label: 'Ngày giờ',
+              label: context.l10n.transactionDateTime,
               value: DateFormat(
                 'dd/MM/yyyy  HH:mm',
-                'vi_VN',
+                Localizations.localeOf(context).toString(),
               ).format(_selectedDate),
               icon: Icons.calendar_today_outlined,
               trailing: const Icon(Icons.chevron_right, color: Colors.grey),
@@ -343,15 +451,15 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt_outlined),
-              title: const Text('Chụp ảnh mới'),
+              title: Text(context.l10n.scanTakePhoto),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.camera);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Chọn từ thư viện'),
+              leading: const Icon(Icons.photo_library),
+              title: Text(context.l10n.scanChooseGallery),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.gallery);
@@ -395,7 +503,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
 
     if (amount <= 0) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Nhập số tiền hợp lệ.')),
+        SnackBar(content: Text(context.l10n.transactionAmountInvalid)),
       );
       return;
     }
@@ -405,7 +513,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       if (_pickedFile != null) {
         imageBytes = await FlutterImageCompress.compressWithFile(
           _pickedFile!.path,
-          quality: 70,
+          quality: AppConstants.imageCompressQuality,
           format: CompressFormat.jpeg,
         );
       }
@@ -450,7 +558,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
         ),
       );
     } catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(error.toString())));
+      messenger.showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
     }
   }
 }
@@ -532,7 +640,7 @@ class _ImagePreview extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Thay đổi ảnh',
+                context.l10n.transactionChangePhoto,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
@@ -562,7 +670,7 @@ class _AmountInput extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            'Số tiền',
+            context.l10n.transactionAmount,
             style: Theme.of(
               context,
             ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
@@ -589,7 +697,7 @@ class _AmountInput extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const Text('đ', style: TextStyle(fontSize: 20, color: Colors.grey)),
+          Text(context.l10n.transactionAmountSuffix, style: const TextStyle(fontSize: 20, color: Colors.grey)),
         ],
       ),
     );
@@ -614,7 +722,7 @@ class _TypeSelector extends StatelessWidget {
         children: [
           Expanded(
             child: _TypeButton(
-              label: 'Chi',
+              label: context.l10n.categoryExpense,
               icon: Icons.south_east,
               selected: type == TransactionType.expense,
               onTap: () => onChanged(TransactionType.expense),
@@ -623,7 +731,7 @@ class _TypeSelector extends StatelessWidget {
           ),
           Expanded(
             child: _TypeButton(
-              label: 'Thu',
+              label: context.l10n.categoryIncome,
               icon: Icons.north_east,
               selected: type == TransactionType.income,
               onTap: () => onChanged(TransactionType.income),
@@ -751,18 +859,18 @@ class _NoteInput extends StatelessWidget {
         children: [
           const Icon(Icons.notes, color: Colors.grey, size: 24),
           const SizedBox(width: 12),
-          const Text('Ghi chú', style: TextStyle(color: Colors.grey)),
+          Text(context.l10n.transactionNote, style: const TextStyle(color: Colors.grey)),
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
               controller: controller,
               maxLines: null,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 isDense: true,
                 border: InputBorder.none,
-                hintText: 'Nhập ghi chú...',
-                hintStyle: TextStyle(color: Colors.grey),
+                hintText: context.l10n.transactionEnterNote,
+                hintStyle: const TextStyle(color: Colors.grey),
                 contentPadding: EdgeInsets.zero,
               ),
             ),

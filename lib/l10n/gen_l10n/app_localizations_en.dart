@@ -1,0 +1,956 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appName => 'Moniary';
+
+  @override
+  String get commonSave => 'Save';
+
+  @override
+  String get commonCancel => 'Cancel';
+
+  @override
+  String get commonDelete => 'Delete';
+
+  @override
+  String get commonEdit => 'Edit';
+
+  @override
+  String get commonRetry => 'Retry';
+
+  @override
+  String get commonAdd => 'Add';
+
+  @override
+  String get commonClose => 'Close';
+
+  @override
+  String get commonSaving => 'Saving...';
+
+  @override
+  String get commonLoading => 'Loading...';
+
+  @override
+  String get commonCopy => 'Copy';
+
+  @override
+  String get commonShare => 'Share';
+
+  @override
+  String get commonOpen => 'Open';
+
+  @override
+  String get commonSelect => 'Select';
+
+  @override
+  String get commonCreate => 'Create';
+
+  @override
+  String get errorGeneric => 'An error occurred. Please try again.';
+
+  @override
+  String get errorNotLoggedIn => 'You are not logged in.';
+
+  @override
+  String get errorConnection => 'Connection error. Please try again.';
+
+  @override
+  String get loginTitle => 'Moniary';
+
+  @override
+  String get loginSubtitle => 'Personal expense manager';
+
+  @override
+  String get loginAnonymous => 'Start anonymous trial';
+
+  @override
+  String get loginTerms =>
+      'By continuing, you agree to Moniary\'s terms of use and privacy policy.';
+
+  @override
+  String get loginFeatureSubtitle => 'Track expenses with photos';
+
+  @override
+  String get loginHeader => 'Sign In';
+
+  @override
+  String get loginGoogle => 'Sign in with Google (Coming soon)';
+
+  @override
+  String get loginApple => 'Sign in with Apple (Coming soon)';
+
+  @override
+  String get loginEmail => 'Sign in with Email (Coming soon)';
+
+  @override
+  String get loginOr => 'or';
+
+  @override
+  String get loginConnecting => 'Connecting to Supabase...';
+
+  @override
+  String get loginTryWithoutAuth => 'Try without logging in';
+
+  @override
+  String get loginSessionReady =>
+      'Session ready. You can go straight to Calendar.';
+
+  @override
+  String get loginDataSecure => 'Your data is secure and synced with Supabase.';
+
+  @override
+  String get splashLoading => 'Loading app...';
+
+  @override
+  String get splashRetry => 'Retry';
+
+  @override
+  String get splashError =>
+      'Cannot connect. Please check your network and try again.';
+
+  @override
+  String get splashErrorConnecting => 'Cannot connect';
+
+  @override
+  String get splashSubtitle => 'Track expenses with photos';
+
+  @override
+  String get splashDescription =>
+      'Capture spending, save to calendar,\nmanage money as easily as saving memories.';
+
+  @override
+  String splashStarting(String appName) {
+    return 'Starting $appName...';
+  }
+
+  @override
+  String get onboardingSkip => 'Skip';
+
+  @override
+  String get onboardingStart => 'Start';
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingNextPage => 'Next';
+
+  @override
+  String get onboardingFinish => 'Continue';
+
+  @override
+  String get onboardingMonthMock => 'May';
+
+  @override
+  String get onboardingPillCapture => 'Capture & save';
+
+  @override
+  String get onboardingPillCalendar => 'Daily view';
+
+  @override
+  String get onboardingPillStats => 'Stats';
+
+  @override
+  String get onboardingPage1Title1 => 'Track expenses';
+
+  @override
+  String get onboardingPage1Title2 => 'with photos';
+
+  @override
+  String get onboardingPage1Subtitle => 'Fast  •  Memorable  •  Never miss';
+
+  @override
+  String get onboardingPage1Caption =>
+      'Save spending moments like a mini diary.';
+
+  @override
+  String get onboardingPage2Title1 => 'View calendar';
+
+  @override
+  String get onboardingPage2Title2 => 'intuitively';
+
+  @override
+  String get onboardingPage2Subtitle =>
+      'Photos, totals, filters and alerts in one screen';
+
+  @override
+  String get onboardingPage2Caption =>
+      'Each day is a cell, each transaction is a memory.';
+
+  @override
+  String get onboardingPage3Title1 => 'Analytics';
+
+  @override
+  String get onboardingPage3Title2 => 'made simple';
+
+  @override
+  String get onboardingPage3Subtitle =>
+      'Track income/expenses without complex charts';
+
+  @override
+  String get onboardingPage3Caption =>
+      'Moniary helps you view money in real context.';
+
+  @override
+  String get profileSetupTitle => 'Profile Setup';
+
+  @override
+  String get profileSetupSubtitle => 'Complete your info to get started';
+
+  @override
+  String get profileSetupDisplayName => 'Display Name';
+
+  @override
+  String get profileSetupDisplayNameHint => 'Enter your name';
+
+  @override
+  String get profileSetupCurrency => 'Currency';
+
+  @override
+  String get profileSetupStart => 'Start';
+
+  @override
+  String get profileSetupNameRequired => 'Please enter a display name.';
+
+  @override
+  String get calendarTitle => 'Calendar';
+
+  @override
+  String get calendarAllWallets => 'All wallets';
+
+  @override
+  String get calendarAllCategories => 'All categories';
+
+  @override
+  String get calendarNoTransactions => 'No transactions this month.';
+
+  @override
+  String get calendarIncome => 'Income';
+
+  @override
+  String get calendarExpense => 'Expense';
+
+  @override
+  String get calendarBalance => 'Balance';
+
+  @override
+  String get calendarSelectWalletFilter => 'Select wallet filter';
+
+  @override
+  String get calendarSelectCategoryFilter => 'Select category filter';
+
+  @override
+  String get calendarMonthlyExpense => 'Monthly Expense';
+
+  @override
+  String get calendarMonthlyIncome => 'Monthly Income';
+
+  @override
+  String get calendarEmptyMessage =>
+      'No transactions this month. Add a transaction to start tracking.';
+
+  @override
+  String calendarStatsMessage(int count, int days) {
+    return '$count transactions in $days active days. Loaded from Supabase.';
+  }
+
+  @override
+  String calendarLoadError(String error) {
+    return 'Could not load calendar: $error';
+  }
+
+  @override
+  String get calendarStatsTab => 'Stats';
+
+  @override
+  String get calendarMon => 'Mon';
+
+  @override
+  String get calendarTue => 'Tue';
+
+  @override
+  String get calendarWed => 'Wed';
+
+  @override
+  String get calendarThu => 'Thu';
+
+  @override
+  String get calendarFri => 'Fri';
+
+  @override
+  String get calendarSat => 'Sat';
+
+  @override
+  String get calendarSun => 'Sun';
+
+  @override
+  String get calendarToday => 'Today';
+
+  @override
+  String get transactionSaveTransaction => 'Save transaction';
+
+  @override
+  String transactionLoadDayError(String error) {
+    return 'Could not load transactions for this day.\n$error';
+  }
+
+  @override
+  String get transactionTotalIncome => 'Total Income';
+
+  @override
+  String get transactionTotalExpense => 'Total Expense';
+
+  @override
+  String get transactionNetTotal => 'Net Total';
+
+  @override
+  String transactionCount(int count) {
+    return '$count transactions';
+  }
+
+  @override
+  String get transactionDayEmpty =>
+      'No transactions for this day. Tap + to add one.';
+
+  @override
+  String transactionLoadDetailError(String error) {
+    return 'Could not load transaction details.\n$error';
+  }
+
+  @override
+  String get transactionNoteEmpty => 'No note for this transaction.';
+
+  @override
+  String get transactionDeleteTitleQuestion => 'Delete transaction?';
+
+  @override
+  String get transactionDeleteUndone => 'This action cannot be undone.';
+
+  @override
+  String get transactionAmount => 'Amount';
+
+  @override
+  String get transactionAmountSuffix => '₫';
+
+  @override
+  String get transactionWallet => 'Wallet';
+
+  @override
+  String get transactionCategory => 'Category';
+
+  @override
+  String get transactionNote => 'Note';
+
+  @override
+  String get transactionNoteHint => 'Bubble tea / Freelance pay / ...';
+
+  @override
+  String get transactionDate => 'Transaction date';
+
+  @override
+  String get transactionSelectWalletCategory =>
+      'Select wallet and category before saving.';
+
+  @override
+  String get transactionAmountInvalid => 'Enter a valid amount.';
+
+  @override
+  String get transactionSaving => 'Saving...';
+
+  @override
+  String get transactionCreateTitle => 'Create transaction';
+
+  @override
+  String get transactionEditTitle => 'Edit transaction';
+
+  @override
+  String get transactionDeleteConfirm => 'Delete this transaction?';
+
+  @override
+  String get transactionDeleteSuccess => 'Transaction deleted.';
+
+  @override
+  String transactionSaveError(String error) {
+    return 'Could not save transaction: $error';
+  }
+
+  @override
+  String get transactionCreateSubtitle =>
+      'Save transaction first, photo can be added in the next step.';
+
+  @override
+  String get transactionWalletCategoryLoadError =>
+      'Could not load wallets/categories. Open data management to check.';
+
+  @override
+  String get transactionChangePhoto => 'Change photo';
+
+  @override
+  String get transactionEnterNote => 'Enter note...';
+
+  @override
+  String get transactionSelectCategory => 'Select category';
+
+  @override
+  String get transactionSelectWallet => 'Select wallet';
+
+  @override
+  String get transactionDateTime => 'Date & Time';
+
+  @override
+  String get transactionWalletAccount => 'Wallet / Account';
+
+  @override
+  String get transactionExpenseCategory => 'Expense category';
+
+  @override
+  String get transactionLoadingWalletCategory =>
+      'Loading wallets and categories...';
+
+  @override
+  String get transactionWalletCategoryError =>
+      'Could not load wallets or categories. Please try again.';
+
+  @override
+  String get transactionWalletCategoryRequired =>
+      'An active wallet and expense category are required before saving.';
+
+  @override
+  String get transactionAmountPositive => 'Enter an amount greater than 0.';
+
+  @override
+  String get walletTitle => 'Wallets / Accounts';
+
+  @override
+  String get walletDescription =>
+      'Manage default wallet, initial balance and activation status.';
+
+  @override
+  String get walletEmpty => 'No wallets yet.';
+
+  @override
+  String get walletDefault => 'Default';
+
+  @override
+  String get walletActive => 'Active';
+
+  @override
+  String get walletInactive => 'Hidden';
+
+  @override
+  String get walletCreateTitle => 'Create wallet';
+
+  @override
+  String get walletEditTitle => 'Edit wallet';
+
+  @override
+  String get walletName => 'Wallet name';
+
+  @override
+  String get walletType => 'Wallet type';
+
+  @override
+  String get walletInitialBalance => 'Initial balance';
+
+  @override
+  String get walletSetDefault => 'Set as default wallet';
+
+  @override
+  String get walletActivated => 'Activated';
+
+  @override
+  String get walletSaving => 'Saving...';
+
+  @override
+  String get walletSave => 'Save wallet';
+
+  @override
+  String get walletNameRequired => 'Wallet name cannot be empty.';
+
+  @override
+  String get walletTypeCash => 'Cash';
+
+  @override
+  String get walletTypeBank => 'Bank';
+
+  @override
+  String get walletTypeEwallet => 'E-Wallet';
+
+  @override
+  String get walletTypeCredit => 'Credit Card';
+
+  @override
+  String get walletTypeOther => 'Other';
+
+  @override
+  String walletError(String error) {
+    return 'Wallet error: $error';
+  }
+
+  @override
+  String get walletNeedOneActive =>
+      'You need at least 1 active wallet to create a transaction.';
+
+  @override
+  String get categoryTitle => 'Categories';
+
+  @override
+  String get categoryDescription =>
+      'Manage income/expense categories for transactions.';
+
+  @override
+  String get categoryEmpty => 'No categories yet.';
+
+  @override
+  String get categoryNoData => 'No data.';
+
+  @override
+  String get categoryCreateTitle => 'Create category';
+
+  @override
+  String get categoryEditTitle => 'Edit category';
+
+  @override
+  String get categoryName => 'Category name';
+
+  @override
+  String get categoryType => 'Category type';
+
+  @override
+  String get categoryActivated => 'Activated';
+
+  @override
+  String get categorySaving => 'Saving...';
+
+  @override
+  String get categorySave => 'Save category';
+
+  @override
+  String get categoryNameRequired => 'Category name cannot be empty.';
+
+  @override
+  String categoryError(String error) {
+    return 'Category error: $error';
+  }
+
+  @override
+  String get categoryExpense => 'Expense';
+
+  @override
+  String get categoryIncome => 'Income';
+
+  @override
+  String get categoryNeedOneActive =>
+      'You need at least 1 active category for this transaction type.';
+
+  @override
+  String get scanTitle => 'Scan receipt';
+
+  @override
+  String get scanTakePhoto => 'Take photo';
+
+  @override
+  String get scanChooseGallery => 'Choose from gallery';
+
+  @override
+  String get scanExtracting => 'Extracting data...';
+
+  @override
+  String get scanFailed => 'Cannot read receipt. Please try again.';
+
+  @override
+  String get scanReviewTitle => 'Review receipt';
+
+  @override
+  String get scanMerchant => 'Merchant';
+
+  @override
+  String scanOcrConfidence(int percent) {
+    return 'OCR confidence: $percent%. Please verify before saving.';
+  }
+
+  @override
+  String get scanItemsTitle => 'Detected items';
+
+  @override
+  String scanQuantity(int quantity) {
+    return 'Quantity: $quantity';
+  }
+
+  @override
+  String get scanSuccessMessage =>
+      'Receipt read successfully. You can review and edit information.';
+
+  @override
+  String get scanScanning => 'Scanning...';
+
+  @override
+  String get scanExtractButton => 'Extract data';
+
+  @override
+  String get scanManualEntry => 'Enter transaction manually';
+
+  @override
+  String get scanNoReceipt => 'No receipt photo yet';
+
+  @override
+  String get scanNoReceiptSubtitle =>
+      'Capture a receipt or choose from gallery to start.';
+
+  @override
+  String get scanImageError => 'Cannot display selected photo.';
+
+  @override
+  String get groupTitle => 'Group expenses';
+
+  @override
+  String get groupEmpty => 'No expense groups yet';
+
+  @override
+  String get groupEmptySubtitle =>
+      'Create a group to track bills and split expenses.';
+
+  @override
+  String get groupCreate => 'Create group';
+
+  @override
+  String get groupCreateDialog => 'Create new group';
+
+  @override
+  String get groupNameLabel => 'Group name';
+
+  @override
+  String get groupNeedLogin => 'You need to be logged in to create a group.';
+
+  @override
+  String groupMemberCount(int count) {
+    return '$count members';
+  }
+
+  @override
+  String get groupLoadError => 'Could not load group list.';
+
+  @override
+  String get groupAddMember => 'Add member';
+
+  @override
+  String get groupMemberName => 'Member name';
+
+  @override
+  String get groupExpenses => 'Group expenses';
+
+  @override
+  String get groupAddExpense => 'Add expense';
+
+  @override
+  String get groupNoExpenses => 'No expenses yet.';
+
+  @override
+  String get groupNoMembers => 'No members in this group besides you.';
+
+  @override
+  String get groupDebtSummary => 'Debt summary';
+
+  @override
+  String get groupRemoveMemberConfirm => 'Remove this member?';
+
+  @override
+  String get groupDetailTitle => 'Group expenses';
+
+  @override
+  String get groupLoadSingleError => 'Could not load group.';
+
+  @override
+  String get groupNotExists => 'Group no longer exists.';
+
+  @override
+  String get groupMembersHeader => 'Members';
+
+  @override
+  String get groupExpenseHistory => 'Expense history';
+
+  @override
+  String get groupLoadExpensesError => 'Could not load group expenses.';
+
+  @override
+  String get groupDeletedMember => 'Deleted member';
+
+  @override
+  String get groupMemberEmailHint => 'Email (optional)';
+
+  @override
+  String get groupDeleteExpenseConfirmTitle => 'Delete expense?';
+
+  @override
+  String get groupDeleteExpenseConfirmMessage =>
+      'This action will update group balances.';
+
+  @override
+  String groupPayerSubtitle(String payer, String date) {
+    return '$payer paid • $date';
+  }
+
+  @override
+  String get groupEmptyExpensesMessage =>
+      'No expenses yet. Add the first expense to start splitting.';
+
+  @override
+  String get debtSummaryTitle => 'Debt summary';
+
+  @override
+  String get debtNoData => 'No expense data yet.';
+
+  @override
+  String get debtSettlementTitle => 'Settlement suggestions';
+
+  @override
+  String get debtNoSettlement => 'No debts to settle.';
+
+  @override
+  String debtOwes(String from, String to, String amount) {
+    return '$from pays $to $amount';
+  }
+
+  @override
+  String get debtSummaryAppBarTitle => 'Group balances';
+
+  @override
+  String get debtLoadError => 'Could not calculate debts.';
+
+  @override
+  String get debtExplanation =>
+      'Positive indicates money to receive, negative indicates money to pay.';
+
+  @override
+  String debtOwesPayerToPayee(String from, String to) {
+    return '$from pays $to';
+  }
+
+  @override
+  String get debtMember => 'Member';
+
+  @override
+  String get debtToReceive => 'To receive';
+
+  @override
+  String get debtToPay => 'To pay';
+
+  @override
+  String get expenseFormTitle => 'Add group expense';
+
+  @override
+  String get expenseFormEditTitle => 'Edit expense';
+
+  @override
+  String get expenseAmount => 'Amount';
+
+  @override
+  String get expenseNote => 'Note';
+
+  @override
+  String get expenseDate => 'Date';
+
+  @override
+  String get expensePayer => 'Payer';
+
+  @override
+  String get expenseParticipants => 'Participants';
+
+  @override
+  String get expenseSplitEqual => 'Split equally';
+
+  @override
+  String get expenseSplitManual => 'Enter amounts manually';
+
+  @override
+  String get expenseSplitPercentage => 'By percentage';
+
+  @override
+  String get expenseSave => 'Save expense';
+
+  @override
+  String get expenseFormMinMembersNotice =>
+      'Please add at least 2 members before splitting expenses.';
+
+  @override
+  String get expenseFormTotalCost => 'Total cost';
+
+  @override
+  String get expenseFormContentLabel => 'Description';
+
+  @override
+  String get expenseFormPayer => 'Paid by';
+
+  @override
+  String get expenseFormDate => 'Date';
+
+  @override
+  String get validationAmountPositive => 'Amount must be greater than 0.';
+
+  @override
+  String validationMinMembers(int min) {
+    return 'Group must have at least $min members.';
+  }
+
+  @override
+  String get validationSelectPayer => 'Select a payer.';
+
+  @override
+  String get validationSelectParticipant => 'Select at least one participant.';
+
+  @override
+  String validationSplitMismatch(String splitTotal, String total) {
+    return 'Split total ($splitTotal) must equal expense total ($total).';
+  }
+
+  @override
+  String get validationNegativeSplit => 'Split amounts cannot be negative.';
+
+  @override
+  String get validationInvalidParticipants => 'Invalid list of participants.';
+
+  @override
+  String get validationSplitCountMismatch =>
+      'Each participant needs exactly one split.';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get profileUserDefault => 'Moniary User';
+
+  @override
+  String get profileAnonymous => 'Anonymous trial account';
+
+  @override
+  String get profileMyData => 'My data';
+
+  @override
+  String get profileExportData => 'Export data';
+
+  @override
+  String get profileExportSubtitle =>
+      'Choose CSV, Excel, or PDF to download personal data.';
+
+  @override
+  String get profilePrivacyCenter => 'Privacy center';
+
+  @override
+  String get profilePrivacySubtitle =>
+      'Manage privacy policy, data, and permissions.';
+
+  @override
+  String get profileAccount => 'Account';
+
+  @override
+  String get profileSignOut => 'Sign out';
+
+  @override
+  String get profileSignOutSubtitle =>
+      'Sign out of current account on this device.';
+
+  @override
+  String get profileDeleteAccount => 'Delete account';
+
+  @override
+  String get profileDeleteSubtitle =>
+      'Delete personal data, transactions, and saved photos.';
+
+  @override
+  String get deleteAccountTitle => 'Delete account';
+
+  @override
+  String get deleteAccountWarning =>
+      'This action will permanently delete all your personal data, transactions, and transaction photos.';
+
+  @override
+  String get deleteAccountConfirm => 'Delete account';
+
+  @override
+  String get deleteAccountTitleQuestion => 'Delete account?';
+
+  @override
+  String get deleteAccountUndone =>
+      'This action cannot be undone within the app.';
+
+  @override
+  String get deleteAccountConsequence1 =>
+      'Delete profile and current login session.';
+
+  @override
+  String get deleteAccountConsequence2 =>
+      'Delete wallets, categories, and all transactions.';
+
+  @override
+  String get deleteAccountConsequence3 =>
+      'Delete transaction photos in Storage by user ID.';
+
+  @override
+  String get deleteAccountUnderstand =>
+      'I understand that my data will be permanently deleted.';
+
+  @override
+  String get deleteAccountConfirmationText => 'DELETE ACCOUNT';
+
+  @override
+  String deleteAccountConfirmInput(String text) {
+    return 'Enter $text to confirm';
+  }
+
+  @override
+  String get exportTitle => 'Export data';
+
+  @override
+  String get exportFormat => 'File format';
+
+  @override
+  String get exportDateRange => 'Date range';
+
+  @override
+  String get exportAllTime => 'All time';
+
+  @override
+  String get exportDataTypes => 'Data types';
+
+  @override
+  String get exportButton => 'Export data';
+
+  @override
+  String get exportDone => 'Data exported';
+
+  @override
+  String get exportHistoryTitle => 'Export history';
+
+  @override
+  String get exportHistoryEmpty => 'No export files yet.';
+
+  @override
+  String get manageDataTitle => 'Manage data';
+
+  @override
+  String get cameraTakePhoto => 'Capture';
+
+  @override
+  String get cameraFlip => 'Flip camera';
+
+  @override
+  String get cameraNoPermission => 'Camera access required.';
+
+  @override
+  String get routeNotFound => 'Page not found';
+
+  @override
+  String get routeGoBack => 'Go back';
+
+  @override
+  String get statsDevelopingMessage =>
+      'Statistics feature is under development.';
+}

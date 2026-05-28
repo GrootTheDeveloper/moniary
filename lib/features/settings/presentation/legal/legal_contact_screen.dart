@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/constants/app_constants.dart';
 
 class LegalContactScreen extends StatelessWidget {
   const LegalContactScreen({super.key});
 
   static const routePath = '/legal-contact';
-
-  static const _privacyEmail = 'privacy@moniary.app';
-  static const _supportEmail = 'support@moniary.app';
-  static const _legalEmail = 'legal@moniary.app';
 
   @override
   Widget build(BuildContext context) {
@@ -25,21 +22,21 @@ class LegalContactScreen extends StatelessWidget {
             _ContactCard(
               icon: Icons.privacy_tip_outlined,
               title: 'Privacy',
-              value: _privacyEmail,
+              value: AppConstants.privacyEmail,
               description:
                   'Yêu cầu dữ liệu cá nhân, xóa dữ liệu hoặc câu hỏi privacy.',
             ),
             _ContactCard(
               icon: Icons.support_agent_outlined,
               title: 'Support',
-              value: _supportEmail,
+              value: AppConstants.supportEmail,
               description:
                   'Hỗ trợ chung về app, file export hoặc thao tác người dùng.',
             ),
             _ContactCard(
               icon: Icons.gavel_outlined,
               title: 'Legal',
-              value: _legalEmail,
+              value: AppConstants.legalEmail,
               description:
                   'Vấn đề điều khoản, phát hành Store hoặc yêu cầu pháp lý.',
             ),
@@ -57,9 +54,9 @@ class LegalContactScreen extends StatelessWidget {
 
   void _copyAll(BuildContext context) {
     Clipboard.setData(
-      const ClipboardData(
+      ClipboardData(
         text:
-            'Privacy: $_privacyEmail\nSupport: $_supportEmail\nLegal: $_legalEmail',
+            'Privacy: ${AppConstants.privacyEmail}\nSupport: ${AppConstants.supportEmail}\nLegal: ${AppConstants.legalEmail}',
       ),
     );
     ScaffoldMessenger.of(

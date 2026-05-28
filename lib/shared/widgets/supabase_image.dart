@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/supabase/signed_url_provider.dart';
@@ -24,6 +26,20 @@ class SupabaseImage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (imagePath == null || imagePath!.isEmpty) {
       return _buildFallback();
+    }
+
+    final isLocal = !imagePath!.startsWith('transactions/');
+    if (isLocal) {
+      return ClipRRect(
+        borderRadius: borderRadius ?? BorderRadius.zero,
+        child: Image.file(
+          File(imagePath!),
+          width: width,
+          height: height,
+          fit: fit,
+          errorBuilder: (context, error, stackTrace) => _buildFallback(),
+        ),
+      );
     }
 
     final signedUrlAsync = ref.watch(signedUrlProvider(imagePath!));

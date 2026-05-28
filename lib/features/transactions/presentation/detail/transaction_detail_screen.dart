@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../l10n/l10n_extension.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/utils/currency_formatter.dart';
@@ -38,7 +39,7 @@ class TransactionDetailScreen extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              'Không tải được chi tiết giao dịch.\n$error',
+              context.l10n.transactionLoadDetailError(error.toString()),
               textAlign: TextAlign.center,
             ),
           ),
@@ -138,7 +139,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                   Text(
                     DateFormat(
                       'dd MMMM yyyy • HH:mm',
-                      'vi_VN',
+                      Localizations.localeOf(context).toString(),
                     ).format(transaction.transactionDate),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: Colors.white70,
@@ -162,7 +163,7 @@ class _TransactionDetailBody extends ConsumerWidget {
             children: [
               Expanded(
                 child: _InfoItem(
-                  label: 'Danh mục',
+                  label: context.l10n.transactionCategory,
                   value: transaction.categoryName,
                   color: accent,
                 ),
@@ -170,7 +171,7 @@ class _TransactionDetailBody extends ConsumerWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _InfoItem(
-                  label: 'Ví',
+                  label: context.l10n.transactionWallet,
                   value: transaction.walletName,
                   color: AppColor.fromHex(
                     transaction.walletColor,
@@ -186,12 +187,12 @@ class _TransactionDetailBody extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Ghi chú', style: Theme.of(context).textTheme.bodyMedium),
+              Text(context.l10n.transactionNote, style: Theme.of(context).textTheme.bodyMedium),
               const SizedBox(height: 8),
               Text(
                 transaction.note?.trim().isNotEmpty == true
                     ? transaction.note!.trim()
-                    : 'Chưa có ghi chú cho giao dịch này.',
+                    : context.l10n.transactionNoteEmpty,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(color: Colors.white),
@@ -214,7 +215,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                   context.pop(result);
                 },
                 icon: const Icon(Icons.edit_outlined),
-                label: const Text('Sửa'),
+                label: Text(context.l10n.commonEdit),
               ),
             ),
             const SizedBox(width: 12),
@@ -225,16 +226,16 @@ class _TransactionDetailBody extends ConsumerWidget {
                     context: context,
                     builder: (context) => AlertDialog(
                       backgroundColor: AppTheme.surface,
-                      title: const Text('Xóa giao dịch?'),
-                      content: const Text('Hành động này không thể hoàn tác.'),
+                      title: Text(context.l10n.transactionDeleteTitleQuestion),
+                      content: Text(context.l10n.transactionDeleteUndone),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text('Hủy'),
+                          child: Text(context.l10n.commonCancel),
                         ),
                         FilledButton(
                           onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text('Xóa'),
+                          child: Text(context.l10n.commonDelete),
                         ),
                       ],
                     ),
@@ -253,7 +254,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                   );
                 },
                 icon: const Icon(Icons.delete_outline_rounded),
-                label: const Text('Xóa'),
+                label: Text(context.l10n.commonDelete),
               ),
             ),
           ],

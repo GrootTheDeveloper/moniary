@@ -1,11 +1,17 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
+import '../../../categories/data/repositories/category_repository.dart';
 import '../../../categories/domain/models/category.dart';
+import '../../../wallets/data/repositories/wallet_repository.dart';
+import '../../../wallets/domain/models/wallet.dart';
 import '../../domain/models/transaction_entry.dart';
 
 final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
@@ -17,7 +23,14 @@ class TransactionRepository {
 
   final SupabaseClient _client;
 
+  static List<TransactionEntry> get mockTransactions => _mockTransactions;
+
+  static final List<TransactionEntry> _mockTransactions = [];
+
   String get _userId {
+    if (!AppConstants.hasSupabaseConfig) {
+      return 'mock-user-id';
+    }
     final uid = _client.auth.currentSession?.user.id;
     if (uid == null) throw const AppException('Bạn chưa đăng nhập.');
     return uid;
@@ -28,6 +41,15 @@ class TransactionRepository {
     String? walletId,
     String? categoryId,
   }) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      return _mockTransactions.where((t) {
+        final sameMonth = t.transactionDate.year == month.year &&
+            t.transactionDate.month == month.month;
+        final matchWallet = walletId == null || t.walletId == walletId;
+        final matchCat = categoryId == null || t.categoryId == categoryId;
+        return sameMonth && matchWallet && matchCat;
+      }).toList()..sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
+    }
     try {
       final uid = _userId;
 
@@ -62,6 +84,16 @@ class TransactionRepository {
     String? walletId,
     String? categoryId,
   }) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      return _mockTransactions.where((t) {
+        final sameDay = t.transactionDate.year == day.year &&
+            t.transactionDate.month == day.month &&
+            t.transactionDate.day == day.day;
+        final matchWallet = walletId == null || t.walletId == walletId;
+        final matchCat = categoryId == null || t.categoryId == categoryId;
+        return sameDay && matchWallet && matchCat;
+      }).toList()..sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
+    }
     try {
       final uid = _userId;
 
@@ -92,6 +124,12 @@ class TransactionRepository {
   }
 
   Future<TransactionEntry> fetchTransactionById(String transactionId) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      return _mockTransactions.firstWhere(
+        (t) => t.id == transactionId,
+        orElse: () => throw const AppException('Giao dịch không tồn tại.'),
+      );
+    }
     try {
       final uid = _userId;
 
@@ -118,6 +156,57 @@ class TransactionRepository {
     String? merchantName,
     String source = 'manual',
   }) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      final id = 'mock-tx-${DateTime.now().millisecondsSinceEpoch}';
+      
+      // Look up wallet and category mock lists
+      final wallets = WalletRepository.mockWallets;
+      final categories = CategoryRepository.mockCategories;
+      
+      final w = wallets.firstWhere(
+        (element) => element.id == walletId,
+        orElse: () => Wallet(
+          id: walletId,
+          name: 'Ví',
+          type: WalletType.cash,
+          initialBalance: 0,
+          isDefault: false,
+          isActive: true,
+          createdAt: DateTime.now(),
+          icon: null,
+          color: null,
+        ),
+      );
+      final c = categories.firstWhere(
+        (element) => element.id == categoryId,
+        orElse: () => Category(
+          id: categoryId,
+          name: 'Khác',
+          type: type,
+          icon: null,
+          color: null,
+          isDefault: false,
+          isActive: true,
+          createdAt: DateTime.now(),
+        ),
+      );
+
+      _mockTransactions.add(TransactionEntry(
+        id: id,
+        amount: amount,
+        type: type,
+        note: note,
+        imagePath: null,
+        transactionDate: transactionDate,
+        walletId: walletId,
+        walletName: w.name,
+        walletColor: w.color,
+        categoryId: categoryId,
+        categoryName: c.name,
+        categoryColor: c.color,
+      ));
+      return id;
+    }
     try {
       final uid = _userId;
 
@@ -156,6 +245,57 @@ class TransactionRepository {
     required DateTime transactionDate,
     String? note,
   }) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      final index = _mockTransactions.indexWhere((t) => t.id == transactionId);
+      if (index != -1) {
+        final wallets = WalletRepository.mockWallets;
+        final categories = CategoryRepository.mockCategories;
+        
+        final w = wallets.firstWhere(
+          (element) => element.id == walletId,
+          orElse: () => Wallet(
+            id: walletId,
+            name: 'Ví',
+            type: WalletType.cash,
+            initialBalance: 0,
+            isDefault: false,
+            isActive: true,
+            createdAt: DateTime.now(),
+            icon: null,
+            color: null,
+          ),
+        );
+        final c = categories.firstWhere(
+          (element) => element.id == categoryId,
+          orElse: () => Category(
+            id: categoryId,
+            name: 'Khác',
+            type: type,
+            icon: null,
+            color: null,
+            isDefault: false,
+            isActive: true,
+            createdAt: DateTime.now(),
+          ),
+        );
+
+        _mockTransactions[index] = TransactionEntry(
+          id: transactionId,
+          amount: amount,
+          type: type,
+          note: note,
+          imagePath: _mockTransactions[index].imagePath,
+          transactionDate: transactionDate,
+          walletId: walletId,
+          walletName: w.name,
+          walletColor: w.color,
+          categoryId: categoryId,
+          categoryName: c.name,
+          categoryColor: c.color,
+        );
+      }
+      return;
+    }
     try {
       final uid = _userId;
 
@@ -180,6 +320,10 @@ class TransactionRepository {
   }
 
   Future<void> deleteTransaction(String transactionId) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      _mockTransactions.removeWhere((t) => t.id == transactionId);
+      return;
+    }
     try {
       final uid = _userId;
 
@@ -215,6 +359,12 @@ class TransactionRepository {
     String transactionId,
     Uint8List bytes,
   ) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      final directory = await getTemporaryDirectory();
+      final file = File('${directory.path}/$transactionId.jpg');
+      await file.writeAsBytes(bytes);
+      return file.path;
+    }
     try {
       final uid = _userId;
 
@@ -245,6 +395,26 @@ class TransactionRepository {
     required String? imagePath,
     required String status,
   }) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      final index = _mockTransactions.indexWhere((t) => t.id == transactionId);
+      if (index != -1) {
+        _mockTransactions[index] = TransactionEntry(
+          id: _mockTransactions[index].id,
+          amount: _mockTransactions[index].amount,
+          type: _mockTransactions[index].type,
+          note: _mockTransactions[index].note,
+          imagePath: imagePath,
+          transactionDate: _mockTransactions[index].transactionDate,
+          walletId: _mockTransactions[index].walletId,
+          walletName: _mockTransactions[index].walletName,
+          walletColor: _mockTransactions[index].walletColor,
+          categoryId: _mockTransactions[index].categoryId,
+          categoryName: _mockTransactions[index].categoryName,
+          categoryColor: _mockTransactions[index].categoryColor,
+        );
+      }
+      return;
+    }
     try {
       final uid = _userId;
 
@@ -262,13 +432,16 @@ class TransactionRepository {
   }
 
   Future<String> getSignedImageUrl(String path) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      return path;
+    }
     try {
       // getSignedImageUrl does not need user session strictly for generating url, 
       // but to be consistent with wrapping MỌI public method and duplicate check, 
       // let's wrap it. Since _userId isn't required by the client call, we just try/catch.
       return await _client.storage
           .from('transaction-images')
-          .createSignedUrl(path, 3600); // 1 hour
+          .createSignedUrl(path, AppConstants.signedUrlTtlSeconds);
     } on PostgrestException catch (e) {
       throw AppException(e.message, code: e.code);
     } catch (e) {

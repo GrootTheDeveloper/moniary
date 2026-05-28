@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../l10n/l10n_extension.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/utils/currency_formatter.dart';
@@ -32,11 +33,11 @@ class DayDetailScreen extends ConsumerWidget {
           children: [
             Text(
               DateUtils.isSameDay(date, DateTime.now())
-                  ? 'Hôm nay'
-                  : DateFormat('EEEE, d/M', 'vi_VN').format(date),
+                  ? context.l10n.calendarToday
+                  : DateFormat('EEEE, d/M', Localizations.localeOf(context).toString()).format(date),
             ),
             Text(
-              DateFormat('dd MMMM, yyyy', 'vi_VN').format(date),
+              DateFormat('dd MMMM, yyyy', Localizations.localeOf(context).toString()).format(date),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
@@ -50,7 +51,7 @@ class DayDetailScreen extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              'Không tải được giao dịch trong ngày.\n$error',
+              context.l10n.transactionLoadDayError(error.toString()),
               textAlign: TextAlign.center,
             ),
           ),
@@ -98,7 +99,7 @@ class _DayDetailBody extends ConsumerWidget {
             children: [
               Expanded(
                 child: _SummaryCard(
-                  label: 'Tổng thu',
+                  label: context.l10n.transactionTotalIncome,
                   value: '+${formatVnd(income)}',
                   color: AppTheme.success,
                 ),
@@ -106,7 +107,7 @@ class _DayDetailBody extends ConsumerWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _SummaryCard(
-                  label: 'Tổng chi',
+                  label: context.l10n.transactionTotalExpense,
                   value: '-${formatVnd(expense)}',
                   color: AppTheme.danger,
                 ),
@@ -117,7 +118,7 @@ class _DayDetailBody extends ConsumerWidget {
         if (index == 1) return const SizedBox(height: 12);
         if (index == 2) {
           return _SummaryCard(
-            label: 'Tổng cộng',
+            label: context.l10n.transactionNetTotal,
             value:
                 '${income - expense >= 0 ? '+' : '-'}${formatVnd((income - expense).abs())}',
             color: income - expense >= 0 ? AppTheme.success : AppTheme.danger,
@@ -128,7 +129,7 @@ class _DayDetailBody extends ConsumerWidget {
           return Row(
             children: [
               Text(
-                '${transactions.length} giao dịch',
+                context.l10n.transactionCount(transactions.length),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ],
@@ -145,7 +146,7 @@ class _DayDetailBody extends ConsumerWidget {
               border: Border.all(color: AppTheme.outline),
             ),
             child: Text(
-              'Ngày này chưa có giao dịch. Bạn có thể bấm nút + để thêm ngay.',
+              context.l10n.transactionDayEmpty,
               style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),

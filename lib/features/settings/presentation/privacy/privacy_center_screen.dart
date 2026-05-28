@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../shared/utils/error_helpers.dart';
 import '../../../auth/presentation/login_screen.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../account/deletion_request_screen.dart';
@@ -43,7 +44,7 @@ class PrivacyCenterScreen extends ConsumerWidget {
         error: (error, stackTrace) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(error.toString())));
+          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
         },
       );
     });

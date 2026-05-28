@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../l10n/l10n_extension.dart';
+import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/currency_formatter.dart';
 import '../application/group_controller.dart';
 import '../domain/expense_group.dart';
@@ -22,15 +24,15 @@ class GroupDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final groupsAsync = ref.watch(groupsControllerProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Chi tiêu nhóm')),
+      appBar: AppBar(title: Text(context.l10n.groupDetailTitle)),
       body: groupsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) =>
-            const Center(child: Text('Không tải được nhóm.')),
+            Center(child: Text(context.l10n.groupLoadSingleError)),
         data: (groups) {
           final matching = groups.where((group) => group.id == groupId);
           if (matching.isEmpty) {
-            return const Center(child: Text('Nhóm không còn tồn tại.'));
+            return Center(child: Text(context.l10n.groupNotExists));
           }
           return _GroupDetailBody(group: matching.first);
         },
@@ -55,11 +57,11 @@ class _GroupDetailBody extends ConsumerWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Thành viên', style: Theme.of(context).textTheme.titleMedium),
+            Text(context.l10n.groupMembersHeader, style: Theme.of(context).textTheme.titleMedium),
             TextButton.icon(
               onPressed: () => _addMember(context, ref),
               icon: const Icon(Icons.person_add_alt),
-              label: const Text('Thêm'),
+              label: Text(context.l10n.commonAdd),
             ),
           ],
         ),
@@ -88,7 +90,7 @@ class _GroupDetailBody extends ConsumerWidget {
                         extra: GroupExpenseFormArgs(group: group),
                       ),
                 icon: const Icon(Icons.add),
-                label: const Text('Thêm chi phí'),
+                label: Text(context.l10n.groupAddExpense),
               ),
             ),
             const SizedBox(width: 10),
@@ -101,15 +103,15 @@ class _GroupDetailBody extends ConsumerWidget {
         ),
         const SizedBox(height: 22),
         Text(
-          'Lịch sử chi tiêu',
+          context.l10n.groupExpenseHistory,
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 12),
         expensesAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stackTrace) => const Text(
-            'Không tải được chi phí nhóm.',
-            style: TextStyle(color: AppTheme.danger),
+          error: (error, stackTrace) => Text(
+            context.l10n.groupLoadExpensesError,
+            style: const TextStyle(color: AppTheme.danger),
           ),
           data: (expenses) => expenses.isEmpty
               ? const _ExpenseEmptyState()
@@ -118,7 +120,7 @@ class _GroupDetailBody extends ConsumerWidget {
                       .map(
                         (expense) => _ExpenseCard(
                           expense: expense,
-                          payerName: _nameFor(expense.payerMemberId),
+                          payerName: _nameFor(expense.payerMemberId, context),
                           onEdit: () => context.push(
                             GroupExpenseFormScreen.routePath,
                             extra: GroupExpenseFormArgs(
@@ -136,9 +138,9 @@ class _GroupDetailBody extends ConsumerWidget {
     );
   }
 
-  String _nameFor(String memberId) {
+  String _nameFor(String memberId, BuildContext context) {
     final member = group.members.where((entry) => entry.id == memberId);
-    return member.isEmpty ? 'Thành viên đã xóa' : member.first.displayName;
+    return member.isEmpty ? context.l10n.groupDeletedMember : member.first.displayName;
   }
 
   Future<void> _addMember(BuildContext context, WidgetRef ref) async {
@@ -147,20 +149,20 @@ class _GroupDetailBody extends ConsumerWidget {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Thêm thành viên'),
+        title: Text(context.l10n.groupAddMember),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
               autofocus: true,
-              decoration: const InputDecoration(labelText: 'Tên hiển thị'),
+              decoration: InputDecoration(labelText: context.l10n.profileSetupDisplayName),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email (không bắt buộc)',
+              decoration: InputDecoration(
+                labelText: context.l10n.groupMemberEmailHint,
               ),
             ),
           ],
@@ -168,11 +170,11 @@ class _GroupDetailBody extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(context.l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Thêm'),
+            child: Text(context.l10n.commonAdd),
           ),
         ],
       ),
@@ -191,7 +193,7 @@ class _GroupDetailBody extends ConsumerWidget {
     } catch (error) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Không thêm được thành viên: $error')),
+          SnackBar(content: Text(userFriendlyMessage(error))),
         );
       }
     }
@@ -209,7 +211,7 @@ class _GroupDetailBody extends ConsumerWidget {
     } catch (error) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Không xóa được thành viên: $error')),
+          SnackBar(content: Text(userFriendlyMessage(error))),
         );
       }
     }
@@ -223,16 +225,16 @@ class _GroupDetailBody extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xóa chi phí?'),
-        content: const Text('Thao tác này sẽ cập nhật lại công nợ của nhóm.'),
+        title: Text(context.l10n.groupDeleteExpenseConfirmTitle),
+        content: Text(context.l10n.groupDeleteExpenseConfirmMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(context.l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Xóa'),
+            child: Text(context.l10n.commonDelete),
           ),
         ],
       ),
@@ -264,9 +266,12 @@ class _ExpenseCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        title: Text(expense.note.isEmpty ? 'Chi phí nhóm' : expense.note),
+        title: Text(expense.note.isEmpty ? context.l10n.groupExpenses : expense.note),
         subtitle: Text(
-          '$payerName đã trả • ${DateFormat('dd/MM/yyyy', 'vi_VN').format(expense.date)}',
+          context.l10n.groupPayerSubtitle(
+            payerName,
+            DateFormat('dd/MM/yyyy', Localizations.localeOf(context).toString()).format(expense.date),
+          ),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -280,9 +285,9 @@ class _ExpenseCard extends StatelessWidget {
             ),
             PopupMenuButton<String>(
               onSelected: (value) => value == 'edit' ? onEdit() : onDelete(),
-              itemBuilder: (context) => const [
-                PopupMenuItem(value: 'edit', child: Text('Sửa')),
-                PopupMenuItem(value: 'delete', child: Text('Xóa')),
+              itemBuilder: (context) => [
+                PopupMenuItem(value: 'edit', child: Text(context.l10n.commonEdit)),
+                PopupMenuItem(value: 'delete', child: Text(context.l10n.commonDelete)),
               ],
             ),
           ],
@@ -304,8 +309,8 @@ class _ExpenseEmptyState extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppTheme.outline),
       ),
-      child: const Text(
-        'Chưa có chi phí. Thêm hóa đơn đầu tiên để bắt đầu tính nợ.',
+      child: Text(
+        context.l10n.groupEmptyExpensesMessage,
         textAlign: TextAlign.center,
       ),
     );

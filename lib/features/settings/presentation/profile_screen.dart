@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../l10n/l10n_extension.dart';
+import '../../../shared/utils/error_helpers.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../application/account/account_actions_controller.dart';
@@ -25,80 +27,93 @@ class ProfileScreen extends ConsumerWidget {
         error: (error, stackTrace) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(error.toString())));
+          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
         },
       );
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Hồ sơ')),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            ListView(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-              children: [
-                _ProfileHeader(
-                  title:
-                      user?.userMetadata?['full_name']?.toString() ??
-                      user?.email ??
-                      'Người dùng Moniary',
-                  subtitle: user?.email ?? 'Tài khoản dùng thử ẩn danh',
-                ),
-                const SizedBox(height: 20),
-                _SettingsGroup(
-                  title: 'Dữ liệu của tôi',
-                  children: [
-                    _SettingsTile(
-                      icon: Icons.file_download_outlined,
-                      title: 'Xuất dữ liệu',
-                      subtitle:
-                          'Chọn CSV, Excel hoặc PDF để tải dữ liệu cá nhân.',
-                      onTap: () => context.push(ExportDataScreen.routePath),
-                    ),
-                    _SettingsTile(
-                      icon: Icons.privacy_tip_outlined,
-                      title: 'Trung tâm riêng tư',
-                      subtitle:
-                          'Quản lý privacy policy, dữ liệu và quyền truy cập.',
-                      onTap: () => context.push(PrivacyCenterScreen.routePath),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _SettingsGroup(
-                  title: 'Tài khoản',
-                  children: [
-                    _SettingsTile(
-                      icon: Icons.logout_rounded,
-                      title: 'Đăng xuất',
-                      subtitle:
-                          'Thoát khỏi tài khoản hiện tại trên thiết bị này.',
-                      onTap: state.isLoading
-                          ? null
-                          : () => _signOut(context, ref),
-                    ),
-                    _SettingsTile(
-                      icon: Icons.delete_forever_outlined,
-                      title: 'Xóa tài khoản',
-                      subtitle: 'Xóa dữ liệu cá nhân, giao dịch và ảnh đã lưu.',
-                      destructive: true,
-                      onTap: state.isLoading
-                          ? null
-                          : () => _confirmDelete(context, ref),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            if (state.isLoading)
-              const Positioned.fill(
-                child: ColoredBox(
-                  color: Color(0x66000000),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
+      appBar: AppBar(
+        title: Text(context.l10n.profileTitle),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF0B1521), AppTheme.background, Color(0xFF08111B)],
+          ),
+        ),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              ListView(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+                children: [
+                  _ProfileHeader(
+                    title:
+                        user?.userMetadata?['full_name']?.toString() ??
+                        user?.email ??
+                        context.l10n.profileUserDefault,
+                    subtitle: user?.email ?? context.l10n.profileAnonymous,
+                  ),
+                  const SizedBox(height: 20),
+                  _SettingsGroup(
+                    title: context.l10n.profileMyData,
+                    children: [
+                      _SettingsTile(
+                        icon: Icons.file_download_outlined,
+                        title: context.l10n.profileExportData,
+                        subtitle:
+                            context.l10n.profileExportSubtitle,
+                        onTap: () => context.push(ExportDataScreen.routePath),
+                      ),
+                      _SettingsTile(
+                        icon: Icons.privacy_tip_outlined,
+                        title: context.l10n.profilePrivacyCenter,
+                        subtitle:
+                            context.l10n.profilePrivacySubtitle,
+                        onTap: () => context.push(PrivacyCenterScreen.routePath),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _SettingsGroup(
+                    title: context.l10n.profileAccount,
+                    children: [
+                      _SettingsTile(
+                        icon: Icons.logout_rounded,
+                        title: context.l10n.profileSignOut,
+                        subtitle:
+                            context.l10n.profileSignOutSubtitle,
+                        onTap: state.isLoading
+                            ? null
+                            : () => _signOut(context, ref),
+                      ),
+                      _SettingsTile(
+                        icon: Icons.delete_forever_outlined,
+                        title: context.l10n.profileDeleteAccount,
+                        subtitle: context.l10n.profileDeleteSubtitle,
+                        destructive: true,
+                        onTap: state.isLoading
+                            ? null
+                            : () => _confirmDelete(context, ref),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-          ],
+              if (state.isLoading)
+                const Positioned.fill(
+                  child: ColoredBox(
+                    color: Color(0x66000000),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

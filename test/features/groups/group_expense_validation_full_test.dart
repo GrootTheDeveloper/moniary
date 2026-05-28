@@ -3,6 +3,7 @@ import 'package:moniary/features/groups/data/group_expense_validation_service.da
 import 'package:moniary/features/groups/domain/expense_group.dart';
 import 'package:moniary/features/groups/domain/expense_split.dart';
 import 'package:moniary/features/groups/domain/group_member.dart';
+import 'package:moniary/l10n/gen_l10n/app_localizations_vi.dart';
 
 void main() {
   const service = GroupExpenseValidationService();
@@ -38,7 +39,7 @@ void main() {
         splits: const [ExpenseSplit(memberId: 'a', amount: 100)],
       );
 
-      expect(error, contains('ít nhất 2 thành viên'));
+      expect(error, GroupExpenseValidationError.minMembers);
     });
 
     test('validate returns error if amount is 0 or negative', () {
@@ -64,8 +65,8 @@ void main() {
         ],
       );
 
-      expect(errorZero, contains('lớn hơn 0'));
-      expect(errorNegative, contains('lớn hơn 0'));
+      expect(errorZero, GroupExpenseValidationError.amountPositive);
+      expect(errorNegative, GroupExpenseValidationError.amountPositive);
     });
 
     test('validate returns error if payerMemberId is null or not in group', () {
@@ -91,8 +92,8 @@ void main() {
         ],
       );
 
-      expect(errorNull, contains('người đã thanh toán'));
-      expect(errorNotInGroup, contains('người đã thanh toán'));
+      expect(errorNull, GroupExpenseValidationError.selectPayer);
+      expect(errorNotInGroup, GroupExpenseValidationError.selectPayer);
     });
 
     test('validate returns error if participantIds list is empty', () {
@@ -104,7 +105,7 @@ void main() {
         splits: [],
       );
 
-      expect(error, contains('Chọn ít nhất một người tham gia'));
+      expect(error, GroupExpenseValidationError.selectParticipant);
     });
 
     test('validate returns error if participants have duplicate IDs', () {
@@ -119,7 +120,7 @@ void main() {
         ],
       );
 
-      expect(error, contains('cần đúng một phần chia'));
+      expect(error, GroupExpenseValidationError.splitCountMismatch);
     });
 
     test('createEqualSplits with amount <= 0 or empty participants returns empty list', () {
@@ -131,8 +132,9 @@ void main() {
     });
 
     test('SplitMethod label extension values', () {
-      expect(SplitMethod.equal.label, 'Chia đều');
-      expect(SplitMethod.manual.label, 'Tự nhập số tiền');
+      final l10n = AppLocalizationsVi();
+      expect(SplitMethod.equal.getLabel(l10n), 'Chia đều');
+      expect(SplitMethod.manual.getLabel(l10n), 'Tự nhập số tiền');
     });
   });
 }

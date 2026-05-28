@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../l10n/l10n_extension.dart';
 
 class DeleteAccountDialog extends StatefulWidget {
   const DeleteAccountDialog({super.key});
@@ -10,7 +11,7 @@ class DeleteAccountDialog extends StatefulWidget {
 }
 
 class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
-  static const confirmationText = 'XOA TAI KHOAN';
+  String get _confirmationText => context.l10n.deleteAccountConfirmationText;
 
   final _controller = TextEditingController();
   bool _understood = false;
@@ -25,31 +26,31 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
   Widget build(BuildContext context) {
     final canDelete =
         _understood &&
-        _controller.text.trim().toUpperCase() == confirmationText;
+        _controller.text.trim().toUpperCase() == _confirmationText;
 
     return AlertDialog(
-      title: const Text('Xóa tài khoản?'),
+      title: Text(context.l10n.deleteAccountTitleQuestion),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Thao tác này không thể hoàn tác trong app.',
+              context.l10n.deleteAccountUndone,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: AppTheme.danger,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 12),
-            const _DeleteConsequence(
-              text: 'Xóa hồ sơ và phiên đăng nhập hiện tại.',
+            _DeleteConsequence(
+              text: context.l10n.deleteAccountConsequence1,
             ),
-            const _DeleteConsequence(
-              text: 'Xóa ví, danh mục và toàn bộ giao dịch.',
+            _DeleteConsequence(
+              text: context.l10n.deleteAccountConsequence2,
             ),
-            const _DeleteConsequence(
-              text: 'Xóa ảnh giao dịch trong Storage theo user ID.',
+            _DeleteConsequence(
+              text: context.l10n.deleteAccountConsequence3,
             ),
             const SizedBox(height: 10),
             CheckboxListTile(
@@ -58,7 +59,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
               activeColor: AppTheme.danger,
               controlAffinity: ListTileControlAffinity.leading,
               title: Text(
-                'Tôi hiểu dữ liệu sẽ bị xóa khỏi tài khoản này.',
+                context.l10n.deleteAccountUnderstand,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               onChanged: (value) =>
@@ -67,8 +68,8 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             const SizedBox(height: 8),
             TextField(
               controller: _controller,
-              decoration: const InputDecoration(
-                labelText: 'Nhập XOA TAI KHOAN để xác nhận',
+              decoration: InputDecoration(
+                labelText: context.l10n.deleteAccountConfirmInput(_confirmationText),
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (_) => setState(() {}),
@@ -79,12 +80,12 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Hủy'),
+          child: Text(context.l10n.commonCancel),
         ),
         FilledButton(
           onPressed: canDelete ? () => Navigator.of(context).pop(true) : null,
           style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
-          child: const Text('Xóa tài khoản'),
+          child: Text(context.l10n.deleteAccountConfirm),
         ),
       ],
     );

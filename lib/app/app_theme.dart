@@ -12,6 +12,11 @@ class AppTheme {
   static const amber = Color(0xFFF6B24D);
   static const danger = Color(0xFFFF6D72);
   static const success = Color(0xFF44D884);
+  static const textMuted = Color(0xFFBECCD9);
+  static const textSubtle = Color(0xFF9CB0C2);
+  static const textDim = Color(0xFF70869A);
+  static const surfaceOverlay = Color(0x66000000);
+  static const navInactive = Color(0xFF74889A);
 
   static ThemeData get darkTheme {
     const colorScheme = ColorScheme.dark(
@@ -52,12 +57,12 @@ class AppTheme {
         ),
         bodyLarge: TextStyle(
           fontSize: 15,
-          color: Color(0xFFBECCD9), // Custom onSurfaceVariant — design token
+          color: textMuted, // Custom onSurfaceVariant — design token
           height: 1.45,
         ),
         bodyMedium: TextStyle(
           fontSize: 13,
-          color: Color(0xFF9CB0C2), // Custom onSurfaceVariant — design token
+          color: textSubtle, // Custom onSurfaceVariant — design token
           height: 1.4,
         ),
         labelLarge: TextStyle(
@@ -83,8 +88,8 @@ class AppTheme {
         filled: true,
         fillColor: surfaceRaised,
         contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-        hintStyle: const TextStyle(color: Color(0xFF70869A)),
-        labelStyle: const TextStyle(color: Color(0xFF9CB0C2)),
+        hintStyle: const TextStyle(color: textDim),
+        labelStyle: const TextStyle(color: textSubtle),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
           borderSide: const BorderSide(color: outline),

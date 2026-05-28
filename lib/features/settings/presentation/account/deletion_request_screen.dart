@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../shared/utils/error_helpers.dart';
 import '../../application/account/account_actions_controller.dart';
 
 class DeletionRequestScreen extends ConsumerStatefulWidget {
@@ -34,7 +35,7 @@ class _DeletionRequestScreenState extends ConsumerState<DeletionRequestScreen> {
         error: (error, stackTrace) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(error.toString())));
+          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
         },
       );
     });

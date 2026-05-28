@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/error_helpers.dart';
 import '../../../categories/domain/models/category.dart';
 import '../../../categories/application/categories_controller.dart';
 import '../../../wallets/domain/models/wallet.dart';
@@ -101,12 +103,12 @@ class _CreateTransactionSheetState
               ),
               const SizedBox(height: 18),
               Text(
-                'Thêm giao dịch',
+                context.l10n.transactionCreateTitle,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
               Text(
-                'Lưu giao dịch trước, phần ảnh sẽ được thêm ở bước tiếp theo.',
+                context.l10n.transactionCreateSubtitle,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 20),
@@ -114,13 +116,13 @@ class _CreateTransactionSheetState
                 spacing: 10,
                 children: [
                   _ChoiceChip(
-                    label: 'Chi',
+                    label: context.l10n.categoryExpense,
                     selected: _type == TransactionType.expense,
                     onTap: () =>
                         setState(() => _type = TransactionType.expense),
                   ),
                   _ChoiceChip(
-                    label: 'Thu',
+                    label: context.l10n.categoryIncome,
                     selected: _type == TransactionType.income,
                     onTap: () => setState(() => _type = TransactionType.income),
                   ),
@@ -132,10 +134,10 @@ class _CreateTransactionSheetState
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: const InputDecoration(
-                  labelText: 'Số tiền',
+                decoration: InputDecoration(
+                  labelText: context.l10n.transactionAmount,
                   hintText: '57000',
-                  prefixIcon: Icon(Icons.payments_outlined),
+                  prefixIcon: const Icon(Icons.payments_outlined),
                 ),
               ),
               const SizedBox(height: 14),
@@ -152,9 +154,9 @@ class _CreateTransactionSheetState
                 onChanged: wallets.isEmpty
                     ? null
                     : (value) => setState(() => _selectedWalletId = value),
-                decoration: const InputDecoration(
-                  labelText: 'Wallet',
-                  prefixIcon: Icon(Icons.account_balance_wallet_outlined),
+                decoration: InputDecoration(
+                  labelText: context.l10n.transactionWallet,
+                  prefixIcon: const Icon(Icons.account_balance_wallet_outlined),
                 ),
               ),
               const SizedBox(height: 14),
@@ -171,9 +173,9 @@ class _CreateTransactionSheetState
                 onChanged: categories.isEmpty
                     ? null
                     : (value) => setState(() => _selectedCategoryId = value),
-                decoration: const InputDecoration(
-                  labelText: 'Category',
-                  prefixIcon: Icon(Icons.category_outlined),
+                decoration: InputDecoration(
+                  labelText: context.l10n.transactionCategory,
+                  prefixIcon: const Icon(Icons.category_outlined),
                 ),
               ),
               const SizedBox(height: 14),
@@ -183,16 +185,16 @@ class _CreateTransactionSheetState
                 controller: _noteController,
                 minLines: 2,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Ghi chú',
-                  hintText: 'Tra sua KOI / Luong freelance / ...',
+                decoration: InputDecoration(
+                  labelText: context.l10n.transactionNote,
+                  hintText: context.l10n.transactionNoteHint,
                   alignLabelWithHint: true,
                 ),
               ),
               if (walletsAsync.hasError || categoriesAsync.hasError) ...[
                 const SizedBox(height: 12),
                 Text(
-                  'Không tải được wallet/category. Mở quản lý dữ liệu để kiểm tra.',
+                  context.l10n.transactionWalletCategoryLoadError,
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: AppTheme.danger),
@@ -202,8 +204,8 @@ class _CreateTransactionSheetState
                 const SizedBox(height: 12),
                 Text(
                   wallets.isEmpty
-                      ? 'Bạn cần ít nhất 1 wallet đang hoạt động để tạo giao dịch.'
-                      : 'Bạn cần ít nhất 1 category đang hoạt động cho loại giao dịch này.',
+                      ? context.l10n.walletNeedOneActive
+                      : context.l10n.categoryNeedOneActive,
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: AppTheme.amber),
@@ -213,7 +215,7 @@ class _CreateTransactionSheetState
               FilledButton(
                 onPressed: canSubmit ? _submit : null,
                 child: Text(
-                  composerState.isLoading ? 'Đang lưu...' : 'Lưu giao dịch',
+                  composerState.isLoading ? context.l10n.transactionSaving : context.l10n.transactionSaveTransaction,
                 ),
               ),
             ],
@@ -257,14 +259,14 @@ class _CreateTransactionSheetState
 
     if (amount == null || amount <= 0) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Nhập số tiền hợp lệ.')),
+        SnackBar(content: Text(context.l10n.transactionAmountInvalid)),
       );
       return;
     }
 
     if (_selectedWalletId == null || _selectedCategoryId == null) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Chọn wallet và category trước khi lưu.')),
+        SnackBar(content: Text(context.l10n.transactionSelectWalletCategory)),
       );
       return;
     }
@@ -286,7 +288,7 @@ class _CreateTransactionSheetState
       if (!mounted) return;
       Navigator.of(context).pop(_selectedDate);
     } catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(error.toString())));
+      messenger.showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
     }
   }
 }

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../l10n/l10n_extension.dart';
+import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/currency_formatter.dart';
 import '../application/group_controller.dart';
 import '../data/group_expense_validation_service.dart';
@@ -94,33 +96,33 @@ class _GroupExpenseFormScreenState
       appBar: AppBar(
         title: Text(
           widget.args.expense == null
-              ? 'Thêm chi phí nhóm'
-              : 'Sửa chi phí nhóm',
+              ? context.l10n.expenseFormTitle
+              : context.l10n.expenseFormEditTitle,
         ),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 36),
         children: [
           if (_group.members.length < 2)
-            const _Notice(
-              text: 'Hãy thêm ít nhất 2 thành viên trước khi chia chi phí.',
+            _Notice(
+              text: context.l10n.expenseFormMinMembersNotice,
             ),
           TextField(
             controller: _amountController,
             onChanged: (_) => setState(() {}),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(
-              labelText: 'Tổng chi phí',
-              suffixText: 'đ',
-              prefixIcon: Icon(Icons.payments_outlined),
+            decoration: InputDecoration(
+              labelText: context.l10n.expenseFormTotalCost,
+              suffixText: context.l10n.transactionAmountSuffix,
+              prefixIcon: const Icon(Icons.payments_outlined),
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _noteController,
-            decoration: const InputDecoration(
-              labelText: 'Nội dung',
-              prefixIcon: Icon(Icons.receipt_long_outlined),
+            decoration: InputDecoration(
+              labelText: context.l10n.expenseFormContentLabel,
+              prefixIcon: const Icon(Icons.receipt_long_outlined),
             ),
           ),
           const SizedBox(height: 12),
@@ -135,9 +137,9 @@ class _GroupExpenseFormScreenState
                 )
                 .toList(),
             onChanged: (value) => setState(() => _payerMemberId = value),
-            decoration: const InputDecoration(
-              labelText: 'Người thanh toán',
-              prefixIcon: Icon(Icons.person_outline),
+            decoration: InputDecoration(
+              labelText: context.l10n.expenseFormPayer,
+              prefixIcon: const Icon(Icons.person_outline),
             ),
           ),
           const SizedBox(height: 12),
@@ -149,12 +151,12 @@ class _GroupExpenseFormScreenState
               side: const BorderSide(color: AppTheme.outline),
             ),
             leading: const Icon(Icons.calendar_today_outlined),
-            title: const Text('Ngày chi'),
-            trailing: Text(DateFormat('dd/MM/yyyy', 'vi_VN').format(_date)),
+            title: Text(context.l10n.expenseFormDate),
+            trailing: Text(DateFormat('dd/MM/yyyy', Localizations.localeOf(context).toString()).format(_date)),
           ),
           const SizedBox(height: 22),
           Text(
-            'Người tham gia',
+            context.l10n.expenseParticipants,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -181,7 +183,7 @@ class _GroupExpenseFormScreenState
             segments: SplitMethod.values
                 .map(
                   (method) =>
-                      ButtonSegment(value: method, label: Text(method.label)),
+                      ButtonSegment(value: method, label: Text(method.getLabel(context.l10n))),
                 )
                 .toList(),
             selected: {_method},
@@ -209,7 +211,7 @@ class _GroupExpenseFormScreenState
                       ),
                       decoration: InputDecoration(
                         labelText: member.displayName,
-                        suffixText: 'đ',
+                        suffixText: context.l10n.transactionAmountSuffix,
                       ),
                     ),
                   ),
@@ -217,7 +219,7 @@ class _GroupExpenseFormScreenState
           const SizedBox(height: 22),
           FilledButton(
             onPressed: _saving ? null : _save,
-            child: Text(_saving ? 'Đang lưu...' : 'Lưu chi phí'),
+            child: Text(_saving ? context.l10n.commonSaving : context.l10n.expenseSave),
           ),
         ],
       ),
@@ -264,9 +266,22 @@ class _GroupExpenseFormScreenState
       splits: splits,
     );
     if (validation != null) {
+      final message = switch (validation) {
+        GroupExpenseValidationError.minMembers => context.l10n.validationMinMembers(2),
+        GroupExpenseValidationError.amountPositive => context.l10n.validationAmountPositive,
+        GroupExpenseValidationError.selectPayer => context.l10n.validationSelectPayer,
+        GroupExpenseValidationError.selectParticipant => context.l10n.validationSelectParticipant,
+        GroupExpenseValidationError.invalidParticipants => context.l10n.validationInvalidParticipants,
+        GroupExpenseValidationError.splitCountMismatch => context.l10n.validationSplitCountMismatch,
+        GroupExpenseValidationError.negativeSplit => context.l10n.validationNegativeSplit,
+        GroupExpenseValidationError.splitMismatch => context.l10n.validationSplitMismatch(
+            splits.fold<double>(0, (sum, split) => sum + split.amount).toStringAsFixed(0),
+            amount.toStringAsFixed(0),
+          ),
+      };
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(validation)));
+      ).showSnackBar(SnackBar(content: Text(message)));
       return;
     }
 
@@ -289,7 +304,7 @@ class _GroupExpenseFormScreenState
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Không lưu được chi phí: $error')),
+          SnackBar(content: Text(userFriendlyMessage(error))),
         );
         setState(() => _saving = false);
       }
