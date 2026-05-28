@@ -208,13 +208,7 @@ class TransactionRepository {
         .eq('user_id', session.user.id);
   }
 
-  String getPublicImageUrl(String path) {
-    // Since the bucket is private, we should ideally use createSignedUrl
-    // but for simplicity in MVP we might use a short-lived signed URL or
-    // the user might have some specific requirement.
-    // The PRD says "App tạo signed URL từ imagePath khi cần hiển thị ảnh"
-    return _client.storage.from('transaction-images').getPublicUrl(path);
-  }
+
 
   Future<String> getSignedImageUrl(String path) async {
     return await _client.storage
