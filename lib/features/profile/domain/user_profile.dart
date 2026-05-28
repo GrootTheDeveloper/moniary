@@ -1,4 +1,4 @@
-﻿class UserProfile {
+class UserProfile {
   const UserProfile({
     required this.id,
     required this.fullName,
@@ -17,6 +17,7 @@
 
   bool get needsSetup {
     final name = fullName?.trim() ?? '';
+    // Assumption: default displayName from Supabase trigger is 'guest'
     return name.isEmpty || name.toLowerCase() == 'guest';
   }
 

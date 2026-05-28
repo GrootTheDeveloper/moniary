@@ -17,7 +17,7 @@ final profileSetupControllerProvider =
 class ProfileSetupController extends AsyncNotifier<UserProfile?> {
   @override
   Future<UserProfile?> build() {
-    return ref.read(profileRepositoryProvider).fetchCurrentProfile();
+    return ref.watch(profileRepositoryProvider).fetchCurrentProfile();
   }
 
   Future<void> saveProfile({

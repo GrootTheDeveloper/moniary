@@ -49,8 +49,7 @@ class ProfileRepository {
 
       final row = await _client
           .from('profiles')
-          .update({'full_name': fullName, 'timezone': timezone})
-          .eq('id', uid)
+          .upsert({'id': uid, 'full_name': fullName, 'timezone': timezone})
           .select()
           .single();
 

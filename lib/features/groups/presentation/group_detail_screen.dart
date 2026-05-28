@@ -66,13 +66,11 @@ class _GroupDetailBody extends ConsumerWidget {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: group.members.indexed.map((indexedMember) {
-            final index = indexedMember.$1;
-            final member = indexedMember.$2;
+          children: group.members.map((member) {
             return InputChip(
               label: Text(member.displayName),
               avatar: const Icon(Icons.person_outline, size: 16),
-              onDeleted: index == 0
+              onDeleted: member.id == group.ownerId
                   ? null
                   : () => _removeMember(context, ref, member.id),
             );
