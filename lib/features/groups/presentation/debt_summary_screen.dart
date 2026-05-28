@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../shared/utils/currency_formatter.dart';
 import '../application/group_controller.dart';
 import '../data/debt_calculator_service.dart';
 import '../domain/expense_group.dart';
@@ -114,7 +114,7 @@ class _BalanceCard extends StatelessWidget {
         title: Text(name),
         subtitle: Text(positive ? 'Sẽ nhận' : 'Cần trả'),
         trailing: Text(
-          '${positive ? '+' : '-'}${_money(value.abs())}',
+          '${positive ? '+' : '-'}${formatVnd(value.abs())}',
           style: TextStyle(color: color, fontWeight: FontWeight.w700),
         ),
       ),
@@ -144,7 +144,7 @@ class _SettlementCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(child: Text(text)),
           Text(
-            _money(amount),
+            formatVnd(amount),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],
@@ -171,12 +171,4 @@ class _SettledCard extends StatelessWidget {
       ),
     );
   }
-}
-
-String _money(double value) {
-  return NumberFormat.currency(
-    locale: 'vi_VN',
-    symbol: 'đ',
-    decimalDigits: 0,
-  ).format(value);
 }

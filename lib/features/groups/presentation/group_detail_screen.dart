@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../shared/utils/currency_formatter.dart';
 import '../application/group_controller.dart';
 import '../domain/expense_group.dart';
 import '../domain/group_expense.dart';
@@ -273,7 +274,7 @@ class _ExpenseCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              _money(expense.amount),
+              formatVnd(expense.amount),
               style: const TextStyle(
                 color: AppTheme.danger,
                 fontWeight: FontWeight.w700,
@@ -311,12 +312,4 @@ class _ExpenseEmptyState extends StatelessWidget {
       ),
     );
   }
-}
-
-String _money(double value) {
-  return NumberFormat.currency(
-    locale: 'vi_VN',
-    symbol: 'đ',
-    decimalDigits: 0,
-  ).format(value);
 }

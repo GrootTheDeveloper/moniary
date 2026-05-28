@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../shared/utils/currency_formatter.dart';
 import '../application/group_controller.dart';
 import '../data/group_expense_validation_service.dart';
 import '../domain/expense_group.dart';
@@ -192,7 +193,7 @@ class _GroupExpenseFormScreenState
             ...equalSplits.map(
               (split) => _ShareRow(
                 name: _memberName(split.memberId),
-                value: _money(split.amount),
+                value: formatVnd(split.amount),
               ),
             )
           else
@@ -335,12 +336,4 @@ class _Notice extends StatelessWidget {
 double _readAmount(String text) {
   return double.tryParse(text.trim().replaceAll('.', '').replaceAll(',', '')) ??
       0;
-}
-
-String _money(double value) {
-  return NumberFormat.currency(
-    locale: 'vi_VN',
-    symbol: 'đ',
-    decimalDigits: 0,
-  ).format(value);
 }

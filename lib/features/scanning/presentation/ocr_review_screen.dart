@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../shared/utils/currency_formatter.dart';
 import '../../calendar/application/month/calendar_month_provider.dart';
 import '../../categories/application/categories_controller.dart';
 import '../../categories/domain/models/category.dart';
@@ -189,7 +190,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
                 subtitle: item.quantity == null
                     ? null
                     : Text('Số lượng: ${item.quantity}'),
-                trailing: item.price == null ? null : Text(_money(item.price!)),
+                trailing: item.price == null ? null : Text(formatVnd(item.price!)),
               ),
             ),
           ],
@@ -355,12 +356,4 @@ class _DateTile extends StatelessWidget {
       trailing: Text(DateFormat('dd/MM/yyyy', 'vi_VN').format(date)),
     );
   }
-}
-
-String _money(double amount) {
-  return NumberFormat.currency(
-    locale: 'vi_VN',
-    symbol: 'đ',
-    decimalDigits: 0,
-  ).format(amount);
 }

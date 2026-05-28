@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../shared/widgets/supabase_image.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../application/queries/transaction_queries.dart';
 import '../../domain/models/transaction_mutation_result.dart';
 import '../../domain/models/transaction_entry.dart';
@@ -101,7 +102,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                 children: [
                   const SizedBox(height: 60),
                   Text(
-                    '${transaction.isIncome ? '+' : '-'}${_money(transaction.amount)}',
+                    '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: transaction.isIncome
                           ? AppTheme.success
@@ -317,11 +318,3 @@ class _InfoItem extends StatelessWidget {
   }
 }
 
-String _money(double amount) {
-  final formatter = NumberFormat.currency(
-    locale: 'vi_VN',
-    symbol: '',
-    decimalDigits: 0,
-  );
-  return '${formatter.format(amount)}d';
-}

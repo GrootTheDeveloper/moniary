@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../shared/widgets/supabase_image.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../application/queries/transaction_queries.dart';
 import '../../domain/models/transaction_mutation_result.dart';
 import '../../domain/models/transaction_entry.dart';
@@ -96,7 +97,7 @@ class _DayDetailBody extends ConsumerWidget {
             Expanded(
               child: _SummaryCard(
                 label: 'Tổng thu',
-                value: '+${_money(income)}',
+                value: '+${formatVnd(income)}',
                 color: AppTheme.success,
               ),
             ),
@@ -104,7 +105,7 @@ class _DayDetailBody extends ConsumerWidget {
             Expanded(
               child: _SummaryCard(
                 label: 'Tổng chi',
-                value: '-${_money(expense)}',
+                value: '-${formatVnd(expense)}',
                 color: AppTheme.danger,
               ),
             ),
@@ -114,7 +115,7 @@ class _DayDetailBody extends ConsumerWidget {
         _SummaryCard(
           label: 'Tổng cộng',
           value:
-              '${income - expense >= 0 ? '+' : '-'}${_money((income - expense).abs())}',
+              '${income - expense >= 0 ? '+' : '-'}${formatVnd((income - expense).abs())}',
           color: income - expense >= 0 ? AppTheme.success : AppTheme.danger,
         ),
         const SizedBox(height: 18),
@@ -278,7 +279,7 @@ class _TransactionTile extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              '${transaction.isIncome ? '+' : '-'}${_money(transaction.amount)}',
+              '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: transaction.isIncome
                     ? AppTheme.success
@@ -317,14 +318,6 @@ class _MiniTag extends StatelessWidget {
   }
 }
 
-String _money(double amount) {
-  final formatter = NumberFormat.currency(
-    locale: 'vi_VN',
-    symbol: '',
-    decimalDigits: 0,
-  );
-  return '${formatter.format(amount)}d';
-}
 
 void _applyMutation(WidgetRef ref, TransactionMutationResult result) {
   final days = <DateTime>{
