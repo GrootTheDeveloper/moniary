@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -64,6 +64,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: SplashScreen.routePath,
     refreshListenable: authRefreshListenable,
+    errorBuilder: (context, state) => Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Trang không tồn tại'),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () => context.go('/'),
+              child: const Text('Quay về trang chính'),
+            ),
+          ],
+        ),
+      ),
+    ),
     redirect: (context, state) {
       final session = ref.read(currentSessionProvider);
       final onboardingSeen = ref.read(onboardingSeenProvider);
@@ -116,7 +131,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: OcrReviewScreen.routePath,
         builder: (context, state) {
-          final args = state.extra as OcrReviewArgs;
+          final args = state.extra as OcrReviewArgs?;
+          if (args == null) {
+            return const CalendarScreen();
+          }
           return OcrReviewScreen(args: args);
         },
       ),
@@ -127,21 +145,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: GroupDetailScreen.routePath,
         builder: (context, state) {
-          return GroupDetailScreen(groupId: state.extra as String);
+          final groupId = state.extra as String?;
+          if (groupId == null) {
+            return const GroupsScreen();
+          }
+          return GroupDetailScreen(groupId: groupId);
         },
       ),
       GoRoute(
         path: GroupExpenseFormScreen.routePath,
         builder: (context, state) {
-          return GroupExpenseFormScreen(
-            args: state.extra as GroupExpenseFormArgs,
-          );
+          final args = state.extra as GroupExpenseFormArgs?;
+          if (args == null) {
+            return const GroupsScreen();
+          }
+          return GroupExpenseFormScreen(args: args);
         },
       ),
       GoRoute(
         path: DebtSummaryScreen.routePath,
         builder: (context, state) {
-          return DebtSummaryScreen(groupId: state.extra as String);
+          final groupId = state.extra as String?;
+          if (groupId == null) {
+            return const GroupsScreen();
+          }
+          return DebtSummaryScreen(groupId: groupId);
         },
       ),
       GoRoute(
@@ -183,7 +211,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: PrivacyRequestDetailScreen.routePath,
         builder: (context, state) {
-          final entry = state.extra as PrivacyRequestHistoryEntry;
+          final entry = state.extra as PrivacyRequestHistoryEntry?;
+          if (entry == null) {
+            return const PrivacyCenterScreen();
+          }
           return PrivacyRequestDetailScreen(entry: entry);
         },
       ),
@@ -269,7 +300,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: TransactionDetailScreen.routePath,
         builder: (context, state) {
-          final args = state.extra as TransactionDetailRouteArgs;
+          final args = state.extra as TransactionDetailRouteArgs?;
+          if (args == null) {
+            return const CalendarScreen();
+          }
           return TransactionDetailScreen(args: args);
         },
       ),
