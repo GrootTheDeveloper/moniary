@@ -9,6 +9,8 @@ import '../../../../core/constants/app_color.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../application/queries/transaction_queries.dart';
+import '../../../calendar/application/month/calendar_month_provider.dart';
+import '../../../statistics/presentation/statistics_view.dart';
 import '../../domain/models/transaction_mutation_result.dart';
 import '../../domain/models/transaction_entry.dart';
 import '../form/transaction_form_sheet.dart';
@@ -262,13 +264,23 @@ class _TransactionTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    transaction.note?.trim().isNotEmpty == true
-                        ? transaction.note!.trim()
-                        : transaction.categoryName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium,
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          transaction.note?.trim().isNotEmpty == true
+                              ? transaction.note!.trim()
+                              : transaction.categoryName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ),
+                      if (transaction.isImportant) ...[
+                        const SizedBox(width: 6),
+                        const Icon(Icons.star, color: Colors.amber, size: 18),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 6),
                   Wrap(
@@ -346,5 +358,17 @@ void _applyMutation(WidgetRef ref, TransactionMutationResult result) {
 
   for (final day in days) {
     ref.invalidate(transactionsForDayProvider(day));
+  }
+
+  final months = <DateTime>{
+    if (result.previousDate != null)
+      DateTime(result.previousDate!.year, result.previousDate!.month, 1),
+    if (result.currentDate != null)
+      DateTime(result.currentDate!.year, result.currentDate!.month, 1),
+  };
+
+  for (final month in months) {
+    ref.invalidate(calendarMonthProvider(month));
+    ref.invalidate(statisticsMonthProvider(month));
   }
 }

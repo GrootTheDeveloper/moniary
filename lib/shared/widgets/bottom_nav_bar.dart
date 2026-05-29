@@ -49,13 +49,6 @@ class MoniaryBottomNavBar extends StatelessWidget {
             onTap: () {
               if (onTabSelected != null) {
                 onTabSelected!(MoniaryTab.stats);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(context.l10n.statsDevelopingMessage),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
               }
             },
           ),

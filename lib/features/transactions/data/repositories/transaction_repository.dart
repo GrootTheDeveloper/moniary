@@ -155,6 +155,7 @@ class TransactionRepository {
     String? note,
     String? merchantName,
     String source = 'manual',
+    bool isImportant = false,
   }) async {
     if (!AppConstants.hasSupabaseConfig) {
       final id = 'mock-tx-${DateTime.now().millisecondsSinceEpoch}';
@@ -204,6 +205,7 @@ class TransactionRepository {
         categoryId: categoryId,
         categoryName: c.name,
         categoryColor: c.color,
+        isImportant: isImportant,
       ));
       return id;
     }
@@ -223,6 +225,7 @@ class TransactionRepository {
             'transaction_date': transactionDate.toUtc().toIso8601String(),
             'source': source,
             'image_upload_status': 'pending',
+            'is_important': isImportant,
           })
           .select('id')
           .single();
@@ -244,6 +247,7 @@ class TransactionRepository {
     required String categoryId,
     required DateTime transactionDate,
     String? note,
+    bool isImportant = false,
   }) async {
     if (!AppConstants.hasSupabaseConfig) {
       final index = _mockTransactions.indexWhere((t) => t.id == transactionId);
@@ -292,6 +296,7 @@ class TransactionRepository {
           categoryId: categoryId,
           categoryName: c.name,
           categoryColor: c.color,
+          isImportant: isImportant,
         );
       }
       return;
@@ -308,6 +313,48 @@ class TransactionRepository {
             'type': type.value,
             'note': note,
             'transaction_date': transactionDate.toUtc().toIso8601String(),
+            'is_important': isImportant,
+          })
+          .eq('id', transactionId)
+          .eq('user_id', uid);
+    } on PostgrestException catch (e) {
+      throw AppException(e.message, code: e.code);
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+    }
+  }
+
+  Future<void> toggleTransactionImportance(String transactionId, bool isImportant) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      final index = _mockTransactions.indexWhere((t) => t.id == transactionId);
+      if (index != -1) {
+        final t = _mockTransactions[index];
+        _mockTransactions[index] = TransactionEntry(
+          id: t.id,
+          amount: t.amount,
+          type: t.type,
+          note: t.note,
+          imagePath: t.imagePath,
+          transactionDate: t.transactionDate,
+          walletId: t.walletId,
+          walletName: t.walletName,
+          walletColor: t.walletColor,
+          categoryId: t.categoryId,
+          categoryName: t.categoryName,
+          categoryColor: t.categoryColor,
+          isImportant: isImportant,
+        );
+      }
+      return;
+    }
+    try {
+      final uid = _userId;
+
+      await _client
+          .from('transactions')
+          .update({
+            'is_important': isImportant,
           })
           .eq('id', transactionId)
           .eq('user_id', uid);
@@ -458,6 +505,7 @@ class TransactionRepository {
           note,
           image_path,
           transaction_date,
+          is_important,
           wallet:wallets!inner(id,name,color),
           category:categories!inner(id,name,color)
         ''');

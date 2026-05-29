@@ -9,6 +9,8 @@ import '../../../../core/constants/app_color.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../application/queries/transaction_queries.dart';
+import '../../data/repositories/transaction_repository.dart';
+import '../../../calendar/application/month/calendar_month_provider.dart';
 import '../../domain/models/transaction_mutation_result.dart';
 import '../../domain/models/transaction_entry.dart';
 import '../../application/composer/transaction_composer_controller.dart';
@@ -30,7 +32,38 @@ class TransactionDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          transactionAsync.when(
+            data: (transaction) => IconButton(
+              icon: Icon(
+                transaction.isImportant ? Icons.star : Icons.star_border,
+                color: transaction.isImportant ? Colors.amber : Colors.grey,
+              ),
+              onPressed: () async {
+                final repo = ref.read(transactionRepositoryProvider);
+                final nextVal = !transaction.isImportant;
+                await repo.toggleTransactionImportance(transaction.id, nextVal);
+
+                // Refresh local cache
+                ref.invalidate(transactionByIdProvider(args.transactionId));
+
+                // Invalidate day detail queries
+                final txDate = transaction.transactionDate;
+                final dayStart = DateTime(txDate.year, txDate.month, txDate.day);
+                ref.invalidate(transactionsForDayProvider(dayStart));
+
+                // Invalidate calendar month queries
+                final monthStart = DateTime(txDate.year, txDate.month, 1);
+                ref.invalidate(calendarMonthProvider(monthStart));
+              },
+            ),
+            loading: () => const SizedBox.shrink(),
+            error: (err, stack) => const SizedBox.shrink(),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: transactionAsync.when(
         data: (transaction) =>
             _TransactionDetailBody(transaction: transaction, day: args.day),

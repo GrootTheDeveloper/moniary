@@ -343,5 +343,49 @@
 
   "routeNotFound": "Page not found",
   "routeGoBack": "Go back",
-  "statsDevelopingMessage": "Statistics feature is under development."
+  "statsDevelopingMessage": "Statistics feature is under development.",
+  "transactionIsImportant": "Important transaction",
+  "statsTitle": "Expense Statistics",
+  "statsTotalIncome": "Total Income",
+  "statsTotalExpense": "Total Expense",
+  "statsNetBalance": "Net Balance",
+  "statsExpenseButton": "Total Expense",
+  "statsIncomeButton": "Total Income",
+  "statsEmptyTitle": "No transactions of this type yet",
+  "statsEmptySubtitle": "Statistics charts will appear after you add transactions.",
+  "statsCategoryAllocation": "Category allocation",
+  "statsDailyTrend": "Daily trend",
+  "statsLargestTransactions": "Largest transactions",
+  "profileProtectAccount": "Protect your account",
+  "profileAnonymousWarning": "You are logged in with a guest account. Please link your account to avoid data loss when switching devices.",
+  "profileLinkNow": "Link now",
+  "profileLinkAccountTitle": "Link account",
+  "profileLinkAccountSubtitle": "Your account is currently anonymous. Link with Email or Google to store data permanently and sign in across devices.",
+  "profileNewPassword": "New password",
+  "profileLinkEmail": "Link Email",
+  "profileLinkGoogle": "Link Google",
+  "profileLinkSuccess": "Linked email account successfully!",
+  "profileLinkGoogleBrowser": "Complete Google linking in browser to return to Moniary.",
+  "profileLinkGoogleError": "Google linking error: {error}",
+  "@profileLinkGoogleError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "profileEditInfo": "Edit profile info",
+  "profileChangeTimezone": "Change timezone",
+  "profileAnonymousBadge": "Anonymous account",
+  "profileVerifiedBadge": "Verified ({provider})",
+  "@profileVerifiedBadge": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "profileSignOutDialogTitle": "Sign out",
+  "profileSignOutDialogMessage": "Are you sure you want to sign out?",
+  "profileCancel": "Cancel"
 }

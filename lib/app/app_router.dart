@@ -41,6 +41,7 @@ import '../features/settings/presentation/privacy/privacy_contact_screen.dart';
 import '../features/settings/presentation/privacy/privacy_policy_screen.dart';
 import '../features/settings/presentation/privacy/privacy_request_detail_screen.dart';
 import '../features/settings/presentation/profile_screen.dart';
+import '../features/statistics/presentation/statistics_view.dart';
 import '../features/settings/presentation/store/store_compliance_checklist_screen.dart';
 import '../features/settings/presentation/support/support_request_checklist_screen.dart';
 import '../features/settings/presentation/legal/terms_of_use_screen.dart';
@@ -132,6 +133,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: CalendarScreen.routePath,
                 builder: (context, state) => const CalendarScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/statistics',
+                builder: (context, state) => const StatisticsView(),
               ),
             ],
           ),

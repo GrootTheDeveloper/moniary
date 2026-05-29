@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'app_theme.dart';
-import '../l10n/l10n_extension.dart';
 import '../shared/widgets/bottom_nav_bar.dart';
 import '../features/calendar/application/month/calendar_month_provider.dart';
 import '../features/calendar/application/month/calendar_visible_month_provider.dart';
@@ -25,9 +24,12 @@ class MainShellScreen extends ConsumerWidget {
         currentTab = MoniaryTab.calendar;
         break;
       case 1:
-        currentTab = MoniaryTab.groups;
+        currentTab = MoniaryTab.stats;
         break;
       case 2:
+        currentTab = MoniaryTab.groups;
+        break;
+      case 3:
         currentTab = MoniaryTab.profile;
         break;
       default:
@@ -74,20 +76,15 @@ class MainShellScreen extends ConsumerWidget {
             case MoniaryTab.calendar:
               index = 0;
               break;
-            case MoniaryTab.groups:
+            case MoniaryTab.stats:
               index = 1;
               break;
-            case MoniaryTab.profile:
+            case MoniaryTab.groups:
               index = 2;
               break;
-            case MoniaryTab.stats:
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(context.l10n.statsDevelopingMessage),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-              return;
+            case MoniaryTab.profile:
+              index = 3;
+              break;
           }
           navigationShell.goBranch(
             index,

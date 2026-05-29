@@ -954,4 +954,103 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get statsDevelopingMessage =>
       'Tính năng Thống kê đang được phát triển.';
+
+  @override
+  String get transactionIsImportant => 'Giao dịch quan trọng';
+
+  @override
+  String get statsTitle => 'Thống kê chi tiêu';
+
+  @override
+  String get statsTotalIncome => 'Tổng thu';
+
+  @override
+  String get statsTotalExpense => 'Tổng chi';
+
+  @override
+  String get statsNetBalance => 'Số dư ròng';
+
+  @override
+  String get statsExpenseButton => 'Tổng Chi';
+
+  @override
+  String get statsIncomeButton => 'Tổng Thu';
+
+  @override
+  String get statsEmptyTitle => 'Chưa có giao dịch nào loại này';
+
+  @override
+  String get statsEmptySubtitle =>
+      'Các biểu đồ thống kê sẽ hiện ra sau khi bạn thêm giao dịch.';
+
+  @override
+  String get statsCategoryAllocation => 'Phân bổ danh mục';
+
+  @override
+  String get statsDailyTrend => 'Xu hướng hàng ngày';
+
+  @override
+  String get statsLargestTransactions => 'Giao dịch lớn nhất';
+
+  @override
+  String get profileProtectAccount => 'Bảo vệ tài khoản của bạn';
+
+  @override
+  String get profileAnonymousWarning =>
+      'Bạn đang đăng nhập bằng tài khoản khách. Hãy liên kết tài khoản để tránh mất mát dữ liệu khi đổi thiết bị.';
+
+  @override
+  String get profileLinkNow => 'Liên kết ngay';
+
+  @override
+  String get profileLinkAccountTitle => 'Liên kết tài khoản';
+
+  @override
+  String get profileLinkAccountSubtitle =>
+      'Tài khoản của bạn hiện là ẩn danh. Liên kết với Email hoặc Google để lưu trữ dữ liệu vĩnh viễn và đăng nhập trên nhiều thiết bị.';
+
+  @override
+  String get profileNewPassword => 'Mật khẩu mới';
+
+  @override
+  String get profileLinkEmail => 'Liên kết Email';
+
+  @override
+  String get profileLinkGoogle => 'Liên kết Google';
+
+  @override
+  String get profileLinkSuccess => 'Liên kết tài khoản email thành công!';
+
+  @override
+  String get profileLinkGoogleBrowser =>
+      'Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.';
+
+  @override
+  String profileLinkGoogleError(String error) {
+    return 'Lỗi liên kết Google: $error';
+  }
+
+  @override
+  String get profileEditInfo => 'Chỉnh sửa thông tin';
+
+  @override
+  String get profileChangeTimezone => 'Thay đổi múi giờ';
+
+  @override
+  String get profileAnonymousBadge => 'Tài khoản Ẩn danh';
+
+  @override
+  String profileVerifiedBadge(String provider) {
+    return 'Đã Xác thực ($provider)';
+  }
+
+  @override
+  String get profileSignOutDialogTitle => 'Đăng xuất';
+
+  @override
+  String get profileSignOutDialogMessage =>
+      'Bạn có chắc chắn muốn đăng xuất không?';
+
+  @override
+  String get profileCancel => 'Hủy';
 }

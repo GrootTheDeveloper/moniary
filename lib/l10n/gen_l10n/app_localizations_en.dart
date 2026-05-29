@@ -953,4 +953,103 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get statsDevelopingMessage =>
       'Statistics feature is under development.';
+
+  @override
+  String get transactionIsImportant => 'Important transaction';
+
+  @override
+  String get statsTitle => 'Expense Statistics';
+
+  @override
+  String get statsTotalIncome => 'Total Income';
+
+  @override
+  String get statsTotalExpense => 'Total Expense';
+
+  @override
+  String get statsNetBalance => 'Net Balance';
+
+  @override
+  String get statsExpenseButton => 'Total Expense';
+
+  @override
+  String get statsIncomeButton => 'Total Income';
+
+  @override
+  String get statsEmptyTitle => 'No transactions of this type yet';
+
+  @override
+  String get statsEmptySubtitle =>
+      'Statistics charts will appear after you add transactions.';
+
+  @override
+  String get statsCategoryAllocation => 'Category allocation';
+
+  @override
+  String get statsDailyTrend => 'Daily trend';
+
+  @override
+  String get statsLargestTransactions => 'Largest transactions';
+
+  @override
+  String get profileProtectAccount => 'Protect your account';
+
+  @override
+  String get profileAnonymousWarning =>
+      'You are logged in with a guest account. Please link your account to avoid data loss when switching devices.';
+
+  @override
+  String get profileLinkNow => 'Link now';
+
+  @override
+  String get profileLinkAccountTitle => 'Link account';
+
+  @override
+  String get profileLinkAccountSubtitle =>
+      'Your account is currently anonymous. Link with Email or Google to store data permanently and sign in across devices.';
+
+  @override
+  String get profileNewPassword => 'New password';
+
+  @override
+  String get profileLinkEmail => 'Link Email';
+
+  @override
+  String get profileLinkGoogle => 'Link Google';
+
+  @override
+  String get profileLinkSuccess => 'Linked email account successfully!';
+
+  @override
+  String get profileLinkGoogleBrowser =>
+      'Complete Google linking in browser to return to Moniary.';
+
+  @override
+  String profileLinkGoogleError(String error) {
+    return 'Google linking error: $error';
+  }
+
+  @override
+  String get profileEditInfo => 'Edit profile info';
+
+  @override
+  String get profileChangeTimezone => 'Change timezone';
+
+  @override
+  String get profileAnonymousBadge => 'Anonymous account';
+
+  @override
+  String profileVerifiedBadge(String provider) {
+    return 'Verified ($provider)';
+  }
+
+  @override
+  String get profileSignOutDialogTitle => 'Sign out';
+
+  @override
+  String get profileSignOutDialogMessage =>
+      'Are you sure you want to sign out?';
+
+  @override
+  String get profileCancel => 'Cancel';
 }

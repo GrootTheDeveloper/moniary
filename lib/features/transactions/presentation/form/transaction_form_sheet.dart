@@ -64,6 +64,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
   String? _selectedCategoryId;
   XFile? _pickedFile;
   bool _isOcrExtracting = false;
+  late bool _isImportant;
 
   bool get _isEditing => widget.initialTransaction != null;
 
@@ -92,6 +93,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
         DateTime.now();
     _selectedWalletId = transaction?.walletId;
     _selectedCategoryId = transaction?.categoryId;
+    _isImportant = transaction?.isImportant ?? false;
     if (widget.initialImagePath != null) {
       _pickedFile = XFile(widget.initialImagePath!);
     }
@@ -380,6 +382,36 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             ),
             const SizedBox(height: 12),
             _NoteInput(controller: _noteController),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppTheme.outline),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.star_outline, color: Colors.grey, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      context.l10n.transactionIsImportant,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  Switch(
+                    value: _isImportant,
+                    activeThumbColor: AppTheme.mint,
+                    onChanged: (value) {
+                      setState(() {
+                        _isImportant = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 40),
             if (composerState.isLoading)
               const Center(
@@ -533,6 +565,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                   ? null
                   : _noteController.text.trim(),
               imageBytes: imageBytes,
+              isImportant: _isImportant,
             );
       } else {
         await ref
@@ -547,6 +580,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                   ? null
                   : _noteController.text.trim(),
               imageBytes: imageBytes,
+              isImportant: _isImportant,
             );
       }
 

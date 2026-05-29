@@ -14,6 +14,7 @@ class TransactionEntry {
     required this.categoryId,
     required this.categoryName,
     required this.categoryColor,
+    this.isImportant = false,
   });
 
   final String id;
@@ -28,6 +29,7 @@ class TransactionEntry {
   final String categoryId;
   final String categoryName;
   final String? categoryColor;
+  final bool isImportant;
 
   bool get isExpense => type == TransactionType.expense;
   bool get isIncome => type == TransactionType.income;
@@ -51,6 +53,7 @@ class TransactionEntry {
       categoryId: (category['id'] ?? '') as String,
       categoryName: (category['name'] ?? 'Khác') as String,
       categoryColor: category['color'] as String?,
+      isImportant: map['is_important'] as bool? ?? false,
     );
   }
 }

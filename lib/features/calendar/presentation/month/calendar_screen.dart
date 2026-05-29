@@ -554,6 +554,16 @@ class _CalendarDayCell extends StatelessWidget {
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
+            if (day.transactions.any((t) => t.isImportant))
+              const Positioned(
+                top: 2,
+                right: 2,
+                child: Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                  size: 12,
+                ),
+              ),
             if (day.transactions.isNotEmpty)
               Positioned(
                 bottom: 18,

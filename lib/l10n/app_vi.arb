@@ -343,5 +343,49 @@
 
   "routeNotFound": "Trang không tồn tại",
   "routeGoBack": "Quay lại",
-  "statsDevelopingMessage": "Tính năng Thống kê đang được phát triển."
+  "statsDevelopingMessage": "Tính năng Thống kê đang được phát triển.",
+  "transactionIsImportant": "Giao dịch quan trọng",
+  "statsTitle": "Thống kê chi tiêu",
+  "statsTotalIncome": "Tổng thu",
+  "statsTotalExpense": "Tổng chi",
+  "statsNetBalance": "Số dư ròng",
+  "statsExpenseButton": "Tổng Chi",
+  "statsIncomeButton": "Tổng Thu",
+  "statsEmptyTitle": "Chưa có giao dịch nào loại này",
+  "statsEmptySubtitle": "Các biểu đồ thống kê sẽ hiện ra sau khi bạn thêm giao dịch.",
+  "statsCategoryAllocation": "Phân bổ danh mục",
+  "statsDailyTrend": "Xu hướng hàng ngày",
+  "statsLargestTransactions": "Giao dịch lớn nhất",
+  "profileProtectAccount": "Bảo vệ tài khoản của bạn",
+  "profileAnonymousWarning": "Bạn đang đăng nhập bằng tài khoản khách. Hãy liên kết tài khoản để tránh mất mát dữ liệu khi đổi thiết bị.",
+  "profileLinkNow": "Liên kết ngay",
+  "profileLinkAccountTitle": "Liên kết tài khoản",
+  "profileLinkAccountSubtitle": "Tài khoản của bạn hiện là ẩn danh. Liên kết với Email hoặc Google để lưu trữ dữ liệu vĩnh viễn và đăng nhập trên nhiều thiết bị.",
+  "profileNewPassword": "Mật khẩu mới",
+  "profileLinkEmail": "Liên kết Email",
+  "profileLinkGoogle": "Liên kết Google",
+  "profileLinkSuccess": "Liên kết tài khoản email thành công!",
+  "profileLinkGoogleBrowser": "Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.",
+  "profileLinkGoogleError": "Lỗi liên kết Google: {error}",
+  "@profileLinkGoogleError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "profileEditInfo": "Chỉnh sửa thông tin",
+  "profileChangeTimezone": "Thay đổi múi giờ",
+  "profileAnonymousBadge": "Tài khoản Ẩn danh",
+  "profileVerifiedBadge": "Đã Xác thực ({provider})",
+  "@profileVerifiedBadge": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "profileSignOutDialogTitle": "Đăng xuất",
+  "profileSignOutDialogMessage": "Bạn có chắc chắn muốn đăng xuất không?",
+  "profileCancel": "Hủy"
 }

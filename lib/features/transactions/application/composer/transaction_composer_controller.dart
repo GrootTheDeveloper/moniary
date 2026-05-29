@@ -24,6 +24,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
     String? merchantName,
     String source = 'manual',
     Uint8List? imageBytes,
+    bool isImportant = false,
   }) async {
     state = const AsyncLoading();
 
@@ -40,6 +41,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
         note: note,
         merchantName: merchantName,
         source: source,
+        isImportant: isImportant,
       );
 
       // 2. If no image, we are done (but status is pending, maybe we should update to uploaded if no image?
@@ -85,6 +87,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
     required DateTime transactionDate,
     String? note,
     Uint8List? imageBytes,
+    bool isImportant = false,
   }) async {
     state = const AsyncLoading();
     final repo = ref.read(transactionRepositoryProvider);
@@ -98,6 +101,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
         categoryId: categoryId,
         transactionDate: transactionDate,
         note: note,
+        isImportant: isImportant,
       );
 
       if (imageBytes != null) {

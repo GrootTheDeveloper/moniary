@@ -1,25 +1,297 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../auth/presentation/login_screen.dart';
+import '../../profile/application/profile_setup_controller.dart';
+import '../../profile/presentation/profile_setup_screen.dart';
 import '../application/account/account_actions_controller.dart';
 import 'export/export_data_screen.dart';
 import 'privacy/privacy_center_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   static const routePath = '/profile';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentSessionProvider)?.user;
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool _isLinkingLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _setLinkingLoading(bool value, VoidCallback refreshSheet) {
+    if (!mounted) return;
+    setState(() => _isLinkingLoading = value);
+    refreshSheet();
+  }
+
+  Future<bool> _linkEmailAccount(VoidCallback refreshSheet) async {
+    if (!_formKey.currentState!.validate()) return false;
+
+    _setLinkingLoading(true, refreshSheet);
+    final client = ref.read(supabaseClientProvider);
+    final messenger = ScaffoldMessenger.of(context);
+    final email = _emailController.text.trim();
+
+    try {
+      // 1. Update user credentials in Auth
+      await client.auth.updateUser(
+        UserAttributes(
+          email: email,
+          password: _passwordController.text,
+        ),
+      );
+
+      // 2. Call RPC to sync profile with database profiles table
+      try {
+        await client.rpc('initialize_user');
+      } catch (e) {
+        // Auth conversion can succeed even when the profile sync RPC is already satisfied.
+      }
+
+      final userId = client.auth.currentUser?.id;
+      if (userId != null) {
+        await client.from('profiles').update({
+          'email': email,
+          'login_provider': 'email',
+        }).eq('id', userId);
+      }
+
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.profileLinkSuccess),
+            backgroundColor: AppTheme.success,
+          ),
+        );
+      }
+
+      ref.invalidate(currentProfileProvider);
+      return true;
+    } catch (e) {
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('${context.l10n.errorGeneric}: ${e.toString()}'),
+            backgroundColor: AppTheme.danger,
+          ),
+        );
+      }
+      return false;
+    } finally {
+      _setLinkingLoading(false, refreshSheet);
+    }
+  }
+
+  Future<void> _linkGoogleAccount(VoidCallback refreshSheet) async {
+    _setLinkingLoading(true, refreshSheet);
+    final client = ref.read(supabaseClientProvider);
+    final messenger = ScaffoldMessenger.of(context);
+
+    try {
+      await client.auth.linkIdentity(OAuthProvider.google);
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.profileLinkGoogleBrowser),
+            backgroundColor: AppTheme.success,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.profileLinkGoogleError(e.toString())),
+            backgroundColor: AppTheme.danger,
+          ),
+        );
+      }
+    } finally {
+      _setLinkingLoading(false, refreshSheet);
+    }
+  }
+
+  void _showLinkAccountSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            void refreshSheet() {
+              if (context.mounted) {
+                setSheetState(() {});
+              }
+            }
+
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                20,
+                20,
+                20,
+                MediaQuery.of(context).viewInsets.bottom + 20,
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          context.l10n.profileLinkAccountTitle,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      context.l10n.profileLinkAccountSubtitle,
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: const TextStyle(color: Colors.grey),
+                        prefixIcon: const Icon(Icons.email_outlined, color: Colors.grey),
+                        filled: true,
+                        fillColor: AppTheme.surfaceRaised,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      validator: (val) {
+                        if (val == null || val.trim().isEmpty) {
+                          return 'Nhập email hợp lệ';
+                        }
+                        if (!val.contains('@')) {
+                          return 'Email không hợp lệ';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: context.l10n.profileNewPassword,
+                        labelStyle: const TextStyle(color: Colors.grey),
+                        prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
+                        filled: true,
+                        fillColor: AppTheme.surfaceRaised,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      validator: (val) {
+                        if (val == null || val.length < 6) {
+                          return 'Mật khẩu phải từ 6 ký tự';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    if (_isLinkingLoading)
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: CircularProgressIndicator(color: AppTheme.mint),
+                        ),
+                      )
+                    else ...[
+                      FilledButton.icon(
+                        onPressed: () async {
+                          final linked = await _linkEmailAccount(refreshSheet);
+                          if (linked && context.mounted) {
+                            Navigator.pop(context);
+                          }
+                        },
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppTheme.mint,
+                          foregroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        icon: const Icon(Icons.link),
+                        label: Text(
+                          context.l10n.profileLinkEmail,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          await _linkGoogleAccount(refreshSheet);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          side: const BorderSide(color: AppTheme.outline),
+                        ),
+                        icon: const Icon(Icons.g_mobiledata, size: 28, color: Colors.white),
+                        label: Text(
+                          context.l10n.profileLinkGoogle,
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final profileAsync = ref.watch(currentProfileProvider);
     final state = ref.watch(accountActionsControllerProvider);
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
@@ -49,61 +321,145 @@ class ProfileScreen extends ConsumerWidget {
         child: SafeArea(
           child: Stack(
             children: [
-              ListView(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-                children: [
-                  _ProfileHeader(
-                    title:
-                        user?.userMetadata?['full_name']?.toString() ??
-                        user?.email ??
-                        context.l10n.profileUserDefault,
-                    subtitle: user?.email ?? context.l10n.profileAnonymous,
-                  ),
-                  const SizedBox(height: 20),
-                  _SettingsGroup(
-                    title: context.l10n.profileMyData,
+              profileAsync.when(
+                data: (profile) {
+                  if (profile == null) {
+                    return Center(child: Text(context.l10n.errorGeneric));
+                  }
+
+                  final provider = profile.loginProvider;
+                  final isAnonymous = provider == 'anonymous';
+                  final name = profile.fullName?.trim().isNotEmpty == true
+                      ? profile.fullName!.trim()
+                      : context.l10n.profileUserDefault;
+                  final email = profile.email?.trim().isNotEmpty == true
+                      ? profile.email!.trim()
+                      : context.l10n.profileAnonymous;
+
+                  return ListView(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
                     children: [
-                      _SettingsTile(
-                        icon: Icons.file_download_outlined,
-                        title: context.l10n.profileExportData,
-                        subtitle:
-                            context.l10n.profileExportSubtitle,
-                        onTap: () => context.push(ExportDataScreen.routePath),
+                      _ProfileHeader(
+                        title: name,
+                        subtitle: email,
+                        provider: provider,
+                        isAnonymous: isAnonymous,
                       ),
-                      _SettingsTile(
-                        icon: Icons.privacy_tip_outlined,
-                        title: context.l10n.profilePrivacyCenter,
-                        subtitle:
-                            context.l10n.profilePrivacySubtitle,
-                        onTap: () => context.push(PrivacyCenterScreen.routePath),
+                      const SizedBox(height: 20),
+                      if (isAnonymous) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppTheme.mint.withValues(alpha: 0.15),
+                                Colors.transparent,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: AppTheme.mint.withValues(alpha: 0.3)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.warning_amber_rounded, color: AppTheme.mint, size: 24),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    context.l10n.profileProtectAccount,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                context.l10n.profileAnonymousWarning,
+                                style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
+                              ),
+                              const SizedBox(height: 16),
+                              SizedBox(
+                                width: double.infinity,
+                                child: FilledButton(
+                                  onPressed: _showLinkAccountSheet,
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: AppTheme.mint,
+                                    foregroundColor: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    context.l10n.profileLinkNow,
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                      _SettingsGroup(
+                        title: context.l10n.profileMyData,
+                        children: [
+                          _SettingsTile(
+                            icon: Icons.file_download_outlined,
+                            title: context.l10n.profileExportData,
+                            subtitle: context.l10n.profileExportSubtitle,
+                            onTap: () => context.push(ExportDataScreen.routePath),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.privacy_tip_outlined,
+                            title: context.l10n.profilePrivacyCenter,
+                            subtitle: context.l10n.profilePrivacySubtitle,
+                            onTap: () => context.push(PrivacyCenterScreen.routePath),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      _SettingsGroup(
+                        title: context.l10n.profileAccount,
+                        children: [
+                          _SettingsTile(
+                            icon: Icons.manage_accounts_outlined,
+                            title: context.l10n.profileEditInfo,
+                            subtitle: '',
+                            onTap: () => context.push(ProfileSetupScreen.routePath),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.lock_outline_rounded,
+                            title: context.l10n.profileChangeTimezone,
+                            subtitle: profile.timezone,
+                            onTap: () => context.push(ProfileSetupScreen.routePath),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.logout_rounded,
+                            title: context.l10n.profileSignOut,
+                            subtitle: context.l10n.profileSignOutSubtitle,
+                            onTap: state.isLoading ? null : () => _signOut(context),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.delete_forever_outlined,
+                            title: context.l10n.profileDeleteAccount,
+                            subtitle: context.l10n.profileDeleteSubtitle,
+                            destructive: true,
+                            onTap: state.isLoading ? null : () => _confirmDelete(context),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 16),
-                  _SettingsGroup(
-                    title: context.l10n.profileAccount,
-                    children: [
-                      _SettingsTile(
-                        icon: Icons.logout_rounded,
-                        title: context.l10n.profileSignOut,
-                        subtitle:
-                            context.l10n.profileSignOutSubtitle,
-                        onTap: state.isLoading
-                            ? null
-                            : () => _signOut(context, ref),
-                      ),
-                      _SettingsTile(
-                        icon: Icons.delete_forever_outlined,
-                        title: context.l10n.profileDeleteAccount,
-                        subtitle: context.l10n.profileDeleteSubtitle,
-                        destructive: true,
-                        onTap: state.isLoading
-                            ? null
-                            : () => _confirmDelete(context, ref),
-                      ),
-                    ],
-                  ),
-                ],
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, _) => Center(child: Text('${context.l10n.errorGeneric}: $error')),
               ),
               if (state.isLoading)
                 const Positioned.fill(
@@ -119,14 +475,36 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _signOut(BuildContext context, WidgetRef ref) async {
-    await ref.read(supabaseClientProvider).auth.signOut();
-    if (context.mounted) {
-      context.go(LoginScreen.routePath);
+  Future<void> _signOut(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.surface,
+        title: Text(context.l10n.profileSignOutDialogTitle),
+        content: Text(context.l10n.profileSignOutDialogMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.profileCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
+            child: Text(context.l10n.profileSignOut),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      await ref.read(supabaseClientProvider).auth.signOut();
+      if (context.mounted) {
+        context.go(LoginScreen.routePath);
+      }
     }
   }
 
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+  Future<void> _confirmDelete(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => const DeleteAccountDialog(),
@@ -144,10 +522,17 @@ class ProfileScreen extends ConsumerWidget {
 }
 
 class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader({required this.title, required this.subtitle});
+  const _ProfileHeader({
+    required this.title,
+    required this.subtitle,
+    required this.provider,
+    required this.isAnonymous,
+  });
 
   final String title;
   final String subtitle;
+  final String provider;
+  final bool isAnonymous;
 
   @override
   Widget build(BuildContext context) {
@@ -160,10 +545,27 @@ class _ProfileHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const CircleAvatar(
-            radius: 28,
-            backgroundColor: AppTheme.mint,
-            child: Icon(Icons.person_rounded, color: Colors.white, size: 30),
+          Container(
+            width: 56,
+            height: 56,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [AppTheme.mint, Colors.teal],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                title.isNotEmpty ? title.substring(0, 1).toUpperCase() : 'U',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -173,6 +575,41 @@ class _ProfileHeader extends StatelessWidget {
                 Text(title, style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 4),
                 Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: isAnonymous
+                        ? AppTheme.danger.withValues(alpha: 0.12)
+                        : AppTheme.success.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isAnonymous ? AppTheme.danger : AppTheme.success,
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isAnonymous ? Icons.lock_open_rounded : Icons.verified_user_rounded,
+                        size: 14,
+                        color: isAnonymous ? AppTheme.danger : AppTheme.success,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        isAnonymous
+                            ? context.l10n.profileAnonymousBadge
+                            : context.l10n.profileVerifiedBadge(provider),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: isAnonymous ? AppTheme.danger : AppTheme.success,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -252,11 +689,13 @@ class _SettingsTile extends StatelessWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: destructive ? AppTheme.danger : Colors.white,
-                    ),
+                          color: destructive ? AppTheme.danger : Colors.white,
+                        ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
+                  if (subtitle.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
+                  ],
                 ],
               ),
             ),

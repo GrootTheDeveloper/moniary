@@ -1837,6 +1837,186 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Tính năng Thống kê đang được phát triển.'**
   String get statsDevelopingMessage;
+
+  /// No description provided for @transactionIsImportant.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch quan trọng'**
+  String get transactionIsImportant;
+
+  /// No description provided for @statsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thống kê chi tiêu'**
+  String get statsTitle;
+
+  /// No description provided for @statsTotalIncome.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng thu'**
+  String get statsTotalIncome;
+
+  /// No description provided for @statsTotalExpense.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng chi'**
+  String get statsTotalExpense;
+
+  /// No description provided for @statsNetBalance.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số dư ròng'**
+  String get statsNetBalance;
+
+  /// No description provided for @statsExpenseButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng Chi'**
+  String get statsExpenseButton;
+
+  /// No description provided for @statsIncomeButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng Thu'**
+  String get statsIncomeButton;
+
+  /// No description provided for @statsEmptyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có giao dịch nào loại này'**
+  String get statsEmptyTitle;
+
+  /// No description provided for @statsEmptySubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Các biểu đồ thống kê sẽ hiện ra sau khi bạn thêm giao dịch.'**
+  String get statsEmptySubtitle;
+
+  /// No description provided for @statsCategoryAllocation.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phân bổ danh mục'**
+  String get statsCategoryAllocation;
+
+  /// No description provided for @statsDailyTrend.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xu hướng hàng ngày'**
+  String get statsDailyTrend;
+
+  /// No description provided for @statsLargestTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch lớn nhất'**
+  String get statsLargestTransactions;
+
+  /// No description provided for @profileProtectAccount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bảo vệ tài khoản của bạn'**
+  String get profileProtectAccount;
+
+  /// No description provided for @profileAnonymousWarning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đang đăng nhập bằng tài khoản khách. Hãy liên kết tài khoản để tránh mất mát dữ liệu khi đổi thiết bị.'**
+  String get profileAnonymousWarning;
+
+  /// No description provided for @profileLinkNow.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết ngay'**
+  String get profileLinkNow;
+
+  /// No description provided for @profileLinkAccountTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết tài khoản'**
+  String get profileLinkAccountTitle;
+
+  /// No description provided for @profileLinkAccountSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tài khoản của bạn hiện là ẩn danh. Liên kết với Email hoặc Google để lưu trữ dữ liệu vĩnh viễn và đăng nhập trên nhiều thiết bị.'**
+  String get profileLinkAccountSubtitle;
+
+  /// No description provided for @profileNewPassword.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mật khẩu mới'**
+  String get profileNewPassword;
+
+  /// No description provided for @profileLinkEmail.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết Email'**
+  String get profileLinkEmail;
+
+  /// No description provided for @profileLinkGoogle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết Google'**
+  String get profileLinkGoogle;
+
+  /// No description provided for @profileLinkSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết tài khoản email thành công!'**
+  String get profileLinkSuccess;
+
+  /// No description provided for @profileLinkGoogleBrowser.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.'**
+  String get profileLinkGoogleBrowser;
+
+  /// No description provided for @profileLinkGoogleError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lỗi liên kết Google: {error}'**
+  String profileLinkGoogleError(String error);
+
+  /// No description provided for @profileEditInfo.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉnh sửa thông tin'**
+  String get profileEditInfo;
+
+  /// No description provided for @profileChangeTimezone.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thay đổi múi giờ'**
+  String get profileChangeTimezone;
+
+  /// No description provided for @profileAnonymousBadge.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tài khoản Ẩn danh'**
+  String get profileAnonymousBadge;
+
+  /// No description provided for @profileVerifiedBadge.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã Xác thực ({provider})'**
+  String profileVerifiedBadge(String provider);
+
+  /// No description provided for @profileSignOutDialogTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng xuất'**
+  String get profileSignOutDialogTitle;
+
+  /// No description provided for @profileSignOutDialogMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có chắc chắn muốn đăng xuất không?'**
+  String get profileSignOutDialogMessage;
+
+  /// No description provided for @profileCancel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hủy'**
+  String get profileCancel;
 }
 
 class _AppLocalizationsDelegate
