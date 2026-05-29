@@ -412,11 +412,13 @@ class AccountRepository {
       return txs
           .where((t) {
             if (filters.startDate != null &&
-                t.transactionDate.isBefore(filters.startDate!))
+                t.transactionDate.isBefore(filters.startDate!)) {
               return false;
+            }
             if (filters.endDate != null &&
-                t.transactionDate.isAfter(filters.endDate!))
+                t.transactionDate.isAfter(filters.endDate!)) {
               return false;
+            }
             return true;
           })
           .map(
