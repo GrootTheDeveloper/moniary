@@ -5,6 +5,7 @@ class AppConstants {
 
   static const appName = 'Moniary';
   static const defaultTimezone = 'Asia/Ho_Chi_Minh';
+  static const defaultLocale = 'vi_VN';
 
   // --- Supabase ---
   static const supabaseUrl = String.fromEnvironment('SUPABASE_URL');

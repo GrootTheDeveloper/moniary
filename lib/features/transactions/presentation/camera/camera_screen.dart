@@ -1,20 +1,21 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../main.dart';
+import '../../../../core/providers/camera_provider.dart';
 import '../../domain/models/transaction_mutation_result.dart';
 
-class CameraScreen extends StatefulWidget {
+class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({super.key});
 
   static const routePath = '/camera';
 
   @override
-  State<CameraScreen> createState() => _CameraScreenState();
+  ConsumerState<CameraScreen> createState() => _CameraScreenState();
 }
 
-class _CameraScreenState extends State<CameraScreen>
+class _CameraScreenState extends ConsumerState<CameraScreen>
     with WidgetsBindingObserver {
   CameraController? _controller;
   bool _isFlashOn = false;
@@ -23,11 +24,14 @@ class _CameraScreenState extends State<CameraScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initializeCamera();
+    ref.read(cameraProvider.future).then((cameras) {
+      if (mounted && cameras.isNotEmpty) {
+        _initializeCamera(cameras);
+      }
+    });
   }
 
-  void _initializeCamera() {
-    if (cameras.isEmpty) return;
+  void _initializeCamera(List<CameraDescription> cameras) {
     if (_controller != null) return;
 
     final controller = CameraController(cameras[0], ResolutionPreset.high);
@@ -46,7 +50,11 @@ class _CameraScreenState extends State<CameraScreen>
       _controller = null;
       setState(() {});
     } else if (state == AppLifecycleState.resumed) {
-      _initializeCamera();
+      ref.read(cameraProvider.future).then((cameras) {
+        if (mounted && cameras.isNotEmpty) {
+          _initializeCamera(cameras);
+        }
+      });
     }
   }
 
