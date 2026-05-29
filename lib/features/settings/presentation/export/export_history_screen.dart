@@ -111,7 +111,7 @@ class _HistoryTile extends ConsumerWidget {
                 );
               }
             },
-            icon: const Icon(Icons.open_in_new_rounded, color: AppTheme.mint),
+            icon: const Icon(Icons.open_in_new_outlined, color: AppTheme.mint),
           ),
         ],
       ),

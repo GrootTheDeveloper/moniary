@@ -175,7 +175,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       context.l10n.profileLinkAccountSubtitle,
-                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                      style: const TextStyle(color: Colors.white54, fontSize: 13),
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
@@ -184,10 +184,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        labelStyle: const TextStyle(color: Colors.grey),
+                        labelStyle: const TextStyle(color: Colors.white54),
                         prefixIcon: const Icon(
                           Icons.email_outlined,
-                          color: Colors.grey,
+                          color: Colors.white54,
                         ),
                         filled: true,
                         fillColor: AppTheme.surfaceRaised,
@@ -213,10 +213,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: context.l10n.profileNewPassword,
-                        labelStyle: const TextStyle(color: Colors.grey),
+                        labelStyle: const TextStyle(color: Colors.white54),
                         prefixIcon: const Icon(
                           Icons.lock_outline,
-                          color: Colors.grey,
+                          color: Colors.white54,
                         ),
                         filled: true,
                         fillColor: AppTheme.surfaceRaised,
@@ -309,9 +309,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(userFriendlyMessage(context, error))),
+          );
         },
       );
     });
@@ -382,7 +382,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               Row(
                                 children: [
                                   const Icon(
-                                    Icons.warning_amber_rounded,
+                                    Icons.warning_amber_outlined,
                                     color: AppTheme.mint,
                                     size: 24,
                                   ),
@@ -462,14 +462,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 context.push(ProfileSetupScreen.routePath),
                           ),
                           _SettingsTile(
-                            icon: Icons.lock_outline_rounded,
+                            icon: Icons.lock_outline,
                             title: context.l10n.profileChangeTimezone,
                             subtitle: profile.timezone,
                             onTap: () =>
                                 context.push(ProfileSetupScreen.routePath),
                           ),
                           _SettingsTile(
-                            icon: Icons.logout_rounded,
+                            icon: Icons.logout_outlined,
                             title: context.l10n.profileSignOut,
                             subtitle: context.l10n.profileSignOutSubtitle,
                             onTap: state.isLoading
@@ -629,8 +629,8 @@ class _ProfileHeader extends StatelessWidget {
                     children: [
                       Icon(
                         isAnonymous
-                            ? Icons.lock_open_rounded
-                            : Icons.verified_user_rounded,
+                            ? Icons.lock_open_outlined
+                            : Icons.verified_user_outlined,
                         size: 14,
                         color: isAnonymous ? AppTheme.danger : AppTheme.success,
                       ),
@@ -743,7 +743,7 @@ class _SettingsTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Icon(Icons.chevron_right_rounded, color: color),
+            Icon(Icons.chevron_right_outlined, color: color),
           ],
         ),
       ),

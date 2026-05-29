@@ -112,9 +112,9 @@ class GroupsScreen extends ConsumerWidget {
           .createGroup(name: name, ownerId: userId);
     } catch (error) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
+        );
       }
     }
   }

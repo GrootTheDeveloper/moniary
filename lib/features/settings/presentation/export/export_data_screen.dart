@@ -42,9 +42,9 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(userFriendlyMessage(context, error))),
+          );
         },
       );
     });
@@ -303,7 +303,7 @@ class _DateRangeCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.date_range_rounded, color: AppTheme.mint),
+          const Icon(Icons.date_range_outlined, color: AppTheme.mint),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -321,7 +321,7 @@ class _DateRangeCard extends StatelessWidget {
           if (onClear != null)
             IconButton(
               onPressed: onClear,
-              icon: const Icon(Icons.close_rounded),
+              icon: const Icon(Icons.close_outlined),
             ),
           TextButton(onPressed: onPick, child: const Text('Chọn')),
         ],
@@ -367,7 +367,7 @@ class _ExportCompleteDialog extends StatelessWidget {
               );
             }
           },
-          icon: const Icon(Icons.ios_share_rounded),
+          icon: const Icon(Icons.ios_share_outlined),
           label: const Text('Chia sẻ'),
         ),
         TextButton.icon(
@@ -386,7 +386,7 @@ class _ExportCompleteDialog extends StatelessWidget {
               );
             }
           },
-          icon: const Icon(Icons.open_in_new_rounded),
+          icon: const Icon(Icons.open_in_new_outlined),
           label: Text(context.l10n.commonOpen),
         ),
         TextButton(

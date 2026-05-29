@@ -17,7 +17,7 @@ class PermissionRationaleScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: const [
             _PermissionCard(
-              icon: Icons.wifi_rounded,
+              icon: Icons.wifi_outlined,
               title: 'Internet',
               status: 'Cần thiết',
               description:
@@ -38,14 +38,14 @@ class PermissionRationaleScreen extends StatelessWidget {
                   'Dùng Android Photo Picker để chọn ảnh mà không cần đọc toàn bộ thư viện.',
             ),
             _PermissionCard(
-              icon: Icons.notifications_none_rounded,
+              icon: Icons.notifications_none_outlined,
               title: 'Notifications',
               status: 'Chỉ dùng khi bật nhắc nhở',
               description:
                   'MVP hiện không bắt buộc quyền này nếu chưa triển khai reminder production.',
             ),
             _PermissionCard(
-              icon: Icons.block_rounded,
+              icon: Icons.block_outlined,
               title: 'Không dùng Location, Contacts, SMS',
               status: 'Không khai báo trong MVP',
               description:

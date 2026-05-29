@@ -67,7 +67,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                       context.go(LoginScreen.routePath);
                     }
                   },
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                  icon: const Icon(Icons.arrow_back_ios_new_outlined),
                 ),
                 const SizedBox(height: 8),
                 Center(
@@ -98,7 +98,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                               ),
                             ),
                             child: const Icon(
-                              Icons.face_rounded,
+                              Icons.face_outlined,
                               size: 84,
                               color: Color(0xFF10333B),
                             ),
@@ -134,7 +134,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                   controller: _nameController,
                   decoration: InputDecoration(
                     hintText: context.l10n.profileSetupDisplayNameHint,
-                    prefixIcon: const Icon(Icons.person_outline_rounded),
+                    prefixIcon: const Icon(Icons.person_outlined),
                   ),
                 ),
                 const SizedBox(height: 20),

@@ -38,10 +38,7 @@ void main() {
     test('throws ArgumentError on whitespace-only path', () async {
       const service = MockOcrService(delay: Duration.zero);
 
-      await expectLater(
-        service.extractFromImage('   '),
-        throwsArgumentError,
-      );
+      await expectLater(service.extractFromImage('   '), throwsArgumentError);
     });
   });
 }

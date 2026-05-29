@@ -76,7 +76,7 @@ class _AcceptanceCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.info_outline_rounded, color: AppTheme.amber),
+          const Icon(Icons.info_outline, color: AppTheme.amber),
           const SizedBox(width: 12),
           Expanded(
             child: Text(

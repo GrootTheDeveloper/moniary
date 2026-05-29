@@ -12,7 +12,7 @@ import 'core/supabase/supabase_bootstrap.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   FlutterError.onError = (details) {
     debugPrint('Flutter Error: ${details.exception}');
   };

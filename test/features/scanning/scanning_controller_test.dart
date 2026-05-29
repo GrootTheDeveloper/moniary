@@ -82,40 +82,46 @@ void main() {
       expect(state.errorType, ScanningError.imageRequired);
     });
 
-    test('extract with image transition flow to success using MockOcrService', () async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-      container.listen(scanningControllerProvider, (previous, next) {});
+    test(
+      'extract with image transition flow to success using MockOcrService',
+      () async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+        container.listen(scanningControllerProvider, (previous, next) {});
 
-      final controller = container.read(scanningControllerProvider.notifier);
-      controller.selectImage('test_image.png');
+        final controller = container.read(scanningControllerProvider.notifier);
+        controller.selectImage('test_image.png');
 
-      final result = await controller.extract();
+        final result = await controller.extract();
 
-      final state = container.read(scanningControllerProvider);
-      expect(result, isNotNull);
-      expect(state.status, ScanningStatus.success);
-      expect(state.result?.merchantName, isNotNull);
-    });
+        final state = container.read(scanningControllerProvider);
+        expect(result, isNotNull);
+        expect(state.status, ScanningStatus.success);
+        expect(state.result?.merchantName, isNotNull);
+      },
+    );
 
-    test('extract with image transition flow to failure when service throws', () async {
-      final container = ProviderContainer(
-        overrides: [
-          ocrServiceProvider.overrideWithValue(const ErrorOcrService()),
-        ],
-      );
-      addTearDown(container.dispose);
-      container.listen(scanningControllerProvider, (previous, next) {});
+    test(
+      'extract with image transition flow to failure when service throws',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            ocrServiceProvider.overrideWithValue(const ErrorOcrService()),
+          ],
+        );
+        addTearDown(container.dispose);
+        container.listen(scanningControllerProvider, (previous, next) {});
 
-      final controller = container.read(scanningControllerProvider.notifier);
-      controller.selectImage('test_image.png');
+        final controller = container.read(scanningControllerProvider.notifier);
+        controller.selectImage('test_image.png');
 
-      final result = await controller.extract();
+        final result = await controller.extract();
 
-      final state = container.read(scanningControllerProvider);
-      expect(result, isNull);
-      expect(state.status, ScanningStatus.failure);
-      expect(state.errorType, ScanningError.ocrFailed);
-    });
+        final state = container.read(scanningControllerProvider);
+        expect(result, isNull);
+        expect(state.status, ScanningStatus.failure);
+        expect(state.errorType, ScanningError.ocrFailed);
+      },
+    );
   });
 }

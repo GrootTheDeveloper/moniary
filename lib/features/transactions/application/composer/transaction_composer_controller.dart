@@ -138,7 +138,9 @@ class TransactionComposerController extends AsyncNotifier<void> {
   Future<void> deleteTransaction(String transactionId) async {
     state = const AsyncLoading();
     try {
-      await ref.read(transactionRepositoryProvider).deleteTransaction(transactionId);
+      await ref
+          .read(transactionRepositoryProvider)
+          .deleteTransaction(transactionId);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);

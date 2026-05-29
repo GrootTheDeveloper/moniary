@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import '../../../../app/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -45,25 +46,33 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
       oldController.dispose();
     }
 
-    final controller = CameraController(cameras[index], ResolutionPreset.high, enableAudio: false);
+    final controller = CameraController(
+      cameras[index],
+      ResolutionPreset.high,
+      enableAudio: false,
+    );
     _controller = controller;
-    controller.initialize().then((_) {
-      if (!mounted) return;
-      if (_controller != controller) return;
-      
-      // Re-apply flash mode
-      controller.setFlashMode(_isFlashOn ? FlashMode.torch : FlashMode.off);
-      setState(() {
-        _errorMessage = null;
-      });
-    }).catchError((e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'Không thể kết nối Camera. Vui lòng cấp quyền trong Cài đặt.';
+    controller
+        .initialize()
+        .then((_) {
+          if (!mounted) return;
+          if (_controller != controller) return;
+
+          // Re-apply flash mode
+          controller.setFlashMode(_isFlashOn ? FlashMode.torch : FlashMode.off);
+          setState(() {
+            _errorMessage = null;
+          });
+        })
+        .catchError((e) {
+          if (mounted) {
+            setState(() {
+              _errorMessage =
+                  'Không thể kết nối Camera. Vui lòng cấp quyền trong Cài đặt.';
+            });
+          }
+          debugPrint('Error initializing camera: $e');
         });
-      }
-      debugPrint('Error initializing camera: $e');
-    });
   }
 
   void _flipCamera() {
@@ -172,7 +181,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
             onPressed: () => context.pop(),
           ),
         ),
-        body: const Center(child: CircularProgressIndicator(color: Colors.white)),
+        body: const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
       );
     }
 
@@ -206,9 +217,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Squared Camera Preview
             Center(
               child: Stack(
@@ -217,7 +228,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                     width: squareSize,
                     height: squareSize,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade900,
+                      color: Colors.white24,
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: ClipRRect(
@@ -225,8 +236,11 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                       child: FittedBox(
                         fit: BoxFit.cover,
                         child: SizedBox(
-                          width: controller.value.previewSize?.height ?? squareSize,
-                          height: controller.value.previewSize?.width ?? squareSize,
+                          width:
+                              controller.value.previewSize?.height ??
+                              squareSize,
+                          height:
+                              controller.value.previewSize?.width ?? squareSize,
                           child: CameraPreview(controller),
                         ),
                       ),
@@ -245,7 +259,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                         ),
                         const SizedBox(width: 12),
                         _buildInFrameButton(
-                          icon: Icons.flip_camera_ios_rounded,
+                          icon: Icons.flip_camera_ios_outlined,
                           onTap: _flipCamera,
                           isActive: false,
                         ),
@@ -255,9 +269,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Bottom Action Controls
             Padding(
               padding: const EdgeInsets.only(left: 32, right: 32),
@@ -267,11 +281,12 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                 children: [
                   // OCR Scan Button
                   _buildBottomActionButton(
-                    icon: Icons.document_scanner_rounded,
+                    icon: Icons.document_scanner_outlined,
                     label: 'Quét OCR',
-                    onTap: _takePicture, // Will capture image, OCR logic can be injected here later
+                    onTap:
+                        _takePicture, // Will capture image, OCR logic can be injected here later
                   ),
-                  
+
                   // Big Capture Button
                   GestureDetector(
                     onTap: _takePicture,
@@ -294,10 +309,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                       ),
                     ),
                   ),
-                  
+
                   // Gallery Pick Button
                   _buildBottomActionButton(
-                    icon: Icons.photo_library_rounded,
+                    icon: Icons.photo_library_outlined,
                     label: 'Thư viện',
                     onTap: _pickFromAlbum,
                   ),
@@ -321,16 +336,12 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isActive 
-              ? Colors.amber.withValues(alpha: 0.8) 
+          color: isActive
+              ? Colors.amber.withValues(alpha: 0.8)
               : Colors.black.withValues(alpha: 0.5),
           shape: BoxShape.circle,
         ),
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: 22,
-        ),
+        child: Icon(icon, color: Colors.white, size: 22),
       ),
     );
   }
@@ -351,11 +362,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
               color: Colors.white.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 24,
-            ),
+            child: Icon(icon, color: Colors.white, size: 24),
           ),
           const SizedBox(height: 8),
           Text(
@@ -371,4 +378,3 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
     );
   }
 }
-

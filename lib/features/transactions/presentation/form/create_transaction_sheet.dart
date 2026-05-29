@@ -54,11 +54,13 @@ class _CreateTransactionSheetState
     final walletsAsync = ref.read(walletsControllerProvider);
     final categoriesAsync = ref.read(categoriesControllerProvider);
 
-    final wallets = walletsAsync.asData?.value
+    final wallets =
+        walletsAsync.asData?.value
             .where((wallet) => wallet.isActive)
             .toList() ??
         const <Wallet>[];
-    final categories = categoriesAsync.asData?.value
+    final categories =
+        categoriesAsync.asData?.value
             .where((category) => category.isActive && category.type == _type)
             .toList() ??
         const <Category>[];
@@ -66,10 +68,9 @@ class _CreateTransactionSheetState
     bool needsUpdate = false;
 
     if (_selectedWalletId == null && wallets.isNotEmpty) {
-      _selectedWalletId = wallets.firstWhere(
-            (wallet) => wallet.isDefault,
-            orElse: () => wallets.first,
-          ).id;
+      _selectedWalletId = wallets
+          .firstWhere((wallet) => wallet.isDefault, orElse: () => wallets.first)
+          .id;
       needsUpdate = true;
     }
 
@@ -384,7 +385,7 @@ class _DateTimeTile extends StatelessWidget {
                 ).textTheme.bodyLarge?.copyWith(color: Colors.white),
               ),
             ),
-            const Icon(Icons.chevron_right_rounded),
+            const Icon(Icons.chevron_right_outlined),
           ],
         ),
       ),

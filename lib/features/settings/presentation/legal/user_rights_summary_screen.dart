@@ -44,7 +44,7 @@ class UserRightsSummaryScreen extends StatelessWidget {
               onTap: () => context.push(PrivacyContactScreen.routePath),
             ),
             _RightItem(
-              icon: Icons.delete_outline_rounded,
+              icon: Icons.delete_outlined,
               title: 'Yêu cầu xóa dữ liệu',
               description:
                   'Người dùng có thể xóa tài khoản trong app hoặc tạo request thủ công khi luồng trực tiếp thất bại.',
@@ -122,7 +122,7 @@ class _RightItem extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(Icons.chevron_right_rounded, color: AppTheme.mint),
+            const Icon(Icons.chevron_right_outlined, color: AppTheme.mint),
           ],
         ),
       ),

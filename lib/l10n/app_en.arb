@@ -140,6 +140,7 @@
   "transactionWalletCategoryError": "Could not load wallets or categories. Please try again.",
   "transactionWalletCategoryRequired": "An active wallet and expense category are required before saving.",
   "transactionAmountPositive": "Enter an amount greater than 0.",
+  "transactionType": "Transaction type",
   "walletTitle": "Wallets / Accounts",
   "walletDescription": "Manage default wallet, initial balance and activation status.",
   "walletEmpty": "No wallets yet.",

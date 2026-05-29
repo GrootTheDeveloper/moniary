@@ -51,9 +51,9 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(userFriendlyMessage(context, error))),
+          );
         },
       );
     });
@@ -76,7 +76,7 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                       'Dùng cho yêu cầu xóa dữ liệu, xuất dữ liệu hoặc câu hỏi về quyền riêng tư.',
                 ),
                 const _ContactInfoTile(
-                  icon: Icons.info_outline_rounded,
+                  icon: Icons.info_outline,
                   title: 'Thông tin cần gửi',
                   value: 'User ID hoặc email đăng nhập',
                   description:
@@ -432,7 +432,7 @@ class _PrivacyRequestHistorySection extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.history_rounded, color: AppTheme.mint),
+                  const Icon(Icons.history_outlined, color: AppTheme.mint),
                   const SizedBox(width: 8),
                   Text(
                     'Yêu cầu gần đây',
@@ -520,7 +520,7 @@ class _PrivacyRequestHistoryTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(Icons.chevron_right_rounded, color: AppTheme.mint),
+            const Icon(Icons.chevron_right_outlined, color: AppTheme.mint),
           ],
         ),
       ),
@@ -544,7 +544,7 @@ class _ContactHero extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Icon(
-            Icons.support_agent_rounded,
+            Icons.support_agent_outlined,
             color: AppTheme.mint,
             size: 34,
           ),

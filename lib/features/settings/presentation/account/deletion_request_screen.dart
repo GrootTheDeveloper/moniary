@@ -35,9 +35,9 @@ class _DeletionRequestScreenState extends ConsumerState<DeletionRequestScreen> {
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(userFriendlyMessage(context, error))),
+          );
         },
       );
     });

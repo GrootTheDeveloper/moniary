@@ -43,9 +43,9 @@ class PrivacyCenterScreen extends ConsumerWidget {
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(userFriendlyMessage(context, error))),
+          );
         },
       );
     });
@@ -61,7 +61,7 @@ class PrivacyCenterScreen extends ConsumerWidget {
                 const _PrivacyHero(),
                 const SizedBox(height: 18),
                 SettingsActionTile(
-                  icon: Icons.help_outline_rounded,
+                  icon: Icons.help_outlined,
                   title: 'Trung tâm trợ giúp',
                   subtitle:
                       'Tìm hướng dẫn về privacy, tài khoản, export dữ liệu và cách liên hệ hỗ trợ.',
@@ -69,7 +69,7 @@ class PrivacyCenterScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
                 SettingsActionTile(
-                  icon: Icons.info_outline_rounded,
+                  icon: Icons.info_outline,
                   title: 'Giới thiệu Moniary',
                   subtitle:
                       'Xem mục đích app, định hướng dữ liệu và trạng thái MVP trước khi phát hành.',
@@ -202,7 +202,7 @@ class PrivacyCenterScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
                 SettingsActionTile(
-                  icon: Icons.history_rounded,
+                  icon: Icons.history_outlined,
                   title: 'Lịch sử export',
                   subtitle:
                       'Xem các file CSV, Excel hoặc PDF đã tạo từ tài khoản này.',

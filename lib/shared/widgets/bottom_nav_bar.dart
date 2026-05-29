@@ -31,7 +31,7 @@ class MoniaryBottomNavBar extends StatelessWidget {
         children: [
           const SizedBox(width: 10),
           _NavItem(
-            icon: Icons.calendar_month_rounded,
+            icon: Icons.calendar_month_outlined,
             label: context.l10n.calendarTitle,
             active: currentTab == MoniaryTab.calendar,
             onTap: () {
@@ -43,7 +43,7 @@ class MoniaryBottomNavBar extends StatelessWidget {
             },
           ),
           _NavItem(
-            icon: Icons.pie_chart_outline_rounded,
+            icon: Icons.pie_chart_outline,
             label: context.l10n.calendarStatsTab,
             active: currentTab == MoniaryTab.stats,
             onTap: () {
@@ -65,7 +65,7 @@ class MoniaryBottomNavBar extends StatelessWidget {
             },
           ),
           _NavItem(
-            icon: Icons.person_outline_rounded,
+            icon: Icons.person_outlined,
             label: context.l10n.profileTitle,
             active: currentTab == MoniaryTab.profile,
             onTap: () {

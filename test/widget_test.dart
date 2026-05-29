@@ -14,18 +14,15 @@ void main() {
       routes: [
         GoRoute(
           path: '/',
-          builder: (context, state) => const Scaffold(
-            body: Center(child: Text('Moniary test shell')),
-          ),
+          builder: (context, state) =>
+              const Scaffold(body: Center(child: Text('Moniary test shell'))),
         ),
       ],
     );
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          appRouterProvider.overrideWithValue(testRouter),
-        ],
+        overrides: [appRouterProvider.overrideWithValue(testRouter)],
         child: const MoniaryApp(),
       ),
     );

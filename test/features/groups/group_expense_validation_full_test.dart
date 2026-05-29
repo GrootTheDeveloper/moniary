@@ -26,9 +26,7 @@ void main() {
         name: 'Nhóm nhỏ',
         ownerId: 'a',
         createdAt: DateTime(2026),
-        members: const [
-          GroupMember(id: 'a', displayName: 'A'),
-        ],
+        members: const [GroupMember(id: 'a', displayName: 'A')],
       );
 
       final error = service.validate(
@@ -123,13 +121,21 @@ void main() {
       expect(error, GroupExpenseValidationError.splitCountMismatch);
     });
 
-    test('createEqualSplits with amount <= 0 or empty participants returns empty list', () {
-      final splitsZeroAmount = service.createEqualSplits(amount: 0, participantIds: ['a', 'b']);
-      final splitsEmptyParticipants = service.createEqualSplits(amount: 100, participantIds: []);
+    test(
+      'createEqualSplits with amount <= 0 or empty participants returns empty list',
+      () {
+        final splitsZeroAmount = service.createEqualSplits(
+          amount: 0,
+          participantIds: ['a', 'b'],
+        );
+        final splitsEmptyParticipants = service.createEqualSplits(
+          amount: 100,
+          participantIds: [],
+        );
 
-      expect(splitsZeroAmount, isEmpty);
-      expect(splitsEmptyParticipants, isEmpty);
-    });
-
+        expect(splitsZeroAmount, isEmpty);
+        expect(splitsEmptyParticipants, isEmpty);
+      },
+    );
   });
 }

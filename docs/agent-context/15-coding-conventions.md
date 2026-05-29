@@ -28,3 +28,7 @@
 ## 6. Generated Files
 - Never modify files inside `.dart_tool` or `lib/l10n/gen_l10n/` manually.
 - Run `flutter gen-l10n` to regenerate translations if needed (though it typically auto-generates on build).
+
+## 7. UI & Iconography
+- All icons must use the `_outlined` variant (e.g., `Icons.restaurant_outlined`). Do not use `_rounded`, `_filled`, or generic emojis for UI elements.
+- Avoid using hardcoded raw generic Material colors (e.g. `Colors.grey`, `Colors.amber`, `Colors.redAccent`) in the UI. Always map to `AppTheme` constants instead (e.g. `AppTheme.textSubtle`, `AppTheme.amber`, `AppTheme.danger`).

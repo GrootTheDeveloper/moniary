@@ -427,6 +427,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionAmountPositive => 'Enter an amount greater than 0.';
 
   @override
+  String get transactionType => 'Transaction type';
+
+  @override
   String get walletTitle => 'Wallets / Accounts';
 
   @override

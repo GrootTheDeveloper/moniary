@@ -24,7 +24,7 @@ class CategoryRepository {
       name: 'Ăn uống',
       type: TransactionType.expense,
       icon: 'restaurant',
-      color: '#FF9800',
+      color: '#F6B24D',
       isDefault: true,
       isActive: true,
       createdAt: DateTime.now().subtract(const Duration(days: 30)),
@@ -34,7 +34,7 @@ class CategoryRepository {
       name: 'Đi lại',
       type: TransactionType.expense,
       icon: 'directions_car',
-      color: '#2196F3',
+      color: '#2563EB',
       isDefault: true,
       isActive: true,
       createdAt: DateTime.now().subtract(const Duration(days: 30)),
@@ -44,7 +44,7 @@ class CategoryRepository {
       name: 'Mua sắm',
       type: TransactionType.expense,
       icon: 'shopping_bag',
-      color: '#E91E63',
+      color: '#E45CA6',
       isDefault: true,
       isActive: true,
       createdAt: DateTime.now().subtract(const Duration(days: 30)),
@@ -54,7 +54,7 @@ class CategoryRepository {
       name: 'Lương',
       type: TransactionType.income,
       icon: 'attach_money',
-      color: '#4CAF50',
+      color: '#44D884',
       isDefault: true,
       isActive: true,
       createdAt: DateTime.now().subtract(const Duration(days: 30)),
@@ -70,17 +70,17 @@ class CategoryRepository {
 
     try {
       final rows = await _client
-        .from('categories')
-        .select()
-        .eq('user_id', session.user.id)
-        .order('type')
-        .order('is_default', ascending: false)
-        .order('created_at');
+          .from('categories')
+          .select()
+          .eq('user_id', session.user.id)
+          .order('type')
+          .order('is_default', ascending: false)
+          .order('created_at');
 
-    return (rows as List<dynamic>)
-        .cast<Map<String, dynamic>>()
-        .map(Category.fromMap)
-        .toList();
+      return (rows as List<dynamic>)
+          .cast<Map<String, dynamic>>()
+          .map(Category.fromMap)
+          .toList();
     } on PostgrestException catch (e, st) {
       AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
@@ -102,7 +102,7 @@ class CategoryRepository {
           name: name,
           type: type,
           icon: type == TransactionType.income ? 'add' : 'remove',
-          color: '#9E9E9E',
+          color: '#9CB0C2',
           isDefault: false,
           isActive: true,
           createdAt: DateTime.now(),

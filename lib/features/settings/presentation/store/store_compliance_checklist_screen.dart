@@ -102,7 +102,7 @@ class _ChecklistItem extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: const Icon(
-              Icons.check_rounded,
+              Icons.check_outlined,
               color: AppTheme.success,
               size: 20,
             ),

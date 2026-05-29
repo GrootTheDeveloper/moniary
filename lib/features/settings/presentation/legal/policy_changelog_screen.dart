@@ -100,7 +100,7 @@ class _ChangelogItem extends StatelessWidget {
               color: AppTheme.mint.withValues(alpha: 0.14),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.history_rounded, color: AppTheme.mint),
+            child: const Icon(Icons.history_outlined, color: AppTheme.mint),
           ),
           const SizedBox(width: 12),
           Expanded(

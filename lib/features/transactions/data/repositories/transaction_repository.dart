@@ -36,10 +36,10 @@ class TransactionRepository {
       transactionDate: DateTime.now(),
       walletId: 'w1',
       walletName: 'Ví tiền mặt',
-      walletColor: '#4CAF50',
+      walletColor: '#44D884',
       categoryId: 'c1',
       categoryName: 'Ăn uống',
-      categoryColor: '#FF5722',
+      categoryColor: '#FC8181',
     ),
     TransactionEntry(
       id: 'mock-2',
@@ -50,10 +50,10 @@ class TransactionRepository {
       transactionDate: DateTime.now(),
       walletId: 'w1',
       walletName: 'Ví tiền mặt',
-      walletColor: '#4CAF50',
+      walletColor: '#44D884',
       categoryId: 'c2',
       categoryName: 'Giải trí',
-      categoryColor: '#2196F3',
+      categoryColor: '#2563EB',
     ),
     TransactionEntry(
       id: 'mock-3',
@@ -64,10 +64,10 @@ class TransactionRepository {
       transactionDate: DateTime.now().subtract(const Duration(days: 1)),
       walletId: 'w1',
       walletName: 'Ví tiền mặt',
-      walletColor: '#4CAF50',
+      walletColor: '#44D884',
       categoryId: 'c3',
       categoryName: 'Mua sắm',
-      categoryColor: '#9C27B0',
+      categoryColor: '#8B5CF6',
     ),
   ];
 

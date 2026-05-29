@@ -74,7 +74,8 @@ class ScanningScreen extends ConsumerWidget {
                 color: AppTheme.danger,
                 size: 30,
               ),
-              text: state.errorType?.getLabel(context) ?? context.l10n.scanFailed,
+              text:
+                  state.errorType?.getLabel(context) ?? context.l10n.scanFailed,
             )
           else if (state.status == ScanningStatus.success)
             _StatusCard(

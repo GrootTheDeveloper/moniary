@@ -27,9 +27,9 @@ class DataTransparencyScreen extends ConsumerWidget {
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(userFriendlyMessage(context, error))),
+          );
         },
       );
     });
@@ -117,7 +117,7 @@ class _Overview extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         const _InventoryTile(
-          icon: Icons.person_outline_rounded,
+          icon: Icons.person_outlined,
           title: 'Hồ sơ tài khoản',
           description:
               'Tên hiển thị, email, avatar, timezone và trạng thái đăng nhập.',
@@ -147,17 +147,23 @@ class _Overview extends StatelessWidget {
               'Đường dẫn ảnh trong Storage private bucket, hiển thị qua signed URL.',
         ),
         const _InventoryTile(
-          icon: Icons.notifications_none_rounded,
+          icon: Icons.notifications_none_outlined,
           title: 'Thiết lập nhắc nhở',
           description:
               'Các tùy chọn nhắc ghi chi tiêu khi tính năng reminder được bật.',
         ),
         const SizedBox(height: 22),
-        Text(context.l10n.privacyPhotoData, style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          context.l10n.privacyPhotoData,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 12),
         _PhotoSummaryCard(summary: summary),
         const SizedBox(height: 22),
-        Text(context.l10n.privacyDataFreshness, style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          context.l10n.privacyDataFreshness,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 12),
         _FreshnessCard(summary: summary),
         const SizedBox(height: 22),
@@ -168,7 +174,10 @@ class _Overview extends StatelessWidget {
         const SizedBox(height: 12),
         const _SensitiveDataNotice(),
         const SizedBox(height: 22),
-        Text(context.l10n.privacyLocalFiles, style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          context.l10n.privacyLocalFiles,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 12),
         _LocalFilesCard(summary: summary),
         const SizedBox(height: 22),
@@ -340,7 +349,10 @@ class _PhotoSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(context.l10n.privacyTransactionPhotos, style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            context.l10n.privacyTransactionPhotos,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 10),
           LinearProgressIndicator(
             value: ratio.clamp(0, 1),
@@ -411,13 +423,13 @@ class _FreshnessCard extends StatelessWidget {
       child: Column(
         children: [
           _FreshnessRow(
-            icon: Icons.history_rounded,
+            icon: Icons.history_outlined,
             label: 'Giao dịch cũ nhất',
             value: _formatDate(summary.oldestTransactionDate, dateFormat),
           ),
           const Divider(height: 24),
           _FreshnessRow(
-            icon: Icons.update_rounded,
+            icon: Icons.update_outlined,
             label: 'Giao dịch mới nhất',
             value: _formatDate(summary.newestTransactionDate, dateFormat),
           ),
@@ -568,7 +580,7 @@ class _LocalFilesCard extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
               onPressed: () => context.push(ExportHistoryScreen.routePath),
-              icon: const Icon(Icons.history_rounded),
+              icon: const Icon(Icons.history_outlined),
               label: Text(context.l10n.privacyViewExportHistory),
             ),
           ),
@@ -618,7 +630,7 @@ class _TransparencyReportCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           const _ReportLine(
-            icon: Icons.lock_outline_rounded,
+            icon: Icons.lock_outline,
             text:
                 'Moniary không bán dữ liệu cá nhân và chỉ dùng dữ liệu để vận hành trải nghiệm quản lý chi tiêu.',
           ),
@@ -709,7 +721,7 @@ class _ControlShortcutTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Icon(Icons.chevron_right_rounded, color: color),
+            Icon(Icons.chevron_right_outlined, color: color),
           ],
         ),
       ),

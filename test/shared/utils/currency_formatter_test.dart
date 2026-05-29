@@ -15,11 +15,14 @@ void main() {
       expect(result.toLowerCase(), anyOf(contains('₫'), contains('đ')));
     });
 
-    test('formatVnd(-50000) returns string containing negative indicator and digits', () {
-      final result = formatVnd(-50000);
-      expect(result, contains('-'));
-      expect(result, contains('50'));
-      expect(result, contains('000'));
-    });
+    test(
+      'formatVnd(-50000) returns string containing negative indicator and digits',
+      () {
+        final result = formatVnd(-50000);
+        expect(result, contains('-'));
+        expect(result, contains('50'));
+        expect(result, contains('000'));
+      },
+    );
   });
 }

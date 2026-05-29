@@ -11,7 +11,7 @@ class SupabaseImage extends ConsumerWidget {
     this.height,
     this.fit = BoxFit.cover,
     this.borderRadius,
-    this.fallbackIcon = Icons.photo_rounded,
+    this.fallbackIcon = Icons.photo_outlined,
     super.key,
   });
 

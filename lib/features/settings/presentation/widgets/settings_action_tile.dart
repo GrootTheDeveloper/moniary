@@ -63,7 +63,7 @@ class SettingsActionTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Icon(Icons.chevron_right_rounded, color: color),
+            Icon(Icons.chevron_right_outlined, color: color),
           ],
         ),
       ),

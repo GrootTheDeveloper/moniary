@@ -60,9 +60,9 @@ class LegalContactScreen extends StatelessWidget {
             'Privacy: ${AppConstants.privacyEmail}\nSupport: ${AppConstants.supportEmail}\nLegal: ${AppConstants.legalEmail}',
       ),
     );
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(context.l10n.legalCopyContactSuccess)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.l10n.legalCopyContactSuccess)),
+    );
   }
 }
 
@@ -124,7 +124,7 @@ class _ContactCard extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () => _copy(context),
-                icon: const Icon(Icons.copy_rounded),
+                icon: const Icon(Icons.copy_outlined),
                 tooltip: 'Copy',
               ),
             ],

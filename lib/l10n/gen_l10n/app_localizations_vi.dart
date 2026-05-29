@@ -427,6 +427,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get transactionAmountPositive => 'Nhập số tiền lớn hơn 0.';
 
   @override
+  String get transactionType => 'Loại giao dịch';
+
+  @override
   String get walletTitle => 'Ví / Tài khoản';
 
   @override

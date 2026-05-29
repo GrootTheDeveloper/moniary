@@ -872,6 +872,12 @@ abstract class AppLocalizations {
   /// **'Nhập số tiền lớn hơn 0.'**
   String get transactionAmountPositive;
 
+  /// No description provided for @transactionType.
+  ///
+  /// In vi, this message translates to:
+  /// **'Loại giao dịch'**
+  String get transactionType;
+
   /// No description provided for @walletTitle.
   ///
   /// In vi, this message translates to:

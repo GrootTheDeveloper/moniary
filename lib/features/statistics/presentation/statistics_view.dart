@@ -165,7 +165,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                 label: context.l10n.statsTotalIncome,
                 value: _money(income),
                 color: AppTheme.success,
-                icon: Icons.north_east_rounded,
+                icon: Icons.north_east_outlined,
               ),
             ),
             const SizedBox(width: 12),
@@ -174,7 +174,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                 label: context.l10n.statsTotalExpense,
                 value: _money(expense),
                 color: AppTheme.danger,
-                icon: Icons.south_east_rounded,
+                icon: Icons.south_east_outlined,
               ),
             ),
           ],
@@ -193,7 +193,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
               Text(
                 context.l10n.statsNetBalance,
                 style: const TextStyle(
-                  color: Colors.grey,
+                  color: Colors.white54,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -255,7 +255,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
       ),
       child: Column(
         children: [
-          const Icon(Icons.bar_chart_rounded, size: 64, color: Colors.grey),
+          const Icon(Icons.bar_chart_outlined, size: 64, color: Colors.white54),
           const SizedBox(height: 12),
           Text(
             context.l10n.statsEmptyTitle,
@@ -268,7 +268,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           const SizedBox(height: 4),
           Text(
             context.l10n.statsEmptySubtitle,
-            style: const TextStyle(color: Colors.grey, fontSize: 13),
+            style: const TextStyle(color: Colors.white54, fontSize: 13),
             textAlign: TextAlign.center,
           ),
         ],
@@ -379,7 +379,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                             '${percentage.toStringAsFixed(0)}%',
                             style: const TextStyle(
                               fontSize: 13,
-                              color: Colors.grey,
+                              color: Colors.white54,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -494,7 +494,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                               child: Text(
                                 '$day',
                                 style: const TextStyle(
-                                  color: Colors.grey,
+                                  color: Colors.white54,
                                   fontSize: 10,
                                 ),
                               ),
@@ -595,7 +595,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                             color: accent.withValues(alpha: 0.15),
                           ),
                           child: Icon(
-                            Icons.receipt_long_rounded,
+                            Icons.receipt_long_outlined,
                             color: accent,
                             size: 20,
                           ),
@@ -624,7 +624,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                                     const SizedBox(width: 6),
                                     const Icon(
                                       Icons.star,
-                                      color: Colors.amber,
+                                      color: AppTheme.amber,
                                       size: 16,
                                     ),
                                   ],
@@ -637,7 +637,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                                 ).format(tx.transactionDate),
                                 style: const TextStyle(
                                   fontSize: 11,
-                                  color: Colors.grey,
+                                  color: Colors.white54,
                                 ),
                               ),
                             ],
@@ -730,7 +730,7 @@ class _MetricCard extends StatelessWidget {
                   label,
                   style: const TextStyle(
                     fontSize: 12,
-                    color: Colors.grey,
+                    color: Colors.white54,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

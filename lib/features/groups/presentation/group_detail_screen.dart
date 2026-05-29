@@ -63,7 +63,7 @@ class _GroupDetailBody extends ConsumerWidget {
             ),
             TextButton.icon(
               onPressed: () => _addMember(context, ref),
-              icon: const Icon(Icons.person_add_alt),
+              icon: const Icon(Icons.person_add_outlined),
               label: Text(context.l10n.commonAdd),
             ),
           ],
@@ -199,9 +199,9 @@ class _GroupDetailBody extends ConsumerWidget {
           .addMember(groupId: group.id, displayName: name, email: email);
     } catch (error) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
+        );
       }
     }
   }
@@ -217,9 +217,9 @@ class _GroupDetailBody extends ConsumerWidget {
           .removeMember(groupId: group.id, memberId: memberId);
     } catch (error) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
+        );
       }
     }
   }

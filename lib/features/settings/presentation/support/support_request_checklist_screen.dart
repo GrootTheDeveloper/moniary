@@ -49,7 +49,7 @@ class SupportRequestChecklistScreen extends StatelessWidget {
             const SizedBox(height: 4),
             OutlinedButton.icon(
               onPressed: () => context.push(HelpCenterScreen.routePath),
-              icon: const Icon(Icons.help_outline_rounded),
+              icon: const Icon(Icons.help_outlined),
               label: Text(context.l10n.supportOpenHelpCenter),
             ),
             const SizedBox(height: 10),
@@ -112,7 +112,7 @@ class _ChecklistItem extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: const Icon(
-              Icons.check_rounded,
+              Icons.check_outlined,
               color: AppTheme.success,
               size: 20,
             ),

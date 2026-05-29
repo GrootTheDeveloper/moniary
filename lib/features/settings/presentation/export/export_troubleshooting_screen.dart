@@ -51,7 +51,7 @@ class ExportTroubleshootingScreen extends StatelessWidget {
             const SizedBox(height: 10),
             OutlinedButton.icon(
               onPressed: () => context.push(ExportHistoryScreen.routePath),
-              icon: const Icon(Icons.history_rounded),
+              icon: const Icon(Icons.history_outlined),
               label: Text(context.l10n.exportOpenHistory),
             ),
             const SizedBox(height: 10),

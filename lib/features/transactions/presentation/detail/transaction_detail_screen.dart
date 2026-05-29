@@ -35,32 +35,115 @@ class TransactionDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         actions: [
           transactionAsync.when(
-            data: (transaction) => IconButton(
-              icon: Icon(
-                transaction.isImportant ? Icons.star : Icons.star_border,
-                color: transaction.isImportant ? Colors.amber : Colors.grey,
-              ),
-              onPressed: () async {
-                final repo = ref.read(transactionRepositoryProvider);
-                final nextVal = !transaction.isImportant;
-                await repo.toggleTransactionImportance(transaction.id, nextVal);
+            data: (transaction) => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    transaction.isImportant ? Icons.star : Icons.star_border,
+                    color: transaction.isImportant ? Colors.amber : Colors.grey,
+                  ),
+                  onPressed: () async {
+                    final repo = ref.read(transactionRepositoryProvider);
+                    final nextVal = !transaction.isImportant;
+                    await repo.toggleTransactionImportance(
+                      transaction.id,
+                      nextVal,
+                    );
 
-                // Refresh local cache
-                ref.invalidate(transactionByIdProvider(args.transactionId));
+                    // Refresh local cache
+                    ref.invalidate(transactionByIdProvider(args.transactionId));
 
-                // Invalidate day detail queries
-                final txDate = transaction.transactionDate;
-                final dayStart = DateTime(
-                  txDate.year,
-                  txDate.month,
-                  txDate.day,
-                );
-                ref.invalidate(transactionsForDayProvider(dayStart));
+                    // Invalidate day detail queries
+                    final txDate = transaction.transactionDate;
+                    final dayStart = DateTime(
+                      txDate.year,
+                      txDate.month,
+                      txDate.day,
+                    );
+                    ref.invalidate(transactionsForDayProvider(dayStart));
 
-                // Invalidate calendar month queries
-                final monthStart = DateTime(txDate.year, txDate.month, 1);
-                ref.invalidate(calendarMonthProvider(monthStart));
-              },
+                    // Invalidate calendar month queries
+                    final monthStart = DateTime(txDate.year, txDate.month, 1);
+                    ref.invalidate(calendarMonthProvider(monthStart));
+                  },
+                ),
+                PopupMenuButton<String>(
+                  onSelected: (value) async {
+                    if (value == 'edit') {
+                      final result = await showTransactionFormSheet(
+                        context,
+                        ref,
+                        initialTransaction: transaction,
+                      );
+                      if (result == null || !context.mounted) return;
+                      context.pop(result);
+                    } else if (value == 'delete') {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: AppTheme.surface,
+                          title: Text(
+                            context.l10n.transactionDeleteTitleQuestion,
+                          ),
+                          content: Text(context.l10n.transactionDeleteUndone),
+                          actions: [
+                            TextButton(
+                              onPressed: () => context.pop(false),
+                              child: Text(context.l10n.commonCancel),
+                            ),
+                            FilledButton(
+                              onPressed: () => context.pop(true),
+                              child: Text(context.l10n.commonDelete),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirmed != true) return;
+                      await ref
+                          .read(transactionComposerProvider.notifier)
+                          .deleteTransaction(transaction.id);
+                      if (!context.mounted) return;
+                      context.pop(
+                        TransactionMutationResult(
+                          previousDate: transaction.transactionDate,
+                          currentDate: null,
+                        ),
+                      );
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.edit_outlined, size: 20),
+                          const SizedBox(width: 12),
+                          Text(context.l10n.commonEdit),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.delete_outlined,
+                            size: 20,
+                            color: AppTheme.danger,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            context.l10n.commonDelete,
+                            style: const TextStyle(color: AppTheme.danger),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
             loading: () => const SizedBox.shrink(),
             error: (err, stack) => const SizedBox.shrink(),
@@ -196,31 +279,6 @@ class _TransactionDetailBody extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         _InfoCard(
-          child: Row(
-            children: [
-              Expanded(
-                child: _InfoItem(
-                  label: context.l10n.transactionCategory,
-                  value: transaction.categoryName,
-                  color: accent,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _InfoItem(
-                  label: context.l10n.transactionWallet,
-                  value: transaction.walletName,
-                  color: AppColor.fromHex(
-                    transaction.walletColor,
-                    fallback: AppTheme.mint,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-        _InfoCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -233,71 +291,38 @@ class _TransactionDetailBody extends ConsumerWidget {
                 transaction.note?.trim().isNotEmpty == true
                     ? transaction.note!.trim()
                     : context.l10n.transactionNoteEmpty,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(color: Colors.white),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Divider(color: AppTheme.outline),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _InfoItem(
+                      label: context.l10n.transactionCategory,
+                      value: transaction.categoryName,
+                      color: accent,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _InfoItem(
+                      label: context.l10n.transactionWallet,
+                      value: transaction.walletName,
+                      color: AppColor.fromHex(
+                        transaction.walletColor,
+                        fallback: AppTheme.mint,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 24),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () async {
-                  final result = await showTransactionFormSheet(
-                    context,
-                    ref,
-                    initialTransaction: transaction,
-                  );
-                  if (result == null || !context.mounted) return;
-                  context.pop(result);
-                },
-                icon: const Icon(Icons.edit_outlined),
-                label: Text(context.l10n.commonEdit),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () async {
-                  final confirmed = await showDialog<bool>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      backgroundColor: AppTheme.surface,
-                      title: Text(context.l10n.transactionDeleteTitleQuestion),
-                      content: Text(context.l10n.transactionDeleteUndone),
-                      actions: [
-                        TextButton(
-                          onPressed: () => context.pop(false),
-                          child: Text(context.l10n.commonCancel),
-                        ),
-                        FilledButton(
-                          onPressed: () => context.pop(true),
-                          child: Text(context.l10n.commonDelete),
-                        ),
-                      ],
-                    ),
-                  );
-
-                  if (confirmed != true) return;
-                  await ref
-                      .read(transactionComposerProvider.notifier)
-                      .deleteTransaction(transaction.id);
-                  if (!context.mounted) return;
-                  context.pop(
-                    TransactionMutationResult(
-                      previousDate: transaction.transactionDate,
-                      currentDate: null,
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.delete_outline_rounded),
-                label: Text(context.l10n.commonDelete),
-              ),
-            ),
-          ],
         ),
       ],
     );

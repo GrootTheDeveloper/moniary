@@ -37,7 +37,7 @@ class DataRetentionPolicyScreen extends StatelessWidget {
                   'File export và lịch sử request được tạo trên thiết bị. Người dùng có thể tự quản lý, chia sẻ hoặc xóa các file này khỏi bộ nhớ cục bộ.',
             ),
             _RetentionItem(
-              icon: Icons.delete_outline_rounded,
+              icon: Icons.delete_outlined,
               title: 'Sau khi xóa tài khoản',
               description:
                   'Moniary gọi luồng xóa tài khoản để gỡ dữ liệu app gắn với user hiện tại. Nếu thao tác thất bại, người dùng có thể tạo request xóa dữ liệu thủ công.',

@@ -38,7 +38,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         title2: context.l10n.onboardingPage1Title2,
         subtitle: context.l10n.onboardingPage1Subtitle,
         caption: context.l10n.onboardingPage1Caption,
-        icon: Icons.camera_alt_rounded,
+        icon: Icons.camera_alt_outlined,
         accent: AppTheme.amber,
       ),
       (
@@ -46,7 +46,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         title2: context.l10n.onboardingPage2Title2,
         subtitle: context.l10n.onboardingPage2Subtitle,
         caption: context.l10n.onboardingPage2Caption,
-        icon: Icons.calendar_month_rounded,
+        icon: Icons.calendar_month_outlined,
         accent: AppTheme.mint,
       ),
       (
@@ -54,7 +54,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         title2: context.l10n.onboardingPage3Title2,
         subtitle: context.l10n.onboardingPage3Subtitle,
         caption: context.l10n.onboardingPage3Caption,
-        icon: Icons.pie_chart_rounded,
+        icon: Icons.pie_chart_outline,
         accent: AppTheme.pink,
       ),
     ];
@@ -132,7 +132,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     const Icon(
-                                      Icons.chevron_left_rounded,
+                                      Icons.chevron_left_outlined,
                                       color: Colors.white70,
                                     ),
                                     Text(
@@ -142,7 +142,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                       ).textTheme.titleMedium,
                                     ),
                                     const Icon(
-                                      Icons.chevron_right_rounded,
+                                      Icons.chevron_right_outlined,
                                       color: Colors.white70,
                                     ),
                                   ],
@@ -278,7 +278,7 @@ class _MockFeatureCard extends StatelessWidget {
                   label: context.l10n.onboardingPillCalendar,
                 ),
                 _FeaturePill(
-                  icon: Icons.pie_chart_outline_rounded,
+                  icon: Icons.pie_chart_outline,
                   label: context.l10n.onboardingPillStats,
                 ),
               ],

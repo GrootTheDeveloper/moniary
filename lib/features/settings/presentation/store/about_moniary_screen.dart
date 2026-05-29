@@ -30,7 +30,7 @@ class AboutMoniaryScreen extends StatelessWidget {
                   'Moniary giúp người dùng ghi lại thu chi cá nhân, quản lý ví, danh mục và ảnh giao dịch trong một trải nghiệm đơn giản.',
             ),
             _AboutTile(
-              icon: Icons.lock_outline_rounded,
+              icon: Icons.lock_outline,
               title: 'Định hướng dữ liệu',
               description:
                   'Dữ liệu tài chính thuộc về người dùng. App cung cấp công cụ xuất dữ liệu, xóa tài khoản và liên hệ privacy khi cần hỗ trợ.',
@@ -102,7 +102,7 @@ class _LicenseEntry extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            const Icon(Icons.chevron_right_rounded, color: AppTheme.mint),
+            const Icon(Icons.chevron_right_outlined, color: AppTheme.mint),
           ],
         ),
       ),

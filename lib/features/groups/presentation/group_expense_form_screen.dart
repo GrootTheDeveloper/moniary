@@ -322,9 +322,9 @@ class _GroupExpenseFormScreenState
       }
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
+        );
         setState(() => _saving = false);
       }
     }

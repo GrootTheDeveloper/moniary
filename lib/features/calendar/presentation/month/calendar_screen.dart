@@ -48,7 +48,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF0A1128), AppTheme.background, AppTheme.background],
+            colors: [
+              Color(0xFF0A1128),
+              AppTheme.background,
+              AppTheme.background,
+            ],
           ),
         ),
         child: SafeArea(
@@ -61,7 +65,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                         child: _SeamlessHeader(
-                          userName: session?.user.userMetadata?['name'] ?? 'groot',
+                          userName:
+                              session?.user.userMetadata?['name'] ?? 'groot',
                           onProfileTap: () => _openManager(context),
                           walletsAsync: walletsAsync,
                           monthAsync: monthAsync,
@@ -89,7 +94,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           data: (monthData) {
                             if (monthData.isEmpty) {
                               return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 24),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 24,
+                                ),
                                 child: PlaceholderCard(
                                   title: context.l10n.calendarTitle,
                                   body: context.l10n.calendarEmptyMessage,
@@ -107,7 +114,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(userFriendlyMessage(context, error)),
+                                    content: Text(
+                                      userFriendlyMessage(context, error),
+                                    ),
                                     behavior: SnackBarBehavior.floating,
                                   ),
                                 );
@@ -205,9 +214,9 @@ class _SeamlessHeader extends StatelessWidget {
               children: [
                 Text(
                   context.l10n.appName,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white54,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.white54),
                 ),
                 Text(
                   userName.isEmpty ? 'User' : userName,
@@ -227,7 +236,11 @@ class _SeamlessHeader extends StatelessWidget {
                   color: Colors.white.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white70, size: 20),
+                child: const Icon(
+                  Icons.account_balance_wallet_outlined,
+                  color: Colors.white70,
+                  size: 20,
+                ),
               ),
             ),
           ],
@@ -236,7 +249,10 @@ class _SeamlessHeader extends StatelessWidget {
         // Row 2: Total Balance (Huge & Centered)
         walletsAsync.when(
           data: (wallets) {
-            final totalBalance = wallets.fold(0.0, (sum, w) => sum + w.initialBalance);
+            final totalBalance = wallets.fold(
+              0.0,
+              (sum, w) => sum + w.initialBalance,
+            );
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -275,14 +291,14 @@ class _SeamlessHeader extends StatelessWidget {
                   label: context.l10n.calendarIncome,
                   amount: monthData.totalIncome,
                   color: AppTheme.mint,
-                  icon: Icons.arrow_downward_rounded,
+                  icon: Icons.arrow_downward_outlined,
                 ),
                 const SizedBox(width: 12),
                 _IncomeExpensePill(
                   label: context.l10n.calendarExpense,
                   amount: monthData.totalExpense,
                   color: Colors.redAccent,
-                  icon: Icons.arrow_upward_rounded,
+                  icon: Icons.arrow_upward_outlined,
                 ),
               ],
             );
@@ -358,7 +374,11 @@ class _CalendarHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.mint, size: 16),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: AppTheme.mint,
+            size: 16,
+          ),
           onPressed: onPreviousMonth,
         ),
         const SizedBox(width: 24),
@@ -373,13 +393,13 @@ class _CalendarHeader extends StatelessWidget {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(width: 4),
                 const Icon(
-                  Icons.keyboard_arrow_down_rounded,
+                  Icons.keyboard_arrow_down_outlined,
                   color: Colors.white70,
                   size: 24,
                 ),
@@ -389,7 +409,11 @@ class _CalendarHeader extends StatelessWidget {
         ),
         const SizedBox(width: 24),
         IconButton(
-          icon: const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.mint, size: 16),
+          icon: const Icon(
+            Icons.arrow_forward_ios_outlined,
+            color: AppTheme.mint,
+            size: 16,
+          ),
           onPressed: onNextMonth,
         ),
       ],
@@ -545,9 +569,12 @@ class _UnifiedFilterRow extends ConsumerWidget {
           ),
           const SizedBox(width: 8),
           _PillButton(
-            label: selectedWallet != null ? selectedWallet.name : context.l10n.transactionWallet,
+            label: selectedWallet != null
+                ? selectedWallet.name
+                : context.l10n.transactionWallet,
             selected: filters.walletId != null,
-            onTap: () => _showWalletPicker(context, ref, walletsAsync.value ?? []),
+            onTap: () =>
+                _showWalletPicker(context, ref, walletsAsync.value ?? []),
             activeColor: AppTheme.mint.withValues(alpha: 0.2),
             activeTextColor: AppTheme.mint,
             inactiveColor: Colors.transparent,
@@ -555,14 +582,16 @@ class _UnifiedFilterRow extends ConsumerWidget {
           ),
           const Spacer(),
           _RoundIconButton(
-            icon: Icons.refresh_rounded,
+            icon: Icons.refresh_outlined,
             onTap: () {
               // Reset filters (Wallet/Category)
               ref.read(calendarFilterProvider.notifier).reset();
-              
+
               // Reset calendar view to current month
               final now = DateTime.now();
-              ref.read(calendarVisibleMonthProvider.notifier).setMonth(DateTime(now.year, now.month, 1));
+              ref
+                  .read(calendarVisibleMonthProvider.notifier)
+                  .setMonth(DateTime(now.year, now.month, 1));
             },
           ),
         ],
@@ -646,7 +675,8 @@ class _MonthCalendarCard extends ConsumerWidget {
                         day,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w500,
-                          color: Colors.white54, // Dimmer text for weekday headers
+                          color:
+                              Colors.white54, // Dimmer text for weekday headers
                           fontSize: 13,
                         ),
                       ),
@@ -710,7 +740,9 @@ class _CalendarDayCell extends StatelessWidget {
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05), // Subtle placeholder
+                    color: Colors.white.withValues(
+                      alpha: 0.05,
+                    ), // Subtle placeholder
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -731,7 +763,10 @@ class _CalendarDayCell extends StatelessWidget {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.orange, width: 1.5),
+                            border: Border.all(
+                              color: Colors.orange,
+                              width: 1.5,
+                            ),
                           ),
                           child: SupabaseImage(
                             imagePath: images[1].imagePath,
@@ -741,7 +776,7 @@ class _CalendarDayCell extends StatelessWidget {
                           ),
                         ),
                       ),
-                    
+
                     // Main foreground image
                     Container(
                       decoration: BoxDecoration(
@@ -762,15 +797,25 @@ class _CalendarDayCell extends StatelessWidget {
                         top: -6,
                         right: -6,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.orange,
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: AppTheme.surface, width: 1.5),
+                            border: Border.all(
+                              color: AppTheme.surface,
+                              width: 1.5,
+                            ),
                           ),
                           child: Text(
                             '+${images.length - 1}',
-                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.white),
+                            style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -790,9 +835,14 @@ class _CalendarDayCell extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontSize: 13,
                       color: day.isCurrentMonth
-                          ? (day.isToday ? AppTheme.mint : Colors.white) // Highlight number mint if today
+                          ? (day.isToday
+                                ? AppTheme.mint
+                                : Colors
+                                      .white) // Highlight number mint if today
                           : Colors.white24, // Dimmer for non-current month
-                      fontWeight: day.isToday ? FontWeight.w900 : FontWeight.w600,
+                      fontWeight: day.isToday
+                          ? FontWeight.w900
+                          : FontWeight.w600,
                     ),
                   ),
                 ),
@@ -818,7 +868,6 @@ class _CalendarDayCell extends StatelessWidget {
     );
   }
 }
-
 
 class _PillButton extends StatelessWidget {
   const _PillButton({
@@ -872,7 +921,7 @@ class _PillButton extends StatelessWidget {
               GestureDetector(
                 onTap: onClear,
                 child: Icon(
-                  Icons.close_rounded,
+                  Icons.close_outlined,
                   size: 16,
                   color: activeTextColor,
                 ),
@@ -1018,5 +1067,3 @@ String _capitalize(String value) {
   }
   return '${value[0].toUpperCase()}${value.substring(1)}';
 }
-
-

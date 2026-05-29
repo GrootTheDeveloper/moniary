@@ -17,7 +17,7 @@ class DataSafetyScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: const [
             _DataSafetyCard(
-              icon: Icons.person_outline_rounded,
+              icon: Icons.person_outlined,
               title: 'Personal info',
               status: 'Có, khi đăng nhập email hoặc Google',
               description:
@@ -38,7 +38,7 @@ class DataSafetyScreen extends StatelessWidget {
                   'Ảnh giao dịch được lưu trong private storage và chỉ hiển thị qua signed URL.',
             ),
             _DataSafetyCard(
-              icon: Icons.fingerprint_rounded,
+              icon: Icons.fingerprint_outlined,
               title: 'User ID',
               status: 'Có',
               description:
