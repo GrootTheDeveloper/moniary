@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,11 +15,16 @@ List<CameraDescription> cameras = [];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    cameras = await availableCameras();
-  } on CameraException catch (e) {
-    debugPrint('Error: ${e.code}\nError Message: ${e.description}');
-  }
+  
+  // Initialize cameras asynchronously to prevent blocking app startup (especially on buggy emulators)
+  unawaited(
+    availableCameras().then((value) {
+      cameras = value;
+    }).catchError((e) {
+      debugPrint('Error initializing cameras: $e');
+    }),
+  );
+
   await initializeDateFormatting('vi_VN');
   AppConstants.assertSupabaseConfig();
   await bootstrapPreferences();
