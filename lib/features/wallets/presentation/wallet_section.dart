@@ -313,7 +313,7 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
       context.pop();
     } catch (error) {
       messenger.showSnackBar(
-        SnackBar(content: Text(userFriendlyMessage(error))),
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
       setState(() => _isSubmitting = false);
     }

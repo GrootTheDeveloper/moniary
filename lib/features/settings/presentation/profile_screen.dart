@@ -311,7 +311,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         error: (error, stackTrace) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
+          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
         },
       );
     });

@@ -24,7 +24,7 @@ void main() {
       expect(state.status, ScanningStatus.empty);
       expect(state.imagePath, isNull);
       expect(state.result, isNull);
-      expect(state.errorMessage, isNull);
+      expect(state.errorType, isNull);
     });
 
     test('selectImage sets state to imageReady', () {
@@ -65,7 +65,7 @@ void main() {
 
       final state = container.read(scanningControllerProvider);
       expect(state.status, ScanningStatus.failure);
-      expect(state.errorMessage, contains('Không thể chọn ảnh'));
+      expect(state.errorType, ScanningError.imageSelect);
     });
 
     test('extract without image fails immediately', () async {
@@ -79,7 +79,7 @@ void main() {
       final state = container.read(scanningControllerProvider);
       expect(result, isNull);
       expect(state.status, ScanningStatus.failure);
-      expect(state.errorMessage, contains('chọn ảnh hóa đơn'));
+      expect(state.errorType, ScanningError.imageRequired);
     });
 
     test('extract with image transition flow to success using MockOcrService', () async {
@@ -115,7 +115,7 @@ void main() {
       final state = container.read(scanningControllerProvider);
       expect(result, isNull);
       expect(state.status, ScanningStatus.failure);
-      expect(state.errorMessage, contains('Không thể đọc hóa đơn'));
+      expect(state.errorType, ScanningError.ocrFailed);
     });
   });
 }

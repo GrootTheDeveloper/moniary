@@ -320,7 +320,7 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
       context.pop();
     } catch (error) {
       messenger.showSnackBar(
-        SnackBar(content: Text(userFriendlyMessage(error))),
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
       setState(() => _isSubmitting = false);
     }

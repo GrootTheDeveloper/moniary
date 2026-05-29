@@ -131,10 +131,5 @@ void main() {
       expect(splitsEmptyParticipants, isEmpty);
     });
 
-    test('SplitMethod label extension values', () {
-      final l10n = AppLocalizationsVi();
-      expect(SplitMethod.equal.getLabel(l10n), 'Chia đều');
-      expect(SplitMethod.manual.getLabel(l10n), 'Tự nhập số tiền');
-    });
   });
 }

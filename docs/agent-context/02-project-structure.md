@@ -10,7 +10,7 @@ The project strictly follows a **Feature-First** directory structure inside `lib
 |---|---|---|
 | `lib/app/` | App initialization and routing | Contains `app.dart`, `app_router.dart`, `app_theme.dart`, `main_shell_screen.dart` |
 | `lib/core/` | Core configurations, providers, and exceptions | `constants/`, `preferences/`, `providers/`, `supabase/` |
-| `lib/features/` | Feature modules | Each feature has its own `presentation/`, `application/`, `domain/`, `data/` layers. |
+| `lib/features/` | Feature modules | 12 features: `auth`, `calendar`, `categories`, `groups`, `onboarding`, `profile`, `scanning`, `settings`, `splash`, `statistics`, `transactions`, `wallets`. |
 | `lib/l10n/` | Localization files | Contains `.arb` files and generated localizations. |
 | `lib/shared/` | Shared UI and Utils | Common widgets, formatters, loggers used across features. |
 | `test/` | Tests | Contains unit and widget tests. |

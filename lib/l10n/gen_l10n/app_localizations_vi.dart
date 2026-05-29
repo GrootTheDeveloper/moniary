@@ -1191,4 +1191,16 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get transactionOcrSuccess => 'Tự động trích xuất dữ liệu thành công!';
+
+  @override
+  String get scanImageSelectError => 'Không thể chọn ảnh. Vui lòng thử lại.';
+
+  @override
+  String get scanImageRequiredError => 'Vui lòng chọn ảnh hóa đơn trước.';
+
+  @override
+  String get scanReadError => 'Không thể đọc hóa đơn. Vui lòng thử lại.';
+
+  @override
+  String get commonFeatureUnderDevelopment => 'Tính năng đang phát triển';
 }

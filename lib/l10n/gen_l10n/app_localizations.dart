@@ -2293,6 +2293,30 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Tự động trích xuất dữ liệu thành công!'**
   String get transactionOcrSuccess;
+
+  /// No description provided for @scanImageSelectError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể chọn ảnh. Vui lòng thử lại.'**
+  String get scanImageSelectError;
+
+  /// No description provided for @scanImageRequiredError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng chọn ảnh hóa đơn trước.'**
+  String get scanImageRequiredError;
+
+  /// No description provided for @scanReadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể đọc hóa đơn. Vui lòng thử lại.'**
+  String get scanReadError;
+
+  /// No description provided for @commonFeatureUnderDevelopment.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tính năng đang phát triển'**
+  String get commonFeatureUnderDevelopment;
 }
 
 class _AppLocalizationsDelegate

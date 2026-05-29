@@ -1190,4 +1190,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactionOcrSuccess => 'Data extracted successfully!';
+
+  @override
+  String get scanImageSelectError =>
+      'Failed to select image. Please try again.';
+
+  @override
+  String get scanImageRequiredError => 'Please select a receipt image first.';
+
+  @override
+  String get scanReadError => 'Failed to read receipt. Please try again.';
+
+  @override
+  String get commonFeatureUnderDevelopment => 'Feature under development';
 }

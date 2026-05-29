@@ -29,7 +29,7 @@ class DataTransparencyScreen extends ConsumerWidget {
         error: (error, stackTrace) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
+          ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
         },
       );
     });
@@ -49,7 +49,7 @@ class DataTransparencyScreen extends ConsumerWidget {
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stackTrace) =>
-                  Center(child: Text(userFriendlyMessage(error))),
+                  Center(child: Text(userFriendlyMessage(context, error))),
             ),
             if (actionState.isLoading)
               const Positioned.fill(

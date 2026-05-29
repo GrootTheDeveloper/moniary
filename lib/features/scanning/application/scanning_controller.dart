@@ -15,18 +15,20 @@ final scanningControllerProvider =
 
 enum ScanningStatus { empty, imageReady, scanning, success, failure }
 
+enum ScanningError { imageSelect, imageRequired, ocrFailed }
+
 class ScanningState {
   const ScanningState({
     this.status = ScanningStatus.empty,
     this.imagePath,
     this.result,
-    this.errorMessage,
+    this.errorType,
   });
 
   final ScanningStatus status;
   final String? imagePath;
   final OcrResult? result;
-  final String? errorMessage;
+  final ScanningError? errorType;
 }
 
 class ScanningController extends Notifier<ScanningState> {
@@ -48,7 +50,7 @@ class ScanningController extends Notifier<ScanningState> {
     state = ScanningState(
       status: ScanningStatus.failure,
       imagePath: state.imagePath,
-      errorMessage: 'Không thể chọn ảnh. Vui lòng thử lại.',
+      errorType: ScanningError.imageSelect,
     );
   }
 
@@ -57,7 +59,7 @@ class ScanningController extends Notifier<ScanningState> {
     if (imagePath == null) {
       state = const ScanningState(
         status: ScanningStatus.failure,
-        errorMessage: 'Vui lòng chọn ảnh hóa đơn trước.',
+        errorType: ScanningError.imageRequired,
       );
       return null;
     }
@@ -81,7 +83,7 @@ class ScanningController extends Notifier<ScanningState> {
       state = ScanningState(
         status: ScanningStatus.failure,
         imagePath: imagePath,
-        errorMessage: 'Không thể đọc hóa đơn. Vui lòng thử lại.',
+        errorType: ScanningError.ocrFailed,
       );
       return null;
     }

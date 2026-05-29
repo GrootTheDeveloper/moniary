@@ -12,24 +12,52 @@
 ## Feature: Calendar
 - **Purpose**: View transactions in a monthly calendar format.
 - **Main files**: `features/calendar/`
-- **UI Architecture**: Zero-scroll optimized layout with a deep blue accent theme. Utilizes `SingleChildScrollView` for filter rows to prevent OOM rendering issues.
+- **UI Architecture**: Zero-scroll optimized layout with a deep blue accent theme. Utilizes `SingleChildScrollView` for filter rows to prevent OOM rendering issues. No separate data layer (consumes `TransactionRepository`).
 
-## Feature: Groups
+## Feature: Statistics
+- **Purpose**: View financial analytics, charts, and trends.
+- **Main files**: `features/statistics/`
+- **UI Architecture**: Presentation-only feature. Uses an inline provider `statisticsMonthProvider` that directly consumes `TransactionRepository`. Shows pie charts and bar charts using `fl_chart`.
+
+## Feature: Wallets
+- **Purpose**: Manage multiple financial sources (Cash, Bank, E-Wallet, Credit).
+- **Main files**: `features/wallets/`
+- **Repository**: `WalletRepository` (Supports Mock & Supabase).
+- **UI Architecture**: Full clean architecture. Managed primarily via `WalletSection` (bottom sheets).
+
+## Feature: Categories
+- **Purpose**: Manage expense/income categories.
+- **Main files**: `features/categories/`
+- **Repository**: `CategoryRepository` (Supports Mock & Supabase).
+- **UI Architecture**: Full clean architecture. Managed primarily via `CategorySection` (bottom sheets).
+
+## Feature: Groups (In-Memory Only)
 - **Purpose**: Manage group expenses and calculate debts.
 - **Main files**: `features/groups/`
 - **UI screens**: `GroupsScreen`, `GroupDetailScreen`, `GroupExpenseFormScreen`, `DebtSummaryScreen`.
-- **Services**: `DebtCalculatorService`, `GroupExpenseService`.
+- **Services**: `DebtCalculatorService`, `InMemoryGroupExpenseService`.
+- **Note**: This is a planned feature. Currently, it is **implemented entirely in-memory** and does NOT sync with Supabase.
 
 ## Feature: Scanning (OCR)
 - **Purpose**: Extract data from receipts using OCR.
 - **Main files**: `features/scanning/`
 - **UI screens**: `ScanningScreen`, `OcrReviewScreen`.
 - **Services**: `OcrService` (with a `MockOcrService` fallback).
+- **Note**: The real OCR backend is not yet integrated. The app currently relies exclusively on the mock implementation.
 
-## Feature: Settings & Profile
-- **Purpose**: App settings, legal, privacy, export, profile setup.
-- **Main files**: `features/settings/`, `features/profile/`
+## Feature: Settings, Privacy & Data Export
+- **Purpose**: App settings, legal agreements, privacy requests, data export (CSV/XLSX/PDF).
+- **Main files**: `features/settings/`
+- **UI screens**: Massive feature with 27+ screens (ExportDataScreen, PrivacyCenterScreen, AccountDeletionScreen, etc.).
+- **Repository**: `AccountRepository` (handles exports, privacy requests, file actions). Export history is stored locally in JSON format.
+
+## Feature: Profile
+- **Purpose**: User profile setup and management.
+- **Main files**: `features/profile/`
+- **Repository**: `ProfileRepository` (Profiles table in Supabase).
+- **UI screens**: `ProfileSetupScreen`.
 
 ## Feature: Auth & Onboarding
 - **Purpose**: User login and introduction.
 - **Main files**: `features/auth/`, `features/onboarding/`, `features/splash/`
+- **Note**: Auth currently relies on Anonymous Sign-in. Google/Apple/Email sign-ins are marked as "Under Development".

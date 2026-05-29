@@ -608,7 +608,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       );
     } catch (error) {
       messenger.showSnackBar(
-        SnackBar(content: Text(userFriendlyMessage(error))),
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
   }

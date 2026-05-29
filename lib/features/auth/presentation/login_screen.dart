@@ -58,7 +58,7 @@ class LoginScreen extends ConsumerWidget {
                   opacity: 0.5,
                   child: GestureDetector(
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Tính năng đang phát triển')),
+                      SnackBar(content: Text(context.l10n.commonFeatureUnderDevelopment)),
                     ),
                     child: _AuthButton(
                       icon: Icons.g_mobiledata_rounded,
@@ -72,7 +72,7 @@ class LoginScreen extends ConsumerWidget {
                   opacity: 0.5,
                   child: GestureDetector(
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Tính năng đang phát triển')),
+                      SnackBar(content: Text(context.l10n.commonFeatureUnderDevelopment)),
                     ),
                     child: _AuthButton(
                       icon: Icons.apple_rounded,
@@ -86,7 +86,7 @@ class LoginScreen extends ConsumerWidget {
                   opacity: 0.5,
                   child: GestureDetector(
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Tính năng đang phát triển')),
+                      SnackBar(content: Text(context.l10n.commonFeatureUnderDevelopment)),
                     ),
                     child: _AuthButton(
                       icon: Icons.email_outlined,
@@ -122,7 +122,7 @@ class LoginScreen extends ConsumerWidget {
                           } catch (error) {
                             messenger.showSnackBar(
                               SnackBar(
-                                content: Text(userFriendlyMessage(error)),
+                                content: Text(userFriendlyMessage(context, error)),
                               ),
                             );
                           }

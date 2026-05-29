@@ -348,7 +348,7 @@ class _CreateTransactionSheetState
       context.pop(_selectedDate);
     } catch (error) {
       messenger.showSnackBar(
-        SnackBar(content: Text(userFriendlyMessage(error))),
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
   }

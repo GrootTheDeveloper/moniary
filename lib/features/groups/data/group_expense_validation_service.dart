@@ -1,15 +1,7 @@
-import '../../../l10n/gen_l10n/app_localizations.dart';
 import '../domain/expense_group.dart';
 import '../domain/expense_split.dart';
 
 enum SplitMethod { equal, manual }
-
-extension SplitMethodX on SplitMethod {
-  String getLabel(AppLocalizations l10n) => switch (this) {
-    SplitMethod.equal => l10n.expenseSplitEqual,
-    SplitMethod.manual => l10n.expenseSplitManual,
-  };
-}
 
 enum GroupExpenseValidationError {
   minMembers,

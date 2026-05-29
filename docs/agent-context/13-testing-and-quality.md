@@ -1,10 +1,10 @@
 # Testing & Quality
 
-**Confidence / Verification Status**: `INFERRED`
+**Confidence / Verification Status**: `VERIFIED`
 
 ## Test Framework
 - **Tools**: Standard `flutter_test`.
-- **Coverage**: The `test/` directory exists, but specific test coverage metrics are unknown.
+- **Coverage**: The `test/` directory contains around 40 unit and widget tests, particularly covering `core` helpers, `scanning` logic, `groups` debt calculators, and `shared` utils. All tests currently pass.
 
 ## Linter & Formatting
 - The project uses `analysis_options.yaml` derived from `flutter_lints`.

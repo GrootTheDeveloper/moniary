@@ -42,7 +42,7 @@ class ExportHistoryScreen extends ConsumerWidget {
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stackTrace) =>
-              Center(child: Text(userFriendlyMessage(error))),
+              Center(child: Text(userFriendlyMessage(context, error))),
         ),
       ),
     );

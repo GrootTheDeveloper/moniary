@@ -39,13 +39,7 @@
   "splashSubtitle": "Track expenses with photos",
   "splashDescription": "Capture spending, save to calendar,\nmanage money as easily as saving memories.",
   "splashStarting": "Starting {appName}...",
-  "@splashStarting": {
-    "placeholders": {
-      "appName": {
-        "type": "String"
-      }
-    }
-  },
+  "@splashStarting": {"placeholders": {"appName": {"type": "String"}}},
   "onboardingSkip": "Skip",
   "onboardingStart": "Start",
   "onboardingNext": "Next",
@@ -87,24 +81,9 @@
   "calendarMonthlyIncome": "Monthly Income",
   "calendarEmptyMessage": "No transactions this month. Add a transaction to start tracking.",
   "calendarStatsMessage": "{count} transactions in {days} active days. Loaded from Supabase.",
-  "@calendarStatsMessage": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "days": {
-        "type": "int"
-      }
-    }
-  },
+  "@calendarStatsMessage": {"placeholders": {"count": {"type": "int"}, "days": {"type": "int"}}},
   "calendarLoadError": "Could not load calendar: {error}",
-  "@calendarLoadError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@calendarLoadError": {"placeholders": {"error": {"type": "String"}}},
   "calendarStatsTab": "Stats",
   "calendarLoading": "Syncing calendar...",
   "calendarEmptyTitle": "Nothing here!",
@@ -120,33 +99,15 @@
   "calendarToday": "Today",
   "transactionSaveTransaction": "Save transaction",
   "transactionLoadDayError": "Could not load transactions for this day.\n{error}",
-  "@transactionLoadDayError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@transactionLoadDayError": {"placeholders": {"error": {"type": "String"}}},
   "transactionTotalIncome": "Total Income",
   "transactionTotalExpense": "Total Expense",
   "transactionNetTotal": "Net Total",
   "transactionCount": "{count} transactions",
-  "@transactionCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "@transactionCount": {"placeholders": {"count": {"type": "int"}}},
   "transactionDayEmpty": "No transactions for this day. Tap + to add one.",
   "transactionLoadDetailError": "Could not load transaction details.\n{error}",
-  "@transactionLoadDetailError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@transactionLoadDetailError": {"placeholders": {"error": {"type": "String"}}},
   "transactionNoteEmpty": "No note for this transaction.",
   "transactionDeleteTitleQuestion": "Delete transaction?",
   "transactionDeleteUndone": "This action cannot be undone.",
@@ -165,13 +126,7 @@
   "transactionDeleteConfirm": "Delete this transaction?",
   "transactionDeleteSuccess": "Transaction deleted.",
   "transactionSaveError": "Could not save transaction: {error}",
-  "@transactionSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@transactionSaveError": {"placeholders": {"error": {"type": "String"}}},
   "transactionCreateSubtitle": "Save transaction first, photo can be added in the next step.",
   "transactionWalletCategoryLoadError": "Could not load wallets/categories. Open data management to check.",
   "transactionChangePhoto": "Change photo",
@@ -207,13 +162,7 @@
   "walletTypeCredit": "Credit Card",
   "walletTypeOther": "Other",
   "walletError": "Wallet error: {error}",
-  "@walletError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@walletError": {"placeholders": {"error": {"type": "String"}}},
   "walletNeedOneActive": "You need at least 1 active wallet to create a transaction.",
   "categoryTitle": "Categories",
   "categoryDescription": "Manage income/expense categories for transactions.",
@@ -228,13 +177,7 @@
   "categorySave": "Save category",
   "categoryNameRequired": "Category name cannot be empty.",
   "categoryError": "Category error: {error}",
-  "@categoryError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@categoryError": {"placeholders": {"error": {"type": "String"}}},
   "categoryExpense": "Expense",
   "categoryIncome": "Income",
   "categoryNeedOneActive": "You need at least 1 active category for this transaction type.",
@@ -246,22 +189,10 @@
   "scanReviewTitle": "Review receipt",
   "scanMerchant": "Merchant",
   "scanOcrConfidence": "OCR confidence: {percent}%. Please verify before saving.",
-  "@scanOcrConfidence": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
+  "@scanOcrConfidence": {"placeholders": {"percent": {"type": "int"}}},
   "scanItemsTitle": "Detected items",
   "scanQuantity": "Quantity: {quantity}",
-  "@scanQuantity": {
-    "placeholders": {
-      "quantity": {
-        "type": "int"
-      }
-    }
-  },
+  "@scanQuantity": {"placeholders": {"quantity": {"type": "int"}}},
   "scanSuccessMessage": "Receipt read successfully. You can review and edit information.",
   "scanScanning": "Scanning...",
   "scanExtractButton": "Extract data",
@@ -277,13 +208,7 @@
   "groupNameLabel": "Group name",
   "groupNeedLogin": "You need to be logged in to create a group.",
   "groupMemberCount": "{count} members",
-  "@groupMemberCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "@groupMemberCount": {"placeholders": {"count": {"type": "int"}}},
   "groupLoadError": "Could not load group list.",
   "groupAddMember": "Add member",
   "groupMemberName": "Member name",
@@ -304,49 +229,19 @@
   "groupDeleteExpenseConfirmTitle": "Delete expense?",
   "groupDeleteExpenseConfirmMessage": "This action will update group balances.",
   "groupPayerSubtitle": "{payer} paid • {date}",
-  "@groupPayerSubtitle": {
-    "placeholders": {
-      "payer": {
-        "type": "String"
-      },
-      "date": {
-        "type": "String"
-      }
-    }
-  },
+  "@groupPayerSubtitle": {"placeholders": {"payer": {"type": "String"}, "date": {"type": "String"}}},
   "groupEmptyExpensesMessage": "No expenses yet. Add the first expense to start splitting.",
   "debtSummaryTitle": "Debt summary",
   "debtNoData": "No expense data yet.",
   "debtSettlementTitle": "Settlement suggestions",
   "debtNoSettlement": "No debts to settle.",
   "debtOwes": "{from} pays {to} {amount}",
-  "@debtOwes": {
-    "placeholders": {
-      "from": {
-        "type": "String"
-      },
-      "to": {
-        "type": "String"
-      },
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
+  "@debtOwes": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}, "amount": {"type": "String"}}},
   "debtSummaryAppBarTitle": "Group balances",
   "debtLoadError": "Could not calculate debts.",
   "debtExplanation": "Positive indicates money to receive, negative indicates money to pay.",
   "debtOwesPayerToPayee": "{from} pays {to}",
-  "@debtOwesPayerToPayee": {
-    "placeholders": {
-      "from": {
-        "type": "String"
-      },
-      "to": {
-        "type": "String"
-      }
-    }
-  },
+  "@debtOwesPayerToPayee": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
   "debtMember": "Member",
   "debtToReceive": "To receive",
   "debtToPay": "To pay",
@@ -368,26 +263,11 @@
   "expenseFormDate": "Date",
   "validationAmountPositive": "Amount must be greater than 0.",
   "validationMinMembers": "Group must have at least {min} members.",
-  "@validationMinMembers": {
-    "placeholders": {
-      "min": {
-        "type": "int"
-      }
-    }
-  },
+  "@validationMinMembers": {"placeholders": {"min": {"type": "int"}}},
   "validationSelectPayer": "Select a payer.",
   "validationSelectParticipant": "Select at least one participant.",
   "validationSplitMismatch": "Split total ({splitTotal}) must equal expense total ({total}).",
-  "@validationSplitMismatch": {
-    "placeholders": {
-      "splitTotal": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
+  "@validationSplitMismatch": {"placeholders": {"splitTotal": {"type": "String"}, "total": {"type": "String"}}},
   "validationNegativeSplit": "Split amounts cannot be negative.",
   "validationInvalidParticipants": "Invalid list of participants.",
   "validationSplitCountMismatch": "Each participant needs exactly one split.",
@@ -415,13 +295,7 @@
   "deleteAccountUnderstand": "I understand that my data will be permanently deleted.",
   "deleteAccountConfirmationText": "DELETE ACCOUNT",
   "deleteAccountConfirmInput": "Enter {text} to confirm",
-  "@deleteAccountConfirmInput": {
-    "placeholders": {
-      "text": {
-        "type": "String"
-      }
-    }
-  },
+  "@deleteAccountConfirmInput": {"placeholders": {"text": {"type": "String"}}},
   "exportTitle": "Export data",
   "exportFormat": "File format",
   "exportDateRange": "Date range",
@@ -461,24 +335,12 @@
   "profileLinkSuccess": "Linked email account successfully!",
   "profileLinkGoogleBrowser": "Complete Google linking in browser to return to Moniary.",
   "profileLinkGoogleError": "Google linking error: {error}",
-  "@profileLinkGoogleError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@profileLinkGoogleError": {"placeholders": {"error": {"type": "String"}}},
   "profileEditInfo": "Edit profile info",
   "profileChangeTimezone": "Change timezone",
   "profileAnonymousBadge": "Anonymous account",
   "profileVerifiedBadge": "Verified ({provider})",
-  "@profileVerifiedBadge": {
-    "placeholders": {
-      "provider": {
-        "type": "String"
-      }
-    }
-  },
+  "@profileVerifiedBadge": {"placeholders": {"provider": {"type": "String"}}},
   "profileSignOutDialogTitle": "Sign out",
   "profileSignOutDialogMessage": "Are you sure you want to sign out?",
   "profileCancel": "Cancel",
@@ -527,5 +389,9 @@
   "supportCopyDiagnostic": "Copy diagnostic info",
   "supportRequestChecklist": "Support checklist",
   "supportOpenHelpCenter": "Open help center",
-  "transactionOcrSuccess": "Data extracted successfully!"
+  "transactionOcrSuccess": "Data extracted successfully!",
+  "scanImageSelectError": "Failed to select image. Please try again.",
+  "scanImageRequiredError": "Please select a receipt image first.",
+  "scanReadError": "Failed to read receipt. Please try again.",
+  "commonFeatureUnderDevelopment": "Feature under development"
 }

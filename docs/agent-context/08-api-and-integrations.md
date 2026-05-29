@@ -3,7 +3,8 @@
 **Confidence / Verification Status**: `VERIFIED`
 
 ## Supabase Database
-- Tables interacted with: `transactions`, `wallets`, `categories`, `expense_groups` (inferred from feature requirements).
+- Tables interacted with: `transactions`, `wallets`, `categories`, `profiles`.
+- Note: The **Groups** feature is currently entirely in-memory and does not interact with Supabase yet.
 - Mock Mode is built into the repositories. If `AppConstants.hasSupabaseConfig` is false, DB calls are bypassed, and data is kept in-memory.
 
 ## Supabase Auth

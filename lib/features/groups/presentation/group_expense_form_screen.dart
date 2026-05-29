@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../shared/utils/l10n_model_extensions.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/currency_formatter.dart';
 import '../application/group_controller.dart';
@@ -188,7 +189,7 @@ class _GroupExpenseFormScreenState
                 .map(
                   (method) => ButtonSegment(
                     value: method,
-                    label: Text(method.getLabel(context.l10n)),
+                    label: Text(method.getLabel(context)),
                   ),
                 )
                 .toList(),
@@ -323,7 +324,7 @@ class _GroupExpenseFormScreenState
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
+        ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(context, error))));
         setState(() => _saving = false);
       }
     }

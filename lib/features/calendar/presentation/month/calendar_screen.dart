@@ -107,7 +107,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(userFriendlyMessage(error)),
+                                    content: Text(userFriendlyMessage(context, error)),
                                     behavior: SnackBarBehavior.floating,
                                   ),
                                 );
@@ -116,7 +116,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                             return Center(
                               child: PlaceholderCard(
                                 title: context.l10n.errorGeneric,
-                                body: userFriendlyMessage(error),
+                                body: userFriendlyMessage(context, error),
                               ),
                             );
                           },

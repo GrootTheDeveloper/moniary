@@ -198,7 +198,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       context.go(CalendarScreen.routePath);
     } catch (error) {
       messenger.showSnackBar(
-        SnackBar(content: Text(userFriendlyMessage(error))),
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
   }
