@@ -185,6 +185,7 @@ Future<void> _showCategoryForm(
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     builder: (context) => _CategoryFormSheet(category: category),
   );
 }

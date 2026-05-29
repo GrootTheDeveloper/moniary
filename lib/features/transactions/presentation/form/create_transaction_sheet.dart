@@ -19,6 +19,7 @@ Future<DateTime?> showCreateTransactionSheet(
   return showModalBottomSheet<DateTime>(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     builder: (context) => const _CreateTransactionSheet(),
   );
 }

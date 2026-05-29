@@ -26,7 +26,50 @@ class TransactionRepository {
 
   static List<TransactionEntry> get mockTransactions => _mockTransactions;
 
-  static final List<TransactionEntry> _mockTransactions = [];
+  static final List<TransactionEntry> _mockTransactions = [
+    TransactionEntry(
+      id: 'mock-1',
+      amount: 150000,
+      type: TransactionType.expense,
+      note: 'Ăn trưa',
+      imagePath: 'https://picsum.photos/seed/moniary1/200/200',
+      transactionDate: DateTime.now(),
+      walletId: 'w1',
+      walletName: 'Ví tiền mặt',
+      walletColor: '#4CAF50',
+      categoryId: 'c1',
+      categoryName: 'Ăn uống',
+      categoryColor: '#FF5722',
+    ),
+    TransactionEntry(
+      id: 'mock-2',
+      amount: 50000,
+      type: TransactionType.expense,
+      note: 'Cafe',
+      imagePath: 'https://picsum.photos/seed/moniary2/200/200',
+      transactionDate: DateTime.now(),
+      walletId: 'w1',
+      walletName: 'Ví tiền mặt',
+      walletColor: '#4CAF50',
+      categoryId: 'c2',
+      categoryName: 'Giải trí',
+      categoryColor: '#2196F3',
+    ),
+    TransactionEntry(
+      id: 'mock-3',
+      amount: 200000,
+      type: TransactionType.expense,
+      note: 'Mua sắm',
+      imagePath: 'https://picsum.photos/seed/moniary3/200/200',
+      transactionDate: DateTime.now().subtract(const Duration(days: 1)),
+      walletId: 'w1',
+      walletName: 'Ví tiền mặt',
+      walletColor: '#4CAF50',
+      categoryId: 'c3',
+      categoryName: 'Mua sắm',
+      categoryColor: '#9C27B0',
+    ),
+  ];
 
   String get _userId {
     if (!AppConstants.hasSupabaseConfig) {

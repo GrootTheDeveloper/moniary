@@ -28,6 +28,20 @@ class SupabaseImage extends ConsumerWidget {
       return _buildFallback();
     }
 
+    final isHttp = imagePath!.startsWith('http');
+    if (isHttp) {
+      return ClipRRect(
+        borderRadius: borderRadius ?? BorderRadius.zero,
+        child: Image.network(
+          imagePath!,
+          width: width,
+          height: height,
+          fit: fit,
+          errorBuilder: (context, error, stackTrace) => _buildFallback(),
+        ),
+      );
+    }
+
     final isLocal = !imagePath!.startsWith('transactions/');
     if (isLocal) {
       return ClipRRect(

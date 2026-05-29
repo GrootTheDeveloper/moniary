@@ -35,7 +35,7 @@ class MainShellScreen extends ConsumerWidget {
 
     return Scaffold(
       body: navigationShell,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: SizedBox(
         width: 66,
         height: 66,

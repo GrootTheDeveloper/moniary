@@ -106,6 +106,10 @@
     }
   },
   "calendarStatsTab": "Stats",
+  "calendarLoading": "Syncing calendar...",
+  "calendarEmptyTitle": "Nothing here!",
+  "calendarEmptyBody": "You don't have any transactions this month. Add a new transaction to start tracking.",
+  "calendarErrorTitle": "Data load error",
   "calendarMon": "Mon",
   "calendarTue": "Tue",
   "calendarWed": "Wed",

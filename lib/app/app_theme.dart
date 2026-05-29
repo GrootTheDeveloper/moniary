@@ -6,11 +6,11 @@ class AppTheme {
   static const surface = Color(0xFF121C28);
   static const surfaceRaised = Color(0xFF172331);
   static const outline = Color(0xFF243344);
-  static const mint = Color(0xFF35D0BD);
-  static const mintSoft = Color(0xFF6DE8D8);
+  static const mint = Color(0xFF2563EB); // Deep Professional Blue
+  static const mintSoft = Color(0xFF60A5FA); // Soft Blue
   static const pink = Color(0xFFE45CA6);
   static const amber = Color(0xFFF6B24D);
-  static const danger = Color(0xFFFF6D72);
+  static const danger = Color(0xFFFC8181);
   static const success = Color(0xFF44D884);
   static const textMuted = Color(0xFFBECCD9);
   static const textSubtle = Color(0xFF9CB0C2);

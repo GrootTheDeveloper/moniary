@@ -31,6 +31,7 @@ Future<TransactionMutationResult?> showTransactionFormSheet(
   return showModalBottomSheet<TransactionMutationResult>(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     builder: (context) => TransactionFormScreen(
       initialTransaction: initialTransaction,
       initialDateTime: initialDateTime,
@@ -558,6 +559,10 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
           quality: AppConstants.imageCompressQuality,
           format: CompressFormat.jpeg,
         );
+        if (imageBytes == null) {
+          // Fallback if compression fails
+          imageBytes = await _pickedFile!.readAsBytes();
+        }
       }
 
       final previousDate = widget.initialTransaction?.transactionDate;

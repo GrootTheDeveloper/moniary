@@ -52,7 +52,6 @@ class MoniaryBottomNavBar extends StatelessWidget {
               }
             },
           ),
-          const SizedBox(width: 76),
           _NavItem(
             icon: Icons.groups_2_outlined,
             label: context.l10n.groupTitle,

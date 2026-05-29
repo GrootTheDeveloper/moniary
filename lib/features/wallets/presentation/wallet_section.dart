@@ -151,6 +151,7 @@ Future<void> _showWalletForm(
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     builder: (context) => _WalletFormSheet(wallet: wallet),
   );
 }
