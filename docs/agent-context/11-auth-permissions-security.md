@@ -9,7 +9,7 @@
 - **Session State**: Riverpod listens to `onAuthStateChange` to trigger `go_router` redirects automatically.
 
 ## Permissions
-- **Camera/Photos**: Handled via `image_picker` and `camera` plugins for receipt scanning and profile pictures.
+- **Camera/Photos**: Handled via `image_picker` and `camera` plugins for receipt scanning and profile pictures. Requires `android.permission.CAMERA` in `AndroidManifest.xml` to prevent initialization hangs.
 - **Rationale**: Before asking for permissions, the app explains why it needs them (e.g., `PermissionRationaleScreen`).
 
 ## Data Security & RLS

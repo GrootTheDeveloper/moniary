@@ -7,10 +7,12 @@
 - **Main files**: `features/transactions/`
 - **UI screens**: `TransactionFormScreen`, `TransactionDetailScreen`, `CameraScreen`, `DayDetailScreen`.
 - **Repository**: `TransactionRepository` (Supports Mock & Supabase modes).
+- **Navigation**: The main FAB opens `CameraScreen` for taking/picking photos (or OCR scanning), which then routes to `TransactionFormScreen`.
 
 ## Feature: Calendar
 - **Purpose**: View transactions in a monthly calendar format.
 - **Main files**: `features/calendar/`
+- **UI Architecture**: Zero-scroll optimized layout with a deep blue accent theme. Utilizes `SingleChildScrollView` for filter rows to prevent OOM rendering issues.
 
 ## Feature: Groups
 - **Purpose**: Manage group expenses and calculate debts.

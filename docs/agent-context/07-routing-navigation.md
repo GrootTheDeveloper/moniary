@@ -25,4 +25,5 @@
 | `/profile` | `ProfileScreen` | Tab 3 |
 | `/scanning` | `ScanningScreen` | Slides up |
 | `/ocr-review` | `OcrReviewScreen` | Passes `OcrReviewArgs` |
-| `/transaction-form` | `TransactionFormScreen` | Used for manual/camera creation |
+| `/camera` | `CameraScreen` | Slides up, accessed via Main FAB |
+| `/transaction-form` | `TransactionFormScreen` | Used for manual creation or after taking/picking a photo |
