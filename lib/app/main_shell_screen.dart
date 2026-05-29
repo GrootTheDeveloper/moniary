@@ -45,7 +45,7 @@ class MainShellScreen extends ConsumerWidget {
           shape: const CircleBorder(),
           onPressed: () async {
             final result = await context.push<TransactionMutationResult>(
-              '/transaction-form',
+              '/camera',
             );
             if (result != null) {
               final months = <DateTime>{
