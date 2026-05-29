@@ -192,7 +192,9 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
                 subtitle: item.quantity == null
                     ? null
                     : Text(context.l10n.scanQuantity(item.quantity!)),
-                trailing: item.price == null ? null : Text(formatVnd(item.price!)),
+                trailing: item.price == null
+                    ? null
+                    : Text(formatVnd(item.price!)),
               ),
             ),
           ],
@@ -214,7 +216,11 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
             onPressed: loading || wallets.isEmpty || categories.isEmpty
                 ? null
                 : _save,
-            child: Text(loading ? context.l10n.transactionSaving : context.l10n.transactionSaveTransaction),
+            child: Text(
+              loading
+                  ? context.l10n.transactionSaving
+                  : context.l10n.transactionSaveTransaction,
+            ),
           ),
         ],
       ),
@@ -301,7 +307,9 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
       Navigator.of(context).pop(TransactionMutationResult(currentDate: _date));
     } catch (error) {
       messenger.showSnackBar(
-        SnackBar(content: Text(context.l10n.transactionSaveError(error.toString()))),
+        SnackBar(
+          content: Text(context.l10n.transactionSaveError(error.toString())),
+        ),
       );
     }
   }
@@ -355,7 +363,12 @@ class _DateTile extends StatelessWidget {
       tileColor: AppTheme.surfaceRaised,
       leading: const Icon(Icons.event_outlined),
       title: Text(context.l10n.transactionDate),
-      trailing: Text(DateFormat('dd/MM/yyyy', Localizations.localeOf(context).toString()).format(date)),
+      trailing: Text(
+        DateFormat(
+          'dd/MM/yyyy',
+          Localizations.localeOf(context).toString(),
+        ).format(date),
+      ),
     );
   }
 }

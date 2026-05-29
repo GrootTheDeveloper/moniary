@@ -115,7 +115,9 @@ class _BalanceCard extends StatelessWidget {
           child: Icon(positive ? Icons.arrow_downward : Icons.arrow_upward),
         ),
         title: Text(name),
-        subtitle: Text(positive ? context.l10n.debtToReceive : context.l10n.debtToPay),
+        subtitle: Text(
+          positive ? context.l10n.debtToReceive : context.l10n.debtToPay,
+        ),
         trailing: Text(
           '${positive ? '+' : '-'}${formatVnd(value.abs())}',
           style: TextStyle(color: color, fontWeight: FontWeight.w700),

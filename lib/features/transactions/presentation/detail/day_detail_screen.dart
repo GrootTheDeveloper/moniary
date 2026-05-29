@@ -36,10 +36,16 @@ class DayDetailScreen extends ConsumerWidget {
             Text(
               DateUtils.isSameDay(date, DateTime.now())
                   ? context.l10n.calendarToday
-                  : DateFormat('EEEE, d/M', Localizations.localeOf(context).toString()).format(date),
+                  : DateFormat(
+                      'EEEE, d/M',
+                      Localizations.localeOf(context).toString(),
+                    ).format(date),
             ),
             Text(
-              DateFormat('dd MMMM, yyyy', Localizations.localeOf(context).toString()).format(date),
+              DateFormat(
+                'dd MMMM, yyyy',
+                Localizations.localeOf(context).toString(),
+              ).format(date),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
@@ -338,7 +344,6 @@ class _MiniTag extends StatelessWidget {
     );
   }
 }
-
 
 void _applyMutation(WidgetRef ref, TransactionMutationResult result) {
   final days = <DateTime>{

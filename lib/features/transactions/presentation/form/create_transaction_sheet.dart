@@ -215,7 +215,9 @@ class _CreateTransactionSheetState
               FilledButton(
                 onPressed: canSubmit ? _submit : null,
                 child: Text(
-                  composerState.isLoading ? context.l10n.transactionSaving : context.l10n.transactionSaveTransaction,
+                  composerState.isLoading
+                      ? context.l10n.transactionSaving
+                      : context.l10n.transactionSaveTransaction,
                 ),
               ),
             ],
@@ -288,7 +290,9 @@ class _CreateTransactionSheetState
       if (!mounted) return;
       Navigator.of(context).pop(_selectedDate);
     } catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
+      messenger.showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(error))),
+      );
     }
   }
 }

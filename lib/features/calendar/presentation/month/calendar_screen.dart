@@ -64,7 +64,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     context.go(LoginScreen.routePath);
                   },
                   onMonthSelect: (date) {
-                    ref.read(calendarVisibleMonthProvider.notifier).setMonth(date);
+                    ref
+                        .read(calendarVisibleMonthProvider.notifier)
+                        .setMonth(date);
                   },
                 ),
                 const SizedBox(height: 14),
@@ -131,7 +133,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     };
 
     if (result.currentDate != null) {
-      ref.read(calendarVisibleMonthProvider.notifier).setMonth(result.currentDate!);
+      ref
+          .read(calendarVisibleMonthProvider.notifier)
+          .setMonth(result.currentDate!);
     }
 
     for (final month in months) {
@@ -310,8 +314,9 @@ class _MonthPickerContentState extends State<_MonthPickerContent> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      DateFormat.MMM(Localizations.localeOf(context).toString())
-                          .format(DateTime(_selectedYear, month)),
+                      DateFormat.MMM(
+                        Localizations.localeOf(context).toString(),
+                      ).format(DateTime(_selectedYear, month)),
                       style: TextStyle(
                         fontWeight: isSelected
                             ? FontWeight.bold
@@ -558,11 +563,7 @@ class _CalendarDayCell extends StatelessWidget {
               const Positioned(
                 top: 2,
                 right: 2,
-                child: Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                  size: 12,
-                ),
+                child: Icon(Icons.star, color: Colors.amber, size: 12),
               ),
             if (day.transactions.isNotEmpty)
               Positioned(
@@ -773,8 +774,6 @@ class _MetricBlock extends StatelessWidget {
     );
   }
 }
-
-
 
 class _PillButton extends StatelessWidget {
   const _PillButton({

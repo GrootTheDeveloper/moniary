@@ -86,16 +86,18 @@ class CategoryRepository {
     required TransactionType type,
   }) async {
     if (!AppConstants.hasSupabaseConfig) {
-      _mockCategories.add(Category(
-        id: 'mock-cat-${DateTime.now().millisecondsSinceEpoch}',
-        name: name,
-        type: type,
-        icon: type == TransactionType.income ? 'add' : 'remove',
-        color: '#9E9E9E',
-        isDefault: false,
-        isActive: true,
-        createdAt: DateTime.now(),
-      ));
+      _mockCategories.add(
+        Category(
+          id: 'mock-cat-${DateTime.now().millisecondsSinceEpoch}',
+          name: name,
+          type: type,
+          icon: type == TransactionType.income ? 'add' : 'remove',
+          color: '#9E9E9E',
+          isDefault: false,
+          isActive: true,
+          createdAt: DateTime.now(),
+        ),
+      );
       return;
     }
     final session = _client.auth.currentSession;

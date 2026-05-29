@@ -173,7 +173,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: OcrReviewScreen.routePath,
         pageBuilder: (context, state) {
           final args = state.extra as OcrReviewArgs?;
-          final child = args == null ? const CalendarScreen() : OcrReviewScreen(args: args);
+          final child = args == null
+              ? const CalendarScreen()
+              : OcrReviewScreen(args: args);
           return buildSlideUpTransitionPage(state: state, child: child);
         },
       ),
@@ -181,7 +183,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: GroupDetailScreen.routePath,
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
-          final child = groupId == null ? const GroupsScreen() : GroupDetailScreen(groupId: groupId);
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupDetailScreen(groupId: groupId);
           return buildSlideTransitionPage(state: state, child: child);
         },
       ),
@@ -189,7 +193,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: GroupExpenseFormScreen.routePath,
         pageBuilder: (context, state) {
           final args = state.extra as GroupExpenseFormArgs?;
-          final child = args == null ? const GroupsScreen() : GroupExpenseFormScreen(args: args);
+          final child = args == null
+              ? const GroupsScreen()
+              : GroupExpenseFormScreen(args: args);
           return buildSlideUpTransitionPage(state: state, child: child);
         },
       ),
@@ -197,7 +203,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: DebtSummaryScreen.routePath,
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
-          final child = groupId == null ? const GroupsScreen() : DebtSummaryScreen(groupId: groupId);
+          final child = groupId == null
+              ? const GroupsScreen()
+              : DebtSummaryScreen(groupId: groupId);
           return buildSlideTransitionPage(state: state, child: child);
         },
       ),
@@ -261,7 +269,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: PrivacyRequestDetailScreen.routePath,
         pageBuilder: (context, state) {
           final entry = state.extra as PrivacyRequestHistoryEntry?;
-          final child = entry == null ? const PrivacyCenterScreen() : PrivacyRequestDetailScreen(entry: entry);
+          final child = entry == null
+              ? const PrivacyCenterScreen()
+              : PrivacyRequestDetailScreen(entry: entry);
           return buildSlideTransitionPage(state: state, child: child);
         },
       ),
@@ -405,7 +415,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: TransactionDetailScreen.routePath,
         pageBuilder: (context, state) {
           final args = state.extra as TransactionDetailRouteArgs?;
-          final child = args == null ? const CalendarScreen() : TransactionDetailScreen(args: args);
+          final child = args == null
+              ? const CalendarScreen()
+              : TransactionDetailScreen(args: args);
           return buildSlideTransitionPage(state: state, child: child);
         },
       ),
@@ -442,11 +454,11 @@ CustomTransitionPage<void> buildSlideTransitionPage({
       const begin = Offset(1.0, 0.0);
       const end = Offset.zero;
       const curve = Curves.easeInOutCubic;
-      final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-      return SlideTransition(
-        position: animation.drive(tween),
-        child: child,
-      );
+      final tween = Tween(
+        begin: begin,
+        end: end,
+      ).chain(CurveTween(curve: curve));
+      return SlideTransition(position: animation.drive(tween), child: child);
     },
   );
 }
@@ -462,11 +474,11 @@ CustomTransitionPage<T> buildSlideUpTransitionPage<T>({
       const begin = Offset(0.0, 1.0);
       const end = Offset.zero;
       const curve = Curves.easeInOutCubic;
-      final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-      return SlideTransition(
-        position: animation.drive(tween),
-        child: child,
-      );
+      final tween = Tween(
+        begin: begin,
+        end: end,
+      ).chain(CurveTween(curve: curve));
+      return SlideTransition(position: animation.drive(tween), child: child);
     },
   );
 }

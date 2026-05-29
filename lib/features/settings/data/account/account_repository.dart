@@ -222,10 +222,8 @@ class AccountRepository {
       final txs = TransactionRepository.mockTransactions;
       final wallets = WalletRepository.mockWallets;
       final categories = CategoryRepository.mockCategories;
-      
-      final transactionDates = txs
-          .map((t) => t.transactionDate)
-          .toList()
+
+      final transactionDates = txs.map((t) => t.transactionDate).toList()
         ..sort();
 
       return DataTransparencySummary(
@@ -411,21 +409,30 @@ class AccountRepository {
   }) async {
     if (!AppConstants.hasSupabaseConfig) {
       final txs = TransactionRepository.mockTransactions;
-      return txs.where((t) {
-        if (filters.startDate != null && t.transactionDate.isBefore(filters.startDate!)) return false;
-        if (filters.endDate != null && t.transactionDate.isAfter(filters.endDate!)) return false;
-        return true;
-      }).map((t) => {
-        'id': t.id,
-        'amount': t.amount,
-        'type': t.type.name,
-        'note': t.note,
-        'image_path': t.imagePath,
-        'transaction_date': t.transactionDate.toIso8601String(),
-        'created_at': t.transactionDate.toIso8601String(),
-        'wallet': {'name': t.walletName},
-        'category': {'name': t.categoryName},
-      }).toList();
+      return txs
+          .where((t) {
+            if (filters.startDate != null &&
+                t.transactionDate.isBefore(filters.startDate!))
+              return false;
+            if (filters.endDate != null &&
+                t.transactionDate.isAfter(filters.endDate!))
+              return false;
+            return true;
+          })
+          .map(
+            (t) => {
+              'id': t.id,
+              'amount': t.amount,
+              'type': t.type.name,
+              'note': t.note,
+              'image_path': t.imagePath,
+              'transaction_date': t.transactionDate.toIso8601String(),
+              'created_at': t.transactionDate.toIso8601String(),
+              'wallet': {'name': t.walletName},
+              'category': {'name': t.categoryName},
+            },
+          )
+          .toList();
     }
     var query = _client
         .from('transactions')
@@ -470,15 +477,19 @@ class AccountRepository {
 
   Future<List<Map<String, dynamic>>> _fetchWalletRows(String userId) async {
     if (!AppConstants.hasSupabaseConfig) {
-      return WalletRepository.mockWallets.map((w) => {
-        'id': w.id,
-        'name': w.name,
-        'type': w.type.name,
-        'initial_balance': w.initialBalance,
-        'is_default': w.isDefault,
-        'is_active': w.isActive,
-        'created_at': w.createdAt.toIso8601String(),
-      }).toList();
+      return WalletRepository.mockWallets
+          .map(
+            (w) => {
+              'id': w.id,
+              'name': w.name,
+              'type': w.type.name,
+              'initial_balance': w.initialBalance,
+              'is_default': w.isDefault,
+              'is_active': w.isActive,
+              'created_at': w.createdAt.toIso8601String(),
+            },
+          )
+          .toList();
     }
     final rows = await _client
         .from('wallets')
@@ -491,14 +502,18 @@ class AccountRepository {
 
   Future<List<Map<String, dynamic>>> _fetchCategoryRows(String userId) async {
     if (!AppConstants.hasSupabaseConfig) {
-      return CategoryRepository.mockCategories.map((c) => {
-        'id': c.id,
-        'name': c.name,
-        'type': c.type.name,
-        'is_default': c.isDefault,
-        'is_active': c.isActive,
-        'created_at': c.createdAt.toIso8601String(),
-      }).toList();
+      return CategoryRepository.mockCategories
+          .map(
+            (c) => {
+              'id': c.id,
+              'name': c.name,
+              'type': c.type.name,
+              'is_default': c.isDefault,
+              'is_active': c.isActive,
+              'created_at': c.createdAt.toIso8601String(),
+            },
+          )
+          .toList();
     }
     final rows = await _client
         .from('categories')

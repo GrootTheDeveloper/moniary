@@ -72,9 +72,7 @@ class ScanningScreen extends ConsumerWidget {
                 color: AppTheme.danger,
                 size: 30,
               ),
-              text:
-                  state.errorMessage ??
-                  context.l10n.scanFailed,
+              text: state.errorMessage ?? context.l10n.scanFailed,
             )
           else if (state.status == ScanningStatus.success)
             _StatusCard(
@@ -83,8 +81,7 @@ class ScanningScreen extends ConsumerWidget {
                 color: AppTheme.success,
                 size: 30,
               ),
-              text:
-                  context.l10n.scanSuccessMessage,
+              text: context.l10n.scanSuccessMessage,
             ),
           const SizedBox(height: 18),
           FilledButton.icon(
@@ -92,7 +89,9 @@ class ScanningScreen extends ConsumerWidget {
                 ? null
                 : () => _extract(context, ref),
             icon: const Icon(Icons.document_scanner_outlined),
-            label: Text(busy ? context.l10n.scanScanning : context.l10n.scanExtractButton),
+            label: Text(
+              busy ? context.l10n.scanScanning : context.l10n.scanExtractButton,
+            ),
           ),
           const SizedBox(height: 12),
           TextButton.icon(
@@ -194,9 +193,8 @@ class _ReceiptPreview extends StatelessWidget {
                   child: Image.file(
                     File(imagePath!),
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Center(
-                      child: Text(context.l10n.scanImageError),
-                    ),
+                    errorBuilder: (context, error, stackTrace) =>
+                        Center(child: Text(context.l10n.scanImageError)),
                   ),
                 ),
                 if (onClear != null)

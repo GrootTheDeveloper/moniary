@@ -1,4 +1,4 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'preferences_bootstrap.dart';
@@ -11,9 +11,10 @@ final onboardingSeenProvider = NotifierProvider<OnboardingSeenNotifier, bool>(
   OnboardingSeenNotifier.new,
 );
 
-final preferredCurrencyProvider = NotifierProvider<PreferredCurrencyNotifier, String>(
-  PreferredCurrencyNotifier.new,
-);
+final preferredCurrencyProvider =
+    NotifierProvider<PreferredCurrencyNotifier, String>(
+      PreferredCurrencyNotifier.new,
+    );
 
 class OnboardingSeenNotifier extends Notifier<bool> {
   static const _key = 'onboarding_seen';

@@ -50,7 +50,11 @@ class TransactionDetailScreen extends ConsumerWidget {
 
                 // Invalidate day detail queries
                 final txDate = transaction.transactionDate;
-                final dayStart = DateTime(txDate.year, txDate.month, txDate.day);
+                final dayStart = DateTime(
+                  txDate.year,
+                  txDate.month,
+                  txDate.day,
+                );
                 ref.invalidate(transactionsForDayProvider(dayStart));
 
                 // Invalidate calendar month queries
@@ -220,7 +224,10 @@ class _TransactionDetailBody extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(context.l10n.transactionNote, style: Theme.of(context).textTheme.bodyMedium),
+              Text(
+                context.l10n.transactionNote,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               const SizedBox(height: 8),
               Text(
                 transaction.note?.trim().isNotEmpty == true
@@ -351,4 +358,3 @@ class _InfoItem extends StatelessWidget {
     );
   }
 }
-

@@ -106,7 +106,9 @@ class LoginScreen extends ConsumerWidget {
                             );
                           } catch (error) {
                             messenger.showSnackBar(
-                              SnackBar(content: Text(userFriendlyMessage(error))),
+                              SnackBar(
+                                content: Text(userFriendlyMessage(error)),
+                              ),
                             );
                           }
                         },
@@ -264,7 +266,10 @@ class _OrDivider extends StatelessWidget {
         Expanded(child: Container(height: 1, color: AppTheme.outline)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Text(context.l10n.loginOr, style: Theme.of(context).textTheme.bodyMedium),
+          child: Text(
+            context.l10n.loginOr,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
         ),
         Expanded(child: Container(height: 1, color: AppTheme.outline)),
       ],

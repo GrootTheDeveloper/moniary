@@ -1,12 +1,9 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../app/app_theme.dart';
 
 class AuroraBackground extends StatelessWidget {
-  const AuroraBackground({
-    required this.child,
-    super.key,
-  });
+  const AuroraBackground({required this.child, super.key});
 
   final Widget child;
 
@@ -17,11 +14,7 @@ class AuroraBackground extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF0B1521),
-            AppTheme.background,
-            Color(0xFF071019),
-          ],
+          colors: [Color(0xFF0B1521), AppTheme.background, Color(0xFF071019)],
         ),
       ),
       child: Stack(

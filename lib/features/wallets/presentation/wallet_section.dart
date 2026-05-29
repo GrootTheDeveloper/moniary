@@ -72,7 +72,8 @@ class WalletSection extends ConsumerWidget {
                         .toList(),
                   );
                 },
-                error: (error, stackTrace) => Text(context.l10n.walletError(error.toString())),
+                error: (error, stackTrace) =>
+                    Text(context.l10n.walletError(error.toString())),
                 loading: () => const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: LinearProgressIndicator(),
@@ -202,7 +203,9 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isEditing ? context.l10n.walletEditTitle : context.l10n.walletCreateTitle,
+              isEditing
+                  ? context.l10n.walletEditTitle
+                  : context.l10n.walletCreateTitle,
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -217,8 +220,10 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
               initialValue: _selectedType,
               items: WalletType.values
                   .map(
-                    (type) =>
-                        DropdownMenuItem(value: type, child: Text(_walletTypeLabel(context, type))),
+                    (type) => DropdownMenuItem(
+                      value: type,
+                      child: Text(_walletTypeLabel(context, type)),
+                    ),
                   )
                   .toList(),
               onChanged: (value) {
@@ -233,7 +238,9 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
-              decoration: InputDecoration(labelText: context.l10n.walletInitialBalance),
+              decoration: InputDecoration(
+                labelText: context.l10n.walletInitialBalance,
+              ),
             ),
             const SizedBox(height: 8),
             SwitchListTile(
@@ -251,7 +258,11 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _isSubmitting ? null : _submit,
-              child: Text(_isSubmitting ? context.l10n.walletSaving : context.l10n.walletSave),
+              child: Text(
+                _isSubmitting
+                    ? context.l10n.walletSaving
+                    : context.l10n.walletSave,
+              ),
             ),
           ],
         ),
@@ -299,7 +310,9 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
 
       Navigator.of(context).pop();
     } catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
+      messenger.showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(error))),
+      );
       setState(() => _isSubmitting = false);
     }
   }

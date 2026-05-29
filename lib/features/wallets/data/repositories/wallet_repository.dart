@@ -84,17 +84,19 @@ class WalletRepository {
           );
         }
       }
-      _mockWallets.add(Wallet(
-        id: 'mock-wallet-${DateTime.now().millisecondsSinceEpoch}',
-        name: name,
-        type: type,
-        icon: 'wallet',
-        color: '#9C27B0',
-        initialBalance: initialBalance,
-        isDefault: isDefault,
-        isActive: true,
-        createdAt: DateTime.now(),
-      ));
+      _mockWallets.add(
+        Wallet(
+          id: 'mock-wallet-${DateTime.now().millisecondsSinceEpoch}',
+          name: name,
+          type: type,
+          icon: 'wallet',
+          color: '#9C27B0',
+          initialBalance: initialBalance,
+          isDefault: isDefault,
+          isActive: true,
+          createdAt: DateTime.now(),
+        ),
+      );
       return;
     }
     final session = _client.auth.currentSession;

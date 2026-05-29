@@ -162,7 +162,11 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                 const Spacer(),
                 FilledButton(
                   onPressed: isLoading ? null : _submit,
-                  child: Text(isLoading ? context.l10n.commonSaving : context.l10n.profileSetupStart),
+                  child: Text(
+                    isLoading
+                        ? context.l10n.commonSaving
+                        : context.l10n.profileSetupStart,
+                  ),
                 ),
               ],
             ),
@@ -193,7 +197,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       if (!mounted) return;
       context.go(CalendarScreen.routePath);
     } catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
+      messenger.showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(error))),
+      );
     }
   }
 }

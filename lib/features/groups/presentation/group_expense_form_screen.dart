@@ -104,9 +104,7 @@ class _GroupExpenseFormScreenState
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 36),
         children: [
           if (_group.members.length < 2)
-            _Notice(
-              text: context.l10n.expenseFormMinMembersNotice,
-            ),
+            _Notice(text: context.l10n.expenseFormMinMembersNotice),
           TextField(
             controller: _amountController,
             onChanged: (_) => setState(() {}),
@@ -152,7 +150,12 @@ class _GroupExpenseFormScreenState
             ),
             leading: const Icon(Icons.calendar_today_outlined),
             title: Text(context.l10n.expenseFormDate),
-            trailing: Text(DateFormat('dd/MM/yyyy', Localizations.localeOf(context).toString()).format(_date)),
+            trailing: Text(
+              DateFormat(
+                'dd/MM/yyyy',
+                Localizations.localeOf(context).toString(),
+              ).format(_date),
+            ),
           ),
           const SizedBox(height: 22),
           Text(
@@ -182,8 +185,10 @@ class _GroupExpenseFormScreenState
           SegmentedButton<SplitMethod>(
             segments: SplitMethod.values
                 .map(
-                  (method) =>
-                      ButtonSegment(value: method, label: Text(method.getLabel(context.l10n))),
+                  (method) => ButtonSegment(
+                    value: method,
+                    label: Text(method.getLabel(context.l10n)),
+                  ),
                 )
                 .toList(),
             selected: {_method},
@@ -219,7 +224,9 @@ class _GroupExpenseFormScreenState
           const SizedBox(height: 22),
           FilledButton(
             onPressed: _saving ? null : _save,
-            child: Text(_saving ? context.l10n.commonSaving : context.l10n.expenseSave),
+            child: Text(
+              _saving ? context.l10n.commonSaving : context.l10n.expenseSave,
+            ),
           ),
         ],
       ),
@@ -267,15 +274,25 @@ class _GroupExpenseFormScreenState
     );
     if (validation != null) {
       final message = switch (validation) {
-        GroupExpenseValidationError.minMembers => context.l10n.validationMinMembers(2),
-        GroupExpenseValidationError.amountPositive => context.l10n.validationAmountPositive,
-        GroupExpenseValidationError.selectPayer => context.l10n.validationSelectPayer,
-        GroupExpenseValidationError.selectParticipant => context.l10n.validationSelectParticipant,
-        GroupExpenseValidationError.invalidParticipants => context.l10n.validationInvalidParticipants,
-        GroupExpenseValidationError.splitCountMismatch => context.l10n.validationSplitCountMismatch,
-        GroupExpenseValidationError.negativeSplit => context.l10n.validationNegativeSplit,
-        GroupExpenseValidationError.splitMismatch => context.l10n.validationSplitMismatch(
-            splits.fold<double>(0, (sum, split) => sum + split.amount).toStringAsFixed(0),
+        GroupExpenseValidationError.minMembers =>
+          context.l10n.validationMinMembers(2),
+        GroupExpenseValidationError.amountPositive =>
+          context.l10n.validationAmountPositive,
+        GroupExpenseValidationError.selectPayer =>
+          context.l10n.validationSelectPayer,
+        GroupExpenseValidationError.selectParticipant =>
+          context.l10n.validationSelectParticipant,
+        GroupExpenseValidationError.invalidParticipants =>
+          context.l10n.validationInvalidParticipants,
+        GroupExpenseValidationError.splitCountMismatch =>
+          context.l10n.validationSplitCountMismatch,
+        GroupExpenseValidationError.negativeSplit =>
+          context.l10n.validationNegativeSplit,
+        GroupExpenseValidationError.splitMismatch =>
+          context.l10n.validationSplitMismatch(
+            splits
+                .fold<double>(0, (sum, split) => sum + split.amount)
+                .toStringAsFixed(0),
             amount.toStringAsFixed(0),
           ),
       };
@@ -303,9 +320,9 @@ class _GroupExpenseFormScreenState
       }
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(userFriendlyMessage(error))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
         setState(() => _saving = false);
       }
     }

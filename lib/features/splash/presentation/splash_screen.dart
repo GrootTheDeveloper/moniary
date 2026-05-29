@@ -117,11 +117,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.error_outline, color: AppTheme.danger, size: 48),
+                      const Icon(
+                        Icons.error_outline,
+                        color: AppTheme.danger,
+                        size: 48,
+                      ),
                       const SizedBox(height: 16),
                       Text(
                         context.l10n.splashErrorConnecting,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppTheme.danger),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(color: AppTheme.danger),
                       ),
                       const SizedBox(height: 16),
                       FilledButton(

@@ -6,9 +6,9 @@ enum SplitMethod { equal, manual }
 
 extension SplitMethodX on SplitMethod {
   String getLabel(AppLocalizations l10n) => switch (this) {
-        SplitMethod.equal => l10n.expenseSplitEqual,
-        SplitMethod.manual => l10n.expenseSplitManual,
-      };
+    SplitMethod.equal => l10n.expenseSplitEqual,
+    SplitMethod.manual => l10n.expenseSplitManual,
+  };
 }
 
 enum GroupExpenseValidationError {
@@ -70,8 +70,8 @@ class GroupExpenseValidationService {
     if (participantIds.toSet().length != participantIds.length ||
         splits.map((split) => split.memberId).toSet().length != splits.length ||
         !participantIds.toSet().containsAll(
-              splits.map((split) => split.memberId),
-            ) ||
+          splits.map((split) => split.memberId),
+        ) ||
         !splits
             .map((split) => split.memberId)
             .toSet()

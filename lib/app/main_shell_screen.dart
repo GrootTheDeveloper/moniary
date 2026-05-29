@@ -9,10 +9,7 @@ import '../features/calendar/application/month/calendar_visible_month_provider.d
 import '../features/transactions/domain/models/transaction_mutation_result.dart';
 
 class MainShellScreen extends ConsumerWidget {
-  const MainShellScreen({
-    super.key,
-    required this.navigationShell,
-  });
+  const MainShellScreen({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
@@ -53,15 +50,25 @@ class MainShellScreen extends ConsumerWidget {
             if (result != null) {
               final months = <DateTime>{
                 if (result.previousDate != null)
-                  DateTime(result.previousDate!.year, result.previousDate!.month, 1),
+                  DateTime(
+                    result.previousDate!.year,
+                    result.previousDate!.month,
+                    1,
+                  ),
                 if (result.currentDate != null)
-                  DateTime(result.currentDate!.year, result.currentDate!.month, 1),
+                  DateTime(
+                    result.currentDate!.year,
+                    result.currentDate!.month,
+                    1,
+                  ),
               };
               for (final month in months) {
                 ref.invalidate(calendarMonthProvider(month));
               }
               if (result.currentDate != null) {
-                ref.read(calendarVisibleMonthProvider.notifier).setMonth(result.currentDate!);
+                ref
+                    .read(calendarVisibleMonthProvider.notifier)
+                    .setMonth(result.currentDate!);
               }
             }
           },

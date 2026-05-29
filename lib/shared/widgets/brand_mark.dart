@@ -1,13 +1,9 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../app/app_theme.dart';
 
 class BrandMark extends StatelessWidget {
-  const BrandMark({
-    this.size = 84,
-    this.showBadge = true,
-    super.key,
-  });
+  const BrandMark({this.size = 84, this.showBadge = true, super.key});
 
   final double size;
   final bool showBadge;
@@ -26,11 +22,7 @@ class BrandMark extends StatelessWidget {
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF53E4D4),
-                  AppTheme.mint,
-                  Color(0xFF219E90),
-                ],
+                colors: [Color(0xFF53E4D4), AppTheme.mint, Color(0xFF219E90)],
               ),
               boxShadow: [
                 BoxShadow(
@@ -103,10 +95,7 @@ class BrandMark extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppTheme.amber,
-                  border: Border.all(
-                    color: const Color(0xFF0A121D),
-                    width: 3,
-                  ),
+                  border: Border.all(color: const Color(0xFF0A121D), width: 3),
                 ),
                 child: const Icon(
                   Icons.auto_awesome_rounded,

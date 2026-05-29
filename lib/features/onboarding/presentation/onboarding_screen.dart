@@ -21,7 +21,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _controller = PageController();
   int _pageIndex = 0;
 
-  List<({String title1, String title2, String subtitle, String caption, IconData icon, Color accent})> _getPages(BuildContext context) {
+  List<
+    ({
+      String title1,
+      String title2,
+      String subtitle,
+      String caption,
+      IconData icon,
+      Color accent,
+    })
+  >
+  _getPages(BuildContext context) {
     return [
       (
         title1: context.l10n.onboardingPage1Title1,
@@ -180,7 +190,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       ? _finish
                       : _nextPage,
                   child: Text(
-                    _pageIndex == pages.length - 1 ? context.l10n.onboardingFinish : context.l10n.onboardingNextPage,
+                    _pageIndex == pages.length - 1
+                        ? context.l10n.onboardingFinish
+                        : context.l10n.onboardingNextPage,
                   ),
                 ),
               ],

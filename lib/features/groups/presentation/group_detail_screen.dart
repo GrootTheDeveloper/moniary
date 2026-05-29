@@ -57,7 +57,10 @@ class _GroupDetailBody extends ConsumerWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(context.l10n.groupMembersHeader, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              context.l10n.groupMembersHeader,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             TextButton.icon(
               onPressed: () => _addMember(context, ref),
               icon: const Icon(Icons.person_add_alt),
@@ -140,7 +143,9 @@ class _GroupDetailBody extends ConsumerWidget {
 
   String _nameFor(String memberId, BuildContext context) {
     final member = group.members.where((entry) => entry.id == memberId);
-    return member.isEmpty ? context.l10n.groupDeletedMember : member.first.displayName;
+    return member.isEmpty
+        ? context.l10n.groupDeletedMember
+        : member.first.displayName;
   }
 
   Future<void> _addMember(BuildContext context, WidgetRef ref) async {
@@ -156,7 +161,9 @@ class _GroupDetailBody extends ConsumerWidget {
             TextField(
               controller: nameController,
               autofocus: true,
-              decoration: InputDecoration(labelText: context.l10n.profileSetupDisplayName),
+              decoration: InputDecoration(
+                labelText: context.l10n.profileSetupDisplayName,
+              ),
             ),
             const SizedBox(height: 12),
             TextField(
@@ -192,9 +199,9 @@ class _GroupDetailBody extends ConsumerWidget {
           .addMember(groupId: group.id, displayName: name, email: email);
     } catch (error) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(userFriendlyMessage(error))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
       }
     }
   }
@@ -210,9 +217,9 @@ class _GroupDetailBody extends ConsumerWidget {
           .removeMember(groupId: group.id, memberId: memberId);
     } catch (error) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(userFriendlyMessage(error))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
       }
     }
   }
@@ -266,11 +273,16 @@ class _ExpenseCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        title: Text(expense.note.isEmpty ? context.l10n.groupExpenses : expense.note),
+        title: Text(
+          expense.note.isEmpty ? context.l10n.groupExpenses : expense.note,
+        ),
         subtitle: Text(
           context.l10n.groupPayerSubtitle(
             payerName,
-            DateFormat('dd/MM/yyyy', Localizations.localeOf(context).toString()).format(expense.date),
+            DateFormat(
+              'dd/MM/yyyy',
+              Localizations.localeOf(context).toString(),
+            ).format(expense.date),
           ),
         ),
         trailing: Row(
@@ -286,8 +298,14 @@ class _ExpenseCard extends StatelessWidget {
             PopupMenuButton<String>(
               onSelected: (value) => value == 'edit' ? onEdit() : onDelete(),
               itemBuilder: (context) => [
-                PopupMenuItem(value: 'edit', child: Text(context.l10n.commonEdit)),
-                PopupMenuItem(value: 'delete', child: Text(context.l10n.commonDelete)),
+                PopupMenuItem(
+                  value: 'edit',
+                  child: Text(context.l10n.commonEdit),
+                ),
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Text(context.l10n.commonDelete),
+                ),
               ],
             ),
           ],

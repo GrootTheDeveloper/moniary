@@ -177,8 +177,9 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
 
       setState(() {
         if (ocrResult.totalAmount != null) {
-          _amountController.text =
-              _amountFormatter.formatDouble(ocrResult.totalAmount!);
+          _amountController.text = _amountFormatter.formatDouble(
+            ocrResult.totalAmount!,
+          );
         }
         if (ocrResult.note != null) {
           _noteController.text = ocrResult.note!;
@@ -254,7 +255,11 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
           icon: const Icon(Icons.chevron_left, size: 32),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(_isEditing ? context.l10n.transactionEditTitle : context.l10n.transactionCreateTitle),
+        title: Text(
+          _isEditing
+              ? context.l10n.transactionEditTitle
+              : context.l10n.transactionCreateTitle,
+        ),
         centerTitle: true,
         actions: [
           IconButton(
@@ -340,7 +345,8 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
               onChanged: (newType) {
                 setState(() {
                   _type = newType;
-                  _selectedCategoryId = null; // Reset category when type changes
+                  _selectedCategoryId =
+                      null; // Reset category when type changes
                 });
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (mounted) _setDefaultSelections();
@@ -350,7 +356,9 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             const SizedBox(height: 24),
             _FormTile(
               label: context.l10n.transactionCategory,
-              value: selectedCategory?.name ?? context.l10n.transactionSelectCategory,
+              value:
+                  selectedCategory?.name ??
+                  context.l10n.transactionSelectCategory,
               icon: Icons.category_outlined,
               trailing: const Icon(Icons.chevron_right, color: Colors.grey),
               leadingWidget: selectedCategory != null
@@ -361,7 +369,8 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             const SizedBox(height: 12),
             _FormTile(
               label: context.l10n.transactionWalletAccount,
-              value: selectedWallet?.name ?? context.l10n.transactionSelectWallet,
+              value:
+                  selectedWallet?.name ?? context.l10n.transactionSelectWallet,
               icon: Icons.account_balance_wallet_outlined,
               trailing: const Icon(Icons.chevron_right, color: Colors.grey),
               leadingWidget: selectedWallet != null
@@ -592,7 +601,9 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
         ),
       );
     } catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
+      messenger.showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(error))),
+      );
     }
   }
 }
@@ -731,7 +742,10 @@ class _AmountInput extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text(context.l10n.transactionAmountSuffix, style: const TextStyle(fontSize: 20, color: Colors.grey)),
+          Text(
+            context.l10n.transactionAmountSuffix,
+            style: const TextStyle(fontSize: 20, color: Colors.grey),
+          ),
         ],
       ),
     );
@@ -893,7 +907,10 @@ class _NoteInput extends StatelessWidget {
         children: [
           const Icon(Icons.notes, color: Colors.grey, size: 24),
           const SizedBox(width: 12),
-          Text(context.l10n.transactionNote, style: const TextStyle(color: Colors.grey)),
+          Text(
+            context.l10n.transactionNote,
+            style: const TextStyle(color: Colors.grey),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: TextField(

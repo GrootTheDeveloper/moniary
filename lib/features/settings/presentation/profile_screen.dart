@@ -54,10 +54,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     try {
       // 1. Update user credentials in Auth
       await client.auth.updateUser(
-        UserAttributes(
-          email: email,
-          password: _passwordController.text,
-        ),
+        UserAttributes(email: email, password: _passwordController.text),
       );
 
       // 2. Call RPC to sync profile with database profiles table
@@ -69,10 +66,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
       final userId = client.auth.currentUser?.id;
       if (userId != null) {
-        await client.from('profiles').update({
-          'email': email,
-          'login_provider': 'email',
-        }).eq('id', userId);
+        await client
+            .from('profiles')
+            .update({'email': email, 'login_provider': 'email'})
+            .eq('id', userId);
       }
 
       if (mounted) {
@@ -165,9 +162,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       children: [
                         Text(
                           context.l10n.profileLinkAccountTitle,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
@@ -188,7 +184,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       decoration: InputDecoration(
                         labelText: 'Email',
                         labelStyle: const TextStyle(color: Colors.grey),
-                        prefixIcon: const Icon(Icons.email_outlined, color: Colors.grey),
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          color: Colors.grey,
+                        ),
                         filled: true,
                         fillColor: AppTheme.surfaceRaised,
                         border: OutlineInputBorder(
@@ -214,7 +213,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       decoration: InputDecoration(
                         labelText: context.l10n.profileNewPassword,
                         labelStyle: const TextStyle(color: Colors.grey),
-                        prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
+                        prefixIcon: const Icon(
+                          Icons.lock_outline,
+                          color: Colors.grey,
+                        ),
                         filled: true,
                         fillColor: AppTheme.surfaceRaised,
                         border: OutlineInputBorder(
@@ -234,7 +236,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const Center(
                         child: Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: CircularProgressIndicator(color: AppTheme.mint),
+                          child: CircularProgressIndicator(
+                            color: AppTheme.mint,
+                          ),
                         ),
                       )
                     else ...[
@@ -271,10 +275,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           side: const BorderSide(color: AppTheme.outline),
                         ),
-                        icon: const Icon(Icons.g_mobiledata, size: 28, color: Colors.white),
+                        icon: const Icon(
+                          Icons.g_mobiledata,
+                          size: 28,
+                          color: Colors.white,
+                        ),
                         label: Text(
                           context.l10n.profileLinkGoogle,
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -360,14 +371,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               end: Alignment.bottomRight,
                             ),
                             borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: AppTheme.mint.withValues(alpha: 0.3)),
+                            border: Border.all(
+                              color: AppTheme.mint.withValues(alpha: 0.3),
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
-                                  const Icon(Icons.warning_amber_rounded, color: AppTheme.mint, size: 24),
+                                  const Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: AppTheme.mint,
+                                    size: 24,
+                                  ),
                                   const SizedBox(width: 8),
                                   Text(
                                     context.l10n.profileProtectAccount,
@@ -382,7 +399,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               const SizedBox(height: 8),
                               Text(
                                 context.l10n.profileAnonymousWarning,
-                                style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 13,
+                                  height: 1.4,
+                                ),
                               ),
                               const SizedBox(height: 16),
                               SizedBox(
@@ -398,7 +419,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   ),
                                   child: Text(
                                     context.l10n.profileLinkNow,
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -414,13 +437,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             icon: Icons.file_download_outlined,
                             title: context.l10n.profileExportData,
                             subtitle: context.l10n.profileExportSubtitle,
-                            onTap: () => context.push(ExportDataScreen.routePath),
+                            onTap: () =>
+                                context.push(ExportDataScreen.routePath),
                           ),
                           _SettingsTile(
                             icon: Icons.privacy_tip_outlined,
                             title: context.l10n.profilePrivacyCenter,
                             subtitle: context.l10n.profilePrivacySubtitle,
-                            onTap: () => context.push(PrivacyCenterScreen.routePath),
+                            onTap: () =>
+                                context.push(PrivacyCenterScreen.routePath),
                           ),
                         ],
                       ),
@@ -432,26 +457,32 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             icon: Icons.manage_accounts_outlined,
                             title: context.l10n.profileEditInfo,
                             subtitle: '',
-                            onTap: () => context.push(ProfileSetupScreen.routePath),
+                            onTap: () =>
+                                context.push(ProfileSetupScreen.routePath),
                           ),
                           _SettingsTile(
                             icon: Icons.lock_outline_rounded,
                             title: context.l10n.profileChangeTimezone,
                             subtitle: profile.timezone,
-                            onTap: () => context.push(ProfileSetupScreen.routePath),
+                            onTap: () =>
+                                context.push(ProfileSetupScreen.routePath),
                           ),
                           _SettingsTile(
                             icon: Icons.logout_rounded,
                             title: context.l10n.profileSignOut,
                             subtitle: context.l10n.profileSignOutSubtitle,
-                            onTap: state.isLoading ? null : () => _signOut(context),
+                            onTap: state.isLoading
+                                ? null
+                                : () => _signOut(context),
                           ),
                           _SettingsTile(
                             icon: Icons.delete_forever_outlined,
                             title: context.l10n.profileDeleteAccount,
                             subtitle: context.l10n.profileDeleteSubtitle,
                             destructive: true,
-                            onTap: state.isLoading ? null : () => _confirmDelete(context),
+                            onTap: state.isLoading
+                                ? null
+                                : () => _confirmDelete(context),
                           ),
                         ],
                       ),
@@ -459,7 +490,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, _) => Center(child: Text('${context.l10n.errorGeneric}: $error')),
+                error: (error, _) =>
+                    Center(child: Text('${context.l10n.errorGeneric}: $error')),
               ),
               if (state.isLoading)
                 const Positioned.fill(
@@ -577,7 +609,10 @@ class _ProfileHeader extends StatelessWidget {
                 Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: isAnonymous
                         ? AppTheme.danger.withValues(alpha: 0.12)
@@ -592,7 +627,9 @@ class _ProfileHeader extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        isAnonymous ? Icons.lock_open_rounded : Icons.verified_user_rounded,
+                        isAnonymous
+                            ? Icons.lock_open_rounded
+                            : Icons.verified_user_rounded,
                         size: 14,
                         color: isAnonymous ? AppTheme.danger : AppTheme.success,
                       ),
@@ -604,7 +641,9 @@ class _ProfileHeader extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: isAnonymous ? AppTheme.danger : AppTheme.success,
+                          color: isAnonymous
+                              ? AppTheme.danger
+                              : AppTheme.success,
                         ),
                       ),
                     ],
@@ -689,12 +728,15 @@ class _SettingsTile extends StatelessWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: destructive ? AppTheme.danger : Colors.white,
-                        ),
+                      color: destructive ? AppTheme.danger : Colors.white,
+                    ),
                   ),
                   if (subtitle.isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ],
                 ],
               ),

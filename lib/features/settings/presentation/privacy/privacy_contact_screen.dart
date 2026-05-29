@@ -305,7 +305,6 @@ class _ResponseTimelineCard extends StatelessWidget {
 class _SupportShortcutsCard extends StatelessWidget {
   const _SupportShortcutsCard();
 
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -332,8 +331,11 @@ class _SupportShortcutsCard extends StatelessWidget {
           Column(
             children: [
               OutlinedButton.icon(
-                onPressed: () =>
-                    _copy(context, AppConstants.privacyEmail, 'Đã copy email support.'),
+                onPressed: () => _copy(
+                  context,
+                  AppConstants.privacyEmail,
+                  'Đã copy email support.',
+                ),
                 icon: const Icon(Icons.email_outlined),
                 label: const Text('Copy email'),
               ),

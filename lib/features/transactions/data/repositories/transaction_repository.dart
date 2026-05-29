@@ -43,12 +43,14 @@ class TransactionRepository {
   }) async {
     if (!AppConstants.hasSupabaseConfig) {
       return _mockTransactions.where((t) {
-        final sameMonth = t.transactionDate.year == month.year &&
-            t.transactionDate.month == month.month;
-        final matchWallet = walletId == null || t.walletId == walletId;
-        final matchCat = categoryId == null || t.categoryId == categoryId;
-        return sameMonth && matchWallet && matchCat;
-      }).toList()..sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
+          final sameMonth =
+              t.transactionDate.year == month.year &&
+              t.transactionDate.month == month.month;
+          final matchWallet = walletId == null || t.walletId == walletId;
+          final matchCat = categoryId == null || t.categoryId == categoryId;
+          return sameMonth && matchWallet && matchCat;
+        }).toList()
+        ..sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
     }
     try {
       final uid = _userId;
@@ -86,13 +88,15 @@ class TransactionRepository {
   }) async {
     if (!AppConstants.hasSupabaseConfig) {
       return _mockTransactions.where((t) {
-        final sameDay = t.transactionDate.year == day.year &&
-            t.transactionDate.month == day.month &&
-            t.transactionDate.day == day.day;
-        final matchWallet = walletId == null || t.walletId == walletId;
-        final matchCat = categoryId == null || t.categoryId == categoryId;
-        return sameDay && matchWallet && matchCat;
-      }).toList()..sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
+          final sameDay =
+              t.transactionDate.year == day.year &&
+              t.transactionDate.month == day.month &&
+              t.transactionDate.day == day.day;
+          final matchWallet = walletId == null || t.walletId == walletId;
+          final matchCat = categoryId == null || t.categoryId == categoryId;
+          return sameDay && matchWallet && matchCat;
+        }).toList()
+        ..sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
     }
     try {
       final uid = _userId;
@@ -159,11 +163,11 @@ class TransactionRepository {
   }) async {
     if (!AppConstants.hasSupabaseConfig) {
       final id = 'mock-tx-${DateTime.now().millisecondsSinceEpoch}';
-      
+
       // Look up wallet and category mock lists
       final wallets = WalletRepository.mockWallets;
       final categories = CategoryRepository.mockCategories;
-      
+
       final w = wallets.firstWhere(
         (element) => element.id == walletId,
         orElse: () => Wallet(
@@ -192,21 +196,23 @@ class TransactionRepository {
         ),
       );
 
-      _mockTransactions.add(TransactionEntry(
-        id: id,
-        amount: amount,
-        type: type,
-        note: note,
-        imagePath: null,
-        transactionDate: transactionDate,
-        walletId: walletId,
-        walletName: w.name,
-        walletColor: w.color,
-        categoryId: categoryId,
-        categoryName: c.name,
-        categoryColor: c.color,
-        isImportant: isImportant,
-      ));
+      _mockTransactions.add(
+        TransactionEntry(
+          id: id,
+          amount: amount,
+          type: type,
+          note: note,
+          imagePath: null,
+          transactionDate: transactionDate,
+          walletId: walletId,
+          walletName: w.name,
+          walletColor: w.color,
+          categoryId: categoryId,
+          categoryName: c.name,
+          categoryColor: c.color,
+          isImportant: isImportant,
+        ),
+      );
       return id;
     }
     try {
@@ -254,7 +260,7 @@ class TransactionRepository {
       if (index != -1) {
         final wallets = WalletRepository.mockWallets;
         final categories = CategoryRepository.mockCategories;
-        
+
         final w = wallets.firstWhere(
           (element) => element.id == walletId,
           orElse: () => Wallet(
@@ -325,7 +331,10 @@ class TransactionRepository {
     }
   }
 
-  Future<void> toggleTransactionImportance(String transactionId, bool isImportant) async {
+  Future<void> toggleTransactionImportance(
+    String transactionId,
+    bool isImportant,
+  ) async {
     if (!AppConstants.hasSupabaseConfig) {
       final index = _mockTransactions.indexWhere((t) => t.id == transactionId);
       if (index != -1) {
@@ -353,9 +362,7 @@ class TransactionRepository {
 
       await _client
           .from('transactions')
-          .update({
-            'is_important': isImportant,
-          })
+          .update({'is_important': isImportant})
           .eq('id', transactionId)
           .eq('user_id', uid);
     } on PostgrestException catch (e) {
@@ -483,8 +490,8 @@ class TransactionRepository {
       return path;
     }
     try {
-      // getSignedImageUrl does not need user session strictly for generating url, 
-      // but to be consistent with wrapping MỌI public method and duplicate check, 
+      // getSignedImageUrl does not need user session strictly for generating url,
+      // but to be consistent with wrapping MỌI public method and duplicate check,
       // let's wrap it. Since _userId isn't required by the client call, we just try/catch.
       return await _client.storage
           .from('transaction-images')

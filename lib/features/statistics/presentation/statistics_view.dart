@@ -15,10 +15,11 @@ import '../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../transactions/presentation/detail/transaction_detail_screen.dart';
 import '../../transactions/presentation/detail/transaction_route_args.dart';
 
-final statisticsMonthProvider = FutureProvider.family<List<TransactionEntry>, DateTime>((ref, month) async {
-  final repo = ref.watch(transactionRepositoryProvider);
-  return repo.fetchTransactionsForMonth(month);
-});
+final statisticsMonthProvider =
+    FutureProvider.family<List<TransactionEntry>, DateTime>((ref, month) async {
+      final repo = ref.watch(transactionRepositoryProvider);
+      return repo.fetchTransactionsForMonth(month);
+    });
 
 class StatisticsView extends ConsumerStatefulWidget {
   const StatisticsView({super.key});
@@ -40,7 +41,11 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
 
   void _changeMonth(int offset) {
     setState(() {
-      _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month + offset, 1);
+      _selectedMonth = DateTime(
+        _selectedMonth.year,
+        _selectedMonth.month + offset,
+        1,
+      );
     });
   }
 
@@ -53,13 +58,19 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(context.l10n.statsTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          context.l10n.statsTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: statsAsync.when(
         data: (transactions) => _buildBody(context, transactions),
-        loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.mint)),
-        error: (error, _) => Center(child: Text('${context.l10n.errorGeneric}: $error')),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppTheme.mint),
+        ),
+        error: (error, _) =>
+            Center(child: Text('${context.l10n.errorGeneric}: $error')),
       ),
     );
   }
@@ -74,7 +85,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     final net = income - expense;
 
     // Filter transactions by type for chart calculations
-    final filteredTxs = transactions.where((t) => t.type == _selectedType).toList();
+    final filteredTxs = transactions
+        .where((t) => t.type == _selectedType)
+        .toList();
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -105,8 +118,11 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   }
 
   Widget _buildMonthSelector(BuildContext context) {
-    final label = DateFormat.MMMM(Localizations.localeOf(context).toString()).format(_selectedMonth);
-    final title = '${label[0].toUpperCase()}${label.substring(1)} ${_selectedMonth.year}';
+    final label = DateFormat.MMMM(
+      Localizations.localeOf(context).toString(),
+    ).format(_selectedMonth);
+    final title =
+        '${label[0].toUpperCase()}${label.substring(1)} ${_selectedMonth.year}';
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -124,7 +140,11 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           ),
           Text(
             title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.chevron_right),
@@ -170,7 +190,13 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(context.l10n.statsNetBalance, style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500)),
+              Text(
+                context.l10n.statsNetBalance,
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               Text(
                 '${net >= 0 ? '+' : '-'}${_money(net.abs())}',
                 style: TextStyle(
@@ -200,7 +226,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
             child: _ToggleButton(
               label: context.l10n.statsExpenseButton,
               selected: _selectedType == TransactionType.expense,
-              onTap: () => setState(() => _selectedType = TransactionType.expense),
+              onTap: () =>
+                  setState(() => _selectedType = TransactionType.expense),
               color: AppTheme.danger,
             ),
           ),
@@ -208,7 +235,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
             child: _ToggleButton(
               label: context.l10n.statsIncomeButton,
               selected: _selectedType == TransactionType.income,
-              onTap: () => setState(() => _selectedType = TransactionType.income),
+              onTap: () =>
+                  setState(() => _selectedType = TransactionType.income),
               color: AppTheme.success,
             ),
           ),
@@ -231,7 +259,11 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           const SizedBox(height: 12),
           Text(
             context.l10n.statsEmptyTitle,
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 16,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -251,7 +283,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     final categoryColors = <String, String>{};
 
     for (final tx in transactions) {
-      categorySums[tx.categoryId] = (categorySums[tx.categoryId] ?? 0) + tx.amount;
+      categorySums[tx.categoryId] =
+          (categorySums[tx.categoryId] ?? 0) + tx.amount;
       categoryNames[tx.categoryId] = tx.categoryName;
       categoryColors[tx.categoryId] = tx.categoryColor ?? '';
     }
@@ -260,13 +293,20 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
 
     final pieSections = categorySums.entries.map((entry) {
       final percentage = total > 0 ? (entry.value / total) * 100 : 0.0;
-      final color = AppColor.fromHex(categoryColors[entry.key], fallback: AppTheme.amber);
+      final color = AppColor.fromHex(
+        categoryColors[entry.key],
+        fallback: AppTheme.amber,
+      );
       return PieChartSectionData(
         value: entry.value,
         title: '${percentage.toStringAsFixed(0)}%',
         radius: 36,
         showTitle: percentage >= 5,
-        titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
+        titleStyle: const TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
         color: color,
       );
     }).toList();
@@ -283,7 +323,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         children: [
           Text(
             context.l10n.statsCategoryAllocation,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           Row(
@@ -303,8 +345,13 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
               Expanded(
                 child: Column(
                   children: categorySums.entries.map((entry) {
-                    final percentage = total > 0 ? (entry.value / total) * 100 : 0.0;
-                    final color = AppColor.fromHex(categoryColors[entry.key], fallback: AppTheme.amber);
+                    final percentage = total > 0
+                        ? (entry.value / total) * 100
+                        : 0.0;
+                    final color = AppColor.fromHex(
+                      categoryColors[entry.key],
+                      fallback: AppTheme.amber,
+                    );
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Row(
@@ -312,19 +359,29 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                           Container(
                             width: 12,
                             height: 12,
-                            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                            decoration: BoxDecoration(
+                              color: color,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               categoryNames[entry.key]!,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 13, color: Colors.white),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                           Text(
                             '${percentage.toStringAsFixed(0)}%',
-                            style: const TextStyle(fontSize: 13, color: Colors.grey, fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
@@ -340,11 +397,15 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   }
 
   Widget _buildTrendChartSection(List<TransactionEntry> transactions) {
-    final daysInMonth = DateUtils.getDaysInMonth(_selectedMonth.year, _selectedMonth.month);
+    final daysInMonth = DateUtils.getDaysInMonth(
+      _selectedMonth.year,
+      _selectedMonth.month,
+    );
     final dailySums = List<double>.filled(daysInMonth, 0.0);
 
     for (final tx in transactions) {
-      if (tx.transactionDate.month == _selectedMonth.month && tx.transactionDate.year == _selectedMonth.year) {
+      if (tx.transactionDate.month == _selectedMonth.month &&
+          tx.transactionDate.year == _selectedMonth.year) {
         final dayIndex = tx.transactionDate.day - 1;
         if (dayIndex >= 0 && dayIndex < daysInMonth) {
           dailySums[dayIndex] += tx.amount;
@@ -352,7 +413,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
       }
     }
 
-    final maxVal = dailySums.isEmpty ? 0.0 : dailySums.reduce((a, b) => a > b ? a : b);
+    final maxVal = dailySums.isEmpty
+        ? 0.0
+        : dailySums.reduce((a, b) => a > b ? a : b);
     final maxY = maxVal > 0 ? maxVal * 1.15 : 10000.0;
 
     final barGroups = List<BarChartGroupData>.generate(daysInMonth, (index) {
@@ -362,7 +425,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         barRods: [
           BarChartRodData(
             toY: dayVal,
-            color: _selectedType == TransactionType.expense ? AppTheme.danger : AppTheme.mint,
+            color: _selectedType == TransactionType.expense
+                ? AppTheme.danger
+                : AppTheme.mint,
             width: 10,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
             backDrawRodData: BackgroundBarChartRodData(
@@ -387,7 +452,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         children: [
           Text(
             context.l10n.statsDailyTrend,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
           SingleChildScrollView(
@@ -405,7 +472,11 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
                         return BarTooltipItem(
                           'Ngày ${group.x.toInt()}\n${_money(rod.toY)}',
-                          const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
+                          const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                          ),
                         );
                       },
                     ),
@@ -422,7 +493,10 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                               padding: const EdgeInsets.only(top: 6),
                               child: Text(
                                 '$day',
-                                style: const TextStyle(color: Colors.grey, fontSize: 10),
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
                               ),
                             );
                           }
@@ -430,9 +504,15 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                         },
                       ),
                     ),
-                    leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   gridData: const FlGridData(show: false),
                   borderData: FlBorderData(show: false),
@@ -466,7 +546,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         children: [
           Text(
             context.l10n.statsLargestTransactions,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           ListView.builder(
@@ -475,19 +557,23 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
             itemCount: topTxs.length,
             itemBuilder: (context, index) {
               final tx = topTxs[index];
-              final accent = AppColor.fromHex(tx.categoryColor ?? tx.walletColor, fallback: AppTheme.amber);
+              final accent = AppColor.fromHex(
+                tx.categoryColor ?? tx.walletColor,
+                fallback: AppTheme.amber,
+              );
 
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: InkWell(
                   onTap: () async {
-                    final result = await context.push<TransactionMutationResult>(
-                      TransactionDetailScreen.routePath,
-                      extra: TransactionDetailRouteArgs(
-                        transactionId: tx.id,
-                        day: tx.transactionDate,
-                      ),
-                    );
+                    final result = await context
+                        .push<TransactionMutationResult>(
+                          TransactionDetailScreen.routePath,
+                          extra: TransactionDetailRouteArgs(
+                            transactionId: tx.id,
+                            day: tx.transactionDate,
+                          ),
+                        );
                     if (result != null && mounted) {
                       _invalidateMutationMonths(result);
                     }
@@ -508,7 +594,11 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                             shape: BoxShape.circle,
                             color: accent.withValues(alpha: 0.15),
                           ),
-                          child: Icon(Icons.receipt_long_rounded, color: accent, size: 20),
+                          child: Icon(
+                            Icons.receipt_long_rounded,
+                            color: accent,
+                            size: 20,
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -519,22 +609,36 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                                 children: [
                                   Flexible(
                                     child: Text(
-                                      tx.note?.trim().isNotEmpty == true ? tx.note!.trim() : tx.categoryName,
+                                      tx.note?.trim().isNotEmpty == true
+                                          ? tx.note!.trim()
+                                          : tx.categoryName,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                   if (tx.isImportant) ...[
                                     const SizedBox(width: 6),
-                                    const Icon(Icons.star, color: Colors.amber, size: 16),
+                                    const Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
+                                      size: 16,
+                                    ),
                                   ],
                                 ],
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                DateFormat('dd/MM/yyyy HH:mm').format(tx.transactionDate),
-                                style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                DateFormat(
+                                  'dd/MM/yyyy HH:mm',
+                                ).format(tx.transactionDate),
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                ),
                               ),
                             ],
                           ),
@@ -544,7 +648,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                           _money(tx.amount),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: tx.isIncome ? AppTheme.success : AppTheme.danger,
+                            color: tx.isIncome
+                                ? AppTheme.success
+                                : AppTheme.danger,
                           ),
                         ),
                       ],
@@ -560,7 +666,11 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   }
 
   String _money(double amount) {
-    final formatter = NumberFormat.currency(locale: 'vi_VN', symbol: '', decimalDigits: 0);
+    final formatter = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: '',
+      decimalDigits: 0,
+    );
     return '${formatter.format(amount)}đ';
   }
 
@@ -618,14 +728,22 @@ class _MetricCard extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
                     value,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
                   ),
                 ),
               ],
@@ -660,9 +778,7 @@ class _ToggleButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? color.withValues(alpha: 0.16) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: selected ? color : Colors.transparent,
-          ),
+          border: Border.all(color: selected ? color : Colors.transparent),
         ),
         alignment: Alignment.center,
         child: Text(

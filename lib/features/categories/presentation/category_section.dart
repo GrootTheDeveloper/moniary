@@ -1,4 +1,4 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_color.dart';
@@ -65,13 +65,20 @@ class CategorySection extends ConsumerWidget {
 
                   return Column(
                     children: [
-                      _CategoryGroup(title: context.l10n.categoryExpense, categories: expense),
+                      _CategoryGroup(
+                        title: context.l10n.categoryExpense,
+                        categories: expense,
+                      ),
                       const SizedBox(height: 12),
-                      _CategoryGroup(title: context.l10n.categoryIncome, categories: income),
+                      _CategoryGroup(
+                        title: context.l10n.categoryIncome,
+                        categories: income,
+                      ),
                     ],
                   );
                 },
-                error: (error, stackTrace) => Text(context.l10n.categoryError(error.toString())),
+                error: (error, stackTrace) =>
+                    Text(context.l10n.categoryError(error.toString())),
                 loading: () => const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: LinearProgressIndicator(),
@@ -155,7 +162,11 @@ class _CategoryTile extends StatelessWidget {
               ),
           ],
         ),
-        subtitle: Text(category.isActive ? context.l10n.walletActive : context.l10n.walletInactive),
+        subtitle: Text(
+          category.isActive
+              ? context.l10n.walletActive
+              : context.l10n.walletInactive,
+        ),
         trailing: IconButton(
           onPressed: onEdit,
           icon: const Icon(Icons.edit_outlined),
@@ -219,7 +230,9 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isEditing ? context.l10n.categoryEditTitle : context.l10n.categoryCreateTitle,
+              isEditing
+                  ? context.l10n.categoryEditTitle
+                  : context.l10n.categoryCreateTitle,
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -260,7 +273,11 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _isSubmitting ? null : _submit,
-              child: Text(_isSubmitting ? context.l10n.categorySaving : context.l10n.categorySave),
+              child: Text(
+                _isSubmitting
+                    ? context.l10n.categorySaving
+                    : context.l10n.categorySave,
+              ),
             ),
           ],
         ),
@@ -300,7 +317,9 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
 
       Navigator.of(context).pop();
     } catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(userFriendlyMessage(error))));
+      messenger.showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(error))),
+      );
       setState(() => _isSubmitting = false);
     }
   }

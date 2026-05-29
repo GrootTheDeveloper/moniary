@@ -51,10 +51,7 @@ class AppTheme {
           fontWeight: FontWeight.w700,
           letterSpacing: -0.3,
         ),
-        titleMedium: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
+        titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         bodyLarge: TextStyle(
           fontSize: 15,
           color: textMuted, // Custom onSurfaceVariant — design token
@@ -65,10 +62,7 @@ class AppTheme {
           color: textSubtle, // Custom onSurfaceVariant — design token
           height: 1.4,
         ),
-        labelLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
+        labelLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
       ),
       appBarTheme: const AppBarTheme(
         centerTitle: true,
@@ -87,7 +81,10 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surfaceRaised,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 16,
+        ),
         hintStyle: const TextStyle(color: textDim),
         labelStyle: const TextStyle(color: textSubtle),
         border: OutlineInputBorder(
@@ -117,10 +114,7 @@ class AppTheme {
           backgroundColor: mint,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(58),
-          textStyle: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-          ),
+          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -146,9 +140,7 @@ class AppTheme {
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(999),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
       ),
     );
   }

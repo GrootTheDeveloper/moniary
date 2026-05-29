@@ -55,7 +55,8 @@ class GroupsScreen extends ConsumerWidget {
               return ListView.separated(
                 padding: const EdgeInsets.all(20),
                 itemCount: groups.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 12),
                 itemBuilder: (context, index) => _GroupCard(
                   group: groups[index],
                   onTap: () => context.push(
@@ -74,9 +75,9 @@ class GroupsScreen extends ConsumerWidget {
   Future<void> _createGroup(BuildContext context, WidgetRef ref) async {
     final userId = ref.read(currentSessionProvider)?.user.id;
     if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.groupNeedLogin)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.groupNeedLogin)));
       return;
     }
     final controller = TextEditingController();
@@ -192,7 +193,10 @@ class _GroupsError extends StatelessWidget {
         children: [
           Text(context.l10n.groupLoadError),
           const SizedBox(height: 12),
-          OutlinedButton(onPressed: onRetry, child: Text(context.l10n.commonRetry)),
+          OutlinedButton(
+            onPressed: onRetry,
+            child: Text(context.l10n.commonRetry),
+          ),
         ],
       ),
     );

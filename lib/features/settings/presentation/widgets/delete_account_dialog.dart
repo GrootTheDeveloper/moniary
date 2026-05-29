@@ -43,15 +43,9 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
               ),
             ),
             const SizedBox(height: 12),
-            _DeleteConsequence(
-              text: context.l10n.deleteAccountConsequence1,
-            ),
-            _DeleteConsequence(
-              text: context.l10n.deleteAccountConsequence2,
-            ),
-            _DeleteConsequence(
-              text: context.l10n.deleteAccountConsequence3,
-            ),
+            _DeleteConsequence(text: context.l10n.deleteAccountConsequence1),
+            _DeleteConsequence(text: context.l10n.deleteAccountConsequence2),
+            _DeleteConsequence(text: context.l10n.deleteAccountConsequence3),
             const SizedBox(height: 10),
             CheckboxListTile(
               value: _understood,
@@ -69,7 +63,9 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             TextField(
               controller: _controller,
               decoration: InputDecoration(
-                labelText: context.l10n.deleteAccountConfirmInput(_confirmationText),
+                labelText: context.l10n.deleteAccountConfirmInput(
+                  _confirmationText,
+                ),
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (_) => setState(() {}),
