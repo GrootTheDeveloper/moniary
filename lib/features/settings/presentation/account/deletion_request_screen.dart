@@ -1,4 +1,6 @@
 import 'dart:io';
+import '../../../../l10n/l10n_extension.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -115,15 +117,15 @@ class _DeletionRequestDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Đã tạo yêu cầu'),
+      title: Text(context.l10n.privacyRequestCreated),
       content: Text(
         'File yêu cầu đã được lưu tại:\n${file.path}',
         style: Theme.of(context).textTheme.bodyMedium,
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Đóng'),
+          onPressed: () => context.pop(),
+          child: Text(context.l10n.commonClose),
         ),
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
@@ -75,11 +76,11 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
+          onPressed: () => context.pop(false),
           child: Text(context.l10n.commonCancel),
         ),
         FilledButton(
-          onPressed: canDelete ? () => Navigator.of(context).pop(true) : null,
+          onPressed: canDelete ? () => context.pop(true) : null,
           style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
           child: Text(context.l10n.deleteAccountConfirm),
         ),

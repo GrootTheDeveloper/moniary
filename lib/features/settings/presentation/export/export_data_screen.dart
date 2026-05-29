@@ -1,4 +1,6 @@
 import 'dart:io';
+import '../../../../l10n/l10n_extension.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -385,11 +387,11 @@ class _ExportCompleteDialog extends StatelessWidget {
             }
           },
           icon: const Icon(Icons.open_in_new_rounded),
-          label: const Text('Mở'),
+          label: Text(context.l10n.commonOpen),
         ),
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Đóng'),
+          onPressed: () => context.pop(),
+          child: Text(context.l10n.commonClose),
         ),
       ],
     );

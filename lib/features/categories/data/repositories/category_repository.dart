@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../domain/models/category.dart';
 
 final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
@@ -67,7 +68,8 @@ class CategoryRepository {
     final session = _client.auth.currentSession;
     if (session == null) return [];
 
-    final rows = await _client
+    try {
+      final rows = await _client
         .from('categories')
         .select()
         .eq('user_id', session.user.id)
@@ -79,6 +81,14 @@ class CategoryRepository {
         .cast<Map<String, dynamic>>()
         .map(Category.fromMap)
         .toList();
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
+    }
   }
 
   Future<void> createCategory({
@@ -103,11 +113,20 @@ class CategoryRepository {
     final session = _client.auth.currentSession;
     if (session == null) throw const AppException('Bạn chưa đăng nhập.');
 
-    await _client.from('categories').insert({
-      'user_id': session.user.id,
-      'name': name,
-      'type': type.value,
-    });
+    try {
+      await _client.from('categories').insert({
+        'user_id': session.user.id,
+        'name': name,
+        'type': type.value,
+      });
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
+    }
   }
 
   Future<void> updateCategory({
@@ -135,10 +154,19 @@ class CategoryRepository {
     final session = _client.auth.currentSession;
     if (session == null) throw const AppException('Bạn chưa đăng nhập.');
 
-    await _client
-        .from('categories')
-        .update({'name': name, 'type': type.value, 'is_active': isActive})
-        .eq('id', categoryId)
-        .eq('user_id', session.user.id);
+    try {
+      await _client
+          .from('categories')
+          .update({'name': name, 'type': type.value, 'is_active': isActive})
+          .eq('id', categoryId)
+          .eq('user_id', session.user.id);
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
+    }
   }
 }

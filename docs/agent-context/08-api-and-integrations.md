@@ -1,0 +1,18 @@
+# API & Integrations
+
+**Confidence / Verification Status**: `VERIFIED`
+
+## Supabase Database
+- Tables interacted with: `transactions`, `wallets`, `categories`, `expense_groups` (inferred from feature requirements).
+- Mock Mode is built into the repositories. If `AppConstants.hasSupabaseConfig` is false, DB calls are bypassed, and data is kept in-memory.
+
+## Supabase Auth
+- Uses `supabaseClient.auth`. The session state stream triggers router refreshes.
+
+## Supabase Storage
+- Bucket: `transaction-images`
+- Handles uploading receipt images. In Mock Mode, images are written to local temporary storage instead.
+
+## OCR Service
+- Found in `features/scanning/data/ocr_service.dart`.
+- There is a `MockOcrService` for use before the real AI provider is connected.

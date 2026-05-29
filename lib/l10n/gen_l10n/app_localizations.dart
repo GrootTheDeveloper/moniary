@@ -2017,6 +2017,282 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Hủy'**
   String get profileCancel;
+
+  /// No description provided for @exportSupportTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hỗ trợ export dữ liệu'**
+  String get exportSupportTitle;
+
+  /// No description provided for @exportOpenData.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở export dữ liệu'**
+  String get exportOpenData;
+
+  /// No description provided for @exportOpenHistory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở lịch sử export'**
+  String get exportOpenHistory;
+
+  /// No description provided for @exportCreateSupportRequest.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo yêu cầu hỗ trợ'**
+  String get exportCreateSupportRequest;
+
+  /// No description provided for @legalDataDeletionPolicy.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chính sách xóa dữ liệu'**
+  String get legalDataDeletionPolicy;
+
+  /// No description provided for @legalDataRetention.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu giữ dữ liệu'**
+  String get legalDataRetention;
+
+  /// No description provided for @legalFinancialDisclaimer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Miễn trừ tài chính'**
+  String get legalFinancialDisclaimer;
+
+  /// No description provided for @legalContact.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên hệ pháp lý'**
+  String get legalContact;
+
+  /// No description provided for @legalCopyAllContacts.
+  ///
+  /// In vi, this message translates to:
+  /// **'Copy tất cả liên hệ'**
+  String get legalCopyAllContacts;
+
+  /// No description provided for @legalCopyContactSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã copy thông tin liên hệ.'**
+  String get legalCopyContactSuccess;
+
+  /// No description provided for @legalPolicyAcceptance.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng ý chính sách'**
+  String get legalPolicyAcceptance;
+
+  /// No description provided for @legalViewPrivacyPolicy.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem chính sách bảo mật'**
+  String get legalViewPrivacyPolicy;
+
+  /// No description provided for @legalViewTermsOfUse.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem điều khoản sử dụng'**
+  String get legalViewTermsOfUse;
+
+  /// No description provided for @legalPolicyChangelog.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lịch sử chính sách'**
+  String get legalPolicyChangelog;
+
+  /// No description provided for @legalTermsOfUse.
+  ///
+  /// In vi, this message translates to:
+  /// **'Điều khoản sử dụng'**
+  String get legalTermsOfUse;
+
+  /// No description provided for @legalThirdPartyServices.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dịch vụ bên thứ ba'**
+  String get legalThirdPartyServices;
+
+  /// No description provided for @legalUserRights.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền dữ liệu'**
+  String get legalUserRights;
+
+  /// No description provided for @privacyDataSafety.
+  ///
+  /// In vi, this message translates to:
+  /// **'Data Safety'**
+  String get privacyDataSafety;
+
+  /// No description provided for @privacyMyData.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu của tôi'**
+  String get privacyMyData;
+
+  /// No description provided for @privacyPhotoData.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu ảnh'**
+  String get privacyPhotoData;
+
+  /// No description provided for @privacyDataFreshness.
+  ///
+  /// In vi, this message translates to:
+  /// **'Độ mới dữ liệu'**
+  String get privacyDataFreshness;
+
+  /// No description provided for @privacyLocalFiles.
+  ///
+  /// In vi, this message translates to:
+  /// **'File cục bộ'**
+  String get privacyLocalFiles;
+
+  /// No description provided for @privacyTransactionPhotos.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh giao dịch'**
+  String get privacyTransactionPhotos;
+
+  /// No description provided for @privacyViewExportHistory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem lịch sử export'**
+  String get privacyViewExportHistory;
+
+  /// No description provided for @privacyPermissionRationale.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền truy cập'**
+  String get privacyPermissionRationale;
+
+  /// No description provided for @privacyFaq.
+  ///
+  /// In vi, this message translates to:
+  /// **'FAQ privacy & tài khoản'**
+  String get privacyFaq;
+
+  /// No description provided for @privacyCenter.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trung tâm riêng tư'**
+  String get privacyCenter;
+
+  /// No description provided for @privacyContact.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên hệ quyền riêng tư'**
+  String get privacyContact;
+
+  /// No description provided for @privacyUseTemplate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng mẫu nội dung'**
+  String get privacyUseTemplate;
+
+  /// No description provided for @privacyCreateRequest.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo yêu cầu privacy'**
+  String get privacyCreateRequest;
+
+  /// No description provided for @privacyRequestCreated.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tạo yêu cầu'**
+  String get privacyRequestCreated;
+
+  /// No description provided for @privacyCopyEmail.
+  ///
+  /// In vi, this message translates to:
+  /// **'Copy email'**
+  String get privacyCopyEmail;
+
+  /// No description provided for @privacyCopyInstructions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Copy hướng dẫn'**
+  String get privacyCopyInstructions;
+
+  /// No description provided for @privacyPolicyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chính sách bảo mật'**
+  String get privacyPolicyTitle;
+
+  /// No description provided for @privacyRequestDetailTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiết yêu cầu'**
+  String get privacyRequestDetailTitle;
+
+  /// No description provided for @privacyCopyFilePath.
+  ///
+  /// In vi, this message translates to:
+  /// **'Copy file path'**
+  String get privacyCopyFilePath;
+
+  /// No description provided for @privacyCopyRequest.
+  ///
+  /// In vi, this message translates to:
+  /// **'Copy request'**
+  String get privacyCopyRequest;
+
+  /// No description provided for @storeAboutMoniary.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giới thiệu Moniary'**
+  String get storeAboutMoniary;
+
+  /// No description provided for @storeComplianceChecklist.
+  ///
+  /// In vi, this message translates to:
+  /// **'Checklist phát hành'**
+  String get storeComplianceChecklist;
+
+  /// No description provided for @storeTrustSafety.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tin cậy & an toàn'**
+  String get storeTrustSafety;
+
+  /// No description provided for @supportHelpCenter.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trung tâm trợ giúp'**
+  String get supportHelpCenter;
+
+  /// No description provided for @supportCopySuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã copy thông tin support.'**
+  String get supportCopySuccess;
+
+  /// No description provided for @supportCopyDiagnostic.
+  ///
+  /// In vi, this message translates to:
+  /// **'Copy diagnostic info'**
+  String get supportCopyDiagnostic;
+
+  /// No description provided for @supportRequestChecklist.
+  ///
+  /// In vi, this message translates to:
+  /// **'Checklist gửi hỗ trợ'**
+  String get supportRequestChecklist;
+
+  /// No description provided for @supportOpenHelpCenter.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở trung tâm trợ giúp'**
+  String get supportOpenHelpCenter;
+
+  /// No description provided for @transactionOcrSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự động trích xuất dữ liệu thành công!'**
+  String get transactionOcrSuccess;
 }
 
 class _AppLocalizationsDelegate

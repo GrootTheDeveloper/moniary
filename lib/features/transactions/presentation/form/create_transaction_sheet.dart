@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -40,6 +41,49 @@ class _CreateTransactionSheetState
   String? _selectedCategoryId;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _setDefaultSelections();
+    });
+  }
+
+  void _setDefaultSelections() {
+    final walletsAsync = ref.read(walletsControllerProvider);
+    final categoriesAsync = ref.read(categoriesControllerProvider);
+
+    final wallets = walletsAsync.asData?.value
+            .where((wallet) => wallet.isActive)
+            .toList() ??
+        const <Wallet>[];
+    final categories = categoriesAsync.asData?.value
+            .where((category) => category.isActive && category.type == _type)
+            .toList() ??
+        const <Category>[];
+
+    bool needsUpdate = false;
+
+    if (_selectedWalletId == null && wallets.isNotEmpty) {
+      _selectedWalletId = wallets.firstWhere(
+            (wallet) => wallet.isDefault,
+            orElse: () => wallets.first,
+          ).id;
+      needsUpdate = true;
+    }
+
+    if (categories.isNotEmpty &&
+        !categories.any((category) => category.id == _selectedCategoryId)) {
+      _selectedCategoryId = categories.first.id;
+      needsUpdate = true;
+    }
+
+    if (needsUpdate) {
+      setState(() {});
+    }
+  }
+
+  @override
   void dispose() {
     _amountController.dispose();
     _noteController.dispose();
@@ -48,6 +92,15 @@ class _CreateTransactionSheetState
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(walletsControllerProvider, (_, _) {
+      if (!mounted) return;
+      _setDefaultSelections();
+    });
+    ref.listen(categoriesControllerProvider, (_, _) {
+      if (!mounted) return;
+      _setDefaultSelections();
+    });
+
     final walletsAsync = ref.watch(walletsControllerProvider);
     final categoriesAsync = ref.watch(categoriesControllerProvider);
     final composerState = ref.watch(transactionComposerProvider);
@@ -62,18 +115,6 @@ class _CreateTransactionSheetState
             .where((category) => category.isActive && category.type == _type)
             .toList() ??
         const <Category>[];
-
-    _selectedWalletId ??= wallets.isNotEmpty
-        ? (wallets.firstWhere(
-            (wallet) => wallet.isDefault,
-            orElse: () => wallets.first,
-          )).id
-        : null;
-
-    if (categories.isNotEmpty &&
-        !categories.any((category) => category.id == _selectedCategoryId)) {
-      _selectedCategoryId = categories.first.id;
-    }
 
     final canSubmit =
         wallets.isNotEmpty && categories.isNotEmpty && !composerState.isLoading;
@@ -118,13 +159,28 @@ class _CreateTransactionSheetState
                   _ChoiceChip(
                     label: context.l10n.categoryExpense,
                     selected: _type == TransactionType.expense,
-                    onTap: () =>
-                        setState(() => _type = TransactionType.expense),
+                    onTap: () {
+                      setState(() {
+                        _type = TransactionType.expense;
+                        _selectedCategoryId = null;
+                      });
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) _setDefaultSelections();
+                      });
+                    },
                   ),
                   _ChoiceChip(
                     label: context.l10n.categoryIncome,
                     selected: _type == TransactionType.income,
-                    onTap: () => setState(() => _type = TransactionType.income),
+                    onTap: () {
+                      setState(() {
+                        _type = TransactionType.income;
+                        _selectedCategoryId = null;
+                      });
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) _setDefaultSelections();
+                      });
+                    },
                   ),
                 ],
               ),
@@ -288,7 +344,7 @@ class _CreateTransactionSheetState
           );
 
       if (!mounted) return;
-      Navigator.of(context).pop(_selectedDate);
+      context.pop(_selectedDate);
     } catch (error) {
       messenger.showSnackBar(
         SnackBar(content: Text(userFriendlyMessage(error))),

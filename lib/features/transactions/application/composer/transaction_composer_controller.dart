@@ -30,7 +30,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
 
     final repo = ref.read(transactionRepositoryProvider);
 
-    state = await AsyncValue.guard(() async {
+    try {
       // 1. Create transaction record (pending status)
       final transactionId = await repo.createTransaction(
         amount: amount,
@@ -75,7 +75,11 @@ class TransactionComposerController extends AsyncNotifier<void> {
         );
         rethrow;
       }
-    });
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
   }
 
   Future<void> updateTransaction({
@@ -92,7 +96,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
     state = const AsyncLoading();
     final repo = ref.read(transactionRepositoryProvider);
 
-    state = await AsyncValue.guard(() async {
+    try {
       await repo.updateTransaction(
         transactionId: transactionId,
         amount: amount,
@@ -124,15 +128,21 @@ class TransactionComposerController extends AsyncNotifier<void> {
           rethrow;
         }
       }
-    });
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
   }
 
   Future<void> deleteTransaction(String transactionId) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref
-          .read(transactionRepositoryProvider)
-          .deleteTransaction(transactionId),
-    );
+    try {
+      await ref.read(transactionRepositoryProvider).deleteTransaction(transactionId);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
   }
 }

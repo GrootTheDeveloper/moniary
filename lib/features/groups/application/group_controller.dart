@@ -16,7 +16,6 @@ final groupsControllerProvider =
 
 final groupExpensesProvider = FutureProvider.family<List<GroupExpense>, String>(
   (ref, groupId) async {
-    ref.watch(groupsControllerProvider);
     return ref.watch(groupExpenseServiceProvider).fetchExpenses(groupId);
   },
 );
@@ -78,17 +77,23 @@ class GroupsController extends AsyncNotifier<List<ExpenseGroup>> {
           date: date,
           splits: splits,
         );
+    ref.invalidate(groupExpensesProvider(groupId));
     await _reload();
   }
 
   Future<void> deleteExpense(String expenseId) async {
     await ref.read(groupExpenseServiceProvider).deleteExpense(expenseId);
+    ref.invalidate(groupExpensesProvider);
     await _reload();
   }
 
   Future<void> _reload() async {
-    state = AsyncData(
-      await ref.read(groupExpenseServiceProvider).fetchGroups(),
-    );
+    state = const AsyncLoading();
+    try {
+      state = AsyncData(await build());
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
   }
 }

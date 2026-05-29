@@ -1053,4 +1053,142 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profileCancel => 'Hủy';
+
+  @override
+  String get exportSupportTitle => 'Hỗ trợ export dữ liệu';
+
+  @override
+  String get exportOpenData => 'Mở export dữ liệu';
+
+  @override
+  String get exportOpenHistory => 'Mở lịch sử export';
+
+  @override
+  String get exportCreateSupportRequest => 'Tạo yêu cầu hỗ trợ';
+
+  @override
+  String get legalDataDeletionPolicy => 'Chính sách xóa dữ liệu';
+
+  @override
+  String get legalDataRetention => 'Lưu giữ dữ liệu';
+
+  @override
+  String get legalFinancialDisclaimer => 'Miễn trừ tài chính';
+
+  @override
+  String get legalContact => 'Liên hệ pháp lý';
+
+  @override
+  String get legalCopyAllContacts => 'Copy tất cả liên hệ';
+
+  @override
+  String get legalCopyContactSuccess => 'Đã copy thông tin liên hệ.';
+
+  @override
+  String get legalPolicyAcceptance => 'Đồng ý chính sách';
+
+  @override
+  String get legalViewPrivacyPolicy => 'Xem chính sách bảo mật';
+
+  @override
+  String get legalViewTermsOfUse => 'Xem điều khoản sử dụng';
+
+  @override
+  String get legalPolicyChangelog => 'Lịch sử chính sách';
+
+  @override
+  String get legalTermsOfUse => 'Điều khoản sử dụng';
+
+  @override
+  String get legalThirdPartyServices => 'Dịch vụ bên thứ ba';
+
+  @override
+  String get legalUserRights => 'Quyền dữ liệu';
+
+  @override
+  String get privacyDataSafety => 'Data Safety';
+
+  @override
+  String get privacyMyData => 'Dữ liệu của tôi';
+
+  @override
+  String get privacyPhotoData => 'Dữ liệu ảnh';
+
+  @override
+  String get privacyDataFreshness => 'Độ mới dữ liệu';
+
+  @override
+  String get privacyLocalFiles => 'File cục bộ';
+
+  @override
+  String get privacyTransactionPhotos => 'Ảnh giao dịch';
+
+  @override
+  String get privacyViewExportHistory => 'Xem lịch sử export';
+
+  @override
+  String get privacyPermissionRationale => 'Quyền truy cập';
+
+  @override
+  String get privacyFaq => 'FAQ privacy & tài khoản';
+
+  @override
+  String get privacyCenter => 'Trung tâm riêng tư';
+
+  @override
+  String get privacyContact => 'Liên hệ quyền riêng tư';
+
+  @override
+  String get privacyUseTemplate => 'Dùng mẫu nội dung';
+
+  @override
+  String get privacyCreateRequest => 'Tạo yêu cầu privacy';
+
+  @override
+  String get privacyRequestCreated => 'Đã tạo yêu cầu';
+
+  @override
+  String get privacyCopyEmail => 'Copy email';
+
+  @override
+  String get privacyCopyInstructions => 'Copy hướng dẫn';
+
+  @override
+  String get privacyPolicyTitle => 'Chính sách bảo mật';
+
+  @override
+  String get privacyRequestDetailTitle => 'Chi tiết yêu cầu';
+
+  @override
+  String get privacyCopyFilePath => 'Copy file path';
+
+  @override
+  String get privacyCopyRequest => 'Copy request';
+
+  @override
+  String get storeAboutMoniary => 'Giới thiệu Moniary';
+
+  @override
+  String get storeComplianceChecklist => 'Checklist phát hành';
+
+  @override
+  String get storeTrustSafety => 'Tin cậy & an toàn';
+
+  @override
+  String get supportHelpCenter => 'Trung tâm trợ giúp';
+
+  @override
+  String get supportCopySuccess => 'Đã copy thông tin support.';
+
+  @override
+  String get supportCopyDiagnostic => 'Copy diagnostic info';
+
+  @override
+  String get supportRequestChecklist => 'Checklist gửi hỗ trợ';
+
+  @override
+  String get supportOpenHelpCenter => 'Mở trung tâm trợ giúp';
+
+  @override
+  String get transactionOcrSuccess => 'Tự động trích xuất dữ liệu thành công!';
 }

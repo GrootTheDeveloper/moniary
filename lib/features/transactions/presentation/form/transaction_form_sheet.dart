@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:go_router/go_router.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -192,8 +193,8 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Tự động trích xuất dữ liệu thành công!'),
+        SnackBar(
+          content: Text(context.l10n.transactionOcrSuccess),
           backgroundColor: AppTheme.success,
         ),
       );
@@ -253,7 +254,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, size: 32),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
         title: Text(
           _isEditing
@@ -594,7 +595,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       }
 
       if (!mounted) return;
-      Navigator.of(context).pop(
+      context.pop(
         TransactionMutationResult(
           previousDate: previousDate,
           currentDate: _selectedDate,

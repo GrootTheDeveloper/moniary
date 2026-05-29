@@ -56,28 +56,43 @@ class LoginScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
                 Opacity(
                   opacity: 0.5,
-                  child: _AuthButton(
-                    icon: Icons.g_mobiledata_rounded,
-                    label: context.l10n.loginGoogle,
-                    style: _AuthButtonStyle.light,
+                  child: GestureDetector(
+                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Tính năng đang phát triển')),
+                    ),
+                    child: _AuthButton(
+                      icon: Icons.g_mobiledata_rounded,
+                      label: context.l10n.loginGoogle,
+                      style: _AuthButtonStyle.light,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Opacity(
                   opacity: 0.5,
-                  child: _AuthButton(
-                    icon: Icons.apple_rounded,
-                    label: context.l10n.loginApple,
-                    style: _AuthButtonStyle.light,
+                  child: GestureDetector(
+                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Tính năng đang phát triển')),
+                    ),
+                    child: _AuthButton(
+                      icon: Icons.apple_rounded,
+                      label: context.l10n.loginApple,
+                      style: _AuthButtonStyle.light,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Opacity(
                   opacity: 0.5,
-                  child: _AuthButton(
-                    icon: Icons.email_outlined,
-                    label: context.l10n.loginEmail,
-                    style: _AuthButtonStyle.dark,
+                  child: GestureDetector(
+                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Tính năng đang phát triển')),
+                    ),
+                    child: _AuthButton(
+                      icon: Icons.email_outlined,
+                      label: context.l10n.loginEmail,
+                      style: _AuthButtonStyle.dark,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),

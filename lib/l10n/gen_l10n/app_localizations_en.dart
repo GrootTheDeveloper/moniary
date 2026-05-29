@@ -1052,4 +1052,142 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileCancel => 'Cancel';
+
+  @override
+  String get exportSupportTitle => 'Export support';
+
+  @override
+  String get exportOpenData => 'Open data export';
+
+  @override
+  String get exportOpenHistory => 'Open export history';
+
+  @override
+  String get exportCreateSupportRequest => 'Create support request';
+
+  @override
+  String get legalDataDeletionPolicy => 'Data deletion policy';
+
+  @override
+  String get legalDataRetention => 'Data retention';
+
+  @override
+  String get legalFinancialDisclaimer => 'Financial disclaimer';
+
+  @override
+  String get legalContact => 'Legal contact';
+
+  @override
+  String get legalCopyAllContacts => 'Copy all contacts';
+
+  @override
+  String get legalCopyContactSuccess => 'Copied contact info.';
+
+  @override
+  String get legalPolicyAcceptance => 'Policy acceptance';
+
+  @override
+  String get legalViewPrivacyPolicy => 'View privacy policy';
+
+  @override
+  String get legalViewTermsOfUse => 'View terms of use';
+
+  @override
+  String get legalPolicyChangelog => 'Policy changelog';
+
+  @override
+  String get legalTermsOfUse => 'Terms of use';
+
+  @override
+  String get legalThirdPartyServices => 'Third-party services';
+
+  @override
+  String get legalUserRights => 'Data rights';
+
+  @override
+  String get privacyDataSafety => 'Data Safety';
+
+  @override
+  String get privacyMyData => 'My data';
+
+  @override
+  String get privacyPhotoData => 'Photo data';
+
+  @override
+  String get privacyDataFreshness => 'Data freshness';
+
+  @override
+  String get privacyLocalFiles => 'Local files';
+
+  @override
+  String get privacyTransactionPhotos => 'Transaction photos';
+
+  @override
+  String get privacyViewExportHistory => 'View export history';
+
+  @override
+  String get privacyPermissionRationale => 'Permission rationale';
+
+  @override
+  String get privacyFaq => 'Privacy & account FAQ';
+
+  @override
+  String get privacyCenter => 'Privacy center';
+
+  @override
+  String get privacyContact => 'Privacy contact';
+
+  @override
+  String get privacyUseTemplate => 'Use template';
+
+  @override
+  String get privacyCreateRequest => 'Create privacy request';
+
+  @override
+  String get privacyRequestCreated => 'Request created';
+
+  @override
+  String get privacyCopyEmail => 'Copy email';
+
+  @override
+  String get privacyCopyInstructions => 'Copy instructions';
+
+  @override
+  String get privacyPolicyTitle => 'Privacy policy';
+
+  @override
+  String get privacyRequestDetailTitle => 'Request detail';
+
+  @override
+  String get privacyCopyFilePath => 'Copy file path';
+
+  @override
+  String get privacyCopyRequest => 'Copy request';
+
+  @override
+  String get storeAboutMoniary => 'About Moniary';
+
+  @override
+  String get storeComplianceChecklist => 'Release checklist';
+
+  @override
+  String get storeTrustSafety => 'Trust & safety';
+
+  @override
+  String get supportHelpCenter => 'Help center';
+
+  @override
+  String get supportCopySuccess => 'Copied support info.';
+
+  @override
+  String get supportCopyDiagnostic => 'Copy diagnostic info';
+
+  @override
+  String get supportRequestChecklist => 'Support checklist';
+
+  @override
+  String get supportOpenHelpCenter => 'Open help center';
+
+  @override
+  String get transactionOcrSuccess => 'Data extracted successfully!';
 }

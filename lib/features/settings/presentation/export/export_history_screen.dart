@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../../../../l10n/l10n_extension.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +21,7 @@ class ExportHistoryScreen extends ConsumerWidget {
     final historyAsync = ref.watch(exportHistoryProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Lịch sử xuất dữ liệu')),
+      appBar: AppBar(title: Text(context.l10n.exportHistoryTitle)),
       body: SafeArea(
         child: historyAsync.when(
           data: (items) {

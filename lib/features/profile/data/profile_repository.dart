@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../domain/user_profile.dart';
 
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
@@ -49,11 +50,13 @@ class ProfileRepository {
 
       if (row == null) return null;
       return UserProfile.fromMap(row);
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
-    } catch (e) {
+    } catch (e, st) {
       if (e is AppException) rethrow;
-      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
     }
   }
 
@@ -82,11 +85,13 @@ class ProfileRepository {
           .single();
 
       return UserProfile.fromMap(row);
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
-    } catch (e) {
+    } catch (e, st) {
       if (e is AppException) rethrow;
-      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
     }
   }
 }

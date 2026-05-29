@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:go_router/go_router.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -304,7 +305,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
       ref.invalidate(
         calendarMonthProvider(DateTime(_date.year, _date.month, 1)),
       );
-      Navigator.of(context).pop(TransactionMutationResult(currentDate: _date));
+      context.pop(TransactionMutationResult(currentDate: _date));
     } catch (error) {
       messenger.showSnackBar(
         SnackBar(

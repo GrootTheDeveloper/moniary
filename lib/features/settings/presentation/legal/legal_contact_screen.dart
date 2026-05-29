@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../app/app_theme.dart';
@@ -12,7 +13,7 @@ class LegalContactScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Liên hệ pháp lý')),
+      appBar: AppBar(title: Text(context.l10n.legalContact)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
@@ -44,7 +45,7 @@ class LegalContactScreen extends StatelessWidget {
             FilledButton.icon(
               onPressed: () => _copyAll(context),
               icon: const Icon(Icons.content_copy_outlined),
-              label: const Text('Copy tất cả liên hệ'),
+              label: Text(context.l10n.legalCopyAllContacts),
             ),
           ],
         ),
@@ -61,7 +62,7 @@ class LegalContactScreen extends StatelessWidget {
     );
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Đã copy thông tin liên hệ.')));
+    ).showSnackBar(SnackBar(content: Text(context.l10n.legalCopyContactSuccess)));
   }
 }
 

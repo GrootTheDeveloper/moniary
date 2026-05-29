@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
@@ -13,7 +14,7 @@ class PolicyAcceptanceNoticeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Đồng ý chính sách')),
+      appBar: AppBar(title: Text(context.l10n.legalPolicyAcceptance)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
@@ -25,13 +26,13 @@ class PolicyAcceptanceNoticeScreen extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: () => context.push(PrivacyPolicyScreen.routePath),
               icon: const Icon(Icons.privacy_tip_outlined),
-              label: const Text('Xem chính sách bảo mật'),
+              label: Text(context.l10n.legalViewPrivacyPolicy),
             ),
             const SizedBox(height: 10),
             OutlinedButton.icon(
               onPressed: () => context.push(TermsOfUseScreen.routePath),
               icon: const Icon(Icons.gavel_outlined),
-              label: const Text('Xem điều khoản sử dụng'),
+              label: Text(context.l10n.legalViewTermsOfUse),
             ),
           ],
         ),

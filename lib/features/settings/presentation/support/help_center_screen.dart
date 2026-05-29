@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,7 +23,7 @@ class HelpCenterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Trung tâm trợ giúp')),
+      appBar: AppBar(title: Text(context.l10n.supportHelpCenter)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
@@ -157,11 +158,11 @@ class _DiagnosticCard extends StatelessWidget {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: diagnostic));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Đã copy thông tin support.')),
+                SnackBar(content: Text(context.l10n.supportCopySuccess)),
               );
             },
             icon: const Icon(Icons.content_copy_outlined),
-            label: const Text('Copy diagnostic info'),
+            label: Text(context.l10n.supportCopyDiagnostic),
           ),
         ],
       ),

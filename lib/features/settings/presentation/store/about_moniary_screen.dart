@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../domain/store/app_release_info.dart';
@@ -11,7 +12,7 @@ class AboutMoniaryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Giới thiệu Moniary')),
+      appBar: AppBar(title: Text(context.l10n.storeAboutMoniary)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),

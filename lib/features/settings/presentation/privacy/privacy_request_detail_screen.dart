@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -35,7 +36,7 @@ class PrivacyRequestDetailScreen extends ConsumerWidget {
     final status = privacyRequestStatusById(currentEntry.status);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Chi tiết yêu cầu')),
+      appBar: AppBar(title: Text(context.l10n.privacyRequestDetailTitle)),
       body: SafeArea(
         child: Stack(
           children: [
@@ -265,13 +266,13 @@ class _RequestCopyActions extends StatelessWidget {
           onPressed: () =>
               _copy(context, entry.path, 'Đã copy đường dẫn file request.'),
           icon: const Icon(Icons.folder_copy_outlined),
-          label: const Text('Copy file path'),
+          label: Text(context.l10n.privacyCopyFilePath),
         ),
         const SizedBox(height: 10),
         OutlinedButton.icon(
           onPressed: () => _copy(context, summary, 'Đã copy nội dung request.'),
           icon: const Icon(Icons.content_copy_outlined),
-          label: const Text('Copy request'),
+          label: Text(context.l10n.privacyCopyRequest),
         ),
       ],
     );

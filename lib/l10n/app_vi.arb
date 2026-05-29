@@ -1,8 +1,6 @@
 {
   "@@locale": "vi",
-
   "appName": "Moniary",
-
   "commonSave": "Lưu",
   "commonCancel": "Hủy",
   "commonDelete": "Xóa",
@@ -17,11 +15,9 @@
   "commonOpen": "Mở",
   "commonSelect": "Chọn",
   "commonCreate": "Tạo",
-
   "errorGeneric": "Đã xảy ra lỗi. Vui lòng thử lại.",
   "errorNotLoggedIn": "Bạn chưa đăng nhập.",
   "errorConnection": "Lỗi kết nối. Vui lòng thử lại.",
-
   "loginTitle": "Moniary",
   "loginSubtitle": "Quản lý chi tiêu cá nhân",
   "loginAnonymous": "Bắt đầu dùng thử ẩn danh",
@@ -36,7 +32,6 @@
   "loginTryWithoutAuth": "Dùng thử không cần đăng nhập",
   "loginSessionReady": "Phiên đăng nhập đã sẵn sàng. Bạn có thể vào thẳng Lịch.",
   "loginDataSecure": "Dữ liệu của bạn được bảo mật và đồng bộ với Supabase.",
-
   "splashLoading": "Đang tải ứng dụng...",
   "splashRetry": "Thử lại",
   "splashError": "Không thể kết nối. Vui lòng kiểm tra mạng và thử lại.",
@@ -51,7 +46,6 @@
       }
     }
   },
-
   "onboardingSkip": "Bỏ qua",
   "onboardingStart": "Bắt đầu",
   "onboardingNext": "Tiếp",
@@ -73,7 +67,6 @@
   "onboardingPage3Title2": "dễ hiểu",
   "onboardingPage3Subtitle": "Theo dõi thu chi và thói quen tiêu dùng không cần bảng biểu khó",
   "onboardingPage3Caption": "Moniary giúp bạn nhìn tiền theo ngữ cảnh sống thật.",
-
   "profileSetupTitle": "Thiết lập hồ sơ",
   "profileSetupSubtitle": "Hoàn tất thông tin để bắt đầu",
   "profileSetupDisplayName": "Tên hiển thị",
@@ -81,7 +74,6 @@
   "profileSetupCurrency": "Đơn vị tiền tệ",
   "profileSetupStart": "Bắt đầu",
   "profileSetupNameRequired": "Nhập tên hiển thị trước.",
-
   "calendarTitle": "Lịch",
   "calendarAllWallets": "Tất cả ví",
   "calendarAllCategories": "Tất cả danh mục",
@@ -95,9 +87,24 @@
   "calendarMonthlyIncome": "Tổng thu tháng",
   "calendarEmptyMessage": "Chưa có giao dịch nào trong tháng này. Bước tiếp theo là thêm giao dịch để lịch hiện dữ liệu thật.",
   "calendarStatsMessage": "{count} giao dịch trong {days} ngày có hoạt động. Lịch đang đọc dữ liệu thật từ Supabase.",
-  "@calendarStatsMessage": { "placeholders": { "count": { "type": "int" }, "days": { "type": "int" } } },
+  "@calendarStatsMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "calendarLoadError": "Không tải được lịch tháng: {error}",
-  "@calendarLoadError": { "placeholders": { "error": { "type": "String" } } },
+  "@calendarLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "calendarStatsTab": "Thống kê",
   "calendarMon": "T2",
   "calendarTue": "T3",
@@ -107,18 +114,35 @@
   "calendarSat": "T7",
   "calendarSun": "CN",
   "calendarToday": "Hôm nay",
-
   "transactionSaveTransaction": "Lưu giao dịch",
   "transactionLoadDayError": "Không tải được giao dịch trong ngày.\n{error}",
-  "@transactionLoadDayError": { "placeholders": { "error": { "type": "String" } } },
+  "@transactionLoadDayError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "transactionTotalIncome": "Tổng thu",
   "transactionTotalExpense": "Tổng chi",
   "transactionNetTotal": "Tổng cộng",
   "transactionCount": "{count} giao dịch",
-  "@transactionCount": { "placeholders": { "count": { "type": "int" } } },
+  "@transactionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "transactionDayEmpty": "Ngày này chưa có giao dịch. Bạn có thể bấm nút + để thêm ngay.",
   "transactionLoadDetailError": "Không tải được chi tiết giao dịch.\n{error}",
-  "@transactionLoadDetailError": { "placeholders": { "error": { "type": "String" } } },
+  "@transactionLoadDetailError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "transactionNoteEmpty": "Chưa có ghi chú cho giao dịch này.",
   "transactionDeleteTitleQuestion": "Xóa giao dịch?",
   "transactionDeleteUndone": "Hành động này không thể hoàn tác.",
@@ -137,7 +161,13 @@
   "transactionDeleteConfirm": "Xác nhận xóa giao dịch này?",
   "transactionDeleteSuccess": "Đã xóa giao dịch.",
   "transactionSaveError": "Không lưu được giao dịch: {error}",
-  "@transactionSaveError": { "placeholders": { "error": { "type": "String" } } },
+  "@transactionSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "transactionCreateSubtitle": "Lưu giao dịch trước, phần ảnh sẽ được thêm ở bước tiếp theo.",
   "transactionWalletCategoryLoadError": "Không tải được ví/danh mục. Mở quản lý dữ liệu để kiểm tra.",
   "transactionChangePhoto": "Thay đổi ảnh",
@@ -145,14 +175,12 @@
   "transactionSelectCategory": "Chọn danh mục",
   "transactionSelectWallet": "Chọn ví",
   "transactionDateTime": "Ngày giờ",
-
   "transactionWalletAccount": "Ví / Tài khoản",
   "transactionExpenseCategory": "Danh mục chi",
   "transactionLoadingWalletCategory": "Đang tải ví và danh mục...",
   "transactionWalletCategoryError": "Không tải được ví hoặc danh mục. Vui lòng thử lại.",
   "transactionWalletCategoryRequired": "Cần có ví và danh mục chi đang hoạt động trước khi lưu.",
   "transactionAmountPositive": "Nhập số tiền lớn hơn 0.",
-
   "walletTitle": "Ví / Tài khoản",
   "walletDescription": "Quản lý ví mặc định, số dư khởi tạo và trạng thái kích hoạt.",
   "walletEmpty": "Chưa có ví nào.",
@@ -175,9 +203,14 @@
   "walletTypeCredit": "Thẻ tín dụng",
   "walletTypeOther": "Khác",
   "walletError": "Lỗi ví: {error}",
-  "@walletError": { "placeholders": { "error": { "type": "String" } } },
+  "@walletError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "walletNeedOneActive": "Bạn cần ít nhất 1 ví đang hoạt động để tạo giao dịch.",
-
   "categoryTitle": "Danh mục",
   "categoryDescription": "Quản lý danh mục thu/chi để chuẩn bị cho giao dịch.",
   "categoryEmpty": "Chưa có danh mục nào.",
@@ -191,11 +224,16 @@
   "categorySave": "Lưu danh mục",
   "categoryNameRequired": "Tên danh mục không được trống.",
   "categoryError": "Category error: {error}",
-  "@categoryError": { "placeholders": { "error": { "type": "String" } } },
+  "@categoryError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "categoryExpense": "Chi",
   "categoryIncome": "Thu",
   "categoryNeedOneActive": "Bạn cần ít nhất 1 danh mục đang hoạt động cho loại giao dịch này.",
-
   "scanTitle": "Quét hóa đơn",
   "scanTakePhoto": "Chụp ảnh",
   "scanChooseGallery": "Chọn từ thư viện",
@@ -204,10 +242,22 @@
   "scanReviewTitle": "Kiểm tra hóa đơn",
   "scanMerchant": "Cửa hàng",
   "scanOcrConfidence": "Độ tin cậy OCR: {percent}%. Hãy kiểm tra thông tin trước khi lưu.",
-  "@scanOcrConfidence": { "placeholders": { "percent": { "type": "int" } } },
+  "@scanOcrConfidence": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "scanItemsTitle": "Mục nhận diện",
   "scanQuantity": "Số lượng: {quantity}",
-  "@scanQuantity": { "placeholders": { "quantity": { "type": "int" } } },
+  "@scanQuantity": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      }
+    }
+  },
   "scanSuccessMessage": "Đã đọc hóa đơn. Bạn có thể kiểm tra và chỉnh sửa thông tin.",
   "scanScanning": "Đang quét...",
   "scanExtractButton": "Trích xuất dữ liệu",
@@ -215,7 +265,6 @@
   "scanNoReceipt": "Chưa có ảnh hóa đơn",
   "scanNoReceiptSubtitle": "Chụp ảnh hoặc chọn ảnh từ thư viện để bắt đầu.",
   "scanImageError": "Không thể hiển thị ảnh đã chọn.",
-
   "groupTitle": "Nhóm chi tiêu",
   "groupEmpty": "Chưa có nhóm chi tiêu",
   "groupEmptySubtitle": "Tạo nhóm để cùng theo dõi hóa đơn và chia tiền.",
@@ -224,7 +273,13 @@
   "groupNameLabel": "Tên nhóm",
   "groupNeedLogin": "Bạn cần đăng nhập để tạo nhóm.",
   "groupMemberCount": "{count} thành viên",
-  "@groupMemberCount": { "placeholders": { "count": { "type": "int" } } },
+  "@groupMemberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupLoadError": "Không tải được danh sách nhóm.",
   "groupAddMember": "Thêm thành viên",
   "groupMemberName": "Tên thành viên",
@@ -245,24 +300,52 @@
   "groupDeleteExpenseConfirmTitle": "Xóa chi phí?",
   "groupDeleteExpenseConfirmMessage": "Thao tác này sẽ cập nhật lại công nợ của nhóm.",
   "groupPayerSubtitle": "{payer} đã trả • {date}",
-  "@groupPayerSubtitle": { "placeholders": { "payer": { "type": "String" }, "date": { "type": "String" } } },
+  "@groupPayerSubtitle": {
+    "placeholders": {
+      "payer": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "groupEmptyExpensesMessage": "Chưa có chi phí. Thêm hóa đơn đầu tiên để bắt đầu tính nợ.",
-
   "debtSummaryTitle": "Tổng hợp nợ",
   "debtNoData": "Chưa có dữ liệu chi phí.",
   "debtSettlementTitle": "Gợi ý thanh toán",
   "debtNoSettlement": "Không có khoản nợ nào cần thanh toán.",
   "debtOwes": "{from} trả {to} {amount}",
-  "@debtOwes": { "placeholders": { "from": { "type": "String" }, "to": { "type": "String" }, "amount": { "type": "String" } } },
+  "@debtOwes": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "debtSummaryAppBarTitle": "Tổng kết công nợ",
   "debtLoadError": "Không tính được công nợ.",
   "debtExplanation": "Số dương là số tiền cần nhận, số âm là số tiền cần trả.",
   "debtOwesPayerToPayee": "{from} trả {to}",
-  "@debtOwesPayerToPayee": { "placeholders": { "from": { "type": "String" }, "to": { "type": "String" } } },
+  "@debtOwesPayerToPayee": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
   "debtMember": "Thành viên",
   "debtToReceive": "Sẽ nhận",
   "debtToPay": "Cần trả",
-
   "expenseFormTitle": "Thêm chi phí nhóm",
   "expenseFormEditTitle": "Sửa chi phí",
   "expenseAmount": "Số tiền",
@@ -279,18 +362,31 @@
   "expenseFormContentLabel": "Nội dung",
   "expenseFormPayer": "Người thanh toán",
   "expenseFormDate": "Ngày chi",
-
   "validationAmountPositive": "Số tiền phải lớn hơn 0.",
   "validationMinMembers": "Nhóm phải có ít nhất {min} thành viên.",
-  "@validationMinMembers": { "placeholders": { "min": { "type": "int" } } },
+  "@validationMinMembers": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
   "validationSelectPayer": "Chọn người trả tiền.",
   "validationSelectParticipant": "Chọn ít nhất một người tham gia.",
   "validationSplitMismatch": "Tổng chia ({splitTotal}) phải bằng tổng chi phí ({total}).",
-  "@validationSplitMismatch": { "placeholders": { "splitTotal": { "type": "String" }, "total": { "type": "String" } } },
+  "@validationSplitMismatch": {
+    "placeholders": {
+      "splitTotal": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
   "validationNegativeSplit": "Phần chia không được âm.",
   "validationInvalidParticipants": "Danh sách người tham gia không hợp lệ.",
   "validationSplitCountMismatch": "Mỗi người tham gia cần đúng một phần chia.",
-
   "profileTitle": "Hồ sơ",
   "profileUserDefault": "Người dùng Moniary",
   "profileAnonymous": "Tài khoản dùng thử ẩn danh",
@@ -304,7 +400,6 @@
   "profileSignOutSubtitle": "Thoát khỏi tài khoản hiện tại trên thiết bị này.",
   "profileDeleteAccount": "Xóa tài khoản",
   "profileDeleteSubtitle": "Xóa dữ liệu cá nhân, giao dịch và ảnh đã lưu.",
-
   "deleteAccountTitle": "Xóa tài khoản",
   "deleteAccountWarning": "Hành động này sẽ xóa toàn bộ dữ liệu cá nhân, giao dịch và ảnh giao dịch của bạn.",
   "deleteAccountConfirm": "Xóa tài khoản",
@@ -323,7 +418,6 @@
       }
     }
   },
-
   "exportTitle": "Xuất dữ liệu",
   "exportFormat": "Định dạng file",
   "exportDateRange": "Khoảng ngày",
@@ -331,16 +425,12 @@
   "exportDataTypes": "Loại dữ liệu",
   "exportButton": "Xuất dữ liệu",
   "exportDone": "Đã xuất dữ liệu",
-
   "exportHistoryTitle": "Lịch sử xuất dữ liệu",
   "exportHistoryEmpty": "Chưa có file export nào.",
-
   "manageDataTitle": "Quản lý dữ liệu",
-
   "cameraTakePhoto": "Chụp",
   "cameraFlip": "Lật camera",
   "cameraNoPermission": "Cần quyền truy cập camera.",
-
   "routeNotFound": "Trang không tồn tại",
   "routeGoBack": "Quay lại",
   "statsDevelopingMessage": "Tính năng Thống kê đang được phát triển.",
@@ -387,5 +477,51 @@
   },
   "profileSignOutDialogTitle": "Đăng xuất",
   "profileSignOutDialogMessage": "Bạn có chắc chắn muốn đăng xuất không?",
-  "profileCancel": "Hủy"
+  "profileCancel": "Hủy",
+  "exportSupportTitle": "Hỗ trợ export dữ liệu",
+  "exportOpenData": "Mở export dữ liệu",
+  "exportOpenHistory": "Mở lịch sử export",
+  "exportCreateSupportRequest": "Tạo yêu cầu hỗ trợ",
+  "legalDataDeletionPolicy": "Chính sách xóa dữ liệu",
+  "legalDataRetention": "Lưu giữ dữ liệu",
+  "legalFinancialDisclaimer": "Miễn trừ tài chính",
+  "legalContact": "Liên hệ pháp lý",
+  "legalCopyAllContacts": "Copy tất cả liên hệ",
+  "legalCopyContactSuccess": "Đã copy thông tin liên hệ.",
+  "legalPolicyAcceptance": "Đồng ý chính sách",
+  "legalViewPrivacyPolicy": "Xem chính sách bảo mật",
+  "legalViewTermsOfUse": "Xem điều khoản sử dụng",
+  "legalPolicyChangelog": "Lịch sử chính sách",
+  "legalTermsOfUse": "Điều khoản sử dụng",
+  "legalThirdPartyServices": "Dịch vụ bên thứ ba",
+  "legalUserRights": "Quyền dữ liệu",
+  "privacyDataSafety": "Data Safety",
+  "privacyMyData": "Dữ liệu của tôi",
+  "privacyPhotoData": "Dữ liệu ảnh",
+  "privacyDataFreshness": "Độ mới dữ liệu",
+  "privacyLocalFiles": "File cục bộ",
+  "privacyTransactionPhotos": "Ảnh giao dịch",
+  "privacyViewExportHistory": "Xem lịch sử export",
+  "privacyPermissionRationale": "Quyền truy cập",
+  "privacyFaq": "FAQ privacy & tài khoản",
+  "privacyCenter": "Trung tâm riêng tư",
+  "privacyContact": "Liên hệ quyền riêng tư",
+  "privacyUseTemplate": "Dùng mẫu nội dung",
+  "privacyCreateRequest": "Tạo yêu cầu privacy",
+  "privacyRequestCreated": "Đã tạo yêu cầu",
+  "privacyCopyEmail": "Copy email",
+  "privacyCopyInstructions": "Copy hướng dẫn",
+  "privacyPolicyTitle": "Chính sách bảo mật",
+  "privacyRequestDetailTitle": "Chi tiết yêu cầu",
+  "privacyCopyFilePath": "Copy file path",
+  "privacyCopyRequest": "Copy request",
+  "storeAboutMoniary": "Giới thiệu Moniary",
+  "storeComplianceChecklist": "Checklist phát hành",
+  "storeTrustSafety": "Tin cậy & an toàn",
+  "supportHelpCenter": "Trung tâm trợ giúp",
+  "supportCopySuccess": "Đã copy thông tin support.",
+  "supportCopyDiagnostic": "Copy diagnostic info",
+  "supportRequestChecklist": "Checklist gửi hỗ trợ",
+  "supportOpenHelpCenter": "Mở trung tâm trợ giúp",
+  "transactionOcrSuccess": "Tự động trích xuất dữ liệu thành công!"
 }

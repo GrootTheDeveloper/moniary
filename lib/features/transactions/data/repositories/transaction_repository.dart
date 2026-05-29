@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../../categories/data/repositories/category_repository.dart';
 import '../../../categories/domain/models/category.dart';
 import '../../../wallets/data/repositories/wallet_repository.dart';
@@ -73,11 +74,13 @@ class TransactionRepository {
       final rows = await query.order('transaction_date');
 
       return _mapList(rows);
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
-    } catch (e) {
+    } catch (e, st) {
       if (e is AppException) rethrow;
-      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
     }
   }
 
@@ -119,11 +122,13 @@ class TransactionRepository {
       final rows = await query.order('transaction_date', ascending: false);
 
       return _mapList(rows);
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
-    } catch (e) {
+    } catch (e, st) {
       if (e is AppException) rethrow;
-      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
     }
   }
 
@@ -142,11 +147,13 @@ class TransactionRepository {
           .eq('user_id', uid)
           .single();
       return TransactionEntry.fromMap(row);
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
-    } catch (e) {
+    } catch (e, st) {
       if (e is AppException) rethrow;
-      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
     }
   }
 
@@ -237,11 +244,13 @@ class TransactionRepository {
           .single();
 
       return row['id'] as String;
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
-    } catch (e) {
+    } catch (e, st) {
       if (e is AppException) rethrow;
-      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
     }
   }
 
@@ -323,11 +332,13 @@ class TransactionRepository {
           })
           .eq('id', transactionId)
           .eq('user_id', uid);
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
-    } catch (e) {
+    } catch (e, st) {
       if (e is AppException) rethrow;
-      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
     }
   }
 
@@ -365,11 +376,13 @@ class TransactionRepository {
           .update({'is_important': isImportant})
           .eq('id', transactionId)
           .eq('user_id', uid);
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
-    } catch (e) {
+    } catch (e, st) {
       if (e is AppException) rethrow;
-      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
     }
   }
 
@@ -401,11 +414,13 @@ class TransactionRepository {
           // Log error but don't fail transaction deletion
         }
       }
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
-    } catch (e) {
+    } catch (e, st) {
       if (e is AppException) rethrow;
-      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
     }
   }
 
@@ -436,11 +451,13 @@ class TransactionRepository {
           );
 
       return path;
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
-    } catch (e) {
+    } catch (e, st) {
       if (e is AppException) rethrow;
-      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
     }
   }
 
@@ -477,11 +494,13 @@ class TransactionRepository {
           .update({'image_path': imagePath, 'image_upload_status': status})
           .eq('id', transactionId)
           .eq('user_id', uid);
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
-    } catch (e) {
+    } catch (e, st) {
       if (e is AppException) rethrow;
-      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
     }
   }
 
@@ -496,11 +515,13 @@ class TransactionRepository {
       return await _client.storage
           .from('transaction-images')
           .createSignedUrl(path, AppConstants.signedUrlTtlSeconds);
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
-    } catch (e) {
+    } catch (e, st) {
       if (e is AppException) rethrow;
-      throw const AppException('Lỗi kết nối. Vui lòng thử lại.');
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
     }
   }
 

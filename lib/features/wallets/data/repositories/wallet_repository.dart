@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../domain/models/wallet.dart';
 
 final walletRepositoryProvider = Provider<WalletRepository>((ref) {
@@ -49,17 +50,26 @@ class WalletRepository {
     final session = _client.auth.currentSession;
     if (session == null) return [];
 
-    final rows = await _client
-        .from('wallets')
-        .select()
-        .eq('user_id', session.user.id)
-        .order('is_default', ascending: false)
-        .order('created_at');
+    try {
+      final rows = await _client
+          .from('wallets')
+          .select()
+          .eq('user_id', session.user.id)
+          .order('is_default', ascending: false)
+          .order('created_at');
 
-    return (rows as List<dynamic>)
-        .cast<Map<String, dynamic>>()
-        .map(Wallet.fromMap)
-        .toList();
+      return (rows as List<dynamic>)
+          .cast<Map<String, dynamic>>()
+          .map(Wallet.fromMap)
+          .toList();
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
+    }
   }
 
   Future<void> createWallet({
@@ -102,17 +112,26 @@ class WalletRepository {
     final session = _client.auth.currentSession;
     if (session == null) throw const AppException('Bạn chưa đăng nhập.');
 
-    if (isDefault) {
-      await _clearDefaultWallets(userId: session.user.id);
-    }
+    try {
+      if (isDefault) {
+        await _clearDefaultWallets(userId: session.user.id);
+      }
 
-    await _client.from('wallets').insert({
-      'user_id': session.user.id,
-      'name': name,
-      'type': type.value,
-      'initial_balance': initialBalance,
-      'is_default': isDefault,
-    });
+      await _client.from('wallets').insert({
+        'user_id': session.user.id,
+        'name': name,
+        'type': type.value,
+        'initial_balance': initialBalance,
+        'is_default': isDefault,
+      });
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
+    }
   }
 
   Future<void> updateWallet({
@@ -160,24 +179,33 @@ class WalletRepository {
     final session = _client.auth.currentSession;
     if (session == null) throw const AppException('Bạn chưa đăng nhập.');
 
-    if (isDefault) {
-      await _clearDefaultWallets(
-        userId: session.user.id,
-        exceptWalletId: walletId,
-      );
-    }
+    try {
+      if (isDefault) {
+        await _clearDefaultWallets(
+          userId: session.user.id,
+          exceptWalletId: walletId,
+        );
+      }
 
-    await _client
-        .from('wallets')
-        .update({
-          'name': name,
-          'type': type.value,
-          'initial_balance': initialBalance,
-          'is_default': isDefault,
-          'is_active': isActive,
-        })
-        .eq('id', walletId)
-        .eq('user_id', session.user.id);
+      await _client
+          .from('wallets')
+          .update({
+            'name': name,
+            'type': type.value,
+            'initial_balance': initialBalance,
+            'is_default': isDefault,
+            'is_active': isActive,
+          })
+          .eq('id', walletId)
+          .eq('user_id', session.user.id);
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Lỗi kết nối', e, st);
+      throw const AppException('errorConnection');
+    }
   }
 
   Future<void> _clearDefaultWallets({

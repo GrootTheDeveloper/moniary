@@ -16,7 +16,7 @@ class AuthController extends AsyncNotifier<void> {
 
   Future<void> signInAnonymously() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+    try {
       if (!AppConstants.hasSupabaseConfig) {
         final prefs = ref.read(sharedPreferencesProvider);
         await prefs.setBool('mock_logged_in', true);
@@ -47,6 +47,10 @@ class AuthController extends AsyncNotifier<void> {
         // Allow auth to succeed even if the database migration/RPC is not ready yet.
         debugPrint('initialize_user() failed (non-blocking): ${error.message}');
       }
-    });
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
   }
 }

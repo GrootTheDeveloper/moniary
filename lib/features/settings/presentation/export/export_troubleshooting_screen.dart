@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
@@ -14,7 +15,7 @@ class ExportTroubleshootingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Hỗ trợ export dữ liệu')),
+      appBar: AppBar(title: Text(context.l10n.exportSupportTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
@@ -45,19 +46,19 @@ class ExportTroubleshootingScreen extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: () => context.push(ExportDataScreen.routePath),
               icon: const Icon(Icons.file_download_outlined),
-              label: const Text('Mở export dữ liệu'),
+              label: Text(context.l10n.exportOpenData),
             ),
             const SizedBox(height: 10),
             OutlinedButton.icon(
               onPressed: () => context.push(ExportHistoryScreen.routePath),
               icon: const Icon(Icons.history_rounded),
-              label: const Text('Mở lịch sử export'),
+              label: Text(context.l10n.exportOpenHistory),
             ),
             const SizedBox(height: 10),
             OutlinedButton.icon(
               onPressed: () => context.push(PrivacyContactScreen.routePath),
               icon: const Icon(Icons.support_agent_outlined),
-              label: const Text('Tạo yêu cầu hỗ trợ'),
+              label: Text(context.l10n.exportCreateSupportRequest),
             ),
           ],
         ),

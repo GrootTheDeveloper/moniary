@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -34,7 +35,7 @@ class DataTransparencyScreen extends ConsumerWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Dữ liệu của tôi')),
+      appBar: AppBar(title: Text(context.l10n.privacyMyData)),
       body: SafeArea(
         child: Stack(
           children: [
@@ -152,11 +153,11 @@ class _Overview extends StatelessWidget {
               'Các tùy chọn nhắc ghi chi tiêu khi tính năng reminder được bật.',
         ),
         const SizedBox(height: 22),
-        Text('Dữ liệu ảnh', style: Theme.of(context).textTheme.titleLarge),
+        Text(context.l10n.privacyPhotoData, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),
         _PhotoSummaryCard(summary: summary),
         const SizedBox(height: 22),
-        Text('Độ mới dữ liệu', style: Theme.of(context).textTheme.titleLarge),
+        Text(context.l10n.privacyDataFreshness, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),
         _FreshnessCard(summary: summary),
         const SizedBox(height: 22),
@@ -167,7 +168,7 @@ class _Overview extends StatelessWidget {
         const SizedBox(height: 12),
         const _SensitiveDataNotice(),
         const SizedBox(height: 22),
-        Text('File cục bộ', style: Theme.of(context).textTheme.titleLarge),
+        Text(context.l10n.privacyLocalFiles, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),
         _LocalFilesCard(summary: summary),
         const SizedBox(height: 22),
@@ -339,7 +340,7 @@ class _PhotoSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Ảnh giao dịch', style: Theme.of(context).textTheme.titleMedium),
+          Text(context.l10n.privacyTransactionPhotos, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 10),
           LinearProgressIndicator(
             value: ratio.clamp(0, 1),
@@ -568,7 +569,7 @@ class _LocalFilesCard extends StatelessWidget {
             child: TextButton.icon(
               onPressed: () => context.push(ExportHistoryScreen.routePath),
               icon: const Icon(Icons.history_rounded),
-              label: const Text('Xem lịch sử export'),
+              label: Text(context.l10n.privacyViewExportHistory),
             ),
           ),
         ],

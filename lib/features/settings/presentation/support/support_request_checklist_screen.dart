@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
@@ -13,7 +14,7 @@ class SupportRequestChecklistScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Checklist gửi hỗ trợ')),
+      appBar: AppBar(title: Text(context.l10n.supportRequestChecklist)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
@@ -49,13 +50,13 @@ class SupportRequestChecklistScreen extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: () => context.push(HelpCenterScreen.routePath),
               icon: const Icon(Icons.help_outline_rounded),
-              label: const Text('Mở trung tâm trợ giúp'),
+              label: Text(context.l10n.supportOpenHelpCenter),
             ),
             const SizedBox(height: 10),
             FilledButton.icon(
               onPressed: () => context.push(PrivacyContactScreen.routePath),
               icon: const Icon(Icons.support_agent_outlined),
-              label: const Text('Tạo yêu cầu hỗ trợ'),
+              label: Text(context.l10n.exportCreateSupportRequest),
             ),
           ],
         ),

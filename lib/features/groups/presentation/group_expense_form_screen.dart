@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -316,7 +317,7 @@ class _GroupExpenseFormScreenState
             splits: splits,
           );
       if (mounted) {
-        Navigator.of(context).pop();
+        context.pop();
       }
     } catch (error) {
       if (mounted) {

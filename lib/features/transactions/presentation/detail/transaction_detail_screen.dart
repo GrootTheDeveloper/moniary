@@ -270,11 +270,11 @@ class _TransactionDetailBody extends ConsumerWidget {
                       content: Text(context.l10n.transactionDeleteUndone),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
+                          onPressed: () => context.pop(false),
                           child: Text(context.l10n.commonCancel),
                         ),
                         FilledButton(
-                          onPressed: () => Navigator.of(context).pop(true),
+                          onPressed: () => context.pop(true),
                           child: Text(context.l10n.commonDelete),
                         ),
                       ],

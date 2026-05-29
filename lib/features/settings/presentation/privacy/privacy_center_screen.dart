@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -50,7 +51,7 @@ class PrivacyCenterScreen extends ConsumerWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Trung tâm riêng tư')),
+      appBar: AppBar(title: Text(context.l10n.privacyCenter)),
       body: SafeArea(
         child: Stack(
           children: [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_color.dart';
@@ -315,7 +316,7 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
         return;
       }
 
-      Navigator.of(context).pop();
+      context.pop();
     } catch (error) {
       messenger.showSnackBar(
         SnackBar(content: Text(userFriendlyMessage(error))),

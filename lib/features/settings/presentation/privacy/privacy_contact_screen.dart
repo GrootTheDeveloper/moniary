@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../../../../l10n/l10n_extension.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,7 +59,7 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Liên hệ quyền riêng tư')),
+      appBar: AppBar(title: Text(context.l10n.privacyContact)),
       body: SafeArea(
         child: Stack(
           children: [
@@ -133,7 +134,7 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                 TextButton.icon(
                   onPressed: _applyTemplate,
                   icon: const Icon(Icons.auto_fix_high_outlined),
-                  label: const Text('Dùng mẫu nội dung'),
+                  label: Text(context.l10n.privacyUseTemplate),
                 ),
                 const SizedBox(height: 8),
                 _RequestPreviewCard(
@@ -144,7 +145,7 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                 FilledButton.icon(
                   onPressed: state.isLoading ? null : _createPrivacyRequest,
                   icon: const Icon(Icons.mark_email_read_outlined),
-                  label: const Text('Tạo yêu cầu privacy'),
+                  label: Text(context.l10n.privacyCreateRequest),
                 ),
               ],
             ),
@@ -200,15 +201,15 @@ class _PrivacyRequestDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Đã tạo yêu cầu'),
+      title: Text(context.l10n.privacyRequestCreated),
       content: Text(
         'File yêu cầu đã được lưu tại:\n${file.path}',
         style: Theme.of(context).textTheme.bodyMedium,
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Đóng'),
+          onPressed: () => context.pop(),
+          child: Text(context.l10n.commonClose),
         ),
       ],
     );
@@ -337,7 +338,7 @@ class _SupportShortcutsCard extends StatelessWidget {
                   'Đã copy email support.',
                 ),
                 icon: const Icon(Icons.email_outlined),
-                label: const Text('Copy email'),
+                label: Text(context.l10n.privacyCopyEmail),
               ),
               const SizedBox(height: 10),
               OutlinedButton.icon(
@@ -347,7 +348,7 @@ class _SupportShortcutsCard extends StatelessWidget {
                   'Đã copy hướng dẫn gửi request.',
                 ),
                 icon: const Icon(Icons.content_copy_outlined),
-                label: const Text('Copy hướng dẫn'),
+                label: Text(context.l10n.privacyCopyInstructions),
               ),
             ],
           ),
