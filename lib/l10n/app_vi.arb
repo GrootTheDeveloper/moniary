@@ -401,5 +401,22 @@
   "privacyCenterHideBalancesTitle": "Chế độ ẩn số dư",
   "privacyCenterHideBalancesSubtitle": "Tự động làm mờ tất cả số tiền trên ứng dụng.",
   "biometricReasonEnable": "Xác thực để bật khóa ứng dụng",
-  "biometricReasonUnlock": "Mở khóa Moniary"
+  "biometricReasonUnlock": "Mở khóa Moniary",
+  "importTitle": "Nhập dữ liệu (CSV)",
+  "importSelectFile": "Chọn tệp CSV",
+  "importCsvFormatTitle": "Định dạng CSV yêu cầu:",
+  "importCsvFormatBody": "Dòng 1 được bỏ qua (tiêu đề).\n1. Ngày (YYYY-MM-DD)\n2. Số tiền\n3. Loại (Income/Expense/Thu/Chi)\n4. Tên danh mục\n5. Ghi chú",
+  "importConfirm": "Xác nhận nhập",
+  "importPreviewTitle": "Xem trước ({count} dòng hợp lệ)",
+  "@importPreviewTitle": {"placeholders": {"count": {"type": "int"}}},
+  "importSuccess": "Đã nhập {count} giao dịch",
+  "@importSuccess": {"placeholders": {"count": {"type": "int"}}},
+  "importNoWallets": "Không tìm thấy ví. Hãy tạo ví trước.",
+  "importSelectWallet": "Chọn ví đích",
+  "importErrorWallets": "Lỗi tải danh sách ví: {error}",
+  "@importErrorWallets": {"placeholders": {"error": {"type": "String"}}},
+  "importErrorUnknown": "Lỗi không xác định",
+  "importErrorMissingColumns": "Thiếu cột (yêu cầu 5)",
+  "importErrorInvalidDate": "Định dạng ngày không hợp lệ (dùng YYYY-MM-DD)",
+  "importErrorInvalidAmount": "Số tiền không hợp lệ"
 }

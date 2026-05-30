@@ -2,26 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-class CsvTransactionRow {
-  final DateTime? date;
-  final double? amount;
-  final String typeStr;
-  final String categoryName;
-  final String note;
-  final bool isValid;
-  final String? errorMessage;
-
-  CsvTransactionRow({
-    this.date,
-    this.amount,
-    required this.typeStr,
-    required this.categoryName,
-    required this.note,
-    required this.isValid,
-    this.errorMessage,
-  });
-}
+// Removed app_constants
+import 'package:moniary/core/supabase/app_exception.dart';
+import 'package:moniary/shared/utils/app_logger.dart';
+import 'package:moniary/features/settings/domain/models/csv_transaction_row.dart';
 
 final importRepositoryProvider = Provider<ImportRepository>((ref) {
   return ImportRepository();
@@ -34,7 +18,7 @@ class ImportRepository {
     try {
       final file = File(filePath);
       if (!await file.exists()) {
-        throw Exception('File does not exist');
+        throw const AppException('File does not exist', code: 'IMPORT_FILE_NOT_FOUND');
       }
 
       final input = file.openRead();
@@ -44,7 +28,7 @@ class ImportRepository {
           .transform(csvCodec.decoder)
           .toList();
 
-      if (fields.isEmpty) throw Exception('File is empty');
+      if (fields.isEmpty) throw const AppException('File is empty', code: 'IMPORT_FILE_EMPTY');
 
       // Skip header row
       final dataRows = fields.skip(1);
@@ -57,12 +41,12 @@ class ImportRepository {
         }
 
         if (row.length < 5) {
-          result.add(CsvTransactionRow(
-            typeStr: '', 
-            categoryName: '', 
-            note: '', 
-            isValid: false, 
-            errorMessage: 'Missing columns (expected 5)',
+          result.add(const CsvTransactionRow(
+            typeStr: '',
+            categoryName: '',
+            note: '',
+            isValid: false,
+            errorMessage: 'MISSING_COLUMNS',
           ));
           continue;
         }
@@ -86,8 +70,11 @@ class ImportRepository {
         final isValid = parsedDate != null && parsedAmount != null && parsedAmount > 0;
         String? error;
         if (!isValid) {
-          if (parsedDate == null) error = 'Invalid date format (use YYYY-MM-DD)';
-          else if (parsedAmount == null) error = 'Invalid amount';
+          if (parsedDate == null) {
+            error = 'INVALID_DATE';
+          } else if (parsedAmount == null) {
+            error = 'INVALID_AMOUNT';
+          }
         }
 
         result.add(CsvTransactionRow(
@@ -102,8 +89,12 @@ class ImportRepository {
       }
 
       return result;
-    } catch (e) {
-      throw Exception('Failed to parse CSV: $e');
+    } on AppException catch (e, st) {
+      AppLogger.error('CSV Import Error', e, st);
+      rethrow;
+    } catch (e, st) {
+      AppLogger.error('Failed to parse CSV', e, st);
+      throw AppException('Failed to parse CSV: $e', code: 'IMPORT_PARSE_ERROR');
     }
   }
 }

@@ -1241,4 +1241,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get biometricReasonUnlock => 'Unlock Moniary';
+
+  @override
+  String get importTitle => 'Import Data (CSV)';
+
+  @override
+  String get importSelectFile => 'Select CSV File';
+
+  @override
+  String get importCsvFormatTitle => 'CSV Format Required:';
+
+  @override
+  String get importCsvFormatBody =>
+      'Row 1 is skipped (headers).\n1. Date (YYYY-MM-DD)\n2. Amount\n3. Type (Income/Expense/Thu/Chi)\n4. Category Name\n5. Note';
+
+  @override
+  String get importConfirm => 'Confirm Import';
+
+  @override
+  String importPreviewTitle(int count) {
+    return 'Preview ($count valid rows)';
+  }
+
+  @override
+  String importSuccess(int count) {
+    return 'Imported $count transactions';
+  }
+
+  @override
+  String get importNoWallets => 'No wallets found. Create a wallet first.';
+
+  @override
+  String get importSelectWallet => 'Select target wallet';
+
+  @override
+  String importErrorWallets(String error) {
+    return 'Error loading wallets: $error';
+  }
+
+  @override
+  String get importErrorUnknown => 'Unknown error';
+
+  @override
+  String get importErrorMissingColumns => 'Missing columns (expected 5)';
+
+  @override
+  String get importErrorInvalidDate => 'Invalid date format (use YYYY-MM-DD)';
+
+  @override
+  String get importErrorInvalidAmount => 'Invalid amount';
 }

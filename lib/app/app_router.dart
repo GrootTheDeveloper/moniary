@@ -165,9 +165,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: 'settings',
                 pageBuilder: (context, state) =>
                     buildSlideTransitionPage(
-                      context,
-                      state,
-                      const Text('SettingsPlaceholder'),
+                      state: state,
+                      child: const Text('SettingsPlaceholder'),
                     ),
               ),
               GoRoute(

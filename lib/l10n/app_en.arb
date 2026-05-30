@@ -405,5 +405,22 @@
   "privacyCenterHideBalancesTitle": "Hide Balances Mode",
   "privacyCenterHideBalancesSubtitle": "Automatically blur all amounts in the app.",
   "biometricReasonEnable": "Authenticate to enable App Lock",
-  "biometricReasonUnlock": "Unlock Moniary"
+  "biometricReasonUnlock": "Unlock Moniary",
+  "importTitle": "Import Data (CSV)",
+  "importSelectFile": "Select CSV File",
+  "importCsvFormatTitle": "CSV Format Required:",
+  "importCsvFormatBody": "Row 1 is skipped (headers).\n1. Date (YYYY-MM-DD)\n2. Amount\n3. Type (Income/Expense/Thu/Chi)\n4. Category Name\n5. Note",
+  "importConfirm": "Confirm Import",
+  "importPreviewTitle": "Preview ({count} valid rows)",
+  "@importPreviewTitle": {"placeholders": {"count": {"type": "int"}}},
+  "importSuccess": "Imported {count} transactions",
+  "@importSuccess": {"placeholders": {"count": {"type": "int"}}},
+  "importNoWallets": "No wallets found. Create a wallet first.",
+  "importSelectWallet": "Select target wallet",
+  "importErrorWallets": "Error loading wallets: {error}",
+  "@importErrorWallets": {"placeholders": {"error": {"type": "String"}}},
+  "importErrorUnknown": "Unknown error",
+  "importErrorMissingColumns": "Missing columns (expected 5)",
+  "importErrorInvalidDate": "Invalid date format (use YYYY-MM-DD)",
+  "importErrorInvalidAmount": "Invalid amount"
 }

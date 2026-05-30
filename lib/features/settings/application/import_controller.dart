@@ -1,9 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// Removed collection
+import 'package:moniary/core/supabase/supabase_providers.dart';
+import 'package:moniary/core/supabase/app_exception.dart';
+import 'package:moniary/shared/utils/app_logger.dart';
 import 'package:moniary/features/settings/data/repositories/import_repository.dart';
 import 'package:moniary/features/transactions/data/repositories/transaction_repository.dart';
 import 'package:moniary/features/categories/data/repositories/category_repository.dart';
 import 'package:moniary/features/wallets/domain/models/wallet.dart';
 import 'package:moniary/features/categories/domain/models/category.dart';
+import 'package:moniary/features/settings/domain/models/csv_transaction_row.dart';
 
 class ImportState {
   final bool isParsing;
@@ -24,15 +29,15 @@ class ImportState {
     bool? isParsing,
     bool? isImporting,
     List<CsvTransactionRow>? parsedRows,
-    String? selectedFilePath,
-    String? error,
+    String? Function()? selectedFilePath,
+    String? Function()? error,
   }) {
     return ImportState(
       isParsing: isParsing ?? this.isParsing,
       isImporting: isImporting ?? this.isImporting,
       parsedRows: parsedRows ?? this.parsedRows,
-      selectedFilePath: selectedFilePath, // replace if not null, or allow clearing? Use named argument carefully.
-      error: error,
+      selectedFilePath: selectedFilePath != null ? selectedFilePath() : this.selectedFilePath,
+      error: error != null ? error() : this.error,
     );
   }
 }
@@ -48,19 +53,29 @@ class ImportController extends Notifier<ImportState> {
   }
 
   Future<void> pickAndParseFile(String filePath) async {
-    state = state.copyWith(isParsing: true, selectedFilePath: filePath, error: null);
+    state = state.copyWith(isParsing: true, selectedFilePath: () => filePath, error: () => null);
     try {
       final repo = ref.read(importRepositoryProvider);
       final rows = await repo.parseCsv(filePath);
-      state = state.copyWith(parsedRows: rows, isParsing: false, selectedFilePath: filePath);
-    } catch (e) {
-      state = state.copyWith(isParsing: false, parsedRows: [], error: 'Failed to parse file: $e');
+      state = state.copyWith(parsedRows: rows, isParsing: false, selectedFilePath: () => filePath);
+    } on AppException catch (e, st) {
+      AppLogger.error('Failed to parse file', e, st);
+      state = state.copyWith(isParsing: false, parsedRows: [], error: () => e.code ?? 'IMPORT_PARSE_ERROR');
+    } catch (e, st) {
+      AppLogger.error('Failed to parse file', e, st);
+      state = state.copyWith(isParsing: false, parsedRows: [], error: () => 'IMPORT_PARSE_ERROR');
     }
   }
 
-  Future<int> confirmImport(Wallet targetWallet, String profileId) async {
-    state = state.copyWith(isImporting: true, error: null);
+  Future<int> confirmImport(Wallet targetWallet) async {
+    state = state.copyWith(isImporting: true, error: () => null);
     try {
+      final session = ref.read(currentSessionProvider);
+      final profileId = session?.user.id;
+      if (profileId == null) {
+         throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
+      }
+
       final validRows = state.parsedRows.where((r) => r.isValid).toList();
       if (validRows.isEmpty) {
         state = state.copyWith(isImporting: false);
@@ -81,25 +96,34 @@ class ImportController extends Notifier<ImportState> {
 
         // Find matching category (case-insensitive)
         Category? matchedCat;
-        try {
-          matchedCat = categories.firstWhere(
-            (c) => c.name.toLowerCase() == row.categoryName.toLowerCase() && c.type == type,
-          );
-        } catch (_) {
-          // Fallback to first available category of the same type
-          try {
-             matchedCat = categories.firstWhere((c) => c.type == type);
-          } catch (_) {
-             // If no categories exist, we cannot import this row safely.
-             continue;
+        for (var c in categories) {
+          if (c.name.toLowerCase() == row.categoryName.toLowerCase() && c.type == type) {
+            matchedCat = c;
+            break;
           }
+        }
+        
+        // Fallback to first available category of the same type
+        if (matchedCat == null) {
+          for (var c in categories) {
+            if (c.type == type) {
+              matchedCat = c;
+              break;
+            }
+          }
+        }
+
+        if (matchedCat == null) {
+           // If no categories exist, we cannot import this row safely.
+           AppLogger.warning('Skipping row because no category found for type: $type');
+           continue;
         }
 
         await transactionRepo.createTransaction(
           amount: row.amount ?? 0.0,
           type: type,
           walletId: targetWallet.id,
-          categoryId: matchedCat!.id,
+          categoryId: matchedCat.id,
           transactionDate: row.date ?? DateTime.now(),
           note: row.note,
         );
@@ -108,8 +132,13 @@ class ImportController extends Notifier<ImportState> {
 
       state = state.copyWith(isImporting: false, parsedRows: []);
       return importCount;
-    } catch (e) {
-      state = state.copyWith(isImporting: false, error: 'Import failed: $e');
+    } on AppException catch (e, st) {
+      AppLogger.error('Import failed', e, st);
+      state = state.copyWith(isImporting: false, error: () => e.code ?? 'IMPORT_FAILED');
+      return 0;
+    } catch (e, st) {
+      AppLogger.error('Import failed', e, st);
+      state = state.copyWith(isImporting: false, error: () => 'IMPORT_FAILED');
       return 0;
     }
   }

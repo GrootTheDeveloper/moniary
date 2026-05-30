@@ -3,10 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moniary/features/settings/application/import_controller.dart';
 import 'package:moniary/features/settings/data/repositories/import_repository.dart';
+import 'package:moniary/features/settings/domain/models/csv_transaction_row.dart';
 import 'package:moniary/features/transactions/data/repositories/transaction_repository.dart';
 import 'package:moniary/features/categories/data/repositories/category_repository.dart';
 import 'package:moniary/features/wallets/domain/models/wallet.dart';
 import 'package:moniary/features/categories/domain/models/category.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:moniary/core/supabase/supabase_providers.dart';
 
 class MockImportRepository extends Mock implements ImportRepository {}
 class MockTransactionRepository extends Mock implements TransactionRepository {}
@@ -32,6 +35,19 @@ void main() {
         importRepositoryProvider.overrideWithValue(mockImportRepo),
         transactionRepositoryProvider.overrideWithValue(mockTransactionRepo),
         categoryRepositoryProvider.overrideWithValue(mockCategoryRepo),
+        currentSessionProvider.overrideWithValue(
+          Session(
+            accessToken: '123',
+            tokenType: 'bearer',
+            user: const User(
+              id: 'u1',
+              appMetadata: {},
+              userMetadata: {},
+              aud: 'authenticated',
+              createdAt: '2026-05-30T00:00:00Z',
+            ),
+          ),
+        ),
       ],
     );
   });
@@ -80,7 +96,7 @@ void main() {
 
     final wallet = Wallet(id: 'w1', name: 'Wallet', type: WalletType.bank, icon: null, color: null, initialBalance: 0, isDefault: true, isActive: true, createdAt: DateTime.now());
     
-    final count = await controller.confirmImport(wallet, 'p1');
+    final count = await controller.confirmImport(wallet);
     expect(count, 2); // 2 valid rows
     verify(() => mockTransactionRepo.createTransaction(
       amount: any(named: 'amount'),

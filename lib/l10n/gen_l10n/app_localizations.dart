@@ -2389,6 +2389,90 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Mở khóa Moniary'**
   String get biometricReasonUnlock;
+
+  /// No description provided for @importTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập dữ liệu (CSV)'**
+  String get importTitle;
+
+  /// No description provided for @importSelectFile.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn tệp CSV'**
+  String get importSelectFile;
+
+  /// No description provided for @importCsvFormatTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Định dạng CSV yêu cầu:'**
+  String get importCsvFormatTitle;
+
+  /// No description provided for @importCsvFormatBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dòng 1 được bỏ qua (tiêu đề).\n1. Ngày (YYYY-MM-DD)\n2. Số tiền\n3. Loại (Income/Expense/Thu/Chi)\n4. Tên danh mục\n5. Ghi chú'**
+  String get importCsvFormatBody;
+
+  /// No description provided for @importConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận nhập'**
+  String get importConfirm;
+
+  /// No description provided for @importPreviewTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem trước ({count} dòng hợp lệ)'**
+  String importPreviewTitle(int count);
+
+  /// No description provided for @importSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã nhập {count} giao dịch'**
+  String importSuccess(int count);
+
+  /// No description provided for @importNoWallets.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy ví. Hãy tạo ví trước.'**
+  String get importNoWallets;
+
+  /// No description provided for @importSelectWallet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn ví đích'**
+  String get importSelectWallet;
+
+  /// No description provided for @importErrorWallets.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lỗi tải danh sách ví: {error}'**
+  String importErrorWallets(String error);
+
+  /// No description provided for @importErrorUnknown.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lỗi không xác định'**
+  String get importErrorUnknown;
+
+  /// No description provided for @importErrorMissingColumns.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiếu cột (yêu cầu 5)'**
+  String get importErrorMissingColumns;
+
+  /// No description provided for @importErrorInvalidDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Định dạng ngày không hợp lệ (dùng YYYY-MM-DD)'**
+  String get importErrorInvalidDate;
+
+  /// No description provided for @importErrorInvalidAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền không hợp lệ'**
+  String get importErrorInvalidAmount;
 }
 
 class _AppLocalizationsDelegate

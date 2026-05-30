@@ -1240,4 +1240,54 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get biometricReasonUnlock => 'Mở khóa Moniary';
+
+  @override
+  String get importTitle => 'Nhập dữ liệu (CSV)';
+
+  @override
+  String get importSelectFile => 'Chọn tệp CSV';
+
+  @override
+  String get importCsvFormatTitle => 'Định dạng CSV yêu cầu:';
+
+  @override
+  String get importCsvFormatBody =>
+      'Dòng 1 được bỏ qua (tiêu đề).\n1. Ngày (YYYY-MM-DD)\n2. Số tiền\n3. Loại (Income/Expense/Thu/Chi)\n4. Tên danh mục\n5. Ghi chú';
+
+  @override
+  String get importConfirm => 'Xác nhận nhập';
+
+  @override
+  String importPreviewTitle(int count) {
+    return 'Xem trước ($count dòng hợp lệ)';
+  }
+
+  @override
+  String importSuccess(int count) {
+    return 'Đã nhập $count giao dịch';
+  }
+
+  @override
+  String get importNoWallets => 'Không tìm thấy ví. Hãy tạo ví trước.';
+
+  @override
+  String get importSelectWallet => 'Chọn ví đích';
+
+  @override
+  String importErrorWallets(String error) {
+    return 'Lỗi tải danh sách ví: $error';
+  }
+
+  @override
+  String get importErrorUnknown => 'Lỗi không xác định';
+
+  @override
+  String get importErrorMissingColumns => 'Thiếu cột (yêu cầu 5)';
+
+  @override
+  String get importErrorInvalidDate =>
+      'Định dạng ngày không hợp lệ (dùng YYYY-MM-DD)';
+
+  @override
+  String get importErrorInvalidAmount => 'Số tiền không hợp lệ';
 }
