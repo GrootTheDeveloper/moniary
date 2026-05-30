@@ -17,3 +17,9 @@
 ## OCR Service
 - Found in `features/scanning/data/ocr_service.dart`.
 - There is a `MockOcrService` for use before the real AI provider is connected.
+
+## Resend API & Edge Functions
+- Supabase Edge Function (`monthly-report`) integrates with Resend API.
+- Generates HTML email reports summarizing income, expenses, and top categories.
+- Frequencies: Daily, Weekly, Monthly, Yearly.
+- Invoked automatically via `pg_cron` (planned) or triggered via API.

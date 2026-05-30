@@ -874,6 +874,30 @@ class AppLocalizationsEn extends AppLocalizations {
       'Delete personal data, transactions, and saved photos.';
 
   @override
+  String get privacyClearDataSubtitle => 'Clear all app data';
+
+  @override
+  String get notificationSettings => 'Notification Settings';
+
+  @override
+  String get emailReports => 'Automated Email Reports';
+
+  @override
+  String get emailReportsDesc => 'Receive periodic income/expense summaries.';
+
+  @override
+  String get dailyReport => 'Daily Report';
+
+  @override
+  String get weeklyReport => 'Weekly Report';
+
+  @override
+  String get monthlyReport => 'Monthly Report';
+
+  @override
+  String get yearlyReport => 'Yearly Report';
+
+  @override
   String get deleteAccountTitle => 'Delete account';
 
   @override

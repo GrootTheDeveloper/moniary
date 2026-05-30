@@ -37,13 +37,20 @@ class SettingsSwitchTile extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text(
             subtitle,
-            style: const TextStyle(fontSize: 13, color: Colors.white54, height: 1.3),
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.white54,
+              height: 1.3,
+            ),
           ),
         ),
         value: value,

@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// Removed collection
 import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/shared/utils/app_logger.dart';
@@ -42,9 +41,8 @@ class ImportState {
   }
 }
 
-final importControllerProvider = NotifierProvider<ImportController, ImportState>(
-  ImportController.new,
-);
+final importControllerProvider =
+    NotifierProvider<ImportController, ImportState>(ImportController.new);
 
 class ImportController extends Notifier<ImportState> {
   @override
@@ -91,8 +89,12 @@ class ImportController extends Notifier<ImportState> {
       int importCount = 0;
 
       for (var row in validRows) {
-        final isIncome = row.typeStr.toLowerCase().contains('income') || row.typeStr.toLowerCase() == 'thu';
-        final type = isIncome ? TransactionType.income : TransactionType.expense;
+        final isIncome =
+            row.typeStr.toLowerCase().contains('income') ||
+            row.typeStr.toLowerCase() == 'thu';
+        final type = isIncome
+            ? TransactionType.income
+            : TransactionType.expense;
 
         // Find matching category (case-insensitive)
         Category? matchedCat;
@@ -102,7 +104,7 @@ class ImportController extends Notifier<ImportState> {
             break;
           }
         }
-        
+
         // Fallback to first available category of the same type
         if (matchedCat == null) {
           for (var c in categories) {
@@ -114,7 +116,6 @@ class ImportController extends Notifier<ImportState> {
         }
 
         if (matchedCat == null) {
-           // If no categories exist, we cannot import this row safely.
            AppLogger.warning('Skipping row because no category found for type: $type');
            continue;
         }

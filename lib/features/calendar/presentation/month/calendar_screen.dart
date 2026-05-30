@@ -258,7 +258,9 @@ class _SeamlessHeader extends ConsumerWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    ref.read(privacyControllerProvider.notifier).toggleHideBalances(!isHidden);
+                    ref
+                        .read(privacyControllerProvider.notifier)
+                        .toggleHideBalances(!isHidden);
                   },
                   child: Container(
                     width: 40,
@@ -268,7 +270,9 @@ class _SeamlessHeader extends ConsumerWidget {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      isHidden ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      isHidden
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
                       color: Colors.white70,
                       size: 20,
                     ),
@@ -315,7 +319,10 @@ class _SeamlessHeader extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 ObscurableAmountText(
-                  amountText: _formatMoney(totalBalance, isNegative: totalBalance < 0),
+                  amountText: _formatMoney(
+                    totalBalance,
+                    isNegative: totalBalance < 0,
+                  ),
                   style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -389,7 +396,10 @@ class _IncomeExpensePill extends StatelessWidget {
           const SizedBox(width: 6),
           ObscurableAmountText(
             prefixText: '$label: ',
-            amountText: _formatMoney(amount, isNegative: false).replaceAll('+', ''),
+            amountText: _formatMoney(
+              amount,
+              isNegative: false,
+            ).replaceAll('+', ''),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: color,
               fontWeight: FontWeight.w600,
@@ -1139,10 +1149,19 @@ class _TodayGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final now = DateTime.now();
     // Find today's data from monthData
-    final todayData = monthData.weeks.expand((week) => week).firstWhere(
-      (d) => d.date.year == now.year && d.date.month == now.month && d.date.day == now.day,
-      orElse: () => CalendarDayData(date: now, isCurrentMonth: true, transactions: []),
-    );
+    final todayData = monthData.weeks
+        .expand((week) => week)
+        .firstWhere(
+          (d) =>
+              d.date.year == now.year &&
+              d.date.month == now.month &&
+              d.date.day == now.day,
+          orElse: () => CalendarDayData(
+            date: now,
+            isCurrentMonth: true,
+            transactions: [],
+          ),
+        );
 
     final transactions = todayData.transactions;
 
@@ -1151,7 +1170,7 @@ class _TodayGrid extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: PlaceholderCard(
           title: context.l10n.calendarToday,
-          body: context.l10n.calendarEmptyMessage, 
+          body: context.l10n.calendarEmptyMessage,
         ),
       );
     }
@@ -1169,14 +1188,17 @@ class _TodayGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         final transaction = transactions[index];
         return TransactionGridTile(
-          transaction: transaction,
-          onTap: () => onTransactionTap(now),
-        ).animate(delay: (30 * index).ms).fade().slideY(
-          begin: 0.1,
-          end: 0,
-          curve: Curves.easeOutQuad,
-          duration: 300.ms,
-        );
+              transaction: transaction,
+              onTap: () => onTransactionTap(now),
+            )
+            .animate(delay: (30 * index).ms)
+            .fade()
+            .slideY(
+              begin: 0.1,
+              end: 0,
+              curve: Curves.easeOutQuad,
+              duration: 300.ms,
+            );
       },
     );
   }

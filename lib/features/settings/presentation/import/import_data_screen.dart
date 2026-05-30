@@ -4,13 +4,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moniary/app/app_theme.dart';
 import 'package:moniary/features/settings/application/import_controller.dart';
-// Removed csv_transaction_row
 import 'package:moniary/features/wallets/application/wallets_controller.dart';
 import 'package:moniary/features/wallets/domain/models/wallet.dart';
 import 'package:moniary/l10n/l10n_extension.dart';
 import 'package:moniary/shared/utils/app_logger.dart';
 import 'package:moniary/shared/utils/currency_formatter.dart';
-// Removed missing error_state import
 import 'package:intl/intl.dart';
 
 class ImportDataScreen extends ConsumerStatefulWidget {
@@ -55,23 +53,27 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.red.withOpacity(0.5)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
                 ),
                 child: Column(
                   children: [
                     const Icon(Icons.error_outline, color: Colors.red, size: 48),
                     const SizedBox(height: 8),
-                    Text(importState.error!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
+                    Text(
+                      _getErrorMessage(context, importState.error!),
+                      style: const TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 8),
-                    TextButton(onPressed: _pickFile, child: const Text('Thử lại')),
+                    TextButton(onPressed: _pickFile, child: Text(context.l10n.importRetry)),
                   ],
                 ),
               )
             else if (importState.parsedRows.isNotEmpty)
               Expanded(child: _buildPreview(context, importState)),
-            
+
             if (importState.parsedRows.isNotEmpty) ...[
               const SizedBox(height: 16),
               _buildWalletSelector(context, walletsAsync),
@@ -81,7 +83,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                     ? null
                     : _confirmImport,
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppTheme.mint, 
+                  backgroundColor: AppTheme.mint,
                   foregroundColor: Colors.black,
                   disabledBackgroundColor: Colors.grey[800],
                   disabledForegroundColor: Colors.grey[500],
@@ -90,7 +92,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
                     : Text(context.l10n.importConfirm),
               ),
-            ]
+            ],
           ],
         ),
       ),
@@ -110,8 +112,8 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
           Text(context.l10n.importCsvFormatTitle, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16)),
           const SizedBox(height: 8),
           Text(
-            context.l10n.importCsvFormatBody, 
-            style: const TextStyle(color: Colors.white70, height: 1.5)
+            context.l10n.importCsvFormatBody,
+            style: const TextStyle(color: Colors.white70, height: 1.5),
           ),
         ],
       ),
@@ -126,12 +128,25 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
           value: _selectedWallet,
           hint: Text(context.l10n.importSelectWallet, style: const TextStyle(color: Colors.white54)),
           dropdownColor: AppTheme.surface,
-          items: wallets.map((w) => DropdownMenuItem(value: w, child: Text(w.name, style: const TextStyle(color: Colors.white)))).toList(),
+          items: wallets
+              .map(
+                (w) => DropdownMenuItem(
+                  value: w,
+                  child: Text(
+                    w.name,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              )
+              .toList(),
           onChanged: (val) => setState(() => _selectedWallet = val),
           decoration: InputDecoration(
             filled: true,
             fillColor: AppTheme.surface,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
           ),
         );
       },
@@ -163,12 +178,16 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
             itemBuilder: (context, index) {
               final row = state.parsedRows[index];
               return ListTile(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 tileColor: AppTheme.surface,
                 leading: Icon(row.isValid ? Icons.check_circle : Icons.error, color: row.isValid ? Colors.green : Colors.red),
                 title: Text('${row.categoryName} - ${formatVnd(row.amount ?? 0)}', style: const TextStyle(color: Colors.white)),
                 subtitle: Text(
-                  row.isValid ? DateFormat('dd/MM/yyyy').format(row.date!) : _getErrorMessage(context, row.errorMessage ?? ''),
+                  row.isValid
+                      ? DateFormat('dd/MM/yyyy').format(row.date!)
+                      : _getErrorMessage(context, row.errorMessage ?? ''),
                   style: TextStyle(color: row.isValid ? Colors.white70 : Colors.redAccent),
                 ),
               );
@@ -186,7 +205,9 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
         allowedExtensions: ['csv'],
       );
       if (result != null && result.files.single.path != null) {
-        ref.read(importControllerProvider.notifier).pickAndParseFile(result.files.single.path!);
+        await ref
+            .read(importControllerProvider.notifier)
+            .pickAndParseFile(result.files.single.path!);
       }
     } catch (e) {
       AppLogger.error('File pick error: $e');
@@ -195,7 +216,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
 
   Future<void> _confirmImport() async {
     final count = await ref.read(importControllerProvider.notifier).confirmImport(_selectedWallet!);
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.importSuccess(count))));
       context.pop();

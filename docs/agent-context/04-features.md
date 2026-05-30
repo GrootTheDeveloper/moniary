@@ -46,11 +46,12 @@
 - **Note**: The real OCR backend is not yet integrated. The app currently relies exclusively on the mock implementation.
 
 ## Feature: Settings, Privacy & Data Export
-- **Purpose**: App settings, legal agreements, privacy requests, data export (CSV/XLSX/PDF), and App Security.
+- **Purpose**: App settings, legal agreements, privacy requests, data export (CSV/XLSX/PDF), data import (CSV), App Security, and Automated Reports.
 - **Main files**: `features/settings/`
-- **UI screens**: Massive feature with 27+ screens (ExportDataScreen, PrivacyCenterScreen, AccountDeletionScreen, AppLockScreen, etc.).
+- **UI screens**: Massive feature with 30+ screens (ExportDataScreen, ImportDataScreen, NotificationSettingsScreen, PrivacyCenterScreen, AccountDeletionScreen, RestoreAccountScreen, ActiveSessionsScreen, AppLockScreen, etc.).
 - **Security Features**: Biometric App Lock (FaceID/TouchID) and Hide Balances mode.
-- **Repository**: `AccountRepository` (handles exports, privacy requests, file actions), `PrivacyRepository` (handles Biometric state in SharedPreferences). Export history is stored locally in JSON format.
+- **Automated Reports**: Uses Supabase Edge Functions + Resend API to send scheduled email reports (Daily/Weekly/Monthly/Yearly).
+- **Repository**: `AccountRepository` (handles exports, privacy requests, file actions), `ImportRepository` (handles CSV import), `PrivacyRepository` (handles Biometric state in SharedPreferences), `NotificationSettingsRepository` (handles email report frequency). Export history is stored locally in JSON format.
 
 ## Feature: Profile
 - **Purpose**: User profile setup and management.

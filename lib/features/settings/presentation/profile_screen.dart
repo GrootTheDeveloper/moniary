@@ -13,6 +13,7 @@ import '../../profile/presentation/profile_setup_screen.dart';
 import '../application/account/account_actions_controller.dart';
 import 'export/export_data_screen.dart';
 import 'import/import_data_screen.dart';
+import 'notifications/notification_settings_screen.dart';
 import 'privacy/privacy_center_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
@@ -176,7 +177,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       context.l10n.profileLinkAccountSubtitle,
-                      style: const TextStyle(color: Colors.white54, fontSize: 13),
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 13,
+                      ),
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
@@ -468,6 +472,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             subtitle: '',
                             onTap: () =>
                                 context.push(ProfileSetupScreen.routePath),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.notifications_outlined,
+                            title: context.l10n.notificationSettings,
+                            subtitle: '',
+                            onTap: () => context.push(
+                              NotificationSettingsScreen.routePath,
+                            ),
                           ),
                           _SettingsTile(
                             icon: Icons.lock_outline,

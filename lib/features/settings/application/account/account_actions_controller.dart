@@ -81,6 +81,20 @@ class AccountActionsController extends AsyncNotifier<void> {
     );
   }
 
+  Future<void> requestSoftDelete() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref.read(accountRepositoryProvider).requestSoftDelete(),
+    );
+  }
+
+  Future<void> restoreAccount() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref.read(accountRepositoryProvider).restoreAccount(),
+    );
+  }
+
   Future<File?> createDeletionRequest({required String reason}) async {
     state = const AsyncLoading();
     File? requestFile;

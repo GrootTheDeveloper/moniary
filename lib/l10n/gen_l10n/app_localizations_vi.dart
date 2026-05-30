@@ -874,6 +874,30 @@ class AppLocalizationsVi extends AppLocalizations {
       'Xóa dữ liệu cá nhân, giao dịch và ảnh đã lưu.';
 
   @override
+  String get privacyClearDataSubtitle => 'Xóa toàn bộ dữ liệu ứng dụng';
+
+  @override
+  String get notificationSettings => 'Cài đặt thông báo';
+
+  @override
+  String get emailReports => 'Báo cáo Email Tự động';
+
+  @override
+  String get emailReportsDesc => 'Nhận tổng hợp thu chi định kỳ qua email.';
+
+  @override
+  String get dailyReport => 'Báo cáo hàng ngày';
+
+  @override
+  String get weeklyReport => 'Báo cáo hàng tuần';
+
+  @override
+  String get monthlyReport => 'Báo cáo hàng tháng';
+
+  @override
+  String get yearlyReport => 'Báo cáo hàng năm';
+
+  @override
   String get deleteAccountTitle => 'Xóa tài khoản';
 
   @override

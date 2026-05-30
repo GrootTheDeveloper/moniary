@@ -176,170 +176,170 @@ class _TransactionDetailBody extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         children: [
           AspectRatio(
-          aspectRatio: 1,
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: AppTheme.surfaceRaised,
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: AppTheme.outline),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.16),
-                  blurRadius: 24,
-                  offset: const Offset(0, 12),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(32),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Hero(
-                    tag: 'tx_image_${transaction.id}',
-                    child: SupabaseImage(
-                      imagePath: transaction.imagePath,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      fallbackIcon: Icons.receipt_long_outlined,
-                    ),
-                  ),
-                  
-                  // Top Overlay: Date, Category and Wallet
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Colors.black54, Colors.transparent],
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            DateFormat(
-                              'dd MMMM yyyy • HH:mm',
-                              Localizations.localeOf(context).toString(),
-                            ).format(transaction.transactionDate),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              shadows: [
-                                Shadow(
-                                  offset: Offset(0, 1),
-                                  blurRadius: 4,
-                                  color: Colors.black87,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Flexible(
-                                child: _TagPill(
-                                  icon: Icons.category_outlined,
-                                  label: transaction.categoryName,
-                                  color: categoryColor,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Flexible(
-                                child: _TagPill(
-                                  icon: Icons.account_balance_wallet_outlined,
-                                  label: transaction.walletName,
-                                  color: walletColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Bottom Overlay: Amount, Note
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                        bottom: 24,
-                        top: 64,
-                      ),
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [Colors.black87, Colors.transparent],
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: transaction.isIncome
-                                  ? AppTheme.success
-                                  : Colors.white,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
-                          if (transaction.note?.trim().isNotEmpty == true)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.black45,
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                              child: Text(
-                                transaction.note!.trim(),
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            )
-                          else
-                            Text(
-                              context.l10n.transactionNoteEmpty,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.white70,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                        ],
-                      ),
-                    ),
+            aspectRatio: 1,
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceRaised,
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(color: AppTheme.outline),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.16),
+                    blurRadius: 24,
+                    offset: const Offset(0, 12),
                   ),
                 ],
               ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(32),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Hero(
+                      tag: 'tx_image_${transaction.id}',
+                      child: SupabaseImage(
+                        imagePath: transaction.imagePath,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        fallbackIcon: Icons.receipt_long_outlined,
+                      ),
+                    ),
+
+                    // Top Overlay: Date, Category and Wallet
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.black54, Colors.transparent],
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              DateFormat(
+                                'dd MMMM yyyy • HH:mm',
+                                Localizations.localeOf(context).toString(),
+                              ).format(transaction.transactionDate),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                shadows: [
+                                  Shadow(
+                                    offset: Offset(0, 1),
+                                    blurRadius: 4,
+                                    color: Colors.black87,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Flexible(
+                                  child: _TagPill(
+                                    icon: Icons.category_outlined,
+                                    label: transaction.categoryName,
+                                    color: categoryColor,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: _TagPill(
+                                    icon: Icons.account_balance_wallet_outlined,
+                                    label: transaction.walletName,
+                                    color: walletColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Bottom Overlay: Amount, Note
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                          left: 20,
+                          right: 20,
+                          bottom: 24,
+                          top: 64,
+                        ),
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [Colors.black87, Colors.transparent],
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: transaction.isIncome
+                                    ? AppTheme.success
+                                    : Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 8),
+                            if (transaction.note?.trim().isNotEmpty == true)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black45,
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                child: Text(
+                                  transaction.note!.trim(),
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                            else
+                              Text(
+                                context.l10n.transactionNoteEmpty,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white70,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
           ),
         ],
       ),

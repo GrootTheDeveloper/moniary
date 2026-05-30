@@ -14,7 +14,8 @@ class MoniaryApp extends ConsumerStatefulWidget {
   ConsumerState<MoniaryApp> createState() => _MoniaryAppState();
 }
 
-class _MoniaryAppState extends ConsumerState<MoniaryApp> with WidgetsBindingObserver {
+class _MoniaryAppState extends ConsumerState<MoniaryApp>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -29,7 +30,8 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp> with WidgetsBindingObse
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
       ref.read(privacyControllerProvider.notifier).lockApp();
     }
   }

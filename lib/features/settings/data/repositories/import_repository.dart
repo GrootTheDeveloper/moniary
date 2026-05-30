@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// Removed app_constants
 import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/shared/utils/app_logger.dart';
 import 'package:moniary/features/settings/domain/models/csv_transaction_row.dart';
@@ -36,7 +35,8 @@ class ImportRepository {
 
       for (var row in dataRows) {
         // Handle empty rows
-        if (row.isEmpty || (row.length == 1 && row[0].toString().trim().isEmpty)) {
+        if (row.isEmpty ||
+            (row.length == 1 && row[0].toString().trim().isEmpty)) {
           continue;
         }
 
@@ -52,7 +52,7 @@ class ImportRepository {
         }
 
         final dateStr = row[0].toString().trim();
-        final amountStr = row[1].toString().trim().replaceAll(',', ''); // Handle comma thousands separator
+        final amountStr = row[1].toString().trim().replaceAll(',', '');
         final typeStr = row[2].toString().trim();
         final categoryStr = row[3].toString().trim();
         final noteStr = row[4].toString().trim();
@@ -67,7 +67,8 @@ class ImportRepository {
           parsedAmount = double.parse(amountStr);
         } catch (_) {}
 
-        final isValid = parsedDate != null && parsedAmount != null && parsedAmount > 0;
+        final isValid =
+            parsedDate != null && parsedAmount != null && parsedAmount > 0;
         String? error;
         if (!isValid) {
           if (parsedDate == null) {
@@ -77,15 +78,17 @@ class ImportRepository {
           }
         }
 
-        result.add(CsvTransactionRow(
-          date: parsedDate,
-          amount: parsedAmount,
-          typeStr: typeStr,
-          categoryName: categoryStr,
-          note: noteStr,
-          isValid: isValid,
-          errorMessage: error,
-        ));
+        result.add(
+          CsvTransactionRow(
+            date: parsedDate,
+            amount: parsedAmount,
+            typeStr: typeStr,
+            categoryName: categoryStr,
+            note: noteStr,
+            isValid: isValid,
+            errorMessage: error,
+          ),
+        );
       }
 
       return result;

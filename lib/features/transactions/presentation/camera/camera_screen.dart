@@ -40,7 +40,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
 
   String? _errorMessage;
 
-  Future<void> _initializeCamera(List<CameraDescription> cameras, {int index = 0}) async {
+  Future<void> _initializeCamera(
+    List<CameraDescription> cameras, {
+    int index = 0,
+  }) async {
     final oldController = _controller;
     if (oldController != null) {
       _controller = null;
@@ -53,14 +56,16 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
       ResolutionPreset.medium,
       enableAudio: false,
     );
-    
+
     try {
       await controller.initialize();
       if (!mounted) return;
-      
+
       _controller = controller;
       // Re-apply flash mode
-      await controller.setFlashMode(_isFlashOn ? FlashMode.torch : FlashMode.off);
+      await controller.setFlashMode(
+        _isFlashOn ? FlashMode.torch : FlashMode.off,
+      );
       setState(() {
         _errorMessage = null;
       });

@@ -23,7 +23,9 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
   }
 
   Future<void> _promptAuth() async {
-    await ref.read(privacyControllerProvider.notifier).authenticateUser(context.l10n.biometricReasonUnlock);
+    await ref
+        .read(privacyControllerProvider.notifier)
+        .authenticateUser(context.l10n.biometricReasonUnlock);
   }
 
   @override
@@ -38,7 +40,11 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
             const SizedBox(height: 24),
             Text(
               context.l10n.appLockTitle,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
@@ -53,7 +59,10 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppTheme.mint,
                 foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 12,
+                ),
               ),
             ),
           ],

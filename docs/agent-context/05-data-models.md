@@ -24,3 +24,8 @@
 - **Path**: `lib/features/scanning/domain/ocr_result.dart`
 - **Type**: DTO / UI Model
 - **Used by**: `OcrService` and `OcrReviewScreen`
+
+## Model: NotificationSettings
+- **Path**: `lib/features/settings/domain/models/notification_settings.dart`
+- **Type**: Domain Entity / DTO
+- **Serialization**: `fromJson`, `toJson` matching Supabase schema.

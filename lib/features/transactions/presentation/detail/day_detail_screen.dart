@@ -176,24 +176,28 @@ class _DayDetailBody extends ConsumerWidget {
               delegate: SliverChildBuilderDelegate((context, index) {
                 final transaction = transactions[index];
                 return TransactionGridTile(
-                  transaction: transaction,
-                  onTap: () async {
-                    final result = await context.push<TransactionMutationResult>(
-                      TransactionDetailScreen.routePath,
-                      extra: TransactionDetailRouteArgs(
-                        transaction: transaction,
-                        day: date,
-                      ),
+                      transaction: transaction,
+                      onTap: () async {
+                        final result = await context
+                            .push<TransactionMutationResult>(
+                              TransactionDetailScreen.routePath,
+                              extra: TransactionDetailRouteArgs(
+                                transaction: transaction,
+                                day: date,
+                              ),
+                            );
+                        if (result == null || !context.mounted) return;
+                        _applyMutation(ref, result);
+                      },
+                    )
+                    .animate(delay: (30 * index).ms)
+                    .fade()
+                    .slideY(
+                      begin: 0.1,
+                      end: 0,
+                      curve: Curves.easeOutQuad,
+                      duration: 300.ms,
                     );
-                    if (result == null || !context.mounted) return;
-                    _applyMutation(ref, result);
-                  },
-                ).animate(delay: (30 * index).ms).fade().slideY(
-                  begin: 0.1,
-                  end: 0,
-                  curve: Curves.easeOutQuad,
-                  duration: 300.ms,
-                );
               }, childCount: transactions.length),
             ),
           ),

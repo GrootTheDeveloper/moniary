@@ -487,7 +487,11 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.star_outline, color: Colors.white54, size: 24),
+                  const Icon(
+                    Icons.star_outline,
+                    color: Colors.white54,
+                    size: 24,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -963,7 +967,10 @@ class _CategoryIcon extends StatelessWidget {
     return Container(
       width: 32,
       height: 32,
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.15), shape: BoxShape.circle),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        shape: BoxShape.circle,
+      ),
       child: Icon(_getIconData(category.icon), color: color, size: 18),
     );
   }
@@ -998,12 +1005,11 @@ class _WalletIcon extends StatelessWidget {
     return Container(
       width: 32,
       height: 32,
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.15), shape: BoxShape.circle),
-      child: Icon(
-        _getWalletIconData(wallet.icon),
-        color: color,
-        size: 18,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        shape: BoxShape.circle,
       ),
+      child: Icon(_getWalletIconData(wallet.icon), color: color, size: 18),
     );
   }
 

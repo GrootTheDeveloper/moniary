@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moniary/features/settings/data/repositories/import_repository.dart';
-// Removed csv_transaction_row
 
 void main() {
   late ImportRepository repository;
@@ -27,12 +26,12 @@ void main() {
 
     final rows = await repository.parseCsv(tempFile.path);
     expect(rows.length, 2);
-    
+
     expect(rows[0].isValid, true);
     expect(rows[0].amount, 50000);
     expect(rows[0].categoryName, 'Food');
     expect(rows[0].note, 'Lunch');
-    
+
     expect(rows[1].isValid, true);
     expect(rows[1].amount, 20000);
     expect(rows[1].typeStr, 'Income');
@@ -47,17 +46,17 @@ invalid_date,50000,Expense,Food,Lunch
 
     final rows = await repository.parseCsv(tempFile.path);
     expect(rows.length, 3);
-    
+
     expect(rows[0].isValid, false);
     expect(rows[0].errorMessage, 'INVALID_DATE');
-    
+
     expect(rows[1].isValid, false);
     expect(rows[1].errorMessage, 'INVALID_AMOUNT');
-    
+
     expect(rows[2].isValid, false);
     expect(rows[2].errorMessage, 'MISSING_COLUMNS');
   });
-  
+
   test('parseCsv skips empty rows', () async {
     await tempFile.writeAsString('''Date,Amount,Type,Category,Note
 2026-05-30,50000,Expense,Food,Lunch

@@ -134,7 +134,8 @@ class _WalletTile extends StatelessWidget {
           child: ObscurableAmountText(
             prefixText: '${_walletTypeLabel(context, wallet.type)} • ',
             amountText: balanceLabel,
-            suffixText: ' • ${wallet.isActive ? context.l10n.walletActive : context.l10n.walletInactive}',
+            suffixText:
+                ' • ${wallet.isActive ? context.l10n.walletActive : context.l10n.walletInactive}',
           ),
         ),
         trailing: IconButton(

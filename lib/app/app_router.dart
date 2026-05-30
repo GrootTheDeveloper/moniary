@@ -24,8 +24,10 @@ import '../features/settings/presentation/legal/data_deletion_policy_screen.dart
 import '../features/settings/presentation/legal/data_retention_policy_screen.dart';
 import '../features/settings/presentation/privacy/data_safety_screen.dart';
 import '../features/settings/presentation/privacy/data_transparency_screen.dart';
+import '../features/settings/presentation/account/active_sessions_screen.dart';
 import '../features/settings/presentation/account/delete_account_help_screen.dart';
 import '../features/settings/presentation/account/deletion_request_screen.dart';
+import '../features/settings/presentation/account/restore_account_screen.dart';
 import '../features/settings/presentation/export/export_data_screen.dart';
 import '../features/settings/presentation/export/export_history_screen.dart';
 import '../features/settings/presentation/export/export_troubleshooting_screen.dart';
@@ -42,6 +44,7 @@ import '../features/settings/presentation/privacy/privacy_policy_screen.dart';
 import '../features/settings/presentation/privacy/privacy_request_detail_screen.dart';
 import '../features/settings/presentation/privacy/app_lock_screen.dart';
 import '../features/settings/presentation/import/import_data_screen.dart';
+import '../features/settings/presentation/notifications/notification_settings_screen.dart';
 import '../features/settings/application/privacy_controller.dart';
 import '../features/settings/presentation/profile_screen.dart';
 import '../features/statistics/presentation/statistics_view.dart';
@@ -57,6 +60,7 @@ import '../features/transactions/presentation/detail/day_detail_screen.dart';
 import '../features/transactions/presentation/detail/transaction_detail_screen.dart';
 import '../features/transactions/presentation/form/transaction_form_sheet.dart';
 import '../features/transactions/presentation/detail/transaction_route_args.dart';
+import '../features/auth/application/account_status_controller.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authStateStream = ref
@@ -98,6 +102,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ProfileSetupScreen.routePath,
       };
 
+      // Handle account soft delete status
+      final accountStatus = ref.read(accountStatusControllerProvider).value;
+      if (session != null && accountStatus == true) {
+        if (location != RestoreAccountScreen.routePath) {
+          return RestoreAccountScreen.routePath;
+        }
+      } else if (session != null &&
+          accountStatus == false &&
+          location == RestoreAccountScreen.routePath) {
+        return CalendarScreen.routePath;
+      }
+
       if (!onboardingSeen &&
           location != SplashScreen.routePath &&
           location != OnboardingScreen.routePath) {
@@ -110,12 +126,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // App lock check
       if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
-        if (location != AppLockScreen.routePath && !publicRoutes.contains(location)) {
+        if (location != AppLockScreen.routePath &&
+            !publicRoutes.contains(location)) {
           return AppLockScreen.routePath;
         }
       } else {
         if (location == AppLockScreen.routePath) {
-          return CalendarScreen.routePath; // default fallback when authenticated
+          return CalendarScreen
+              .routePath; // default fallback when authenticated
         }
       }
 
@@ -163,11 +181,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: 'settings',
-                pageBuilder: (context, state) =>
-                    buildSlideTransitionPage(
-                      state: state,
-                      child: const Text('SettingsPlaceholder'),
-                    ),
+                pageBuilder: (context, state) => buildSlideTransitionPage(
+                  state: state,
+                  child: const Text('SettingsPlaceholder'),
+                ),
               ),
               GoRoute(
                 path: GroupsScreen.routePath,
@@ -373,10 +390,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: '/active-sessions',
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const ActiveSessionsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RestoreAccountScreen.routePath,
+        builder: (context, state) => const RestoreAccountScreen(),
+      ),
+      GoRoute(
         path: ExportDataScreen.routePath,
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
           child: const ExportDataScreen(),
+        ),
+      ),
+      GoRoute(
+        path: NotificationSettingsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const NotificationSettingsScreen(),
         ),
       ),
       GoRoute(
@@ -477,7 +512,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   );
 
   ref.listen(privacyControllerProvider, (previous, next) {
-    if (previous?.isAuthenticated != next.isAuthenticated || previous?.isAppLocked != next.isAppLocked) {
+    if (previous?.isAuthenticated != next.isAuthenticated ||
+        previous?.isAppLocked != next.isAppLocked) {
+      router.refresh();
+    }
+  });
+
+  ref.listen(accountStatusControllerProvider, (previous, next) {
+    if (previous?.value != next.value) {
       router.refresh();
     }
   });
