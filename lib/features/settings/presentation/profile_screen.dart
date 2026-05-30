@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/error_helpers.dart';
-import '../../../core/supabase/supabase_providers.dart';
+import '../../auth/application/auth_controller.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
@@ -49,30 +48,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (!_formKey.currentState!.validate()) return false;
 
     _setLinkingLoading(true, refreshSheet);
-    final client = ref.read(supabaseClientProvider);
     final messenger = ScaffoldMessenger.of(context);
     final email = _emailController.text.trim();
+    final password = _passwordController.text;
 
     try {
-      // 1. Update user credentials in Auth
-      await client.auth.updateUser(
-        UserAttributes(email: email, password: _passwordController.text),
+      await ref.read(authControllerProvider.notifier).linkEmailAccount(
+        email: email,
+        password: password,
       );
-
-      // 2. Call RPC to sync profile with database profiles table
-      try {
-        await client.rpc('initialize_user');
-      } catch (e) {
-        // Auth conversion can succeed even when the profile sync RPC is already satisfied.
-      }
-
-      final userId = client.auth.currentUser?.id;
-      if (userId != null) {
-        await client
-            .from('profiles')
-            .update({'email': email, 'login_provider': 'email'})
-            .eq('id', userId);
-      }
 
       if (mounted) {
         messenger.showSnackBar(
@@ -102,11 +86,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Future<void> _linkGoogleAccount(VoidCallback refreshSheet) async {
     _setLinkingLoading(true, refreshSheet);
-    final client = ref.read(supabaseClientProvider);
     final messenger = ScaffoldMessenger.of(context);
 
     try {
-      await client.auth.linkIdentity(OAuthProvider.google);
+      await ref.read(authControllerProvider.notifier).linkGoogleAccount();
       if (mounted) {
         messenger.showSnackBar(
           SnackBar(
@@ -188,7 +171,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       keyboardType: TextInputType.emailAddress,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        labelText: 'Email',
+                        labelText: context.l10n.loginEmail,
                         labelStyle: const TextStyle(color: Colors.white54),
                         prefixIcon: const Icon(
                           Icons.email_outlined,
@@ -203,10 +186,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) {
-                          return 'Nhập email hợp lệ';
+                          return context.l10n.validationEmailRequired;
                         }
                         if (!val.contains('@')) {
-                          return 'Email không hợp lệ';
+                          return context.l10n.validationEmailInvalid;
                         }
                         return null;
                       },
@@ -232,7 +215,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                       validator: (val) {
                         if (val == null || val.length < 6) {
-                          return 'Mật khẩu phải từ 6 ký tự';
+                          return context.l10n.validationPasswordMinLength(6);
                         }
                         return null;
                       },
@@ -550,7 +533,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
 
     if (confirmed == true && context.mounted) {
-      await ref.read(supabaseClientProvider).auth.signOut();
+      await ref.read(authControllerProvider.notifier).signOut();
       if (context.mounted) {
         context.go(LoginScreen.routePath);
       }

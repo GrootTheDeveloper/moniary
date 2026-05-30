@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/supabase/supabase_providers.dart';
+import '../../../../l10n/l10n_extension.dart';
 import '../../application/account/active_sessions_controller.dart';
 import '../../domain/account/active_session.dart';
 
@@ -18,11 +19,11 @@ class ActiveSessionsScreen extends ConsumerWidget {
     final state = ref.watch(activeSessionsControllerProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Thiết bị & Phiên')),
+      appBar: AppBar(title: Text(context.l10n.activeSessionsTitle)),
       body: state.when(
         data: (sessions) {
           if (sessions.isEmpty) {
-            return const Center(child: Text('Không có dữ liệu.'));
+            return Center(child: Text(context.l10n.activeSessionsEmpty));
           }
           return RefreshIndicator(
             onRefresh: () =>
@@ -42,12 +43,12 @@ class ActiveSessionsScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Lỗi: $error'),
+              Text(context.l10n.activeSessionsError(error.toString())),
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: () =>
                     ref.refresh(activeSessionsControllerProvider.future),
-                child: const Text('Thử lại'),
+                child: Text(context.l10n.commonRetry),
               ),
             ],
           ),
@@ -62,53 +63,61 @@ class _SessionTile extends ConsumerWidget {
 
   final ActiveSession session;
 
-  String _parseDeviceName(String? userAgent) {
-    if (userAgent == null || userAgent.isEmpty)
-      return 'Thiết bị không xác định';
+  String _parseDeviceName(String? userAgent, BuildContext context) {
+    if (userAgent == null || userAgent.isEmpty) {
+      return context.l10n.activeSessionsUnknownDevice;
+    }
 
     final ua = userAgent.toLowerCase();
 
     // Parse OS
     String os = '';
-    if (ua.contains('iphone'))
+    if (ua.contains('iphone')) {
       os = 'iPhone';
-    else if (ua.contains('ipad'))
+    } else if (ua.contains('ipad')) {
       os = 'iPad';
-    else if (ua.contains('mac os'))
+    } else if (ua.contains('mac os')) {
       os = 'macOS';
-    else if (ua.contains('windows'))
+    } else if (ua.contains('windows')) {
       os = 'Windows';
-    else if (ua.contains('android'))
+    } else if (ua.contains('android')) {
       os = 'Android';
-    else if (ua.contains('linux'))
+    } else if (ua.contains('linux')) {
       os = 'Linux';
-    else
-      os = 'Hệ điều hành khác';
+    } else {
+      os = context.l10n.activeSessionsOtherOs;
+    }
 
     // Parse Browser/App
     String browser = '';
-    if (ua.contains('moniary') || ua.contains('dart'))
+    if (ua.contains('moniary') || ua.contains('dart')) {
       browser = 'Moniary App';
-    else if (ua.contains('edg/'))
+    } else if (ua.contains('edg/')) {
       browser = 'Edge';
-    else if (ua.contains('chrome/') && !ua.contains('edg/'))
+    } else if (ua.contains('chrome/') && !ua.contains('edg/')) {
       browser = 'Chrome';
-    else if (ua.contains('safari/') && !ua.contains('chrome/'))
+    } else if (ua.contains('safari/') && !ua.contains('chrome/')) {
       browser = 'Safari';
-    else if (ua.contains('firefox/'))
+    } else if (ua.contains('firefox/')) {
       browser = 'Firefox';
-    else
-      browser = 'Trình duyệt/App khác';
+    } else {
+      browser = context.l10n.activeSessionsOtherBrowser;
+    }
 
-    return '$browser trên $os';
+    return context.l10n.activeSessionsDeviceOn(browser, os);
   }
 
   IconData _getDeviceIcon(String? userAgent) {
-    if (userAgent == null) return Icons.device_unknown;
+    if (userAgent == null) {
+      return Icons.device_unknown;
+    }
     final ua = userAgent.toLowerCase();
-    if (ua.contains('iphone') || ua.contains('android'))
+    if (ua.contains('iphone') || ua.contains('android')) {
       return Icons.phone_android;
-    if (ua.contains('ipad')) return Icons.tablet_mac;
+    }
+    if (ua.contains('ipad')) {
+      return Icons.tablet_mac;
+    }
     return Icons.computer;
   }
 
@@ -131,11 +140,11 @@ class _SessionTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentSession = ref.watch(supabaseClientProvider).auth.currentSession;
+    final currentSession = ref.watch(currentSessionProvider);
     final currentSessionId = _getCurrentSessionId(currentSession);
     final isCurrent = currentSessionId == session.id;
 
-    final deviceName = _parseDeviceName(session.userAgent);
+    final deviceName = _parseDeviceName(session.userAgent, context);
     final icon = _getDeviceIcon(session.userAgent);
 
     final lastActive = DateFormat('dd/MM/yyyy HH:mm').format(session.updatedAt);
@@ -162,7 +171,7 @@ class _SessionTile extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'Thiết bị này',
+                context.l10n.activeSessionsThisDevice,
                 style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(context).colorScheme.onSecondaryContainer,
@@ -176,10 +185,10 @@ class _SessionTile extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Đăng nhập lần đầu: $createdAt'),
-            Text('Hoạt động gần nhất: $lastActive'),
+            Text(context.l10n.activeSessionsFirstLogin(createdAt)),
+            Text(context.l10n.activeSessionsLastActive(lastActive)),
             if (session.ip != null && session.ip!.isNotEmpty)
-              Text('IP: ${session.ip}'),
+              Text(context.l10n.activeSessionsIp(session.ip!)),
           ],
         ),
       ),
@@ -188,7 +197,7 @@ class _SessionTile extends ConsumerWidget {
           : IconButton(
               icon: const Icon(Icons.logout, color: Colors.red),
               onPressed: () => _showRevokeDialog(context, ref),
-              tooltip: 'Đăng xuất thiết bị này',
+              tooltip: context.l10n.activeSessionsRevokeTooltip,
             ),
       isThreeLine: true,
     );
@@ -199,14 +208,12 @@ class _SessionTile extends ConsumerWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Đăng xuất thiết bị?'),
-          content: const Text(
-            'Thiết bị này sẽ bị đăng xuất khỏi tài khoản của bạn ngay lập tức.',
-          ),
+          title: Text(context.l10n.activeSessionsRevokeTitle),
+          content: Text(context.l10n.activeSessionsRevokeContent),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Hủy'),
+              child: Text(context.l10n.commonCancel),
             ),
             FilledButton(
               onPressed: () {
@@ -215,7 +222,7 @@ class _SessionTile extends ConsumerWidget {
                     .read(activeSessionsControllerProvider.notifier)
                     .revokeSession(session.id);
               },
-              child: const Text('Đăng xuất'),
+              child: Text(context.l10n.activeSessionsRevokeConfirm),
             ),
           ],
         );

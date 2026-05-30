@@ -426,5 +426,86 @@
   "importErrorUnknown": "Lỗi không xác định",
   "importErrorMissingColumns": "Thiếu cột (yêu cầu 5)",
   "importErrorInvalidDate": "Định dạng ngày không hợp lệ (dùng YYYY-MM-DD)",
-  "importErrorInvalidAmount": "Số tiền không hợp lệ"
+  "importErrorInvalidAmount": "Số tiền không hợp lệ",
+  "importRetry": "Thử lại",
+  "activeSessionsTitle": "Thiết bị & Phiên",
+  "activeSessionsEmpty": "Không có dữ liệu.",
+  "activeSessionsError": "Lỗi: {error}",
+  "@activeSessionsError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsUnknownDevice": "Thiết bị không xác định",
+  "activeSessionsThisDevice": "Thiết bị này",
+  "activeSessionsFirstLogin": "Đăng nhập lần đầu: {date}",
+  "@activeSessionsFirstLogin": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsLastActive": "Hoạt động gần nhất: {date}",
+  "@activeSessionsLastActive": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsIp": "IP: {ip}",
+  "@activeSessionsIp": {
+    "placeholders": {
+      "ip": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsRevokeTooltip": "Đăng xuất thiết bị này",
+  "activeSessionsRevokeTitle": "Đăng xuất thiết bị?",
+  "activeSessionsRevokeContent": "Thiết bị này sẽ bị đăng xuất khỏi tài khoản của bạn ngay lập tức.",
+  "activeSessionsRevokeConfirm": "Đăng xuất",
+  "restoreAccountTitle": "Tài khoản đang chờ xóa",
+  "restoreAccountBody": "Tài khoản của bạn đã bị vô hiệu hóa và đang trong thời gian ân hạn 30 ngày trước khi bị xóa vĩnh viễn.\n\nBạn có muốn khôi phục lại tài khoản không?",
+  "restoreAccountButton": "Khôi phục tài khoản",
+  "validationEmailRequired": "Email không được trống",
+  "validationEmailInvalid": "Email không hợp lệ",
+  "validationPasswordMinLength": "Mật khẩu phải từ {min} ký tự",
+  "@validationPasswordMinLength": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "exportFormatCsvDesc": "Bảng dữ liệu nhẹ, mở được bằng Excel hoặc Google Sheets.",
+  "exportFormatXlsxDesc": "Workbook .xlsx cho Excel, Sheets hoặc WPS Office.",
+  "exportFormatPdfDesc": "Báo cáo dễ đọc để lưu hoặc gửi cho người khác.",
+  "exportFileSavedAt": "File đã được lưu tại:\n{path}",
+  "@exportFileSavedAt": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "exportNoAppToShare": "Chưa tìm thấy app phù hợp để chia sẻ file.",
+  "exportNoAppToOpen": "Chưa tìm thấy app phù hợp để mở file.",
+  "commonComingSoon": "Sắp có",
+  "activeSessionsDeviceOn": "{browser} trên {os}",
+  "@activeSessionsDeviceOn": {
+    "placeholders": {
+      "browser": {
+        "type": "String"
+      },
+      "os": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsOtherOs": "Hệ điều hành khác",
+  "activeSessionsOtherBrowser": "Trình duyệt/App khác"
 }

@@ -94,4 +94,18 @@ class ProfileRepository {
       throw const AppException('errorConnection');
     }
   }
+
+  void setMockEmailAndProvider({
+    required String email,
+    required String loginProvider,
+  }) {
+    _mockProfile = UserProfile(
+      id: 'mock-user-id',
+      fullName: _mockProfile?.fullName ?? '',
+      email: email,
+      avatarUrl: _mockProfile?.avatarUrl,
+      loginProvider: loginProvider,
+      timezone: _mockProfile?.timezone ?? AppConstants.defaultTimezone,
+    );
+  }
 }

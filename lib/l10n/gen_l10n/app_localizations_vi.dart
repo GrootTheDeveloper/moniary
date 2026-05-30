@@ -1314,4 +1314,110 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get importErrorInvalidAmount => 'Số tiền không hợp lệ';
+
+  @override
+  String get importRetry => 'Thử lại';
+
+  @override
+  String get activeSessionsTitle => 'Thiết bị & Phiên';
+
+  @override
+  String get activeSessionsEmpty => 'Không có dữ liệu.';
+
+  @override
+  String activeSessionsError(String error) {
+    return 'Lỗi: $error';
+  }
+
+  @override
+  String get activeSessionsUnknownDevice => 'Thiết bị không xác định';
+
+  @override
+  String get activeSessionsThisDevice => 'Thiết bị này';
+
+  @override
+  String activeSessionsFirstLogin(String date) {
+    return 'Đăng nhập lần đầu: $date';
+  }
+
+  @override
+  String activeSessionsLastActive(String date) {
+    return 'Hoạt động gần nhất: $date';
+  }
+
+  @override
+  String activeSessionsIp(String ip) {
+    return 'IP: $ip';
+  }
+
+  @override
+  String get activeSessionsRevokeTooltip => 'Đăng xuất thiết bị này';
+
+  @override
+  String get activeSessionsRevokeTitle => 'Đăng xuất thiết bị?';
+
+  @override
+  String get activeSessionsRevokeContent =>
+      'Thiết bị này sẽ bị đăng xuất khỏi tài khoản của bạn ngay lập tức.';
+
+  @override
+  String get activeSessionsRevokeConfirm => 'Đăng xuất';
+
+  @override
+  String get restoreAccountTitle => 'Tài khoản đang chờ xóa';
+
+  @override
+  String get restoreAccountBody =>
+      'Tài khoản của bạn đã bị vô hiệu hóa và đang trong thời gian ân hạn 30 ngày trước khi bị xóa vĩnh viễn.\n\nBạn có muốn khôi phục lại tài khoản không?';
+
+  @override
+  String get restoreAccountButton => 'Khôi phục tài khoản';
+
+  @override
+  String get validationEmailRequired => 'Email không được trống';
+
+  @override
+  String get validationEmailInvalid => 'Email không hợp lệ';
+
+  @override
+  String validationPasswordMinLength(int min) {
+    return 'Mật khẩu phải từ $min ký tự';
+  }
+
+  @override
+  String get exportFormatCsvDesc =>
+      'Bảng dữ liệu nhẹ, mở được bằng Excel hoặc Google Sheets.';
+
+  @override
+  String get exportFormatXlsxDesc =>
+      'Workbook .xlsx cho Excel, Sheets hoặc WPS Office.';
+
+  @override
+  String get exportFormatPdfDesc =>
+      'Báo cáo dễ đọc để lưu hoặc gửi cho người khác.';
+
+  @override
+  String exportFileSavedAt(String path) {
+    return 'File đã được lưu tại:\n$path';
+  }
+
+  @override
+  String get exportNoAppToShare => 'Chưa tìm thấy app phù hợp để chia sẻ file.';
+
+  @override
+  String get exportNoAppToOpen => 'Chưa tìm thấy app phù hợp để mở file.';
+
+  @override
+  String get commonComingSoon => 'Sắp có';
+
+  @override
+  String activeSessionsDeviceOn(String browser, String os) {
+    return '$browser trên $os';
+  }
+
+  @override
+  String get activeSessionsOtherOs => 'Hệ điều hành khác';
+
+  @override
+  String get activeSessionsOtherBrowser => 'Trình duyệt/App khác';
 }

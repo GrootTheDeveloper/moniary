@@ -1314,4 +1314,110 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get importErrorInvalidAmount => 'Invalid amount';
+
+  @override
+  String get importRetry => 'Try again';
+
+  @override
+  String get activeSessionsTitle => 'Devices & Sessions';
+
+  @override
+  String get activeSessionsEmpty => 'No active sessions found.';
+
+  @override
+  String activeSessionsError(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get activeSessionsUnknownDevice => 'Unknown device';
+
+  @override
+  String get activeSessionsThisDevice => 'This device';
+
+  @override
+  String activeSessionsFirstLogin(String date) {
+    return 'First login: $date';
+  }
+
+  @override
+  String activeSessionsLastActive(String date) {
+    return 'Last active: $date';
+  }
+
+  @override
+  String activeSessionsIp(String ip) {
+    return 'IP: $ip';
+  }
+
+  @override
+  String get activeSessionsRevokeTooltip => 'Log out this device';
+
+  @override
+  String get activeSessionsRevokeTitle => 'Log out device?';
+
+  @override
+  String get activeSessionsRevokeContent =>
+      'This device will be immediately logged out of your account.';
+
+  @override
+  String get activeSessionsRevokeConfirm => 'Log out';
+
+  @override
+  String get restoreAccountTitle => 'Account Pending Deletion';
+
+  @override
+  String get restoreAccountBody =>
+      'Your account has been deactivated and is in a 30-day grace period before permanent deletion.\n\nDo you want to restore your account?';
+
+  @override
+  String get restoreAccountButton => 'Restore Account';
+
+  @override
+  String get validationEmailRequired => 'Email is required';
+
+  @override
+  String get validationEmailInvalid => 'Invalid email';
+
+  @override
+  String validationPasswordMinLength(int min) {
+    return 'Password must be at least $min characters';
+  }
+
+  @override
+  String get exportFormatCsvDesc =>
+      'Lightweight data sheet, opens in Excel or Google Sheets.';
+
+  @override
+  String get exportFormatXlsxDesc =>
+      '.xlsx workbook for Excel, Sheets, or WPS Office.';
+
+  @override
+  String get exportFormatPdfDesc =>
+      'Easy-to-read report to save or share with others.';
+
+  @override
+  String exportFileSavedAt(String path) {
+    return 'File has been saved at:\n$path';
+  }
+
+  @override
+  String get exportNoAppToShare => 'No suitable app found to share the file.';
+
+  @override
+  String get exportNoAppToOpen => 'No suitable app found to open the file.';
+
+  @override
+  String get commonComingSoon => 'Coming soon';
+
+  @override
+  String activeSessionsDeviceOn(String browser, String os) {
+    return '$browser on $os';
+  }
+
+  @override
+  String get activeSessionsOtherOs => 'Other OS';
+
+  @override
+  String get activeSessionsOtherBrowser => 'Other browser/app';
 }

@@ -12,14 +12,27 @@ import '../../data/export/file_action_service.dart';
 import '../../domain/export/export_filters.dart';
 
 enum ExportFormat {
-  csv('CSV', 'Bảng dữ liệu nhẹ, mở được bằng Excel hoặc Google Sheets.'),
-  xlsx('Excel', 'Workbook .xlsx cho Excel, Sheets hoặc WPS Office.'),
-  pdf('PDF', 'Báo cáo dễ đọc để lưu hoặc gửi cho người khác.');
+  csv,
+  xlsx,
+  pdf,
+}
 
-  const ExportFormat(this.label, this.description);
+extension ExportFormatL10n on ExportFormat {
+  String getLabel(BuildContext context) {
+    return switch (this) {
+      ExportFormat.csv => 'CSV',
+      ExportFormat.xlsx => 'Excel',
+      ExportFormat.pdf => 'PDF',
+    };
+  }
 
-  final String label;
-  final String description;
+  String getDescription(BuildContext context) {
+    return switch (this) {
+      ExportFormat.csv => context.l10n.exportFormatCsvDesc,
+      ExportFormat.xlsx => context.l10n.exportFormatXlsxDesc,
+      ExportFormat.pdf => context.l10n.exportFormatPdfDesc,
+    };
+  }
 }
 
 class ExportDataScreen extends ConsumerStatefulWidget {
@@ -50,7 +63,7 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Xuất dữ liệu')),
+      appBar: AppBar(title: Text(context.l10n.exportTitle)),
       body: SafeArea(
         child: Stack(
           children: [
@@ -58,7 +71,7 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
               children: [
                 Text(
-                  'Định dạng file',
+                  context.l10n.exportFormat,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 12),
@@ -98,7 +111,7 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
                 FilledButton.icon(
                   onPressed: state.isLoading ? null : _export,
                   icon: const Icon(Icons.file_download_outlined),
-                  label: const Text('Xuất dữ liệu'),
+                  label: Text(context.l10n.exportButton),
                 ),
               ],
             ),
@@ -182,7 +195,7 @@ class _DataTypesCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Loại dữ liệu', style: Theme.of(context).textTheme.titleMedium),
+          Text(context.l10n.exportDataTypes, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           ...ExportDataType.values.map(
             (type) => CheckboxListTile(
@@ -250,18 +263,18 @@ class _FormatOption extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    format.label,
+                    format.getLabel(context),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    format.description,
+                    format.getDescription(context),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   if (!enabled) ...[
                     const SizedBox(height: 6),
                     Text(
-                      'Sắp có',
+                      context.l10n.commonComingSoon,
                       style: Theme.of(
                         context,
                       ).textTheme.bodyMedium?.copyWith(color: accent),
@@ -292,7 +305,7 @@ class _DateRangeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final label = filters.hasDateRange
         ? '${_dateLabel(filters.startDate)} - ${_dateLabel(filters.endDate)}'
-        : 'Tất cả thời gian';
+        : context.l10n.exportAllTime;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -310,7 +323,7 @@ class _DateRangeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Khoảng ngày',
+                  context.l10n.exportDateRange,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 4),
@@ -323,7 +336,7 @@ class _DateRangeCard extends StatelessWidget {
               onPressed: onClear,
               icon: const Icon(Icons.close_outlined),
             ),
-          TextButton(onPressed: onPick, child: const Text('Chọn')),
+          TextButton(onPressed: onPick, child: Text(context.l10n.commonSelect)),
         ],
       ),
     );
@@ -345,9 +358,9 @@ class _ExportCompleteDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Đã xuất dữ liệu'),
+      title: Text(context.l10n.exportDone),
       content: Text(
-        'File đã được lưu tại:\n${file.path}',
+        context.l10n.exportFileSavedAt(file.path),
         style: Theme.of(context).textTheme.bodyMedium,
       ),
       actions: [
@@ -361,14 +374,14 @@ class _ExportCompleteDialog extends StatelessWidget {
             }
             if (!shared) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Chưa tìm thấy app phù hợp để chia sẻ file.'),
+                SnackBar(
+                  content: Text(context.l10n.exportNoAppToShare),
                 ),
               );
             }
           },
           icon: const Icon(Icons.ios_share_outlined),
-          label: const Text('Chia sẻ'),
+          label: Text(context.l10n.commonShare),
         ),
         TextButton.icon(
           onPressed: () async {
@@ -380,8 +393,8 @@ class _ExportCompleteDialog extends StatelessWidget {
             }
             if (!opened) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Chưa tìm thấy app phù hợp để mở file.'),
+                SnackBar(
+                  content: Text(context.l10n.exportNoAppToOpen),
                 ),
               );
             }

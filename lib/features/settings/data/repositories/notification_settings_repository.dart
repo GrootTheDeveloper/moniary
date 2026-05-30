@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/supabase/app_exception.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../domain/models/notification_settings.dart';
 
 abstract class NotificationSettingsRepository {
@@ -19,7 +21,7 @@ class SupabaseNotificationSettingsRepository
   Future<NotificationSettings> getSettings() async {
     final user = _supabase.auth.currentUser;
     if (user == null) {
-      throw Exception('User is not logged in');
+      throw const AppException('User is not logged in', code: 'AUTH_REQUIRED');
     }
 
     final data = await _supabase
@@ -40,13 +42,18 @@ class SupabaseNotificationSettingsRepository
   Future<void> updateSettings(NotificationSettings settings) async {
     final user = _supabase.auth.currentUser;
     if (user == null) {
-      throw Exception('User is not logged in');
+      throw const AppException('User is not logged in', code: 'AUTH_REQUIRED');
     }
 
-    await _supabase
+    try {
+      await _supabase
         .from('notification_settings')
         .update(settings.toJson())
         .eq('user_id', user.id);
+    } catch (e, st) {
+      AppLogger.error('Failed to update notification settings', e, st);
+      rethrow;
+    }
   }
 }
 

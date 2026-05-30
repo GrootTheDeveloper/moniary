@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/supabase/supabase_providers.dart';
-import '../../../auth/application/account_status_controller.dart';
-import '../../../../app/app_theme.dart';
+import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../auth/application/account_status_controller.dart';
+import '../../../auth/application/auth_controller.dart';
 
 class RestoreAccountScreen extends ConsumerWidget {
   const RestoreAccountScreen({super.key});
@@ -41,7 +41,7 @@ class RestoreAccountScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
               Text(
-                'Tài khoản đang chờ xóa',
+                context.l10n.restoreAccountTitle,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -49,7 +49,7 @@ class RestoreAccountScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Tài khoản của bạn đã bị vô hiệu hóa và đang trong thời gian ân hạn 30 ngày trước khi bị xóa vĩnh viễn.\n\nBạn có muốn khôi phục lại tài khoản không?',
+                context.l10n.restoreAccountBody,
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
@@ -72,18 +72,18 @@ class RestoreAccountScreen extends ConsumerWidget {
                         ),
                       )
                     : const Icon(Icons.restore),
-                label: const Text('Khôi phục tài khoản'),
+                label: Text(context.l10n.restoreAccountButton),
               ),
               const SizedBox(height: 16),
               OutlinedButton.icon(
                 onPressed: state.isLoading
                     ? null
-                    : () {
-                        ref.read(supabaseClientProvider).auth.signOut();
-                        context.go('/');
+                    : () async {
+                        await ref.read(authControllerProvider.notifier).signOut();
+                        if (context.mounted) context.go('/');
                       },
                 icon: const Icon(Icons.logout),
-                label: const Text('Đăng xuất'),
+                label: Text(context.l10n.profileSignOut),
               ),
             ],
           ),

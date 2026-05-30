@@ -430,5 +430,86 @@
   "importErrorUnknown": "Unknown error",
   "importErrorMissingColumns": "Missing columns (expected 5)",
   "importErrorInvalidDate": "Invalid date format (use YYYY-MM-DD)",
-  "importErrorInvalidAmount": "Invalid amount"
+  "importErrorInvalidAmount": "Invalid amount",
+  "importRetry": "Try again",
+  "activeSessionsTitle": "Devices & Sessions",
+  "activeSessionsEmpty": "No active sessions found.",
+  "activeSessionsError": "Error: {error}",
+  "@activeSessionsError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsUnknownDevice": "Unknown device",
+  "activeSessionsThisDevice": "This device",
+  "activeSessionsFirstLogin": "First login: {date}",
+  "@activeSessionsFirstLogin": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsLastActive": "Last active: {date}",
+  "@activeSessionsLastActive": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsIp": "IP: {ip}",
+  "@activeSessionsIp": {
+    "placeholders": {
+      "ip": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsRevokeTooltip": "Log out this device",
+  "activeSessionsRevokeTitle": "Log out device?",
+  "activeSessionsRevokeContent": "This device will be immediately logged out of your account.",
+  "activeSessionsRevokeConfirm": "Log out",
+  "restoreAccountTitle": "Account Pending Deletion",
+  "restoreAccountBody": "Your account has been deactivated and is in a 30-day grace period before permanent deletion.\n\nDo you want to restore your account?",
+  "restoreAccountButton": "Restore Account",
+  "validationEmailRequired": "Email is required",
+  "validationEmailInvalid": "Invalid email",
+  "validationPasswordMinLength": "Password must be at least {min} characters",
+  "@validationPasswordMinLength": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "exportFormatCsvDesc": "Lightweight data sheet, opens in Excel or Google Sheets.",
+  "exportFormatXlsxDesc": ".xlsx workbook for Excel, Sheets, or WPS Office.",
+  "exportFormatPdfDesc": "Easy-to-read report to save or share with others.",
+  "exportFileSavedAt": "File has been saved at:\n{path}",
+  "@exportFileSavedAt": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "exportNoAppToShare": "No suitable app found to share the file.",
+  "exportNoAppToOpen": "No suitable app found to open the file.",
+  "commonComingSoon": "Coming soon",
+  "activeSessionsDeviceOn": "{browser} on {os}",
+  "@activeSessionsDeviceOn": {
+    "placeholders": {
+      "browser": {
+        "type": "String"
+      },
+      "os": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsOtherOs": "Other OS",
+  "activeSessionsOtherBrowser": "Other browser/app"
 }

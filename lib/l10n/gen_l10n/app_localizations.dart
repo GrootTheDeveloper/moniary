@@ -2521,6 +2521,180 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Số tiền không hợp lệ'**
   String get importErrorInvalidAmount;
+
+  /// No description provided for @importRetry.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử lại'**
+  String get importRetry;
+
+  /// No description provided for @activeSessionsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết bị & Phiên'**
+  String get activeSessionsTitle;
+
+  /// No description provided for @activeSessionsEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có dữ liệu.'**
+  String get activeSessionsEmpty;
+
+  /// No description provided for @activeSessionsError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lỗi: {error}'**
+  String activeSessionsError(String error);
+
+  /// No description provided for @activeSessionsUnknownDevice.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết bị không xác định'**
+  String get activeSessionsUnknownDevice;
+
+  /// No description provided for @activeSessionsThisDevice.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết bị này'**
+  String get activeSessionsThisDevice;
+
+  /// No description provided for @activeSessionsFirstLogin.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng nhập lần đầu: {date}'**
+  String activeSessionsFirstLogin(String date);
+
+  /// No description provided for @activeSessionsLastActive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoạt động gần nhất: {date}'**
+  String activeSessionsLastActive(String date);
+
+  /// No description provided for @activeSessionsIp.
+  ///
+  /// In vi, this message translates to:
+  /// **'IP: {ip}'**
+  String activeSessionsIp(String ip);
+
+  /// No description provided for @activeSessionsRevokeTooltip.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng xuất thiết bị này'**
+  String get activeSessionsRevokeTooltip;
+
+  /// No description provided for @activeSessionsRevokeTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng xuất thiết bị?'**
+  String get activeSessionsRevokeTitle;
+
+  /// No description provided for @activeSessionsRevokeContent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết bị này sẽ bị đăng xuất khỏi tài khoản của bạn ngay lập tức.'**
+  String get activeSessionsRevokeContent;
+
+  /// No description provided for @activeSessionsRevokeConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng xuất'**
+  String get activeSessionsRevokeConfirm;
+
+  /// No description provided for @restoreAccountTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tài khoản đang chờ xóa'**
+  String get restoreAccountTitle;
+
+  /// No description provided for @restoreAccountBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tài khoản của bạn đã bị vô hiệu hóa và đang trong thời gian ân hạn 30 ngày trước khi bị xóa vĩnh viễn.\n\nBạn có muốn khôi phục lại tài khoản không?'**
+  String get restoreAccountBody;
+
+  /// No description provided for @restoreAccountButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khôi phục tài khoản'**
+  String get restoreAccountButton;
+
+  /// No description provided for @validationEmailRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Email không được trống'**
+  String get validationEmailRequired;
+
+  /// No description provided for @validationEmailInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Email không hợp lệ'**
+  String get validationEmailInvalid;
+
+  /// No description provided for @validationPasswordMinLength.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mật khẩu phải từ {min} ký tự'**
+  String validationPasswordMinLength(int min);
+
+  /// No description provided for @exportFormatCsvDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bảng dữ liệu nhẹ, mở được bằng Excel hoặc Google Sheets.'**
+  String get exportFormatCsvDesc;
+
+  /// No description provided for @exportFormatXlsxDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Workbook .xlsx cho Excel, Sheets hoặc WPS Office.'**
+  String get exportFormatXlsxDesc;
+
+  /// No description provided for @exportFormatPdfDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo dễ đọc để lưu hoặc gửi cho người khác.'**
+  String get exportFormatPdfDesc;
+
+  /// No description provided for @exportFileSavedAt.
+  ///
+  /// In vi, this message translates to:
+  /// **'File đã được lưu tại:\n{path}'**
+  String exportFileSavedAt(String path);
+
+  /// No description provided for @exportNoAppToShare.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa tìm thấy app phù hợp để chia sẻ file.'**
+  String get exportNoAppToShare;
+
+  /// No description provided for @exportNoAppToOpen.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa tìm thấy app phù hợp để mở file.'**
+  String get exportNoAppToOpen;
+
+  /// No description provided for @commonComingSoon.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sắp có'**
+  String get commonComingSoon;
+
+  /// No description provided for @activeSessionsDeviceOn.
+  ///
+  /// In vi, this message translates to:
+  /// **'{browser} trên {os}'**
+  String activeSessionsDeviceOn(String browser, String os);
+
+  /// No description provided for @activeSessionsOtherOs.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hệ điều hành khác'**
+  String get activeSessionsOtherOs;
+
+  /// No description provided for @activeSessionsOtherBrowser.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trình duyệt/App khác'**
+  String get activeSessionsOtherBrowser;
 }
 
 class _AppLocalizationsDelegate
