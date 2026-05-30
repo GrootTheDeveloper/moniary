@@ -25,5 +25,6 @@
 - Follow Material 3 guidelines but lean heavily into custom dark-themed cards.
 - Add graceful loading, empty, and error states for every screen.
 - **Deep Aesthetic**: UI elements (like status pills, category/wallet icons) should avoid fully opaque, bright backgrounds. Instead, use a deep translucent effect. The standard pattern is a background of `color.withValues(alpha: 0.15)` paired with a foreground icon/text of `color`.
+- **Polaroid-Style Image Overlay**: For image displays (like transaction previews or detail cards), use a 1:1 `AspectRatio` container with deeply rounded corners (`borderRadius: BorderRadius.circular(32)`). Overlays (Amount, Note, Date, Tags) should sit directly on the image, separated by dark-to-transparent `LinearGradient` wrappers (e.g., `Colors.black87` to `Colors.transparent`) to ensure text legibility while maintaining an immersive, focused aesthetic without disjointed frames.
 - **Iconography**: Use `_outlined` icons globally. Avoid `_rounded`, `_filled`, or generic emojis.
 - **Colors**: Do not use raw Material generic colors (`Colors.amber`, `#FF9800`, etc.) even in mock data. Always map to `AppTheme` colors (e.g., `AppTheme.amber`, `#F6B24D`) to maintain the deep consistency.

@@ -177,209 +177,226 @@ class _TransactionDetailBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final accent = AppColor.fromHex(
-      transaction.categoryColor ?? transaction.walletColor,
+    final categoryColor = AppColor.fromHex(
+      transaction.categoryColor,
       fallback: transaction.isIncome ? AppTheme.success : AppTheme.amber,
     );
+    final walletColor = AppColor.fromHex(
+      transaction.walletColor,
+      fallback: AppTheme.mint,
+    );
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-      children: [
-        Container(
-          height: 280,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(28),
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [accent.withValues(alpha: 0.92), const Color(0xFF151F2B)],
+    return Center(
+      child: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        children: [
+          AspectRatio(
+          aspectRatio: 1,
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceRaised,
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(color: AppTheme.outline),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.16),
+                  blurRadius: 24,
+                  offset: const Offset(0, 12),
+                ),
+              ],
             ),
-          ),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              SupabaseImage(
-                imagePath: transaction.imagePath,
-                width: double.infinity,
-                height: double.infinity,
-                borderRadius: BorderRadius.circular(28),
-                fallbackIcon: Icons.local_offer_outlined,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(28),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      const Color(0xFF151F2B).withValues(alpha: 0.8),
-                    ],
-                  ),
-                ),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32),
+              child: Stack(
+                fit: StackFit.expand,
                 children: [
-                  const SizedBox(height: 60),
-                  Text(
-                    '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: transaction.isIncome
-                          ? AppTheme.success
-                          : AppTheme.danger,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        const Shadow(
-                          offset: Offset(0, 2),
-                          blurRadius: 10,
-                          color: Colors.black54,
+                  SupabaseImage(
+                    imagePath: transaction.imagePath,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fallbackIcon: Icons.receipt_long_outlined,
+                  ),
+                  
+                  // Top Overlay: Date, Category and Wallet
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.black54, Colors.transparent],
                         ),
-                      ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            DateFormat(
+                              'dd MMMM yyyy • HH:mm',
+                              Localizations.localeOf(context).toString(),
+                            ).format(transaction.transactionDate),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              shadows: [
+                                Shadow(
+                                  offset: Offset(0, 1),
+                                  blurRadius: 4,
+                                  color: Colors.black87,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                child: _TagPill(
+                                  icon: Icons.category_outlined,
+                                  label: transaction.categoryName,
+                                  color: categoryColor,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: _TagPill(
+                                  icon: Icons.account_balance_wallet_outlined,
+                                  label: transaction.walletName,
+                                  color: walletColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    transaction.note?.trim().isNotEmpty == true
-                        ? transaction.note!.trim()
-                        : transaction.categoryName,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
-                      shadows: [
-                        const Shadow(
-                          offset: Offset(0, 2),
-                          blurRadius: 10,
-                          color: Colors.black54,
+
+                  // Bottom Overlay: Amount, Note
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        bottom: 24,
+                        top: 64,
+                      ),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [Colors.black87, Colors.transparent],
                         ),
-                      ],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    DateFormat(
-                      'dd MMMM yyyy • HH:mm',
-                      Localizations.localeOf(context).toString(),
-                    ).format(transaction.transactionDate),
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.white70,
-                      shadows: [
-                        const Shadow(
-                          offset: Offset(0, 2),
-                          blurRadius: 4,
-                          color: Colors.black54,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        _InfoCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                context.l10n.transactionNote,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                transaction.note?.trim().isNotEmpty == true
-                    ? transaction.note!.trim()
-                    : context.l10n.transactionNoteEmpty,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Divider(color: AppTheme.outline),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _InfoItem(
-                      label: context.l10n.transactionCategory,
-                      value: transaction.categoryName,
-                      color: accent,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _InfoItem(
-                      label: context.l10n.transactionWallet,
-                      value: transaction.walletName,
-                      color: AppColor.fromHex(
-                        transaction.walletColor,
-                        fallback: AppTheme.mint,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: transaction.isIncome
+                                  ? AppTheme.success
+                                  : Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          if (transaction.note?.trim().isNotEmpty == true)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.black45,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Text(
+                                transaction.note!.trim(),
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            )
+                          else
+                            Text(
+                              context.l10n.transactionNoteEmpty,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.white70,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                        ],
                       ),
                     ),
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class _InfoCard extends StatelessWidget {
-  const _InfoCard({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.outline),
+          ),
+        ],
       ),
-      child: child,
     );
   }
 }
 
-class _InfoItem extends StatelessWidget {
-  const _InfoItem({
+class _TagPill extends StatelessWidget {
+  const _TagPill({
+    required this.icon,
     required this.label,
-    required this.value,
     required this.color,
   });
 
+  final IconData icon;
   final String label;
-  final String value;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: Theme.of(context).textTheme.bodyMedium),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.18),
-            borderRadius: BorderRadius.circular(14),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-          child: Text(
-            value,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(color: color),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

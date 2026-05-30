@@ -12,7 +12,7 @@
 ## Feature: Calendar
 - **Purpose**: View transactions in a monthly calendar format.
 - **Main files**: `features/calendar/`
-- **UI Architecture**: Zero-scroll optimized layout with a deep blue accent theme. Utilizes `SingleChildScrollView` for filter rows to prevent OOM rendering issues. No separate data layer (consumes `TransactionRepository`).
+- **UI Architecture**: Zero-scroll optimized layout with a deep blue accent theme. Features a seamless "In-Place" toggle: pressing "Today" instantly replaces the month calendar grid with a scrollable 3xN grid of today's images, hiding the month selector for maximum focus. Utilizes `SingleChildScrollView` for filter rows to prevent OOM rendering issues. No separate data layer (consumes `TransactionRepository`).
 
 ## Feature: Statistics
 - **Purpose**: View financial analytics, charts, and trends.
