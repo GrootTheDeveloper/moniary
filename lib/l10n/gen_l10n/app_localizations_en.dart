@@ -844,7 +844,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose CSV, Excel, or PDF to download personal data.';
 
   @override
-  String get profilePrivacyCenter => 'Privacy center';
+  String get profileImportData => 'Import Data';
+
+  @override
+  String get profileImportSubtitle => 'Import from CSV file';
+
+  @override
+  String get profilePrivacyCenter => 'Privacy Center';
 
   @override
   String get profilePrivacySubtitle =>

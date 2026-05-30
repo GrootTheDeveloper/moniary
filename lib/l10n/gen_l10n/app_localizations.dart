@@ -1637,13 +1637,25 @@ abstract class AppLocalizations {
   /// No description provided for @profileExportSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Chọn CSV, Excel hoặc PDF để tải dữ liệu cá nhân.'**
+  /// **'CSV, XLSX, PDF'**
   String get profileExportSubtitle;
+
+  /// No description provided for @profileImportData.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập dữ liệu'**
+  String get profileImportData;
+
+  /// No description provided for @profileImportSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập từ file CSV'**
+  String get profileImportSubtitle;
 
   /// No description provided for @profilePrivacyCenter.
   ///
   /// In vi, this message translates to:
-  /// **'Trung tâm riêng tư'**
+  /// **'Bảo mật & Quyền riêng tư'**
   String get profilePrivacyCenter;
 
   /// No description provided for @profilePrivacySubtitle.

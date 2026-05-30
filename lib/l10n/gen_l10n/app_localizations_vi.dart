@@ -841,11 +841,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileExportData => 'Xuất dữ liệu';
 
   @override
-  String get profileExportSubtitle =>
-      'Chọn CSV, Excel hoặc PDF để tải dữ liệu cá nhân.';
+  String get profileExportSubtitle => 'CSV, XLSX, PDF';
 
   @override
-  String get profilePrivacyCenter => 'Trung tâm riêng tư';
+  String get profileImportData => 'Nhập dữ liệu';
+
+  @override
+  String get profileImportSubtitle => 'Nhập từ file CSV';
+
+  @override
+  String get profilePrivacyCenter => 'Bảo mật & Quyền riêng tư';
 
   @override
   String get profilePrivacySubtitle =>

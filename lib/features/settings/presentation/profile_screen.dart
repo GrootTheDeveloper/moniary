@@ -12,6 +12,7 @@ import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../application/account/account_actions_controller.dart';
 import 'export/export_data_screen.dart';
+import 'import/import_data_screen.dart';
 import 'privacy/privacy_center_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
@@ -434,6 +435,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       _SettingsGroup(
                         title: context.l10n.profileMyData,
                         children: [
+                          _SettingsTile(
+                            icon: Icons.file_upload_outlined,
+                            title: context.l10n.profileImportData,
+                            subtitle: context.l10n.profileImportSubtitle,
+                            onTap: () =>
+                                context.push(ImportDataScreen.routePath),
+                          ),
                           _SettingsTile(
                             icon: Icons.file_download_outlined,
                             title: context.l10n.profileExportData,

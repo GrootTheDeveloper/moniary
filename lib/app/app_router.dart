@@ -41,6 +41,7 @@ import '../features/settings/presentation/privacy/privacy_contact_screen.dart';
 import '../features/settings/presentation/privacy/privacy_policy_screen.dart';
 import '../features/settings/presentation/privacy/privacy_request_detail_screen.dart';
 import '../features/settings/presentation/privacy/app_lock_screen.dart';
+import '../features/settings/presentation/import/import_data_screen.dart';
 import '../features/settings/application/privacy_controller.dart';
 import '../features/settings/presentation/profile_screen.dart';
 import '../features/statistics/presentation/statistics_view.dart';
@@ -160,6 +161,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           StatefulShellBranch(
             routes: [
+              GoRoute(
+                path: 'settings',
+                pageBuilder: (context, state) =>
+                    buildSlideTransitionPage(
+                      context,
+                      state,
+                      const Text('SettingsPlaceholder'),
+                    ),
+              ),
               GoRoute(
                 path: GroupsScreen.routePath,
                 builder: (context, state) => const GroupsScreen(),
@@ -368,6 +378,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
           child: const ExportDataScreen(),
+        ),
+      ),
+      GoRoute(
+        path: ImportDataScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const ImportDataScreen(),
         ),
       ),
       GoRoute(
