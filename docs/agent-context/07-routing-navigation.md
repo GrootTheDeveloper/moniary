@@ -23,6 +23,8 @@
 | `/statistics` | `StatisticsView` | Tab 1 |
 | `/groups` | `GroupsScreen` | Tab 2 |
 | `/profile` | `ProfileScreen` | Tab 3 |
+| `/import` | `ImportDataScreen` | Accessed via Profile |
+| `/notification-settings` | `NotificationSettingsScreen` | Accessed via Profile |
 | `/scanning` | `ScanningScreen` | Slides up |
 | `/ocr-review` | `OcrReviewScreen` | Passes `OcrReviewArgs` |
 | `/camera` | `CameraScreen` | Slides up, accessed via Main FAB |
