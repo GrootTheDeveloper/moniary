@@ -1206,4 +1206,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonFeatureUnderDevelopment => 'Feature under development';
+
+  @override
+  String get appLockTitle => 'App Locked';
+
+  @override
+  String get appLockSubtitle => 'Please authenticate to continue';
+
+  @override
+  String get appLockUnlockButton => 'Unlock';
+
+  @override
+  String get privacyCenterAppLockTitle => 'App Lock';
+
+  @override
+  String get privacyCenterAppLockSubtitle =>
+      'Require fingerprint or face to open the app.';
+
+  @override
+  String get privacyCenterHideBalancesTitle => 'Hide Balances Mode';
+
+  @override
+  String get privacyCenterHideBalancesSubtitle =>
+      'Automatically blur all amounts in the app.';
+
+  @override
+  String get biometricReasonEnable => 'Authenticate to enable App Lock';
+
+  @override
+  String get biometricReasonUnlock => 'Unlock Moniary';
 }

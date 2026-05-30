@@ -46,10 +46,11 @@
 - **Note**: The real OCR backend is not yet integrated. The app currently relies exclusively on the mock implementation.
 
 ## Feature: Settings, Privacy & Data Export
-- **Purpose**: App settings, legal agreements, privacy requests, data export (CSV/XLSX/PDF).
+- **Purpose**: App settings, legal agreements, privacy requests, data export (CSV/XLSX/PDF), and App Security.
 - **Main files**: `features/settings/`
-- **UI screens**: Massive feature with 27+ screens (ExportDataScreen, PrivacyCenterScreen, AccountDeletionScreen, etc.).
-- **Repository**: `AccountRepository` (handles exports, privacy requests, file actions). Export history is stored locally in JSON format.
+- **UI screens**: Massive feature with 27+ screens (ExportDataScreen, PrivacyCenterScreen, AccountDeletionScreen, AppLockScreen, etc.).
+- **Security Features**: Biometric App Lock (FaceID/TouchID) and Hide Balances mode.
+- **Repository**: `AccountRepository` (handles exports, privacy requests, file actions), `PrivacyRepository` (handles Biometric state in SharedPreferences). Export history is stored locally in JSON format.
 
 ## Feature: Profile
 - **Purpose**: User profile setup and management.

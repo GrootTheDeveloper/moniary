@@ -27,3 +27,4 @@
 | `/ocr-review` | `OcrReviewScreen` | Passes `OcrReviewArgs` |
 | `/camera` | `CameraScreen` | Slides up, accessed via Main FAB |
 | `/transaction-form` | `TransactionFormScreen` | Used for manual creation or after taking/picking a photo |
+| `/app-lock` | `AppLockScreen` | Global lock screen for biometric authentication |

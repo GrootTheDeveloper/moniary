@@ -1205,5 +1205,34 @@ class AppLocalizationsVi extends AppLocalizations {
   String get scanReadError => 'Không thể đọc hóa đơn. Vui lòng thử lại.';
 
   @override
-  String get commonFeatureUnderDevelopment => 'Tính năng đang phát triển';
+  String get commonFeatureUnderDevelopment => 'Tính năng đang được phát triển';
+
+  @override
+  String get appLockTitle => 'Ứng dụng đã bị khóa';
+
+  @override
+  String get appLockSubtitle => 'Vui lòng xác thực để tiếp tục sử dụng';
+
+  @override
+  String get appLockUnlockButton => 'Mở khóa';
+
+  @override
+  String get privacyCenterAppLockTitle => 'Khóa ứng dụng';
+
+  @override
+  String get privacyCenterAppLockSubtitle =>
+      'Yêu cầu vân tay hoặc khuôn mặt khi mở ứng dụng.';
+
+  @override
+  String get privacyCenterHideBalancesTitle => 'Chế độ ẩn số dư';
+
+  @override
+  String get privacyCenterHideBalancesSubtitle =>
+      'Tự động làm mờ tất cả số tiền trên ứng dụng.';
+
+  @override
+  String get biometricReasonEnable => 'Xác thực để bật khóa ứng dụng';
+
+  @override
+  String get biometricReasonUnlock => 'Mở khóa Moniary';
 }

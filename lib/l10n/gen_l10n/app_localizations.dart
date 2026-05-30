@@ -2321,8 +2321,62 @@ abstract class AppLocalizations {
   /// No description provided for @commonFeatureUnderDevelopment.
   ///
   /// In vi, this message translates to:
-  /// **'Tính năng đang phát triển'**
+  /// **'Tính năng đang được phát triển'**
   String get commonFeatureUnderDevelopment;
+
+  /// No description provided for @appLockTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ứng dụng đã bị khóa'**
+  String get appLockTitle;
+
+  /// No description provided for @appLockSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng xác thực để tiếp tục sử dụng'**
+  String get appLockSubtitle;
+
+  /// No description provided for @appLockUnlockButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở khóa'**
+  String get appLockUnlockButton;
+
+  /// No description provided for @privacyCenterAppLockTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khóa ứng dụng'**
+  String get privacyCenterAppLockTitle;
+
+  /// No description provided for @privacyCenterAppLockSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu vân tay hoặc khuôn mặt khi mở ứng dụng.'**
+  String get privacyCenterAppLockSubtitle;
+
+  /// No description provided for @privacyCenterHideBalancesTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chế độ ẩn số dư'**
+  String get privacyCenterHideBalancesTitle;
+
+  /// No description provided for @privacyCenterHideBalancesSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự động làm mờ tất cả số tiền trên ứng dụng.'**
+  String get privacyCenterHideBalancesSubtitle;
+
+  /// No description provided for @biometricReasonEnable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác thực để bật khóa ứng dụng'**
+  String get biometricReasonEnable;
+
+  /// No description provided for @biometricReasonUnlock.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở khóa Moniary'**
+  String get biometricReasonUnlock;
 }
 
 class _AppLocalizationsDelegate

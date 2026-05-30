@@ -390,5 +390,14 @@
   "scanImageSelectError": "Không thể chọn ảnh. Vui lòng thử lại.",
   "scanImageRequiredError": "Vui lòng chọn ảnh hóa đơn trước.",
   "scanReadError": "Không thể đọc hóa đơn. Vui lòng thử lại.",
-  "commonFeatureUnderDevelopment": "Tính năng đang phát triển"
+  "commonFeatureUnderDevelopment": "Tính năng đang được phát triển",
+  "appLockTitle": "Ứng dụng đã bị khóa",
+  "appLockSubtitle": "Vui lòng xác thực để tiếp tục sử dụng",
+  "appLockUnlockButton": "Mở khóa",
+  "privacyCenterAppLockTitle": "Khóa ứng dụng",
+  "privacyCenterAppLockSubtitle": "Yêu cầu vân tay hoặc khuôn mặt khi mở ứng dụng.",
+  "privacyCenterHideBalancesTitle": "Chế độ ẩn số dư",
+  "privacyCenterHideBalancesSubtitle": "Tự động làm mờ tất cả số tiền trên ứng dụng.",
+  "biometricReasonEnable": "Xác thực để bật khóa ứng dụng",
+  "biometricReasonUnlock": "Mở khóa Moniary"
 }

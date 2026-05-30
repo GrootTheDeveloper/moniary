@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../shared/widgets/obscurable_amount_text.dart';
 import '../domain/models/wallet.dart';
 import '../application/wallets_controller.dart';
 
@@ -130,8 +131,10 @@ class _WalletTile extends StatelessWidget {
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 8),
-          child: Text(
-            '${_walletTypeLabel(context, wallet.type)} • $balanceLabel • ${wallet.isActive ? context.l10n.walletActive : context.l10n.walletInactive}',
+          child: ObscurableAmountText(
+            prefixText: '${_walletTypeLabel(context, wallet.type)} • ',
+            amountText: balanceLabel,
+            suffixText: ' • ${wallet.isActive ? context.l10n.walletActive : context.l10n.walletInactive}',
           ),
         ),
         trailing: IconButton(

@@ -394,5 +394,14 @@
   "scanImageSelectError": "Failed to select image. Please try again.",
   "scanImageRequiredError": "Please select a receipt image first.",
   "scanReadError": "Failed to read receipt. Please try again.",
-  "commonFeatureUnderDevelopment": "Feature under development"
+  "commonFeatureUnderDevelopment": "Feature under development",
+  "appLockTitle": "App Locked",
+  "appLockSubtitle": "Please authenticate to continue",
+  "appLockUnlockButton": "Unlock",
+  "privacyCenterAppLockTitle": "App Lock",
+  "privacyCenterAppLockSubtitle": "Require fingerprint or face to open the app.",
+  "privacyCenterHideBalancesTitle": "Hide Balances Mode",
+  "privacyCenterHideBalancesSubtitle": "Automatically blur all amounts in the app.",
+  "biometricReasonEnable": "Authenticate to enable App Lock",
+  "biometricReasonUnlock": "Unlock Moniary"
 }

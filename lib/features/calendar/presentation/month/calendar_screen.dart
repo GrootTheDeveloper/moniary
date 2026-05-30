@@ -20,9 +20,11 @@ import '../../application/month/calendar_visible_month_provider.dart';
 import '../../domain/month/calendar_month_data.dart';
 import 'manage_data_sheet.dart';
 import '../../../../shared/widgets/supabase_image.dart';
+import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
 import '../../../../shared/widgets/aurora_background.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../settings/application/privacy_controller.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -210,7 +212,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }
 }
 
-class _SeamlessHeader extends StatelessWidget {
+class _SeamlessHeader extends ConsumerWidget {
   const _SeamlessHeader({
     required this.userName,
     required this.onProfileTap,
@@ -224,7 +226,8 @@ class _SeamlessHeader extends StatelessWidget {
   final AsyncValue<CalendarMonthData> monthAsync;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isHidden = ref.watch(privacyControllerProvider).isBalancesHidden;
     return Column(
       children: [
         // Row 1: Greeting & Avatar
@@ -250,21 +253,44 @@ class _SeamlessHeader extends StatelessWidget {
                 ),
               ],
             ),
-            GestureDetector(
-              onTap: onProfileTap,
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    ref.read(privacyControllerProvider.notifier).toggleHideBalances(!isHidden);
+                  },
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isHidden ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      color: Colors.white70,
+                      size: 20,
+                    ),
+                  ),
                 ),
-                child: const Icon(
-                  Icons.account_balance_wallet_outlined,
-                  color: Colors.white70,
-                  size: 20,
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: onProfileTap,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.account_balance_wallet_outlined,
+                      color: Colors.white70,
+                      size: 20,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ),
@@ -287,15 +313,14 @@ class _SeamlessHeader extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  _formatMoney(totalBalance, isNegative: totalBalance < 0),
+                ObscurableAmountText(
+                  amountText: _formatMoney(totalBalance, isNegative: totalBalance < 0),
                   style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
                     fontSize: 36,
                     letterSpacing: -1,
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ],
             );
@@ -361,8 +386,9 @@ class _IncomeExpensePill extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 14),
           const SizedBox(width: 6),
-          Text(
-            '$label: ${_formatMoney(amount, isNegative: false).replaceAll('+', '')}',
+          ObscurableAmountText(
+            prefixText: '$label: ',
+            amountText: _formatMoney(amount, isNegative: false).replaceAll('+', ''),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: color,
               fontWeight: FontWeight.w600,

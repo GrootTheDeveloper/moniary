@@ -40,6 +40,8 @@ import '../features/settings/presentation/privacy/privacy_account_faq_screen.dar
 import '../features/settings/presentation/privacy/privacy_contact_screen.dart';
 import '../features/settings/presentation/privacy/privacy_policy_screen.dart';
 import '../features/settings/presentation/privacy/privacy_request_detail_screen.dart';
+import '../features/settings/presentation/privacy/app_lock_screen.dart';
+import '../features/settings/application/privacy_controller.dart';
 import '../features/settings/presentation/profile_screen.dart';
 import '../features/statistics/presentation/statistics_view.dart';
 import '../features/settings/presentation/store/store_compliance_checklist_screen.dart';
@@ -64,7 +66,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   ref.onDispose(authRefreshListenable.dispose);
 
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: SplashScreen.routePath,
     refreshListenable: authRefreshListenable,
     errorBuilder: (context, state) => Scaffold(
@@ -85,6 +87,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final session = ref.read(currentSessionProvider);
       final onboardingSeen = ref.read(onboardingSeenProvider);
+      final privacyState = ref.read(privacyControllerProvider);
       final location = state.matchedLocation;
 
       const publicRoutes = {
@@ -102,6 +105,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       if (session == null && !publicRoutes.contains(location)) {
         return LoginScreen.routePath;
+      }
+
+      // App lock check
+      if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
+        if (location != AppLockScreen.routePath && !publicRoutes.contains(location)) {
+          return AppLockScreen.routePath;
+        }
+      } else {
+        if (location == AppLockScreen.routePath) {
+          return CalendarScreen.routePath; // default fallback when authenticated
+        }
       }
 
       return null;
@@ -215,6 +229,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           state: state,
           child: const PrivacyCenterScreen(),
         ),
+      ),
+      GoRoute(
+        path: AppLockScreen.routePath,
+        builder: (context, state) => const AppLockScreen(),
       ),
       GoRoute(
         path: HelpCenterScreen.routePath,
@@ -441,6 +459,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+
+  ref.listen(privacyControllerProvider, (previous, next) {
+    if (previous?.isAuthenticated != next.isAuthenticated || previous?.isAppLocked != next.isAppLocked) {
+      router.refresh();
+    }
+  });
+
+  return router;
 });
 
 CustomTransitionPage<void> buildSlideTransitionPage({

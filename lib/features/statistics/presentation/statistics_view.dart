@@ -14,6 +14,7 @@ import '../../transactions/domain/models/transaction_entry.dart';
 import '../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../transactions/presentation/detail/transaction_detail_screen.dart';
 import '../../transactions/presentation/detail/transaction_route_args.dart';
+import '../../../shared/widgets/obscurable_amount_text.dart';
 
 final statisticsMonthProvider =
     FutureProvider.family<List<TransactionEntry>, DateTime>((ref, month) async {
@@ -197,8 +198,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              Text(
-                '${net >= 0 ? '+' : '-'}${_money(net.abs())}',
+              ObscurableAmountText(
+                prefixText: net >= 0 ? '+' : '-',
+                amountText: _money(net.abs()),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -644,8 +646,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                          _money(tx.amount),
+                        ObscurableAmountText(
+                          amountText: _money(tx.amount),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: tx.isIncome
@@ -737,8 +739,8 @@ class _MetricCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Text(
-                    value,
+                  child: ObscurableAmountText(
+                    amountText: value,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

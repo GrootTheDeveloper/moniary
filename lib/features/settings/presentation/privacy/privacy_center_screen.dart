@@ -30,6 +30,8 @@ import 'permission_rationale_screen.dart';
 import 'privacy_contact_screen.dart';
 import 'privacy_policy_screen.dart';
 import '../widgets/delete_account_dialog.dart';
+import '../../application/privacy_controller.dart';
+import '../widgets/settings_switch_tile.dart';
 
 class PrivacyCenterScreen extends ConsumerWidget {
   const PrivacyCenterScreen({super.key});
@@ -39,6 +41,7 @@ class PrivacyCenterScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(accountActionsControllerProvider);
+    final privacyState = ref.watch(privacyControllerProvider);
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -60,6 +63,22 @@ class PrivacyCenterScreen extends ConsumerWidget {
               children: [
                 const _PrivacyHero(),
                 const SizedBox(height: 18),
+                SettingsSwitchTile(
+                  icon: Icons.fingerprint,
+                  title: context.l10n.privacyCenterAppLockTitle,
+                  subtitle: context.l10n.privacyCenterAppLockSubtitle,
+                  value: privacyState.isAppLocked,
+                  onChanged: (val) => ref.read(privacyControllerProvider.notifier).toggleAppLock(val, reason: context.l10n.biometricReasonEnable),
+                ),
+                const SizedBox(height: 12),
+                SettingsSwitchTile(
+                  icon: Icons.visibility_off_outlined,
+                  title: context.l10n.privacyCenterHideBalancesTitle,
+                  subtitle: context.l10n.privacyCenterHideBalancesSubtitle,
+                  value: privacyState.isBalancesHidden,
+                  onChanged: (val) => ref.read(privacyControllerProvider.notifier).toggleHideBalances(val),
+                ),
+                const SizedBox(height: 12),
                 SettingsActionTile(
                   icon: Icons.help_outlined,
                   title: 'Trung tâm trợ giúp',
