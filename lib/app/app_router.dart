@@ -24,6 +24,7 @@ import '../features/settings/presentation/legal/data_deletion_policy_screen.dart
 import '../features/settings/presentation/legal/data_retention_policy_screen.dart';
 import '../features/settings/presentation/privacy/data_safety_screen.dart';
 import '../features/settings/presentation/privacy/data_transparency_screen.dart';
+import '../features/settings/presentation/account/active_sessions_screen.dart';
 import '../features/settings/presentation/account/delete_account_help_screen.dart';
 import '../features/settings/presentation/account/deletion_request_screen.dart';
 import '../features/settings/presentation/account/restore_account_screen.dart';
@@ -386,6 +387,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
           child: const DeletionRequestScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/active-sessions',
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const ActiveSessionsScreen(),
         ),
       ),
       GoRoute(

@@ -14,6 +14,7 @@ import '../../../transactions/data/repositories/transaction_repository.dart';
 import '../../../wallets/data/repositories/wallet_repository.dart';
 import '../../domain/export/export_filters.dart';
 import '../../domain/export/export_history_entry.dart';
+import '../../domain/account/active_session.dart';
 import '../../domain/transparency/data_transparency_summary.dart';
 import '../../domain/privacy_requests/privacy_request_history_entry.dart';
 import '../export/pdf_report.dart';
@@ -334,6 +335,41 @@ class AccountRepository {
         .from('profiles')
         .update({'deleted_at': null})
         .eq('id', session.user.id);
+  }
+
+  Future<void> revokeSession(String sessionId) async {
+    if (!AppConstants.hasSupabaseConfig) return;
+    final session = _client.auth.currentSession;
+    if (session == null) {
+      throw const AppException('Bạn chưa đăng nhập.');
+    }
+    await _client.rpc('revoke_session', params: {'session_id': sessionId});
+  }
+
+  Future<List<ActiveSession>> getActiveSessions() async {
+    if (!AppConstants.hasSupabaseConfig) {
+      return [
+        ActiveSession(
+          id: 'mock-session-id',
+          createdAt: DateTime.now().subtract(const Duration(days: 1)),
+          updatedAt: DateTime.now(),
+          userAgent:
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+          ip: '127.0.0.1',
+        ),
+      ];
+    }
+
+    final session = _client.auth.currentSession;
+    if (session == null) {
+      throw const AppException('Bạn chưa đăng nhập.');
+    }
+
+    final response = await _client.rpc('get_active_sessions');
+    final List<dynamic> data = response as List<dynamic>;
+
+    return data.cast<Map<String, dynamic>>().map(ActiveSession.fromMap).toList()
+      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   }
 
   Future<File> createDeletionRequest({required String reason}) async {
