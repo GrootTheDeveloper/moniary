@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
@@ -1170,9 +1171,13 @@ class _TodayGrid extends StatelessWidget {
         return TransactionGridTile(
           transaction: transaction,
           onTap: () => onTransactionTap(now),
+        ).animate(delay: (30 * index).ms).fade().slideY(
+          begin: 0.1,
+          end: 0,
+          curve: Curves.easeOutQuad,
+          duration: 300.ms,
         );
       },
     );
   }
 }
-

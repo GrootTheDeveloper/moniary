@@ -453,7 +453,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final child = args == null
               ? const CalendarScreen()
               : TransactionDetailScreen(args: args);
-          return buildSlideTransitionPage(state: state, child: child);
+          return buildFadeTransitionPage(state: state, child: child);
         },
       ),
       GoRoute(
@@ -522,6 +522,24 @@ CustomTransitionPage<T> buildSlideUpTransitionPage<T>({
         end: end,
       ).chain(CurveTween(curve: curve));
       return SlideTransition(position: animation.drive(tween), child: child);
+    },
+  );
+}
+
+CustomTransitionPage<T> buildFadeTransitionPage<T>({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<T>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 400),
+    reverseTransitionDuration: const Duration(milliseconds: 400),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: CurveTween(curve: Curves.fastOutSlowIn).animate(animation),
+        child: child,
+      );
     },
   );
 }

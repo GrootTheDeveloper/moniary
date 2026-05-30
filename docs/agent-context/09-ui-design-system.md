@@ -21,6 +21,11 @@
 | `PlaceholderCard` | `lib/shared/widgets/placeholder_card.dart` | Empty/Loading state | Use when no data |
 | `SupabaseImage` | `lib/shared/widgets/supabase_image.dart` | Network image | Resolves signed URLs |
 
+## Animations & Micro-interactions
+- **Package**: `flutter_animate`
+- **Lists and Grids**: Use staggered entrance animations for list items and grids (e.g., `.animate(delay: (30 * index).ms).fade().slideY(...)`) to create a fluid, cascading effect when data loads.
+- **Hero Transitions**: Used primarily for images flying from a list/grid into a detail view. To create a clean "zoom out" popup effect, pair the destination `Hero` screen with `buildFadeTransitionPage` (avoid sliding page transitions). Ensure `fit` attributes match between source and destination (e.g., `BoxFit.cover`) to prevent glitchy image resizing. Place the `Hero` wrapper directly around the `SupabaseImage` unless the entire container is meant to cross-fade.
+
 ## Design Rules
 - Follow Material 3 guidelines but lean heavily into custom dark-themed cards.
 - Add graceful loading, empty, and error states for every screen.

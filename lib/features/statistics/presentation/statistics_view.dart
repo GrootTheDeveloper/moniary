@@ -570,12 +570,12 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                   onTap: () async {
                     final result = await context
                         .push<TransactionMutationResult>(
-                          TransactionDetailScreen.routePath,
-                          extra: TransactionDetailRouteArgs(
-                            transactionId: tx.id,
-                            day: tx.transactionDate,
-                          ),
-                        );
+                            TransactionDetailScreen.routePath,
+                            extra: TransactionDetailRouteArgs(
+                              transaction: tx,
+                              day: tx.transactionDate,
+                            ),
+                          );
                     if (result != null && mounted) {
                       _invalidateMutationMonths(result);
                     }

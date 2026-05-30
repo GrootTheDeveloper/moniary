@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
@@ -177,17 +178,21 @@ class _DayDetailBody extends ConsumerWidget {
                 return TransactionGridTile(
                   transaction: transaction,
                   onTap: () async {
-                    final result = await context
-                        .push<TransactionMutationResult>(
-                          TransactionDetailScreen.routePath,
-                          extra: TransactionDetailRouteArgs(
-                            transactionId: transaction.id,
-                            day: date,
-                          ),
-                        );
+                    final result = await context.push<TransactionMutationResult>(
+                      TransactionDetailScreen.routePath,
+                      extra: TransactionDetailRouteArgs(
+                        transaction: transaction,
+                        day: date,
+                      ),
+                    );
                     if (result == null || !context.mounted) return;
                     _applyMutation(ref, result);
                   },
+                ).animate(delay: (30 * index).ms).fade().slideY(
+                  begin: 0.1,
+                  end: 0,
+                  curve: Curves.easeOutQuad,
+                  duration: 300.ms,
                 );
               }, childCount: transactions.length),
             ),
@@ -263,12 +268,15 @@ class TransactionGridTile extends StatelessWidget {
                   colors: [accent, accent.withValues(alpha: 0.42)],
                 ),
               ),
-              child: SupabaseImage(
-                imagePath: transaction.imagePath,
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                fallbackIcon: Icons.receipt_long_outlined,
+              child: Hero(
+                tag: 'tx_image_${transaction.id}',
+                child: SupabaseImage(
+                  imagePath: transaction.imagePath,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                  fallbackIcon: Icons.receipt_long_outlined,
+                ),
               ),
             ),
             Positioned(

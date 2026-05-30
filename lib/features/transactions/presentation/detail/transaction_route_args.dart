@@ -1,9 +1,11 @@
-﻿class TransactionDetailRouteArgs {
+import '../../domain/models/transaction_entry.dart';
+
+class TransactionDetailRouteArgs {
   const TransactionDetailRouteArgs({
-    required this.transactionId,
+    required this.transaction,
     required this.day,
   });
 
-  final String transactionId;
+  final TransactionEntry transaction;
   final DateTime day;
 }

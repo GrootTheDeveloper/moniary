@@ -9,7 +9,7 @@
 ## Key Behaviors
 - **Auth Redirect**: Global redirect logic checks if the user has completed onboarding and if they are logged in.
 - **Main Shell**: Uses `StatefulShellRoute.indexedStack` to manage bottom navigation tabs (Calendar, Statistics, Groups, Profile).
-- **Transitions**: Custom slide transitions (`buildSlideTransitionPage`, `buildSlideUpTransitionPage`) are used for almost all routes.
+- **Transitions**: Custom transitions (`buildSlideTransitionPage`, `buildSlideUpTransitionPage`, `buildFadeTransitionPage`) are used for almost all routes to provide smooth, controlled animations.
 
 ## Route Table
 

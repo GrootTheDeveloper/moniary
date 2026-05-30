@@ -40,10 +40,12 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
 
   String? _errorMessage;
 
-  void _initializeCamera(List<CameraDescription> cameras, {int index = 0}) {
+  Future<void> _initializeCamera(List<CameraDescription> cameras, {int index = 0}) async {
     final oldController = _controller;
     if (oldController != null) {
-      oldController.dispose();
+      _controller = null;
+      setState(() {});
+      await oldController.dispose();
     }
 
     final controller = CameraController(
@@ -51,32 +53,33 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
       ResolutionPreset.medium,
       enableAudio: false,
     );
-    _controller = controller;
-    controller
-        .initialize()
-        .then((_) {
-          if (!mounted) return;
-          if (_controller != controller) return;
-
-          // Re-apply flash mode
-          controller.setFlashMode(_isFlashOn ? FlashMode.torch : FlashMode.off);
-          setState(() {
-            _errorMessage = null;
-          });
-        })
-        .catchError((e) {
-          if (mounted) {
-            setState(() {
-              if (e is CameraException && e.code == 'CameraAccessDenied') {
-                _errorMessage =
-                    'Không thể kết nối Camera. Vui lòng cấp quyền trong Cài đặt.';
-              } else {
-                _errorMessage = 'Lỗi khởi tạo Camera: ${e.toString()}';
-              }
-            });
+    
+    try {
+      await controller.initialize();
+      if (!mounted) return;
+      
+      _controller = controller;
+      // Re-apply flash mode
+      await controller.setFlashMode(_isFlashOn ? FlashMode.torch : FlashMode.off);
+      setState(() {
+        _errorMessage = null;
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          if (e is CameraException && e.code == 'CameraAccessDenied') {
+            _errorMessage =
+                'Không thể kết nối Camera. Vui lòng cấp quyền trong Cài đặt.';
+          } else if (e.toString().contains('disposed')) {
+            // Ignore disposed errors from interrupted initializations
+            return;
+          } else {
+            _errorMessage = 'Lỗi khởi tạo Camera: ${e.toString()}';
           }
-          debugPrint('Error initializing camera: $e');
         });
+      }
+      debugPrint('Error initializing camera: $e');
+    }
   }
 
   void _flipCamera() {

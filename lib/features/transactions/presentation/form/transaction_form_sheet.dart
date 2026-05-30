@@ -21,6 +21,7 @@ import '../../../wallets/application/wallets_controller.dart';
 import '../../domain/models/transaction_entry.dart';
 import '../../domain/models/transaction_mutation_result.dart';
 import '../../application/composer/transaction_composer_controller.dart';
+import '../../../../shared/widgets/supabase_image.dart';
 
 Future<TransactionMutationResult?> showTransactionFormSheet(
   BuildContext context,
@@ -289,6 +290,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             const SizedBox(height: 12),
             _ImagePreview(
               file: _pickedFile,
+              initialImagePath: widget.initialTransaction?.imagePath,
               amountController: _amountController,
               amountFormatter: _amountFormatter,
               noteController: _noteController,
@@ -699,6 +701,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
 class _ImagePreview extends StatelessWidget {
   const _ImagePreview({
     required this.file,
+    this.initialImagePath,
     required this.amountController,
     required this.amountFormatter,
     required this.noteController,
@@ -706,6 +709,7 @@ class _ImagePreview extends StatelessWidget {
     required this.onPick,
   });
   final XFile? file;
+  final String? initialImagePath;
   final TextEditingController amountController;
   final CurrencyTextInputFormatter amountFormatter;
   final TextEditingController noteController;
@@ -734,6 +738,16 @@ class _ImagePreview extends StatelessWidget {
                       width: double.infinity,
                       height: double.infinity,
                       fit: BoxFit.cover,
+                    ),
+                  )
+                else if (initialImagePath != null)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: SupabaseImage(
+                      imagePath: initialImagePath,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fallbackIcon: Icons.image_outlined,
                     ),
                   )
                 else
