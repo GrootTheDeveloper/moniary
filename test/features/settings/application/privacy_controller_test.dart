@@ -6,6 +6,7 @@ import 'package:moniary/features/settings/application/privacy_controller.dart';
 import 'package:moniary/features/settings/data/repositories/privacy_repository.dart';
 
 class MockPrivacyRepository extends Mock implements PrivacyRepository {}
+
 class MockLocalAuthentication extends Mock implements LocalAuthentication {}
 
 void main() {
@@ -58,27 +59,33 @@ void main() {
     verify(() => mockRepo.setIsBalancesHidden(true)).called(1);
   });
 
-  test('toggleAppLock(true) with successful auth updates state and repository', () async {
-    when(() => mockAuth.authenticate(
-      localizedReason: any(named: 'localizedReason'),
-    )).thenAnswer((_) async => true);
+  test(
+    'toggleAppLock(true) with successful auth updates state and repository',
+    () async {
+      when(
+        () => mockAuth.authenticate(
+          localizedReason: any(named: 'localizedReason'),
+        ),
+      ).thenAnswer((_) async => true);
 
-    final container = makeContainer();
-    final notifier = container.read(privacyControllerProvider.notifier);
+      final container = makeContainer();
+      final notifier = container.read(privacyControllerProvider.notifier);
 
-    await notifier.toggleAppLock(true, reason: 'Unlock');
+      await notifier.toggleAppLock(true, reason: 'Unlock');
 
-    final state = container.read(privacyControllerProvider);
-    expect(state.isAppLocked, isTrue);
-    expect(state.isAuthenticated, isTrue);
-    verify(() => mockAuth.authenticate(localizedReason: 'Unlock')).called(1);
-    verify(() => mockRepo.setIsAppLocked(true)).called(1);
-  });
+      final state = container.read(privacyControllerProvider);
+      expect(state.isAppLocked, isTrue);
+      expect(state.isAuthenticated, isTrue);
+      verify(() => mockAuth.authenticate(localizedReason: 'Unlock')).called(1);
+      verify(() => mockRepo.setIsAppLocked(true)).called(1);
+    },
+  );
 
   test('toggleAppLock(true) with failed auth does not update state', () async {
-    when(() => mockAuth.authenticate(
-      localizedReason: any(named: 'localizedReason'),
-    )).thenAnswer((_) async => false);
+    when(
+      () =>
+          mockAuth.authenticate(localizedReason: any(named: 'localizedReason')),
+    ).thenAnswer((_) async => false);
 
     final container = makeContainer();
     final notifier = container.read(privacyControllerProvider.notifier);

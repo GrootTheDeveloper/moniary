@@ -26,12 +26,12 @@ void main() {
 
     final rows = await repository.parseCsv(tempFile.path);
     expect(rows.length, 2);
-    
+
     expect(rows[0].isValid, true);
     expect(rows[0].amount, 50000);
     expect(rows[0].categoryName, 'Food');
     expect(rows[0].note, 'Lunch');
-    
+
     expect(rows[1].isValid, true);
     expect(rows[1].amount, 20000);
     expect(rows[1].typeStr, 'Income');
@@ -46,17 +46,17 @@ invalid_date,50000,Expense,Food,Lunch
 
     final rows = await repository.parseCsv(tempFile.path);
     expect(rows.length, 3);
-    
+
     expect(rows[0].isValid, false);
     expect(rows[0].errorMessage, contains('Invalid date'));
-    
+
     expect(rows[1].isValid, false);
     expect(rows[1].errorMessage, contains('Invalid amount'));
-    
+
     expect(rows[2].isValid, false);
     expect(rows[2].errorMessage, contains('Missing columns'));
   });
-  
+
   test('parseCsv skips empty rows', () async {
     await tempFile.writeAsString('''Date,Amount,Type,Category,Note
 2026-05-30,50000,Expense,Food,Lunch

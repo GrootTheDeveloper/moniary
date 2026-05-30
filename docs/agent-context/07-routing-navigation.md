@@ -19,6 +19,7 @@
 | `/onboarding` | `OnboardingScreen` | Public |
 | `/login` | `LoginScreen` | Public |
 | `/profile-setup` | `ProfileSetupScreen` | Public |
+| `/restore-account` | `RestoreAccountScreen` | Redirected if account is soft-deleted |
 | `/calendar` | `CalendarScreen` | Tab 0 |
 | `/statistics` | `StatisticsView` | Tab 1 |
 | `/groups` | `GroupsScreen` | Tab 2 |

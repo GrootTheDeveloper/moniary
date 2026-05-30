@@ -7,7 +7,7 @@ import 'package:moniary/features/wallets/application/wallets_controller.dart';
 import 'package:moniary/features/wallets/domain/models/wallet.dart';
 import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/shared/utils/app_logger.dart';
-import 'package:moniary/shared/widgets/error_state.dart';
+
 import 'package:intl/intl.dart';
 
 class ImportDataScreen extends ConsumerStatefulWidget {
@@ -29,9 +29,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        title: const Text('Import Data (CSV)'),
-      ),
+      appBar: AppBar(title: const Text('Import Data (CSV)')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -43,20 +41,25 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
               onPressed: _pickFile,
               icon: const Icon(Icons.file_upload),
               label: const Text('Select CSV File'),
-              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.mint, foregroundColor: Colors.black),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.mint,
+                foregroundColor: Colors.black,
+              ),
             ),
             const SizedBox(height: 16),
             if (importState.isParsing)
               const Center(child: CircularProgressIndicator())
             else if (importState.error != null)
-              ErrorState(
-                message: importState.error!, 
-                onRetry: () {}, 
-                icon: Icons.error_outline,
+              Center(
+                child: Text(
+                  importState.error!,
+                  style: const TextStyle(color: Colors.redAccent),
+                  textAlign: TextAlign.center,
+                ),
               )
             else if (importState.parsedRows.isNotEmpty)
               Expanded(child: _buildPreview(importState)),
-            
+
             if (importState.parsedRows.isNotEmpty) ...[
               const SizedBox(height: 16),
               _buildWalletSelector(walletsAsync),
@@ -66,16 +69,23 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                     ? null
                     : _confirmImport,
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppTheme.mint, 
+                  backgroundColor: AppTheme.mint,
                   foregroundColor: Colors.black,
                   disabledBackgroundColor: Colors.grey[800],
                   disabledForegroundColor: Colors.grey[500],
                 ),
                 child: importState.isImporting
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.black,
+                          strokeWidth: 2,
+                        ),
+                      )
                     : const Text('Confirm Import'),
               ),
-            ]
+            ],
           ],
         ),
       ),
@@ -92,7 +102,14 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('CSV Format Required:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16)),
+          Text(
+            'CSV Format Required:',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
           SizedBox(height: 8),
           Text(
             'Row 1 is skipped (headers).\n'
@@ -100,8 +117,8 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
             '2. Amount\n'
             '3. Type (Income/Expense/Thu/Chi)\n'
             '4. Category Name\n'
-            '5. Note', 
-            style: TextStyle(color: Colors.white70, height: 1.5)
+            '5. Note',
+            style: TextStyle(color: Colors.white70, height: 1.5),
           ),
         ],
       ),
@@ -111,22 +128,45 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
   Widget _buildWalletSelector(AsyncValue<List<Wallet>> walletsAsync) {
     return walletsAsync.when(
       data: (wallets) {
-        if (wallets.isEmpty) return const Text('No wallets found. Create a wallet first.', style: TextStyle(color: Colors.red));
+        if (wallets.isEmpty)
+          return const Text(
+            'No wallets found. Create a wallet first.',
+            style: TextStyle(color: Colors.red),
+          );
         return DropdownButtonFormField<Wallet>(
           value: _selectedWallet,
-          hint: const Text('Select target wallet', style: TextStyle(color: Colors.white54)),
+          hint: const Text(
+            'Select target wallet',
+            style: TextStyle(color: Colors.white54),
+          ),
           dropdownColor: AppTheme.surface,
-          items: wallets.map((w) => DropdownMenuItem(value: w, child: Text(w.name, style: const TextStyle(color: Colors.white)))).toList(),
+          items: wallets
+              .map(
+                (w) => DropdownMenuItem(
+                  value: w,
+                  child: Text(
+                    w.name,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              )
+              .toList(),
           onChanged: (val) => setState(() => _selectedWallet = val),
           decoration: InputDecoration(
             filled: true,
             fillColor: AppTheme.surface,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
           ),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Text('Error loading wallets: $e', style: const TextStyle(color: Colors.red)),
+      error: (e, _) => Text(
+        'Error loading wallets: $e',
+        style: const TextStyle(color: Colors.red),
+      ),
     );
   }
 
@@ -135,7 +175,14 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Preview ($validCount valid rows)', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
+        Text(
+          'Preview ($validCount valid rows)',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         Expanded(
           child: ListView.separated(
@@ -144,13 +191,25 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
             itemBuilder: (context, index) {
               final row = state.parsedRows[index];
               return ListTile(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 tileColor: AppTheme.surface,
-                leading: Icon(row.isValid ? Icons.check_circle : Icons.error, color: row.isValid ? Colors.green : Colors.red),
-                title: Text('${row.categoryName} - ${NumberFormat.currency(locale: 'vi', symbol: '₫').format(row.amount ?? 0)}', style: const TextStyle(color: Colors.white)),
+                leading: Icon(
+                  row.isValid ? Icons.check_circle : Icons.error,
+                  color: row.isValid ? Colors.green : Colors.red,
+                ),
+                title: Text(
+                  '${row.categoryName} - ${NumberFormat.currency(locale: 'vi', symbol: '₫').format(row.amount ?? 0)}',
+                  style: const TextStyle(color: Colors.white),
+                ),
                 subtitle: Text(
-                  row.isValid ? DateFormat('dd/MM/yyyy').format(row.date!) : (row.errorMessage ?? 'Unknown error'),
-                  style: TextStyle(color: row.isValid ? Colors.white70 : Colors.redAccent),
+                  row.isValid
+                      ? DateFormat('dd/MM/yyyy').format(row.date!)
+                      : (row.errorMessage ?? 'Unknown error'),
+                  style: TextStyle(
+                    color: row.isValid ? Colors.white70 : Colors.redAccent,
+                  ),
                 ),
               );
             },
@@ -162,12 +221,14 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
 
   Future<void> _pickFile() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['csv'],
       );
       if (result != null && result.files.single.path != null) {
-        ref.read(importControllerProvider.notifier).pickAndParseFile(result.files.single.path!);
+        ref
+            .read(importControllerProvider.notifier)
+            .pickAndParseFile(result.files.single.path!);
       }
     } catch (e) {
       AppLogger.error('File pick error: $e');
@@ -177,10 +238,14 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
   Future<void> _confirmImport() async {
     final session = ref.read(supabaseClientProvider).auth.currentSession;
     final profileId = session?.user.id ?? 'anonymous';
-    final count = await ref.read(importControllerProvider.notifier).confirmImport(_selectedWallet!, profileId);
-    
+    final count = await ref
+        .read(importControllerProvider.notifier)
+        .confirmImport(_selectedWallet!, profileId);
+
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Imported $count transactions')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Imported $count transactions')));
       Navigator.pop(context);
     }
   }

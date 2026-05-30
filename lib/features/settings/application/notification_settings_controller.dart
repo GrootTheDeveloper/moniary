@@ -5,7 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/models/notification_settings.dart';
 import '../data/repositories/notification_settings_repository.dart';
 
-class NotificationSettingsController extends AsyncNotifier<NotificationSettings> {
+class NotificationSettingsController
+    extends AsyncNotifier<NotificationSettings> {
   @override
   FutureOr<NotificationSettings> build() {
     return ref.read(notificationSettingsRepositoryProvider).getSettings();
@@ -50,7 +51,9 @@ class NotificationSettingsController extends AsyncNotifier<NotificationSettings>
   Future<void> _update(NotificationSettings newSettings) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      await ref.read(notificationSettingsRepositoryProvider).updateSettings(newSettings);
+      await ref
+          .read(notificationSettingsRepositoryProvider)
+          .updateSettings(newSettings);
       return newSettings;
     });
   }
@@ -58,5 +61,5 @@ class NotificationSettingsController extends AsyncNotifier<NotificationSettings>
 
 final notificationSettingsControllerProvider =
     AsyncNotifierProvider<NotificationSettingsController, NotificationSettings>(
-  NotificationSettingsController.new,
-);
+      NotificationSettingsController.new,
+    );

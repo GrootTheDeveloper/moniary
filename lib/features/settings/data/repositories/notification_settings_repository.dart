@@ -9,7 +9,8 @@ abstract class NotificationSettingsRepository {
   Future<void> updateSettings(NotificationSettings settings);
 }
 
-class SupabaseNotificationSettingsRepository implements NotificationSettingsRepository {
+class SupabaseNotificationSettingsRepository
+    implements NotificationSettingsRepository {
   SupabaseNotificationSettingsRepository(this._supabase);
 
   final SupabaseClient _supabase;
@@ -49,7 +50,8 @@ class SupabaseNotificationSettingsRepository implements NotificationSettingsRepo
   }
 }
 
-class MockNotificationSettingsRepository implements NotificationSettingsRepository {
+class MockNotificationSettingsRepository
+    implements NotificationSettingsRepository {
   NotificationSettings _settings = const NotificationSettings();
 
   @override
@@ -65,10 +67,11 @@ class MockNotificationSettingsRepository implements NotificationSettingsReposito
   }
 }
 
-final notificationSettingsRepositoryProvider = Provider<NotificationSettingsRepository>((ref) {
-  if (AppConstants.hasSupabaseConfig) {
-    return SupabaseNotificationSettingsRepository(Supabase.instance.client);
-  } else {
-    return MockNotificationSettingsRepository();
-  }
-});
+final notificationSettingsRepositoryProvider =
+    Provider<NotificationSettingsRepository>((ref) {
+      if (AppConstants.hasSupabaseConfig) {
+        return SupabaseNotificationSettingsRepository(Supabase.instance.client);
+      } else {
+        return MockNotificationSettingsRepository();
+      }
+    });

@@ -58,7 +58,8 @@ class NotificationSettings {
       dailyReminderEnabled: dailyReminderEnabled ?? this.dailyReminderEnabled,
       dailyReminderTime: dailyReminderTime ?? this.dailyReminderTime,
       weeklySummaryEnabled: weeklySummaryEnabled ?? this.weeklySummaryEnabled,
-      monthlySummaryEnabled: monthlySummaryEnabled ?? this.monthlySummaryEnabled,
+      monthlySummaryEnabled:
+          monthlySummaryEnabled ?? this.monthlySummaryEnabled,
       yearlySummaryEnabled: yearlySummaryEnabled ?? this.yearlySummaryEnabled,
     );
   }

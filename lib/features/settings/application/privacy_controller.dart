@@ -6,7 +6,8 @@ import '../../../../shared/utils/app_logger.dart';
 class PrivacyState {
   final bool isAppLocked;
   final bool isBalancesHidden;
-  final bool isAuthenticated; // True if the user has successfully passed biometric auth in this session
+  final bool
+  isAuthenticated; // True if the user has successfully passed biometric auth in this session
 
   PrivacyState({
     this.isAppLocked = false,
@@ -31,12 +32,10 @@ final localAuthProvider = Provider<LocalAuthentication>((ref) {
   return LocalAuthentication();
 });
 
-final privacyControllerProvider = NotifierProvider<PrivacyController, PrivacyState>(
-  PrivacyController.new,
-);
+final privacyControllerProvider =
+    NotifierProvider<PrivacyController, PrivacyState>(PrivacyController.new);
 
 class PrivacyController extends Notifier<PrivacyState> {
-
   @override
   PrivacyState build() {
     final repository = ref.watch(privacyRepositoryProvider);
@@ -51,9 +50,9 @@ class PrivacyController extends Notifier<PrivacyState> {
     // If trying to turn on lock, verify identity first
     if (value) {
       final success = await authenticateUser(reason);
-      if (!success) return; 
+      if (!success) return;
     }
-    
+
     await ref.read(privacyRepositoryProvider).setIsAppLocked(value);
     state = state.copyWith(isAppLocked: value, isAuthenticated: true);
   }
@@ -75,13 +74,11 @@ class PrivacyController extends Notifier<PrivacyState> {
         // If device has no biometrics/PIN setup, we bypass or fail depending on security policy.
         // For now, we return true if unsupported to not brick the app, but log it.
         AppLogger.warning('Device does not support local auth');
-        return true; 
+        return true;
       }
 
-      final didAuthenticate = await auth.authenticate(
-        localizedReason: reason,
-      );
-      
+      final didAuthenticate = await auth.authenticate(localizedReason: reason);
+
       if (didAuthenticate) {
         state = state.copyWith(isAuthenticated: true);
       }

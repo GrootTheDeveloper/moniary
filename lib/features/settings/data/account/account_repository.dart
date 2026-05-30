@@ -308,6 +308,34 @@ class AccountRepository {
     await _client.auth.signOut();
   }
 
+  Future<void> requestSoftDelete() async {
+    if (!AppConstants.hasSupabaseConfig) {
+      await _client.auth.signOut();
+      return;
+    }
+    final session = _client.auth.currentSession;
+    if (session == null) {
+      throw const AppException('Bạn chưa đăng nhập.');
+    }
+
+    await _client.functions.invoke('soft-delete-account');
+    await _client.auth.signOut();
+  }
+
+  Future<void> restoreAccount() async {
+    if (!AppConstants.hasSupabaseConfig) return;
+
+    final session = _client.auth.currentSession;
+    if (session == null) {
+      throw const AppException('Bạn chưa đăng nhập.');
+    }
+
+    await _client
+        .from('profiles')
+        .update({'deleted_at': null})
+        .eq('id', session.user.id);
+  }
+
   Future<File> createDeletionRequest({required String reason}) async {
     final session = _client.auth.currentSession;
     if (session == null) {

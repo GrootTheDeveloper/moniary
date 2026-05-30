@@ -177,7 +177,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       context.l10n.profileLinkAccountSubtitle,
-                      style: const TextStyle(color: Colors.white54, fontSize: 13),
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 13,
+                      ),
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
@@ -474,8 +477,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             icon: Icons.notifications_outlined,
                             title: context.l10n.notificationSettings,
                             subtitle: '',
-                            onTap: () =>
-                                context.push(NotificationSettingsScreen.routePath),
+                            onTap: () => context.push(
+                              NotificationSettingsScreen.routePath,
+                            ),
                           ),
                           _SettingsTile(
                             icon: Icons.lock_outline,

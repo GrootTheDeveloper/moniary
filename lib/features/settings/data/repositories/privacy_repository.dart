@@ -9,7 +9,7 @@ final privacyRepositoryProvider = Provider<PrivacyRepository>((ref) {
 
 class PrivacyRepository {
   final SharedPreferences _prefs;
-  
+
   static const String _keyIsAppLocked = 'is_app_locked';
   static const String _keyIsBalancesHidden = 'is_balances_hidden';
 

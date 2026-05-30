@@ -68,7 +68,12 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   title: context.l10n.privacyCenterAppLockTitle,
                   subtitle: context.l10n.privacyCenterAppLockSubtitle,
                   value: privacyState.isAppLocked,
-                  onChanged: (val) => ref.read(privacyControllerProvider.notifier).toggleAppLock(val, reason: context.l10n.biometricReasonEnable),
+                  onChanged: (val) => ref
+                      .read(privacyControllerProvider.notifier)
+                      .toggleAppLock(
+                        val,
+                        reason: context.l10n.biometricReasonEnable,
+                      ),
                 ),
                 const SizedBox(height: 12),
                 SettingsSwitchTile(
@@ -76,7 +81,9 @@ class PrivacyCenterScreen extends ConsumerWidget {
                   title: context.l10n.privacyCenterHideBalancesTitle,
                   subtitle: context.l10n.privacyCenterHideBalancesSubtitle,
                   value: privacyState.isBalancesHidden,
-                  onChanged: (val) => ref.read(privacyControllerProvider.notifier).toggleHideBalances(val),
+                  onChanged: (val) => ref
+                      .read(privacyControllerProvider.notifier)
+                      .toggleHideBalances(val),
                 ),
                 const SizedBox(height: 12),
                 SettingsActionTile(

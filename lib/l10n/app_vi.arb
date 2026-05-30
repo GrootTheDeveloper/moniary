@@ -282,6 +282,7 @@
   "profileSignOut": "Đăng xuất",
   "profileSignOutSubtitle": "Thoát khỏi tài khoản hiện tại trên thiết bị này.",
   "profileDeleteAccount": "Xóa tài khoản",
+  "profileDeleteSubtitle": "Xóa dữ liệu cá nhân, giao dịch và ảnh đã lưu.",
   "privacyClearDataSubtitle": "Xóa toàn bộ dữ liệu ứng dụng",
   "notificationSettings": "Cài đặt thông báo",
   "emailReports": "Báo cáo Email Tự động",

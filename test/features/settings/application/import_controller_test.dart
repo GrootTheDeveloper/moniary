@@ -9,7 +9,9 @@ import 'package:moniary/features/wallets/domain/models/wallet.dart';
 import 'package:moniary/features/categories/domain/models/category.dart';
 
 class MockImportRepository extends Mock implements ImportRepository {}
+
 class MockTransactionRepository extends Mock implements TransactionRepository {}
+
 class MockCategoryRepository extends Mock implements CategoryRepository {}
 
 void main() {
@@ -41,9 +43,18 @@ void main() {
   });
 
   test('pickAndParseFile updates state with parsed rows', () async {
-    when(() => mockImportRepo.parseCsv(any())).thenAnswer((_) async => [
-      CsvTransactionRow(typeStr: 'Expense', categoryName: 'Food', note: '', isValid: true, amount: 100, date: DateTime.now())
-    ]);
+    when(() => mockImportRepo.parseCsv(any())).thenAnswer(
+      (_) async => [
+        CsvTransactionRow(
+          typeStr: 'Expense',
+          categoryName: 'Food',
+          note: '',
+          isValid: true,
+          amount: 100,
+          date: DateTime.now(),
+        ),
+      ],
+    );
 
     final controller = container.read(importControllerProvider.notifier);
     await controller.pickAndParseFile('test.csv');
@@ -55,42 +66,99 @@ void main() {
   });
 
   test('confirmImport creates transactions for valid rows', () async {
-    when(() => mockImportRepo.parseCsv(any())).thenAnswer((_) async => [
-      CsvTransactionRow(typeStr: 'Expense', categoryName: 'Food', note: 'Lunch', isValid: true, amount: 100, date: DateTime.now()),
-      CsvTransactionRow(typeStr: 'Income', categoryName: 'Salary', note: 'May', isValid: true, amount: 1000, date: DateTime.now()),
-      CsvTransactionRow(typeStr: 'Expense', categoryName: 'Unknown', note: '', isValid: false, amount: 10, date: DateTime.now()), // Invalid row
-    ]);
-    
-    when(() => mockCategoryRepo.fetchCategories()).thenAnswer((_) async => [
-      Category(id: 'c1', name: 'Food', type: TransactionType.expense, icon: '', color: '', isDefault: false, isActive: true, createdAt: DateTime.now()),
-      Category(id: 'c2', name: 'Salary', type: TransactionType.income, icon: '', color: '', isDefault: false, isActive: true, createdAt: DateTime.now()),
-    ]);
+    when(() => mockImportRepo.parseCsv(any())).thenAnswer(
+      (_) async => [
+        CsvTransactionRow(
+          typeStr: 'Expense',
+          categoryName: 'Food',
+          note: 'Lunch',
+          isValid: true,
+          amount: 100,
+          date: DateTime.now(),
+        ),
+        CsvTransactionRow(
+          typeStr: 'Income',
+          categoryName: 'Salary',
+          note: 'May',
+          isValid: true,
+          amount: 1000,
+          date: DateTime.now(),
+        ),
+        CsvTransactionRow(
+          typeStr: 'Expense',
+          categoryName: 'Unknown',
+          note: '',
+          isValid: false,
+          amount: 10,
+          date: DateTime.now(),
+        ), // Invalid row
+      ],
+    );
 
-    when(() => mockTransactionRepo.createTransaction(
-      amount: any(named: 'amount'),
-      type: any(named: 'type'),
-      walletId: any(named: 'walletId'),
-      categoryId: any(named: 'categoryId'),
-      transactionDate: any(named: 'transactionDate'),
-      note: any(named: 'note'),
-    )).thenAnswer((_) async => 'mock-id');
+    when(() => mockCategoryRepo.fetchCategories()).thenAnswer(
+      (_) async => [
+        Category(
+          id: 'c1',
+          name: 'Food',
+          type: TransactionType.expense,
+          icon: '',
+          color: '',
+          isDefault: false,
+          isActive: true,
+          createdAt: DateTime.now(),
+        ),
+        Category(
+          id: 'c2',
+          name: 'Salary',
+          type: TransactionType.income,
+          icon: '',
+          color: '',
+          isDefault: false,
+          isActive: true,
+          createdAt: DateTime.now(),
+        ),
+      ],
+    );
+
+    when(
+      () => mockTransactionRepo.createTransaction(
+        amount: any(named: 'amount'),
+        type: any(named: 'type'),
+        walletId: any(named: 'walletId'),
+        categoryId: any(named: 'categoryId'),
+        transactionDate: any(named: 'transactionDate'),
+        note: any(named: 'note'),
+      ),
+    ).thenAnswer((_) async => 'mock-id');
 
     final controller = container.read(importControllerProvider.notifier);
     await controller.pickAndParseFile('test.csv');
 
-    final wallet = Wallet(id: 'w1', name: 'Wallet', type: WalletType.bank, icon: null, color: null, initialBalance: 0, isDefault: true, isActive: true, createdAt: DateTime.now());
-    
+    final wallet = Wallet(
+      id: 'w1',
+      name: 'Wallet',
+      type: WalletType.bank,
+      icon: null,
+      color: null,
+      initialBalance: 0,
+      isDefault: true,
+      isActive: true,
+      createdAt: DateTime.now(),
+    );
+
     final count = await controller.confirmImport(wallet, 'p1');
     expect(count, 2); // 2 valid rows
-    verify(() => mockTransactionRepo.createTransaction(
-      amount: any(named: 'amount'),
-      type: any(named: 'type'),
-      walletId: any(named: 'walletId'),
-      categoryId: any(named: 'categoryId'),
-      transactionDate: any(named: 'transactionDate'),
-      note: any(named: 'note'),
-    )).called(2);
-    
+    verify(
+      () => mockTransactionRepo.createTransaction(
+        amount: any(named: 'amount'),
+        type: any(named: 'type'),
+        walletId: any(named: 'walletId'),
+        categoryId: any(named: 'categoryId'),
+        transactionDate: any(named: 'transactionDate'),
+        note: any(named: 'note'),
+      ),
+    ).called(2);
+
     final state = container.read(importControllerProvider);
     expect(state.parsedRows, isEmpty); // Clears rows on success
   });

@@ -1694,6 +1694,54 @@ abstract class AppLocalizations {
   /// **'Xóa dữ liệu cá nhân, giao dịch và ảnh đã lưu.'**
   String get profileDeleteSubtitle;
 
+  /// No description provided for @privacyClearDataSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa toàn bộ dữ liệu ứng dụng'**
+  String get privacyClearDataSubtitle;
+
+  /// No description provided for @notificationSettings.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cài đặt thông báo'**
+  String get notificationSettings;
+
+  /// No description provided for @emailReports.
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo Email Tự động'**
+  String get emailReports;
+
+  /// No description provided for @emailReportsDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhận tổng hợp thu chi định kỳ qua email.'**
+  String get emailReportsDesc;
+
+  /// No description provided for @dailyReport.
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo hàng ngày'**
+  String get dailyReport;
+
+  /// No description provided for @weeklyReport.
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo hàng tuần'**
+  String get weeklyReport;
+
+  /// No description provided for @monthlyReport.
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo hàng tháng'**
+  String get monthlyReport;
+
+  /// No description provided for @yearlyReport.
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo hàng năm'**
+  String get yearlyReport;
+
   /// No description provided for @deleteAccountTitle.
   ///
   /// In vi, this message translates to:

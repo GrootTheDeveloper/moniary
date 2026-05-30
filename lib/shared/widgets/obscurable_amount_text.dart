@@ -20,7 +20,9 @@ class ObscurableAmountText extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isHidden = ref.watch(privacyControllerProvider.select((state) => state.isBalancesHidden));
+    final isHidden = ref.watch(
+      privacyControllerProvider.select((state) => state.isBalancesHidden),
+    );
     final displayAmount = isHidden ? obscurePattern : amountText;
     return Text(
       '${prefixText ?? ''}$displayAmount${suffixText ?? ''}',

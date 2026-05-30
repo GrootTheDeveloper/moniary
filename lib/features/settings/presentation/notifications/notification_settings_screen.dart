@@ -14,9 +14,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
     final state = ref.watch(notificationSettingsControllerProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.notificationSettings),
-      ),
+      appBar: AppBar(title: Text(context.l10n.notificationSettings)),
       body: state.when(
         data: (settings) => ListView(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -29,9 +27,9 @@ class NotificationSettingsScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             Text(
               context.l10n.emailReportsDesc,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.mint,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppTheme.mint),
             ),
             const SizedBox(height: 24),
             _buildSwitchTile(
@@ -39,7 +37,9 @@ class NotificationSettingsScreen extends ConsumerWidget {
               title: context.l10n.dailyReport,
               value: settings.dailyReminderEnabled,
               onChanged: (val) {
-                ref.read(notificationSettingsControllerProvider.notifier).updateDailyReminder(val);
+                ref
+                    .read(notificationSettingsControllerProvider.notifier)
+                    .updateDailyReminder(val);
               },
             ),
             const SizedBox(height: 16),
@@ -48,7 +48,9 @@ class NotificationSettingsScreen extends ConsumerWidget {
               title: context.l10n.weeklyReport,
               value: settings.weeklySummaryEnabled,
               onChanged: (val) {
-                ref.read(notificationSettingsControllerProvider.notifier).updateWeeklySummary(val);
+                ref
+                    .read(notificationSettingsControllerProvider.notifier)
+                    .updateWeeklySummary(val);
               },
             ),
             const SizedBox(height: 16),
@@ -57,7 +59,9 @@ class NotificationSettingsScreen extends ConsumerWidget {
               title: context.l10n.monthlyReport,
               value: settings.monthlySummaryEnabled,
               onChanged: (val) {
-                ref.read(notificationSettingsControllerProvider.notifier).updateMonthlySummary(val);
+                ref
+                    .read(notificationSettingsControllerProvider.notifier)
+                    .updateMonthlySummary(val);
               },
             ),
             const SizedBox(height: 16),
@@ -66,7 +70,9 @@ class NotificationSettingsScreen extends ConsumerWidget {
               title: context.l10n.yearlyReport,
               value: settings.yearlySummaryEnabled,
               onChanged: (val) {
-                ref.read(notificationSettingsControllerProvider.notifier).updateYearlySummary(val);
+                ref
+                    .read(notificationSettingsControllerProvider.notifier)
+                    .updateYearlySummary(val);
               },
             ),
           ],
