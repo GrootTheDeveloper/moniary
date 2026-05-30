@@ -34,6 +34,8 @@ class CalendarScreen extends ConsumerStatefulWidget {
 }
 
 class _CalendarScreenState extends ConsumerState<CalendarScreen> {
+  bool _isTodayGridMode = false;
+
   @override
   Widget build(BuildContext context) {
     final session = ref.watch(currentSessionProvider);
@@ -74,20 +76,35 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _UnifiedFilterRow(userId: userId),
+                        child: _UnifiedFilterRow(
+                          userId: userId,
+                          isTodaySelected: _isTodayGridMode,
+                          onTodayTap: () {
+                            setState(() {
+                              _isTodayGridMode = true;
+                            });
+                          },
+                          onResetTap: () {
+                            setState(() {
+                              _isTodayGridMode = false;
+                            });
+                          },
+                        ),
                       ),
                       const SizedBox(height: 12),
-                      _CalendarHeader(
-                        month: visibleMonth,
-                        onPreviousMonth: () => _changeMonth(-1),
-                        onNextMonth: () => _changeMonth(1),
-                        onMonthSelect: (date) {
-                          ref
-                              .read(calendarVisibleMonthProvider.notifier)
-                              .setMonth(date);
-                        },
-                      ),
-                      const SizedBox(height: 8),
+                      if (!_isTodayGridMode) ...[
+                        _CalendarHeader(
+                          month: visibleMonth,
+                          onPreviousMonth: () => _changeMonth(-1),
+                          onNextMonth: () => _changeMonth(1),
+                          onMonthSelect: (date) {
+                            ref
+                                .read(calendarVisibleMonthProvider.notifier)
+                                .setMonth(date);
+                          },
+                        ),
+                        const SizedBox(height: 8),
+                      ],
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: monthAsync.when(
@@ -101,6 +118,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                   title: context.l10n.calendarTitle,
                                   body: context.l10n.calendarEmptyMessage,
                                 ),
+                              );
+                            }
+                            if (_isTodayGridMode) {
+                              return _TodayGrid(
+                                monthData: monthData,
+                                onTransactionTap: _openDayDetail,
                               );
                             }
                             return _MonthCalendarCard(
@@ -539,9 +562,17 @@ class _MonthPickerContentState extends State<_MonthPickerContent> {
 }
 
 class _UnifiedFilterRow extends ConsumerWidget {
-  const _UnifiedFilterRow({required this.userId});
+  const _UnifiedFilterRow({
+    required this.userId,
+    required this.isTodaySelected,
+    required this.onTodayTap,
+    required this.onResetTap,
+  });
 
   final String userId;
+  final bool isTodaySelected;
+  final VoidCallback onTodayTap;
+  final VoidCallback onResetTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -580,10 +611,21 @@ class _UnifiedFilterRow extends ConsumerWidget {
             inactiveColor: Colors.transparent,
             inactiveBorderColor: Colors.white10,
           ),
+          const SizedBox(width: 8),
+          _PillButton(
+            label: context.l10n.calendarToday,
+            selected: isTodaySelected,
+            onTap: onTodayTap,
+            activeColor: AppTheme.mint.withValues(alpha: 0.2),
+            activeTextColor: AppTheme.mint,
+            inactiveColor: Colors.transparent,
+            inactiveBorderColor: Colors.white10,
+          ),
           const Spacer(),
           _RoundIconButton(
             icon: Icons.refresh_outlined,
             onTap: () {
+              onResetTap();
               // Reset filters (Wallet/Category)
               ref.read(calendarFilterProvider.notifier).reset();
 
@@ -1061,9 +1103,50 @@ String _formatMoney(double amount, {required bool isNegative}) {
   return '$sign$formattedđ';
 }
 
-String _capitalize(String value) {
-  if (value.isEmpty) {
-    return value;
+class _TodayGrid extends StatelessWidget {
+  const _TodayGrid({required this.monthData, required this.onTransactionTap});
+  final CalendarMonthData monthData;
+  final ValueChanged<DateTime> onTransactionTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    // Find today's data from monthData
+    final todayData = monthData.weeks.expand((week) => week).firstWhere(
+      (d) => d.date.year == now.year && d.date.month == now.month && d.date.day == now.day,
+      orElse: () => CalendarDayData(date: now, isCurrentMonth: true, transactions: []),
+    );
+
+    final transactions = todayData.transactions;
+
+    if (transactions.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: PlaceholderCard(
+          title: context.l10n.calendarToday,
+          body: context.l10n.calendarEmptyMessage, 
+        ),
+      );
+    }
+
+    return GridView.builder(
+      padding: const EdgeInsets.only(top: 8),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemCount: transactions.length,
+      itemBuilder: (context, index) {
+        final transaction = transactions[index];
+        return TransactionGridTile(
+          transaction: transaction,
+          onTap: () => onTransactionTap(now),
+        );
+      },
+    );
   }
-  return '${value[0].toUpperCase()}${value.substring(1)}';
 }
+

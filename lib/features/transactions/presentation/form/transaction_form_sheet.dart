@@ -235,9 +235,16 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
         )
         .toList();
 
+    if ((_selectedCategoryId == null && categoryOptions.isNotEmpty) ||
+        (_selectedWalletId == null && walletOptions.isNotEmpty)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _setDefaultSelections();
+      });
+    }
+
     final canSubmit =
-        walletOptions.isNotEmpty &&
-        categoryOptions.isNotEmpty &&
+        _selectedWalletId != null &&
+        _selectedCategoryId != null &&
         !composerState.isLoading &&
         !_isOcrExtracting;
 

@@ -48,7 +48,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
 
     final controller = CameraController(
       cameras[index],
-      ResolutionPreset.high,
+      ResolutionPreset.medium,
       enableAudio: false,
     );
     _controller = controller;
@@ -67,8 +67,12 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
         .catchError((e) {
           if (mounted) {
             setState(() {
-              _errorMessage =
-                  'Không thể kết nối Camera. Vui lòng cấp quyền trong Cài đặt.';
+              if (e is CameraException && e.code == 'CameraAccessDenied') {
+                _errorMessage =
+                    'Không thể kết nối Camera. Vui lòng cấp quyền trong Cài đặt.';
+              } else {
+                _errorMessage = 'Lỗi khởi tạo Camera: ${e.toString()}';
+              }
             });
           }
           debugPrint('Error initializing camera: $e');

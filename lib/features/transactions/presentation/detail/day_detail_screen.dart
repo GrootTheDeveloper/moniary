@@ -174,7 +174,7 @@ class _DayDetailBody extends ConsumerWidget {
               ),
               delegate: SliverChildBuilderDelegate((context, index) {
                 final transaction = transactions[index];
-                return _TransactionGridTile(
+                return TransactionGridTile(
                   transaction: transaction,
                   onTap: () async {
                     final result = await context
@@ -234,8 +234,8 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
-class _TransactionGridTile extends StatelessWidget {
-  const _TransactionGridTile({required this.transaction, required this.onTap});
+class TransactionGridTile extends StatelessWidget {
+  const TransactionGridTile({required this.transaction, required this.onTap});
 
   final TransactionEntry transaction;
   final VoidCallback onTap;
@@ -278,9 +278,9 @@ class _TransactionGridTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _GridTag(label: transaction.categoryName),
+                  GridTag(label: transaction.categoryName),
                   const SizedBox(height: 4),
-                  _GridTag(label: transaction.walletName),
+                  GridTag(label: transaction.walletName),
                 ],
               ),
             ),
@@ -329,8 +329,8 @@ class _TransactionGridTile extends StatelessWidget {
   }
 }
 
-class _GridTag extends StatelessWidget {
-  const _GridTag({required this.label});
+class GridTag extends StatelessWidget {
+  const GridTag({required this.label});
   final String label;
 
   @override
