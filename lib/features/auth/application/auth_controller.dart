@@ -82,10 +82,9 @@ class AuthController extends AsyncNotifier<void> {
     state = const AsyncLoading();
     try {
       if (!AppConstants.hasSupabaseConfig) {
-        ref.read(profileRepositoryProvider).setMockEmailAndProvider(
-          email: email,
-          loginProvider: 'email',
-        );
+        ref
+            .read(profileRepositoryProvider)
+            .setMockEmailAndProvider(email: email, loginProvider: 'email');
         state = const AsyncData(null);
         return;
       }
@@ -122,10 +121,12 @@ class AuthController extends AsyncNotifier<void> {
     state = const AsyncLoading();
     try {
       if (!AppConstants.hasSupabaseConfig) {
-        ref.read(profileRepositoryProvider).setMockEmailAndProvider(
-          email: 'mock-google@gmail.com',
-          loginProvider: 'google',
-        );
+        ref
+            .read(profileRepositoryProvider)
+            .setMockEmailAndProvider(
+              email: 'mock-google@gmail.com',
+              loginProvider: 'google',
+            );
         state = const AsyncData(null);
         return;
       }

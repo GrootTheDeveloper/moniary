@@ -47,9 +47,9 @@ class SupabaseNotificationSettingsRepository
 
     try {
       await _supabase
-        .from('notification_settings')
-        .update(settings.toJson())
-        .eq('user_id', user.id);
+          .from('notification_settings')
+          .update(settings.toJson())
+          .eq('user_id', user.id);
     } catch (e, st) {
       AppLogger.error('Failed to update notification settings', e, st);
       rethrow;

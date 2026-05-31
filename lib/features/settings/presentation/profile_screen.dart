@@ -53,10 +53,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final password = _passwordController.text;
 
     try {
-      await ref.read(authControllerProvider.notifier).linkEmailAccount(
-        email: email,
-        password: password,
-      );
+      await ref
+          .read(authControllerProvider.notifier)
+          .linkEmailAccount(email: email, password: password);
 
       if (mounted) {
         messenger.showSnackBar(

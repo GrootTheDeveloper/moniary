@@ -35,7 +35,9 @@ class ImportState {
       isParsing: isParsing ?? this.isParsing,
       isImporting: isImporting ?? this.isImporting,
       parsedRows: parsedRows ?? this.parsedRows,
-      selectedFilePath: selectedFilePath != null ? selectedFilePath() : this.selectedFilePath,
+      selectedFilePath: selectedFilePath != null
+          ? selectedFilePath()
+          : this.selectedFilePath,
       error: error != null ? error() : this.error,
     );
   }
@@ -51,17 +53,33 @@ class ImportController extends Notifier<ImportState> {
   }
 
   Future<void> pickAndParseFile(String filePath) async {
-    state = state.copyWith(isParsing: true, selectedFilePath: () => filePath, error: () => null);
+    state = state.copyWith(
+      isParsing: true,
+      selectedFilePath: () => filePath,
+      error: () => null,
+    );
     try {
       final repo = ref.read(importRepositoryProvider);
       final rows = await repo.parseCsv(filePath);
-      state = state.copyWith(parsedRows: rows, isParsing: false, selectedFilePath: () => filePath);
+      state = state.copyWith(
+        parsedRows: rows,
+        isParsing: false,
+        selectedFilePath: () => filePath,
+      );
     } on AppException catch (e, st) {
       AppLogger.error('Failed to parse file', e, st);
-      state = state.copyWith(isParsing: false, parsedRows: [], error: () => e.code ?? 'IMPORT_PARSE_ERROR');
+      state = state.copyWith(
+        isParsing: false,
+        parsedRows: [],
+        error: () => e.code ?? 'IMPORT_PARSE_ERROR',
+      );
     } catch (e, st) {
       AppLogger.error('Failed to parse file', e, st);
-      state = state.copyWith(isParsing: false, parsedRows: [], error: () => 'IMPORT_PARSE_ERROR');
+      state = state.copyWith(
+        isParsing: false,
+        parsedRows: [],
+        error: () => 'IMPORT_PARSE_ERROR',
+      );
     }
   }
 
@@ -71,7 +89,7 @@ class ImportController extends Notifier<ImportState> {
       final session = ref.read(currentSessionProvider);
       final profileId = session?.user.id;
       if (profileId == null) {
-         throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
+        throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
       }
 
       final validRows = state.parsedRows.where((r) => r.isValid).toList();
@@ -99,7 +117,8 @@ class ImportController extends Notifier<ImportState> {
         // Find matching category (case-insensitive)
         Category? matchedCat;
         for (var c in categories) {
-          if (c.name.toLowerCase() == row.categoryName.toLowerCase() && c.type == type) {
+          if (c.name.toLowerCase() == row.categoryName.toLowerCase() &&
+              c.type == type) {
             matchedCat = c;
             break;
           }
@@ -116,8 +135,10 @@ class ImportController extends Notifier<ImportState> {
         }
 
         if (matchedCat == null) {
-           AppLogger.warning('Skipping row because no category found for type: $type');
-           continue;
+          AppLogger.warning(
+            'Skipping row because no category found for type: $type',
+          );
+          continue;
         }
 
         await transactionRepo.createTransaction(
@@ -135,7 +156,10 @@ class ImportController extends Notifier<ImportState> {
       return importCount;
     } on AppException catch (e, st) {
       AppLogger.error('Import failed', e, st);
-      state = state.copyWith(isImporting: false, error: () => e.code ?? 'IMPORT_FAILED');
+      state = state.copyWith(
+        isImporting: false,
+        error: () => e.code ?? 'IMPORT_FAILED',
+      );
       return 0;
     } catch (e, st) {
       AppLogger.error('Import failed', e, st);

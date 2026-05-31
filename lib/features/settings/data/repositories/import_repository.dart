@@ -30,7 +30,10 @@ class ImportRepository {
     try {
       final file = File(filePath);
       if (!await file.exists()) {
-        throw const AppException('File does not exist', code: 'IMPORT_FILE_NOT_FOUND');
+        throw const AppException(
+          'File does not exist',
+          code: 'IMPORT_FILE_NOT_FOUND',
+        );
       }
 
       final input = file.openRead();
@@ -40,7 +43,8 @@ class ImportRepository {
           .transform(csvCodec.decoder)
           .toList();
 
-      if (fields.isEmpty) throw const AppException('File is empty', code: 'IMPORT_FILE_EMPTY');
+      if (fields.isEmpty)
+        throw const AppException('File is empty', code: 'IMPORT_FILE_EMPTY');
 
       // Skip header row
       final dataRows = fields.skip(1);
@@ -54,13 +58,15 @@ class ImportRepository {
         }
 
         if (row.length < 5) {
-          result.add(const CsvTransactionRow(
-            typeStr: '',
-            categoryName: '',
-            note: '',
-            isValid: false,
-            errorMessage: 'MISSING_COLUMNS',
-          ));
+          result.add(
+            const CsvTransactionRow(
+              typeStr: '',
+              categoryName: '',
+              note: '',
+              isValid: false,
+              errorMessage: 'MISSING_COLUMNS',
+            ),
+          );
           continue;
         }
 

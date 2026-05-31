@@ -30,9 +30,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        title: Text(context.l10n.importTitle),
-      ),
+      appBar: AppBar(title: Text(context.l10n.importTitle)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -44,7 +42,10 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
               onPressed: _pickFile,
               icon: const Icon(Icons.file_upload),
               label: Text(context.l10n.importSelectFile),
-              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.mint, foregroundColor: Colors.black),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.mint,
+                foregroundColor: Colors.black,
+              ),
             ),
             const SizedBox(height: 16),
             if (importState.isParsing)
@@ -59,7 +60,11 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                 ),
                 child: Column(
                   children: [
-                    const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                    const Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 48,
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       _getErrorMessage(context, importState.error!),
@@ -67,7 +72,10 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
-                    TextButton(onPressed: _pickFile, child: Text(context.l10n.importRetry)),
+                    TextButton(
+                      onPressed: _pickFile,
+                      child: Text(context.l10n.importRetry),
+                    ),
                   ],
                 ),
               )
@@ -89,7 +97,14 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                   disabledForegroundColor: Colors.grey[500],
                 ),
                 child: importState.isImporting
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.black,
+                          strokeWidth: 2,
+                        ),
+                      )
                     : Text(context.l10n.importConfirm),
               ),
             ],
@@ -109,7 +124,14 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(context.l10n.importCsvFormatTitle, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16)),
+          Text(
+            context.l10n.importCsvFormatTitle,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
           const SizedBox(height: 8),
           Text(
             context.l10n.importCsvFormatBody,
@@ -120,13 +142,23 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
     );
   }
 
-  Widget _buildWalletSelector(BuildContext context, AsyncValue<List<Wallet>> walletsAsync) {
+  Widget _buildWalletSelector(
+    BuildContext context,
+    AsyncValue<List<Wallet>> walletsAsync,
+  ) {
     return walletsAsync.when(
       data: (wallets) {
-        if (wallets.isEmpty) return Text(context.l10n.importNoWallets, style: const TextStyle(color: Colors.red));
+        if (wallets.isEmpty)
+          return Text(
+            context.l10n.importNoWallets,
+            style: const TextStyle(color: Colors.red),
+          );
         return DropdownButtonFormField<Wallet>(
           value: _selectedWallet,
-          hint: Text(context.l10n.importSelectWallet, style: const TextStyle(color: Colors.white54)),
+          hint: Text(
+            context.l10n.importSelectWallet,
+            style: const TextStyle(color: Colors.white54),
+          ),
           dropdownColor: AppTheme.surface,
           items: wallets
               .map(
@@ -151,16 +183,23 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Text(context.l10n.importErrorWallets(e.toString()), style: const TextStyle(color: Colors.red)),
+      error: (e, _) => Text(
+        context.l10n.importErrorWallets(e.toString()),
+        style: const TextStyle(color: Colors.red),
+      ),
     );
   }
 
   String _getErrorMessage(BuildContext context, String code) {
     switch (code) {
-      case 'MISSING_COLUMNS': return context.l10n.importErrorMissingColumns;
-      case 'INVALID_DATE': return context.l10n.importErrorInvalidDate;
-      case 'INVALID_AMOUNT': return context.l10n.importErrorInvalidAmount;
-      default: return context.l10n.importErrorUnknown;
+      case 'MISSING_COLUMNS':
+        return context.l10n.importErrorMissingColumns;
+      case 'INVALID_DATE':
+        return context.l10n.importErrorInvalidDate;
+      case 'INVALID_AMOUNT':
+        return context.l10n.importErrorInvalidAmount;
+      default:
+        return context.l10n.importErrorUnknown;
     }
   }
 
@@ -169,7 +208,14 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(context.l10n.importPreviewTitle(validCount), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
+        Text(
+          context.l10n.importPreviewTitle(validCount),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         Expanded(
           child: ListView.separated(
@@ -182,13 +228,21 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 tileColor: AppTheme.surface,
-                leading: Icon(row.isValid ? Icons.check_circle : Icons.error, color: row.isValid ? Colors.green : Colors.red),
-                title: Text('${row.categoryName} - ${formatVnd(row.amount ?? 0)}', style: const TextStyle(color: Colors.white)),
+                leading: Icon(
+                  row.isValid ? Icons.check_circle : Icons.error,
+                  color: row.isValid ? Colors.green : Colors.red,
+                ),
+                title: Text(
+                  '${row.categoryName} - ${formatVnd(row.amount ?? 0)}',
+                  style: const TextStyle(color: Colors.white),
+                ),
                 subtitle: Text(
                   row.isValid
                       ? DateFormat('dd/MM/yyyy').format(row.date!)
                       : _getErrorMessage(context, row.errorMessage ?? ''),
-                  style: TextStyle(color: row.isValid ? Colors.white70 : Colors.redAccent),
+                  style: TextStyle(
+                    color: row.isValid ? Colors.white70 : Colors.redAccent,
+                  ),
                 ),
               );
             },
@@ -215,10 +269,14 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
   }
 
   Future<void> _confirmImport() async {
-    final count = await ref.read(importControllerProvider.notifier).confirmImport(_selectedWallet!);
+    final count = await ref
+        .read(importControllerProvider.notifier)
+        .confirmImport(_selectedWallet!);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.importSuccess(count))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.importSuccess(count))),
+      );
       context.pop();
     }
   }

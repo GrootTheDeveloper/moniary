@@ -11,11 +11,7 @@ import '../../application/account/account_actions_controller.dart';
 import '../../data/export/file_action_service.dart';
 import '../../domain/export/export_filters.dart';
 
-enum ExportFormat {
-  csv,
-  xlsx,
-  pdf,
-}
+enum ExportFormat { csv, xlsx, pdf }
 
 extension ExportFormatL10n on ExportFormat {
   String getLabel(BuildContext context) {
@@ -195,7 +191,10 @@ class _DataTypesCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(context.l10n.exportDataTypes, style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            context.l10n.exportDataTypes,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           ...ExportDataType.values.map(
             (type) => CheckboxListTile(
@@ -374,9 +373,7 @@ class _ExportCompleteDialog extends StatelessWidget {
             }
             if (!shared) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(context.l10n.exportNoAppToShare),
-                ),
+                SnackBar(content: Text(context.l10n.exportNoAppToShare)),
               );
             }
           },
@@ -393,9 +390,7 @@ class _ExportCompleteDialog extends StatelessWidget {
             }
             if (!opened) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(context.l10n.exportNoAppToOpen),
-                ),
+                SnackBar(content: Text(context.l10n.exportNoAppToOpen)),
               );
             }
           },

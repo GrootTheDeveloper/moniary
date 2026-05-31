@@ -79,7 +79,9 @@ class RestoreAccountScreen extends ConsumerWidget {
                 onPressed: state.isLoading
                     ? null
                     : () async {
-                        await ref.read(authControllerProvider.notifier).signOut();
+                        await ref
+                            .read(authControllerProvider.notifier)
+                            .signOut();
                         if (context.mounted) context.go('/');
                       },
                 icon: const Icon(Icons.logout),
