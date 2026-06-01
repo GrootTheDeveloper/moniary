@@ -6,11 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
-import '../../../../core/constants/app_color.dart';
 import '../../../../core/supabase/supabase_providers.dart';
-import '../../../auth/presentation/login_screen.dart';
-import '../../../categories/domain/models/category.dart';
-import '../../../categories/application/categories_controller.dart';
 import '../../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../../transactions/presentation/detail/day_detail_screen.dart';
 import '../../../wallets/domain/models/wallet.dart';
@@ -23,7 +19,6 @@ import 'manage_data_sheet.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
-import '../../../../shared/widgets/aurora_background.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../settings/application/privacy_controller.dart';
 
@@ -334,7 +329,7 @@ class _SeamlessHeader extends ConsumerWidget {
             );
           },
           loading: () => const SizedBox(height: 60),
-          error: (_, __) => const SizedBox(height: 60),
+          error: (_, _) => const SizedBox(height: 60),
         ),
         const SizedBox(height: 12),
         // Row 3: Income & Expense (Pills)
@@ -360,7 +355,7 @@ class _SeamlessHeader extends ConsumerWidget {
             );
           },
           loading: () => const SizedBox(height: 30),
-          error: (_, __) => const SizedBox(height: 30),
+          error: (_, _) => const SizedBox(height: 30),
         ),
       ],
     );
@@ -905,7 +900,7 @@ class _CalendarDayCell extends StatelessWidget {
             // Day Number (Always consistently placed below the placeholder)
             Positioned(
               top: 36,
-              child: Container(
+              child: SizedBox(
                 width: 22,
                 height: 22,
                 child: Center(
@@ -953,7 +948,6 @@ class _PillButton extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
-    this.onClear,
     this.activeColor = AppTheme.mint,
     this.activeTextColor = Colors.black,
     this.inactiveColor = Colors.transparent,
@@ -963,7 +957,6 @@ class _PillButton extends StatelessWidget {
   final String label;
   final bool selected;
   final VoidCallback onTap;
-  final VoidCallback? onClear;
   final Color activeColor;
   final Color activeTextColor;
   final Color inactiveColor;
@@ -995,17 +988,6 @@ class _PillButton extends StatelessWidget {
                 fontWeight: selected ? FontWeight.bold : FontWeight.w500,
               ),
             ),
-            if (selected && onClear != null) ...[
-              const SizedBox(width: 4),
-              GestureDetector(
-                onTap: onClear,
-                child: Icon(
-                  Icons.close_outlined,
-                  size: 16,
-                  color: activeTextColor,
-                ),
-              ),
-            ],
           ],
         ),
       ),

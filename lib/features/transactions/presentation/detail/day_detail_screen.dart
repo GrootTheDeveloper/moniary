@@ -244,7 +244,11 @@ class _SummaryCard extends StatelessWidget {
 }
 
 class TransactionGridTile extends StatelessWidget {
-  const TransactionGridTile({required this.transaction, required this.onTap});
+  const TransactionGridTile({
+    super.key,
+    required this.transaction,
+    required this.onTap,
+  });
 
   final TransactionEntry transaction;
   final VoidCallback onTap;
@@ -342,7 +346,7 @@ class TransactionGridTile extends StatelessWidget {
 }
 
 class GridTag extends StatelessWidget {
-  const GridTag({required this.label});
+  const GridTag({super.key, required this.label});
   final String label;
 
   @override

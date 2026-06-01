@@ -1,6 +1,5 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import '../../../../app/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -34,7 +33,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
     final cameras = await ref.read(cameraProvider.future);
     if (mounted && cameras.isNotEmpty) {
       _cameras = cameras;
-      _initializeCamera(cameras, index: _selectedCameraIndex);
+      await _initializeCamera(cameras, index: _selectedCameraIndex);
     }
   }
 

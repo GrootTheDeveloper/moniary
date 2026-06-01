@@ -647,10 +647,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
           quality: AppConstants.imageCompressQuality,
           format: CompressFormat.jpeg,
         );
-        if (imageBytes == null) {
-          // Fallback if compression fails
-          imageBytes = await _pickedFile!.readAsBytes();
-        }
+        imageBytes ??= await _pickedFile!.readAsBytes();
       }
 
       final previousDate = widget.initialTransaction?.transactionDate;

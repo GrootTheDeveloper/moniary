@@ -3,7 +3,6 @@ import 'package:moniary/features/groups/data/group_expense_validation_service.da
 import 'package:moniary/features/groups/domain/expense_group.dart';
 import 'package:moniary/features/groups/domain/expense_split.dart';
 import 'package:moniary/features/groups/domain/group_member.dart';
-import 'package:moniary/l10n/gen_l10n/app_localizations_vi.dart';
 
 void main() {
   const service = GroupExpenseValidationService();

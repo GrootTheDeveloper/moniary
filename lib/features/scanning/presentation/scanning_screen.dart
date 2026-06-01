@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../app/app_theme.dart';
-import '../../../core/providers/camera_provider.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/l10n_model_extensions.dart';
 import '../../transactions/domain/models/transaction_mutation_result.dart';

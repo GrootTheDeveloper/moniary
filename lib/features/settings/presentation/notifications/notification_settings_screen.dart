@@ -78,7 +78,8 @@ class NotificationSettingsScreen extends ConsumerWidget {
           ],
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Lỗi: $err')),
+        error: (err, stack) =>
+            Center(child: Text('${context.l10n.errorGeneric}\n$err')),
       ),
     );
   }
@@ -99,7 +100,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
         title: Text(title, style: Theme.of(context).textTheme.titleMedium),
         value: value,
         onChanged: onChanged,
-        activeColor: AppTheme.mint,
+        activeThumbColor: AppTheme.mint,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       ),
     );
