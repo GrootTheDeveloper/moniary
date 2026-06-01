@@ -36,6 +36,7 @@ class AuthController extends AsyncNotifier<void> {
           user: user,
         );
         ref.read(mockSessionProvider.notifier).setSession(mockSession);
+        state = const AsyncData(null);
         return;
       }
 
