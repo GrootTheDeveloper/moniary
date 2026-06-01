@@ -20,8 +20,8 @@ class ImportRepository {
         CsvTransactionRow(
           date: DateTime.now(),
           amount: 50000.0,
-          typeStr: 'Expense',
-          categoryName: 'Food',
+          typeStr: 'Chi',
+          categoryName: 'Ăn uống',
           note: 'Mock transaction',
           isValid: true,
         ),
