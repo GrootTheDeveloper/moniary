@@ -1,7 +1,7 @@
 import 'dart:io';
-
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:share_plus/share_plus.dart';
 
 final fileActionServiceProvider = Provider<FileActionService>((ref) {
   return const FileActionService();
@@ -10,27 +10,13 @@ final fileActionServiceProvider = Provider<FileActionService>((ref) {
 class FileActionService {
   const FileActionService();
 
-  static const _channel = MethodChannel('moniary/file_actions');
-
   Future<bool> open(File file) async {
-    if (!Platform.isAndroid) {
-      return false;
-    }
-
-    final opened = await _channel.invokeMethod<bool>('openFile', {
-      'path': file.path,
-    });
-    return opened ?? false;
+    final result = await OpenFilex.open(file.path);
+    return result.type == ResultType.done;
   }
 
   Future<bool> share(File file) async {
-    if (!Platform.isAndroid) {
-      return false;
-    }
-
-    final shared = await _channel.invokeMethod<bool>('shareFile', {
-      'path': file.path,
-    });
-    return shared ?? false;
+    final result = await Share.shareXFiles([XFile(file.path)]);
+    return result.status == ShareResultStatus.success;
   }
 }

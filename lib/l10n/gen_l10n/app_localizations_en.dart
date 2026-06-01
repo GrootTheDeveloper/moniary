@@ -1195,7 +1195,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyCopyFilePath => 'Copy file path';
 
   @override
+  String get privacyCopyFilePathSuccess => 'Copied file path';
+
+  @override
   String get privacyCopyRequest => 'Copy request';
+
+  @override
+  String get privacyCopyRequestSuccess => 'Copied request';
 
   @override
   String get storeAboutMoniary => 'About Moniary';

@@ -95,31 +95,27 @@ class AccountActionsController extends AsyncNotifier<void> {
     );
   }
 
-  Future<File?> createDeletionRequest({required String reason}) async {
+  Future<void> createDeletionRequest({required String reason}) async {
     state = const AsyncLoading();
-    File? requestFile;
     state = await AsyncValue.guard(() async {
-      requestFile = await ref
+      await ref
           .read(accountRepositoryProvider)
           .createDeletionRequest(reason: reason);
     });
     ref.invalidate(privacyRequestHistoryProvider);
-    return requestFile;
   }
 
-  Future<File?> createPrivacyRequest({
+  Future<void> createPrivacyRequest({
     required String requestType,
     required String message,
   }) async {
     state = const AsyncLoading();
-    File? requestFile;
     state = await AsyncValue.guard(() async {
-      requestFile = await ref
+      await ref
           .read(accountRepositoryProvider)
           .createPrivacyRequest(requestType: requestType, message: message);
     });
     ref.invalidate(privacyRequestHistoryProvider);
-    return requestFile;
   }
 
   Future<void> updatePrivacyRequestStatus({

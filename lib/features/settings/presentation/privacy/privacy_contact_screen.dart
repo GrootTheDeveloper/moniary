@@ -1,4 +1,3 @@
-import 'dart:io';
 import '../../../../l10n/l10n_extension.dart';
 
 import 'package:flutter/material.dart';
@@ -176,42 +175,30 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
   }
 
   Future<void> _createPrivacyRequest() async {
-    final file = await ref
-        .read(accountActionsControllerProvider.notifier)
-        .createPrivacyRequest(
-          requestType: privacyRequestTypeById(_requestTypeId).label,
-          message: _messageController.text,
-        );
-    if (!mounted || file == null) {
-      return;
-    }
+    final notifier = ref.read(accountActionsControllerProvider.notifier);
+    await notifier.createPrivacyRequest(
+      requestType: privacyRequestTypeById(_requestTypeId).label,
+      message: _messageController.text,
+    );
+
+    if (!mounted) return;
 
     await showDialog<void>(
       context: context,
-      builder: (context) => _PrivacyRequestDialog(file: file),
-    );
-  }
-}
-
-class _PrivacyRequestDialog extends StatelessWidget {
-  const _PrivacyRequestDialog({required this.file});
-
-  final File file;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(context.l10n.privacyRequestCreated),
-      content: Text(
-        'File yêu cầu đã được lưu tại:\n${file.path}',
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => context.pop(),
-          child: Text(context.l10n.commonClose),
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.privacyRequestCreated),
+        content: const Text(
+          'Yêu cầu của bạn đã được ghi nhận. Bạn có thể theo dõi trong phần Lịch sử yêu cầu.',
         ),
-      ],
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(context.l10n.commonClose),
+          ),
+        ],
+      ),
     );
   }
 }

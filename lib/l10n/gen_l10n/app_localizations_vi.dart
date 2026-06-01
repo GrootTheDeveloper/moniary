@@ -1195,7 +1195,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get privacyCopyFilePath => 'Copy file path';
 
   @override
+  String get privacyCopyFilePathSuccess => 'Đã copy đường dẫn file';
+
+  @override
   String get privacyCopyRequest => 'Copy request';
+
+  @override
+  String get privacyCopyRequestSuccess => 'Đã copy nội dung yêu cầu';
 
   @override
   String get storeAboutMoniary => 'Giới thiệu Moniary';

@@ -1,4 +1,3 @@
-import 'dart:io';
 import '../../../../l10n/l10n_extension.dart';
 import 'package:go_router/go_router.dart';
 
@@ -108,7 +107,7 @@ class _DeletionRequestScreenState extends ConsumerState<DeletionRequestScreen> {
     // The requirement says "Dùng lựa chọn này khi không thể xóa tài khoản trực tiếp trong app".
     // Actually, "requestSoftDelete" IS deleting the account directly (soft delete).
 
-    final file = await notifier.createDeletionRequest(
+    await notifier.createDeletionRequest(
       reason: _reasonController.text,
     );
 
@@ -116,36 +115,24 @@ class _DeletionRequestScreenState extends ConsumerState<DeletionRequestScreen> {
     // but we also want to trigger soft delete on the server.
     await notifier.requestSoftDelete();
 
-    if (!mounted || file == null) {
+    if (!mounted) {
       return;
     }
 
     await showDialog<void>(
       context: context,
-      builder: (context) => _DeletionRequestDialog(file: file),
-    );
-  }
-}
-
-class _DeletionRequestDialog extends StatelessWidget {
-  const _DeletionRequestDialog({required this.file});
-
-  final File file;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(context.l10n.privacyRequestCreated),
-      content: Text(
-        'File yêu cầu đã được lưu tại:\n${file.path}',
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => context.pop(),
-          child: Text(context.l10n.commonClose),
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.privacyRequestCreated),
+        content: const Text(
+          'Yêu cầu của bạn đã được gửi thành công đến hệ thống.',
         ),
-      ],
+        actions: [
+          TextButton(
+            onPressed: () => context.pop(),
+            child: Text(context.l10n.commonClose),
+          ),
+        ],
+      ),
     );
   }
 }

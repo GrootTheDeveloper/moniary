@@ -1,15 +1,18 @@
-import 'dart:io';
 import '../../../../l10n/l10n_extension.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../../data/export/file_action_service.dart';
 import '../../domain/export/export_filters.dart';
+import '../../domain/export/export_history_entry.dart';
+import 'export_detail_screen.dart';
+import 'export_history_screen.dart';
 
 enum ExportFormat { csv, xlsx, pdf }
 
@@ -109,6 +112,8 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
                   icon: const Icon(Icons.file_download_outlined),
                   label: Text(context.l10n.exportButton),
                 ),
+                const SizedBox(height: 24),
+                _RecentExportsSection(),
               ],
             ),
             if (state.isLoading)
@@ -143,9 +148,14 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
       return;
     }
 
-    await showDialog<void>(
-      context: context,
-      builder: (context) => _ExportCompleteDialog(file: file),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(context.l10n.exportDone),
+        action: SnackBarAction(
+          label: context.l10n.commonShare,
+          onPressed: () => ref.read(fileActionServiceProvider).share(file),
+        ),
+      ),
     );
   }
 
@@ -289,6 +299,76 @@ class _FormatOption extends StatelessWidget {
   }
 }
 
+class _RecentExportsSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final historyAsync = ref.watch(exportHistoryProvider);
+
+    return historyAsync.when(
+      data: (items) {
+        if (items.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Lần xuất gần đây',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                TextButton(
+                  onPressed: () => context.push(ExportHistoryScreen.routePath),
+                  child: const Text('Xem tất cả'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ...items.take(3).map(
+                  (item) => _RecentExportTile(entry: item),
+                ),
+          ],
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (e, st) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _RecentExportTile extends StatelessWidget {
+  const _RecentExportTile({required this.entry});
+  final ExportHistoryEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final date = DateFormat('dd/MM HH:mm').format(entry.createdAt);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: ListTile(
+        onTap: () => context.push(ExportDetailScreen.routePath, extra: entry),
+        leading: CircleAvatar(
+          backgroundColor: AppTheme.mint.withValues(alpha: 0.1),
+          child: Text(
+            entry.format.toUpperCase(),
+            style: const TextStyle(color: AppTheme.mint, fontSize: 10),
+          ),
+        ),
+        title: Text(entry.dateRange, style: const TextStyle(fontSize: 14)),
+        subtitle: Text(date, style: const TextStyle(fontSize: 12)),
+        trailing: const Icon(Icons.chevron_right, size: 20),
+      ),
+    );
+  }
+}
+
 class _DateRangeCard extends StatelessWidget {
   const _DateRangeCard({
     required this.filters,
@@ -349,59 +429,3 @@ class _DateRangeCard extends StatelessWidget {
   }
 }
 
-class _ExportCompleteDialog extends StatelessWidget {
-  const _ExportCompleteDialog({required this.file});
-
-  final File file;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(context.l10n.exportDone),
-      content: Text(
-        context.l10n.exportFileSavedAt(file.path),
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-      actions: [
-        TextButton.icon(
-          onPressed: () async {
-            final shared = await ProviderScope.containerOf(
-              context,
-            ).read(fileActionServiceProvider).share(file);
-            if (!context.mounted) {
-              return;
-            }
-            if (!shared) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(context.l10n.exportNoAppToShare)),
-              );
-            }
-          },
-          icon: const Icon(Icons.ios_share_outlined),
-          label: Text(context.l10n.commonShare),
-        ),
-        TextButton.icon(
-          onPressed: () async {
-            final opened = await ProviderScope.containerOf(
-              context,
-            ).read(fileActionServiceProvider).open(file);
-            if (!context.mounted) {
-              return;
-            }
-            if (!opened) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(context.l10n.exportNoAppToOpen)),
-              );
-            }
-          },
-          icon: const Icon(Icons.open_in_new_outlined),
-          label: Text(context.l10n.commonOpen),
-        ),
-        TextButton(
-          onPressed: () => context.pop(),
-          child: Text(context.l10n.commonClose),
-        ),
-      ],
-    );
-  }
-}

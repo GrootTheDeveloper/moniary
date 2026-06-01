@@ -18,6 +18,7 @@ import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
 import '../features/scanning/presentation/ocr_review_screen.dart';
 import '../features/scanning/presentation/scanning_screen.dart';
+import '../features/settings/domain/export/export_history_entry.dart';
 import '../features/settings/domain/privacy_requests/privacy_request_history_entry.dart';
 import '../features/settings/presentation/store/about_moniary_screen.dart';
 import '../features/settings/presentation/legal/data_deletion_policy_screen.dart';
@@ -29,6 +30,7 @@ import '../features/settings/presentation/account/delete_account_help_screen.dar
 import '../features/settings/presentation/account/deletion_request_screen.dart';
 import '../features/settings/presentation/account/restore_account_screen.dart';
 import '../features/settings/presentation/export/export_data_screen.dart';
+import '../features/settings/presentation/export/export_detail_screen.dart';
 import '../features/settings/presentation/export/export_history_screen.dart';
 import '../features/settings/presentation/export/export_troubleshooting_screen.dart';
 import '../features/settings/presentation/legal/financial_disclaimer_screen.dart';
@@ -427,6 +429,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           state: state,
           child: const ExportHistoryScreen(),
         ),
+      ),
+      GoRoute(
+        path: ExportDetailScreen.routePath,
+        pageBuilder: (context, state) {
+          final entry = state.extra as ExportHistoryEntry?;
+          final child = entry == null
+              ? const ExportHistoryScreen()
+              : ExportDetailScreen(entry: entry);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
       ),
       GoRoute(
         path: PermissionRationaleScreen.routePath,

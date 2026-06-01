@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/app_constants.dart';
@@ -66,11 +68,12 @@ class AccountRepository {
       csv.writeln(row.map(_csvCell).join(','));
     }
 
-    final directory = await getApplicationDocumentsDirectory();
+    final directory = await _getExportDirectory();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
     final file = File('${directory.path}/moniary_export_$timestamp.csv');
     final saved = await file.writeAsString(csv.toString(), encoding: utf8);
     await _recordExport(format: 'CSV', file: saved, filters: filters);
+    await OpenFilex.open(saved.path);
     return saved;
   }
 
@@ -110,11 +113,12 @@ class AccountRepository {
       sheetName: 'Transactions',
       rows: workbookRows,
     ).build();
-    final directory = await getApplicationDocumentsDirectory();
+    final directory = await _getExportDirectory();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
     final file = File('${directory.path}/moniary_export_$timestamp.xlsx');
     final saved = await file.writeAsBytes(bytes, flush: true);
     await _recordExport(format: 'XLSX', file: saved, filters: filters);
+    await OpenFilex.open(saved.path);
     return saved;
   }
 
@@ -165,11 +169,12 @@ class AccountRepository {
     ];
 
     final bytes = PdfReport(lines: lines).build();
-    final directory = await getApplicationDocumentsDirectory();
+    final directory = await _getExportDirectory();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
     final file = File('${directory.path}/moniary_export_$timestamp.pdf');
     final saved = await file.writeAsBytes(bytes, flush: true);
     await _recordExport(format: 'PDF', file: saved, filters: filters);
+    await OpenFilex.open(saved.path);
     return saved;
   }
 
@@ -372,48 +377,26 @@ class AccountRepository {
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   }
 
-  Future<File> createDeletionRequest({required String reason}) async {
+  Future<void> createDeletionRequest({required String reason}) async {
     final session = _client.auth.currentSession;
     if (session == null) {
       throw const AppException('Bạn chưa đăng nhập.');
     }
 
     final timestamp = DateTime.now();
-    final payload = {
-      'type': 'account_deletion_request',
-      'status': 'pending_manual_review',
-      'created_at': timestamp.toIso8601String(),
-      'user_id': session.user.id,
-      'email': session.user.email,
-      'reason': reason.trim(),
-      'requested_scope': [
-        'profile',
-        'wallets',
-        'categories',
-        'transactions',
-        'transaction_images',
-      ],
-    };
 
-    final directory = await getApplicationDocumentsDirectory();
-    final fileTimestamp = DateFormat('yyyyMMdd_HHmmss').format(timestamp);
-    final file = File(
-      '${directory.path}/moniary_deletion_request_$fileTimestamp.json',
-    );
-    final saved = await file.writeAsString(
-      const JsonEncoder.withIndent('  ').convert(payload),
-    );
+    // In Supabase mode, we just trigger the soft delete (which also records the reason if handled by function)
+    // Or we could insert into a 'privacy_requests' table if it existed.
+    // For now, we just record it in local history as 'requested'.
     await _recordPrivacyRequest(
       requestType: 'Xóa dữ liệu',
       message: reason,
-      status: 'ready_to_send',
-      file: saved,
+      status: 'sent_manually',
       timestamp: timestamp,
     );
-    return saved;
   }
 
-  Future<File> createPrivacyRequest({
+  Future<void> createPrivacyRequest({
     required String requestType,
     required String message,
   }) async {
@@ -423,32 +406,13 @@ class AccountRepository {
     }
 
     final timestamp = DateTime.now();
-    final payload = {
-      'type': 'privacy_request',
-      'status': 'pending_manual_review',
-      'created_at': timestamp.toIso8601String(),
-      'user_id': session.user.id,
-      'email': session.user.email,
-      'request_type': requestType,
-      'message': message.trim(),
-    };
 
-    final directory = await getApplicationDocumentsDirectory();
-    final fileTimestamp = DateFormat('yyyyMMdd_HHmmss').format(timestamp);
-    final file = File(
-      '${directory.path}/moniary_privacy_request_$fileTimestamp.json',
-    );
-    final saved = await file.writeAsString(
-      const JsonEncoder.withIndent('  ').convert(payload),
-    );
     await _recordPrivacyRequest(
       requestType: requestType,
       message: message,
-      status: 'ready_to_send',
-      file: saved,
+      status: 'sent_manually',
       timestamp: timestamp,
     );
-    return saved;
   }
 
   static String _formatDate(String? value) {
@@ -708,7 +672,7 @@ class AccountRepository {
     required String requestType,
     required String message,
     required String status,
-    required File file,
+    File? file,
     required DateTime timestamp,
   }) async {
     final history = await fetchPrivacyRequestHistory();
@@ -718,7 +682,7 @@ class AccountRepository {
       message: message.trim(),
       status: status,
       createdAt: timestamp,
-      path: file.path,
+      path: file?.path,
     );
 
     final historyFile = await _privacyRequestHistoryFile();
@@ -742,5 +706,17 @@ class AccountRepository {
         ? '...'
         : DateFormat('dd/MM/yyyy').format(filters.endDate!);
     return '$start - $end';
+  }
+
+  Future<Directory> _getExportDirectory() async {
+    if (Platform.isAndroid) {
+      final directory = await getDownloadsDirectory();
+      if (directory != null) return directory;
+    }
+    return getApplicationDocumentsDirectory();
+  }
+
+  Future<void> shareFile(File file) async {
+    await Share.shareXFiles([XFile(file.path)]);
   }
 }

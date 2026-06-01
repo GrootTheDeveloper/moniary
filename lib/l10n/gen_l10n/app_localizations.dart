@@ -2300,11 +2300,23 @@ abstract class AppLocalizations {
   /// **'Copy file path'**
   String get privacyCopyFilePath;
 
+  /// No description provided for @privacyCopyFilePathSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã copy đường dẫn file'**
+  String get privacyCopyFilePathSuccess;
+
   /// No description provided for @privacyCopyRequest.
   ///
   /// In vi, this message translates to:
   /// **'Copy request'**
   String get privacyCopyRequest;
+
+  /// No description provided for @privacyCopyRequestSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã copy nội dung yêu cầu'**
+  String get privacyCopyRequestSuccess;
 
   /// No description provided for @storeAboutMoniary.
   ///

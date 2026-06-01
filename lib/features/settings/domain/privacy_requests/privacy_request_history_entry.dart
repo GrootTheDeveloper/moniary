@@ -5,7 +5,7 @@ class PrivacyRequestHistoryEntry {
     required this.message,
     required this.status,
     required this.createdAt,
-    required this.path,
+    this.path,
   });
 
   final String id;
@@ -13,7 +13,7 @@ class PrivacyRequestHistoryEntry {
   final String message;
   final String status;
   final DateTime createdAt;
-  final String path;
+  final String? path;
 
   PrivacyRequestHistoryEntry copyWith({String? status}) {
     return PrivacyRequestHistoryEntry(
@@ -35,7 +35,7 @@ class PrivacyRequestHistoryEntry {
       createdAt:
           DateTime.tryParse(map['created_at'] as String? ?? '') ??
           DateTime.fromMillisecondsSinceEpoch(0),
-      path: map['path'] as String? ?? '',
+      path: map['path'] as String?,
     );
   }
 
@@ -46,7 +46,7 @@ class PrivacyRequestHistoryEntry {
       'message': message,
       'status': status,
       'created_at': createdAt.toIso8601String(),
-      'path': path,
+      if (path != null) 'path': path,
     };
   }
 }

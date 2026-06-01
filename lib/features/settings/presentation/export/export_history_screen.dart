@@ -1,15 +1,15 @@
-import 'dart:io';
 import '../../../../l10n/l10n_extension.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/account/account_actions_controller.dart';
-import '../../data/export/file_action_service.dart';
 import '../../domain/export/export_history_entry.dart';
+import 'export_detail_screen.dart';
 
 class ExportHistoryScreen extends ConsumerWidget {
   const ExportHistoryScreen({super.key});
@@ -59,61 +59,48 @@ class _HistoryTile extends ConsumerWidget {
     final createdAt = DateFormat('dd/MM/yyyy HH:mm').format(entry.createdAt);
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.surface,
+      child: InkWell(
+        onTap: () => context.push(ExportDetailScreen.routePath, extra: entry),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppTheme.outline),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: AppTheme.mint.withValues(alpha: 0.16),
-            child: Text(
-              entry.format,
-              style: const TextStyle(color: AppTheme.mint, fontSize: 11),
-            ),
+        child: Ink(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: AppTheme.outline),
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(createdAt, style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 4),
-                Text(
-                  entry.dataTypes.join(', '),
-                  style: Theme.of(context).textTheme.bodyMedium,
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: AppTheme.mint.withValues(alpha: 0.16),
+                child: Text(
+                  entry.format,
+                  style: const TextStyle(color: AppTheme.mint, fontSize: 11),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  entry.dateRange,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            onPressed: () async {
-              final opened = await ref
-                  .read(fileActionServiceProvider)
-                  .open(File(entry.path));
-              if (!context.mounted) {
-                return;
-              }
-              if (!opened) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Không mở được file này. File có thể đã bị xóa.',
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(createdAt, style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 4),
+                    Text(
+                      entry.dataTypes.join(', '),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                  ),
-                );
-              }
-            },
-            icon: const Icon(Icons.open_in_new_outlined, color: AppTheme.mint),
+                    const SizedBox(height: 2),
+                    Text(
+                      entry.dateRange,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.white54),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

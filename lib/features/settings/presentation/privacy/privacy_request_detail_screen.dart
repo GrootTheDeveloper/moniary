@@ -35,6 +35,7 @@ class PrivacyRequestDetailScreen extends ConsumerWidget {
     ).format(privacyRequestDueDate(currentEntry.createdAt));
     final status = privacyRequestStatusById(currentEntry.status);
 
+    final path = currentEntry.path;
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.privacyRequestDetailTitle)),
       body: SafeArea(
@@ -74,11 +75,12 @@ class PrivacyRequestDetailScreen extends ConsumerWidget {
                       ? 'Không có nội dung bổ sung.'
                       : currentEntry.message.trim(),
                 ),
-                _DetailTile(
-                  icon: Icons.folder_outlined,
-                  title: 'File đã tạo',
-                  value: currentEntry.path,
-                ),
+                if (path != null)
+                  _DetailTile(
+                    icon: Icons.folder_outlined,
+                    title: 'File đã tạo',
+                    value: path,
+                  ),
               ],
             ),
             if (actionState.isLoading)
@@ -254,35 +256,40 @@ class _RequestCopyActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final path = entry.path;
     final summary =
         'Loại yêu cầu: ${entry.requestType}\n'
         'Trạng thái: ${privacyRequestStatusById(entry.status).label}\n'
         'Nội dung: ${entry.message.trim()}\n'
-        'File: ${entry.path}';
+        '${path != null ? 'File: $path' : ''}';
 
     return Column(
       children: [
+        if (path != null) ...[
+          OutlinedButton.icon(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: path));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(context.l10n.privacyCopyFilePathSuccess)),
+              );
+            },
+            icon: const Icon(Icons.folder_copy_outlined),
+            label: Text(context.l10n.privacyCopyFilePath),
+          ),
+          const SizedBox(height: 10),
+        ],
         OutlinedButton.icon(
-          onPressed: () =>
-              _copy(context, entry.path, 'Đã copy đường dẫn file request.'),
-          icon: const Icon(Icons.folder_copy_outlined),
-          label: Text(context.l10n.privacyCopyFilePath),
-        ),
-        const SizedBox(height: 10),
-        OutlinedButton.icon(
-          onPressed: () => _copy(context, summary, 'Đã copy nội dung request.'),
+          onPressed: () {
+            Clipboard.setData(ClipboardData(text: summary));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(context.l10n.privacyCopyRequestSuccess)),
+            );
+          },
           icon: const Icon(Icons.content_copy_outlined),
           label: Text(context.l10n.privacyCopyRequest),
         ),
       ],
     );
-  }
-
-  void _copy(BuildContext context, String value, String message) {
-    Clipboard.setData(ClipboardData(text: value));
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
