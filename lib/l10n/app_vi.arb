@@ -427,6 +427,8 @@
   "importErrorMissingColumns": "Thiếu cột (yêu cầu 5)",
   "importErrorInvalidDate": "Định dạng ngày không hợp lệ (dùng YYYY-MM-DD)",
   "importErrorInvalidAmount": "Số tiền không hợp lệ",
+  "importErrorInvalidType": "Loại giao dịch không hợp lệ",
+  "importErrorCategoryNotFound": "Không tìm thấy danh mục",
   "importRetry": "Thử lại",
   "activeSessionsTitle": "Thiết bị & Phiên",
   "activeSessionsEmpty": "Không có dữ liệu.",

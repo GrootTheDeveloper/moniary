@@ -1316,6 +1316,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get importErrorInvalidAmount => 'Số tiền không hợp lệ';
 
   @override
+  String get importErrorInvalidType => 'Loại giao dịch không hợp lệ';
+
+  @override
+  String get importErrorCategoryNotFound => 'Không tìm thấy danh mục';
+
+  @override
   String get importRetry => 'Thử lại';
 
   @override

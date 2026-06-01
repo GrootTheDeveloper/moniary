@@ -148,13 +148,14 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
   ) {
     return walletsAsync.when(
       data: (wallets) {
-        if (wallets.isEmpty)
+        if (wallets.isEmpty) {
           return Text(
             context.l10n.importNoWallets,
             style: const TextStyle(color: Colors.red),
           );
+        }
         return DropdownButtonFormField<Wallet>(
-          value: _selectedWallet,
+          initialValue: _selectedWallet,
           hint: Text(
             context.l10n.importSelectWallet,
             style: const TextStyle(color: Colors.white54),
@@ -198,6 +199,10 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
         return context.l10n.importErrorInvalidDate;
       case 'INVALID_AMOUNT':
         return context.l10n.importErrorInvalidAmount;
+      case 'INVALID_TYPE':
+        return context.l10n.importErrorInvalidType;
+      case 'CATEGORY_NOT_FOUND':
+        return context.l10n.importErrorCategoryNotFound;
       default:
         return context.l10n.importErrorUnknown;
     }
@@ -220,7 +225,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
         Expanded(
           child: ListView.separated(
             itemCount: state.parsedRows.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
               final row = state.parsedRows[index];
               return ListTile(

@@ -71,6 +71,20 @@ void main() {
         ),
       ],
     );
+    when(() => mockCategoryRepo.fetchCategories()).thenAnswer(
+      (_) async => [
+        Category(
+          id: 'c1',
+          name: 'Food',
+          type: TransactionType.expense,
+          icon: '',
+          color: '',
+          isDefault: false,
+          isActive: true,
+          createdAt: DateTime.now(),
+        ),
+      ],
+    );
 
     final controller = container.read(importControllerProvider.notifier);
     await controller.pickAndParseFile('test.csv');
@@ -104,10 +118,18 @@ void main() {
           typeStr: 'Expense',
           categoryName: 'Unknown',
           note: '',
-          isValid: false,
+          isValid: true,
           amount: 10,
           date: DateTime.now(),
-        ), // Invalid row
+        ),
+        CsvTransactionRow(
+          typeStr: 'Transfer',
+          categoryName: 'Food',
+          note: '',
+          isValid: true,
+          amount: 10,
+          date: DateTime.now(),
+        ),
       ],
     );
 
@@ -149,6 +171,12 @@ void main() {
 
     final controller = container.read(importControllerProvider.notifier);
     await controller.pickAndParseFile('test.csv');
+
+    final parsedState = container.read(importControllerProvider);
+    expect(parsedState.parsedRows[2].isValid, isFalse);
+    expect(parsedState.parsedRows[2].errorMessage, 'CATEGORY_NOT_FOUND');
+    expect(parsedState.parsedRows[3].isValid, isFalse);
+    expect(parsedState.parsedRows[3].errorMessage, 'INVALID_TYPE');
 
     final wallet = Wallet(
       id: 'w1',

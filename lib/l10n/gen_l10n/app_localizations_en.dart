@@ -1316,6 +1316,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importErrorInvalidAmount => 'Invalid amount';
 
   @override
+  String get importErrorInvalidType => 'Invalid transaction type';
+
+  @override
+  String get importErrorCategoryNotFound => 'Category was not found';
+
+  @override
   String get importRetry => 'Try again';
 
   @override

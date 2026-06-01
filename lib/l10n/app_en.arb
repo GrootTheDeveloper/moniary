@@ -431,6 +431,8 @@
   "importErrorMissingColumns": "Missing columns (expected 5)",
   "importErrorInvalidDate": "Invalid date format (use YYYY-MM-DD)",
   "importErrorInvalidAmount": "Invalid amount",
+  "importErrorInvalidType": "Invalid transaction type",
+  "importErrorCategoryNotFound": "Category was not found",
   "importRetry": "Try again",
   "activeSessionsTitle": "Devices & Sessions",
   "activeSessionsEmpty": "No active sessions found.",

@@ -61,8 +61,12 @@ class ImportController extends Notifier<ImportState> {
     try {
       final repo = ref.read(importRepositoryProvider);
       final rows = await repo.parseCsv(filePath);
+      final categories = await ref
+          .read(categoryRepositoryProvider)
+          .fetchCategories();
+      final validatedRows = _validateCategories(rows, categories);
       state = state.copyWith(
-        parsedRows: rows,
+        parsedRows: validatedRows,
         isParsing: false,
         selectedFilePath: () => filePath,
       );
@@ -101,42 +105,21 @@ class ImportController extends Notifier<ImportState> {
       final categoryRepo = ref.read(categoryRepositoryProvider);
       final transactionRepo = ref.read(transactionRepositoryProvider);
 
-      // Fetch categories to map names to IDs
       final categories = await categoryRepo.fetchCategories();
 
       int importCount = 0;
 
       for (var row in validRows) {
-        final isIncome =
-            row.typeStr.toLowerCase().contains('income') ||
-            row.typeStr.toLowerCase() == 'thu';
-        final type = isIncome
-            ? TransactionType.income
-            : TransactionType.expense;
-
-        // Find matching category (case-insensitive)
-        Category? matchedCat;
-        for (var c in categories) {
-          if (c.name.toLowerCase() == row.categoryName.toLowerCase() &&
-              c.type == type) {
-            matchedCat = c;
-            break;
-          }
+        final type = _transactionTypeFor(row.typeStr);
+        if (type == null) {
+          AppLogger.warning('Skipping row because type is invalid');
+          continue;
         }
 
-        // Fallback to first available category of the same type
-        if (matchedCat == null) {
-          for (var c in categories) {
-            if (c.type == type) {
-              matchedCat = c;
-              break;
-            }
-          }
-        }
-
+        final matchedCat = _findCategory(row.categoryName, type, categories);
         if (matchedCat == null) {
           AppLogger.warning(
-            'Skipping row because no category found for type: $type',
+            'Skipping row because category was not found: ${row.categoryName}',
           );
           continue;
         }
@@ -166,5 +149,56 @@ class ImportController extends Notifier<ImportState> {
       state = state.copyWith(isImporting: false, error: () => 'IMPORT_FAILED');
       return 0;
     }
+  }
+
+  List<CsvTransactionRow> _validateCategories(
+    List<CsvTransactionRow> rows,
+    List<Category> categories,
+  ) {
+    return rows.map((row) {
+      if (!row.isValid) return row;
+
+      final type = _transactionTypeFor(row.typeStr);
+      if (type == null) {
+        return row.copyWith(isValid: false, errorMessage: () => 'INVALID_TYPE');
+      }
+
+      final category = _findCategory(row.categoryName, type, categories);
+      if (category == null) {
+        return row.copyWith(
+          isValid: false,
+          errorMessage: () => 'CATEGORY_NOT_FOUND',
+        );
+      }
+
+      return row;
+    }).toList();
+  }
+
+  static TransactionType? _transactionTypeFor(String value) {
+    switch (value.trim().toLowerCase()) {
+      case 'income':
+      case 'thu':
+        return TransactionType.income;
+      case 'expense':
+      case 'chi':
+        return TransactionType.expense;
+    }
+    return null;
+  }
+
+  static Category? _findCategory(
+    String categoryName,
+    TransactionType type,
+    List<Category> categories,
+  ) {
+    final normalizedName = categoryName.trim().toLowerCase();
+    for (final category in categories) {
+      if (category.name.trim().toLowerCase() == normalizedName &&
+          category.type == type) {
+        return category;
+      }
+    }
+    return null;
   }
 }

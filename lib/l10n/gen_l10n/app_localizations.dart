@@ -2522,6 +2522,18 @@ abstract class AppLocalizations {
   /// **'Số tiền không hợp lệ'**
   String get importErrorInvalidAmount;
 
+  /// No description provided for @importErrorInvalidType.
+  ///
+  /// In vi, this message translates to:
+  /// **'Loại giao dịch không hợp lệ'**
+  String get importErrorInvalidType;
+
+  /// No description provided for @importErrorCategoryNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy danh mục'**
+  String get importErrorCategoryNotFound;
+
   /// No description provided for @importRetry.
   ///
   /// In vi, this message translates to:

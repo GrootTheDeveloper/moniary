@@ -42,10 +42,11 @@ void main() {
 invalid_date,50000,Expense,Food,Lunch
 2026-05-31,invalid,Income,Salary,Test
 2026-05-30,50000,Expense
+2026-05-30,50000,Transfer,Food,Unsupported type
 ''');
 
     final rows = await repository.parseCsv(tempFile.path);
-    expect(rows.length, 3);
+    expect(rows.length, 4);
 
     expect(rows[0].isValid, false);
     expect(rows[0].errorMessage, 'INVALID_DATE');
@@ -55,6 +56,9 @@ invalid_date,50000,Expense,Food,Lunch
 
     expect(rows[2].isValid, false);
     expect(rows[2].errorMessage, 'MISSING_COLUMNS');
+
+    expect(rows[3].isValid, false);
+    expect(rows[3].errorMessage, 'INVALID_TYPE');
   });
 
   test('parseCsv skips empty rows', () async {

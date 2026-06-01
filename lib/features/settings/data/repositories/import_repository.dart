@@ -43,8 +43,9 @@ class ImportRepository {
           .transform(csvCodec.decoder)
           .toList();
 
-      if (fields.isEmpty)
+      if (fields.isEmpty) {
         throw const AppException('File is empty', code: 'IMPORT_FILE_EMPTY');
+      }
 
       // Skip header row
       final dataRows = fields.skip(1);
@@ -86,14 +87,20 @@ class ImportRepository {
           parsedAmount = double.parse(amountStr);
         } catch (_) {}
 
+        final isTypeValid = _isSupportedType(typeStr);
         final isValid =
-            parsedDate != null && parsedAmount != null && parsedAmount > 0;
+            parsedDate != null &&
+            parsedAmount != null &&
+            parsedAmount > 0 &&
+            isTypeValid;
         String? error;
         if (!isValid) {
           if (parsedDate == null) {
             error = 'INVALID_DATE';
-          } else if (parsedAmount == null) {
+          } else if (parsedAmount == null || parsedAmount <= 0) {
             error = 'INVALID_AMOUNT';
+          } else if (!isTypeValid) {
+            error = 'INVALID_TYPE';
           }
         }
 
@@ -118,5 +125,13 @@ class ImportRepository {
       AppLogger.error('Failed to parse CSV', e, st);
       throw AppException('Failed to parse CSV: $e', code: 'IMPORT_PARSE_ERROR');
     }
+  }
+
+  static bool _isSupportedType(String value) {
+    final normalized = value.trim().toLowerCase();
+    return normalized == 'income' ||
+        normalized == 'expense' ||
+        normalized == 'thu' ||
+        normalized == 'chi';
   }
 }
