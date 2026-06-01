@@ -48,12 +48,21 @@ class SupabaseNotificationSettingsRepository
     try {
       await _supabase
           .from('notification_settings')
-          .update(settings.toJson())
-          .eq('user_id', user.id);
+          .upsert(
+            buildSettingsPayload(user.id, settings),
+            onConflict: 'user_id',
+          );
     } catch (e, st) {
       AppLogger.error('Failed to update notification settings', e, st);
       rethrow;
     }
+  }
+
+  static Map<String, dynamic> buildSettingsPayload(
+    String userId,
+    NotificationSettings settings,
+  ) {
+    return {'user_id': userId, ...settings.toJson()};
   }
 }
 

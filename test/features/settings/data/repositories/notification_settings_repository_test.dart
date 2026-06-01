@@ -3,6 +3,29 @@ import 'package:moniary/features/settings/data/repositories/notification_setting
 import 'package:moniary/features/settings/domain/models/notification_settings.dart';
 
 void main() {
+  group('SupabaseNotificationSettingsRepository', () {
+    test('buildSettingsPayload includes user_id for upsert', () {
+      const settings = NotificationSettings(
+        dailyReminderEnabled: true,
+        weeklySummaryEnabled: true,
+        monthlySummaryEnabled: false,
+        yearlySummaryEnabled: true,
+      );
+
+      final payload =
+          SupabaseNotificationSettingsRepository.buildSettingsPayload(
+            'user-1',
+            settings,
+          );
+
+      expect(payload['user_id'], 'user-1');
+      expect(payload['daily_reminder_enabled'], isTrue);
+      expect(payload['weekly_summary_enabled'], isTrue);
+      expect(payload['monthly_summary_enabled'], isFalse);
+      expect(payload['yearly_summary_enabled'], isTrue);
+    });
+  });
+
   group('MockNotificationSettingsRepository', () {
     late MockNotificationSettingsRepository repository;
 
