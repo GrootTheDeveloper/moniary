@@ -45,7 +45,7 @@ class AuthRepository {
     } catch (e, st) {
       AppLogger.error('Anonymous sign-in failed', e, st);
       if (e is AppException) rethrow;
-      throw AppException(e.toString(), code: 'AUTH_SIGN_IN_FAILED');
+      throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
     }
   }
 
@@ -60,7 +60,7 @@ class AuthRepository {
     } catch (e, st) {
       AppLogger.error('Sign-out failed', e, st);
       if (e is AppException) rethrow;
-      throw AppException(e.toString(), code: 'AUTH_SIGN_OUT_FAILED');
+      throw const AppException('errorGeneric', code: 'AUTH_SIGN_OUT_FAILED');
     }
   }
 
@@ -82,7 +82,7 @@ class AuthRepository {
     } catch (e, st) {
       AppLogger.error('Email account linking failed', e, st);
       if (e is AppException) rethrow;
-      throw AppException(e.toString(), code: 'AUTH_LINK_EMAIL_FAILED');
+      throw const AppException('errorGeneric', code: 'AUTH_LINK_EMAIL_FAILED');
     }
   }
 
@@ -97,7 +97,7 @@ class AuthRepository {
     } catch (e, st) {
       AppLogger.error('Google account linking failed', e, st);
       if (e is AppException) rethrow;
-      throw AppException(e.toString(), code: 'AUTH_LINK_GOOGLE_FAILED');
+      throw const AppException('errorGeneric', code: 'AUTH_LINK_GOOGLE_FAILED');
     }
   }
 

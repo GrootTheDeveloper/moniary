@@ -13,6 +13,7 @@
 
 ## Error UI Mapping
 - In Riverpod `AsyncError` states, the UI maps the error message to a user-friendly string using `context.l10n`.
+- Shared UI error helpers must map stable `AppException.code`/message keys to l10n text and must not render raw `AppException.message` values from repositories.
 - For silent failures, `AppLogger.error` is used, but exceptions should not be swallowed if they affect user state.
 
 ## Example Repository Pattern
