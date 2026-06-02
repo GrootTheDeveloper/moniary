@@ -6,6 +6,8 @@ import 'package:moniary/core/constants/app_constants.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/shared/utils/app_logger.dart';
 import 'package:moniary/features/settings/domain/models/csv_transaction_row.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:moniary/features/settings/domain/import/import_history_entry.dart';
 
 final importRepositoryProvider = Provider<ImportRepository>((ref) {
   return ImportRepository();
@@ -133,5 +135,116 @@ class ImportRepository {
         normalized == 'expense' ||
         normalized == 'thu' ||
         normalized == 'chi';
+  }
+
+  Future<File> _importHistoryFile() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return File('${directory.path}/moniary_import_history.json');
+  }
+
+  Future<List<ImportHistoryEntry>> fetchImportHistory() async {
+    final file = await _importHistoryFile();
+    if (!await file.exists()) {
+      return const [];
+    }
+
+    try {
+      final raw = await file.readAsString();
+      final decoded = jsonDecode(raw) as List<dynamic>;
+      return decoded
+          .cast<Map<String, dynamic>>()
+          .map(ImportHistoryEntry.fromMap)
+          .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    } catch (e) {
+      AppLogger.error('Failed to read import history', e);
+      return const [];
+    }
+  }
+
+  Future<void> recordImport({
+    required String fileName,
+    required int importedCount,
+    required String walletName,
+  }) async {
+    final entry = ImportHistoryEntry(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      fileName: fileName,
+      importedCount: importedCount,
+      walletName: walletName,
+      createdAt: DateTime.now(),
+      status: ImportHistoryStatus.completed,
+    );
+
+    await _prependImportHistory(entry);
+  }
+
+  Future<ImportHistoryEntry> createPendingImport({
+    required String fileName,
+    required String walletName,
+  }) async {
+    final entry = ImportHistoryEntry(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      fileName: fileName,
+      importedCount: 0,
+      walletName: walletName,
+      createdAt: DateTime.now(),
+      status: ImportHistoryStatus.pending,
+    );
+    await _prependImportHistory(entry);
+    return entry;
+  }
+
+  Future<void> completeImport({
+    required String id,
+    required int importedCount,
+  }) {
+    return _updateImportHistoryEntry(
+      id,
+      (entry) => entry.copyWith(
+        importedCount: importedCount,
+        status: ImportHistoryStatus.completed,
+        errorMessage: () => null,
+      ),
+    );
+  }
+
+  Future<void> failImport({
+    required String id,
+    required int importedCount,
+    required String errorMessage,
+  }) {
+    return _updateImportHistoryEntry(
+      id,
+      (entry) => entry.copyWith(
+        importedCount: importedCount,
+        status: ImportHistoryStatus.failed,
+        errorMessage: () => errorMessage,
+      ),
+    );
+  }
+
+  Future<void> _prependImportHistory(ImportHistoryEntry entry) async {
+    final history = await fetchImportHistory();
+    await _writeImportHistory([entry, ...history].take(50).toList());
+  }
+
+  Future<void> _updateImportHistoryEntry(
+    String id,
+    ImportHistoryEntry Function(ImportHistoryEntry entry) update,
+  ) async {
+    final history = await fetchImportHistory();
+    final updated = history.map((entry) {
+      return entry.id == id ? update(entry) : entry;
+    }).toList();
+    await _writeImportHistory(updated);
+  }
+
+  Future<void> _writeImportHistory(List<ImportHistoryEntry> history) async {
+    final fileHistory = await _importHistoryFile();
+    final next = history.take(50).map((item) => item.toMap()).toList();
+    await fileHistory.writeAsString(
+      const JsonEncoder.withIndent('  ').convert(next),
+    );
   }
 }

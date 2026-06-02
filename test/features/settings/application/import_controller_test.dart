@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moniary/features/settings/application/import_controller.dart';
 import 'package:moniary/features/settings/data/repositories/import_repository.dart';
+import 'package:moniary/features/settings/domain/import/import_history_entry.dart';
 import 'package:moniary/features/settings/domain/models/csv_transaction_row.dart';
 import 'package:moniary/features/transactions/data/repositories/transaction_repository.dart';
 import 'package:moniary/features/categories/data/repositories/category_repository.dart';
@@ -57,6 +58,17 @@ void main() {
   tearDown(() {
     container.dispose();
   });
+
+  ImportHistoryEntry historyEntry() {
+    return ImportHistoryEntry(
+      id: 'import-history-1',
+      fileName: 'test.csv',
+      importedCount: 0,
+      walletName: 'Wallet',
+      createdAt: DateTime(2026, 6, 2),
+      status: ImportHistoryStatus.pending,
+    );
+  }
 
   test('pickAndParseFile updates state with parsed rows', () async {
     when(() => mockImportRepo.parseCsv(any())).thenAnswer(
@@ -168,6 +180,18 @@ void main() {
         note: any(named: 'note'),
       ),
     ).thenAnswer((_) async => 'mock-id');
+    when(
+      () => mockImportRepo.createPendingImport(
+        fileName: any(named: 'fileName'),
+        walletName: any(named: 'walletName'),
+      ),
+    ).thenAnswer((_) async => historyEntry());
+    when(
+      () => mockImportRepo.completeImport(
+        id: any(named: 'id'),
+        importedCount: any(named: 'importedCount'),
+      ),
+    ).thenAnswer((_) async {});
 
     final controller = container.read(importControllerProvider.notifier);
     await controller.pickAndParseFile('test.csv');
@@ -205,5 +229,93 @@ void main() {
 
     final state = container.read(importControllerProvider);
     expect(state.parsedRows, isEmpty); // Clears rows on success
+    verify(
+      () => mockImportRepo.createPendingImport(
+        fileName: 'test.csv',
+        walletName: 'Wallet',
+      ),
+    ).called(1);
+    verify(
+      () => mockImportRepo.completeImport(
+        id: 'import-history-1',
+        importedCount: 2,
+      ),
+    ).called(1);
   });
+
+  test(
+    'confirmImport keeps imported count when completing history fails',
+    () async {
+      when(() => mockImportRepo.parseCsv(any())).thenAnswer(
+        (_) async => [
+          CsvTransactionRow(
+            typeStr: 'Expense',
+            categoryName: 'Food',
+            note: 'Lunch',
+            isValid: true,
+            amount: 100,
+            date: DateTime.now(),
+          ),
+        ],
+      );
+      when(() => mockCategoryRepo.fetchCategories()).thenAnswer(
+        (_) async => [
+          Category(
+            id: 'c1',
+            name: 'Food',
+            type: TransactionType.expense,
+            icon: '',
+            color: '',
+            isDefault: false,
+            isActive: true,
+            createdAt: DateTime.now(),
+          ),
+        ],
+      );
+      when(
+        () => mockTransactionRepo.createTransaction(
+          amount: any(named: 'amount'),
+          type: any(named: 'type'),
+          walletId: any(named: 'walletId'),
+          categoryId: any(named: 'categoryId'),
+          transactionDate: any(named: 'transactionDate'),
+          note: any(named: 'note'),
+        ),
+      ).thenAnswer((_) async => 'mock-id');
+      when(
+        () => mockImportRepo.createPendingImport(
+          fileName: any(named: 'fileName'),
+          walletName: any(named: 'walletName'),
+        ),
+      ).thenAnswer((_) async => historyEntry());
+      when(
+        () => mockImportRepo.completeImport(
+          id: any(named: 'id'),
+          importedCount: any(named: 'importedCount'),
+        ),
+      ).thenThrow(Exception('history write failed'));
+
+      final controller = container.read(importControllerProvider.notifier);
+      await controller.pickAndParseFile('test.csv');
+
+      final count = await controller.confirmImport(
+        Wallet(
+          id: 'w1',
+          name: 'Wallet',
+          type: WalletType.bank,
+          icon: null,
+          color: null,
+          initialBalance: 0,
+          isDefault: true,
+          isActive: true,
+          createdAt: DateTime.now(),
+        ),
+      );
+
+      expect(count, 1);
+      final state = container.read(importControllerProvider);
+      expect(state.error, isNull);
+      expect(state.parsedRows, isEmpty);
+    },
+  );
 }

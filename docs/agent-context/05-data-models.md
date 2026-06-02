@@ -29,3 +29,9 @@
 - **Path**: `lib/features/settings/domain/models/notification_settings.dart`
 - **Type**: Domain Entity / DTO
 - **Serialization**: `fromJson`, `toJson` matching Supabase schema.
+
+## Model: ImportHistoryEntry
+- **Path**: `lib/features/settings/domain/import/import_history_entry.dart`
+- **Type**: Local history DTO
+- **Serialization**: `fromMap`, `toMap` matching the local JSON import history file.
+- **Status**: `pending`, `completed`, or `failed`. Import starts with a pending entry, then updates the same entry after the import finishes.

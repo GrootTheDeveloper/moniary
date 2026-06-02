@@ -7,7 +7,13 @@ import 'package:moniary/features/transactions/data/repositories/transaction_repo
 import 'package:moniary/features/categories/data/repositories/category_repository.dart';
 import 'package:moniary/features/wallets/domain/models/wallet.dart';
 import 'package:moniary/features/categories/domain/models/category.dart';
+import 'dart:io';
 import 'package:moniary/features/settings/domain/models/csv_transaction_row.dart';
+import 'package:moniary/features/settings/domain/import/import_history_entry.dart';
+
+final importHistoryProvider = FutureProvider<List<ImportHistoryEntry>>((ref) {
+  return ref.watch(importRepositoryProvider).fetchImportHistory();
+});
 
 class ImportState {
   final bool isParsing;
@@ -89,6 +95,9 @@ class ImportController extends Notifier<ImportState> {
 
   Future<int> confirmImport(Wallet targetWallet) async {
     state = state.copyWith(isImporting: true, error: () => null);
+    final importRepo = ref.read(importRepositoryProvider);
+    ImportHistoryEntry? historyEntry;
+    var importCount = 0;
     try {
       final session = ref.read(currentSessionProvider);
       final profileId = session?.user.id;
@@ -102,12 +111,17 @@ class ImportController extends Notifier<ImportState> {
         return 0;
       }
 
+      final fileName = _selectedFileName();
+      historyEntry = await _createPendingImportHistory(
+        importRepo: importRepo,
+        fileName: fileName,
+        walletName: targetWallet.name,
+      );
+
       final categoryRepo = ref.read(categoryRepositoryProvider);
       final transactionRepo = ref.read(transactionRepositoryProvider);
 
       final categories = await categoryRepo.fetchCategories();
-
-      int importCount = 0;
 
       for (var row in validRows) {
         final type = _transactionTypeFor(row.typeStr);
@@ -135,9 +149,21 @@ class ImportController extends Notifier<ImportState> {
         importCount++;
       }
 
+      await _completeImportHistory(
+        importRepo: importRepo,
+        historyEntry: historyEntry,
+        importedCount: importCount,
+      );
+
       state = state.copyWith(isImporting: false, parsedRows: []);
       return importCount;
     } on AppException catch (e, st) {
+      await _failImportHistory(
+        importRepo: importRepo,
+        historyEntry: historyEntry,
+        importedCount: importCount,
+        errorMessage: e.code ?? e.message,
+      );
       AppLogger.error('Import failed', e, st);
       state = state.copyWith(
         isImporting: false,
@@ -145,9 +171,74 @@ class ImportController extends Notifier<ImportState> {
       );
       return 0;
     } catch (e, st) {
+      await _failImportHistory(
+        importRepo: importRepo,
+        historyEntry: historyEntry,
+        importedCount: importCount,
+        errorMessage: 'IMPORT_FAILED',
+      );
       AppLogger.error('Import failed', e, st);
       state = state.copyWith(isImporting: false, error: () => 'IMPORT_FAILED');
       return 0;
+    }
+  }
+
+  String _selectedFileName() {
+    return state.selectedFilePath?.split(Platform.pathSeparator).last ??
+        'unknown.csv';
+  }
+
+  Future<ImportHistoryEntry?> _createPendingImportHistory({
+    required ImportRepository importRepo,
+    required String fileName,
+    required String walletName,
+  }) async {
+    try {
+      final entry = await importRepo.createPendingImport(
+        fileName: fileName,
+        walletName: walletName,
+      );
+      ref.invalidate(importHistoryProvider);
+      return entry;
+    } catch (e, st) {
+      AppLogger.error('Failed to create pending import history', e, st);
+      return null;
+    }
+  }
+
+  Future<void> _completeImportHistory({
+    required ImportRepository importRepo,
+    required ImportHistoryEntry? historyEntry,
+    required int importedCount,
+  }) async {
+    if (historyEntry == null) return;
+    try {
+      await importRepo.completeImport(
+        id: historyEntry.id,
+        importedCount: importedCount,
+      );
+      ref.invalidate(importHistoryProvider);
+    } catch (e, st) {
+      AppLogger.error('Failed to complete import history', e, st);
+    }
+  }
+
+  Future<void> _failImportHistory({
+    required ImportRepository importRepo,
+    required ImportHistoryEntry? historyEntry,
+    required int importedCount,
+    required String errorMessage,
+  }) async {
+    if (historyEntry == null) return;
+    try {
+      await importRepo.failImport(
+        id: historyEntry.id,
+        importedCount: importedCount,
+        errorMessage: errorMessage,
+      );
+      ref.invalidate(importHistoryProvider);
+    } catch (e, st) {
+      AppLogger.error('Failed to mark import history as failed', e, st);
     }
   }
 
