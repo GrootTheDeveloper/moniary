@@ -6,9 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
-import '../../../../shared/utils/error_helpers.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../../domain/export/export_history_entry.dart';
+import '../widgets/recent_history_error_card.dart';
 import 'export_detail_screen.dart';
 import 'export_l10n_helpers.dart';
 
@@ -42,8 +42,15 @@ class ExportHistoryScreen extends ConsumerWidget {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stackTrace) =>
-              Center(child: Text(userFriendlyMessage(context, error))),
+          error: (error, stackTrace) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: RecentHistoryErrorCard(
+                message: context.l10n.exportRecentHistoryError,
+                onRetry: () => ref.invalidate(exportHistoryProvider),
+              ),
+            ),
+          ),
         ),
       ),
     );

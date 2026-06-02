@@ -55,7 +55,7 @@
 - **Export History**: Exported data type selections are stored as stable technical keys (`transactions`, `wallets`, `categories`) and localized only in presentation screens.
 - **Export File Actions**: Opening and sharing exported files is handled from presentation via `FileActionService`; failures are logged and surfaced with localized SnackBars.
 - **Import History**: CSV imports create a local history entry before transaction creation starts (`pending`), update it to `completed` with the imported count on success, and mark it `failed` with the partial imported count if the import fails.
-- **Recent History Errors**: Import/export entry screens surface recent history loading errors with a localized retry action and log the exception instead of hiding the section silently. If a local import/export history file exists but cannot be parsed, the repository throws an `AppException` and refuses to overwrite that file during new imports or exports.
+- **Recent History Errors**: Import/export entry screens and full history screens surface history loading errors with a localized retry action and log the exception instead of hiding the section silently. If a local import/export history file exists but cannot be parsed, the repository throws an `AppException` and refuses to overwrite that file during new imports or exports.
 
 ## Feature: Profile
 - **Purpose**: User profile setup and management.

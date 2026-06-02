@@ -7,6 +7,7 @@ import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../application/import_controller.dart';
 import '../../domain/import/import_history_entry.dart';
+import '../widgets/recent_history_error_card.dart';
 import 'import_detail_screen.dart';
 
 class ImportHistoryScreen extends ConsumerWidget {
@@ -44,7 +45,13 @@ class ImportHistoryScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, st) => Center(
-          child: Text(e.toString(), style: const TextStyle(color: Colors.red)),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: RecentHistoryErrorCard(
+              message: context.l10n.importRecentHistoryError,
+              onRetry: () => ref.invalidate(importHistoryProvider),
+            ),
+          ),
         ),
       ),
     );
