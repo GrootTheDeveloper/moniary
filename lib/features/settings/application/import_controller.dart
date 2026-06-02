@@ -188,7 +188,7 @@ class ImportController extends Notifier<ImportState> {
         'unknown.csv';
   }
 
-  Future<ImportHistoryEntry?> _createPendingImportHistory({
+  Future<ImportHistoryEntry> _createPendingImportHistory({
     required ImportRepository importRepo,
     required String fileName,
     required String walletName,
@@ -202,7 +202,10 @@ class ImportController extends Notifier<ImportState> {
       return entry;
     } catch (e, st) {
       AppLogger.error('Failed to create pending import history', e, st);
-      return null;
+      throw const AppException(
+        'Failed to create pending import history',
+        code: 'IMPORT_HISTORY_CREATE_ERROR',
+      );
     }
   }
 

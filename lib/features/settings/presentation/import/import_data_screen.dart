@@ -213,6 +213,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
       case 'AUTH_REQUIRED':
         return context.l10n.errorNotLoggedIn;
       case 'IMPORT_FAILED':
+      case 'IMPORT_HISTORY_CREATE_ERROR':
       case 'IMPORT_PARSE_ERROR':
         return context.l10n.errorGeneric;
       default:

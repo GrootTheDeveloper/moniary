@@ -56,6 +56,7 @@
 - **Export Auth Flow**: CSV/XLSX/PDF export resolves the active user from the Riverpod session path so mock mode exports work with mock anonymous sign-in, while Supabase mode still requires a real signed-in session.
 - **Export File Actions**: Opening and sharing exported files is handled from presentation via `FileActionService`; failures are logged and surfaced with localized SnackBars.
 - **Import History**: CSV imports create a local history entry before transaction creation starts (`pending`), update it to `completed` with the imported count on success, and mark it `failed` with the partial imported count if the import fails.
+- **Import History Guard**: Transaction creation does not start unless the pending import history entry is created successfully, so imported transactions always have a traceable import record.
 - **Import CSV Validation**: CSV row scalar fields are parsed with non-throwing validators; malformed dates, amounts, and types stay in the preview as invalid rows with stable error codes instead of being swallowed by empty exception handlers.
 - **Import Confirmation Errors**: The import screen stays open and shows a localized error state when confirmation fails; success SnackBars and navigation only run after the controller finishes without an import error.
 - **Import Wallet Loading Errors**: The import screen shows a localized retry state when wallets fail to load and does not render raw repository/backend exception details.

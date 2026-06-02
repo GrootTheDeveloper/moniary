@@ -318,4 +318,80 @@ void main() {
       expect(state.parsedRows, isEmpty);
     },
   );
+
+  test(
+    'confirmImport stops before creating transactions when pending history fails',
+    () async {
+      when(() => mockImportRepo.parseCsv(any())).thenAnswer(
+        (_) async => [
+          CsvTransactionRow(
+            typeStr: 'Expense',
+            categoryName: 'Food',
+            note: 'Lunch',
+            isValid: true,
+            amount: 100,
+            date: DateTime.now(),
+          ),
+        ],
+      );
+      when(() => mockCategoryRepo.fetchCategories()).thenAnswer(
+        (_) async => [
+          Category(
+            id: 'c1',
+            name: 'Food',
+            type: TransactionType.expense,
+            icon: '',
+            color: '',
+            isDefault: false,
+            isActive: true,
+            createdAt: DateTime.now(),
+          ),
+        ],
+      );
+      when(
+        () => mockImportRepo.createPendingImport(
+          fileName: any(named: 'fileName'),
+          walletName: any(named: 'walletName'),
+        ),
+      ).thenThrow(Exception('history write failed'));
+
+      final controller = container.read(importControllerProvider.notifier);
+      await controller.pickAndParseFile('test.csv');
+
+      final count = await controller.confirmImport(
+        Wallet(
+          id: 'w1',
+          name: 'Wallet',
+          type: WalletType.bank,
+          icon: null,
+          color: null,
+          initialBalance: 0,
+          isDefault: true,
+          isActive: true,
+          createdAt: DateTime.now(),
+        ),
+      );
+
+      expect(count, 0);
+      final state = container.read(importControllerProvider);
+      expect(state.error, 'IMPORT_HISTORY_CREATE_ERROR');
+      expect(state.parsedRows, isNotEmpty);
+      verifyNever(
+        () => mockTransactionRepo.createTransaction(
+          amount: any(named: 'amount'),
+          type: any(named: 'type'),
+          walletId: any(named: 'walletId'),
+          categoryId: any(named: 'categoryId'),
+          transactionDate: any(named: 'transactionDate'),
+          note: any(named: 'note'),
+        ),
+      );
+      verifyNever(
+        () => mockImportRepo.completeImport(
+          id: any(named: 'id'),
+          importedCount: any(named: 'importedCount'),
+        ),
+      );
+    },
+  );
 }
