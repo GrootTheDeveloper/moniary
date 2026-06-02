@@ -23,33 +23,33 @@ import '../export/pdf_report.dart';
 import '../export/xlsx_workbook.dart';
 
 final accountRepositoryProvider = Provider<AccountRepository>((ref) {
-  return AccountRepository(ref.watch(supabaseClientProvider));
+  final session = ref.watch(currentSessionProvider);
+  return AccountRepository(
+    ref.watch(supabaseClientProvider),
+    currentUserId: session?.user.id,
+  );
 });
 
 class AccountRepository {
   AccountRepository(
     this._client, {
+    String? currentUserId,
     Directory? documentsDirectory,
     Directory? exportDirectory,
-  }) : _documentsDirectory = documentsDirectory,
+  }) : _currentUserId = currentUserId,
+       _documentsDirectory = documentsDirectory,
        _exportDirectory = exportDirectory;
 
   final SupabaseClient _client;
+  final String? _currentUserId;
   final Directory? _documentsDirectory;
   final Directory? _exportDirectory;
 
   Future<File> exportTransactionsCsv({
     ExportFilters filters = const ExportFilters(),
   }) async {
-    final session = _client.auth.currentSession;
-    if (session == null) {
-      throw const AppException('Bạn chưa đăng nhập.');
-    }
-
-    final exportRows = await _buildExportRows(
-      session.user.id,
-      filters: filters,
-    );
+    final userId = _requireExportUserId();
+    final exportRows = await _buildExportRows(userId, filters: filters);
 
     final csv = StringBuffer()
       ..writeln(
@@ -86,15 +86,8 @@ class AccountRepository {
   Future<File> exportTransactionsXlsx({
     ExportFilters filters = const ExportFilters(),
   }) async {
-    final session = _client.auth.currentSession;
-    if (session == null) {
-      throw const AppException('Bạn chưa đăng nhập.');
-    }
-
-    final exportRows = await _buildExportRows(
-      session.user.id,
-      filters: filters,
-    );
+    final userId = _requireExportUserId();
+    final exportRows = await _buildExportRows(userId, filters: filters);
     final workbookRows = <List<Object?>>[
       [
         'Data type',
@@ -130,19 +123,16 @@ class AccountRepository {
   Future<File> exportTransactionsPdf({
     ExportFilters filters = const ExportFilters(),
   }) async {
-    final session = _client.auth.currentSession;
-    if (session == null) {
-      throw const AppException('Bạn chưa đăng nhập.');
-    }
+    final userId = _requireExportUserId();
 
     final transactions = filters.hasTransactions
-        ? await _fetchTransactionRows(session.user.id, filters: filters)
+        ? await _fetchTransactionRows(userId, filters: filters)
         : <Map<String, dynamic>>[];
     final wallets = filters.hasWallets
-        ? await _fetchWalletRows(session.user.id)
+        ? await _fetchWalletRows(userId)
         : <Map<String, dynamic>>[];
     final categories = filters.hasCategories
-        ? await _fetchCategoryRows(session.user.id)
+        ? await _fetchCategoryRows(userId)
         : <Map<String, dynamic>>[];
     final generatedAt = DateFormat(
       'yyyy-MM-dd HH:mm:ss',
@@ -450,6 +440,18 @@ class AccountRepository {
   static String _csvCell(Object? value) {
     final text = (value ?? '').toString().replaceAll('"', '""');
     return '"$text"';
+  }
+
+  String _requireExportUserId() {
+    if (!AppConstants.hasSupabaseConfig) {
+      return _currentUserId ?? 'mock-user-id';
+    }
+
+    final userId = _currentUserId ?? _client.auth.currentSession?.user.id;
+    if (userId == null) {
+      throw const AppException('Bạn chưa đăng nhập.');
+    }
+    return userId;
   }
 
   Future<List<Map<String, dynamic>>> _fetchTransactionRows(

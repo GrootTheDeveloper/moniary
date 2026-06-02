@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moniary/core/constants/app_constants.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/features/settings/data/account/account_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -65,4 +66,70 @@ void main() {
 
     expect(historyFile.readAsStringSync(), corruptHistory);
   });
+
+  test(
+    'exportTransactionsCsv works in mock mode without Supabase auth',
+    () async {
+      if (AppConstants.hasSupabaseConfig) {
+        markTestSkipped(
+          'Mock mode export test requires missing Supabase config.',
+        );
+      }
+
+      final file = await repository.exportTransactionsCsv();
+
+      expect(file.path, endsWith('.csv'));
+      expect(await file.exists(), isTrue);
+      expect(await file.readAsString(), contains('data_type'));
+
+      final history = await repository.fetchExportHistory();
+      expect(history, hasLength(1));
+      expect(history.single.format, 'CSV');
+      expect(history.single.path, file.path);
+    },
+  );
+
+  test(
+    'exportTransactionsXlsx works in mock mode without Supabase auth',
+    () async {
+      if (AppConstants.hasSupabaseConfig) {
+        markTestSkipped(
+          'Mock mode export test requires missing Supabase config.',
+        );
+      }
+
+      final file = await repository.exportTransactionsXlsx();
+
+      expect(file.path, endsWith('.xlsx'));
+      expect(await file.exists(), isTrue);
+      expect(await file.length(), greaterThan(0));
+
+      final history = await repository.fetchExportHistory();
+      expect(history, hasLength(1));
+      expect(history.single.format, 'XLSX');
+      expect(history.single.path, file.path);
+    },
+  );
+
+  test(
+    'exportTransactionsPdf works in mock mode without Supabase auth',
+    () async {
+      if (AppConstants.hasSupabaseConfig) {
+        markTestSkipped(
+          'Mock mode export test requires missing Supabase config.',
+        );
+      }
+
+      final file = await repository.exportTransactionsPdf();
+
+      expect(file.path, endsWith('.pdf'));
+      expect(await file.exists(), isTrue);
+      expect(await file.length(), greaterThan(0));
+
+      final history = await repository.fetchExportHistory();
+      expect(history, hasLength(1));
+      expect(history.single.format, 'PDF');
+      expect(history.single.path, file.path);
+    },
+  );
 }
