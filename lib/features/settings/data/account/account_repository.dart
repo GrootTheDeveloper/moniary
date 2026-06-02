@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,6 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../../categories/data/repositories/category_repository.dart';
 import '../../../transactions/data/repositories/transaction_repository.dart';
 import '../../../wallets/data/repositories/wallet_repository.dart';
@@ -25,9 +27,16 @@ final accountRepositoryProvider = Provider<AccountRepository>((ref) {
 });
 
 class AccountRepository {
-  AccountRepository(this._client);
+  AccountRepository(
+    this._client, {
+    Directory? documentsDirectory,
+    Directory? exportDirectory,
+  }) : _documentsDirectory = documentsDirectory,
+       _exportDirectory = exportDirectory;
 
   final SupabaseClient _client;
+  final Directory? _documentsDirectory;
+  final Directory? _exportDirectory;
 
   Future<File> exportTransactionsCsv({
     ExportFilters filters = const ExportFilters(),
@@ -179,13 +188,30 @@ class AccountRepository {
       return const [];
     }
 
-    final raw = await file.readAsString();
-    final decoded = jsonDecode(raw) as List<dynamic>;
-    return decoded
-        .cast<Map<String, dynamic>>()
-        .map(ExportHistoryEntry.fromMap)
-        .toList()
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    try {
+      final raw = await file.readAsString();
+      final decoded = jsonDecode(raw) as List<dynamic>;
+      return decoded
+          .cast<Map<String, dynamic>>()
+          .map(ExportHistoryEntry.fromMap)
+          .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    } catch (e, st) {
+      AppLogger.error('Failed to read export history', e, st);
+      throw const AppException(
+        'Failed to read export history',
+        code: 'EXPORT_HISTORY_READ_ERROR',
+      );
+    }
+  }
+
+  @visibleForTesting
+  Future<void> recordExportForTest({
+    required String format,
+    required File file,
+    ExportFilters filters = const ExportFilters(),
+  }) {
+    return _recordExport(format: format, file: file, filters: filters);
   }
 
   Future<List<PrivacyRequestHistoryEntry>> fetchPrivacyRequestHistory() async {
@@ -654,12 +680,14 @@ class AccountRepository {
   }
 
   Future<File> _exportHistoryFile() async {
-    final directory = await getApplicationDocumentsDirectory();
+    final directory =
+        _documentsDirectory ?? await getApplicationDocumentsDirectory();
     return File('${directory.path}/moniary_export_history.json');
   }
 
   Future<File> _privacyRequestHistoryFile() async {
-    final directory = await getApplicationDocumentsDirectory();
+    final directory =
+        _documentsDirectory ?? await getApplicationDocumentsDirectory();
     return File('${directory.path}/moniary_privacy_request_history.json');
   }
 
@@ -704,6 +732,7 @@ class AccountRepository {
   }
 
   Future<Directory> _getExportDirectory() async {
+    if (_exportDirectory != null) return _exportDirectory;
     if (Platform.isAndroid) {
       final directory = await getDownloadsDirectory();
       if (directory != null) return directory;

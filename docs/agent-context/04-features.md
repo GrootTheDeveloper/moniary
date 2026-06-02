@@ -54,7 +54,7 @@
 - **Repository**: `AccountRepository` (handles exports, privacy requests, file actions), `ImportRepository` (handles CSV import and local import history), `PrivacyRepository` (handles Biometric state in SharedPreferences), `NotificationSettingsRepository` (handles email report frequency). Export history and import history are stored locally in JSON format.
 - **Export History**: Exported data type selections are stored as stable technical keys (`transactions`, `wallets`, `categories`) and localized only in presentation screens.
 - **Import History**: CSV imports create a local history entry before transaction creation starts (`pending`), update it to `completed` with the imported count on success, and mark it `failed` with the partial imported count if the import fails.
-- **Recent History Errors**: Import/export entry screens surface recent history loading errors with a localized retry action and log the exception instead of hiding the section silently. If the local import history file exists but cannot be parsed, the repository throws an `AppException` and refuses to overwrite that file during new imports.
+- **Recent History Errors**: Import/export entry screens surface recent history loading errors with a localized retry action and log the exception instead of hiding the section silently. If a local import/export history file exists but cannot be parsed, the repository throws an `AppException` and refuses to overwrite that file during new imports or exports.
 
 ## Feature: Profile
 - **Purpose**: User profile setup and management.
