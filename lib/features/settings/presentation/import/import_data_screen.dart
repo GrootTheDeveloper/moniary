@@ -210,6 +210,11 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
         return context.l10n.importErrorInvalidType;
       case 'CATEGORY_NOT_FOUND':
         return context.l10n.importErrorCategoryNotFound;
+      case 'AUTH_REQUIRED':
+        return context.l10n.errorNotLoggedIn;
+      case 'IMPORT_FAILED':
+      case 'IMPORT_PARSE_ERROR':
+        return context.l10n.errorGeneric;
       default:
         return context.l10n.importErrorUnknown;
     }
@@ -285,12 +290,19 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
         .read(importControllerProvider.notifier)
         .confirmImport(_selectedWallet!);
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.importSuccess(count))),
-      );
-      context.pop();
+    if (!mounted) {
+      return;
     }
+
+    final latestState = ref.read(importControllerProvider);
+    if (latestState.error != null) {
+      return;
+    }
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(context.l10n.importSuccess(count))));
+    context.pop();
   }
 }
 
