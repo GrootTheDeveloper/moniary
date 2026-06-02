@@ -78,8 +78,45 @@ class NotificationSettingsScreen extends ConsumerWidget {
           ],
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) =>
-            Center(child: Text('${context.l10n.errorGeneric}\n$err')),
+        error: (err, stack) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppTheme.danger.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppTheme.danger.withValues(alpha: 0.35),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color: AppTheme.danger,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      context.l10n.errorGeneric,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: AppTheme.danger),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () =>
+                        ref.invalidate(notificationSettingsControllerProvider),
+                    child: Text(context.l10n.commonRetry),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

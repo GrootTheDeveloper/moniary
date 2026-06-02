@@ -56,6 +56,7 @@
 - **Export File Actions**: Opening and sharing exported files is handled from presentation via `FileActionService`; failures are logged and surfaced with localized SnackBars.
 - **Import History**: CSV imports create a local history entry before transaction creation starts (`pending`), update it to `completed` with the imported count on success, and mark it `failed` with the partial imported count if the import fails.
 - **Recent History Errors**: Import/export entry screens and full history screens surface history loading errors with a localized retry action and log the exception instead of hiding the section silently. If a local import/export history file exists but cannot be parsed, the repository throws an `AppException` and refuses to overwrite that file during new imports or exports.
+- **Notification Settings Errors**: Supabase notification settings reads and updates are wrapped as `AppException` values with stable error codes; the UI shows a localized retry state instead of backend exception details.
 
 ## Feature: Profile
 - **Purpose**: User profile setup and management.

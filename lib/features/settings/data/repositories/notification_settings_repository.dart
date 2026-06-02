@@ -11,50 +11,83 @@ abstract class NotificationSettingsRepository {
   Future<void> updateSettings(NotificationSettings settings);
 }
 
-class SupabaseNotificationSettingsRepository
-    implements NotificationSettingsRepository {
-  SupabaseNotificationSettingsRepository(this._supabase);
+abstract class NotificationSettingsDataSource {
+  String? get currentUserId;
+  Future<Map<String, dynamic>?> fetchSettings(String userId);
+  Future<void> upsertSettings(Map<String, dynamic> payload);
+}
+
+class SupabaseNotificationSettingsDataSource
+    implements NotificationSettingsDataSource {
+  SupabaseNotificationSettingsDataSource(this._supabase);
 
   final SupabaseClient _supabase;
 
   @override
-  Future<NotificationSettings> getSettings() async {
-    final user = _supabase.auth.currentUser;
-    if (user == null) {
-      throw const AppException('User is not logged in', code: 'AUTH_REQUIRED');
-    }
+  String? get currentUserId => _supabase.auth.currentUser?.id;
 
-    final data = await _supabase
+  @override
+  Future<Map<String, dynamic>?> fetchSettings(String userId) {
+    return _supabase
         .from('notification_settings')
         .select()
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .maybeSingle();
-
-    if (data == null) {
-      // If no settings exist yet, return default
-      return const NotificationSettings();
-    }
-
-    return NotificationSettings.fromJson(data);
   }
 
   @override
-  Future<void> updateSettings(NotificationSettings settings) async {
-    final user = _supabase.auth.currentUser;
-    if (user == null) {
+  Future<void> upsertSettings(Map<String, dynamic> payload) {
+    return _supabase
+        .from('notification_settings')
+        .upsert(payload, onConflict: 'user_id');
+  }
+}
+
+class SupabaseNotificationSettingsRepository
+    implements NotificationSettingsRepository {
+  SupabaseNotificationSettingsRepository(this._dataSource);
+
+  final NotificationSettingsDataSource _dataSource;
+
+  @override
+  Future<NotificationSettings> getSettings() async {
+    final userId = _dataSource.currentUserId;
+    if (userId == null) {
       throw const AppException('User is not logged in', code: 'AUTH_REQUIRED');
     }
 
     try {
-      await _supabase
-          .from('notification_settings')
-          .upsert(
-            buildSettingsPayload(user.id, settings),
-            onConflict: 'user_id',
-          );
+      final data = await _dataSource.fetchSettings(userId);
+
+      if (data == null) {
+        return const NotificationSettings();
+      }
+
+      return NotificationSettings.fromJson(data);
+    } catch (e, st) {
+      AppLogger.error('Failed to load notification settings', e, st);
+      throw const AppException(
+        'Failed to load notification settings',
+        code: 'NOTIFICATION_SETTINGS_READ_ERROR',
+      );
+    }
+  }
+
+  @override
+  Future<void> updateSettings(NotificationSettings settings) async {
+    final userId = _dataSource.currentUserId;
+    if (userId == null) {
+      throw const AppException('User is not logged in', code: 'AUTH_REQUIRED');
+    }
+
+    try {
+      await _dataSource.upsertSettings(buildSettingsPayload(userId, settings));
     } catch (e, st) {
       AppLogger.error('Failed to update notification settings', e, st);
-      rethrow;
+      throw const AppException(
+        'Failed to update notification settings',
+        code: 'NOTIFICATION_SETTINGS_UPDATE_ERROR',
+      );
     }
   }
 
@@ -86,7 +119,9 @@ class MockNotificationSettingsRepository
 final notificationSettingsRepositoryProvider =
     Provider<NotificationSettingsRepository>((ref) {
       if (AppConstants.hasSupabaseConfig) {
-        return SupabaseNotificationSettingsRepository(Supabase.instance.client);
+        return SupabaseNotificationSettingsRepository(
+          SupabaseNotificationSettingsDataSource(Supabase.instance.client),
+        );
       } else {
         return MockNotificationSettingsRepository();
       }
