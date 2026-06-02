@@ -1,20 +1,22 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/features/settings/data/repositories/import_repository.dart';
 
 void main() {
   late ImportRepository repository;
+  late Directory tempDir;
   late File tempFile;
 
   setUp(() {
-    repository = ImportRepository();
-    final tempDir = Directory.systemTemp.createTempSync('moniary_test');
+    tempDir = Directory.systemTemp.createTempSync('moniary_test');
+    repository = ImportRepository(documentsDirectory: tempDir);
     tempFile = File('${tempDir.path}/test.csv');
   });
 
   tearDown(() {
-    if (tempFile.existsSync()) {
-      tempFile.deleteSync();
+    if (tempDir.existsSync()) {
+      tempDir.deleteSync(recursive: true);
     }
   });
 
@@ -70,5 +72,46 @@ invalid_date,50000,Expense,Food,Lunch
 
     final rows = await repository.parseCsv(tempFile.path);
     expect(rows.length, 2);
+  });
+
+  test(
+    'fetchImportHistory returns empty list when history file is missing',
+    () async {
+      final history = await repository.fetchImportHistory();
+
+      expect(history, isEmpty);
+    },
+  );
+
+  test(
+    'fetchImportHistory throws when stored history JSON is invalid',
+    () async {
+      final historyFile = File('${tempDir.path}/moniary_import_history.json');
+      await historyFile.writeAsString('not valid json');
+
+      expect(
+        repository.fetchImportHistory(),
+        throwsA(
+          isA<AppException>().having(
+            (error) => error.code,
+            'code',
+            'IMPORT_HISTORY_READ_ERROR',
+          ),
+        ),
+      );
+    },
+  );
+
+  test('createPendingImport does not overwrite invalid history file', () async {
+    final historyFile = File('${tempDir.path}/moniary_import_history.json');
+    const corruptHistory = 'not valid json';
+    await historyFile.writeAsString(corruptHistory);
+
+    await expectLater(
+      repository.createPendingImport(fileName: 'test.csv', walletName: 'Cash'),
+      throwsA(isA<AppException>()),
+    );
+
+    expect(await historyFile.readAsString(), corruptHistory);
   });
 }

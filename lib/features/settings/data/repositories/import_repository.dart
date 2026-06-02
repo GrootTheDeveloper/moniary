@@ -14,6 +14,11 @@ final importRepositoryProvider = Provider<ImportRepository>((ref) {
 });
 
 class ImportRepository {
+  ImportRepository({Directory? documentsDirectory})
+    : _documentsDirectory = documentsDirectory;
+
+  final Directory? _documentsDirectory;
+
   /// Parses a CSV file and returns a list of [CsvTransactionRow].
   /// Expected columns: Date (YYYY-MM-DD), Amount, Type, Category, Note
   Future<List<CsvTransactionRow>> parseCsv(String filePath) async {
@@ -138,7 +143,8 @@ class ImportRepository {
   }
 
   Future<File> _importHistoryFile() async {
-    final directory = await getApplicationDocumentsDirectory();
+    final directory =
+        _documentsDirectory ?? await getApplicationDocumentsDirectory();
     return File('${directory.path}/moniary_import_history.json');
   }
 
@@ -156,9 +162,12 @@ class ImportRepository {
           .map(ImportHistoryEntry.fromMap)
           .toList()
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    } catch (e) {
-      AppLogger.error('Failed to read import history', e);
-      return const [];
+    } catch (e, st) {
+      AppLogger.error('Failed to read import history', e, st);
+      throw const AppException(
+        'Failed to read import history',
+        code: 'IMPORT_HISTORY_READ_ERROR',
+      );
     }
   }
 
