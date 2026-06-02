@@ -32,6 +32,7 @@ class StatisticsView extends ConsumerStatefulWidget {
 class _StatisticsViewState extends ConsumerState<StatisticsView> {
   late DateTime _selectedMonth;
   TransactionType _selectedType = TransactionType.expense;
+  String? _touchedCategoryId;
 
   @override
   void initState() {
@@ -47,6 +48,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         _selectedMonth.month + offset,
         1,
       );
+      _touchedCategoryId = null; // Reset filter on month change
     });
   }
 
@@ -86,9 +88,13 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     final net = income - expense;
 
     // Filter transactions by type for chart calculations
-    final filteredTxs = transactions
+    final filteredByType = transactions
         .where((t) => t.type == _selectedType)
         .toList();
+
+    final filteredBySelection = _touchedCategoryId == null
+        ? filteredByType
+        : filteredByType.where((t) => t.categoryId == _touchedCategoryId).toList();
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -103,14 +109,14 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           const SizedBox(height: 24),
           _buildTypeToggle(),
           const SizedBox(height: 20),
-          if (filteredTxs.isEmpty)
+          if (filteredByType.isEmpty)
             _buildEmptyState()
           else ...[
-            _buildPieChartSection(filteredTxs),
+            _buildPieChartSection(filteredByType),
             const SizedBox(height: 24),
-            _buildTrendChartSection(filteredTxs),
+            _buildTrendChartSection(filteredByType),
             const SizedBox(height: 24),
-            _buildTopSpendingList(filteredTxs),
+            _buildTopSpendingList(filteredBySelection),
           ],
           const SizedBox(height: 100), // Spacing for floating action button
         ],
@@ -299,17 +305,30 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         categoryColors[entry.key],
         fallback: AppTheme.amber,
       );
+      final isTouched = _touchedCategoryId == entry.key;
+
       return PieChartSectionData(
         value: entry.value,
         title: '${percentage.toStringAsFixed(0)}%',
-        radius: 36,
+        radius: isTouched ? 42 : 36,
         showTitle: percentage >= 5,
-        titleStyle: const TextStyle(
-          fontSize: 10,
+        titleStyle: TextStyle(
+          fontSize: isTouched ? 12 : 10,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
         color: color,
+        badgeWidget: isTouched
+            ? Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.check, size: 10, color: color),
+              )
+            : null,
+        badgePositionPercentageOffset: 1.1,
       );
     }).toList();
 
@@ -323,11 +342,21 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            context.l10n.statsCategoryAllocation,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                context.l10n.statsCategoryAllocation,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              if (_touchedCategoryId != null)
+                TextButton(
+                  onPressed: () => setState(() => _touchedCategoryId = null),
+                  child: const Text('Hiện tất cả', style: TextStyle(fontSize: 12)),
+                ),
+            ],
           ),
           const SizedBox(height: 16),
           Row(
@@ -340,6 +369,18 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                     sectionsSpace: 2,
                     centerSpaceRadius: 28,
                     sections: pieSections,
+                    pieTouchData: PieTouchData(
+                      touchCallback: (event, response) {
+                        if (event is FlTapUpEvent && response != null) {
+                          final index = response.touchedSection?.touchedSectionIndex;
+                          if (index != null && index >= 0) {
+                            setState(() {
+                              _touchedCategoryId = categorySums.keys.elementAt(index);
+                            });
+                          }
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -354,38 +395,47 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                       categoryColors[entry.key],
                       fallback: AppTheme.amber,
                     );
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 12,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: color,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              categoryNames[entry.key]!,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Colors.white,
+                    final isTouched = _touchedCategoryId == entry.key;
+
+                    return GestureDetector(
+                      onTap: () => setState(() => _touchedCategoryId = entry.key),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 12,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                color: color,
+                                shape: BoxShape.circle,
+                                border: isTouched
+                                    ? Border.all(color: Colors.white, width: 2)
+                                    : null,
                               ),
                             ),
-                          ),
-                          Text(
-                            '${percentage.toStringAsFixed(0)}%',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Colors.white54,
-                              fontWeight: FontWeight.w600,
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                categoryNames[entry.key]!,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: isTouched ? Colors.white : Colors.white54,
+                                  fontWeight: isTouched ? FontWeight.bold : null,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                            Text(
+                              '${percentage.toStringAsFixed(0)}%',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: isTouched ? Colors.white : Colors.white24,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   }).toList(),
@@ -533,8 +583,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     final sortedTxs = List<TransactionEntry>.from(transactions)
       ..sort((a, b) => b.amount.compareTo(a.amount));
 
-    // Take top 5
-    final topTxs = sortedTxs.take(5).toList();
+    // Take top 5 unless filtered
+    final isFiltered = _touchedCategoryId != null;
+    final displayTxs = isFiltered ? sortedTxs : sortedTxs.take(5).toList();
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -546,19 +597,28 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            context.l10n.statsLargestTransactions,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                isFiltered
+                    ? 'Giao dịch trong danh mục'
+                    : context.l10n.statsLargestTransactions,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              if (!isFiltered && sortedTxs.length > 5)
+                const Icon(Icons.arrow_downward, size: 14, color: Colors.white24),
+            ],
           ),
           const SizedBox(height: 12),
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: topTxs.length,
+            itemCount: displayTxs.length,
             itemBuilder: (context, index) {
-              final tx = topTxs[index];
+              final tx = displayTxs[index];
               final accent = AppColor.fromHex(
                 tx.categoryColor ?? tx.walletColor,
                 fallback: AppTheme.amber,

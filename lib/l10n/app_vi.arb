@@ -562,5 +562,7 @@
     }
   },
   "activeSessionsOtherOs": "Hệ điều hành khác",
-  "activeSessionsOtherBrowser": "Trình duyệt/App khác"
+  "activeSessionsOtherBrowser": "Trình duyệt/App khác",
+  "calendarSearchHint": "Tìm theo ghi chú, tên quán...",
+  "calendarSearchNoResults": "Không tìm thấy giao dịch nào."
 }

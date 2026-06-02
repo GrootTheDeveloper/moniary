@@ -566,5 +566,7 @@
     }
   },
   "activeSessionsOtherOs": "Other OS",
-  "activeSessionsOtherBrowser": "Other browser/app"
+  "activeSessionsOtherBrowser": "Other browser/app",
+  "calendarSearchHint": "Search by note, merchant...",
+  "calendarSearchNoResults": "No transactions found."
 }

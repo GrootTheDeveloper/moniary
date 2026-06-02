@@ -127,6 +127,33 @@ class TransactionRepository {
     }
   }
 
+  Future<List<TransactionEntry>> searchTransactions(String queryText) async {
+    if (!AppConstants.hasSupabaseConfig) {
+      final queryLower = queryText.toLowerCase();
+      return _mockTransactions.where((t) {
+        final noteMatch = t.note?.toLowerCase().contains(queryLower) ?? false;
+        final catMatch = t.categoryName.toLowerCase().contains(queryLower);
+        return noteMatch || catMatch;
+      }).toList();
+    }
+    try {
+      final uid = _userId;
+
+      final rows = await _baseSelect()
+          .eq('user_id', uid)
+          .or('note.ilike.%$queryText%,category.name.ilike.%$queryText%')
+          .order('transaction_date', ascending: false);
+
+      return _mapList(rows);
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi tìm kiếm', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      throw const AppException('errorConnection');
+    }
+  }
+
   Future<List<TransactionEntry>> fetchTransactionsForDay(
     DateTime day, {
     String? walletId,

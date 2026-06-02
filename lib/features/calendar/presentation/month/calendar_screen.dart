@@ -16,6 +16,7 @@ import '../../application/month/calendar_month_provider.dart';
 import '../../application/month/calendar_visible_month_provider.dart';
 import '../../domain/month/calendar_month_data.dart';
 import 'manage_data_sheet.dart';
+import 'transaction_search_delegate.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
@@ -268,6 +269,28 @@ class _SeamlessHeader extends ConsumerWidget {
                       isHidden
                           ? Icons.visibility_off_outlined
                           : Icons.visibility_outlined,
+                      color: Colors.white70,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () {
+                    showSearch(
+                      context: context,
+                      delegate: TransactionSearchDelegate(ref),
+                    );
+                  },
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.search,
                       color: Colors.white70,
                       size: 20,
                     ),
@@ -934,6 +957,18 @@ class _CalendarDayCell extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: AppTheme.mint, // Dot indicates today
                   ),
+                ),
+              ),
+
+            // Star Indicator for Important Transactions
+            if (day.hasImportant)
+              Positioned(
+                top: 2,
+                right: 2,
+                child: const Icon(
+                  Icons.star,
+                  color: AppTheme.amber,
+                  size: 10,
                 ),
               ),
           ],
