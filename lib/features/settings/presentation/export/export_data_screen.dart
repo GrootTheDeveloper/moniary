@@ -148,6 +148,11 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
       return;
     }
 
+    await ref.read(fileActionServiceProvider).open(file);
+    if (!mounted) {
+      return;
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(context.l10n.exportDone),
@@ -325,9 +330,7 @@ class _RecentExportsSection extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 8),
-            ...items.take(3).map(
-                  (item) => _RecentExportTile(entry: item),
-                ),
+            ...items.take(3).map((item) => _RecentExportTile(entry: item)),
           ],
         );
       },
@@ -428,4 +431,3 @@ class _DateRangeCard extends StatelessWidget {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 }
-

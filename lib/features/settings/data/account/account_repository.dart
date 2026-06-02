@@ -3,9 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/app_constants.dart';
@@ -73,7 +71,6 @@ class AccountRepository {
     final file = File('${directory.path}/moniary_export_$timestamp.csv');
     final saved = await file.writeAsString(csv.toString(), encoding: utf8);
     await _recordExport(format: 'CSV', file: saved, filters: filters);
-    await OpenFilex.open(saved.path);
     return saved;
   }
 
@@ -118,7 +115,6 @@ class AccountRepository {
     final file = File('${directory.path}/moniary_export_$timestamp.xlsx');
     final saved = await file.writeAsBytes(bytes, flush: true);
     await _recordExport(format: 'XLSX', file: saved, filters: filters);
-    await OpenFilex.open(saved.path);
     return saved;
   }
 
@@ -174,7 +170,6 @@ class AccountRepository {
     final file = File('${directory.path}/moniary_export_$timestamp.pdf');
     final saved = await file.writeAsBytes(bytes, flush: true);
     await _recordExport(format: 'PDF', file: saved, filters: filters);
-    await OpenFilex.open(saved.path);
     return saved;
   }
 
@@ -714,9 +709,5 @@ class AccountRepository {
       if (directory != null) return directory;
     }
     return getApplicationDocumentsDirectory();
-  }
-
-  Future<void> shareFile(File file) async {
-    await Share.shareXFiles([XFile(file.path)]);
   }
 }
