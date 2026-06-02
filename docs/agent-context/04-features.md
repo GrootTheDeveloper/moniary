@@ -52,7 +52,7 @@
 - **Security Features**: Biometric App Lock (FaceID/TouchID) and Hide Balances mode.
 - **Automated Reports**: Uses Supabase Edge Functions + Resend API to send scheduled email reports (Daily/Weekly/Monthly/Yearly).
 - **Repository**: `AccountRepository` (handles exports, privacy requests, file actions), `ImportRepository` (handles CSV import and local import history), `PrivacyRepository` (handles Biometric state in SharedPreferences), `NotificationSettingsRepository` (handles email report frequency). Export history and import history are stored locally in JSON format.
-- **Export History**: Exported data type selections are stored as stable technical keys (`transactions`, `wallets`, `categories`) and localized only in presentation screens.
+- **Export History**: Exported data type selections are stored as stable technical keys (`transactions`, `wallets`, `categories`), and date ranges are stored as raw `start_date`/`end_date` values. Labels are localized only in presentation screens; legacy `date_range` text is still read for older history entries.
 - **Export Auth Flow**: CSV/XLSX/PDF export resolves the active user from the Riverpod session path so mock mode exports work with mock anonymous sign-in, while Supabase mode still requires a real signed-in session.
 - **Export File Actions**: Opening and sharing exported files is handled from presentation via `FileActionService`; failures are logged and surfaced with localized SnackBars.
 - **Import History**: CSV imports create a local history entry before transaction creation starts (`pending`), update it to `completed` with the imported count on success, and mark it `failed` with the partial imported count if the import fails.

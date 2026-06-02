@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../l10n/l10n_extension.dart';
 import '../../domain/export/export_filters.dart';
+import '../../domain/export/export_history_entry.dart';
 
 extension ExportDataTypeL10n on ExportDataType {
   String getLabel(BuildContext context) {
@@ -27,4 +29,33 @@ String localizedExportDataTypeList(
   Iterable<String> keys,
 ) {
   return keys.map((key) => localizedExportDataTypeKey(context, key)).join(', ');
+}
+
+String localizedExportDateRange(
+  BuildContext context,
+  ExportHistoryEntry entry,
+) {
+  if (entry.hasDateRange) {
+    final start = _dateLabel(entry.startDate);
+    final end = _dateLabel(entry.endDate);
+    return '$start - $end';
+  }
+
+  final legacy = entry.legacyDateRange?.trim();
+  if (legacy == null || legacy.isEmpty) {
+    return context.l10n.exportAllTime;
+  }
+
+  return switch (legacy) {
+    'Tất cả thời gian' ||
+    'Táº¥t cáº£ thá»i gian' => context.l10n.exportAllTime,
+    _ => legacy,
+  };
+}
+
+String _dateLabel(DateTime? date) {
+  if (date == null) {
+    return '...';
+  }
+  return DateFormat('dd/MM/yyyy').format(date);
 }

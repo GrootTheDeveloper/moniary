@@ -668,7 +668,8 @@ class AccountRepository {
       path: file.path,
       createdAt: DateTime.now(),
       dataTypes: filters.dataTypes.map((type) => type.key).toList(),
-      dateRange: _dateRangeLabel(filters),
+      startDate: filters.startDate,
+      endDate: filters.endDate,
     );
 
     final fileHistory = await _exportHistoryFile();
@@ -718,19 +719,6 @@ class AccountRepository {
     await historyFile.writeAsString(
       const JsonEncoder.withIndent('  ').convert(next),
     );
-  }
-
-  static String _dateRangeLabel(ExportFilters filters) {
-    if (!filters.hasDateRange) {
-      return 'Tất cả thời gian';
-    }
-    final start = filters.startDate == null
-        ? '...'
-        : DateFormat('dd/MM/yyyy').format(filters.startDate!);
-    final end = filters.endDate == null
-        ? '...'
-        : DateFormat('dd/MM/yyyy').format(filters.endDate!);
-    return '$start - $end';
   }
 
   Future<Directory> _getExportDirectory() async {

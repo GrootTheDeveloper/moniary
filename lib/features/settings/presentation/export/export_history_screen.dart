@@ -102,7 +102,7 @@ class _HistoryTile extends ConsumerWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      entry.dateRange,
+                      localizedExportDateRange(context, entry),
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],

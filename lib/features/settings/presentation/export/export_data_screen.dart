@@ -376,7 +376,10 @@ class _RecentExportTile extends StatelessWidget {
             style: const TextStyle(color: AppTheme.mint, fontSize: 10),
           ),
         ),
-        title: Text(entry.dateRange, style: const TextStyle(fontSize: 14)),
+        title: Text(
+          localizedExportDateRange(context, entry),
+          style: const TextStyle(fontSize: 14),
+        ),
         subtitle: Text(date, style: const TextStyle(fontSize: 12)),
         trailing: const Icon(Icons.chevron_right, size: 20),
       ),

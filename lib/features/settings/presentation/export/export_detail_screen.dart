@@ -56,7 +56,7 @@ class ExportDetailScreen extends ConsumerWidget {
               items: [
                 _InfoRow(
                   label: context.l10n.exportDetailDataRange,
-                  value: entry.dateRange,
+                  value: localizedExportDateRange(context, entry),
                 ),
                 _InfoRow(
                   label: context.l10n.exportDetailDataGroups,
