@@ -981,6 +981,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportRecentTitle => 'Recent exports';
 
   @override
+  String get exportRecentHistoryError => 'Could not load recent exports.';
+
+  @override
   String get manageDataTitle => 'Manage data';
 
   @override
@@ -1338,6 +1341,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get importRecentTitle => 'Recent imports';
+
+  @override
+  String get importRecentHistoryError => 'Could not load recent imports.';
 
   @override
   String get importViewHistory => 'View import history';

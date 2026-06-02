@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 
 import 'import_history_screen.dart';
 import '../../domain/import/import_history_entry.dart';
+import '../widgets/recent_history_error_card.dart';
 
 class ImportDataScreen extends ConsumerStatefulWidget {
   const ImportDataScreen({super.key});
@@ -326,7 +327,13 @@ class _RecentImportsSection extends ConsumerWidget {
         );
       },
       loading: () => const SizedBox.shrink(),
-      error: (e, st) => const SizedBox.shrink(),
+      error: (e, st) {
+        AppLogger.error('Failed to load recent import history', e, st);
+        return RecentHistoryErrorCard(
+          message: context.l10n.importRecentHistoryError,
+          onRetry: () => ref.invalidate(importHistoryProvider),
+        );
+      },
     );
   }
 }

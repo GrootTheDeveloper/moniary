@@ -7,10 +7,12 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../../data/export/file_action_service.dart';
 import '../../domain/export/export_filters.dart';
 import '../../domain/export/export_history_entry.dart';
+import '../widgets/recent_history_error_card.dart';
 import 'export_detail_screen.dart';
 import 'export_history_screen.dart';
 import 'export_l10n_helpers.dart';
@@ -339,7 +341,13 @@ class _RecentExportsSection extends ConsumerWidget {
         );
       },
       loading: () => const SizedBox.shrink(),
-      error: (e, st) => const SizedBox.shrink(),
+      error: (e, st) {
+        AppLogger.error('Failed to load recent export history', e, st);
+        return RecentHistoryErrorCard(
+          message: context.l10n.exportRecentHistoryError,
+          onRetry: () => ref.invalidate(exportHistoryProvider),
+        );
+      },
     );
   }
 }

@@ -981,6 +981,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get exportRecentTitle => 'Lần xuất gần đây';
 
   @override
+  String get exportRecentHistoryError => 'Không tải được lần xuất gần đây.';
+
+  @override
   String get manageDataTitle => 'Quản lý dữ liệu';
 
   @override
@@ -1337,6 +1340,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get importRecentTitle => 'Lần nạp gần đây';
+
+  @override
+  String get importRecentHistoryError => 'Không tải được lần nạp gần đây.';
 
   @override
   String get importViewHistory => 'Xem lịch sử nạp';

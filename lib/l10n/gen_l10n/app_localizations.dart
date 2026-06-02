@@ -1892,6 +1892,12 @@ abstract class AppLocalizations {
   /// **'Lần xuất gần đây'**
   String get exportRecentTitle;
 
+  /// No description provided for @exportRecentHistoryError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được lần xuất gần đây.'**
+  String get exportRecentHistoryError;
+
   /// No description provided for @manageDataTitle.
   ///
   /// In vi, this message translates to:
@@ -2569,6 +2575,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Lần nạp gần đây'**
   String get importRecentTitle;
+
+  /// No description provided for @importRecentHistoryError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được lần nạp gần đây.'**
+  String get importRecentHistoryError;
 
   /// No description provided for @importViewHistory.
   ///
