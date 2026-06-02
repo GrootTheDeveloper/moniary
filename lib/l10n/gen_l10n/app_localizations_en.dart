@@ -1283,10 +1283,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get importCsvFormatBody =>
-      'Row 1 is skipped (headers).\n1. Date (YYYY-MM-DD)\n2. Amount\n3. Type (Income/Expense/Thu/Chi)\n4. Category Name\n5. Note';
+      '1. Transaction Date (YYYY-MM-DD)\n2. Amount (e.g. 100000)\n3. Type (Income / Expense)\n4. Category\n5. Note (Optional)\n\nNote: Skip header row if exists.';
 
   @override
   String get importConfirm => 'Confirm Import';
+
+  @override
+  String get importViewHistory => 'View import history';
+
+  @override
+  String get importHistoryTitle => 'Import history';
+
+  @override
+  String get importDetailTitle => 'Import detail';
+
+  @override
+  String get importNoHistory => 'No import history yet.';
+
+  @override
+  String get importDetailFileName => 'File name';
+
+  @override
+  String get importDetailImportedCount => 'Imported transactions';
+
+  @override
+  String get importDetailWallet => 'Target wallet';
+
+  @override
+  String get importDetailDate => 'Import date';
+
+  @override
+  String get importDetailStatus => 'Status';
+
+  @override
+  String get importDetailError => 'Error';
+
+  @override
+  String get importStatusPending => 'Importing';
+
+  @override
+  String get importStatusCompleted => 'Completed';
+
+  @override
+  String get importStatusFailed => 'Failed';
+
+  @override
+  String get settingsTitle => 'Settings';
 
   @override
   String importPreviewTitle(int count) {

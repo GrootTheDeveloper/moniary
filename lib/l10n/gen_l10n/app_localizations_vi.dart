@@ -1282,10 +1282,52 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get importCsvFormatBody =>
-      'Dòng 1 được bỏ qua (tiêu đề).\n1. Ngày (YYYY-MM-DD)\n2. Số tiền\n3. Loại (Income/Expense/Thu/Chi)\n4. Tên danh mục\n5. Ghi chú';
+      '1. Ngày giao dịch (YYYY-MM-DD)\n2. Số tiền (Ví dụ: 100000)\n3. Loại (Thu / Chi)\n4. Hạng mục\n5. Ghi chú (Tùy chọn)\n\nLưu ý: Bỏ qua dòng tiêu đề nếu có.';
 
   @override
   String get importConfirm => 'Xác nhận nhập';
+
+  @override
+  String get importViewHistory => 'Xem lịch sử nạp';
+
+  @override
+  String get importHistoryTitle => 'Lịch sử nạp dữ liệu';
+
+  @override
+  String get importDetailTitle => 'Chi tiết nạp dữ liệu';
+
+  @override
+  String get importNoHistory => 'Chưa có lịch sử nạp dữ liệu.';
+
+  @override
+  String get importDetailFileName => 'Tên file';
+
+  @override
+  String get importDetailImportedCount => 'Số giao dịch nạp thành công';
+
+  @override
+  String get importDetailWallet => 'Ví đích';
+
+  @override
+  String get importDetailDate => 'Ngày nạp';
+
+  @override
+  String get importDetailStatus => 'Trạng thái';
+
+  @override
+  String get importDetailError => 'Lỗi';
+
+  @override
+  String get importStatusPending => 'Đang nạp';
+
+  @override
+  String get importStatusCompleted => 'Hoàn tất';
+
+  @override
+  String get importStatusFailed => 'Thất bại';
+
+  @override
+  String get settingsTitle => 'Cài đặt';
 
   @override
   String importPreviewTitle(int count) {

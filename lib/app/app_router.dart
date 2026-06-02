@@ -46,6 +46,9 @@ import '../features/settings/presentation/privacy/privacy_policy_screen.dart';
 import '../features/settings/presentation/privacy/privacy_request_detail_screen.dart';
 import '../features/settings/presentation/privacy/app_lock_screen.dart';
 import '../features/settings/presentation/import/import_data_screen.dart';
+import '../features/settings/presentation/import/import_history_screen.dart';
+import '../features/settings/presentation/import/import_detail_screen.dart';
+import '../features/settings/domain/import/import_history_entry.dart';
 import '../features/settings/presentation/notifications/notification_settings_screen.dart';
 import '../features/settings/application/privacy_controller.dart';
 import '../features/settings/presentation/profile_screen.dart';
@@ -422,6 +425,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           state: state,
           child: const ImportDataScreen(),
         ),
+      ),
+      GoRoute(
+        path: ImportHistoryScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const ImportHistoryScreen(),
+        ),
+      ),
+      GoRoute(
+        path: ImportHistoryScreen.detailRoutePath,
+        pageBuilder: (context, state) {
+          final entry = state.extra as ImportHistoryEntry?;
+          final child = entry == null
+              ? const ImportHistoryScreen()
+              : ImportDetailScreen(entry: entry);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
       ),
       GoRoute(
         path: ExportHistoryScreen.routePath,

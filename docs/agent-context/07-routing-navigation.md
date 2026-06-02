@@ -26,6 +26,8 @@
 | `/groups` | `GroupsScreen` | Tab 2 |
 | `/profile` | `ProfileScreen` | Tab 3 |
 | `/import` | `ImportDataScreen` | Accessed via Profile |
+| `/import-history` | `ImportHistoryScreen` | Lists local CSV import history |
+| `/import-history/detail` | `ImportDetailScreen` | Uses `ImportHistoryScreen.detailRoutePath`; expects `ImportHistoryEntry` in `state.extra` |
 | `/notification-settings` | `NotificationSettingsScreen` | Accessed via Profile |
 | `/scanning` | `ScanningScreen` | Slides up |
 | `/ocr-review` | `OcrReviewScreen` | Passes `OcrReviewArgs` |

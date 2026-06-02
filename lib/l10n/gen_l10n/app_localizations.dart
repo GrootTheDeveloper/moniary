@@ -2471,7 +2471,7 @@ abstract class AppLocalizations {
   /// No description provided for @importCsvFormatBody.
   ///
   /// In vi, this message translates to:
-  /// **'Dòng 1 được bỏ qua (tiêu đề).\n1. Ngày (YYYY-MM-DD)\n2. Số tiền\n3. Loại (Income/Expense/Thu/Chi)\n4. Tên danh mục\n5. Ghi chú'**
+  /// **'1. Ngày giao dịch (YYYY-MM-DD)\n2. Số tiền (Ví dụ: 100000)\n3. Loại (Thu / Chi)\n4. Hạng mục\n5. Ghi chú (Tùy chọn)\n\nLưu ý: Bỏ qua dòng tiêu đề nếu có.'**
   String get importCsvFormatBody;
 
   /// No description provided for @importConfirm.
@@ -2479,6 +2479,90 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Xác nhận nhập'**
   String get importConfirm;
+
+  /// No description provided for @importViewHistory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem lịch sử nạp'**
+  String get importViewHistory;
+
+  /// No description provided for @importHistoryTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lịch sử nạp dữ liệu'**
+  String get importHistoryTitle;
+
+  /// No description provided for @importDetailTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiết nạp dữ liệu'**
+  String get importDetailTitle;
+
+  /// No description provided for @importNoHistory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có lịch sử nạp dữ liệu.'**
+  String get importNoHistory;
+
+  /// No description provided for @importDetailFileName.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên file'**
+  String get importDetailFileName;
+
+  /// No description provided for @importDetailImportedCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số giao dịch nạp thành công'**
+  String get importDetailImportedCount;
+
+  /// No description provided for @importDetailWallet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví đích'**
+  String get importDetailWallet;
+
+  /// No description provided for @importDetailDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày nạp'**
+  String get importDetailDate;
+
+  /// No description provided for @importDetailStatus.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trạng thái'**
+  String get importDetailStatus;
+
+  /// No description provided for @importDetailError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lỗi'**
+  String get importDetailError;
+
+  /// No description provided for @importStatusPending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang nạp'**
+  String get importStatusPending;
+
+  /// No description provided for @importStatusCompleted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoàn tất'**
+  String get importStatusCompleted;
+
+  /// No description provided for @importStatusFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thất bại'**
+  String get importStatusFailed;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cài đặt'**
+  String get settingsTitle;
 
   /// No description provided for @importPreviewTitle.
   ///
