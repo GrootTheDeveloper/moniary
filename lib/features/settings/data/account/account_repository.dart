@@ -147,7 +147,7 @@ class AccountRepository {
 
     final lines = <String>[
       'Generated: $generatedAt',
-      'Data types: ${filters.dataTypes.map((type) => type.label).join(', ')}',
+      'Data types: ${filters.dataTypes.map((type) => type.key).join(', ')}',
       'Transactions: ${transactions.length}',
       'Wallets: ${wallets.length}',
       'Categories: ${categories.length}',
@@ -639,7 +639,7 @@ class AccountRepository {
       format: format,
       path: file.path,
       createdAt: DateTime.now(),
-      dataTypes: filters.dataTypes.map((type) => type.label).toList(),
+      dataTypes: filters.dataTypes.map((type) => type.key).toList(),
       dateRange: _dateRangeLabel(filters),
     );
 

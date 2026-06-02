@@ -1,11 +1,13 @@
-enum ExportDataType {
-  transactions('Giao dịch'),
-  wallets('Ví'),
-  categories('Danh mục');
+enum ExportDataType { transactions, wallets, categories }
 
-  const ExportDataType(this.label);
-
-  final String label;
+extension ExportDataTypeKey on ExportDataType {
+  String get key {
+    return switch (this) {
+      ExportDataType.transactions => 'transactions',
+      ExportDataType.wallets => 'wallets',
+      ExportDataType.categories => 'categories',
+    };
+  }
 }
 
 class ExportFilters {

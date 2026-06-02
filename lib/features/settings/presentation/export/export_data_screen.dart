@@ -13,15 +13,16 @@ import '../../domain/export/export_filters.dart';
 import '../../domain/export/export_history_entry.dart';
 import 'export_detail_screen.dart';
 import 'export_history_screen.dart';
+import 'export_l10n_helpers.dart';
 
 enum ExportFormat { csv, xlsx, pdf }
 
 extension ExportFormatL10n on ExportFormat {
   String getLabel(BuildContext context) {
     return switch (this) {
-      ExportFormat.csv => 'CSV',
-      ExportFormat.xlsx => 'Excel',
-      ExportFormat.pdf => 'PDF',
+      ExportFormat.csv => context.l10n.exportFormatCsvLabel,
+      ExportFormat.xlsx => context.l10n.exportFormatXlsxLabel,
+      ExportFormat.pdf => context.l10n.exportFormatPdfLabel,
     };
   }
 
@@ -217,7 +218,7 @@ class _DataTypesCard extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               controlAffinity: ListTileControlAffinity.leading,
               activeColor: AppTheme.mint,
-              title: Text(type.label),
+              title: Text(type.getLabel(context)),
               onChanged: (selected) {
                 final next = {...selectedTypes};
                 if (selected == true) {
@@ -319,13 +320,16 @@ class _RecentExportsSection extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Lần xuất gần đây',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  context.l10n.exportRecentTitle,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 TextButton(
                   onPressed: () => context.push(ExportHistoryScreen.routePath),
-                  child: const Text('Xem tất cả'),
+                  child: Text(context.l10n.commonViewAll),
                 ),
               ],
             ),

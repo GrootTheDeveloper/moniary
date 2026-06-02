@@ -48,6 +48,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonOpen => 'Open';
 
   @override
+  String get commonViewAll => 'View all';
+
+  @override
   String get commonSelect => 'Select';
 
   @override
@@ -954,6 +957,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportDataTypes => 'Data types';
 
   @override
+  String get exportDataTypeTransactions => 'Transactions';
+
+  @override
+  String get exportDataTypeWallets => 'Wallets';
+
+  @override
+  String get exportDataTypeCategories => 'Categories';
+
+  @override
   String get exportButton => 'Export data';
 
   @override
@@ -964,6 +976,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportHistoryEmpty => 'No export files yet.';
+
+  @override
+  String get exportRecentTitle => 'Recent exports';
 
   @override
   String get manageDataTitle => 'Manage data';
@@ -1097,6 +1112,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportCreateSupportRequest => 'Create support request';
+
+  @override
+  String get exportTroubleshootingHero =>
+      'This guide helps you quickly troubleshoot CSV, Excel, or PDF files that are empty, cannot be opened, or cannot be found after export.';
+
+  @override
+  String get exportTroubleshootingTypeTitle => '1. Check selected data types';
+
+  @override
+  String get exportTroubleshootingTypeDesc =>
+      'If the file is empty, check whether you selected Transactions, Wallets, or Categories in the export filters.';
+
+  @override
+  String get exportTroubleshootingDateTitle => '2. Check date range';
+
+  @override
+  String get exportTroubleshootingDateDesc =>
+      'If the selected date range is too narrow, the file may not contain matching transactions.';
+
+  @override
+  String get exportTroubleshootingHistoryTitle =>
+      '3. Reopen from export history';
+
+  @override
+  String get exportTroubleshootingHistoryDesc =>
+      'After creating a file, open export history to access the file path and share it when needed.';
+
+  @override
+  String get exportTroubleshootingSupportTitle => '4. Create a support request';
+
+  @override
+  String get exportTroubleshootingSupportDesc =>
+      'If the file cannot be created or opened, create a privacy/support request with an error description.';
 
   @override
   String get legalDataDeletionPolicy => 'Data deletion policy';
@@ -1289,6 +1337,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importConfirm => 'Confirm Import';
 
   @override
+  String get importRecentTitle => 'Recent imports';
+
+  @override
   String get importViewHistory => 'View import history';
 
   @override
@@ -1439,12 +1490,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get exportFormatCsvLabel => 'CSV';
+
+  @override
   String get exportFormatCsvDesc =>
       'Lightweight data sheet, opens in Excel or Google Sheets.';
 
   @override
+  String get exportFormatXlsxLabel => 'Excel';
+
+  @override
   String get exportFormatXlsxDesc =>
       '.xlsx workbook for Excel, Sheets, or WPS Office.';
+
+  @override
+  String get exportFormatPdfLabel => 'PDF';
 
   @override
   String get exportFormatPdfDesc =>
@@ -1460,6 +1520,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportNoAppToOpen => 'No suitable app found to open the file.';
+
+  @override
+  String get exportDetailTitle => 'Export detail';
+
+  @override
+  String get exportDetailFileInfo => 'File information';
+
+  @override
+  String get exportDetailTime => 'Time';
+
+  @override
+  String get exportDetailFormat => 'Format';
+
+  @override
+  String get exportDetailStatus => 'Status';
+
+  @override
+  String get exportDetailReady => 'Ready';
+
+  @override
+  String get exportDetailMissing => 'File deleted';
+
+  @override
+  String get exportDetailDataConfig => 'Data configuration';
+
+  @override
+  String get exportDetailDataRange => 'Data time range';
+
+  @override
+  String get exportDetailDataGroups => 'Data groups';
+
+  @override
+  String get exportDetailStoragePath => 'Storage path';
+
+  @override
+  String get exportDetailLocation => 'Location';
+
+  @override
+  String get exportDetailOpenFile => 'Open file now';
+
+  @override
+  String get exportDetailShareFile => 'Share via Email / Zalo';
+
+  @override
+  String get exportDetailMissingMessage =>
+      'This file no longer exists on this device. You can export the data again with similar filters.';
+
+  @override
+  String get exportDetailSuccessTitle => 'Data exported successfully';
+
+  @override
+  String get exportDetailReportSubtitle => 'Moniary Financial Report';
 
   @override
   String get commonComingSoon => 'Coming soon';

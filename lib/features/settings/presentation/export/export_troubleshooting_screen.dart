@@ -22,25 +22,21 @@ class ExportTroubleshootingScreen extends StatelessWidget {
           children: [
             const _ExportHelpHero(),
             const SizedBox(height: 16),
-            const _TroubleshootingStep(
-              title: '1. Kiểm tra loại dữ liệu đã chọn',
-              description:
-                  'Nếu file trống, hãy kiểm tra bạn đã chọn Giao dịch, Ví hoặc Danh mục trong bộ lọc export.',
+            _TroubleshootingStep(
+              title: context.l10n.exportTroubleshootingTypeTitle,
+              description: context.l10n.exportTroubleshootingTypeDesc,
             ),
-            const _TroubleshootingStep(
-              title: '2. Kiểm tra khoảng ngày',
-              description:
-                  'Nếu chọn khoảng ngày quá hẹp, file có thể không có giao dịch phù hợp.',
+            _TroubleshootingStep(
+              title: context.l10n.exportTroubleshootingDateTitle,
+              description: context.l10n.exportTroubleshootingDateDesc,
             ),
-            const _TroubleshootingStep(
-              title: '3. Mở lại từ lịch sử export',
-              description:
-                  'Sau khi tạo file, vào lịch sử export để mở lại đường dẫn file và chia sẻ khi cần.',
+            _TroubleshootingStep(
+              title: context.l10n.exportTroubleshootingHistoryTitle,
+              description: context.l10n.exportTroubleshootingHistoryDesc,
             ),
-            const _TroubleshootingStep(
-              title: '4. Tạo request hỗ trợ',
-              description:
-                  'Nếu file không tạo được hoặc không mở được, hãy tạo request privacy/support kèm mô tả lỗi.',
+            _TroubleshootingStep(
+              title: context.l10n.exportTroubleshootingSupportTitle,
+              description: context.l10n.exportTroubleshootingSupportDesc,
             ),
             const SizedBox(height: 4),
             OutlinedButton.icon(
@@ -80,7 +76,7 @@ class _ExportHelpHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Hướng dẫn này giúp xử lý nhanh khi file CSV, Excel hoặc PDF không có dữ liệu, không mở được hoặc không tìm thấy sau khi export.',
+        context.l10n.exportTroubleshootingHero,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );

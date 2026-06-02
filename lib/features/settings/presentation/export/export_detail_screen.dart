@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../l10n/l10n_extension.dart';
 import '../../data/export/file_action_service.dart';
 import '../../domain/export/export_history_entry.dart';
+import 'export_l10n_helpers.dart';
 
 class ExportDetailScreen extends ConsumerWidget {
   const ExportDetailScreen({super.key, required this.entry});
@@ -21,7 +23,7 @@ class ExportDetailScreen extends ConsumerWidget {
     final exists = file.existsSync();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Chi tiết bản xuất')),
+      appBar: AppBar(title: Text(context.l10n.exportDetailTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
@@ -29,31 +31,45 @@ class ExportDetailScreen extends ConsumerWidget {
             _DetailHeader(entry: entry),
             const SizedBox(height: 24),
             _InfoSection(
-              title: 'Thông tin file',
+              title: context.l10n.exportDetailFileInfo,
               items: [
-                _InfoRow(label: 'Thời gian', value: createdAt),
-                _InfoRow(label: 'Định dạng', value: entry.format.toUpperCase()),
                 _InfoRow(
-                  label: 'Trạng thái',
-                  value: exists ? 'Sẵn sàng' : 'File đã bị xóa',
+                  label: context.l10n.exportDetailTime,
+                  value: createdAt,
+                ),
+                _InfoRow(
+                  label: context.l10n.exportDetailFormat,
+                  value: entry.format.toUpperCase(),
+                ),
+                _InfoRow(
+                  label: context.l10n.exportDetailStatus,
+                  value: exists
+                      ? context.l10n.exportDetailReady
+                      : context.l10n.exportDetailMissing,
                   valueColor: exists ? AppTheme.success : AppTheme.danger,
                 ),
               ],
             ),
             const SizedBox(height: 16),
             _InfoSection(
-              title: 'Cấu hình dữ liệu',
+              title: context.l10n.exportDetailDataConfig,
               items: [
-                _InfoRow(label: 'Thời gian dữ liệu', value: entry.dateRange),
-                _InfoRow(label: 'Các nhóm dữ liệu', value: entry.dataTypes.join(', ')),
+                _InfoRow(
+                  label: context.l10n.exportDetailDataRange,
+                  value: entry.dateRange,
+                ),
+                _InfoRow(
+                  label: context.l10n.exportDetailDataGroups,
+                  value: localizedExportDataTypeList(context, entry.dataTypes),
+                ),
               ],
             ),
             const SizedBox(height: 16),
             _InfoSection(
-              title: 'Đường dẫn lưu trữ',
+              title: context.l10n.exportDetailStoragePath,
               items: [
                 _InfoRow(
-                  label: 'Vị trí',
+                  label: context.l10n.exportDetailLocation,
                   value: entry.path,
                   isLongText: true,
                 ),
@@ -64,13 +80,14 @@ class ExportDetailScreen extends ConsumerWidget {
               FilledButton.icon(
                 onPressed: () => ref.read(fileActionServiceProvider).open(file),
                 icon: const Icon(Icons.open_in_new),
-                label: const Text('Mở xem file ngay'),
+                label: Text(context.l10n.exportDetailOpenFile),
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
-                onPressed: () => ref.read(fileActionServiceProvider).share(file),
+                onPressed: () =>
+                    ref.read(fileActionServiceProvider).share(file),
                 icon: const Icon(Icons.share_outlined),
-                label: const Text('Chia sẻ qua Email / Zalo'),
+                label: Text(context.l10n.exportDetailShareFile),
               ),
             ] else
               Container(
@@ -78,11 +95,13 @@ class ExportDetailScreen extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: AppTheme.danger.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppTheme.danger.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: AppTheme.danger.withValues(alpha: 0.3),
+                  ),
                 ),
-                child: const Text(
-                  'Tệp tin này không còn tồn tại trên thiết bị. Bạn có thể thực hiện xuất lại dữ liệu với các bộ lọc tương tự.',
-                  style: TextStyle(color: AppTheme.danger),
+                child: Text(
+                  context.l10n.exportDetailMissingMessage,
+                  style: const TextStyle(color: AppTheme.danger),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -121,14 +140,16 @@ class _DetailHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Xuất dữ liệu thành công',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        Text(
+          context.l10n.exportDetailSuccessTitle,
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         Text(
-          'Moniary Financial Report',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white54),
+          context.l10n.exportDetailReportSubtitle,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: Colors.white54),
         ),
       ],
     );
@@ -191,18 +212,27 @@ class _InfoRow extends StatelessWidget {
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(color: Colors.white54, fontSize: 13)),
+                Text(
+                  label,
+                  style: const TextStyle(color: Colors.white54, fontSize: 13),
+                ),
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: TextStyle(color: valueColor ?? Colors.white70, fontSize: 12),
+                  style: TextStyle(
+                    color: valueColor ?? Colors.white70,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             )
           : Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(label, style: const TextStyle(color: Colors.white54, fontSize: 13)),
+                Text(
+                  label,
+                  style: const TextStyle(color: Colors.white54, fontSize: 13),
+                ),
                 const SizedBox(width: 16),
                 Flexible(
                   child: Text(

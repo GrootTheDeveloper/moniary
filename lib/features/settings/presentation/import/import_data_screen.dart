@@ -11,6 +11,9 @@ import 'package:moniary/shared/utils/app_logger.dart';
 import 'package:moniary/shared/utils/currency_formatter.dart';
 import 'package:intl/intl.dart';
 
+import 'import_history_screen.dart';
+import '../../domain/import/import_history_entry.dart';
+
 class ImportDataScreen extends ConsumerStatefulWidget {
   const ImportDataScreen({super.key});
 
@@ -108,6 +111,8 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                     : Text(context.l10n.importConfirm),
               ),
             ],
+            const SizedBox(height: 24),
+            _RecentImportsSection(),
           ],
         ),
       ),
@@ -284,5 +289,66 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
       );
       context.pop();
     }
+  }
+}
+
+class _RecentImportsSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final historyAsync = ref.watch(importHistoryProvider);
+
+    return historyAsync.when(
+      data: (items) {
+        if (items.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  context.l10n.importRecentTitle,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => context.push(ImportHistoryScreen.routePath),
+                  child: Text(context.l10n.commonViewAll),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ...items.take(3).map((item) => _RecentImportTile(entry: item)),
+          ],
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (e, st) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _RecentImportTile extends StatelessWidget {
+  const _RecentImportTile({required this.entry});
+  final ImportHistoryEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: const Icon(Icons.download_done, color: AppTheme.mint),
+      title: Text(
+        entry.fileName,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(DateFormat('dd/MM/yyyy').format(entry.createdAt)),
+      trailing: const Icon(Icons.chevron_right, color: Colors.white54),
+      onTap: () {
+        context.push(ImportHistoryScreen.detailRoutePath, extra: entry);
+      },
+    );
   }
 }

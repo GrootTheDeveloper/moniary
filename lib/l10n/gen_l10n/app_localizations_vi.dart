@@ -48,6 +48,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get commonOpen => 'Mở';
 
   @override
+  String get commonViewAll => 'Xem tất cả';
+
+  @override
   String get commonSelect => 'Chọn';
 
   @override
@@ -954,6 +957,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get exportDataTypes => 'Loại dữ liệu';
 
   @override
+  String get exportDataTypeTransactions => 'Giao dịch';
+
+  @override
+  String get exportDataTypeWallets => 'Ví';
+
+  @override
+  String get exportDataTypeCategories => 'Danh mục';
+
+  @override
   String get exportButton => 'Xuất dữ liệu';
 
   @override
@@ -964,6 +976,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get exportHistoryEmpty => 'Chưa có file export nào.';
+
+  @override
+  String get exportRecentTitle => 'Lần xuất gần đây';
 
   @override
   String get manageDataTitle => 'Quản lý dữ liệu';
@@ -1097,6 +1112,39 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get exportCreateSupportRequest => 'Tạo yêu cầu hỗ trợ';
+
+  @override
+  String get exportTroubleshootingHero =>
+      'Hướng dẫn này giúp xử lý nhanh khi file CSV, Excel hoặc PDF không có dữ liệu, không mở được hoặc không tìm thấy sau khi export.';
+
+  @override
+  String get exportTroubleshootingTypeTitle =>
+      '1. Kiểm tra loại dữ liệu đã chọn';
+
+  @override
+  String get exportTroubleshootingTypeDesc =>
+      'Nếu file trống, hãy kiểm tra bạn đã chọn Giao dịch, Ví hoặc Danh mục trong bộ lọc export.';
+
+  @override
+  String get exportTroubleshootingDateTitle => '2. Kiểm tra khoảng ngày';
+
+  @override
+  String get exportTroubleshootingDateDesc =>
+      'Nếu chọn khoảng ngày quá hẹp, file có thể không có giao dịch phù hợp.';
+
+  @override
+  String get exportTroubleshootingHistoryTitle => '3. Mở lại từ lịch sử export';
+
+  @override
+  String get exportTroubleshootingHistoryDesc =>
+      'Sau khi tạo file, vào lịch sử export để mở lại đường dẫn file và chia sẻ khi cần.';
+
+  @override
+  String get exportTroubleshootingSupportTitle => '4. Tạo request hỗ trợ';
+
+  @override
+  String get exportTroubleshootingSupportDesc =>
+      'Nếu file không tạo được hoặc không mở được, hãy tạo request privacy/support kèm mô tả lỗi.';
 
   @override
   String get legalDataDeletionPolicy => 'Chính sách xóa dữ liệu';
@@ -1288,6 +1336,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get importConfirm => 'Xác nhận nhập';
 
   @override
+  String get importRecentTitle => 'Lần nạp gần đây';
+
+  @override
   String get importViewHistory => 'Xem lịch sử nạp';
 
   @override
@@ -1439,12 +1490,21 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get exportFormatCsvLabel => 'CSV';
+
+  @override
   String get exportFormatCsvDesc =>
       'Bảng dữ liệu nhẹ, mở được bằng Excel hoặc Google Sheets.';
 
   @override
+  String get exportFormatXlsxLabel => 'Excel';
+
+  @override
   String get exportFormatXlsxDesc =>
       'Workbook .xlsx cho Excel, Sheets hoặc WPS Office.';
+
+  @override
+  String get exportFormatPdfLabel => 'PDF';
 
   @override
   String get exportFormatPdfDesc =>
@@ -1460,6 +1520,58 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get exportNoAppToOpen => 'Chưa tìm thấy app phù hợp để mở file.';
+
+  @override
+  String get exportDetailTitle => 'Chi tiết bản xuất';
+
+  @override
+  String get exportDetailFileInfo => 'Thông tin file';
+
+  @override
+  String get exportDetailTime => 'Thời gian';
+
+  @override
+  String get exportDetailFormat => 'Định dạng';
+
+  @override
+  String get exportDetailStatus => 'Trạng thái';
+
+  @override
+  String get exportDetailReady => 'Sẵn sàng';
+
+  @override
+  String get exportDetailMissing => 'File đã bị xóa';
+
+  @override
+  String get exportDetailDataConfig => 'Cấu hình dữ liệu';
+
+  @override
+  String get exportDetailDataRange => 'Thời gian dữ liệu';
+
+  @override
+  String get exportDetailDataGroups => 'Các nhóm dữ liệu';
+
+  @override
+  String get exportDetailStoragePath => 'Đường dẫn lưu trữ';
+
+  @override
+  String get exportDetailLocation => 'Vị trí';
+
+  @override
+  String get exportDetailOpenFile => 'Mở xem file ngay';
+
+  @override
+  String get exportDetailShareFile => 'Chia sẻ qua Email / Zalo';
+
+  @override
+  String get exportDetailMissingMessage =>
+      'Tệp tin này không còn tồn tại trên thiết bị. Bạn có thể thực hiện xuất lại dữ liệu với các bộ lọc tương tự.';
+
+  @override
+  String get exportDetailSuccessTitle => 'Xuất dữ liệu thành công';
+
+  @override
+  String get exportDetailReportSubtitle => 'Moniary Financial Report';
 
   @override
   String get commonComingSoon => 'Sắp có';

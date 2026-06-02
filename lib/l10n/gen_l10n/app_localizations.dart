@@ -176,6 +176,12 @@ abstract class AppLocalizations {
   /// **'Mở'**
   String get commonOpen;
 
+  /// No description provided for @commonViewAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem tất cả'**
+  String get commonViewAll;
+
   /// No description provided for @commonSelect.
   ///
   /// In vi, this message translates to:
@@ -1838,6 +1844,24 @@ abstract class AppLocalizations {
   /// **'Loại dữ liệu'**
   String get exportDataTypes;
 
+  /// No description provided for @exportDataTypeTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch'**
+  String get exportDataTypeTransactions;
+
+  /// No description provided for @exportDataTypeWallets.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví'**
+  String get exportDataTypeWallets;
+
+  /// No description provided for @exportDataTypeCategories.
+  ///
+  /// In vi, this message translates to:
+  /// **'Danh mục'**
+  String get exportDataTypeCategories;
+
   /// No description provided for @exportButton.
   ///
   /// In vi, this message translates to:
@@ -1861,6 +1885,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa có file export nào.'**
   String get exportHistoryEmpty;
+
+  /// No description provided for @exportRecentTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lần xuất gần đây'**
+  String get exportRecentTitle;
 
   /// No description provided for @manageDataTitle.
   ///
@@ -2107,6 +2137,60 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Tạo yêu cầu hỗ trợ'**
   String get exportCreateSupportRequest;
+
+  /// No description provided for @exportTroubleshootingHero.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hướng dẫn này giúp xử lý nhanh khi file CSV, Excel hoặc PDF không có dữ liệu, không mở được hoặc không tìm thấy sau khi export.'**
+  String get exportTroubleshootingHero;
+
+  /// No description provided for @exportTroubleshootingTypeTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'1. Kiểm tra loại dữ liệu đã chọn'**
+  String get exportTroubleshootingTypeTitle;
+
+  /// No description provided for @exportTroubleshootingTypeDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nếu file trống, hãy kiểm tra bạn đã chọn Giao dịch, Ví hoặc Danh mục trong bộ lọc export.'**
+  String get exportTroubleshootingTypeDesc;
+
+  /// No description provided for @exportTroubleshootingDateTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'2. Kiểm tra khoảng ngày'**
+  String get exportTroubleshootingDateTitle;
+
+  /// No description provided for @exportTroubleshootingDateDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nếu chọn khoảng ngày quá hẹp, file có thể không có giao dịch phù hợp.'**
+  String get exportTroubleshootingDateDesc;
+
+  /// No description provided for @exportTroubleshootingHistoryTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'3. Mở lại từ lịch sử export'**
+  String get exportTroubleshootingHistoryTitle;
+
+  /// No description provided for @exportTroubleshootingHistoryDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sau khi tạo file, vào lịch sử export để mở lại đường dẫn file và chia sẻ khi cần.'**
+  String get exportTroubleshootingHistoryDesc;
+
+  /// No description provided for @exportTroubleshootingSupportTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'4. Tạo request hỗ trợ'**
+  String get exportTroubleshootingSupportTitle;
+
+  /// No description provided for @exportTroubleshootingSupportDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nếu file không tạo được hoặc không mở được, hãy tạo request privacy/support kèm mô tả lỗi.'**
+  String get exportTroubleshootingSupportDesc;
 
   /// No description provided for @legalDataDeletionPolicy.
   ///
@@ -2480,6 +2564,12 @@ abstract class AppLocalizations {
   /// **'Xác nhận nhập'**
   String get importConfirm;
 
+  /// No description provided for @importRecentTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lần nạp gần đây'**
+  String get importRecentTitle;
+
   /// No description provided for @importViewHistory.
   ///
   /// In vi, this message translates to:
@@ -2744,17 +2834,35 @@ abstract class AppLocalizations {
   /// **'Mật khẩu phải từ {min} ký tự'**
   String validationPasswordMinLength(int min);
 
+  /// No description provided for @exportFormatCsvLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'CSV'**
+  String get exportFormatCsvLabel;
+
   /// No description provided for @exportFormatCsvDesc.
   ///
   /// In vi, this message translates to:
   /// **'Bảng dữ liệu nhẹ, mở được bằng Excel hoặc Google Sheets.'**
   String get exportFormatCsvDesc;
 
+  /// No description provided for @exportFormatXlsxLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Excel'**
+  String get exportFormatXlsxLabel;
+
   /// No description provided for @exportFormatXlsxDesc.
   ///
   /// In vi, this message translates to:
   /// **'Workbook .xlsx cho Excel, Sheets hoặc WPS Office.'**
   String get exportFormatXlsxDesc;
+
+  /// No description provided for @exportFormatPdfLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'PDF'**
+  String get exportFormatPdfLabel;
 
   /// No description provided for @exportFormatPdfDesc.
   ///
@@ -2779,6 +2887,108 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa tìm thấy app phù hợp để mở file.'**
   String get exportNoAppToOpen;
+
+  /// No description provided for @exportDetailTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiết bản xuất'**
+  String get exportDetailTitle;
+
+  /// No description provided for @exportDetailFileInfo.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông tin file'**
+  String get exportDetailFileInfo;
+
+  /// No description provided for @exportDetailTime.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thời gian'**
+  String get exportDetailTime;
+
+  /// No description provided for @exportDetailFormat.
+  ///
+  /// In vi, this message translates to:
+  /// **'Định dạng'**
+  String get exportDetailFormat;
+
+  /// No description provided for @exportDetailStatus.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trạng thái'**
+  String get exportDetailStatus;
+
+  /// No description provided for @exportDetailReady.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sẵn sàng'**
+  String get exportDetailReady;
+
+  /// No description provided for @exportDetailMissing.
+  ///
+  /// In vi, this message translates to:
+  /// **'File đã bị xóa'**
+  String get exportDetailMissing;
+
+  /// No description provided for @exportDetailDataConfig.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cấu hình dữ liệu'**
+  String get exportDetailDataConfig;
+
+  /// No description provided for @exportDetailDataRange.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thời gian dữ liệu'**
+  String get exportDetailDataRange;
+
+  /// No description provided for @exportDetailDataGroups.
+  ///
+  /// In vi, this message translates to:
+  /// **'Các nhóm dữ liệu'**
+  String get exportDetailDataGroups;
+
+  /// No description provided for @exportDetailStoragePath.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đường dẫn lưu trữ'**
+  String get exportDetailStoragePath;
+
+  /// No description provided for @exportDetailLocation.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vị trí'**
+  String get exportDetailLocation;
+
+  /// No description provided for @exportDetailOpenFile.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở xem file ngay'**
+  String get exportDetailOpenFile;
+
+  /// No description provided for @exportDetailShareFile.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ qua Email / Zalo'**
+  String get exportDetailShareFile;
+
+  /// No description provided for @exportDetailMissingMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tệp tin này không còn tồn tại trên thiết bị. Bạn có thể thực hiện xuất lại dữ liệu với các bộ lọc tương tự.'**
+  String get exportDetailMissingMessage;
+
+  /// No description provided for @exportDetailSuccessTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất dữ liệu thành công'**
+  String get exportDetailSuccessTitle;
+
+  /// No description provided for @exportDetailReportSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Moniary Financial Report'**
+  String get exportDetailReportSubtitle;
 
   /// No description provided for @commonComingSoon.
   ///

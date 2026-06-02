@@ -10,6 +10,7 @@ import '../../../../shared/utils/error_helpers.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../../domain/export/export_history_entry.dart';
 import 'export_detail_screen.dart';
+import 'export_l10n_helpers.dart';
 
 class ExportHistoryScreen extends ConsumerWidget {
   const ExportHistoryScreen({super.key});
@@ -28,7 +29,7 @@ class ExportHistoryScreen extends ConsumerWidget {
             if (items.isEmpty) {
               return Center(
                 child: Text(
-                  'Chưa có file export nào.',
+                  context.l10n.exportHistoryEmpty,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               );
@@ -83,10 +84,13 @@ class _HistoryTile extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(createdAt, style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      createdAt,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 4),
                     Text(
-                      entry.dataTypes.join(', '),
+                      localizedExportDataTypeList(context, entry.dataTypes),
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 2),

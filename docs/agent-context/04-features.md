@@ -52,6 +52,7 @@
 - **Security Features**: Biometric App Lock (FaceID/TouchID) and Hide Balances mode.
 - **Automated Reports**: Uses Supabase Edge Functions + Resend API to send scheduled email reports (Daily/Weekly/Monthly/Yearly).
 - **Repository**: `AccountRepository` (handles exports, privacy requests, file actions), `ImportRepository` (handles CSV import and local import history), `PrivacyRepository` (handles Biometric state in SharedPreferences), `NotificationSettingsRepository` (handles email report frequency). Export history and import history are stored locally in JSON format.
+- **Export History**: Exported data type selections are stored as stable technical keys (`transactions`, `wallets`, `categories`) and localized only in presentation screens.
 - **Import History**: CSV imports create a local history entry before transaction creation starts (`pending`), update it to `completed` with the imported count on success, and mark it `failed` with the partial imported count if the import fails.
 
 ## Feature: Profile
