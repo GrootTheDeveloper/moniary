@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../data/export/file_action_service.dart';
 import '../../domain/export/export_history_entry.dart';
+import 'export_file_actions.dart';
 import 'export_l10n_helpers.dart';
 
 class ExportDetailScreen extends ConsumerWidget {
@@ -78,14 +78,13 @@ class ExportDetailScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             if (exists) ...[
               FilledButton.icon(
-                onPressed: () => ref.read(fileActionServiceProvider).open(file),
+                onPressed: () => openExportFile(context, ref, file),
                 icon: const Icon(Icons.open_in_new),
                 label: Text(context.l10n.exportDetailOpenFile),
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
-                onPressed: () =>
-                    ref.read(fileActionServiceProvider).share(file),
+                onPressed: () => shareExportFile(context, ref, file),
                 icon: const Icon(Icons.share_outlined),
                 label: Text(context.l10n.exportDetailShareFile),
               ),

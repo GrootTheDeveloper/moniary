@@ -9,11 +9,11 @@ import '../../../../app/app_theme.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../application/account/account_actions_controller.dart';
-import '../../data/export/file_action_service.dart';
 import '../../domain/export/export_filters.dart';
 import '../../domain/export/export_history_entry.dart';
 import '../widgets/recent_history_error_card.dart';
 import 'export_detail_screen.dart';
+import 'export_file_actions.dart';
 import 'export_history_screen.dart';
 import 'export_l10n_helpers.dart';
 
@@ -151,7 +151,7 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
       return;
     }
 
-    await ref.read(fileActionServiceProvider).open(file);
+    await openExportFile(context, ref, file);
     if (!mounted) {
       return;
     }
@@ -161,7 +161,7 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
         content: Text(context.l10n.exportDone),
         action: SnackBarAction(
           label: context.l10n.commonShare,
-          onPressed: () => ref.read(fileActionServiceProvider).share(file),
+          onPressed: () => shareExportFile(context, ref, file),
         ),
       ),
     );
