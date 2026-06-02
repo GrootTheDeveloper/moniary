@@ -88,7 +88,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
 
             if (importState.parsedRows.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _buildWalletSelector(context, walletsAsync),
+              _buildWalletSelector(context, ref, walletsAsync),
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: _selectedWallet == null || importState.isImporting
@@ -150,6 +150,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
 
   Widget _buildWalletSelector(
     BuildContext context,
+    WidgetRef ref,
     AsyncValue<List<Wallet>> walletsAsync,
   ) {
     return walletsAsync.when(
@@ -190,9 +191,9 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Text(
-        context.l10n.importErrorWallets(e.toString()),
-        style: const TextStyle(color: Colors.red),
+      error: (e, _) => _WalletLoadErrorCard(
+        message: context.l10n.importErrorWallets(context.l10n.errorGeneric),
+        onRetry: () => ref.invalidate(walletsControllerProvider),
       ),
     );
   }
@@ -290,6 +291,41 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
       );
       context.pop();
     }
+  }
+}
+
+class _WalletLoadErrorCard extends StatelessWidget {
+  const _WalletLoadErrorCard({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.danger.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.danger.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.error_outline, color: AppTheme.danger, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppTheme.danger),
+            ),
+          ),
+          TextButton(onPressed: onRetry, child: Text(context.l10n.commonRetry)),
+        ],
+      ),
+    );
   }
 }
 
