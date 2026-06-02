@@ -84,15 +84,8 @@ class ImportRepository {
         final categoryStr = row[3].toString().trim();
         final noteStr = row[4].toString().trim();
 
-        DateTime? parsedDate;
-        try {
-          parsedDate = DateTime.parse(dateStr);
-        } catch (_) {}
-
-        double? parsedAmount;
-        try {
-          parsedAmount = double.parse(amountStr);
-        } catch (_) {}
+        final parsedDate = DateTime.tryParse(dateStr);
+        final parsedAmount = double.tryParse(amountStr);
 
         final isTypeValid = _isSupportedType(typeStr);
         final isValid =
