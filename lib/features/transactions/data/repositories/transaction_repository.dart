@@ -76,7 +76,9 @@ class TransactionRepository {
       return 'mock-user-id';
     }
     final uid = _client.auth.currentSession?.user.id;
-    if (uid == null) throw const AppException('Bạn chưa đăng nhập.');
+    if (uid == null) {
+      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
+    }
     return uid;
   }
 
@@ -179,7 +181,10 @@ class TransactionRepository {
     if (!AppConstants.hasSupabaseConfig) {
       return _mockTransactions.firstWhere(
         (t) => t.id == transactionId,
-        orElse: () => throw const AppException('Giao dịch không tồn tại.'),
+        orElse: () => throw const AppException(
+          'Transaction not found',
+          code: 'NOT_FOUND',
+        ),
       );
     }
     try {

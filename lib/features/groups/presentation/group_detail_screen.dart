@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/currency_formatter.dart';
 import '../application/group_controller.dart';
@@ -27,8 +28,10 @@ class GroupDetailScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(context.l10n.groupDetailTitle)),
       body: groupsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) =>
-            Center(child: Text(context.l10n.groupLoadSingleError)),
+        error: (error, stackTrace) {
+          AppLogger.error('Failed to load group detail', error, stackTrace);
+          return Center(child: Text(context.l10n.groupLoadSingleError));
+        },
         data: (groups) {
           final matching = groups.where((group) => group.id == groupId);
           if (matching.isEmpty) {
@@ -112,10 +115,13 @@ class _GroupDetailBody extends ConsumerWidget {
         const SizedBox(height: 12),
         expensesAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stackTrace) => Text(
-            context.l10n.groupLoadExpensesError,
-            style: const TextStyle(color: AppTheme.danger),
-          ),
+          error: (error, stackTrace) {
+            AppLogger.error('Failed to load group expenses', error, stackTrace);
+            return Text(
+              context.l10n.groupLoadExpensesError,
+              style: const TextStyle(color: AppTheme.danger),
+            );
+          },
           data: (expenses) => expenses.isEmpty
               ? const _ExpenseEmptyState()
               : Column(

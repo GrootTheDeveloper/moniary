@@ -295,6 +295,10 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
       return;
     }
 
+    if (count == null) {
+      return;
+    }
+
     final latestState = ref.read(importControllerProvider);
     if (latestState.error != null) {
       return;

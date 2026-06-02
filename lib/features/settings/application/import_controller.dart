@@ -93,7 +93,7 @@ class ImportController extends Notifier<ImportState> {
     }
   }
 
-  Future<int> confirmImport(Wallet targetWallet) async {
+  Future<int?> confirmImport(Wallet targetWallet) async {
     state = state.copyWith(isImporting: true, error: () => null);
     final importRepo = ref.read(importRepositoryProvider);
     ImportHistoryEntry? historyEntry;
@@ -169,7 +169,7 @@ class ImportController extends Notifier<ImportState> {
         isImporting: false,
         error: () => e.code ?? 'IMPORT_FAILED',
       );
-      return 0;
+      return null;
     } catch (e, st) {
       await _failImportHistory(
         importRepo: importRepo,
@@ -179,7 +179,7 @@ class ImportController extends Notifier<ImportState> {
       );
       AppLogger.error('Import failed', e, st);
       state = state.copyWith(isImporting: false, error: () => 'IMPORT_FAILED');
-      return 0;
+      return null;
     }
   }
 

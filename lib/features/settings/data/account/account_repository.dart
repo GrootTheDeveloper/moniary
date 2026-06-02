@@ -262,7 +262,7 @@ class AccountRepository {
     }
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw const AppException('Bạn chưa đăng nhập.');
+      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
     }
 
     final userId = session.user.id;
@@ -318,7 +318,7 @@ class AccountRepository {
     }
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw const AppException('Bạn chưa đăng nhập.');
+      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
     }
 
     await _client.functions.invoke('delete-account');
@@ -332,7 +332,7 @@ class AccountRepository {
     }
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw const AppException('Bạn chưa đăng nhập.');
+      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
     }
 
     await _client.functions.invoke('soft-delete-account');
@@ -344,7 +344,7 @@ class AccountRepository {
 
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw const AppException('Bạn chưa đăng nhập.');
+      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
     }
 
     await _client
@@ -384,7 +384,7 @@ class AccountRepository {
     if (!AppConstants.hasSupabaseConfig) return;
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw const AppException('Bạn chưa đăng nhập.');
+      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
     }
     await _client.rpc('revoke_session', params: {'session_id': sessionId});
   }
@@ -405,7 +405,7 @@ class AccountRepository {
 
     final session = _client.auth.currentSession;
     if (session == null) {
-      throw const AppException('Bạn chưa đăng nhập.');
+      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
     }
 
     final response = await _client.rpc('get_active_sessions');
@@ -416,9 +416,13 @@ class AccountRepository {
   }
 
   Future<void> createDeletionRequest({required String reason}) async {
-    final session = _client.auth.currentSession;
-    if (session == null) {
-      throw const AppException('Bạn chưa đăng nhập.');
+    if (!AppConstants.hasSupabaseConfig) {
+      // Mock bypass
+    } else {
+      final session = _client.auth.currentSession;
+      if (session == null) {
+        throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
+      }
     }
 
     final timestamp = DateTime.now();
@@ -438,9 +442,13 @@ class AccountRepository {
     required String requestType,
     required String message,
   }) async {
-    final session = _client.auth.currentSession;
-    if (session == null) {
-      throw const AppException('Bạn chưa đăng nhập.');
+    if (!AppConstants.hasSupabaseConfig) {
+      // Mock bypass
+    } else {
+      final session = _client.auth.currentSession;
+      if (session == null) {
+        throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
+      }
     }
 
     final timestamp = DateTime.now();
@@ -476,7 +484,7 @@ class AccountRepository {
 
     final userId = _currentUserId ?? _client.auth.currentSession?.user.id;
     if (userId == null) {
-      throw const AppException('Bạn chưa đăng nhập.');
+      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
     }
     return userId;
   }

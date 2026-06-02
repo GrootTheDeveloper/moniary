@@ -24,22 +24,19 @@ class LegalContactScreen extends StatelessWidget {
               icon: Icons.privacy_tip_outlined,
               title: 'Privacy',
               value: AppConstants.privacyEmail,
-              description:
-                  'Yêu cầu dữ liệu cá nhân, xóa dữ liệu hoặc câu hỏi privacy.',
+              description: context.l10n.legalContactPrivacyDesc,
             ),
             _ContactCard(
               icon: Icons.support_agent_outlined,
               title: 'Support',
               value: AppConstants.supportEmail,
-              description:
-                  'Hỗ trợ chung về app, file export hoặc thao tác người dùng.',
+              description: context.l10n.legalContactSupportDesc,
             ),
             _ContactCard(
               icon: Icons.gavel_outlined,
               title: 'Legal',
               value: AppConstants.legalEmail,
-              description:
-                  'Vấn đề điều khoản, phát hành Store hoặc yêu cầu pháp lý.',
+              description: context.l10n.legalContactLegalDesc,
             ),
             const SizedBox(height: 4),
             FilledButton.icon(
@@ -79,7 +76,7 @@ class _LegalHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Các kênh liên hệ này giúp người dùng, reviewer hoặc team phát hành biết nơi gửi yêu cầu phù hợp.',
+        context.l10n.legalContactHero,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );

@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../shared/utils/app_logger.dart';
+import '../../../shared/utils/error_helpers.dart';
 import '../../categories/domain/models/category.dart';
 import '../../calendar/application/month/calendar_month_provider.dart';
 import '../../transactions/data/repositories/transaction_repository.dart';
@@ -70,8 +72,10 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         loading: () => const Center(
           child: CircularProgressIndicator(color: AppTheme.mint),
         ),
-        error: (error, _) =>
-            Center(child: Text('${context.l10n.errorGeneric}: $error')),
+        error: (error, stackTrace) {
+          AppLogger.error('Failed to load statistics', error, stackTrace);
+          return Center(child: Text(userFriendlyMessage(context, error)));
+        },
       ),
     );
   }

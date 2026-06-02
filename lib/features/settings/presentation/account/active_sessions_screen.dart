@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/app_logger.dart';
+import '../../../../shared/utils/error_helpers.dart';
 import '../../application/account/active_sessions_controller.dart';
 import '../../domain/account/active_session.dart';
 
@@ -39,20 +41,27 @@ class ActiveSessionsScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(context.l10n.activeSessionsError(error.toString())),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () =>
-                    ref.refresh(activeSessionsControllerProvider.future),
-                child: Text(context.l10n.commonRetry),
-              ),
-            ],
-          ),
-        ),
+        error: (error, stack) {
+          AppLogger.error('Failed to load active sessions', error, stack);
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  context.l10n.activeSessionsError(
+                    userFriendlyMessage(context, error),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () =>
+                      ref.refresh(activeSessionsControllerProvider.future),
+                  child: Text(context.l10n.commonRetry),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

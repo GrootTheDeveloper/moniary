@@ -70,15 +70,15 @@ class PrivacyRequestDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 _DetailTile(
                   icon: Icons.notes_outlined,
-                  title: 'Nội dung yêu cầu',
+                  title: context.l10n.privacyDetailContentTitle,
                   value: currentEntry.message.trim().isEmpty
-                      ? 'Không có nội dung bổ sung.'
+                      ? context.l10n.privacyDetailContentEmpty
                       : currentEntry.message.trim(),
                 ),
                 if (path != null)
                   _DetailTile(
                     icon: Icons.folder_outlined,
-                    title: 'File đã tạo',
+                    title: context.l10n.privacyDetailFileTitle,
                     value: path,
                   ),
               ],
@@ -127,7 +127,7 @@ class _DetailHero extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Tạo lúc $createdAt',
+            context.l10n.privacyDetailCreatedAt(createdAt),
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
@@ -199,12 +199,15 @@ class _DueDateTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Dự kiến phản hồi',
+                  context.l10n.privacyDetailExpectedResponse,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '$dueDate hoặc trong $privacyRequestResponseBusinessDays ngày làm việc sau khi gửi.',
+                  context.l10n.privacyDetailExpectedResponseDesc(
+                    dueDate,
+                    privacyRequestResponseBusinessDays,
+                  ),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -244,7 +247,7 @@ class _StatusActions extends StatelessWidget {
     return OutlinedButton.icon(
       onPressed: isBusy ? null : () => onStatusChange(nextStatus),
       icon: const Icon(Icons.task_alt_outlined),
-      label: Text('Đánh dấu: ${next.label}'),
+      label: Text(context.l10n.privacyDetailMarkStatus(next.label)),
     );
   }
 }
@@ -270,7 +273,9 @@ class _RequestCopyActions extends StatelessWidget {
             onPressed: () {
               Clipboard.setData(ClipboardData(text: path));
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(context.l10n.privacyCopyFilePathSuccess)),
+                SnackBar(
+                  content: Text(context.l10n.privacyCopyFilePathSuccess),
+                ),
               );
             },
             icon: const Icon(Icons.folder_copy_outlined),

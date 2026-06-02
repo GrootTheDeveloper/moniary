@@ -4,7 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/providers/camera_provider.dart';
+import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../domain/models/transaction_mutation_result.dart';
+
+enum _CameraError { permissionDenied, generic }
 
 class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({super.key});
@@ -37,7 +41,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
     }
   }
 
-  String? _errorMessage;
+  _CameraError? _cameraError;
 
   Future<void> _initializeCamera(
     List<CameraDescription> cameras, {
@@ -66,23 +70,22 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
         _isFlashOn ? FlashMode.torch : FlashMode.off,
       );
       setState(() {
-        _errorMessage = null;
+        _cameraError = null;
       });
     } catch (e) {
       if (mounted) {
         setState(() {
           if (e is CameraException && e.code == 'CameraAccessDenied') {
-            _errorMessage =
-                'Không thể kết nối Camera. Vui lòng cấp quyền trong Cài đặt.';
+            _cameraError = _CameraError.permissionDenied;
           } else if (e.toString().contains('disposed')) {
             // Ignore disposed errors from interrupted initializations
             return;
           } else {
-            _errorMessage = 'Lỗi khởi tạo Camera: ${e.toString()}';
+            _cameraError = _CameraError.generic;
           }
         });
       }
-      debugPrint('Error initializing camera: $e');
+      AppLogger.error('Error initializing camera', e);
     }
   }
 
@@ -127,8 +130,8 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
       if (result != null && mounted) {
         context.pop(result);
       }
-    } catch (e) {
-      debugPrint('Error taking picture: $e');
+    } catch (e, st) {
+      AppLogger.error('Error taking picture', e, st);
     }
   }
 
@@ -156,9 +159,17 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
     });
   }
 
+  String _cameraErrorMessage(BuildContext context, _CameraError error) {
+    return switch (error) {
+      _CameraError.permissionDenied => context.l10n.cameraNoPermission,
+      _CameraError.generic => context.l10n.errorGeneric,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_errorMessage != null) {
+    final cameraError = _cameraError;
+    if (cameraError != null) {
       return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
@@ -172,7 +183,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
           child: Padding(
             padding: const EdgeInsets.all(32),
             child: Text(
-              _errorMessage!,
+              _cameraErrorMessage(context, cameraError),
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.redAccent, fontSize: 16),
             ),
@@ -216,8 +227,8 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                     icon: const Icon(Icons.close, color: Colors.white),
                     onPressed: () => context.pop(),
                   ),
-                  const Text(
-                    'Chụp hóa đơn',
+                  Text(
+                    context.l10n.cameraTitle,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -293,7 +304,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                   // OCR Scan Button
                   _buildBottomActionButton(
                     icon: Icons.document_scanner_outlined,
-                    label: 'Quét OCR',
+                    label: context.l10n.cameraOcrScan,
                     onTap:
                         _takePicture, // Will capture image, OCR logic can be injected here later
                   ),
@@ -324,7 +335,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                   // Gallery Pick Button
                   _buildBottomActionButton(
                     icon: Icons.photo_library_outlined,
-                    label: 'Thư viện',
+                    label: context.l10n.cameraGallery,
                     onTap: _pickFromAlbum,
                   ),
                 ],

@@ -63,6 +63,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorNotLoggedIn => 'You are not logged in.';
 
   @override
+  String get errorNotFound => 'Data not found.';
+
+  @override
   String get errorConnection => 'Connection error. Please try again.';
 
   @override
@@ -993,7 +996,125 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cameraFlip => 'Flip camera';
 
   @override
-  String get cameraNoPermission => 'Camera access required.';
+  String get cameraNoPermission => 'No camera permission';
+
+  @override
+  String get cameraTitle => 'Take a photo of receipt';
+
+  @override
+  String get cameraOcrScan => 'OCR Scan';
+
+  @override
+  String get cameraGallery => 'Gallery';
+
+  @override
+  String get accountDeletionRequestTitle => 'Data Deletion Request';
+
+  @override
+  String get accountDeletionRequestDesc =>
+      'Use this option when you cannot delete your account directly in the app. Moniary will create a request file for you to send to privacy support.';
+
+  @override
+  String get accountDeletionRequestReasonLabel =>
+      'Reason or notes for the request';
+
+  @override
+  String get accountDeletionRequestReasonHint =>
+      'Example: I no longer use the app and want to delete all data.';
+
+  @override
+  String get accountDeletionRequestSubmit => 'Create data deletion request';
+
+  @override
+  String get accountDeletionRequestSuccessDesc =>
+      'Your request has been successfully sent to the system.';
+
+  @override
+  String get deleteAccountHelpTitle => 'Account Deletion Help';
+
+  @override
+  String get deleteAccountHelpHero =>
+      'Deleting an account is a major action. This guide helps users prepare data and know how to send support requests when needed.';
+
+  @override
+  String get deleteAccountHelpStep1Title => '1. Export data before deleting';
+
+  @override
+  String get deleteAccountHelpStep1Desc =>
+      'After deleting the account, app data linked to the current user may not be recoverable. Export CSV, Excel, or PDF first if you need a copy.';
+
+  @override
+  String get deleteAccountHelpStep2Title => '2. Check transaction images';
+
+  @override
+  String get deleteAccountHelpStep2Desc =>
+      'Transaction images are processed along with account data. Download or save necessary files before deleting.';
+
+  @override
+  String get deleteAccountHelpStep3Title => '3. Confirm carefully in the app';
+
+  @override
+  String get deleteAccountHelpStep3Desc =>
+      'The account deletion flow requires strong confirmation to avoid accidental actions.';
+
+  @override
+  String get deleteAccountHelpStep4Title => '4. Use fallback if deletion fails';
+
+  @override
+  String get deleteAccountHelpStep4Desc =>
+      'If direct action fails, create a manual data deletion request file and attach an error description to the support channel.';
+
+  @override
+  String get deleteAccountHelpExportBefore => 'Export data first';
+
+  @override
+  String get deleteAccountHelpCreateRequest => 'Create data deletion request';
+
+  @override
+  String get deleteAccountHelpContactPrivacy => 'Contact privacy support';
+
+  @override
+  String get legalContactHero =>
+      'These contact channels help users, reviewers, or the release team know where to send appropriate requests.';
+
+  @override
+  String get legalContactPrivacyDesc =>
+      'Personal data requests, data deletion, or privacy questions.';
+
+  @override
+  String get legalContactSupportDesc =>
+      'General app support, file export, or user actions.';
+
+  @override
+  String get legalContactLegalDesc =>
+      'Terms issues, Store releases, or legal requests.';
+
+  @override
+  String privacyDetailCreatedAt(String date) {
+    return 'Created at $date';
+  }
+
+  @override
+  String get privacyDetailExpectedResponse => 'Expected response';
+
+  @override
+  String privacyDetailExpectedResponseDesc(String date, int days) {
+    return '$date or within $days business days after submission.';
+  }
+
+  @override
+  String privacyDetailMarkStatus(String status) {
+    return 'Mark as: $status';
+  }
+
+  @override
+  String get privacyDetailContentTitle => 'Request content';
+
+  @override
+  String get privacyDetailContentEmpty => 'No additional content.';
+
+  @override
+  String get privacyDetailFileTitle => 'Created file';
 
   @override
   String get routeNotFound => 'Page not found';

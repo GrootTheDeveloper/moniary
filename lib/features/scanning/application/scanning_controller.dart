@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../shared/utils/app_logger.dart';
 
 import '../data/mock_ocr_service.dart';
 import '../data/ocr_service.dart';
@@ -79,7 +80,8 @@ class ScanningController extends Notifier<ScanningState> {
         result: result,
       );
       return result;
-    } catch (_) {
+    } catch (e, st) {
+      AppLogger.error('Failed to extract text from image', e, st);
       state = ScanningState(
         status: ScanningStatus.failure,
         imagePath: imagePath,

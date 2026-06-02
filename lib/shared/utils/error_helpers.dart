@@ -10,6 +10,8 @@ String userFriendlyMessage(BuildContext context, Object error) {
     switch (error.code) {
       case 'AUTH_REQUIRED':
         return l10n.errorNotLoggedIn;
+      case 'NOT_FOUND':
+        return l10n.errorNotFound;
     }
 
     switch (error.message) {

@@ -12,6 +12,7 @@ import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../categories/domain/models/category.dart';
 import '../../../categories/application/categories_controller.dart';
@@ -200,11 +201,16 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
           backgroundColor: AppTheme.success,
         ),
       );
-    } catch (error) {
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to extract OCR data in transaction form',
+        error,
+        stackTrace,
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Không thể đọc hóa đơn. Vui lòng thử lại: $error'),
+          content: Text(userFriendlyMessage(context, error)),
           backgroundColor: AppTheme.danger,
         ),
       );

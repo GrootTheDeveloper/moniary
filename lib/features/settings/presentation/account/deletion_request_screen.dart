@@ -42,7 +42,7 @@ class _DeletionRequestScreenState extends ConsumerState<DeletionRequestScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Yêu cầu xóa dữ liệu')),
+      appBar: AppBar(title: Text(context.l10n.accountDeletionRequestTitle)),
       body: SafeArea(
         child: Stack(
           children: [
@@ -57,7 +57,7 @@ class _DeletionRequestScreenState extends ConsumerState<DeletionRequestScreen> {
                     border: Border.all(color: AppTheme.outline),
                   ),
                   child: Text(
-                    'Dùng lựa chọn này khi không thể xóa tài khoản trực tiếp trong app. Moniary sẽ tạo một file yêu cầu để bạn gửi cho kênh hỗ trợ quyền riêng tư.',
+                    context.l10n.accountDeletionRequestDesc,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
@@ -66,17 +66,16 @@ class _DeletionRequestScreenState extends ConsumerState<DeletionRequestScreen> {
                   controller: _reasonController,
                   minLines: 4,
                   maxLines: 6,
-                  decoration: const InputDecoration(
-                    labelText: 'Lý do hoặc ghi chú cho yêu cầu',
-                    hintText:
-                        'Ví dụ: Tôi không còn sử dụng app và muốn xóa toàn bộ dữ liệu.',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.accountDeletionRequestReasonLabel,
+                    hintText: context.l10n.accountDeletionRequestReasonHint,
                   ),
                 ),
                 const SizedBox(height: 16),
                 FilledButton.icon(
                   onPressed: state.isLoading ? null : _createRequest,
                   icon: const Icon(Icons.description_outlined),
-                  label: const Text('Tạo yêu cầu xóa dữ liệu'),
+                  label: Text(context.l10n.accountDeletionRequestSubmit),
                 ),
               ],
             ),
@@ -107,9 +106,7 @@ class _DeletionRequestScreenState extends ConsumerState<DeletionRequestScreen> {
     // The requirement says "Dùng lựa chọn này khi không thể xóa tài khoản trực tiếp trong app".
     // Actually, "requestSoftDelete" IS deleting the account directly (soft delete).
 
-    await notifier.createDeletionRequest(
-      reason: _reasonController.text,
-    );
+    await notifier.createDeletionRequest(reason: _reasonController.text);
 
     // If not mock mode and it succeeded, the user will be logged out by the repository
     // but we also want to trigger soft delete on the server.
@@ -123,9 +120,7 @@ class _DeletionRequestScreenState extends ConsumerState<DeletionRequestScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(context.l10n.privacyRequestCreated),
-        content: const Text(
-          'Yêu cầu của bạn đã được gửi thành công đến hệ thống.',
-        ),
+        content: Text(context.l10n.accountDeletionRequestSuccessDesc),
         actions: [
           TextButton(
             onPressed: () => context.pop(),

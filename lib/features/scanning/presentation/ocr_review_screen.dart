@@ -10,6 +10,8 @@ import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/error_helpers.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../calendar/application/month/calendar_month_provider.dart';
 import '../../categories/application/categories_controller.dart';
 import '../../categories/domain/models/category.dart';
@@ -306,10 +308,15 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
         calendarMonthProvider(DateTime(_date.year, _date.month, 1)),
       );
       context.pop(TransactionMutationResult(currentDate: _date));
-    } catch (error) {
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to save OCR transaction', error, stackTrace);
       messenger.showSnackBar(
         SnackBar(
-          content: Text(context.l10n.transactionSaveError(error.toString())),
+          content: Text(
+            context.l10n.transactionSaveError(
+              userFriendlyMessage(context, error),
+            ),
+          ),
         ),
       );
     }

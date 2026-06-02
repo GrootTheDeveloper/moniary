@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_color.dart';
 import '../../../shared/utils/error_helpers.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../domain/models/category.dart';
 import '../application/categories_controller.dart';
@@ -78,8 +79,18 @@ class CategorySection extends ConsumerWidget {
                     ],
                   );
                 },
-                error: (error, stackTrace) =>
-                    Text(context.l10n.categoryError(error.toString())),
+                error: (error, stackTrace) {
+                  AppLogger.error(
+                    'Failed to load categories section',
+                    error,
+                    stackTrace,
+                  );
+                  return Text(
+                    context.l10n.categoryError(
+                      userFriendlyMessage(context, error),
+                    ),
+                  );
+                },
                 loading: () => const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: LinearProgressIndicator(),

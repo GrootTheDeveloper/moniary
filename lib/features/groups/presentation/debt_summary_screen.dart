@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../application/group_controller.dart';
 import '../data/debt_calculator_service.dart';
 import '../domain/expense_group.dart';
@@ -22,8 +23,14 @@ class DebtSummaryScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(context.l10n.debtSummaryAppBarTitle)),
       body: groupsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) =>
-            Center(child: Text(context.l10n.groupLoadSingleError)),
+        error: (error, stackTrace) {
+          AppLogger.error(
+            'Failed to load group for debt summary',
+            error,
+            stackTrace,
+          );
+          return Center(child: Text(context.l10n.groupLoadSingleError));
+        },
         data: (groups) {
           final matches = groups.where((group) => group.id == groupId);
           if (matches.isEmpty) {
@@ -46,8 +53,14 @@ class _DebtBody extends ConsumerWidget {
     final expensesAsync = ref.watch(groupExpensesProvider(group.id));
     return expensesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) =>
-          Center(child: Text(context.l10n.debtLoadError)),
+      error: (error, stackTrace) {
+        AppLogger.error(
+          'Failed to load debt summary expenses',
+          error,
+          stackTrace,
+        );
+        return Center(child: Text(context.l10n.debtLoadError));
+      },
       data: (expenses) {
         final calculator = const DebtCalculatorService();
         final balances = calculator.calculateBalances(expenses);

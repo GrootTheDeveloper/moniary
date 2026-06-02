@@ -63,6 +63,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get errorNotLoggedIn => 'Bạn chưa đăng nhập.';
 
   @override
+  String get errorNotFound => 'Dữ liệu không tồn tại.';
+
+  @override
   String get errorConnection => 'Lỗi kết nối. Vui lòng thử lại.';
 
   @override
@@ -993,7 +996,125 @@ class AppLocalizationsVi extends AppLocalizations {
   String get cameraFlip => 'Lật camera';
 
   @override
-  String get cameraNoPermission => 'Cần quyền truy cập camera.';
+  String get cameraNoPermission => 'Không có quyền truy cập camera';
+
+  @override
+  String get cameraTitle => 'Chụp hóa đơn';
+
+  @override
+  String get cameraOcrScan => 'Quét OCR';
+
+  @override
+  String get cameraGallery => 'Thư viện';
+
+  @override
+  String get accountDeletionRequestTitle => 'Yêu cầu xóa dữ liệu';
+
+  @override
+  String get accountDeletionRequestDesc =>
+      'Dùng lựa chọn này khi không thể xóa tài khoản trực tiếp trong app. Moniary sẽ tạo một file yêu cầu để bạn gửi cho kênh hỗ trợ quyền riêng tư.';
+
+  @override
+  String get accountDeletionRequestReasonLabel =>
+      'Lý do hoặc ghi chú cho yêu cầu';
+
+  @override
+  String get accountDeletionRequestReasonHint =>
+      'Ví dụ: Tôi không còn sử dụng app và muốn xóa toàn bộ dữ liệu.';
+
+  @override
+  String get accountDeletionRequestSubmit => 'Tạo yêu cầu xóa dữ liệu';
+
+  @override
+  String get accountDeletionRequestSuccessDesc =>
+      'Yêu cầu của bạn đã được gửi thành công đến hệ thống.';
+
+  @override
+  String get deleteAccountHelpTitle => 'Hỗ trợ xóa tài khoản';
+
+  @override
+  String get deleteAccountHelpHero =>
+      'Xóa tài khoản là thao tác quan trọng. Hướng dẫn này giúp người dùng chuẩn bị dữ liệu và biết cách gửi yêu cầu hỗ trợ khi cần.';
+
+  @override
+  String get deleteAccountHelpStep1Title => '1. Xuất dữ liệu trước khi xóa';
+
+  @override
+  String get deleteAccountHelpStep1Desc =>
+      'Sau khi xóa tài khoản, dữ liệu app gắn với user hiện tại có thể không khôi phục được. Hãy export CSV, Excel hoặc PDF trước nếu cần giữ bản sao.';
+
+  @override
+  String get deleteAccountHelpStep2Title => '2. Kiểm tra ảnh giao dịch';
+
+  @override
+  String get deleteAccountHelpStep2Desc =>
+      'Ảnh giao dịch được xử lý cùng dữ liệu tài khoản. Hãy tải hoặc lưu lại file cần thiết trước khi xóa.';
+
+  @override
+  String get deleteAccountHelpStep3Title => '3. Xác nhận kỹ trong app';
+
+  @override
+  String get deleteAccountHelpStep3Desc =>
+      'Luồng xóa tài khoản yêu cầu xác nhận mạnh để tránh thao tác nhầm.';
+
+  @override
+  String get deleteAccountHelpStep4Title => '4. Dùng fallback nếu xóa thất bại';
+
+  @override
+  String get deleteAccountHelpStep4Desc =>
+      'Nếu thao tác trực tiếp lỗi, tạo file yêu cầu xóa dữ liệu thủ công và gửi kèm mô tả lỗi cho kênh hỗ trợ.';
+
+  @override
+  String get deleteAccountHelpExportBefore => 'Xuất dữ liệu trước';
+
+  @override
+  String get deleteAccountHelpCreateRequest => 'Tạo request xóa dữ liệu';
+
+  @override
+  String get deleteAccountHelpContactPrivacy => 'Liên hệ privacy';
+
+  @override
+  String get legalContactHero =>
+      'Các kênh liên hệ này giúp người dùng, reviewer hoặc team phát hành biết nơi gửi yêu cầu phù hợp.';
+
+  @override
+  String get legalContactPrivacyDesc =>
+      'Yêu cầu dữ liệu cá nhân, xóa dữ liệu hoặc câu hỏi privacy.';
+
+  @override
+  String get legalContactSupportDesc =>
+      'Hỗ trợ chung về app, file export hoặc thao tác người dùng.';
+
+  @override
+  String get legalContactLegalDesc =>
+      'Vấn đề điều khoản, phát hành Store hoặc yêu cầu pháp lý.';
+
+  @override
+  String privacyDetailCreatedAt(String date) {
+    return 'Tạo lúc $date';
+  }
+
+  @override
+  String get privacyDetailExpectedResponse => 'Dự kiến phản hồi';
+
+  @override
+  String privacyDetailExpectedResponseDesc(String date, int days) {
+    return '$date hoặc trong $days ngày làm việc sau khi gửi.';
+  }
+
+  @override
+  String privacyDetailMarkStatus(String status) {
+    return 'Đánh dấu: $status';
+  }
+
+  @override
+  String get privacyDetailContentTitle => 'Nội dung yêu cầu';
+
+  @override
+  String get privacyDetailContentEmpty => 'Không có nội dung bổ sung.';
+
+  @override
+  String get privacyDetailFileTitle => 'File đã tạo';
 
   @override
   String get routeNotFound => 'Trang không tồn tại';

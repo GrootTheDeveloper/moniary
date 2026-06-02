@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_color.dart';
 import '../../../shared/utils/error_helpers.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/widgets/obscurable_amount_text.dart';
 import '../domain/models/wallet.dart';
@@ -74,8 +75,18 @@ class WalletSection extends ConsumerWidget {
                         .toList(),
                   );
                 },
-                error: (error, stackTrace) =>
-                    Text(context.l10n.walletError(error.toString())),
+                error: (error, stackTrace) {
+                  AppLogger.error(
+                    'Failed to load wallets section',
+                    error,
+                    stackTrace,
+                  );
+                  return Text(
+                    context.l10n.walletError(
+                      userFriendlyMessage(context, error),
+                    ),
+                  );
+                },
                 loading: () => const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: LinearProgressIndicator(),

@@ -206,6 +206,12 @@ abstract class AppLocalizations {
   /// **'Bạn chưa đăng nhập.'**
   String get errorNotLoggedIn;
 
+  /// No description provided for @errorNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu không tồn tại.'**
+  String get errorNotFound;
+
   /// No description provided for @errorConnection.
   ///
   /// In vi, this message translates to:
@@ -1919,8 +1925,206 @@ abstract class AppLocalizations {
   /// No description provided for @cameraNoPermission.
   ///
   /// In vi, this message translates to:
-  /// **'Cần quyền truy cập camera.'**
+  /// **'Không có quyền truy cập camera'**
   String get cameraNoPermission;
+
+  /// No description provided for @cameraTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chụp hóa đơn'**
+  String get cameraTitle;
+
+  /// No description provided for @cameraOcrScan.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quét OCR'**
+  String get cameraOcrScan;
+
+  /// No description provided for @cameraGallery.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thư viện'**
+  String get cameraGallery;
+
+  /// No description provided for @accountDeletionRequestTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu xóa dữ liệu'**
+  String get accountDeletionRequestTitle;
+
+  /// No description provided for @accountDeletionRequestDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng lựa chọn này khi không thể xóa tài khoản trực tiếp trong app. Moniary sẽ tạo một file yêu cầu để bạn gửi cho kênh hỗ trợ quyền riêng tư.'**
+  String get accountDeletionRequestDesc;
+
+  /// No description provided for @accountDeletionRequestReasonLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lý do hoặc ghi chú cho yêu cầu'**
+  String get accountDeletionRequestReasonLabel;
+
+  /// No description provided for @accountDeletionRequestReasonHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví dụ: Tôi không còn sử dụng app và muốn xóa toàn bộ dữ liệu.'**
+  String get accountDeletionRequestReasonHint;
+
+  /// No description provided for @accountDeletionRequestSubmit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo yêu cầu xóa dữ liệu'**
+  String get accountDeletionRequestSubmit;
+
+  /// No description provided for @accountDeletionRequestSuccessDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu của bạn đã được gửi thành công đến hệ thống.'**
+  String get accountDeletionRequestSuccessDesc;
+
+  /// No description provided for @deleteAccountHelpTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hỗ trợ xóa tài khoản'**
+  String get deleteAccountHelpTitle;
+
+  /// No description provided for @deleteAccountHelpHero.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa tài khoản là thao tác quan trọng. Hướng dẫn này giúp người dùng chuẩn bị dữ liệu và biết cách gửi yêu cầu hỗ trợ khi cần.'**
+  String get deleteAccountHelpHero;
+
+  /// No description provided for @deleteAccountHelpStep1Title.
+  ///
+  /// In vi, this message translates to:
+  /// **'1. Xuất dữ liệu trước khi xóa'**
+  String get deleteAccountHelpStep1Title;
+
+  /// No description provided for @deleteAccountHelpStep1Desc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sau khi xóa tài khoản, dữ liệu app gắn với user hiện tại có thể không khôi phục được. Hãy export CSV, Excel hoặc PDF trước nếu cần giữ bản sao.'**
+  String get deleteAccountHelpStep1Desc;
+
+  /// No description provided for @deleteAccountHelpStep2Title.
+  ///
+  /// In vi, this message translates to:
+  /// **'2. Kiểm tra ảnh giao dịch'**
+  String get deleteAccountHelpStep2Title;
+
+  /// No description provided for @deleteAccountHelpStep2Desc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh giao dịch được xử lý cùng dữ liệu tài khoản. Hãy tải hoặc lưu lại file cần thiết trước khi xóa.'**
+  String get deleteAccountHelpStep2Desc;
+
+  /// No description provided for @deleteAccountHelpStep3Title.
+  ///
+  /// In vi, this message translates to:
+  /// **'3. Xác nhận kỹ trong app'**
+  String get deleteAccountHelpStep3Title;
+
+  /// No description provided for @deleteAccountHelpStep3Desc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Luồng xóa tài khoản yêu cầu xác nhận mạnh để tránh thao tác nhầm.'**
+  String get deleteAccountHelpStep3Desc;
+
+  /// No description provided for @deleteAccountHelpStep4Title.
+  ///
+  /// In vi, this message translates to:
+  /// **'4. Dùng fallback nếu xóa thất bại'**
+  String get deleteAccountHelpStep4Title;
+
+  /// No description provided for @deleteAccountHelpStep4Desc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nếu thao tác trực tiếp lỗi, tạo file yêu cầu xóa dữ liệu thủ công và gửi kèm mô tả lỗi cho kênh hỗ trợ.'**
+  String get deleteAccountHelpStep4Desc;
+
+  /// No description provided for @deleteAccountHelpExportBefore.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất dữ liệu trước'**
+  String get deleteAccountHelpExportBefore;
+
+  /// No description provided for @deleteAccountHelpCreateRequest.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo request xóa dữ liệu'**
+  String get deleteAccountHelpCreateRequest;
+
+  /// No description provided for @deleteAccountHelpContactPrivacy.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên hệ privacy'**
+  String get deleteAccountHelpContactPrivacy;
+
+  /// No description provided for @legalContactHero.
+  ///
+  /// In vi, this message translates to:
+  /// **'Các kênh liên hệ này giúp người dùng, reviewer hoặc team phát hành biết nơi gửi yêu cầu phù hợp.'**
+  String get legalContactHero;
+
+  /// No description provided for @legalContactPrivacyDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu dữ liệu cá nhân, xóa dữ liệu hoặc câu hỏi privacy.'**
+  String get legalContactPrivacyDesc;
+
+  /// No description provided for @legalContactSupportDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hỗ trợ chung về app, file export hoặc thao tác người dùng.'**
+  String get legalContactSupportDesc;
+
+  /// No description provided for @legalContactLegalDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vấn đề điều khoản, phát hành Store hoặc yêu cầu pháp lý.'**
+  String get legalContactLegalDesc;
+
+  /// No description provided for @privacyDetailCreatedAt.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo lúc {date}'**
+  String privacyDetailCreatedAt(String date);
+
+  /// No description provided for @privacyDetailExpectedResponse.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dự kiến phản hồi'**
+  String get privacyDetailExpectedResponse;
+
+  /// No description provided for @privacyDetailExpectedResponseDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'{date} hoặc trong {days} ngày làm việc sau khi gửi.'**
+  String privacyDetailExpectedResponseDesc(String date, int days);
+
+  /// No description provided for @privacyDetailMarkStatus.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đánh dấu: {status}'**
+  String privacyDetailMarkStatus(String status);
+
+  /// No description provided for @privacyDetailContentTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nội dung yêu cầu'**
+  String get privacyDetailContentTitle;
+
+  /// No description provided for @privacyDetailContentEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có nội dung bổ sung.'**
+  String get privacyDetailContentEmpty;
+
+  /// No description provided for @privacyDetailFileTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'File đã tạo'**
+  String get privacyDetailFileTitle;
 
   /// No description provided for @routeNotFound.
   ///

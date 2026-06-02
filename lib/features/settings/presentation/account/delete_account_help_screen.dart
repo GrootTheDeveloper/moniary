@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
 import 'deletion_request_screen.dart';
@@ -14,50 +15,46 @@ class DeleteAccountHelpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Hỗ trợ xóa tài khoản')),
+      appBar: AppBar(title: Text(context.l10n.deleteAccountHelpTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: [
             const _DeleteHelpHero(),
             const SizedBox(height: 16),
-            const _DeleteHelpStep(
-              title: '1. Xuất dữ liệu trước khi xóa',
-              description:
-                  'Sau khi xóa tài khoản, dữ liệu app gắn với user hiện tại có thể không khôi phục được. Hãy export CSV, Excel hoặc PDF trước nếu cần giữ bản sao.',
+            _DeleteHelpStep(
+              title: context.l10n.deleteAccountHelpStep1Title,
+              description: context.l10n.deleteAccountHelpStep1Desc,
             ),
-            const _DeleteHelpStep(
-              title: '2. Kiểm tra ảnh giao dịch',
-              description:
-                  'Ảnh giao dịch được xử lý cùng dữ liệu tài khoản. Hãy tải hoặc lưu lại file cần thiết trước khi xóa.',
+            _DeleteHelpStep(
+              title: context.l10n.deleteAccountHelpStep2Title,
+              description: context.l10n.deleteAccountHelpStep2Desc,
             ),
-            const _DeleteHelpStep(
-              title: '3. Xác nhận kỹ trong app',
-              description:
-                  'Luồng xóa tài khoản yêu cầu xác nhận mạnh để tránh thao tác nhầm.',
+            _DeleteHelpStep(
+              title: context.l10n.deleteAccountHelpStep3Title,
+              description: context.l10n.deleteAccountHelpStep3Desc,
             ),
-            const _DeleteHelpStep(
-              title: '4. Dùng fallback nếu xóa thất bại',
-              description:
-                  'Nếu thao tác trực tiếp lỗi, tạo file yêu cầu xóa dữ liệu thủ công và gửi kèm mô tả lỗi cho kênh hỗ trợ.',
+            _DeleteHelpStep(
+              title: context.l10n.deleteAccountHelpStep4Title,
+              description: context.l10n.deleteAccountHelpStep4Desc,
             ),
             const SizedBox(height: 4),
             OutlinedButton.icon(
               onPressed: () => context.push(ExportDataScreen.routePath),
               icon: const Icon(Icons.file_download_outlined),
-              label: const Text('Xuất dữ liệu trước'),
+              label: Text(context.l10n.deleteAccountHelpExportBefore),
             ),
             const SizedBox(height: 10),
             OutlinedButton.icon(
               onPressed: () => context.push(DeletionRequestScreen.routePath),
               icon: const Icon(Icons.description_outlined),
-              label: const Text('Tạo request xóa dữ liệu'),
+              label: Text(context.l10n.deleteAccountHelpCreateRequest),
             ),
             const SizedBox(height: 10),
             OutlinedButton.icon(
               onPressed: () => context.push(PrivacyContactScreen.routePath),
               icon: const Icon(Icons.support_agent_outlined),
-              label: const Text('Liên hệ privacy'),
+              label: Text(context.l10n.deleteAccountHelpContactPrivacy),
             ),
           ],
         ),
@@ -79,7 +76,7 @@ class _DeleteHelpHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Xóa tài khoản là thao tác quan trọng. Hướng dẫn này giúp người dùng chuẩn bị dữ liệu và biết cách gửi yêu cầu hỗ trợ khi cần.',
+        context.l10n.deleteAccountHelpHero,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );

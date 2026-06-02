@@ -9,6 +9,8 @@ import '../../../../l10n/l10n_extension.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../application/queries/transaction_queries.dart';
 import '../../../calendar/application/month/calendar_month_provider.dart';
 import '../../../statistics/presentation/statistics_view.dart';
@@ -56,15 +58,20 @@ class DayDetailScreen extends ConsumerWidget {
         data: (transactions) =>
             _DayDetailBody(date: date, transactions: transactions),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(
-              context.l10n.transactionLoadDayError(error.toString()),
-              textAlign: TextAlign.center,
+        error: (error, stackTrace) {
+          AppLogger.error('Failed to load day transactions', error, stackTrace);
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                context.l10n.transactionLoadDayError(
+                  userFriendlyMessage(context, error),
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppTheme.mint,

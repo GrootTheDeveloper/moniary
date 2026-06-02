@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/l10n_model_extensions.dart';
 import '../../transactions/domain/models/transaction_mutation_result.dart';
@@ -117,7 +118,8 @@ class ScanningScreen extends ConsumerWidget {
       if (file != null) {
         ref.read(scanningControllerProvider.notifier).selectImage(file.path);
       }
-    } catch (_) {
+    } catch (e, st) {
+      AppLogger.error('Failed to pick image', e, st);
       ref.read(scanningControllerProvider.notifier).setImageError();
     }
   }

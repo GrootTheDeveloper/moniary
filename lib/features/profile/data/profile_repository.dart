@@ -23,7 +23,9 @@ class ProfileRepository {
       return 'mock-user-id';
     }
     final uid = _client.auth.currentSession?.user.id;
-    if (uid == null) throw const AppException('Bạn chưa đăng nhập.');
+    if (uid == null) {
+      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
+    }
     return uid;
   }
 

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../core/supabase/supabase_providers.dart';
@@ -45,9 +46,12 @@ class GroupsScreen extends ConsumerWidget {
         child: SafeArea(
           child: groupsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stackTrace) => _GroupsError(
-              onRetry: () => ref.invalidate(groupsControllerProvider),
-            ),
+            error: (error, stackTrace) {
+              AppLogger.error('Failed to load groups', error, stackTrace);
+              return _GroupsError(
+                onRetry: () => ref.invalidate(groupsControllerProvider),
+              );
+            },
             data: (groups) {
               if (groups.isEmpty) {
                 return const _EmptyGroups();

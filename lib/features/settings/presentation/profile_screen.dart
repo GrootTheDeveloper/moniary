@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/presentation/login_screen.dart';
@@ -68,11 +69,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
       ref.invalidate(currentProfileProvider);
       return true;
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error('Failed to link email account from profile', e, st);
       if (mounted) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text('${context.l10n.errorGeneric}: ${e.toString()}'),
+            content: Text(userFriendlyMessage(context, e)),
             backgroundColor: AppTheme.danger,
           ),
         );
@@ -97,11 +99,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error('Failed to link Google account from profile', e, st);
       if (mounted) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text(context.l10n.profileLinkGoogleError(e.toString())),
+            content: Text(
+              context.l10n.profileLinkGoogleError(
+                userFriendlyMessage(context, e),
+              ),
+            ),
             backgroundColor: AppTheme.danger,
           ),
         );
@@ -493,8 +500,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, _) =>
-                    Center(child: Text('${context.l10n.errorGeneric}: $error')),
+                error: (error, stackTrace) {
+                  AppLogger.error(
+                    'Failed to load profile screen',
+                    error,
+                    stackTrace,
+                  );
+                  return Center(
+                    child: Text(userFriendlyMessage(context, error)),
+                  );
+                },
               ),
               if (state.isLoading)
                 const Positioned.fill(

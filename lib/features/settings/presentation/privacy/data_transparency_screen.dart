@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../auth/presentation/login_screen.dart';
 import '../../application/account/account_actions_controller.dart';
@@ -27,6 +28,11 @@ class DataTransparencyScreen extends ConsumerWidget {
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
+          AppLogger.error(
+            'Failed to run data transparency action',
+            error,
+            stackTrace,
+          );
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(userFriendlyMessage(context, error))),
           );
@@ -48,8 +54,14 @@ class DataTransparencyScreen extends ConsumerWidget {
                     : () => _confirmDelete(context, ref),
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stackTrace) =>
-                  Center(child: Text(userFriendlyMessage(context, error))),
+              error: (error, stackTrace) {
+                AppLogger.error(
+                  'Failed to load data transparency summary',
+                  error,
+                  stackTrace,
+                );
+                return Center(child: Text(userFriendlyMessage(context, error)));
+              },
             ),
             if (actionState.isLoading)
               const Positioned.fill(
