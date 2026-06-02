@@ -353,6 +353,33 @@ class AccountRepository {
         .eq('id', session.user.id);
   }
 
+  Future<bool> isAccountPendingDeletion() async {
+    if (!AppConstants.hasSupabaseConfig) return false;
+
+    final session = _client.auth.currentSession;
+    if (session == null) return false;
+
+    try {
+      final row = await _client
+          .from('profiles')
+          .select('deleted_at')
+          .eq('id', session.user.id)
+          .maybeSingle();
+
+      return row != null && row['deleted_at'] != null;
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Failed to load account status', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to load account status', e, st);
+      throw const AppException(
+        'Failed to load account status',
+        code: 'ACCOUNT_STATUS_LOAD_FAILED',
+      );
+    }
+  }
+
   Future<void> revokeSession(String sessionId) async {
     if (!AppConstants.hasSupabaseConfig) return;
     final session = _client.auth.currentSession;

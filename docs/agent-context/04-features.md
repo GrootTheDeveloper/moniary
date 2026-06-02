@@ -73,3 +73,4 @@
 - **Purpose**: User login and introduction.
 - **Main files**: `features/auth/`, `features/onboarding/`, `features/splash/`
 - **Note**: Auth currently relies on Anonymous Sign-in. Google/Apple/Email sign-ins are marked as "Under Development".
+- **Auth Data Boundary**: Auth and account-status controllers delegate Supabase Auth, RPC, and `profiles` table operations to repositories; controllers only manage Riverpod state and mock session state.
