@@ -110,8 +110,9 @@ class WalletRepository {
       return;
     }
     final session = _client.auth.currentSession;
-    if (session == null)
+    if (session == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
+    }
 
     try {
       if (isDefault) {
@@ -178,8 +179,9 @@ class WalletRepository {
       return;
     }
     final session = _client.auth.currentSession;
-    if (session == null)
+    if (session == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
+    }
 
     try {
       if (isDefault) {

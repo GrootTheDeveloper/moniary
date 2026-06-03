@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -9,6 +10,15 @@ import '../../domain/models/notification_settings.dart';
 abstract class NotificationSettingsRepository {
   Future<NotificationSettings> getSettings();
   Future<void> updateSettings(NotificationSettings settings);
+}
+
+extension NotificationSettingsNormalization on NotificationSettings {
+  NotificationSettings normalized() {
+    if (dailyReminderEnabled && dailyReminderTime == null) {
+      return copyWith(dailyReminderTime: const TimeOfDay(hour: 20, minute: 0));
+    }
+    return this;
+  }
 }
 
 abstract class NotificationSettingsDataSource {
@@ -81,7 +91,10 @@ class SupabaseNotificationSettingsRepository
     }
 
     try {
-      await _dataSource.upsertSettings(buildSettingsPayload(userId, settings));
+      final normalizedSettings = settings.normalized();
+      await _dataSource.upsertSettings(
+        buildSettingsPayload(userId, normalizedSettings),
+      );
     } catch (e, st) {
       AppLogger.error('Failed to update notification settings', e, st);
       throw const AppException(
@@ -112,7 +125,7 @@ class MockNotificationSettingsRepository
   @override
   Future<void> updateSettings(NotificationSettings settings) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    _settings = settings;
+    _settings = settings.normalized();
   }
 }
 

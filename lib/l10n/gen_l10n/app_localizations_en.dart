@@ -975,7 +975,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportDone => 'Data exported';
 
   @override
-  String get exportHistoryTitle => 'Export history';
+  String get exportHistoryTitle => 'Export History';
 
   @override
   String get exportHistoryEmpty => 'No export files yet.';
@@ -1027,7 +1027,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountDeletionRequestSuccessDesc =>
-      'Your request has been successfully sent to the system.';
+      'The request has been created. Please check the history and send the request manually.';
 
   @override
   String get deleteAccountHelpTitle => 'Account Deletion Help';
@@ -1358,7 +1358,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyCopyInstructions => 'Copy instructions';
 
   @override
-  String get privacyPolicyTitle => 'Privacy policy';
+  String get privacyPolicyTitle => 'Privacy Policy';
 
   @override
   String get privacyRequestDetailTitle => 'Request detail';
@@ -1713,4 +1713,982 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get activeSessionsOtherBrowser => 'Other browser/app';
+
+  @override
+  String get privacyReqDataAccess => 'Data Access';
+
+  @override
+  String get privacyReqDataAccessDesc =>
+      'Request Moniary to provide information about the data associated with your account.';
+
+  @override
+  String get privacyReqExportHelp => 'Data Export Help';
+
+  @override
+  String get privacyReqExportHelpDesc =>
+      'Request assistance when unable to self-export data in the app.';
+
+  @override
+  String get privacyReqCorrection => 'Data Correction';
+
+  @override
+  String get privacyReqCorrectionDesc =>
+      'Request to adjust incorrect personal or financial data.';
+
+  @override
+  String get privacyReqDeletion => 'Data Deletion';
+
+  @override
+  String get privacyReqDeletionDesc =>
+      'Request to delete data or get help when account deletion fails.';
+
+  @override
+  String get privacyReqComplaint => 'Privacy Complaint';
+
+  @override
+  String get privacyReqComplaintDesc =>
+      'Send feedback on how personal data is handled in Moniary.';
+
+  @override
+  String get privacyStatusReady => 'Ready to send';
+
+  @override
+  String get privacyStatusReadyDesc =>
+      'The request file has been created and is waiting for you to send it.';
+
+  @override
+  String get privacyStatusSent => 'Sent manually';
+
+  @override
+  String get privacyStatusSentDesc =>
+      'The user has sent the request via email or support channel.';
+
+  @override
+  String get privacyStatusResolved => 'Resolved';
+
+  @override
+  String get privacyStatusResolvedDesc =>
+      'The request has been processed or no longer needs tracking.';
+
+  @override
+  String get privacyTplDataAccess =>
+      'I want to know what data Moniary is currently storing about my account.';
+
+  @override
+  String get privacyTplExportHelp =>
+      'I need help exporting account data as I cannot complete it within the app.';
+
+  @override
+  String get privacyTplCorrection =>
+      'I want to request correction of inaccurate data in my account. The data to check is:';
+
+  @override
+  String get privacyTplDeletion =>
+      'I want to request the deletion of my personal and financial data linked to my account.';
+
+  @override
+  String get privacyTplComplaint =>
+      'I want to submit feedback or a complaint about how Moniary handles my personal data.';
+
+  @override
+  String get privacyTplDefault =>
+      'I need support regarding privacy and personal data in Moniary.';
+
+  @override
+  String get privacyContactRequestType => 'Request Type';
+
+  @override
+  String get privacyContactRequestContent => 'Request Content';
+
+  @override
+  String get privacyContactRequestHint =>
+      'Briefly describe what you need support with.';
+
+  @override
+  String get privacyContactPreview => 'Request Preview';
+
+  @override
+  String get privacyContactPreviewEmpty => 'Request content is empty.';
+
+  @override
+  String get privacyContactProcessTimeline => 'Response Process';
+
+  @override
+  String get privacyContactProcessStep1 => 'Create request in app';
+
+  @override
+  String get privacyContactProcessStep1Desc =>
+      'The app prepares the content for you to send to support.';
+
+  @override
+  String get privacyContactProcessStep2 => 'Send request manually';
+
+  @override
+  String privacyContactProcessStep2Desc(String email) {
+    return 'Send the request via email to $email.';
+  }
+
+  @override
+  String get privacyContactProcessStep3 => 'Track response';
+
+  @override
+  String privacyContactProcessStep3Desc(int days) {
+    return 'Expected response time is $days business days.';
+  }
+
+  @override
+  String get privacyContactShortcuts => 'Support Shortcuts';
+
+  @override
+  String get privacyContactCopyEmailSuccess => 'Support email copied.';
+
+  @override
+  String privacyContactCopyGuide(String email) {
+    return 'Email: $email\nSubject: Moniary privacy request\nContent: Paste the copied request content from the app.';
+  }
+
+  @override
+  String get privacyContactCopyGuideSuccess => 'Request instructions copied.';
+
+  @override
+  String get privacyContactHeroTitle => 'Personal Data Requests';
+
+  @override
+  String get privacyContactHeroDesc =>
+      'If not possible in-app, users can contact the team for data support requests.';
+
+  @override
+  String get privacyContactEmailTitle => 'Support Email';
+
+  @override
+  String get privacyContactEmailDesc =>
+      'Used for data deletion, export requests, or privacy questions.';
+
+  @override
+  String get privacyContactInfoTitle => 'Information to Send';
+
+  @override
+  String get privacyContactInfoValue => 'User ID or login email';
+
+  @override
+  String get privacyContactInfoDesc =>
+      'Do not send passwords, access tokens, sensitive receipt photos, or detailed amounts via email.';
+
+  @override
+  String get privacyContactTimeTitle => 'Response Time';
+
+  @override
+  String get privacyContactTimeValue => 'Within 7 business days';
+
+  @override
+  String get privacyContactTimeDesc =>
+      'The team will update actual times before production release.';
+
+  @override
+  String get privacyContactRecentRequests => 'Recent Requests';
+
+  @override
+  String get privacyContactRequestStatus => 'Status';
+
+  @override
+  String get privacyContactRequestFile => 'Attached file';
+
+  @override
+  String get privacyRequestSuccessDesc =>
+      'Request created. Please check history and send the request manually.';
+
+  @override
+  String get privacyAndAccountTitle => 'Privacy & Account';
+
+  @override
+  String get privacyAndAccountSubtitle =>
+      'View data rights, privacy requests, and account-related options.';
+
+  @override
+  String get dataRightsTitle => 'Data Rights';
+
+  @override
+  String get dataRightsSubtitle =>
+      'Summary of rights to view, export, edit/delete data, and privacy contact.';
+
+  @override
+  String get exportDataSubTitle =>
+      'Troubleshooting CSV, Excel, or PDF export errors, empty files, or missing files.';
+
+  @override
+  String get createExportFileTitle => 'Create Export File';
+
+  @override
+  String get createExportFileSubtitle =>
+      'Open export flow to create a copy of your personal data.';
+
+  @override
+  String get contactSupportSubtitle =>
+      'Create a privacy request or copy contact info to send to the support team.';
+
+  @override
+  String get deleteAccountSubtitle =>
+      'Preparation before deletion, understanding affected data, and fallbacks.';
+
+  @override
+  String get supportChecklistTitle => 'Support Checklist';
+
+  @override
+  String get supportChecklistSubtitle =>
+      'Prepare bug description, related files, and diagnostic info before requesting.';
+
+  @override
+  String get helpHeroText =>
+      'Quickly find guides on data, privacy, export, and account support in Moniary.';
+
+  @override
+  String get supportDiagnosticTitle => 'Support Info';
+
+  @override
+  String get supportDiagnosticSubtitle =>
+      'Copy version, build, and contact channels to include with bug reports.';
+
+  @override
+  String get helpCenterTitle => 'Help Center';
+
+  @override
+  String get helpCenterSubtitle =>
+      'Find guides on privacy, accounts, data export, and contacting support.';
+
+  @override
+  String get aboutMoniaryTitle => 'About Moniary';
+
+  @override
+  String get aboutMoniarySubtitle =>
+      'View app purpose, data direction, and MVP status before release.';
+
+  @override
+  String get privacyPolicySubtitle =>
+      'See how Moniary handles personal data, finances, and transaction photos.';
+
+  @override
+  String get termsOfUseTitle => 'Terms of Use';
+
+  @override
+  String get termsOfUseSubtitle =>
+      'View scope of use, user responsibilities, and MVP limitations.';
+
+  @override
+  String get dataRetentionPolicyTitle => 'Data Retention Policy';
+
+  @override
+  String get dataRetentionPolicySubtitle =>
+      'See what is stored on cloud vs locally, and handling after account deletion.';
+
+  @override
+  String get thirdPartyServicesTitle => 'Third-Party Services';
+
+  @override
+  String get thirdPartyServicesSubtitle =>
+      'See how the app uses Supabase, Flutter packages, and device storage.';
+
+  @override
+  String get releaseChecklistTitle => 'Release Checklist';
+
+  @override
+  String get releaseChecklistSubtitle =>
+      'Review privacy, data export, account deletion, and contacts before Store release.';
+
+  @override
+  String get trustSafetyTitle => 'Trust & Safety';
+
+  @override
+  String get trustSafetySubtitle =>
+      'View notes on financial advice limits, user data, and file sharing.';
+
+  @override
+  String get financialDisclaimerTitle => 'Financial Disclaimer';
+
+  @override
+  String get financialDisclaimerSubtitle =>
+      'Liability limit: app is not for investment, tax, accounting, or legal advice.';
+
+  @override
+  String get policyChangelogTitle => 'Policy Changelog';
+
+  @override
+  String get policyChangelogSubtitle =>
+      'View milestones for privacy, legal, and store readiness updates.';
+
+  @override
+  String get userDataRightsTitle => 'User Data Rights';
+
+  @override
+  String get userDataRightsSubtitle =>
+      'Summary of data viewing, exporting, edit/delete requests, and privacy contact.';
+
+  @override
+  String get policyAcceptanceNoticeTitle => 'Policy Acceptance Notice';
+
+  @override
+  String get policyAcceptanceNoticeSubtitle =>
+      'Explains that continued use applies current policies and terms.';
+
+  @override
+  String get legalContactTitle => 'Legal Contact';
+
+  @override
+  String get legalContactSubtitle =>
+      'View and copy privacy, support, and legal emails for Store release.';
+
+  @override
+  String get dataSafetyTitle => 'Data Safety';
+
+  @override
+  String get dataSafetySubtitle =>
+      'Summary of data groups collected or not collected in the MVP.';
+
+  @override
+  String get myDataTitle => 'My Data';
+
+  @override
+  String get myDataSubtitle =>
+      'Quick view of how much data the app stores for this account.';
+
+  @override
+  String get permissionsTitle => 'Permissions';
+
+  @override
+  String get permissionsSubtitle =>
+      'Explanation of why Moniary uses or doesn\'t use each Android permission.';
+
+  @override
+  String get exportMyDataTitle => 'Export My Data';
+
+  @override
+  String get exportMyDataSubtitle =>
+      'Choose file format and create a copy of your personal data.';
+
+  @override
+  String get exportHistorySubtitle =>
+      'View CSV, Excel, or PDF files generated from this account.';
+
+  @override
+  String get deleteAccountSubtitle2 =>
+      'Delete profile, wallets, categories, transactions, and saved photos.';
+
+  @override
+  String get dataDeletionPolicyTitle => 'Data Deletion Policy';
+
+  @override
+  String get dataDeletionPolicySubtitle =>
+      'See what data is deleted and how Moniary handles deletion requests.';
+
+  @override
+  String get dataDeletionRequestTitle => 'Data Deletion Request';
+
+  @override
+  String get dataDeletionRequestSubtitle =>
+      'Create manual deletion request file if direct deletion fails.';
+
+  @override
+  String get privacyContactTitle => 'Privacy Contact';
+
+  @override
+  String get privacyContactSubtitle =>
+      'Support channel for data requests, deletion requests, or privacy questions.';
+
+  @override
+  String get privacyHeroTitle => 'Your Privacy';
+
+  @override
+  String get privacyHeroSubtitle =>
+      'Manage information on data, access rights, and security options in Moniary.';
+
+  @override
+  String get trustHeroText =>
+      'These notes clarify what the app does, doesn\'t do, and how to protect your financial data.';
+
+  @override
+  String get notFinancialAdviceTitle => 'Not Financial Advice';
+
+  @override
+  String get notFinancialAdviceDesc =>
+      'Moniary only helps record and review personal income/expenses. No investment, tax, or accounting advice.';
+
+  @override
+  String get userEnteredDataTitle => 'User-Entered Data';
+
+  @override
+  String get userEnteredDataDesc =>
+      'Amounts, notes, categories, and photos depend entirely on user-created data.';
+
+  @override
+  String get noOverCollectionTitle => 'No Over-Collection';
+
+  @override
+  String get noOverCollectionDesc =>
+      'MVP does not read contacts, SMS, emails, location, or auto-sync bank accounts.';
+
+  @override
+  String get carefulFileSharingTitle => 'Careful File Sharing';
+
+  @override
+  String get carefulFileSharingDesc =>
+      'Export files contain personal financial data. Share only with trusted contacts or support.';
+
+  @override
+  String get exportDataTitle => 'Export Data';
+
+  @override
+  String get supportContactTitle => 'Support Contact';
+
+  @override
+  String importSuccessWithHistoryError(int count) {
+    return 'Successfully imported $count transactions, but failed to save local history.';
+  }
+
+  @override
+  String legalCopyContactValue(String value) {
+    return 'Copied $value';
+  }
+
+  @override
+  String get storeComplianceHero =>
+      'These items help review user and reviewer-facing elements before release.';
+
+  @override
+  String get storeCompliancePrivacyTitle => 'Privacy Policy';
+
+  @override
+  String get storeCompliancePrivacyDesc =>
+      'Privacy policy describes financial data, photos, and handling.';
+
+  @override
+  String get storeComplianceDeleteTitle => 'Delete Account';
+
+  @override
+  String get storeComplianceDeleteDesc =>
+      'Account deletion flow and manual request fallback exist.';
+
+  @override
+  String get storeComplianceExportTitle => 'Export Data';
+
+  @override
+  String get storeComplianceExportDesc =>
+      'Users can export CSV, Excel, or PDF data.';
+
+  @override
+  String get storeComplianceDataSafetyTitle => 'Data Safety';
+
+  @override
+  String get storeComplianceDataSafetyDesc =>
+      'Summarizes data collected and not collected.';
+
+  @override
+  String get storeComplianceContactTitle => 'Privacy Contact';
+
+  @override
+  String get storeComplianceContactDesc =>
+      'Support channels and request history exist.';
+
+  @override
+  String get storeComplianceTermsTitle => 'Terms of Use';
+
+  @override
+  String get storeComplianceTermsDesc =>
+      'Terms of use and liability limits are defined.';
+
+  @override
+  String get privacyNoData => 'No data available';
+
+  @override
+  String get privacyDataOverview => 'Data Overview';
+
+  @override
+  String get privacyDataInventory => 'Stored Data Types';
+
+  @override
+  String get privacySensitiveData => 'Sensitive Data Notice';
+
+  @override
+  String get privacyTransparencyReport => 'Transparency Report';
+
+  @override
+  String get privacyDataControl => 'Data Controls';
+
+  @override
+  String get metricTransaction => 'Transactions';
+
+  @override
+  String get metricWallet => 'Wallets';
+
+  @override
+  String get metricCategory => 'Categories';
+
+  @override
+  String get metricHasPhoto => 'With Photo';
+
+  @override
+  String get metricNoPhoto => 'Without Photo';
+
+  @override
+  String get inventoryProfileTitle => 'Account Profile';
+
+  @override
+  String get inventoryProfileDesc =>
+      'Display name, email, avatar, timezone, and login state.';
+
+  @override
+  String get inventoryWalletTitle => 'Wallets';
+
+  @override
+  String get inventoryWalletDesc =>
+      'Wallet name, type, initial balance, default state, and visibility.';
+
+  @override
+  String get inventoryCategoryTitle => 'Categories';
+
+  @override
+  String get inventoryCategoryDesc =>
+      'Category name, type, default state, and visibility.';
+
+  @override
+  String get inventoryTransactionTitle => 'Transactions';
+
+  @override
+  String get inventoryTransactionDesc =>
+      'Amount, type, wallet, category, note, and date.';
+
+  @override
+  String get inventoryPhotoTitle => 'Transaction Photos';
+
+  @override
+  String get inventoryPhotoDesc =>
+      'Path in Storage private bucket, shown via signed URL.';
+
+  @override
+  String get inventorySettingsTitle => 'Reminder Settings';
+
+  @override
+  String get inventorySettingsDesc =>
+      'Notification preferences when reminders are enabled.';
+
+  @override
+  String get sensitiveDataDesc =>
+      'Financial data includes amounts, notes, photos, and exported files. Only share exports with trusted parties and delete local files when no longer needed.';
+
+  @override
+  String localFilesExportCount(int count) {
+    return '$count exported files';
+  }
+
+  @override
+  String localFilesLatest(String date) {
+    return 'Latest: $date';
+  }
+
+  @override
+  String get localFilesNoExport => 'No exported files yet';
+
+  @override
+  String get localFilesDesc =>
+      'CSV, Excel, and PDF files are stored on this device. You can open, share, or delete them manually.';
+
+  @override
+  String reportSummaryDesc(int txs, int wallets, int categories) {
+    return 'This account currently has $txs transactions, $wallets wallets, and $categories categories.';
+  }
+
+  @override
+  String reportPhotoDesc(int percent) {
+    return '$percent% of your transactions contain photos.';
+  }
+
+  @override
+  String reportExportDesc(int count) {
+    return '$count exported files have been recorded on this device.';
+  }
+
+  @override
+  String get reportPrivacyDesc =>
+      'Moniary does not sell personal data and uses it only to run the expense management experience.';
+
+  @override
+  String get controlExportTitle => 'Export Data';
+
+  @override
+  String get controlExportDesc =>
+      'Create a CSV, Excel, or PDF file from your account data.';
+
+  @override
+  String get controlContactTitle => 'Privacy Contact';
+
+  @override
+  String get controlContactDesc =>
+      'Create a support request regarding data, privacy, or account deletion.';
+
+  @override
+  String get controlDeleteTitle => 'Delete Account';
+
+  @override
+  String get controlDeleteDesc =>
+      'Open confirmation to delete your account and all associated data.';
+
+  @override
+  String get freshOldestTx => 'Oldest transaction';
+
+  @override
+  String get freshNewestTx => 'Newest transaction';
+
+  @override
+  String get freshLatestExport => 'Latest data export';
+
+  @override
+  String get supportChecklistHero =>
+      'Prepare enough information before submitting a request to help the team resolve it faster and avoid sharing sensitive data unnecessarily.';
+
+  @override
+  String get supportChecklistActionTitle => 'Describe what you did';
+
+  @override
+  String get supportChecklistActionDesc =>
+      'Specify if you were exporting, deleting your account, creating a request, or opening a file.';
+
+  @override
+  String get supportChecklistErrorTitle => 'Include error messages if any';
+
+  @override
+  String get supportChecklistErrorDesc =>
+      'Copy the error message or describe the screen so the team can investigate.';
+
+  @override
+  String get supportChecklistFileTitle =>
+      'Attach request/export files when relevant';
+
+  @override
+  String get supportChecklistFileDesc =>
+      'If it is a privacy request or manual deletion, attach the generated JSON file.';
+
+  @override
+  String get supportChecklistDiagnosticTitle => 'Copy diagnostic info';
+
+  @override
+  String get supportChecklistDiagnosticDesc =>
+      'Include version, build, and release channel from the Help Center.';
+
+  @override
+  String get supportChecklistSensitiveTitle =>
+      'Do not send overly sensitive data';
+
+  @override
+  String get supportChecklistSensitiveDesc =>
+      'Do not send passwords, access tokens, or sensitive receipt photos unless absolutely necessary.';
+
+  @override
+  String get dataSafetyPersonalInfoTitle => 'Personal info';
+
+  @override
+  String get dataSafetyPersonalInfoStatus =>
+      'Yes, when logging in with email or Google';
+
+  @override
+  String get dataSafetyPersonalInfoDesc =>
+      'Display name, email, avatar, and user ID used for login and data synchronization.';
+
+  @override
+  String get dataSafetyFinancialInfoTitle => 'Financial info';
+
+  @override
+  String get dataSafetyFinancialInfoStatus => 'Yes';
+
+  @override
+  String get dataSafetyFinancialInfoDesc =>
+      'Wallets, categories, amounts, notes, and transaction dates entered by the user.';
+
+  @override
+  String get dataSafetyPhotosTitle => 'Photos';
+
+  @override
+  String get dataSafetyPhotosStatus =>
+      'Yes, when actively chosen/taken by the user';
+
+  @override
+  String get dataSafetyPhotosDesc =>
+      'Transaction photos are stored in private storage and only accessible via signed URLs.';
+
+  @override
+  String get dataSafetyUserIdTitle => 'User ID';
+
+  @override
+  String get dataSafetyUserIdStatus => 'Yes';
+
+  @override
+  String get dataSafetyUserIdDesc =>
+      'Used to associate data with the correct account and apply RLS on Supabase.';
+
+  @override
+  String get dataSafetyLocationTitle => 'Location, Contacts, SMS';
+
+  @override
+  String get dataSafetyLocationStatus => 'Not collected in MVP';
+
+  @override
+  String get dataSafetyLocationDesc =>
+      'Moniary does not request location, contacts, or read SMS/email for transaction imports.';
+
+  @override
+  String get aboutMoniaryHeroTitle => 'Moniary';
+
+  @override
+  String get aboutMoniaryHeroDesc =>
+      'A personal finance notebook with clear data control for users.';
+
+  @override
+  String get aboutMoniaryVersionLabel => 'Version';
+
+  @override
+  String get aboutMoniaryBuildLabel => 'Build';
+
+  @override
+  String get aboutMoniaryChannelLabel => 'Release channel';
+
+  @override
+  String get aboutMoniaryLicenseTitle => 'Open source licenses';
+
+  @override
+  String get aboutMoniaryLicenseDesc =>
+      'View licenses for Flutter and packages used in this app.';
+
+  @override
+  String get aboutMoniaryPurposeTitle => 'Purpose';
+
+  @override
+  String get aboutMoniaryPurposeDesc =>
+      'Moniary helps users record personal finances, manage wallets, categories, and transaction photos in a simple experience.';
+
+  @override
+  String get aboutMoniaryDataDirTitle => 'Data Philosophy';
+
+  @override
+  String get aboutMoniaryDataDirDesc =>
+      'Financial data belongs to the user. The app provides tools to export data, delete accounts, and contact privacy support.';
+
+  @override
+  String get aboutMoniaryMvpStatusTitle => 'MVP Status';
+
+  @override
+  String get aboutMoniaryMvpStatusDesc =>
+      'The current version focuses on expense tracking, data transparency, and requirements needed for Store release.';
+
+  @override
+  String get permissionInternetTitle => 'Internet';
+
+  @override
+  String get permissionInternetStatus => 'Required';
+
+  @override
+  String get permissionInternetDesc =>
+      'Used for login, Supabase Database synchronization, and downloading transaction photos from Storage.';
+
+  @override
+  String get permissionCameraTitle => 'Camera';
+
+  @override
+  String get permissionCameraStatus => 'Only asked when user takes a photo';
+
+  @override
+  String get permissionCameraDesc =>
+      'Used to take photos of receipts or images related to transactions.';
+
+  @override
+  String get permissionPhotoTitle => 'Photo Picker';
+
+  @override
+  String get permissionPhotoStatus => 'Only opens when user selects a photo';
+
+  @override
+  String get permissionPhotoDesc =>
+      'Uses Android Photo Picker to select photos without reading the entire gallery.';
+
+  @override
+  String get permissionNotiTitle => 'Notifications';
+
+  @override
+  String get permissionNotiStatus => 'Only used when reminders are enabled';
+
+  @override
+  String get permissionNotiDesc =>
+      'MVP does not require this permission if reminders are not deployed to production.';
+
+  @override
+  String get permissionLocationTitle => 'Location, Contacts, SMS not used';
+
+  @override
+  String get permissionLocationStatus => 'Not declared in MVP';
+
+  @override
+  String get permissionLocationDesc =>
+      'Moniary does not need location, contacts, or SMS to record expenses with photos.';
+
+  @override
+  String get privacyPolicyLeadTitle =>
+      'Moniary protects your personal spending data.';
+
+  @override
+  String get privacyPolicyLeadDesc =>
+      'This content is used for the in-app screen and as a draft public Privacy Policy before submitting to Google Play.';
+
+  @override
+  String get privacyPolicyDataTitle => 'Data processed by Moniary';
+
+  @override
+  String get privacyPolicyDataItem1 =>
+      'Account information such as display name, email, avatar, and user ID upon login.';
+
+  @override
+  String get privacyPolicyDataItem2 =>
+      'Financial data entered by the user including wallets, categories, transactions, amounts, notes, and dates.';
+
+  @override
+  String get privacyPolicyDataItem3 =>
+      'Transaction photos taken or selected by the user.';
+
+  @override
+  String get privacyPolicyDataItem4 =>
+      'App settings such as reminders and profile preferences.';
+
+  @override
+  String get privacyPolicyPurposeTitle => 'Purpose of use';
+
+  @override
+  String get privacyPolicyPurposeItem1 =>
+      'Login, data synchronization, and data recovery when changing devices.';
+
+  @override
+  String get privacyPolicyPurposeItem2 =>
+      'Display spending calendar, transaction details, filters, and monthly statistics.';
+
+  @override
+  String get privacyPolicyPurposeItem3 =>
+      'Store transaction photos in Supabase Storage private bucket and provide signed URLs for viewing.';
+
+  @override
+  String get privacyPolicyPurposeItem4 =>
+      'Protect accounts, control access with RLS, and support users upon request.';
+
+  @override
+  String get privacyPolicyShareTitle => 'Data sharing';
+
+  @override
+  String get privacyPolicyShareItem1 =>
+      'Moniary does not sell personal or financial data of users.';
+
+  @override
+  String get privacyPolicyShareItem2 =>
+      'Data is stored on Supabase to provide Auth, Database, and Storage for the app.';
+
+  @override
+  String get privacyPolicyShareItem3 =>
+      'MVP does not automatically read location, contacts, SMS, personal email, or bank data.';
+
+  @override
+  String get privacyPolicyDeleteTitle => 'Data deletion';
+
+  @override
+  String get privacyPolicyDeleteItem1 =>
+      'Users can delete individual transactions within the app.';
+
+  @override
+  String get privacyPolicyDeleteItem2 =>
+      'Users can export CSV data before deleting their account.';
+
+  @override
+  String get privacyPolicyDeleteItem3 =>
+      'When deleting an account, Moniary requests deletion of profiles, wallets, categories, transactions, and photos in Storage belonging to the current user ID.';
+
+  @override
+  String get privacyPolicySafetyTitle => 'Google Play Data Safety Declaration';
+
+  @override
+  String get privacyPolicySafetyItem1 =>
+      'Personal info: collected only when users log in with email or Google.';
+
+  @override
+  String get privacyPolicySafetyItem2 =>
+      'Financial info: collected to store and display personal finances.';
+
+  @override
+  String get privacyPolicySafetyItem3 =>
+      'Photos: collected only when users actively take or select photos.';
+
+  @override
+  String get privacyPolicySafetyItem4 =>
+      'Location, Contacts, SMS: not collected in MVP.';
+
+  @override
+  String get privacyPolicyContactDesc =>
+      'Before release, the team needs to publish this content on a public URL and update the official contact email in the Play Console.';
+
+  @override
+  String get deletionPolicyStep1Title => 'Before deleting';
+
+  @override
+  String get deletionPolicyStep1Desc =>
+      'Users can export a CSV to retain their personal transaction history.';
+
+  @override
+  String get deletionPolicyStep2Title => 'Data to be deleted';
+
+  @override
+  String get deletionPolicyStep2Desc =>
+      'Profiles, wallets, categories, transactions, reminder settings, and photos in Storage belonging to the current user ID.';
+
+  @override
+  String get deletionPolicyStep3Title => 'How to delete';
+
+  @override
+  String get deletionPolicyStep3Desc =>
+      'The app calls the delete-account Edge Function. The function verifies the session, deletes transaction photos, and then deletes the Auth user.';
+
+  @override
+  String get deletionPolicyStep4Title => 'Data outside the app';
+
+  @override
+  String get deletionPolicyStep4Desc =>
+      'If backup data, logs, or external requests need to be deleted, users can contact the team via the privacy support channel.';
+
+  @override
+  String get termsOfUseHeroDesc =>
+      'These terms summarize how users should use Moniary in the MVP version.';
+
+  @override
+  String get termsOfUseScopeTitle => '1. Scope of use';
+
+  @override
+  String get termsOfUseScopeDesc =>
+      'Moniary is provided for users to record and self-manage personal financial data. Users are responsible for the accuracy of the entered data.';
+
+  @override
+  String get termsOfUseAccountTitle => '2. Account data';
+
+  @override
+  String get termsOfUseAccountDesc =>
+      'Users can export data, submit privacy requests, and delete accounts using the tools provided in the app.';
+
+  @override
+  String get termsOfUseContentTitle => '3. User content';
+
+  @override
+  String get termsOfUseContentDesc =>
+      'Notes, amounts, and transaction photos entered or uploaded by the user should only serve personal expense management purposes.';
+
+  @override
+  String get termsOfUseLiabilityTitle => '4. Limitation of liability';
+
+  @override
+  String get termsOfUseLiabilityDesc =>
+      'Moniary is not a financial, accounting, tax, or legal advisory tool. In-app statistics are for reference only.';
+
+  @override
+  String get termsOfUseChangesTitle => '5. Changes to terms';
+
+  @override
+  String get termsOfUseChangesDesc =>
+      'Terms may be updated when the app adds features or prepares for official release.';
 }

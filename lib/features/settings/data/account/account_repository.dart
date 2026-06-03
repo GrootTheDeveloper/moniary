@@ -75,12 +75,21 @@ class AccountRepository {
       csv.writeln(row.map(_csvCell).join(','));
     }
 
-    final directory = await _getExportDirectory();
-    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-    final file = File('${directory.path}/moniary_export_$timestamp.csv');
-    final saved = await file.writeAsString(csv.toString(), encoding: utf8);
-    await _recordExport(format: 'CSV', file: saved, filters: filters);
-    return saved;
+    try {
+      final directory = await _getExportDirectory();
+      final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+      final file = File('${directory.path}/moniary_export_$timestamp.csv');
+      final saved = await file.writeAsString(csv.toString(), encoding: utf8);
+      await _recordExport(format: 'CSV', file: saved, filters: filters);
+      return saved;
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to write CSV export file', e, st);
+      throw const AppException(
+        'Failed to write CSV export file',
+        code: 'FILE_IO_ERROR',
+      );
+    }
   }
 
   Future<File> exportTransactionsXlsx({
@@ -112,12 +121,21 @@ class AccountRepository {
       sheetName: 'Transactions',
       rows: workbookRows,
     ).build();
-    final directory = await _getExportDirectory();
-    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-    final file = File('${directory.path}/moniary_export_$timestamp.xlsx');
-    final saved = await file.writeAsBytes(bytes, flush: true);
-    await _recordExport(format: 'XLSX', file: saved, filters: filters);
-    return saved;
+    try {
+      final directory = await _getExportDirectory();
+      final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+      final file = File('${directory.path}/moniary_export_$timestamp.xlsx');
+      final saved = await file.writeAsBytes(bytes, flush: true);
+      await _recordExport(format: 'XLSX', file: saved, filters: filters);
+      return saved;
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to write XLSX export file', e, st);
+      throw const AppException(
+        'Failed to write XLSX export file',
+        code: 'FILE_IO_ERROR',
+      );
+    }
   }
 
   Future<File> exportTransactionsPdf({
@@ -164,21 +182,30 @@ class AccountRepository {
     ];
 
     final bytes = PdfReport(lines: lines).build();
-    final directory = await _getExportDirectory();
-    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-    final file = File('${directory.path}/moniary_export_$timestamp.pdf');
-    final saved = await file.writeAsBytes(bytes, flush: true);
-    await _recordExport(format: 'PDF', file: saved, filters: filters);
-    return saved;
+    try {
+      final directory = await _getExportDirectory();
+      final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+      final file = File('${directory.path}/moniary_export_$timestamp.pdf');
+      final saved = await file.writeAsBytes(bytes, flush: true);
+      await _recordExport(format: 'PDF', file: saved, filters: filters);
+      return saved;
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to write PDF export file', e, st);
+      throw const AppException(
+        'Failed to write PDF export file',
+        code: 'FILE_IO_ERROR',
+      );
+    }
   }
 
   Future<List<ExportHistoryEntry>> fetchExportHistory() async {
-    final file = await _exportHistoryFile();
-    if (!await file.exists()) {
-      return const [];
-    }
-
     try {
+      final file = await _exportHistoryFile();
+      if (!await file.exists()) {
+        return const [];
+      }
+
       final raw = await file.readAsString();
       final decoded = jsonDecode(raw) as List<dynamic>;
       return decoded
@@ -205,18 +232,26 @@ class AccountRepository {
   }
 
   Future<List<PrivacyRequestHistoryEntry>> fetchPrivacyRequestHistory() async {
-    final file = await _privacyRequestHistoryFile();
-    if (!await file.exists()) {
-      return const [];
-    }
+    try {
+      final file = await _privacyRequestHistoryFile();
+      if (!await file.exists()) {
+        return const [];
+      }
 
-    final raw = await file.readAsString();
-    final decoded = jsonDecode(raw) as List<dynamic>;
-    return decoded
-        .cast<Map<String, dynamic>>()
-        .map(PrivacyRequestHistoryEntry.fromMap)
-        .toList()
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      final raw = await file.readAsString();
+      final decoded = jsonDecode(raw) as List<dynamic>;
+      return decoded
+          .cast<Map<String, dynamic>>()
+          .map(PrivacyRequestHistoryEntry.fromMap)
+          .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    } catch (e, st) {
+      AppLogger.error('Failed to read privacy request history', e, st);
+      throw const AppException(
+        'Failed to read privacy request history',
+        code: 'PRIVACY_HISTORY_READ_ERROR',
+      );
+    }
   }
 
   Future<void> updatePrivacyRequestStatus({
@@ -228,10 +263,18 @@ class AccountRepository {
         .map((entry) => entry.id == id ? entry.copyWith(status: status) : entry)
         .map((entry) => entry.toMap())
         .toList();
-    final historyFile = await _privacyRequestHistoryFile();
-    await historyFile.writeAsString(
-      const JsonEncoder.withIndent('  ').convert(updated),
-    );
+    try {
+      final historyFile = await _privacyRequestHistoryFile();
+      await historyFile.writeAsString(
+        const JsonEncoder.withIndent('  ').convert(updated),
+      );
+    } catch (e, st) {
+      AppLogger.error('Failed to write privacy request history file', e, st);
+      throw const AppException(
+        'Failed to write privacy request history file',
+        code: 'FILE_IO_ERROR',
+      );
+    }
   }
 
   Future<DataTransparencySummary> fetchDataTransparencySummary() async {
@@ -427,11 +470,10 @@ class AccountRepository {
 
     final timestamp = DateTime.now();
 
-    // In Supabase mode, we just trigger the soft delete (which also records the reason if handled by function)
-    // Or we could insert into a 'privacy_requests' table if it existed.
+    // We just record it in local history as a privacy request for manual processing.
     // For now, we just record it in local history as 'requested'.
     await _recordPrivacyRequest(
-      requestType: 'Xóa dữ liệu',
+      requestType: 'data_deletion',
       message: reason,
       status: 'sent_manually',
       timestamp: timestamp,
@@ -707,14 +749,22 @@ class AccountRepository {
       endDate: filters.endDate,
     );
 
-    final fileHistory = await _exportHistoryFile();
-    final next = [
-      entry,
-      ...history,
-    ].take(50).map((item) => item.toMap()).toList();
-    await fileHistory.writeAsString(
-      const JsonEncoder.withIndent('  ').convert(next),
-    );
+    try {
+      final fileHistory = await _exportHistoryFile();
+      final next = [
+        entry,
+        ...history,
+      ].take(50).map((item) => item.toMap()).toList();
+      await fileHistory.writeAsString(
+        const JsonEncoder.withIndent('  ').convert(next),
+      );
+    } catch (e, st) {
+      AppLogger.error('Failed to write export history file', e, st);
+      throw const AppException(
+        'Failed to write export history file',
+        code: 'FILE_IO_ERROR',
+      );
+    }
   }
 
   Future<File> _exportHistoryFile() async {
@@ -746,14 +796,22 @@ class AccountRepository {
       path: file?.path,
     );
 
-    final historyFile = await _privacyRequestHistoryFile();
-    final next = [
-      entry,
-      ...history,
-    ].take(50).map((item) => item.toMap()).toList();
-    await historyFile.writeAsString(
-      const JsonEncoder.withIndent('  ').convert(next),
-    );
+    try {
+      final historyFile = await _privacyRequestHistoryFile();
+      final next = [
+        entry,
+        ...history,
+      ].take(50).map((item) => item.toMap()).toList();
+      await historyFile.writeAsString(
+        const JsonEncoder.withIndent('  ').convert(next),
+      );
+    } catch (e, st) {
+      AppLogger.error('Failed to write privacy request history file', e, st);
+      throw const AppException(
+        'Failed to write privacy request history file',
+        code: 'FILE_IO_ERROR',
+      );
+    }
   }
 
   Future<Directory> _getExportDirectory() async {

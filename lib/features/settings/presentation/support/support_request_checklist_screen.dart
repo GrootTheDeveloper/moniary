@@ -21,30 +21,25 @@ class SupportRequestChecklistScreen extends StatelessWidget {
           children: [
             const _ChecklistHero(),
             const SizedBox(height: 16),
-            const _ChecklistItem(
-              title: 'Mô tả thao tác đã làm',
-              description:
-                  'Ghi rõ bạn đang export, xóa tài khoản, tạo request hay mở file nào.',
+            _ChecklistItem(
+              title: context.l10n.supportChecklistActionTitle,
+              description: context.l10n.supportChecklistActionDesc,
             ),
-            const _ChecklistItem(
-              title: 'Thêm thông báo lỗi nếu có',
-              description:
-                  'Copy nội dung lỗi hoặc mô tả màn hình đang hiển thị để team dễ kiểm tra.',
+            _ChecklistItem(
+              title: context.l10n.supportChecklistErrorTitle,
+              description: context.l10n.supportChecklistErrorDesc,
             ),
-            const _ChecklistItem(
-              title: 'Đính kèm file request/export khi phù hợp',
-              description:
-                  'Nếu là yêu cầu privacy hoặc xóa dữ liệu thủ công, gửi kèm file JSON đã tạo.',
+            _ChecklistItem(
+              title: context.l10n.supportChecklistFileTitle,
+              description: context.l10n.supportChecklistFileDesc,
             ),
-            const _ChecklistItem(
-              title: 'Copy diagnostic info',
-              description:
-                  'Gửi kèm version, build và kênh release từ Trung tâm trợ giúp.',
+            _ChecklistItem(
+              title: context.l10n.supportChecklistDiagnosticTitle,
+              description: context.l10n.supportChecklistDiagnosticDesc,
             ),
-            const _ChecklistItem(
-              title: 'Không gửi dữ liệu quá nhạy cảm',
-              description:
-                  'Không gửi mật khẩu, access token hoặc ảnh hóa đơn nhạy cảm nếu không thật sự cần thiết.',
+            _ChecklistItem(
+              title: context.l10n.supportChecklistSensitiveTitle,
+              description: context.l10n.supportChecklistSensitiveDesc,
             ),
             const SizedBox(height: 4),
             OutlinedButton.icon(
@@ -78,7 +73,7 @@ class _ChecklistHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Chuẩn bị đủ thông tin trước khi gửi yêu cầu giúp team hỗ trợ nhanh hơn và tránh chia sẻ dữ liệu nhạy cảm không cần thiết.',
+        context.l10n.supportChecklistHero,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );

@@ -96,7 +96,7 @@ class _DeletionRequestScreenState extends ConsumerState<DeletionRequestScreen> {
     // Hide keyboard
     FocusScope.of(context).unfocus();
 
-    // In Supabase mode, trigger soft delete which automatically logs user out
+    // Create a manual deletion request (recorded locally as a privacy request)
     final notifier = ref.read(accountActionsControllerProvider.notifier);
 
     // Check if we are in mock mode by looking at the provider or simply trying the deletion
@@ -104,15 +104,11 @@ class _DeletionRequestScreenState extends ConsumerState<DeletionRequestScreen> {
 
     // Wait! In mock mode, we want to export the file. In Supabase mode, we want to soft delete.
     // The requirement says "Dùng lựa chọn này khi không thể xóa tài khoản trực tiếp trong app".
-    // Actually, "requestSoftDelete" IS deleting the account directly (soft delete).
+    // "createDeletionRequest" will record a manual request locally.
 
     await notifier.createDeletionRequest(reason: _reasonController.text);
 
-    // If not mock mode and it succeeded, the user will be logged out by the repository
-    // but we also want to trigger soft delete on the server.
-    await notifier.requestSoftDelete();
-
-    if (!mounted) {
+    if (!mounted || ref.read(accountActionsControllerProvider).hasError) {
       return;
     }
 

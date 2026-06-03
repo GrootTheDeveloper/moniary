@@ -50,6 +50,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
       if (imageBytes == null) {
         // Update to 'uploaded' even if no image? Or just leave it?
         // PRD says: image_path is null and status pending/failed is allowed.
+        state = const AsyncData(null);
         return;
       }
 

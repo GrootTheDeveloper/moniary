@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/features/settings/data/repositories/notification_settings_repository.dart';
@@ -50,6 +51,26 @@ void main() {
       expect(payload['monthly_summary_enabled'], isFalse);
       expect(payload['yearly_summary_enabled'], isTrue);
     });
+
+    test(
+      'NotificationSettings.normalized() normalizes dailyReminderTime to 20:00 when enabled and null',
+      () {
+        const settings = NotificationSettings(
+          dailyReminderEnabled: true,
+          dailyReminderTime: null,
+        );
+
+        final normalized = settings.normalized();
+        final payload =
+            SupabaseNotificationSettingsRepository.buildSettingsPayload(
+              'user-1',
+              normalized,
+            );
+
+        expect(payload['daily_reminder_enabled'], isTrue);
+        expect(payload['daily_reminder_time'], '20:00:00');
+      },
+    );
 
     test('getSettings returns defaults when no settings exist', () async {
       final repository = SupabaseNotificationSettingsRepository(
@@ -134,6 +155,7 @@ void main() {
     test('updateSettings saves new settings', () async {
       const newSettings = NotificationSettings(
         dailyReminderEnabled: true,
+        dailyReminderTime: TimeOfDay(hour: 10, minute: 30),
         weeklySummaryEnabled: true,
         monthlySummaryEnabled: true,
         yearlySummaryEnabled: true,
@@ -143,9 +165,26 @@ void main() {
       final fetched = await repository.getSettings();
 
       expect(fetched.dailyReminderEnabled, isTrue);
+      expect(fetched.dailyReminderTime, const TimeOfDay(hour: 10, minute: 30));
       expect(fetched.weeklySummaryEnabled, isTrue);
       expect(fetched.monthlySummaryEnabled, isTrue);
       expect(fetched.yearlySummaryEnabled, isTrue);
     });
+
+    test(
+      'updateSettings normalizes time to 20:00 when enabled without time',
+      () async {
+        const newSettings = NotificationSettings(
+          dailyReminderEnabled: true,
+          dailyReminderTime: null,
+        );
+
+        await repository.updateSettings(newSettings);
+        final fetched = await repository.getSettings();
+
+        expect(fetched.dailyReminderEnabled, isTrue);
+        expect(fetched.dailyReminderTime, const TimeOfDay(hour: 20, minute: 0));
+      },
+    );
   });
 }

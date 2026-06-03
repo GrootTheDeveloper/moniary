@@ -110,59 +110,65 @@ class _Overview extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
       children: [
         Text(
-          'Tổng quan dữ liệu',
+          context.l10n.privacyDataOverview,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 12),
         _MetricGrid(
           items: [
-            _MetricItem('Giao dịch', summary.transactionCount.toString()),
-            _MetricItem('Ví', summary.walletCount.toString()),
-            _MetricItem('Danh mục', summary.categoryCount.toString()),
-            _MetricItem('Có ảnh', summary.photoTransactionCount.toString()),
+            _MetricItem(
+              context.l10n.metricTransaction,
+              summary.transactionCount.toString(),
+            ),
+            _MetricItem(
+              context.l10n.metricWallet,
+              summary.walletCount.toString(),
+            ),
+            _MetricItem(
+              context.l10n.metricCategory,
+              summary.categoryCount.toString(),
+            ),
+            _MetricItem(
+              context.l10n.metricHasPhoto,
+              summary.photoTransactionCount.toString(),
+            ),
           ],
         ),
         const SizedBox(height: 22),
         Text(
-          'Nhóm dữ liệu đang lưu',
+          context.l10n.privacyDataInventory,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 12),
-        const _InventoryTile(
+        _InventoryTile(
           icon: Icons.person_outlined,
-          title: 'Hồ sơ tài khoản',
-          description:
-              'Tên hiển thị, email, avatar, timezone và trạng thái đăng nhập.',
+          title: context.l10n.inventoryProfileTitle,
+          description: context.l10n.inventoryProfileDesc,
         ),
-        const _InventoryTile(
+        _InventoryTile(
           icon: Icons.account_balance_wallet_outlined,
-          title: 'Ví',
-          description:
-              'Tên ví, loại ví, số dư ban đầu, trạng thái mặc định và hiển thị.',
+          title: context.l10n.inventoryWalletTitle,
+          description: context.l10n.inventoryWalletDesc,
         ),
-        const _InventoryTile(
+        _InventoryTile(
           icon: Icons.category_outlined,
-          title: 'Danh mục',
-          description:
-              'Tên danh mục, loại thu/chi, trạng thái mặc định và hiển thị.',
+          title: context.l10n.inventoryCategoryTitle,
+          description: context.l10n.inventoryCategoryDesc,
         ),
-        const _InventoryTile(
+        _InventoryTile(
           icon: Icons.receipt_long_outlined,
-          title: 'Giao dịch',
-          description:
-              'Số tiền, loại giao dịch, ví, danh mục, ghi chú và ngày giờ.',
+          title: context.l10n.inventoryTransactionTitle,
+          description: context.l10n.inventoryTransactionDesc,
         ),
-        const _InventoryTile(
+        _InventoryTile(
           icon: Icons.image_outlined,
-          title: 'Ảnh giao dịch',
-          description:
-              'Đường dẫn ảnh trong Storage private bucket, hiển thị qua signed URL.',
+          title: context.l10n.inventoryPhotoTitle,
+          description: context.l10n.inventoryPhotoDesc,
         ),
-        const _InventoryTile(
+        _InventoryTile(
           icon: Icons.notifications_none_outlined,
-          title: 'Thiết lập nhắc nhở',
-          description:
-              'Các tùy chọn nhắc ghi chi tiêu khi tính năng reminder được bật.',
+          title: context.l10n.inventorySettingsTitle,
+          description: context.l10n.inventorySettingsDesc,
         ),
         const SizedBox(height: 22),
         Text(
@@ -180,7 +186,7 @@ class _Overview extends StatelessWidget {
         _FreshnessCard(summary: summary),
         const SizedBox(height: 22),
         Text(
-          'Lưu ý dữ liệu nhạy cảm',
+          context.l10n.privacySensitiveData,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 12),
@@ -194,29 +200,28 @@ class _Overview extends StatelessWidget {
         _LocalFilesCard(summary: summary),
         const SizedBox(height: 22),
         Text(
-          'Báo cáo minh bạch',
+          context.l10n.privacyTransparencyReport,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 12),
         _TransparencyReportCard(summary: summary),
         const SizedBox(height: 22),
         Text(
-          'Kiểm soát dữ liệu',
+          context.l10n.privacyDataControl,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 12),
         _ControlShortcutTile(
           icon: Icons.file_download_outlined,
-          title: 'Xuất dữ liệu',
-          description: 'Tạo file CSV, Excel hoặc PDF từ dữ liệu tài khoản.',
+          title: context.l10n.controlExportTitle,
+          description: context.l10n.controlExportDesc,
           onTap: isBusy ? null : () => context.push(ExportDataScreen.routePath),
         ),
         const SizedBox(height: 12),
         _ControlShortcutTile(
           icon: Icons.support_agent_outlined,
-          title: 'Liên hệ quyền riêng tư',
-          description:
-              'Tạo yêu cầu hỗ trợ về dữ liệu, quyền riêng tư hoặc xóa dữ liệu.',
+          title: context.l10n.controlContactTitle,
+          description: context.l10n.controlContactDesc,
           onTap: isBusy
               ? null
               : () => context.push(PrivacyContactScreen.routePath),
@@ -224,9 +229,8 @@ class _Overview extends StatelessWidget {
         const SizedBox(height: 12),
         _ControlShortcutTile(
           icon: Icons.delete_forever_outlined,
-          title: 'Xóa tài khoản',
-          description:
-              'Mở xác nhận xóa tài khoản và toàn bộ dữ liệu liên quan.',
+          title: context.l10n.controlDeleteTitle,
+          description: context.l10n.controlDeleteDesc,
           destructive: true,
           onTap: onDeleteAccount,
         ),
@@ -378,13 +382,13 @@ class _PhotoSummaryCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _PhotoCount(
-                  label: 'Có ảnh',
+                  label: context.l10n.metricHasPhoto,
                   value: summary.photoTransactionCount.toString(),
                 ),
               ),
               Expanded(
                 child: _PhotoCount(
-                  label: 'Không ảnh',
+                  label: context.l10n.metricNoPhoto,
                   value: summary.transactionWithoutPhotoCount.toString(),
                 ),
               ),
@@ -436,29 +440,41 @@ class _FreshnessCard extends StatelessWidget {
         children: [
           _FreshnessRow(
             icon: Icons.history_outlined,
-            label: 'Giao dịch cũ nhất',
-            value: _formatDate(summary.oldestTransactionDate, dateFormat),
+            label: context.l10n.freshOldestTx,
+            value: _formatDate(
+              context,
+              summary.oldestTransactionDate,
+              dateFormat,
+            ),
           ),
           const Divider(height: 24),
           _FreshnessRow(
             icon: Icons.update_outlined,
-            label: 'Giao dịch mới nhất',
-            value: _formatDate(summary.newestTransactionDate, dateFormat),
+            label: context.l10n.freshNewestTx,
+            value: _formatDate(
+              context,
+              summary.newestTransactionDate,
+              dateFormat,
+            ),
           ),
           const Divider(height: 24),
           _FreshnessRow(
             icon: Icons.file_download_done_outlined,
-            label: 'Lần xuất dữ liệu gần nhất',
-            value: _formatDate(summary.latestExportDate, dateTimeFormat),
+            label: context.l10n.freshLatestExport,
+            value: _formatDate(
+              context,
+              summary.latestExportDate,
+              dateTimeFormat,
+            ),
           ),
         ],
       ),
     );
   }
 
-  String _formatDate(DateTime? value, DateFormat format) {
+  String _formatDate(BuildContext context, DateTime? value, DateFormat format) {
     if (value == null) {
-      return 'Chưa có dữ liệu';
+      return context.l10n.privacyNoData;
     }
     return format.format(value.toLocal());
   }
@@ -516,7 +532,7 @@ class _SensitiveDataNotice extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Dữ liệu tài chính có thể gồm số tiền, ghi chú, ảnh hóa đơn và file đã xuất. Chỉ chia sẻ file export với người bạn tin cậy và xóa file cục bộ khi không còn cần dùng.',
+              context.l10n.sensitiveDataDesc,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -535,8 +551,10 @@ class _LocalFilesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateTimeFormat = DateFormat('dd/MM/yyyy HH:mm', 'vi_VN');
     final latestExport = summary.latestExportDate == null
-        ? 'Chưa có file export'
-        : dateTimeFormat.format(summary.latestExportDate!.toLocal());
+        ? context.l10n.localFilesNoExport
+        : context.l10n.localFilesLatest(
+            dateTimeFormat.format(summary.latestExportDate!.toLocal()),
+          );
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -569,12 +587,14 @@ class _LocalFilesCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${summary.exportFileCount} file đã xuất',
+                      context.l10n.localFilesExportCount(
+                        summary.exportFileCount,
+                      ),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Gần nhất: $latestExport',
+                      latestExport,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
@@ -584,7 +604,7 @@ class _LocalFilesCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Các file CSV, Excel và PDF được tạo trên thiết bị này. Bạn có thể mở lại, chia sẻ hoặc tự xóa file trong bộ nhớ cục bộ.',
+            context.l10n.localFilesDesc,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 12),
@@ -625,26 +645,27 @@ class _TransparencyReportCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Tài khoản này hiện có ${summary.transactionCount} giao dịch, ${summary.walletCount} ví và ${summary.categoryCount} danh mục.',
+            context.l10n.reportSummaryDesc(
+              summary.transactionCount,
+              summary.walletCount,
+              summary.categoryCount,
+            ),
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 14),
           _ReportLine(
             icon: Icons.image_search_outlined,
-            text:
-                '$photoPercent% giao dịch đang có ảnh đính kèm trong dữ liệu của bạn.',
+            text: context.l10n.reportPhotoDesc(photoPercent),
           ),
           const SizedBox(height: 10),
           _ReportLine(
             icon: Icons.folder_open_outlined,
-            text:
-                '${summary.exportFileCount} file export đã được ghi nhận trên thiết bị này.',
+            text: context.l10n.reportExportDesc(summary.exportFileCount),
           ),
           const SizedBox(height: 10),
-          const _ReportLine(
+          _ReportLine(
             icon: Icons.lock_outline,
-            text:
-                'Moniary không bán dữ liệu cá nhân và chỉ dùng dữ liệu để vận hành trải nghiệm quản lý chi tiêu.',
+            text: context.l10n.reportPrivacyDesc,
           ),
         ],
       ),

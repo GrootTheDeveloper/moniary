@@ -142,12 +142,12 @@ class ImportRepository {
   }
 
   Future<List<ImportHistoryEntry>> fetchImportHistory() async {
-    final file = await _importHistoryFile();
-    if (!await file.exists()) {
-      return const [];
-    }
-
     try {
+      final file = await _importHistoryFile();
+      if (!await file.exists()) {
+        return const [];
+      }
+
       final raw = await file.readAsString();
       final decoded = jsonDecode(raw) as List<dynamic>;
       return decoded
@@ -243,10 +243,18 @@ class ImportRepository {
   }
 
   Future<void> _writeImportHistory(List<ImportHistoryEntry> history) async {
-    final fileHistory = await _importHistoryFile();
-    final next = history.take(50).map((item) => item.toMap()).toList();
-    await fileHistory.writeAsString(
-      const JsonEncoder.withIndent('  ').convert(next),
-    );
+    try {
+      final fileHistory = await _importHistoryFile();
+      final next = history.take(50).map((item) => item.toMap()).toList();
+      await fileHistory.writeAsString(
+        const JsonEncoder.withIndent('  ').convert(next),
+      );
+    } catch (e, st) {
+      AppLogger.error('Failed to write import history file', e, st);
+      throw const AppException(
+        'Failed to write import history file',
+        code: 'FILE_IO_ERROR',
+      );
+    }
   }
 }

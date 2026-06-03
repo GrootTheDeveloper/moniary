@@ -111,8 +111,9 @@ class CategoryRepository {
       return;
     }
     final session = _client.auth.currentSession;
-    if (session == null)
+    if (session == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
+    }
 
     try {
       await _client.from('categories').insert({
@@ -153,8 +154,9 @@ class CategoryRepository {
       return;
     }
     final session = _client.auth.currentSession;
-    if (session == null)
+    if (session == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
+    }
 
     try {
       await _client

@@ -16,9 +16,16 @@ class NotificationSettingsController
     final current = state.value;
     if (current == null) return;
 
+    final updatedTime =
+        time ??
+        (enabled
+            ? (current.dailyReminderTime ??
+                  const TimeOfDay(hour: 20, minute: 0))
+            : current.dailyReminderTime);
+
     final updated = current.copyWith(
       dailyReminderEnabled: enabled,
-      dailyReminderTime: time,
+      dailyReminderTime: updatedTime,
     );
 
     await _update(updated);

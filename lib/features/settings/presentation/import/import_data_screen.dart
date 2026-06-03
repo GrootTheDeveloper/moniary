@@ -44,11 +44,11 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _pickFile,
-              icon: const Icon(Icons.file_upload),
+              icon: const Icon(Icons.file_upload_outlined),
               label: Text(context.l10n.importSelectFile),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.mint,
-                foregroundColor: Colors.black,
+                foregroundColor: Colors.white,
               ),
             ),
             const SizedBox(height: 16),
@@ -58,21 +58,23 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
+                  color: AppTheme.danger.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
+                  border: Border.all(
+                    color: AppTheme.danger.withValues(alpha: 0.5),
+                  ),
                 ),
                 child: Column(
                   children: [
                     const Icon(
                       Icons.error_outline,
-                      color: Colors.red,
+                      color: AppTheme.danger,
                       size: 48,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       _getErrorMessage(context, importState.error!),
-                      style: const TextStyle(color: Colors.red),
+                      style: const TextStyle(color: AppTheme.danger),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
@@ -96,9 +98,9 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                     : _confirmImport,
                 style: FilledButton.styleFrom(
                   backgroundColor: AppTheme.mint,
-                  foregroundColor: Colors.black,
-                  disabledBackgroundColor: Colors.grey[800],
-                  disabledForegroundColor: Colors.grey[500],
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: AppTheme.surfaceRaised,
+                  disabledForegroundColor: AppTheme.textDim,
                 ),
                 child: importState.isImporting
                     ? const SizedBox(
@@ -132,16 +134,16 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
         children: [
           Text(
             context.l10n.importCsvFormatTitle,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onSurface,
               fontSize: 16,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             context.l10n.importCsvFormatBody,
-            style: const TextStyle(color: Colors.white70, height: 1.5),
+            style: const TextStyle(color: AppTheme.textMuted, height: 1.5),
           ),
         ],
       ),
@@ -158,14 +160,14 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
         if (wallets.isEmpty) {
           return Text(
             context.l10n.importNoWallets,
-            style: const TextStyle(color: Colors.red),
+            style: const TextStyle(color: AppTheme.danger),
           );
         }
         return DropdownButtonFormField<Wallet>(
           initialValue: _selectedWallet,
           hint: Text(
             context.l10n.importSelectWallet,
-            style: const TextStyle(color: Colors.white54),
+            style: const TextStyle(color: AppTheme.textSubtle),
           ),
           dropdownColor: AppTheme.surface,
           items: wallets
@@ -174,7 +176,9 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                   value: w,
                   child: Text(
                     w.name,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ),
               )
@@ -212,8 +216,14 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
         return context.l10n.importErrorCategoryNotFound;
       case 'AUTH_REQUIRED':
         return context.l10n.errorNotLoggedIn;
+      case 'IMPORT_HISTORY_READ_ERROR':
+      case 'FILE_IO_ERROR':
+      case 'IMPORT_HISTORY_FAIL_ERROR':
+      case 'IMPORT_FAILED_HISTORY_FAILED':
+        return context.l10n.errorGeneric; // Add if we have a specific one
       case 'IMPORT_FAILED':
       case 'IMPORT_HISTORY_CREATE_ERROR':
+      case 'IMPORT_HISTORY_COMPLETE_ERROR':
       case 'IMPORT_PARSE_ERROR':
         return context.l10n.errorGeneric;
       default:
@@ -228,10 +238,10 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
       children: [
         Text(
           context.l10n.importPreviewTitle(validCount),
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 8),
@@ -247,19 +257,23 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                 ),
                 tileColor: AppTheme.surface,
                 leading: Icon(
-                  row.isValid ? Icons.check_circle : Icons.error,
-                  color: row.isValid ? Colors.green : Colors.red,
+                  row.isValid
+                      ? Icons.check_circle_outline
+                      : Icons.error_outline,
+                  color: row.isValid ? AppTheme.success : AppTheme.danger,
                 ),
                 title: Text(
                   '${row.categoryName} - ${formatVnd(row.amount ?? 0)}',
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 subtitle: Text(
                   row.isValid
                       ? DateFormat('dd/MM/yyyy').format(row.date!)
                       : _getErrorMessage(context, row.errorMessage ?? ''),
                   style: TextStyle(
-                    color: row.isValid ? Colors.white70 : Colors.redAccent,
+                    color: row.isValid ? AppTheme.textMuted : AppTheme.danger,
                   ),
                 ),
               );
@@ -300,7 +314,24 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
     }
 
     final latestState = ref.read(importControllerProvider);
+
     if (latestState.error != null) {
+      final isHistoryError = [
+        'IMPORT_HISTORY_COMPLETE_ERROR',
+        'IMPORT_HISTORY_READ_ERROR',
+        'FILE_IO_ERROR',
+        'IMPORT_HISTORY_FAIL_ERROR',
+      ].contains(latestState.error);
+
+      if (isHistoryError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.importSuccessWithHistoryError(count)),
+            backgroundColor: AppTheme.amber,
+          ),
+        );
+        context.pop();
+      }
       return;
     }
 
@@ -405,7 +436,7 @@ class _RecentImportTile extends StatelessWidget {
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       subtitle: Text(DateFormat('dd/MM/yyyy').format(entry.createdAt)),
-      trailing: const Icon(Icons.chevron_right, color: Colors.white54),
+      trailing: const Icon(Icons.chevron_right, color: AppTheme.textSubtle),
       onTap: () {
         context.push(ImportHistoryScreen.detailRoutePath, extra: entry);
       },

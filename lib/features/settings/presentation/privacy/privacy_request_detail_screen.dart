@@ -5,9 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../shared/utils/error_helpers.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../../domain/privacy_requests/privacy_request_history_entry.dart';
 import '../../domain/privacy_requests/privacy_request_sla.dart';
+import '../../domain/privacy_requests/privacy_request_type.dart';
+import 'utils/privacy_request_l10n.dart';
 
 class PrivacyRequestDetailScreen extends ConsumerWidget {
   const PrivacyRequestDetailScreen({required this.entry, super.key});
@@ -18,6 +21,16 @@ class PrivacyRequestDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(accountActionsControllerProvider, (previous, next) {
+      next.whenOrNull(
+        error: (error, stackTrace) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(userFriendlyMessage(context, error))),
+          );
+        },
+      );
+    });
+
     final historyAsync = ref.watch(privacyRequestHistoryProvider);
     final actionState = ref.watch(accountActionsControllerProvider);
     final currentEntry = historyAsync.maybeWhen(
@@ -44,13 +57,42 @@ class PrivacyRequestDetailScreen extends ConsumerWidget {
             ListView(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
               children: [
+                if (historyAsync.hasError) ...[
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppTheme.danger),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          context.l10n.errorGeneric,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppTheme.danger),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton.icon(
+                          onPressed: () =>
+                              ref.invalidate(privacyRequestHistoryProvider),
+                          icon: const Icon(Icons.refresh_outlined),
+                          label: Text(context.l10n.commonRetry),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 _DetailHero(entry: currentEntry, createdAt: createdAt),
                 const SizedBox(height: 16),
                 _DueDateTile(dueDate: dueDate),
                 const SizedBox(height: 12),
                 _StatusTile(
-                  label: status.label,
-                  description: status.description,
+                  label: status.label(context),
+                  description: status.description(context),
                 ),
                 const SizedBox(height: 12),
                 _StatusActions(
@@ -122,7 +164,7 @@ class _DetailHero extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            entry.requestType,
+            privacyRequestTypeByStoredValue(entry.requestType).label(context),
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
@@ -247,7 +289,7 @@ class _StatusActions extends StatelessWidget {
     return OutlinedButton.icon(
       onPressed: isBusy ? null : () => onStatusChange(nextStatus),
       icon: const Icon(Icons.task_alt_outlined),
-      label: Text(context.l10n.privacyDetailMarkStatus(next.label)),
+      label: Text(context.l10n.privacyDetailMarkStatus(next.label(context))),
     );
   }
 }
@@ -261,10 +303,10 @@ class _RequestCopyActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final path = entry.path;
     final summary =
-        'Loại yêu cầu: ${entry.requestType}\n'
-        'Trạng thái: ${privacyRequestStatusById(entry.status).label}\n'
-        'Nội dung: ${entry.message.trim()}\n'
-        '${path != null ? 'File: $path' : ''}';
+        '${context.l10n.privacyContactRequestType}: ${privacyRequestTypeByStoredValue(entry.requestType).label(context)}\n'
+        '${context.l10n.privacyContactRequestStatus}: ${privacyRequestStatusById(entry.status).label(context)}\n'
+        '${context.l10n.privacyContactRequestContent}: ${entry.message.trim()}\n'
+        '${path != null ? '${context.l10n.privacyContactRequestFile}: $path' : ''}';
 
     return Column(
       children: [

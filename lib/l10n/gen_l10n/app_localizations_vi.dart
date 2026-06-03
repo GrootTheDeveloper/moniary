@@ -975,7 +975,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get exportDone => 'Đã xuất dữ liệu';
 
   @override
-  String get exportHistoryTitle => 'Lịch sử xuất dữ liệu';
+  String get exportHistoryTitle => 'Lịch sử export';
 
   @override
   String get exportHistoryEmpty => 'Chưa có file export nào.';
@@ -1027,7 +1027,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get accountDeletionRequestSuccessDesc =>
-      'Yêu cầu của bạn đã được gửi thành công đến hệ thống.';
+      'Yêu cầu đã được tạo. Vui lòng kiểm tra lịch sử và gửi yêu cầu thủ công.';
 
   @override
   String get deleteAccountHelpTitle => 'Hỗ trợ xóa tài khoản';
@@ -1713,4 +1713,980 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get activeSessionsOtherBrowser => 'Trình duyệt/App khác';
+
+  @override
+  String get privacyReqDataAccess => 'Xem dữ liệu đang lưu';
+
+  @override
+  String get privacyReqDataAccessDesc =>
+      'Yêu cầu Moniary cung cấp thông tin về dữ liệu đang gắn với tài khoản.';
+
+  @override
+  String get privacyReqExportHelp => 'Hỗ trợ xuất dữ liệu';
+
+  @override
+  String get privacyReqExportHelpDesc =>
+      'Yêu cầu hỗ trợ khi không thể tự xuất dữ liệu trong app.';
+
+  @override
+  String get privacyReqCorrection => 'Chỉnh sửa dữ liệu';
+
+  @override
+  String get privacyReqCorrectionDesc =>
+      'Yêu cầu điều chỉnh dữ liệu cá nhân hoặc dữ liệu tài chính bị sai.';
+
+  @override
+  String get privacyReqDeletion => 'Xóa dữ liệu';
+
+  @override
+  String get privacyReqDeletionDesc =>
+      'Yêu cầu xóa dữ liệu hoặc hỗ trợ khi xóa tài khoản không thành công.';
+
+  @override
+  String get privacyReqComplaint => 'Khiếu nại quyền riêng tư';
+
+  @override
+  String get privacyReqComplaintDesc =>
+      'Gửi phản hồi về cách dữ liệu cá nhân được xử lý trong Moniary.';
+
+  @override
+  String get privacyStatusReady => 'Sẵn sàng gửi';
+
+  @override
+  String get privacyStatusReadyDesc =>
+      'File request đã được tạo và đang chờ người dùng gửi đi.';
+
+  @override
+  String get privacyStatusSent => 'Đã gửi thủ công';
+
+  @override
+  String get privacyStatusSentDesc =>
+      'Người dùng đã gửi request qua email hoặc kênh hỗ trợ.';
+
+  @override
+  String get privacyStatusResolved => 'Đã xử lý';
+
+  @override
+  String get privacyStatusResolvedDesc =>
+      'Yêu cầu đã được xử lý xong hoặc không cần theo dõi nữa.';
+
+  @override
+  String get privacyTplDataAccess =>
+      'Tôi muốn biết Moniary hiện đang lưu những nhóm dữ liệu nào liên quan đến tài khoản của tôi.';
+
+  @override
+  String get privacyTplExportHelp =>
+      'Tôi cần hỗ trợ xuất dữ liệu tài khoản vì không thể hoàn tất thao tác xuất dữ liệu trong app.';
+
+  @override
+  String get privacyTplCorrection =>
+      'Tôi muốn yêu cầu chỉnh sửa dữ liệu chưa chính xác trong tài khoản của mình. Dữ liệu cần kiểm tra là:';
+
+  @override
+  String get privacyTplDeletion =>
+      'Tôi muốn yêu cầu xóa dữ liệu cá nhân và dữ liệu tài chính liên quan đến tài khoản của mình.';
+
+  @override
+  String get privacyTplComplaint =>
+      'Tôi muốn gửi phản hồi hoặc khiếu nại về cách Moniary xử lý dữ liệu cá nhân của tôi.';
+
+  @override
+  String get privacyTplDefault =>
+      'Tôi cần hỗ trợ về quyền riêng tư và dữ liệu cá nhân trong Moniary.';
+
+  @override
+  String get privacyContactRequestType => 'Loại yêu cầu';
+
+  @override
+  String get privacyContactRequestContent => 'Nội dung yêu cầu';
+
+  @override
+  String get privacyContactRequestHint =>
+      'Mô tả ngắn điều bạn muốn team hỗ trợ.';
+
+  @override
+  String get privacyContactPreview => 'Xem trước yêu cầu';
+
+  @override
+  String get privacyContactPreviewEmpty => 'Chưa nhập nội dung yêu cầu.';
+
+  @override
+  String get privacyContactProcessTimeline => 'Quy trình phản hồi';
+
+  @override
+  String get privacyContactProcessStep1 => 'Tạo request trong app';
+
+  @override
+  String get privacyContactProcessStep1Desc =>
+      'App chuẩn bị nội dung để bạn gửi cho kênh hỗ trợ.';
+
+  @override
+  String get privacyContactProcessStep2 => 'Gửi request thủ công';
+
+  @override
+  String privacyContactProcessStep2Desc(String email) {
+    return 'Gửi yêu cầu qua email $email.';
+  }
+
+  @override
+  String get privacyContactProcessStep3 => 'Theo dõi phản hồi';
+
+  @override
+  String privacyContactProcessStep3Desc(int days) {
+    return 'Mốc phản hồi dự kiến là $days ngày làm việc.';
+  }
+
+  @override
+  String get privacyContactShortcuts => 'Lối tắt hỗ trợ';
+
+  @override
+  String get privacyContactCopyEmailSuccess => 'Đã copy email support.';
+
+  @override
+  String privacyContactCopyGuide(String email) {
+    return 'Email: $email\nChủ đề: Moniary privacy request\nNội dung: Dán nội dung yêu cầu đã copy từ app.';
+  }
+
+  @override
+  String get privacyContactCopyGuideSuccess => 'Đã copy hướng dẫn gửi request.';
+
+  @override
+  String get privacyContactHeroTitle => 'Yêu cầu về dữ liệu cá nhân';
+
+  @override
+  String get privacyContactHeroDesc =>
+      'Nếu không thể xử lý trực tiếp trong app, người dùng có thể liên hệ team để yêu cầu hỗ trợ về dữ liệu.';
+
+  @override
+  String get privacyContactEmailTitle => 'Email hỗ trợ';
+
+  @override
+  String get privacyContactEmailDesc =>
+      'Dùng cho yêu cầu xóa dữ liệu, xuất dữ liệu hoặc câu hỏi về quyền riêng tư.';
+
+  @override
+  String get privacyContactInfoTitle => 'Thông tin cần gửi';
+
+  @override
+  String get privacyContactInfoValue => 'User ID hoặc email đăng nhập';
+
+  @override
+  String get privacyContactInfoDesc =>
+      'Không gửi mật khẩu, access token, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.';
+
+  @override
+  String get privacyContactTimeTitle => 'Thời gian phản hồi';
+
+  @override
+  String get privacyContactTimeValue => 'Trong vòng 7 ngày làm việc';
+
+  @override
+  String get privacyContactTimeDesc =>
+      'Team cần cập nhật thời gian thực tế trước khi phát hành production.';
+
+  @override
+  String get privacyContactRecentRequests => 'Yêu cầu gần đây';
+
+  @override
+  String get privacyContactRequestStatus => 'Trạng thái';
+
+  @override
+  String get privacyContactRequestFile => 'File đính kèm';
+
+  @override
+  String get privacyRequestSuccessDesc =>
+      'Yêu cầu đã được tạo. Vui lòng kiểm tra lịch sử và gửi yêu cầu thủ công.';
+
+  @override
+  String get privacyAndAccountTitle => 'Privacy & tài khoản';
+
+  @override
+  String get privacyAndAccountSubtitle =>
+      'Xem quyền dữ liệu, yêu cầu privacy và các lựa chọn liên quan tài khoản.';
+
+  @override
+  String get dataRightsTitle => 'Quyền dữ liệu';
+
+  @override
+  String get dataRightsSubtitle =>
+      'Tóm tắt quyền xem, xuất, sửa/xóa dữ liệu và liên hệ privacy.';
+
+  @override
+  String get exportDataSubTitle =>
+      'Xử lý khi export CSV, Excel hoặc PDF lỗi, trống hoặc không tìm thấy file.';
+
+  @override
+  String get createExportFileTitle => 'Tạo file export';
+
+  @override
+  String get createExportFileSubtitle =>
+      'Mở luồng export khi cần tạo bản sao dữ liệu cá nhân.';
+
+  @override
+  String get contactSupportSubtitle =>
+      'Tạo request privacy hoặc copy thông tin liên hệ để gửi cho team hỗ trợ.';
+
+  @override
+  String get deleteAccountSubtitle =>
+      'Chuẩn bị trước khi xóa, hiểu dữ liệu bị ảnh hưởng và fallback khi có lỗi.';
+
+  @override
+  String get supportChecklistTitle => 'Checklist gửi hỗ trợ';
+
+  @override
+  String get supportChecklistSubtitle =>
+      'Chuẩn bị mô tả lỗi, file liên quan và diagnostic info trước khi gửi request.';
+
+  @override
+  String get helpHeroText =>
+      'Tìm nhanh các hướng dẫn liên quan đến dữ liệu, quyền riêng tư, export và hỗ trợ tài khoản trong Moniary.';
+
+  @override
+  String get supportDiagnosticTitle => 'Thông tin gửi support';
+
+  @override
+  String get supportDiagnosticSubtitle =>
+      'Copy version, build và kênh liên hệ để gửi kèm khi báo lỗi.';
+
+  @override
+  String get helpCenterTitle => 'Trung tâm trợ giúp';
+
+  @override
+  String get helpCenterSubtitle =>
+      'Tìm hướng dẫn về privacy, tài khoản, export dữ liệu và cách liên hệ hỗ trợ.';
+
+  @override
+  String get aboutMoniaryTitle => 'Giới thiệu Moniary';
+
+  @override
+  String get aboutMoniarySubtitle =>
+      'Xem mục đích app, định hướng dữ liệu và trạng thái MVP trước khi phát hành.';
+
+  @override
+  String get privacyPolicySubtitle =>
+      'Xem cách Moniary xử lý dữ liệu cá nhân, tài chính và ảnh giao dịch.';
+
+  @override
+  String get termsOfUseTitle => 'Điều khoản sử dụng';
+
+  @override
+  String get termsOfUseSubtitle =>
+      'Xem phạm vi sử dụng, trách nhiệm người dùng và giới hạn của phiên bản MVP.';
+
+  @override
+  String get dataRetentionPolicyTitle => 'Chính sách lưu giữ dữ liệu';
+
+  @override
+  String get dataRetentionPolicySubtitle =>
+      'Xem dữ liệu nào được lưu trên cloud, dữ liệu nào nằm cục bộ và cách xử lý sau khi xóa tài khoản.';
+
+  @override
+  String get thirdPartyServicesTitle => 'Dịch vụ bên thứ ba';
+
+  @override
+  String get thirdPartyServicesSubtitle =>
+      'Xem app đang dùng Supabase, Flutter/package và bộ nhớ thiết bị như thế nào.';
+
+  @override
+  String get releaseChecklistTitle => 'Checklist phát hành';
+
+  @override
+  String get releaseChecklistSubtitle =>
+      'Rà soát các mục privacy, data export, xóa tài khoản và contact trước khi lên Store.';
+
+  @override
+  String get trustSafetyTitle => 'Tin cậy & an toàn';
+
+  @override
+  String get trustSafetySubtitle =>
+      'Xem ghi chú về giới hạn tư vấn tài chính, dữ liệu người dùng và chia sẻ file.';
+
+  @override
+  String get financialDisclaimerTitle => 'Miễn trừ tài chính';
+
+  @override
+  String get financialDisclaimerSubtitle =>
+      'Xem giới hạn trách nhiệm: app không phải tư vấn đầu tư, thuế, kế toán hoặc pháp lý.';
+
+  @override
+  String get policyChangelogTitle => 'Lịch sử chính sách';
+
+  @override
+  String get policyChangelogSubtitle =>
+      'Xem các mốc cập nhật privacy, legal và store readiness trong app.';
+
+  @override
+  String get userDataRightsTitle => 'Quyền dữ liệu của người dùng';
+
+  @override
+  String get userDataRightsSubtitle =>
+      'Tóm tắt quyền xem dữ liệu, xuất dữ liệu, yêu cầu sửa/xóa và liên hệ privacy.';
+
+  @override
+  String get policyAcceptanceNoticeTitle => 'Thông báo đồng ý chính sách';
+
+  @override
+  String get policyAcceptanceNoticeSubtitle =>
+      'Giải thích rằng việc tiếp tục sử dụng app áp dụng theo chính sách và điều khoản hiện tại.';
+
+  @override
+  String get legalContactTitle => 'Liên hệ pháp lý';
+
+  @override
+  String get legalContactSubtitle =>
+      'Xem và copy email privacy, support và legal dùng cho phát hành Store.';
+
+  @override
+  String get dataSafetyTitle => 'Data Safety';
+
+  @override
+  String get dataSafetySubtitle =>
+      'Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong MVP.';
+
+  @override
+  String get myDataTitle => 'Dữ liệu của tôi';
+
+  @override
+  String get myDataSubtitle =>
+      'Xem nhanh app đang lưu bao nhiêu dữ liệu trong tài khoản này.';
+
+  @override
+  String get permissionsTitle => 'Quyền truy cập';
+
+  @override
+  String get permissionsSubtitle =>
+      'Giải thích lý do Moniary dùng hoặc không dùng từng quyền Android.';
+
+  @override
+  String get exportMyDataTitle => 'Xuất dữ liệu của tôi';
+
+  @override
+  String get exportMyDataSubtitle =>
+      'Chọn định dạng file và tạo bản sao dữ liệu cá nhân.';
+
+  @override
+  String get exportHistorySubtitle =>
+      'Xem các file CSV, Excel hoặc PDF đã tạo từ tài khoản này.';
+
+  @override
+  String get deleteAccountSubtitle2 =>
+      'Xóa hồ sơ, ví, danh mục, giao dịch và ảnh giao dịch đã lưu.';
+
+  @override
+  String get dataDeletionPolicyTitle => 'Chính sách xóa dữ liệu';
+
+  @override
+  String get dataDeletionPolicySubtitle =>
+      'Xem dữ liệu nào bị xóa và cách Moniary xử lý yêu cầu xóa.';
+
+  @override
+  String get dataDeletionRequestTitle => 'Yêu cầu xóa dữ liệu';
+
+  @override
+  String get dataDeletionRequestSubtitle =>
+      'Tạo file yêu cầu xóa thủ công nếu xóa trực tiếp không thành công.';
+
+  @override
+  String get privacyContactTitle => 'Liên hệ quyền riêng tư';
+
+  @override
+  String get privacyContactSubtitle =>
+      'Kênh hỗ trợ cho yêu cầu dữ liệu, xóa dữ liệu hoặc câu hỏi privacy.';
+
+  @override
+  String get privacyHeroTitle => 'Quyền riêng tư của bạn';
+
+  @override
+  String get privacyHeroSubtitle =>
+      'Quản lý các thông tin về dữ liệu, quyền truy cập và lựa chọn bảo mật trong Moniary.';
+
+  @override
+  String get trustHeroText =>
+      'Các ghi chú này giúp người dùng hiểu rõ app làm gì, không làm gì và nên bảo vệ dữ liệu tài chính cá nhân ra sao.';
+
+  @override
+  String get notFinancialAdviceTitle => 'Không phải tư vấn tài chính';
+
+  @override
+  String get notFinancialAdviceDesc =>
+      'Moniary chỉ giúp ghi chép và xem lại dữ liệu thu chi cá nhân. App không đưa ra lời khuyên đầu tư, thuế hoặc kế toán.';
+
+  @override
+  String get userEnteredDataTitle => 'Dữ liệu do người dùng nhập';
+
+  @override
+  String get userEnteredDataDesc =>
+      'Số tiền, ghi chú, danh mục và ảnh giao dịch phụ thuộc vào dữ liệu người dùng tạo trong app.';
+
+  @override
+  String get noOverCollectionTitle => 'Không thu thập ngoài phạm vi';
+
+  @override
+  String get noOverCollectionDesc =>
+      'MVP không đọc danh bạ, SMS, email inbox, vị trí hoặc tài khoản ngân hàng tự động.';
+
+  @override
+  String get carefulFileSharingTitle => 'Cẩn thận khi chia sẻ file';
+
+  @override
+  String get carefulFileSharingDesc =>
+      'File export có thể chứa dữ liệu tài chính cá nhân. Chỉ chia sẻ với người hoặc kênh hỗ trợ đáng tin cậy.';
+
+  @override
+  String get exportDataTitle => 'Xuất dữ liệu';
+
+  @override
+  String get supportContactTitle => 'Liên hệ hỗ trợ';
+
+  @override
+  String importSuccessWithHistoryError(int count) {
+    return 'Đã import thành công $count giao dịch, nhưng lỗi khi lưu lịch sử cục bộ.';
+  }
+
+  @override
+  String legalCopyContactValue(String value) {
+    return 'Đã copy $value';
+  }
+
+  @override
+  String get storeComplianceHero =>
+      'Các mục dưới đây giúp rà soát nhanh những phần người dùng và reviewer cần thấy trước khi app được phát hành.';
+
+  @override
+  String get storeCompliancePrivacyTitle => 'Chính sách bảo mật';
+
+  @override
+  String get storeCompliancePrivacyDesc =>
+      'Có màn privacy policy mô tả dữ liệu tài chính, ảnh giao dịch và cách xử lý dữ liệu.';
+
+  @override
+  String get storeComplianceDeleteTitle => 'Xóa tài khoản';
+
+  @override
+  String get storeComplianceDeleteDesc =>
+      'Có luồng xóa tài khoản trong app và fallback tạo request thủ công.';
+
+  @override
+  String get storeComplianceExportTitle => 'Xuất dữ liệu';
+
+  @override
+  String get storeComplianceExportDesc =>
+      'Người dùng có thể export dữ liệu CSV, Excel hoặc PDF trước khi rời app.';
+
+  @override
+  String get storeComplianceDataSafetyTitle => 'Data Safety';
+
+  @override
+  String get storeComplianceDataSafetyDesc =>
+      'Có phần tóm tắt nhóm dữ liệu được lưu và nhóm dữ liệu app không thu thập.';
+
+  @override
+  String get storeComplianceContactTitle => 'Liên hệ privacy';
+
+  @override
+  String get storeComplianceContactDesc =>
+      'Có kênh hỗ trợ, request history và trạng thái xử lý yêu cầu privacy.';
+
+  @override
+  String get storeComplianceTermsTitle => 'Điều khoản sử dụng';
+
+  @override
+  String get storeComplianceTermsDesc =>
+      'Có terms of use và ghi chú giới hạn trách nhiệm của app MVP.';
+
+  @override
+  String get privacyNoData => 'Chưa có dữ liệu';
+
+  @override
+  String get privacyDataOverview => 'Tổng quan dữ liệu';
+
+  @override
+  String get privacyDataInventory => 'Nhóm dữ liệu đang lưu';
+
+  @override
+  String get privacySensitiveData => 'Lưu ý dữ liệu nhạy cảm';
+
+  @override
+  String get privacyTransparencyReport => 'Báo cáo minh bạch';
+
+  @override
+  String get privacyDataControl => 'Kiểm soát dữ liệu';
+
+  @override
+  String get metricTransaction => 'Giao dịch';
+
+  @override
+  String get metricWallet => 'Ví';
+
+  @override
+  String get metricCategory => 'Danh mục';
+
+  @override
+  String get metricHasPhoto => 'Có ảnh';
+
+  @override
+  String get metricNoPhoto => 'Không ảnh';
+
+  @override
+  String get inventoryProfileTitle => 'Hồ sơ tài khoản';
+
+  @override
+  String get inventoryProfileDesc =>
+      'Tên hiển thị, email, avatar, timezone và trạng thái đăng nhập.';
+
+  @override
+  String get inventoryWalletTitle => 'Ví';
+
+  @override
+  String get inventoryWalletDesc =>
+      'Tên ví, loại ví, số dư ban đầu, trạng thái mặc định và hiển thị.';
+
+  @override
+  String get inventoryCategoryTitle => 'Danh mục';
+
+  @override
+  String get inventoryCategoryDesc =>
+      'Tên danh mục, loại thu/chi, trạng thái mặc định và hiển thị.';
+
+  @override
+  String get inventoryTransactionTitle => 'Giao dịch';
+
+  @override
+  String get inventoryTransactionDesc =>
+      'Số tiền, loại giao dịch, ví, danh mục, ghi chú và ngày giờ.';
+
+  @override
+  String get inventoryPhotoTitle => 'Ảnh giao dịch';
+
+  @override
+  String get inventoryPhotoDesc =>
+      'Đường dẫn ảnh trong Storage private bucket, hiển thị qua signed URL.';
+
+  @override
+  String get inventorySettingsTitle => 'Thiết lập nhắc nhở';
+
+  @override
+  String get inventorySettingsDesc =>
+      'Các tùy chọn nhắc ghi chi tiêu khi tính năng reminder được bật.';
+
+  @override
+  String get sensitiveDataDesc =>
+      'Dữ liệu tài chính có thể gồm số tiền, ghi chú, ảnh hóa đơn và file đã xuất. Chỉ chia sẻ file export với người bạn tin cậy và xóa file cục bộ khi không còn cần dùng.';
+
+  @override
+  String localFilesExportCount(int count) {
+    return '$count file đã xuất';
+  }
+
+  @override
+  String localFilesLatest(String date) {
+    return 'Gần nhất: $date';
+  }
+
+  @override
+  String get localFilesNoExport => 'Chưa có file export';
+
+  @override
+  String get localFilesDesc =>
+      'Các file CSV, Excel và PDF được tạo trên thiết bị này. Bạn có thể mở lại, chia sẻ hoặc tự xóa file trong bộ nhớ cục bộ.';
+
+  @override
+  String reportSummaryDesc(int txs, int wallets, int categories) {
+    return 'Tài khoản này hiện có $txs giao dịch, $wallets ví và $categories danh mục.';
+  }
+
+  @override
+  String reportPhotoDesc(int percent) {
+    return '$percent% giao dịch đang có ảnh đính kèm trong dữ liệu của bạn.';
+  }
+
+  @override
+  String reportExportDesc(int count) {
+    return '$count file export đã được ghi nhận trên thiết bị này.';
+  }
+
+  @override
+  String get reportPrivacyDesc =>
+      'Moniary không bán dữ liệu cá nhân và chỉ dùng dữ liệu để vận hành trải nghiệm quản lý chi tiêu.';
+
+  @override
+  String get controlExportTitle => 'Xuất dữ liệu';
+
+  @override
+  String get controlExportDesc =>
+      'Tạo file CSV, Excel hoặc PDF từ dữ liệu tài khoản.';
+
+  @override
+  String get controlContactTitle => 'Liên hệ quyền riêng tư';
+
+  @override
+  String get controlContactDesc =>
+      'Tạo yêu cầu hỗ trợ về dữ liệu, quyền riêng tư hoặc xóa dữ liệu.';
+
+  @override
+  String get controlDeleteTitle => 'Xóa tài khoản';
+
+  @override
+  String get controlDeleteDesc =>
+      'Mở xác nhận xóa tài khoản và toàn bộ dữ liệu liên quan.';
+
+  @override
+  String get freshOldestTx => 'Giao dịch cũ nhất';
+
+  @override
+  String get freshNewestTx => 'Giao dịch mới nhất';
+
+  @override
+  String get freshLatestExport => 'Lần xuất dữ liệu gần nhất';
+
+  @override
+  String get supportChecklistHero =>
+      'Chuẩn bị đủ thông tin trước khi gửi yêu cầu giúp team hỗ trợ nhanh hơn và tránh chia sẻ dữ liệu nhạy cảm không cần thiết.';
+
+  @override
+  String get supportChecklistActionTitle => 'Mô tả thao tác đã làm';
+
+  @override
+  String get supportChecklistActionDesc =>
+      'Ghi rõ bạn đang export, xóa tài khoản, tạo request hay mở file nào.';
+
+  @override
+  String get supportChecklistErrorTitle => 'Thêm thông báo lỗi nếu có';
+
+  @override
+  String get supportChecklistErrorDesc =>
+      'Copy nội dung lỗi hoặc mô tả màn hình đang hiển thị để team dễ kiểm tra.';
+
+  @override
+  String get supportChecklistFileTitle =>
+      'Đính kèm file request/export khi phù hợp';
+
+  @override
+  String get supportChecklistFileDesc =>
+      'Nếu là yêu cầu privacy hoặc xóa dữ liệu thủ công, gửi kèm file JSON đã tạo.';
+
+  @override
+  String get supportChecklistDiagnosticTitle => 'Copy diagnostic info';
+
+  @override
+  String get supportChecklistDiagnosticDesc =>
+      'Gửi kèm version, build và kênh release từ Trung tâm trợ giúp.';
+
+  @override
+  String get supportChecklistSensitiveTitle => 'Không gửi dữ liệu quá nhạy cảm';
+
+  @override
+  String get supportChecklistSensitiveDesc =>
+      'Không gửi mật khẩu, access token hoặc ảnh hóa đơn nhạy cảm nếu không thật sự cần thiết.';
+
+  @override
+  String get dataSafetyPersonalInfoTitle => 'Personal info';
+
+  @override
+  String get dataSafetyPersonalInfoStatus =>
+      'Có, khi đăng nhập email hoặc Google';
+
+  @override
+  String get dataSafetyPersonalInfoDesc =>
+      'Tên hiển thị, email, avatar và user ID dùng cho đăng nhập và đồng bộ dữ liệu.';
+
+  @override
+  String get dataSafetyFinancialInfoTitle => 'Financial info';
+
+  @override
+  String get dataSafetyFinancialInfoStatus => 'Có';
+
+  @override
+  String get dataSafetyFinancialInfoDesc =>
+      'Ví, danh mục, số tiền, ghi chú và ngày giao dịch do người dùng nhập.';
+
+  @override
+  String get dataSafetyPhotosTitle => 'Photos';
+
+  @override
+  String get dataSafetyPhotosStatus => 'Có, khi người dùng chủ động chọn/chụp';
+
+  @override
+  String get dataSafetyPhotosDesc =>
+      'Ảnh giao dịch được lưu trong private storage và chỉ hiển thị qua signed URL.';
+
+  @override
+  String get dataSafetyUserIdTitle => 'User ID';
+
+  @override
+  String get dataSafetyUserIdStatus => 'Có';
+
+  @override
+  String get dataSafetyUserIdDesc =>
+      'Dùng để gắn dữ liệu với đúng tài khoản và áp dụng RLS trên Supabase.';
+
+  @override
+  String get dataSafetyLocationTitle => 'Location, Contacts, SMS';
+
+  @override
+  String get dataSafetyLocationStatus => 'Không thu thập trong MVP';
+
+  @override
+  String get dataSafetyLocationDesc =>
+      'Moniary không xin quyền vị trí, danh bạ hoặc đọc SMS/email để import giao dịch.';
+
+  @override
+  String get aboutMoniaryHeroTitle => 'Moniary';
+
+  @override
+  String get aboutMoniaryHeroDesc =>
+      'Sổ tay thu chi cá nhân có kiểm soát dữ liệu rõ ràng cho người dùng.';
+
+  @override
+  String get aboutMoniaryVersionLabel => 'Phiên bản';
+
+  @override
+  String get aboutMoniaryBuildLabel => 'Build';
+
+  @override
+  String get aboutMoniaryChannelLabel => 'Kênh phát hành';
+
+  @override
+  String get aboutMoniaryLicenseTitle => 'Giấy phép mã nguồn mở';
+
+  @override
+  String get aboutMoniaryLicenseDesc =>
+      'Xem license của Flutter và các package đang dùng trong app.';
+
+  @override
+  String get aboutMoniaryPurposeTitle => 'Mục đích';
+
+  @override
+  String get aboutMoniaryPurposeDesc =>
+      'Moniary giúp người dùng ghi lại thu chi cá nhân, quản lý ví, danh mục và ảnh giao dịch trong một trải nghiệm đơn giản.';
+
+  @override
+  String get aboutMoniaryDataDirTitle => 'Định hướng dữ liệu';
+
+  @override
+  String get aboutMoniaryDataDirDesc =>
+      'Dữ liệu tài chính thuộc về người dùng. App cung cấp công cụ xuất dữ liệu, xóa tài khoản và liên hệ privacy khi cần hỗ trợ.';
+
+  @override
+  String get aboutMoniaryMvpStatusTitle => 'Trạng thái MVP';
+
+  @override
+  String get aboutMoniaryMvpStatusDesc =>
+      'Phiên bản hiện tại tập trung vào ghi chép chi tiêu, minh bạch dữ liệu và các yêu cầu cần thiết để chuẩn bị phát hành Store.';
+
+  @override
+  String get permissionInternetTitle => 'Internet';
+
+  @override
+  String get permissionInternetStatus => 'Cần thiết';
+
+  @override
+  String get permissionInternetDesc =>
+      'Dùng để đăng nhập, đồng bộ Supabase Database và tải ảnh giao dịch từ Storage.';
+
+  @override
+  String get permissionCameraTitle => 'Camera';
+
+  @override
+  String get permissionCameraStatus => 'Chỉ hỏi khi người dùng chụp ảnh';
+
+  @override
+  String get permissionCameraDesc =>
+      'Dùng để chụp hóa đơn hoặc hình ảnh liên quan đến giao dịch.';
+
+  @override
+  String get permissionPhotoTitle => 'Photo Picker';
+
+  @override
+  String get permissionPhotoStatus => 'Chỉ mở khi người dùng chọn ảnh';
+
+  @override
+  String get permissionPhotoDesc =>
+      'Dùng Android Photo Picker để chọn ảnh mà không cần đọc toàn bộ thư viện.';
+
+  @override
+  String get permissionNotiTitle => 'Notifications';
+
+  @override
+  String get permissionNotiStatus => 'Chỉ dùng khi bật nhắc nhở';
+
+  @override
+  String get permissionNotiDesc =>
+      'MVP hiện không bắt buộc quyền này nếu chưa triển khai reminder production.';
+
+  @override
+  String get permissionLocationTitle => 'Không dùng Location, Contacts, SMS';
+
+  @override
+  String get permissionLocationStatus => 'Không khai báo trong MVP';
+
+  @override
+  String get permissionLocationDesc =>
+      'Moniary không cần vị trí, danh bạ hoặc SMS để ghi chi tiêu bằng ảnh.';
+
+  @override
+  String get privacyPolicyLeadTitle =>
+      'Moniary bảo vệ dữ liệu chi tiêu cá nhân của bạn.';
+
+  @override
+  String get privacyPolicyLeadDesc =>
+      'Nội dung này dùng cho màn hình trong app và làm bản nháp public Privacy Policy trước khi submit Google Play.';
+
+  @override
+  String get privacyPolicyDataTitle => 'Dữ liệu Moniary xử lý';
+
+  @override
+  String get privacyPolicyDataItem1 =>
+      'Thông tự tài khoản như tên hiển thị, email, avatar và user ID khi người dùng đăng nhập.';
+
+  @override
+  String get privacyPolicyDataItem2 =>
+      'Dữ liệu tài chính do người dùng nhập gồm ví, danh mục, giao dịch, số tiền, ghi chú và ngày giờ.';
+
+  @override
+  String get privacyPolicyDataItem3 =>
+      'Ảnh giao dịch do người dùng chụp hoặc chọn từ thiết bị.';
+
+  @override
+  String get privacyPolicyDataItem4 =>
+      'Thiết lập ứng dụng như nhắc nhở và tùy chọn hồ sơ.';
+
+  @override
+  String get privacyPolicyPurposeTitle => 'Mục đích sử dụng';
+
+  @override
+  String get privacyPolicyPurposeItem1 =>
+      'Đăng nhập, đồng bộ dữ liệu và khôi phục dữ liệu khi đổi thiết bị.';
+
+  @override
+  String get privacyPolicyPurposeItem2 =>
+      'Hiển thị lịch chi tiêu, chi tiết giao dịch, bộ lọc và thống kê tháng.';
+
+  @override
+  String get privacyPolicyPurposeItem3 =>
+      'Lưu ảnh giao dịch trong Supabase Storage private bucket và cấp signed URL khi cần hiển thị.';
+
+  @override
+  String get privacyPolicyPurposeItem4 =>
+      'Bảo vệ tài khoản, kiểm soát truy cập bằng RLS và hỗ trợ người dùng khi có yêu cầu.';
+
+  @override
+  String get privacyPolicyShareTitle => 'Chia sẻ dữ liệu';
+
+  @override
+  String get privacyPolicyShareItem1 =>
+      'Moniary không bán dữ liệu cá nhân hoặc dữ liệu tài chính của người dùng.';
+
+  @override
+  String get privacyPolicyShareItem2 =>
+      'Dữ liệu được lưu trên Supabase để cung cấp Auth, Database và Storage cho ứng dụng.';
+
+  @override
+  String get privacyPolicyShareItem3 =>
+      'MVP không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.';
+
+  @override
+  String get privacyPolicyDeleteTitle => 'Xóa dữ liệu';
+
+  @override
+  String get privacyPolicyDeleteItem1 =>
+      'Người dùng có thể xóa từng giao dịch trong app.';
+
+  @override
+  String get privacyPolicyDeleteItem2 =>
+      'Người dùng có thể xuất dữ liệu CSV trước khi xóa tài khoản.';
+
+  @override
+  String get privacyPolicyDeleteItem3 =>
+      'Khi xóa tài khoản, Moniary yêu cầu xóa hồ sơ, ví, danh mục, giao dịch và ảnh trong Storage thuộc user ID hiện tại.';
+
+  @override
+  String get privacyPolicySafetyTitle => 'Khai báo Google Play Data Safety';
+
+  @override
+  String get privacyPolicySafetyItem1 =>
+      'Personal info: chỉ thu thập khi người dùng đăng nhập bằng email hoặc Google.';
+
+  @override
+  String get privacyPolicySafetyItem2 =>
+      'Financial info: thu thập để lưu và hiển thị thu chi cá nhân.';
+
+  @override
+  String get privacyPolicySafetyItem3 =>
+      'Photos: chỉ thu thập ảnh người dùng chủ động chụp hoặc chọn.';
+
+  @override
+  String get privacyPolicySafetyItem4 =>
+      'Location, Contacts, SMS: không thu thập trong MVP.';
+
+  @override
+  String get privacyPolicyContactDesc =>
+      'Trước khi phát hành, team cần đưa nội dung này lên một URL public và cập nhật email liên hệ chính thức trong Play Console.';
+
+  @override
+  String get deletionPolicyStep1Title => 'Trước khi xóa';
+
+  @override
+  String get deletionPolicyStep1Desc =>
+      'Người dùng có thể xuất CSV để giữ lại lịch sử giao dịch cá nhân.';
+
+  @override
+  String get deletionPolicyStep2Title => 'Dữ liệu sẽ bị xóa';
+
+  @override
+  String get deletionPolicyStep2Desc =>
+      'Hồ sơ, ví, danh mục, giao dịch, thiết lập nhắc nhở và ảnh trong Storage thuộc user ID hiện tại.';
+
+  @override
+  String get deletionPolicyStep3Title => 'Cách xóa';
+
+  @override
+  String get deletionPolicyStep3Desc =>
+      'App gọi Edge Function delete-account. Function xác thực session, xóa ảnh giao dịch rồi xóa Auth user.';
+
+  @override
+  String get deletionPolicyStep4Title => 'Dữ liệu ngoài app';
+
+  @override
+  String get deletionPolicyStep4Desc =>
+      'Nếu cần xóa dữ liệu backup, log hoặc yêu cầu ngoài app, người dùng có thể liên hệ qua kênh privacy support của team.';
+
+  @override
+  String get termsOfUseHeroDesc =>
+      'Các điều khoản này tóm tắt cách người dùng nên sử dụng Moniary trong phiên bản MVP.';
+
+  @override
+  String get termsOfUseScopeTitle => '1. Phạm vi sử dụng';
+
+  @override
+  String get termsOfUseScopeDesc =>
+      'Moniary được cung cấp để người dùng ghi chép và tự quản lý dữ liệu thu chi cá nhân. Người dùng chịu trách nhiệm về độ chính xác của dữ liệu đã nhập.';
+
+  @override
+  String get termsOfUseAccountTitle => '2. Dữ liệu tài khoản';
+
+  @override
+  String get termsOfUseAccountDesc =>
+      'Người dùng có thể xuất dữ liệu, gửi yêu cầu privacy và xóa tài khoản theo các công cụ được cung cấp trong app.';
+
+  @override
+  String get termsOfUseContentTitle => '3. Nội dung người dùng';
+
+  @override
+  String get termsOfUseContentDesc =>
+      'Ghi chú, số tiền và ảnh giao dịch do người dùng nhập hoặc tải lên chỉ nên phục vụ mục đích quản lý chi tiêu cá nhân.';
+
+  @override
+  String get termsOfUseLiabilityTitle => '4. Giới hạn trách nhiệm';
+
+  @override
+  String get termsOfUseLiabilityDesc =>
+      'Moniary không phải công cụ tư vấn tài chính, kế toán, thuế hoặc pháp lý. Các thống kê trong app chỉ có tính tham khảo.';
+
+  @override
+  String get termsOfUseChangesTitle => '5. Thay đổi điều khoản';
+
+  @override
+  String get termsOfUseChangesDesc =>
+      'Điều khoản có thể được cập nhật khi app bổ sung tính năng hoặc chuẩn bị phát hành chính thức.';
 }

@@ -41,7 +41,13 @@
   "splashSubtitle": "Track expenses with photos",
   "splashDescription": "Capture spending, save to calendar,\nmanage money as easily as saving memories.",
   "splashStarting": "Starting {appName}...",
-  "@splashStarting": {"placeholders": {"appName": {"type": "String"}}},
+  "@splashStarting": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingSkip": "Skip",
   "onboardingStart": "Start",
   "onboardingNext": "Next",
@@ -83,9 +89,24 @@
   "calendarMonthlyIncome": "Monthly Income",
   "calendarEmptyMessage": "No transactions this month. Add a transaction to start tracking.",
   "calendarStatsMessage": "{count} transactions in {days} active days. Loaded from Supabase.",
-  "@calendarStatsMessage": {"placeholders": {"count": {"type": "int"}, "days": {"type": "int"}}},
+  "@calendarStatsMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "calendarLoadError": "Could not load calendar: {error}",
-  "@calendarLoadError": {"placeholders": {"error": {"type": "String"}}},
+  "@calendarLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "calendarStatsTab": "Stats",
   "calendarLoading": "Syncing calendar...",
   "calendarEmptyTitle": "Nothing here!",
@@ -101,15 +122,33 @@
   "calendarToday": "Today",
   "transactionSaveTransaction": "Save transaction",
   "transactionLoadDayError": "Could not load transactions for this day.\n{error}",
-  "@transactionLoadDayError": {"placeholders": {"error": {"type": "String"}}},
+  "@transactionLoadDayError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "transactionTotalIncome": "Total Income",
   "transactionTotalExpense": "Total Expense",
   "transactionNetTotal": "Net Total",
   "transactionCount": "{count} transactions",
-  "@transactionCount": {"placeholders": {"count": {"type": "int"}}},
+  "@transactionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "transactionDayEmpty": "No transactions for this day. Tap + to add one.",
   "transactionLoadDetailError": "Could not load transaction details.\n{error}",
-  "@transactionLoadDetailError": {"placeholders": {"error": {"type": "String"}}},
+  "@transactionLoadDetailError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "transactionNoteEmpty": "No note for this transaction.",
   "transactionDeleteTitleQuestion": "Delete transaction?",
   "transactionDeleteUndone": "This action cannot be undone.",
@@ -128,7 +167,13 @@
   "transactionDeleteConfirm": "Delete this transaction?",
   "transactionDeleteSuccess": "Transaction deleted.",
   "transactionSaveError": "Could not save transaction: {error}",
-  "@transactionSaveError": {"placeholders": {"error": {"type": "String"}}},
+  "@transactionSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "transactionCreateSubtitle": "Save transaction first, photo can be added in the next step.",
   "transactionWalletCategoryLoadError": "Could not load wallets/categories. Open data management to check.",
   "transactionChangePhoto": "Change photo",
@@ -165,7 +210,13 @@
   "walletTypeCredit": "Credit Card",
   "walletTypeOther": "Other",
   "walletError": "Wallet error: {error}",
-  "@walletError": {"placeholders": {"error": {"type": "String"}}},
+  "@walletError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "walletNeedOneActive": "You need at least 1 active wallet to create a transaction.",
   "categoryTitle": "Categories",
   "categoryDescription": "Manage income/expense categories for transactions.",
@@ -180,7 +231,13 @@
   "categorySave": "Save category",
   "categoryNameRequired": "Category name cannot be empty.",
   "categoryError": "Category error: {error}",
-  "@categoryError": {"placeholders": {"error": {"type": "String"}}},
+  "@categoryError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "categoryExpense": "Expense",
   "categoryIncome": "Income",
   "categoryNeedOneActive": "You need at least 1 active category for this transaction type.",
@@ -192,10 +249,22 @@
   "scanReviewTitle": "Review receipt",
   "scanMerchant": "Merchant",
   "scanOcrConfidence": "OCR confidence: {percent}%. Please verify before saving.",
-  "@scanOcrConfidence": {"placeholders": {"percent": {"type": "int"}}},
+  "@scanOcrConfidence": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "scanItemsTitle": "Detected items",
   "scanQuantity": "Quantity: {quantity}",
-  "@scanQuantity": {"placeholders": {"quantity": {"type": "int"}}},
+  "@scanQuantity": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      }
+    }
+  },
   "scanSuccessMessage": "Receipt read successfully. You can review and edit information.",
   "scanScanning": "Scanning...",
   "scanExtractButton": "Extract data",
@@ -211,7 +280,13 @@
   "groupNameLabel": "Group name",
   "groupNeedLogin": "You need to be logged in to create a group.",
   "groupMemberCount": "{count} members",
-  "@groupMemberCount": {"placeholders": {"count": {"type": "int"}}},
+  "@groupMemberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupLoadError": "Could not load group list.",
   "groupAddMember": "Add member",
   "groupMemberName": "Member name",
@@ -232,19 +307,49 @@
   "groupDeleteExpenseConfirmTitle": "Delete expense?",
   "groupDeleteExpenseConfirmMessage": "This action will update group balances.",
   "groupPayerSubtitle": "{payer} paid • {date}",
-  "@groupPayerSubtitle": {"placeholders": {"payer": {"type": "String"}, "date": {"type": "String"}}},
+  "@groupPayerSubtitle": {
+    "placeholders": {
+      "payer": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "groupEmptyExpensesMessage": "No expenses yet. Add the first expense to start splitting.",
   "debtSummaryTitle": "Debt summary",
   "debtNoData": "No expense data yet.",
   "debtSettlementTitle": "Settlement suggestions",
   "debtNoSettlement": "No debts to settle.",
   "debtOwes": "{from} pays {to} {amount}",
-  "@debtOwes": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}, "amount": {"type": "String"}}},
+  "@debtOwes": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "debtSummaryAppBarTitle": "Group balances",
   "debtLoadError": "Could not calculate debts.",
   "debtExplanation": "Positive indicates money to receive, negative indicates money to pay.",
   "debtOwesPayerToPayee": "{from} pays {to}",
-  "@debtOwesPayerToPayee": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
+  "@debtOwesPayerToPayee": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
   "debtMember": "Member",
   "debtToReceive": "To receive",
   "debtToPay": "To pay",
@@ -266,11 +371,26 @@
   "expenseFormDate": "Date",
   "validationAmountPositive": "Amount must be greater than 0.",
   "validationMinMembers": "Group must have at least {min} members.",
-  "@validationMinMembers": {"placeholders": {"min": {"type": "int"}}},
+  "@validationMinMembers": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
   "validationSelectPayer": "Select a payer.",
   "validationSelectParticipant": "Select at least one participant.",
   "validationSplitMismatch": "Split total ({splitTotal}) must equal expense total ({total}).",
-  "@validationSplitMismatch": {"placeholders": {"splitTotal": {"type": "String"}, "total": {"type": "String"}}},
+  "@validationSplitMismatch": {
+    "placeholders": {
+      "splitTotal": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
   "validationNegativeSplit": "Split amounts cannot be negative.",
   "validationInvalidParticipants": "Invalid list of participants.",
   "validationSplitCountMismatch": "Each participant needs exactly one split.",
@@ -308,7 +428,13 @@
   "deleteAccountUnderstand": "I understand that my data will be permanently deleted.",
   "deleteAccountConfirmationText": "DELETE ACCOUNT",
   "deleteAccountConfirmInput": "Enter {text} to confirm",
-  "@deleteAccountConfirmInput": {"placeholders": {"text": {"type": "String"}}},
+  "@deleteAccountConfirmInput": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "exportTitle": "Export data",
   "exportFormat": "File format",
   "exportDateRange": "Date range",
@@ -319,7 +445,7 @@
   "exportDataTypeCategories": "Categories",
   "exportButton": "Export data",
   "exportDone": "Data exported",
-  "exportHistoryTitle": "Export history",
+  "exportHistoryTitle": "Export History",
   "exportHistoryEmpty": "No export files yet.",
   "exportRecentTitle": "Recent exports",
   "exportRecentHistoryError": "Could not load recent exports.",
@@ -335,7 +461,7 @@
   "accountDeletionRequestReasonLabel": "Reason or notes for the request",
   "accountDeletionRequestReasonHint": "Example: I no longer use the app and want to delete all data.",
   "accountDeletionRequestSubmit": "Create data deletion request",
-  "accountDeletionRequestSuccessDesc": "Your request has been successfully sent to the system.",
+  "accountDeletionRequestSuccessDesc": "The request has been created. Please check the history and send the request manually.",
   "deleteAccountHelpTitle": "Account Deletion Help",
   "deleteAccountHelpHero": "Deleting an account is a major action. This guide helps users prepare data and know how to send support requests when needed.",
   "deleteAccountHelpStep1Title": "1. Export data before deleting",
@@ -354,12 +480,33 @@
   "legalContactSupportDesc": "General app support, file export, or user actions.",
   "legalContactLegalDesc": "Terms issues, Store releases, or legal requests.",
   "privacyDetailCreatedAt": "Created at {date}",
-  "@privacyDetailCreatedAt": {"placeholders": {"date": {"type": "String"}}},
+  "@privacyDetailCreatedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "privacyDetailExpectedResponse": "Expected response",
   "privacyDetailExpectedResponseDesc": "{date} or within {days} business days after submission.",
-  "@privacyDetailExpectedResponseDesc": {"placeholders": {"date": {"type": "String"}, "days": {"type": "int"}}},
+  "@privacyDetailExpectedResponseDesc": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "privacyDetailMarkStatus": "Mark as: {status}",
-  "@privacyDetailMarkStatus": {"placeholders": {"status": {"type": "String"}}},
+  "@privacyDetailMarkStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
   "privacyDetailContentTitle": "Request content",
   "privacyDetailContentEmpty": "No additional content.",
   "privacyDetailFileTitle": "Created file",
@@ -389,12 +536,24 @@
   "profileLinkSuccess": "Linked email account successfully!",
   "profileLinkGoogleBrowser": "Complete Google linking in browser to return to Moniary.",
   "profileLinkGoogleError": "Google linking error: {error}",
-  "@profileLinkGoogleError": {"placeholders": {"error": {"type": "String"}}},
+  "@profileLinkGoogleError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "profileEditInfo": "Edit profile info",
   "profileChangeTimezone": "Change timezone",
   "profileAnonymousBadge": "Anonymous account",
   "profileVerifiedBadge": "Verified ({provider})",
-  "@profileVerifiedBadge": {"placeholders": {"provider": {"type": "String"}}},
+  "@profileVerifiedBadge": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
   "profileSignOutDialogTitle": "Sign out",
   "profileSignOutDialogMessage": "Are you sure you want to sign out?",
   "profileCancel": "Cancel",
@@ -440,7 +599,7 @@
   "privacyRequestCreated": "Request created",
   "privacyCopyEmail": "Copy email",
   "privacyCopyInstructions": "Copy instructions",
-  "privacyPolicyTitle": "Privacy policy",
+  "privacyPolicyTitle": "Privacy Policy",
   "privacyRequestDetailTitle": "Request detail",
   "privacyCopyFilePath": "Copy file path",
   "privacyCopyFilePathSuccess": "Copied file path",
@@ -490,13 +649,31 @@
   "importStatusFailed": "Failed",
   "settingsTitle": "Settings",
   "importPreviewTitle": "Preview ({count} valid rows)",
-  "@importPreviewTitle": {"placeholders": {"count": {"type": "int"}}},
+  "@importPreviewTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "importSuccess": "Imported {count} transactions",
-  "@importSuccess": {"placeholders": {"count": {"type": "int"}}},
+  "@importSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "importNoWallets": "No wallets found. Create a wallet first.",
   "importSelectWallet": "Select target wallet",
   "importErrorWallets": "Error loading wallets: {error}",
-  "@importErrorWallets": {"placeholders": {"error": {"type": "String"}}},
+  "@importErrorWallets": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "importErrorUnknown": "Unknown error",
   "importErrorMissingColumns": "Missing columns (expected 5)",
   "importErrorInvalidDate": "Invalid date format (use YYYY-MM-DD)",
@@ -603,5 +780,356 @@
     }
   },
   "activeSessionsOtherOs": "Other OS",
-  "activeSessionsOtherBrowser": "Other browser/app"
+  "activeSessionsOtherBrowser": "Other browser/app",
+  "privacyReqDataAccess": "Data Access",
+  "privacyReqDataAccessDesc": "Request Moniary to provide information about the data associated with your account.",
+  "privacyReqExportHelp": "Data Export Help",
+  "privacyReqExportHelpDesc": "Request assistance when unable to self-export data in the app.",
+  "privacyReqCorrection": "Data Correction",
+  "privacyReqCorrectionDesc": "Request to adjust incorrect personal or financial data.",
+  "privacyReqDeletion": "Data Deletion",
+  "privacyReqDeletionDesc": "Request to delete data or get help when account deletion fails.",
+  "privacyReqComplaint": "Privacy Complaint",
+  "privacyReqComplaintDesc": "Send feedback on how personal data is handled in Moniary.",
+  "privacyStatusReady": "Ready to send",
+  "privacyStatusReadyDesc": "The request file has been created and is waiting for you to send it.",
+  "privacyStatusSent": "Sent manually",
+  "privacyStatusSentDesc": "The user has sent the request via email or support channel.",
+  "privacyStatusResolved": "Resolved",
+  "privacyStatusResolvedDesc": "The request has been processed or no longer needs tracking.",
+  "privacyTplDataAccess": "I want to know what data Moniary is currently storing about my account.",
+  "privacyTplExportHelp": "I need help exporting account data as I cannot complete it within the app.",
+  "privacyTplCorrection": "I want to request correction of inaccurate data in my account. The data to check is:",
+  "privacyTplDeletion": "I want to request the deletion of my personal and financial data linked to my account.",
+  "privacyTplComplaint": "I want to submit feedback or a complaint about how Moniary handles my personal data.",
+  "privacyTplDefault": "I need support regarding privacy and personal data in Moniary.",
+  "privacyContactRequestType": "Request Type",
+  "privacyContactRequestContent": "Request Content",
+  "privacyContactRequestHint": "Briefly describe what you need support with.",
+  "privacyContactPreview": "Request Preview",
+  "privacyContactPreviewEmpty": "Request content is empty.",
+  "privacyContactProcessTimeline": "Response Process",
+  "privacyContactProcessStep1": "Create request in app",
+  "privacyContactProcessStep1Desc": "The app prepares the content for you to send to support.",
+  "privacyContactProcessStep2": "Send request manually",
+  "privacyContactProcessStep2Desc": "Send the request via email to {email}.",
+  "@privacyContactProcessStep2Desc": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyContactProcessStep3": "Track response",
+  "privacyContactProcessStep3Desc": "Expected response time is {days} business days.",
+  "@privacyContactProcessStep3Desc": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "privacyContactShortcuts": "Support Shortcuts",
+  "privacyContactCopyEmailSuccess": "Support email copied.",
+  "privacyContactCopyGuide": "Email: {email}\nSubject: Moniary privacy request\nContent: Paste the copied request content from the app.",
+  "@privacyContactCopyGuide": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyContactCopyGuideSuccess": "Request instructions copied.",
+  "privacyContactHeroTitle": "Personal Data Requests",
+  "privacyContactHeroDesc": "If not possible in-app, users can contact the team for data support requests.",
+  "privacyContactEmailTitle": "Support Email",
+  "privacyContactEmailDesc": "Used for data deletion, export requests, or privacy questions.",
+  "privacyContactInfoTitle": "Information to Send",
+  "privacyContactInfoValue": "User ID or login email",
+  "privacyContactInfoDesc": "Do not send passwords, access tokens, sensitive receipt photos, or detailed amounts via email.",
+  "privacyContactTimeTitle": "Response Time",
+  "privacyContactTimeValue": "Within 7 business days",
+  "privacyContactTimeDesc": "The team will update actual times before production release.",
+  "privacyContactRecentRequests": "Recent Requests",
+  "privacyContactRequestStatus": "Status",
+  "privacyContactRequestFile": "Attached file",
+  "privacyRequestSuccessDesc": "Request created. Please check history and send the request manually.",
+  "privacyAndAccountTitle": "Privacy & Account",
+  "privacyAndAccountSubtitle": "View data rights, privacy requests, and account-related options.",
+  "dataRightsTitle": "Data Rights",
+  "dataRightsSubtitle": "Summary of rights to view, export, edit/delete data, and privacy contact.",
+  "exportDataSubTitle": "Troubleshooting CSV, Excel, or PDF export errors, empty files, or missing files.",
+  "createExportFileTitle": "Create Export File",
+  "createExportFileSubtitle": "Open export flow to create a copy of your personal data.",
+  "contactSupportSubtitle": "Create a privacy request or copy contact info to send to the support team.",
+  "deleteAccountSubtitle": "Preparation before deletion, understanding affected data, and fallbacks.",
+  "supportChecklistTitle": "Support Checklist",
+  "supportChecklistSubtitle": "Prepare bug description, related files, and diagnostic info before requesting.",
+  "helpHeroText": "Quickly find guides on data, privacy, export, and account support in Moniary.",
+  "supportDiagnosticTitle": "Support Info",
+  "supportDiagnosticSubtitle": "Copy version, build, and contact channels to include with bug reports.",
+  "helpCenterTitle": "Help Center",
+  "helpCenterSubtitle": "Find guides on privacy, accounts, data export, and contacting support.",
+  "aboutMoniaryTitle": "About Moniary",
+  "aboutMoniarySubtitle": "View app purpose, data direction, and MVP status before release.",
+  "privacyPolicySubtitle": "See how Moniary handles personal data, finances, and transaction photos.",
+  "termsOfUseTitle": "Terms of Use",
+  "termsOfUseSubtitle": "View scope of use, user responsibilities, and MVP limitations.",
+  "dataRetentionPolicyTitle": "Data Retention Policy",
+  "dataRetentionPolicySubtitle": "See what is stored on cloud vs locally, and handling after account deletion.",
+  "thirdPartyServicesTitle": "Third-Party Services",
+  "thirdPartyServicesSubtitle": "See how the app uses Supabase, Flutter packages, and device storage.",
+  "releaseChecklistTitle": "Release Checklist",
+  "releaseChecklistSubtitle": "Review privacy, data export, account deletion, and contacts before Store release.",
+  "trustSafetyTitle": "Trust & Safety",
+  "trustSafetySubtitle": "View notes on financial advice limits, user data, and file sharing.",
+  "financialDisclaimerTitle": "Financial Disclaimer",
+  "financialDisclaimerSubtitle": "Liability limit: app is not for investment, tax, accounting, or legal advice.",
+  "policyChangelogTitle": "Policy Changelog",
+  "policyChangelogSubtitle": "View milestones for privacy, legal, and store readiness updates.",
+  "userDataRightsTitle": "User Data Rights",
+  "userDataRightsSubtitle": "Summary of data viewing, exporting, edit/delete requests, and privacy contact.",
+  "policyAcceptanceNoticeTitle": "Policy Acceptance Notice",
+  "policyAcceptanceNoticeSubtitle": "Explains that continued use applies current policies and terms.",
+  "legalContactTitle": "Legal Contact",
+  "legalContactSubtitle": "View and copy privacy, support, and legal emails for Store release.",
+  "dataSafetyTitle": "Data Safety",
+  "dataSafetySubtitle": "Summary of data groups collected or not collected in the MVP.",
+  "myDataTitle": "My Data",
+  "myDataSubtitle": "Quick view of how much data the app stores for this account.",
+  "permissionsTitle": "Permissions",
+  "permissionsSubtitle": "Explanation of why Moniary uses or doesn't use each Android permission.",
+  "exportMyDataTitle": "Export My Data",
+  "exportMyDataSubtitle": "Choose file format and create a copy of your personal data.",
+  "exportHistorySubtitle": "View CSV, Excel, or PDF files generated from this account.",
+  "deleteAccountSubtitle2": "Delete profile, wallets, categories, transactions, and saved photos.",
+  "dataDeletionPolicyTitle": "Data Deletion Policy",
+  "dataDeletionPolicySubtitle": "See what data is deleted and how Moniary handles deletion requests.",
+  "dataDeletionRequestTitle": "Data Deletion Request",
+  "dataDeletionRequestSubtitle": "Create manual deletion request file if direct deletion fails.",
+  "privacyContactTitle": "Privacy Contact",
+  "privacyContactSubtitle": "Support channel for data requests, deletion requests, or privacy questions.",
+  "privacyHeroTitle": "Your Privacy",
+  "privacyHeroSubtitle": "Manage information on data, access rights, and security options in Moniary.",
+  "trustHeroText": "These notes clarify what the app does, doesn't do, and how to protect your financial data.",
+  "notFinancialAdviceTitle": "Not Financial Advice",
+  "notFinancialAdviceDesc": "Moniary only helps record and review personal income/expenses. No investment, tax, or accounting advice.",
+  "userEnteredDataTitle": "User-Entered Data",
+  "userEnteredDataDesc": "Amounts, notes, categories, and photos depend entirely on user-created data.",
+  "noOverCollectionTitle": "No Over-Collection",
+  "noOverCollectionDesc": "MVP does not read contacts, SMS, emails, location, or auto-sync bank accounts.",
+  "carefulFileSharingTitle": "Careful File Sharing",
+  "carefulFileSharingDesc": "Export files contain personal financial data. Share only with trusted contacts or support.",
+  "exportDataTitle": "Export Data",
+  "supportContactTitle": "Support Contact",
+  "importSuccessWithHistoryError": "Successfully imported {count} transactions, but failed to save local history.",
+  "@importSuccessWithHistoryError": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "legalCopyContactValue": "Copied {value}",
+  "@legalCopyContactValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "storeComplianceHero": "These items help review user and reviewer-facing elements before release.",
+  "storeCompliancePrivacyTitle": "Privacy Policy",
+  "storeCompliancePrivacyDesc": "Privacy policy describes financial data, photos, and handling.",
+  "storeComplianceDeleteTitle": "Delete Account",
+  "storeComplianceDeleteDesc": "Account deletion flow and manual request fallback exist.",
+  "storeComplianceExportTitle": "Export Data",
+  "storeComplianceExportDesc": "Users can export CSV, Excel, or PDF data.",
+  "storeComplianceDataSafetyTitle": "Data Safety",
+  "storeComplianceDataSafetyDesc": "Summarizes data collected and not collected.",
+  "storeComplianceContactTitle": "Privacy Contact",
+  "storeComplianceContactDesc": "Support channels and request history exist.",
+  "storeComplianceTermsTitle": "Terms of Use",
+  "storeComplianceTermsDesc": "Terms of use and liability limits are defined.",
+  "privacyNoData": "No data available",
+  "privacyDataOverview": "Data Overview",
+  "privacyDataInventory": "Stored Data Types",
+  "privacySensitiveData": "Sensitive Data Notice",
+  "privacyTransparencyReport": "Transparency Report",
+  "privacyDataControl": "Data Controls",
+  "metricTransaction": "Transactions",
+  "metricWallet": "Wallets",
+  "metricCategory": "Categories",
+  "metricHasPhoto": "With Photo",
+  "metricNoPhoto": "Without Photo",
+  "inventoryProfileTitle": "Account Profile",
+  "inventoryProfileDesc": "Display name, email, avatar, timezone, and login state.",
+  "inventoryWalletTitle": "Wallets",
+  "inventoryWalletDesc": "Wallet name, type, initial balance, default state, and visibility.",
+  "inventoryCategoryTitle": "Categories",
+  "inventoryCategoryDesc": "Category name, type, default state, and visibility.",
+  "inventoryTransactionTitle": "Transactions",
+  "inventoryTransactionDesc": "Amount, type, wallet, category, note, and date.",
+  "inventoryPhotoTitle": "Transaction Photos",
+  "inventoryPhotoDesc": "Path in Storage private bucket, shown via signed URL.",
+  "inventorySettingsTitle": "Reminder Settings",
+  "inventorySettingsDesc": "Notification preferences when reminders are enabled.",
+  "sensitiveDataDesc": "Financial data includes amounts, notes, photos, and exported files. Only share exports with trusted parties and delete local files when no longer needed.",
+  "localFilesExportCount": "{count} exported files",
+  "@localFilesExportCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localFilesLatest": "Latest: {date}",
+  "@localFilesLatest": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "localFilesNoExport": "No exported files yet",
+  "localFilesDesc": "CSV, Excel, and PDF files are stored on this device. You can open, share, or delete them manually.",
+  "reportSummaryDesc": "This account currently has {txs} transactions, {wallets} wallets, and {categories} categories.",
+  "@reportSummaryDesc": {
+    "placeholders": {
+      "txs": {
+        "type": "int"
+      },
+      "wallets": {
+        "type": "int"
+      },
+      "categories": {
+        "type": "int"
+      }
+    }
+  },
+  "reportPhotoDesc": "{percent}% of your transactions contain photos.",
+  "@reportPhotoDesc": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportExportDesc": "{count} exported files have been recorded on this device.",
+  "@reportExportDesc": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportPrivacyDesc": "Moniary does not sell personal data and uses it only to run the expense management experience.",
+  "controlExportTitle": "Export Data",
+  "controlExportDesc": "Create a CSV, Excel, or PDF file from your account data.",
+  "controlContactTitle": "Privacy Contact",
+  "controlContactDesc": "Create a support request regarding data, privacy, or account deletion.",
+  "controlDeleteTitle": "Delete Account",
+  "controlDeleteDesc": "Open confirmation to delete your account and all associated data.",
+  "freshOldestTx": "Oldest transaction",
+  "freshNewestTx": "Newest transaction",
+  "freshLatestExport": "Latest data export",
+  "supportChecklistHero": "Prepare enough information before submitting a request to help the team resolve it faster and avoid sharing sensitive data unnecessarily.",
+  "supportChecklistActionTitle": "Describe what you did",
+  "supportChecklistActionDesc": "Specify if you were exporting, deleting your account, creating a request, or opening a file.",
+  "supportChecklistErrorTitle": "Include error messages if any",
+  "supportChecklistErrorDesc": "Copy the error message or describe the screen so the team can investigate.",
+  "supportChecklistFileTitle": "Attach request/export files when relevant",
+  "supportChecklistFileDesc": "If it is a privacy request or manual deletion, attach the generated JSON file.",
+  "supportChecklistDiagnosticTitle": "Copy diagnostic info",
+  "supportChecklistDiagnosticDesc": "Include version, build, and release channel from the Help Center.",
+  "supportChecklistSensitiveTitle": "Do not send overly sensitive data",
+  "supportChecklistSensitiveDesc": "Do not send passwords, access tokens, or sensitive receipt photos unless absolutely necessary.",
+  "dataSafetyPersonalInfoTitle": "Personal info",
+  "dataSafetyPersonalInfoStatus": "Yes, when logging in with email or Google",
+  "dataSafetyPersonalInfoDesc": "Display name, email, avatar, and user ID used for login and data synchronization.",
+  "dataSafetyFinancialInfoTitle": "Financial info",
+  "dataSafetyFinancialInfoStatus": "Yes",
+  "dataSafetyFinancialInfoDesc": "Wallets, categories, amounts, notes, and transaction dates entered by the user.",
+  "dataSafetyPhotosTitle": "Photos",
+  "dataSafetyPhotosStatus": "Yes, when actively chosen/taken by the user",
+  "dataSafetyPhotosDesc": "Transaction photos are stored in private storage and only accessible via signed URLs.",
+  "dataSafetyUserIdTitle": "User ID",
+  "dataSafetyUserIdStatus": "Yes",
+  "dataSafetyUserIdDesc": "Used to associate data with the correct account and apply RLS on Supabase.",
+  "dataSafetyLocationTitle": "Location, Contacts, SMS",
+  "dataSafetyLocationStatus": "Not collected in MVP",
+  "dataSafetyLocationDesc": "Moniary does not request location, contacts, or read SMS/email for transaction imports.",
+  "aboutMoniaryHeroTitle": "Moniary",
+  "aboutMoniaryHeroDesc": "A personal finance notebook with clear data control for users.",
+  "aboutMoniaryVersionLabel": "Version",
+  "aboutMoniaryBuildLabel": "Build",
+  "aboutMoniaryChannelLabel": "Release channel",
+  "aboutMoniaryLicenseTitle": "Open source licenses",
+  "aboutMoniaryLicenseDesc": "View licenses for Flutter and packages used in this app.",
+  "aboutMoniaryPurposeTitle": "Purpose",
+  "aboutMoniaryPurposeDesc": "Moniary helps users record personal finances, manage wallets, categories, and transaction photos in a simple experience.",
+  "aboutMoniaryDataDirTitle": "Data Philosophy",
+  "aboutMoniaryDataDirDesc": "Financial data belongs to the user. The app provides tools to export data, delete accounts, and contact privacy support.",
+  "aboutMoniaryMvpStatusTitle": "MVP Status",
+  "aboutMoniaryMvpStatusDesc": "The current version focuses on expense tracking, data transparency, and requirements needed for Store release.",
+  "permissionInternetTitle": "Internet",
+  "permissionInternetStatus": "Required",
+  "permissionInternetDesc": "Used for login, Supabase Database synchronization, and downloading transaction photos from Storage.",
+  "permissionCameraTitle": "Camera",
+  "permissionCameraStatus": "Only asked when user takes a photo",
+  "permissionCameraDesc": "Used to take photos of receipts or images related to transactions.",
+  "permissionPhotoTitle": "Photo Picker",
+  "permissionPhotoStatus": "Only opens when user selects a photo",
+  "permissionPhotoDesc": "Uses Android Photo Picker to select photos without reading the entire gallery.",
+  "permissionNotiTitle": "Notifications",
+  "permissionNotiStatus": "Only used when reminders are enabled",
+  "permissionNotiDesc": "MVP does not require this permission if reminders are not deployed to production.",
+  "permissionLocationTitle": "Location, Contacts, SMS not used",
+  "permissionLocationStatus": "Not declared in MVP",
+  "permissionLocationDesc": "Moniary does not need location, contacts, or SMS to record expenses with photos.",
+  "privacyPolicyLeadTitle": "Moniary protects your personal spending data.",
+  "privacyPolicyLeadDesc": "This content is used for the in-app screen and as a draft public Privacy Policy before submitting to Google Play.",
+  "privacyPolicyDataTitle": "Data processed by Moniary",
+  "privacyPolicyDataItem1": "Account information such as display name, email, avatar, and user ID upon login.",
+  "privacyPolicyDataItem2": "Financial data entered by the user including wallets, categories, transactions, amounts, notes, and dates.",
+  "privacyPolicyDataItem3": "Transaction photos taken or selected by the user.",
+  "privacyPolicyDataItem4": "App settings such as reminders and profile preferences.",
+  "privacyPolicyPurposeTitle": "Purpose of use",
+  "privacyPolicyPurposeItem1": "Login, data synchronization, and data recovery when changing devices.",
+  "privacyPolicyPurposeItem2": "Display spending calendar, transaction details, filters, and monthly statistics.",
+  "privacyPolicyPurposeItem3": "Store transaction photos in Supabase Storage private bucket and provide signed URLs for viewing.",
+  "privacyPolicyPurposeItem4": "Protect accounts, control access with RLS, and support users upon request.",
+  "privacyPolicyShareTitle": "Data sharing",
+  "privacyPolicyShareItem1": "Moniary does not sell personal or financial data of users.",
+  "privacyPolicyShareItem2": "Data is stored on Supabase to provide Auth, Database, and Storage for the app.",
+  "privacyPolicyShareItem3": "MVP does not automatically read location, contacts, SMS, personal email, or bank data.",
+  "privacyPolicyDeleteTitle": "Data deletion",
+  "privacyPolicyDeleteItem1": "Users can delete individual transactions within the app.",
+  "privacyPolicyDeleteItem2": "Users can export CSV data before deleting their account.",
+  "privacyPolicyDeleteItem3": "When deleting an account, Moniary requests deletion of profiles, wallets, categories, transactions, and photos in Storage belonging to the current user ID.",
+  "privacyPolicySafetyTitle": "Google Play Data Safety Declaration",
+  "privacyPolicySafetyItem1": "Personal info: collected only when users log in with email or Google.",
+  "privacyPolicySafetyItem2": "Financial info: collected to store and display personal finances.",
+  "privacyPolicySafetyItem3": "Photos: collected only when users actively take or select photos.",
+  "privacyPolicySafetyItem4": "Location, Contacts, SMS: not collected in MVP.",
+  "privacyPolicyContactDesc": "Before release, the team needs to publish this content on a public URL and update the official contact email in the Play Console.",
+  "deletionPolicyStep1Title": "Before deleting",
+  "deletionPolicyStep1Desc": "Users can export a CSV to retain their personal transaction history.",
+  "deletionPolicyStep2Title": "Data to be deleted",
+  "deletionPolicyStep2Desc": "Profiles, wallets, categories, transactions, reminder settings, and photos in Storage belonging to the current user ID.",
+  "deletionPolicyStep3Title": "How to delete",
+  "deletionPolicyStep3Desc": "The app calls the delete-account Edge Function. The function verifies the session, deletes transaction photos, and then deletes the Auth user.",
+  "deletionPolicyStep4Title": "Data outside the app",
+  "deletionPolicyStep4Desc": "If backup data, logs, or external requests need to be deleted, users can contact the team via the privacy support channel.",
+  "termsOfUseHeroDesc": "These terms summarize how users should use Moniary in the MVP version.",
+  "termsOfUseScopeTitle": "1. Scope of use",
+  "termsOfUseScopeDesc": "Moniary is provided for users to record and self-manage personal financial data. Users are responsible for the accuracy of the entered data.",
+  "termsOfUseAccountTitle": "2. Account data",
+  "termsOfUseAccountDesc": "Users can export data, submit privacy requests, and delete accounts using the tools provided in the app.",
+  "termsOfUseContentTitle": "3. User content",
+  "termsOfUseContentDesc": "Notes, amounts, and transaction photos entered or uploaded by the user should only serve personal expense management purposes.",
+  "termsOfUseLiabilityTitle": "4. Limitation of liability",
+  "termsOfUseLiabilityDesc": "Moniary is not a financial, accounting, tax, or legal advisory tool. In-app statistics are for reference only.",
+  "termsOfUseChangesTitle": "5. Changes to terms",
+  "termsOfUseChangesDesc": "Terms may be updated when the app adds features or prepares for official release."
 }

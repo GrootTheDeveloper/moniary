@@ -530,6 +530,7 @@ class TransactionRepository {
           categoryId: _mockTransactions[index].categoryId,
           categoryName: _mockTransactions[index].categoryName,
           categoryColor: _mockTransactions[index].categoryColor,
+          isImportant: _mockTransactions[index].isImportant,
         );
       }
       return;

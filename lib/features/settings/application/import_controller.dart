@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:moniary/core/supabase/supabase_providers.dart';
+import 'package:moniary/core/constants/app_constants.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
+import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/shared/utils/app_logger.dart';
 import 'package:moniary/features/settings/data/repositories/import_repository.dart';
 import 'package:moniary/features/transactions/data/repositories/transaction_repository.dart';
@@ -98,10 +99,12 @@ class ImportController extends Notifier<ImportState> {
     final importRepo = ref.read(importRepositoryProvider);
     ImportHistoryEntry? historyEntry;
     var importCount = 0;
+    bool isTransactionSuccess = false;
+
     try {
       final session = ref.read(currentSessionProvider);
       final profileId = session?.user.id;
-      if (profileId == null) {
+      if (AppConstants.hasSupabaseConfig && profileId == null) {
         throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
       }
 
@@ -149,6 +152,8 @@ class ImportController extends Notifier<ImportState> {
         importCount++;
       }
 
+      isTransactionSuccess = true;
+
       await _completeImportHistory(
         importRepo: importRepo,
         historyEntry: historyEntry,
@@ -158,28 +163,65 @@ class ImportController extends Notifier<ImportState> {
       state = state.copyWith(isImporting: false, parsedRows: []);
       return importCount;
     } on AppException catch (e, st) {
-      await _failImportHistory(
-        importRepo: importRepo,
-        historyEntry: historyEntry,
-        importedCount: importCount,
-        errorMessage: e.code ?? e.message,
-      );
+      if (!isTransactionSuccess) {
+        try {
+          await _failImportHistory(
+            importRepo: importRepo,
+            historyEntry: historyEntry,
+            importedCount: importCount,
+            errorMessage: e.code ?? e.message,
+          );
+        } catch (historyErr) {
+          AppLogger.error(
+            'Failed to mark import history as failed during exception handling',
+            historyErr,
+          );
+          state = state.copyWith(
+            isImporting: false,
+            error: () => 'IMPORT_FAILED_HISTORY_FAILED',
+          );
+          return null;
+        }
+      }
       AppLogger.error('Import failed', e, st);
       state = state.copyWith(
         isImporting: false,
-        error: () => e.code ?? 'IMPORT_FAILED',
+        parsedRows: isTransactionSuccess ? [] : state.parsedRows,
+        error: () => isTransactionSuccess
+            ? (e.code ?? 'IMPORT_HISTORY_COMPLETE_ERROR')
+            : (e.code ?? 'IMPORT_FAILED'),
       );
-      return null;
+      return isTransactionSuccess ? importCount : null;
     } catch (e, st) {
-      await _failImportHistory(
-        importRepo: importRepo,
-        historyEntry: historyEntry,
-        importedCount: importCount,
-        errorMessage: 'IMPORT_FAILED',
-      );
+      if (!isTransactionSuccess) {
+        try {
+          await _failImportHistory(
+            importRepo: importRepo,
+            historyEntry: historyEntry,
+            importedCount: importCount,
+            errorMessage: 'IMPORT_FAILED',
+          );
+        } catch (historyErr) {
+          AppLogger.error(
+            'Failed to mark import history as failed during exception handling',
+            historyErr,
+          );
+          state = state.copyWith(
+            isImporting: false,
+            error: () => 'IMPORT_FAILED_HISTORY_FAILED',
+          );
+          return null;
+        }
+      }
       AppLogger.error('Import failed', e, st);
-      state = state.copyWith(isImporting: false, error: () => 'IMPORT_FAILED');
-      return null;
+      state = state.copyWith(
+        isImporting: false,
+        parsedRows: isTransactionSuccess ? [] : state.parsedRows,
+        error: () => isTransactionSuccess
+            ? 'IMPORT_HISTORY_COMPLETE_ERROR'
+            : 'IMPORT_FAILED',
+      );
+      return isTransactionSuccess ? importCount : null;
     }
   }
 
@@ -202,6 +244,7 @@ class ImportController extends Notifier<ImportState> {
       return entry;
     } catch (e, st) {
       AppLogger.error('Failed to create pending import history', e, st);
+      if (e is AppException) rethrow;
       throw const AppException(
         'Failed to create pending import history',
         code: 'IMPORT_HISTORY_CREATE_ERROR',
@@ -223,6 +266,11 @@ class ImportController extends Notifier<ImportState> {
       ref.invalidate(importHistoryProvider);
     } catch (e, st) {
       AppLogger.error('Failed to complete import history', e, st);
+      if (e is AppException) rethrow;
+      throw const AppException(
+        'Failed to complete import history',
+        code: 'IMPORT_HISTORY_COMPLETE_ERROR',
+      );
     }
   }
 
@@ -242,6 +290,11 @@ class ImportController extends Notifier<ImportState> {
       ref.invalidate(importHistoryProvider);
     } catch (e, st) {
       AppLogger.error('Failed to mark import history as failed', e, st);
+      if (e is AppException) rethrow;
+      throw const AppException(
+        'Failed to mark import history as failed',
+        code: 'IMPORT_HISTORY_FAIL_ERROR',
+      );
     }
   }
 

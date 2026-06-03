@@ -39,7 +39,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
               onChanged: (val) {
                 ref
                     .read(notificationSettingsControllerProvider.notifier)
-                    .updateDailyReminder(val);
+                    .updateDailyReminder(val, null);
               },
             ),
             const SizedBox(height: 16),

@@ -15,32 +15,28 @@ class TrustSafetyScreen extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: const [
-            _TrustHero(),
-            SizedBox(height: 16),
+          children: [
+            const _TrustHero(),
+            const SizedBox(height: 16),
             _TrustNote(
               icon: Icons.account_balance_outlined,
-              title: 'Không phải tư vấn tài chính',
-              description:
-                  'Moniary chỉ giúp ghi chép và xem lại dữ liệu thu chi cá nhân. App không đưa ra lời khuyên đầu tư, thuế hoặc kế toán.',
+              title: context.l10n.notFinancialAdviceTitle,
+              description: context.l10n.notFinancialAdviceDesc,
             ),
             _TrustNote(
               icon: Icons.edit_note_outlined,
-              title: 'Dữ liệu do người dùng nhập',
-              description:
-                  'Số tiền, ghi chú, danh mục và ảnh giao dịch phụ thuộc vào dữ liệu người dùng tạo trong app.',
+              title: context.l10n.userEnteredDataTitle,
+              description: context.l10n.userEnteredDataDesc,
             ),
             _TrustNote(
               icon: Icons.visibility_off_outlined,
-              title: 'Không thu thập ngoài phạm vi',
-              description:
-                  'MVP không đọc danh bạ, SMS, email inbox, vị trí hoặc tài khoản ngân hàng tự động.',
+              title: context.l10n.noOverCollectionTitle,
+              description: context.l10n.noOverCollectionDesc,
             ),
             _TrustNote(
               icon: Icons.ios_share_outlined,
-              title: 'Cẩn thận khi chia sẻ file',
-              description:
-                  'File export có thể chứa dữ liệu tài chính cá nhân. Chỉ chia sẻ với người hoặc kênh hỗ trợ đáng tin cậy.',
+              title: context.l10n.carefulFileSharingTitle,
+              description: context.l10n.carefulFileSharingDesc,
             ),
           ],
         ),
@@ -62,7 +58,7 @@ class _TrustHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Các ghi chú này giúp người dùng hiểu rõ app làm gì, không làm gì và nên bảo vệ dữ liệu tài chính cá nhân ra sao.',
+        context.l10n.trustHeroText,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );

@@ -314,7 +314,7 @@ void main() {
 
       expect(count, 1);
       final state = container.read(importControllerProvider);
-      expect(state.error, isNull);
+      expect(state.error, 'IMPORT_HISTORY_COMPLETE_ERROR');
       expect(state.parsedRows, isEmpty);
     },
   );
@@ -372,7 +372,7 @@ void main() {
         ),
       );
 
-      expect(count, 0);
+      expect(count, isNull);
       final state = container.read(importControllerProvider);
       expect(state.error, 'IMPORT_HISTORY_CREATE_ERROR');
       expect(state.parsedRows, isNotEmpty);
