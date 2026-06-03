@@ -25,6 +25,8 @@ class CalendarDayData {
   late final double expenseTotal = transactions
       .where((transaction) => transaction.isExpense)
       .fold(0, (sum, transaction) => sum + transaction.amount);
+
+  bool get hasImportant => transactions.any((t) => t.isImportant);
 }
 
 class CalendarMonthData {

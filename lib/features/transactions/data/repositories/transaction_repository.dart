@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,14 +31,14 @@ class TransactionRepository {
       id: 'mock-1',
       amount: 150000,
       type: TransactionType.expense,
-      note: 'Ăn trưa',
+      note: 'Lunch',
       imagePath: 'https://picsum.photos/seed/moniary1/200/200',
       transactionDate: DateTime.now(),
       walletId: 'w1',
-      walletName: 'Ví tiền mặt',
+      walletName: 'Cash Wallet',
       walletColor: '#44D884',
       categoryId: 'c1',
-      categoryName: 'Ăn uống',
+      categoryName: 'Food',
       categoryColor: '#FC8181',
     ),
     TransactionEntry(
@@ -49,24 +49,24 @@ class TransactionRepository {
       imagePath: 'https://picsum.photos/seed/moniary2/200/200',
       transactionDate: DateTime.now(),
       walletId: 'w1',
-      walletName: 'Ví tiền mặt',
+      walletName: 'Cash Wallet',
       walletColor: '#44D884',
       categoryId: 'c2',
-      categoryName: 'Giải trí',
+      categoryName: 'Entertainment',
       categoryColor: '#2563EB',
     ),
     TransactionEntry(
       id: 'mock-3',
       amount: 200000,
       type: TransactionType.expense,
-      note: 'Mua sắm',
+      note: 'Shopping',
       imagePath: 'https://picsum.photos/seed/moniary3/200/200',
       transactionDate: DateTime.now().subtract(const Duration(days: 1)),
       walletId: 'w1',
-      walletName: 'Ví tiền mặt',
+      walletName: 'Cash Wallet',
       walletColor: '#44D884',
       categoryId: 'c3',
-      categoryName: 'Mua sắm',
+      categoryName: 'Shopping',
       categoryColor: '#8B5CF6',
     ),
   ];
@@ -120,11 +120,38 @@ class TransactionRepository {
 
       return _mapList(rows);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('Lỗi kết nối', e, st);
+      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
+      throw const AppException('errorConnection');
+    }
+  }
+
+  Future<List<TransactionEntry>> searchTransactions(String queryText) async {
+    final normalizedQuery = queryText.trim().toLowerCase();
+    if (normalizedQuery.isEmpty) {
+      return const [];
+    }
+
+    if (!AppConstants.hasSupabaseConfig) {
+      return _filterTransactions(_mockTransactions, normalizedQuery);
+    }
+    try {
+      final uid = _userId;
+
+      final rows = await _baseSelect()
+          .eq('user_id', uid)
+          .order('transaction_date', ascending: false);
+
+      return _filterTransactions(_mapList(rows), normalizedQuery);
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Search transactions failed', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Search transactions failed', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -168,11 +195,11 @@ class TransactionRepository {
 
       return _mapList(rows);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('Lỗi kết nối', e, st);
+      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -196,11 +223,11 @@ class TransactionRepository {
           .single();
       return TransactionEntry.fromMap(row);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('Lỗi kết nối', e, st);
+      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -227,7 +254,7 @@ class TransactionRepository {
         (element) => element.id == walletId,
         orElse: () => Wallet(
           id: walletId,
-          name: 'Ví',
+          name: 'Wallet',
           type: WalletType.cash,
           initialBalance: 0,
           isDefault: false,
@@ -241,7 +268,7 @@ class TransactionRepository {
         (element) => element.id == categoryId,
         orElse: () => Category(
           id: categoryId,
-          name: 'Khác',
+          name: 'Other',
           type: type,
           icon: null,
           color: null,
@@ -293,11 +320,11 @@ class TransactionRepository {
 
       return row['id'] as String;
     } on PostgrestException catch (e, st) {
-      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('Lỗi kết nối', e, st);
+      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -322,7 +349,7 @@ class TransactionRepository {
           (element) => element.id == walletId,
           orElse: () => Wallet(
             id: walletId,
-            name: 'Ví',
+            name: 'Wallet',
             type: WalletType.cash,
             initialBalance: 0,
             isDefault: false,
@@ -336,7 +363,7 @@ class TransactionRepository {
           (element) => element.id == categoryId,
           orElse: () => Category(
             id: categoryId,
-            name: 'Khác',
+            name: 'Other',
             type: type,
             icon: null,
             color: null,
@@ -381,11 +408,11 @@ class TransactionRepository {
           .eq('id', transactionId)
           .eq('user_id', uid);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('Lỗi kết nối', e, st);
+      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -425,11 +452,11 @@ class TransactionRepository {
           .eq('id', transactionId)
           .eq('user_id', uid);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('Lỗi kết nối', e, st);
+      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -463,11 +490,11 @@ class TransactionRepository {
         }
       }
     } on PostgrestException catch (e, st) {
-      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('Lỗi kết nối', e, st);
+      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -500,11 +527,11 @@ class TransactionRepository {
 
       return path;
     } on PostgrestException catch (e, st) {
-      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('Lỗi kết nối', e, st);
+      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -544,11 +571,11 @@ class TransactionRepository {
           .eq('id', transactionId)
           .eq('user_id', uid);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('Lỗi kết nối', e, st);
+      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -559,17 +586,17 @@ class TransactionRepository {
     }
     try {
       // getSignedImageUrl does not need user session strictly for generating url,
-      // but to be consistent with wrapping MỌI public method and duplicate check,
+      // but to be consistent with wrapping MÃ¡Â»Å’I public method and duplicate check,
       // let's wrap it. Since _userId isn't required by the client call, we just try/catch.
       return await _client.storage
           .from('transaction-images')
           .createSignedUrl(path, AppConstants.signedUrlTtlSeconds);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
+      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('Lỗi kết nối', e, st);
+      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -593,5 +620,30 @@ class TransactionRepository {
         .cast<Map<String, dynamic>>()
         .map(TransactionEntry.fromMap)
         .toList();
+  }
+
+  List<TransactionEntry> _filterTransactions(
+    Iterable<TransactionEntry> transactions,
+    String normalizedQuery,
+  ) {
+    final filtered = transactions
+        .where(
+          (transaction) => _matchesSearchQuery(transaction, normalizedQuery),
+        )
+        .toList();
+    filtered.sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
+    return filtered;
+  }
+
+  bool _matchesSearchQuery(
+    TransactionEntry transaction,
+    String normalizedQuery,
+  ) {
+    final noteMatch =
+        transaction.note?.toLowerCase().contains(normalizedQuery) ?? false;
+    final categoryMatch = transaction.categoryName.toLowerCase().contains(
+      normalizedQuery,
+    );
+    return noteMatch || categoryMatch;
   }
 }

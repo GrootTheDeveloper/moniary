@@ -120,6 +120,9 @@
   "calendarSat": "Sat",
   "calendarSun": "Sun",
   "calendarToday": "Today",
+  "calendarSearchHint": "Search by note or category...",
+  "calendarSearchPrompt": "Enter a note or category to search.",
+  "calendarSearchNoResults": "No transactions found.",
   "transactionSaveTransaction": "Save transaction",
   "transactionLoadDayError": "Could not load transactions for this day.\n{error}",
   "@transactionLoadDayError": {
@@ -525,6 +528,18 @@
   "statsCategoryAllocation": "Category allocation",
   "statsDailyTrend": "Daily trend",
   "statsLargestTransactions": "Largest transactions",
+  "statsCategoryTransactions": "Transactions in this category",
+  "statsDayTooltip": "Day {day}\n{amount}",
+  "@statsDayTooltip": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "profileProtectAccount": "Protect your account",
   "profileAnonymousWarning": "You are logged in with a guest account. Please link your account to avoid data loss when switching devices.",
   "profileLinkNow": "Link now",

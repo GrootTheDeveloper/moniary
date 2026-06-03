@@ -650,6 +650,24 @@ abstract class AppLocalizations {
   /// **'Hôm nay'**
   String get calendarToday;
 
+  /// No description provided for @calendarSearchHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm theo ghi chú hoặc danh mục...'**
+  String get calendarSearchHint;
+
+  /// No description provided for @calendarSearchPrompt.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập ghi chú hoặc danh mục để tìm kiếm.'**
+  String get calendarSearchPrompt;
+
+  /// No description provided for @calendarSearchNoResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy giao dịch nào.'**
+  String get calendarSearchNoResults;
+
   /// No description provided for @transactionSaveTransaction.
   ///
   /// In vi, this message translates to:
@@ -2215,6 +2233,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Giao dịch lớn nhất'**
   String get statsLargestTransactions;
+
+  /// No description provided for @statsCategoryTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch trong danh mục'**
+  String get statsCategoryTransactions;
+
+  /// No description provided for @statsDayTooltip.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày {day}\n{amount}'**
+  String statsDayTooltip(int day, String amount);
 
   /// No description provided for @profileProtectAccount.
   ///

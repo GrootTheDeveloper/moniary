@@ -301,6 +301,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calendarToday => 'Today';
 
   @override
+  String get calendarSearchHint => 'Search by note or category...';
+
+  @override
+  String get calendarSearchPrompt => 'Enter a note or category to search.';
+
+  @override
+  String get calendarSearchNoResults => 'No transactions found.';
+
+  @override
   String get transactionSaveTransaction => 'Save transaction';
 
   @override
@@ -1162,6 +1171,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statsLargestTransactions => 'Largest transactions';
+
+  @override
+  String get statsCategoryTransactions => 'Transactions in this category';
+
+  @override
+  String statsDayTooltip(int day, String amount) {
+    return 'Day $day\n$amount';
+  }
 
   @override
   String get profileProtectAccount => 'Protect your account';

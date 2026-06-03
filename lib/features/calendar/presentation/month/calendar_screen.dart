@@ -7,8 +7,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/supabase/supabase_providers.dart';
+import '../../../transactions/domain/models/transaction_entry.dart';
 import '../../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../../transactions/presentation/detail/day_detail_screen.dart';
+import '../../../transactions/presentation/detail/transaction_detail_screen.dart';
+import '../../../transactions/presentation/detail/transaction_route_args.dart';
 import '../../../wallets/domain/models/wallet.dart';
 import '../../../wallets/application/wallets_controller.dart';
 import '../../application/month/calendar_filter_provider.dart';
@@ -16,6 +19,7 @@ import '../../application/month/calendar_month_provider.dart';
 import '../../application/month/calendar_visible_month_provider.dart';
 import '../../domain/month/calendar_month_data.dart';
 import 'manage_data_sheet.dart';
+import 'transaction_search_delegate.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
@@ -68,6 +72,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           userName:
                               session?.user.userMetadata?['name'] ?? 'groot',
                           onProfileTap: () => _openManager(context),
+                          onTransactionTap: _openTransactionDetail,
                           walletsAsync: walletsAsync,
                           monthAsync: monthAsync,
                         ),
@@ -188,6 +193,20 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     _applyMutationResult(result);
   }
 
+  Future<void> _openTransactionDetail(TransactionEntry transaction) async {
+    final result = await context.push<TransactionMutationResult>(
+      TransactionDetailScreen.routePath,
+      extra: TransactionDetailRouteArgs(
+        transaction: transaction,
+        day: transaction.transactionDate,
+      ),
+    );
+    if (result == null || !mounted) {
+      return;
+    }
+    _applyMutationResult(result);
+  }
+
   void _applyMutationResult(TransactionMutationResult result) {
     final months = <DateTime>{
       if (result.previousDate != null)
@@ -212,12 +231,14 @@ class _SeamlessHeader extends ConsumerWidget {
   const _SeamlessHeader({
     required this.userName,
     required this.onProfileTap,
+    required this.onTransactionTap,
     required this.walletsAsync,
     required this.monthAsync,
   });
 
   final String userName;
   final VoidCallback onProfileTap;
+  final Future<void> Function(TransactionEntry transaction) onTransactionTap;
   final AsyncValue<List<Wallet>> walletsAsync;
   final AsyncValue<CalendarMonthData> monthAsync;
 
@@ -268,6 +289,35 @@ class _SeamlessHeader extends ConsumerWidget {
                       isHidden
                           ? Icons.visibility_off_outlined
                           : Icons.visibility_outlined,
+                      color: Colors.white70,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () async {
+                    final transaction = await showSearch<TransactionEntry?>(
+                      context: context,
+                      delegate: TransactionSearchDelegate(
+                        ref: ref,
+                        searchFieldLabelText: context.l10n.calendarSearchHint,
+                      ),
+                    );
+                    if (transaction == null || !context.mounted) {
+                      return;
+                    }
+                    await onTransactionTap(transaction);
+                  },
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.search,
                       color: Colors.white70,
                       size: 20,
                     ),
@@ -935,6 +985,14 @@ class _CalendarDayCell extends StatelessWidget {
                     color: AppTheme.mint, // Dot indicates today
                   ),
                 ),
+              ),
+
+            // Star Indicator for Important Transactions
+            if (day.hasImportant)
+              Positioned(
+                top: 2,
+                right: 2,
+                child: const Icon(Icons.star, color: AppTheme.amber, size: 10),
               ),
           ],
         ),

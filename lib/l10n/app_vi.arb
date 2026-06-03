@@ -116,6 +116,9 @@
   "calendarSat": "T7",
   "calendarSun": "CN",
   "calendarToday": "Hôm nay",
+  "calendarSearchHint": "Tìm theo ghi chú hoặc danh mục...",
+  "calendarSearchPrompt": "Nhập ghi chú hoặc danh mục để tìm kiếm.",
+  "calendarSearchNoResults": "Không tìm thấy giao dịch nào.",
   "transactionSaveTransaction": "Lưu giao dịch",
   "transactionLoadDayError": "Không tải được giao dịch trong ngày.\n{error}",
   "@transactionLoadDayError": {
@@ -521,6 +524,18 @@
   "statsCategoryAllocation": "Phân bổ danh mục",
   "statsDailyTrend": "Xu hướng hàng ngày",
   "statsLargestTransactions": "Giao dịch lớn nhất",
+  "statsCategoryTransactions": "Giao dịch trong danh mục",
+  "statsDayTooltip": "Ngày {day}\n{amount}",
+  "@statsDayTooltip": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "profileProtectAccount": "Bảo vệ tài khoản của bạn",
   "profileAnonymousWarning": "Bạn đang đăng nhập bằng tài khoản khách. Hãy liên kết tài khoản để tránh mất mát dữ liệu khi đổi thiết bị.",
   "profileLinkNow": "Liên kết ngay",

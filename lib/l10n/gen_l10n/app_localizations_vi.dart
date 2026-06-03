@@ -302,6 +302,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get calendarToday => 'Hôm nay';
 
   @override
+  String get calendarSearchHint => 'Tìm theo ghi chú hoặc danh mục...';
+
+  @override
+  String get calendarSearchPrompt => 'Nhập ghi chú hoặc danh mục để tìm kiếm.';
+
+  @override
+  String get calendarSearchNoResults => 'Không tìm thấy giao dịch nào.';
+
+  @override
   String get transactionSaveTransaction => 'Lưu giao dịch';
 
   @override
@@ -1162,6 +1171,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get statsLargestTransactions => 'Giao dịch lớn nhất';
+
+  @override
+  String get statsCategoryTransactions => 'Giao dịch trong danh mục';
+
+  @override
+  String statsDayTooltip(int day, String amount) {
+    return 'Ngày $day\n$amount';
+  }
 
   @override
   String get profileProtectAccount => 'Bảo vệ tài khoản của bạn';
