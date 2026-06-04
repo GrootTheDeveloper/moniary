@@ -17,7 +17,12 @@ class WalletSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final walletsAsync = ref.watch(walletsControllerProvider);
-    final currency = NumberFormat.currency(locale: 'vi_VN', symbol: 'd');
+    final currency = NumberFormat.currency(
+      locale: Localizations.localeOf(context).toString(),
+      symbol: '',
+      decimalDigits: 0,
+    );
+    final amountSuffix = context.l10n.transactionAmountSuffix;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
@@ -64,9 +69,8 @@ class WalletSection extends ConsumerWidget {
                             padding: const EdgeInsets.only(bottom: 12),
                             child: _WalletTile(
                               wallet: wallet,
-                              balanceLabel: currency.format(
-                                wallet.initialBalance,
-                              ),
+                              balanceLabel:
+                                  '${currency.format(wallet.initialBalance).trim()}$amountSuffix',
                               onEdit: () =>
                                   _showWalletForm(context, ref, wallet: wallet),
                             ),

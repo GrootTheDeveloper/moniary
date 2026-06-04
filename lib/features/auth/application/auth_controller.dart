@@ -29,6 +29,20 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
+  Future<void> startGuestSession() async {
+    state = const AsyncLoading();
+    try {
+      final mockSession = await ref
+          .read(authRepositoryProvider)
+          .startGuestSession();
+      ref.read(mockSessionProvider.notifier).setSession(mockSession);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
+
   Future<void> signOut() async {
     state = const AsyncLoading();
     try {

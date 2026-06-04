@@ -75,7 +75,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginSubtitle => 'Personal expense manager';
 
   @override
-  String get loginAnonymous => 'Start anonymous trial';
+  String get loginAnonymous => 'Connect anonymously with Supabase';
 
   @override
   String get loginTerms =>
@@ -2708,4 +2708,115 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get termsOfUseChangesDesc =>
       'Terms may be updated when the app adds features or prepares for official release.';
+
+  @override
+  String get transactionOcrExtracting => 'Extracting data...';
+
+  @override
+  String get exportSheetTransactions => 'Transactions';
+
+  @override
+  String get exportColumnDataType => 'Data type';
+
+  @override
+  String get exportColumnId => 'ID';
+
+  @override
+  String get exportColumnName => 'Name';
+
+  @override
+  String get exportColumnImagePath => 'Image path';
+
+  @override
+  String get exportColumnCreatedAt => 'Created at';
+
+  @override
+  String get exportReportGeneratedAt => 'Generated at';
+
+  @override
+  String get exportReportRecentTransactions => 'Recent transactions';
+
+  @override
+  String get dataRetentionCloudTitle => 'Cloud data';
+
+  @override
+  String get dataRetentionCloudDesc =>
+      'Profiles, wallets, categories, transactions, and transaction image paths are kept while the account remains active so the app can sync and render the data again.';
+
+  @override
+  String get dataRetentionPhotosTitle => 'Transaction photos';
+
+  @override
+  String get dataRetentionPhotosDesc =>
+      'Transaction photos are stored only when the user actively takes or selects an image. Photos are processed together with account data when deleting the account.';
+
+  @override
+  String get dataRetentionLocalFilesTitle => 'Local files';
+
+  @override
+  String get dataRetentionLocalFilesDesc =>
+      'Export files and request history are created on the device. Users can manage, share, or delete these files from local storage.';
+
+  @override
+  String get dataRetentionDeleteTitle => 'After account deletion';
+
+  @override
+  String get dataRetentionDeleteDesc =>
+      'Moniary runs the account deletion flow to remove app data tied to the current user. If it fails, users can create a manual data deletion request.';
+
+  @override
+  String get financialDisclaimerInvestmentTitle => 'Not investment advice';
+
+  @override
+  String get financialDisclaimerInvestmentDesc =>
+      'Moniary does not recommend buying, selling, investing, or allocating assets. Users remain responsible for their own financial decisions.';
+
+  @override
+  String get financialDisclaimerTaxTitle => 'Not tax/accounting advice';
+
+  @override
+  String get financialDisclaimerTaxDesc =>
+      'Data in the app does not replace receipts, accounting reports, or professional tax advice.';
+
+  @override
+  String get financialDisclaimerReferenceTitle => 'Figures are for reference';
+
+  @override
+  String get financialDisclaimerReferenceDesc =>
+      'Income totals, expense totals, and export files depend on user-entered data and may be wrong if entries are missing or incorrect.';
+
+  @override
+  String get financialDisclaimerExpertTitle => 'For important decisions';
+
+  @override
+  String get financialDisclaimerExpertDesc =>
+      'Users should verify source data and consult a qualified expert before making financial, tax, or legal decisions.';
+
+  @override
+  String get policyChangelogEntry1Title => 'Added Legal & Policy Center';
+
+  @override
+  String get policyChangelogEntry1Desc =>
+      'Added data retention policy, third-party service notice, financial disclaimer, and policy changelog.';
+
+  @override
+  String get policyChangelogEntry2Title => 'Added Privacy Requests & Support';
+
+  @override
+  String get policyChangelogEntry2Desc =>
+      'Added privacy request types, templates, previews, request history, status, and response timeline.';
+
+  @override
+  String get policyChangelogEntry3Title => 'Added Store Readiness & Trust';
+
+  @override
+  String get policyChangelogEntry3Desc =>
+      'Added About, Terms of Use, license entry, version/build info, release checklist, and legal contact flow.';
+
+  @override
+  String get policyChangelogEntry4Title => 'Initialized MVP policies';
+
+  @override
+  String get policyChangelogEntry4Desc =>
+      'Added privacy policy, data safety, data deletion policy, data export, and account deletion flow.';
 }

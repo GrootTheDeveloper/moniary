@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:go_router/go_router.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
@@ -306,13 +306,13 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             if (_pickedFile != null) ...[
               const SizedBox(height: 12),
               if (_isOcrExtracting)
-                const Center(
+                Center(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -320,10 +320,10 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                             color: AppTheme.mint,
                           ),
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                         Text(
-                          'Đang trích xuất dữ liệu...',
-                          style: TextStyle(
+                          context.l10n.transactionOcrExtracting,
+                          style: const TextStyle(
                             color: AppTheme.mint,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -376,9 +376,9 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                             Icons.document_scanner_outlined,
                             size: 20,
                           ),
-                          label: const Text(
-                            'Quét hóa đơn AI',
-                            style: TextStyle(
+                          label: Text(
+                            context.l10n.cameraOcrScan,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
                             ),

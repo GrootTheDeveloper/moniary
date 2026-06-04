@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:moniary/core/constants/app_constants.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/shared/utils/app_logger.dart';
@@ -104,7 +103,8 @@ class ImportController extends Notifier<ImportState> {
     try {
       final session = ref.read(currentSessionProvider);
       final profileId = session?.user.id;
-      if (AppConstants.hasSupabaseConfig && profileId == null) {
+      final usesMockData = ref.read(useMockDataModeProvider);
+      if (!usesMockData && profileId == null) {
         throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
       }
 

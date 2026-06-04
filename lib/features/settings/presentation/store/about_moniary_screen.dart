@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../domain/store/app_release_info.dart';
 
 class AboutMoniaryScreen extends StatelessWidget {
@@ -54,8 +55,8 @@ class _LicenseEntry extends StatelessWidget {
       onTap: () {
         showLicensePage(
           context: context,
-          applicationName: 'Moniary',
-          applicationLegalese: 'MVP build for personal finance tracking.',
+          applicationName: AppConstants.appName,
+          applicationLegalese: context.l10n.aboutMoniaryHeroDesc,
         );
       },
       borderRadius: BorderRadius.circular(22),

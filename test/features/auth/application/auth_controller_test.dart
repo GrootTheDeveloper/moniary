@@ -28,4 +28,21 @@ void main() {
     expect(prefs.getBool('mock_logged_in'), isTrue);
     expect(container.read(mockSessionProvider), isNotNull);
   });
+
+  test('startGuestSession sets guest session state', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+    );
+    addTearDown(container.dispose);
+
+    await container.read(authControllerProvider.notifier).startGuestSession();
+
+    final authState = container.read(authControllerProvider);
+    expect(authState.isLoading, isFalse);
+    expect(authState.hasError, isFalse);
+    expect(prefs.getBool('guest_mode_enabled'), isTrue);
+    expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
+  });
 }

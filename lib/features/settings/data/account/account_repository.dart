@@ -15,6 +15,7 @@ import '../../../categories/data/repositories/category_repository.dart';
 import '../../../transactions/data/repositories/transaction_repository.dart';
 import '../../../wallets/data/repositories/wallet_repository.dart';
 import '../../domain/export/export_filters.dart';
+import '../../domain/export/export_file_text.dart';
 import '../../domain/export/export_history_entry.dart';
 import '../../domain/account/active_session.dart';
 import '../../domain/transparency/data_transparency_summary.dart';
@@ -27,6 +28,7 @@ final accountRepositoryProvider = Provider<AccountRepository>((ref) {
   return AccountRepository(
     ref.watch(supabaseClientProvider),
     currentUserId: session?.user.id,
+    useMockData: ref.watch(useMockDataModeProvider),
   );
 });
 
@@ -36,12 +38,15 @@ class AccountRepository {
     String? currentUserId,
     Directory? documentsDirectory,
     Directory? exportDirectory,
+    bool useMockData = false,
   }) : _currentUserId = currentUserId,
+       _useMockData = useMockData || !AppConstants.hasSupabaseConfig,
        _documentsDirectory = documentsDirectory,
        _exportDirectory = exportDirectory;
 
   final SupabaseClient _client;
   final String? _currentUserId;
+  final bool _useMockData;
   final Directory? _documentsDirectory;
   final Directory? _exportDirectory;
 
@@ -94,31 +99,17 @@ class AccountRepository {
 
   Future<File> exportTransactionsXlsx({
     ExportFilters filters = const ExportFilters(),
+    required ExportFileText text,
   }) async {
     final userId = _requireExportUserId();
     final exportRows = await _buildExportRows(userId, filters: filters);
     final workbookRows = <List<Object?>>[
-      [
-        'Data type',
-        'ID',
-        'Name',
-        'Type',
-        'Amount',
-        'Wallet',
-        'Category',
-        'Note',
-        'Transaction date',
-        'Image path',
-        'Created at',
-        'Initial balance',
-        'Is default',
-        'Is active',
-      ],
+      List<Object?>.from(text.xlsxHeaders),
       ...exportRows,
     ];
 
     final bytes = XlsxWorkbook(
-      sheetName: 'Transactions',
+      sheetName: text.xlsxSheetName,
       rows: workbookRows,
     ).build();
     try {
@@ -140,6 +131,7 @@ class AccountRepository {
 
   Future<File> exportTransactionsPdf({
     ExportFilters filters = const ExportFilters(),
+    required ExportFileText text,
   }) async {
     final userId = _requireExportUserId();
 
@@ -163,25 +155,27 @@ class AccountRepository {
         .fold<double>(0, (sum, row) => sum + (row['amount'] as num).toDouble());
 
     final lines = <String>[
-      'Generated: $generatedAt',
-      'Data types: ${filters.dataTypes.map((type) => type.key).join(', ')}',
-      'Transactions: ${transactions.length}',
-      'Wallets: ${wallets.length}',
-      'Categories: ${categories.length}',
-      'Income total: ${income.toStringAsFixed(0)}',
-      'Expense total: ${expense.toStringAsFixed(0)}',
-      'Recent transactions:',
+      '${text.pdfGeneratedAtLabel}: $generatedAt',
+      '${text.pdfDataTypesLabel}: ${_localizedExportDataTypes(filters, text)}',
+      '${text.pdfTransactionsLabel}: ${transactions.length}',
+      '${text.pdfWalletsLabel}: ${wallets.length}',
+      '${text.pdfCategoriesLabel}: ${categories.length}',
+      '${text.pdfIncomeTotalLabel}: ${income.toStringAsFixed(0)}',
+      '${text.pdfExpenseTotalLabel}: ${expense.toStringAsFixed(0)}',
+      '${text.pdfRecentTransactionsLabel}:',
       ...transactions.take(20).map((row) {
         final wallet = row['wallet'] as Map<String, dynamic>? ?? const {};
         final category = row['category'] as Map<String, dynamic>? ?? const {};
-        final type = row['type'] == 'income' ? 'Income' : 'Expense';
+        final type = row['type'] == 'income'
+            ? text.pdfIncomeTypeLabel
+            : text.pdfExpenseTypeLabel;
         final amount = (row['amount'] as num).toStringAsFixed(0);
         final date = _formatDate(row['transaction_date'] as String?);
         return '$date | $type | $amount | ${wallet['name'] ?? ''} | ${category['name'] ?? ''}';
       }),
     ];
 
-    final bytes = PdfReport(lines: lines).build();
+    final bytes = PdfReport(title: text.pdfTitle, lines: lines).build();
     try {
       final directory = await _getExportDirectory();
       final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
@@ -278,7 +272,7 @@ class AccountRepository {
   }
 
   Future<DataTransparencySummary> fetchDataTransparencySummary() async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       final txs = TransactionRepository.mockTransactions;
       final wallets = WalletRepository.mockWallets;
       final categories = CategoryRepository.mockCategories;
@@ -355,7 +349,7 @@ class AccountRepository {
   }
 
   Future<void> deleteAccount() async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       await _client.auth.signOut();
       return;
     }
@@ -369,7 +363,7 @@ class AccountRepository {
   }
 
   Future<void> requestSoftDelete() async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       await _client.auth.signOut();
       return;
     }
@@ -383,7 +377,7 @@ class AccountRepository {
   }
 
   Future<void> restoreAccount() async {
-    if (!AppConstants.hasSupabaseConfig) return;
+    if (_useMockData) return;
 
     final session = _client.auth.currentSession;
     if (session == null) {
@@ -397,7 +391,7 @@ class AccountRepository {
   }
 
   Future<bool> isAccountPendingDeletion() async {
-    if (!AppConstants.hasSupabaseConfig) return false;
+    if (_useMockData) return false;
 
     final session = _client.auth.currentSession;
     if (session == null) return false;
@@ -424,7 +418,7 @@ class AccountRepository {
   }
 
   Future<void> revokeSession(String sessionId) async {
-    if (!AppConstants.hasSupabaseConfig) return;
+    if (_useMockData) return;
     final session = _client.auth.currentSession;
     if (session == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
@@ -433,7 +427,7 @@ class AccountRepository {
   }
 
   Future<List<ActiveSession>> getActiveSessions() async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return [
         ActiveSession(
           id: 'mock-session-id',
@@ -459,7 +453,7 @@ class AccountRepository {
   }
 
   Future<void> createDeletionRequest({required String reason}) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       // Mock bypass
     } else {
       final session = _client.auth.currentSession;
@@ -484,7 +478,7 @@ class AccountRepository {
     required String requestType,
     required String message,
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       // Mock bypass
     } else {
       final session = _client.auth.currentSession;
@@ -520,7 +514,7 @@ class AccountRepository {
   }
 
   String _requireExportUserId() {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return _currentUserId ?? 'mock-user-id';
     }
 
@@ -535,7 +529,7 @@ class AccountRepository {
     String userId, {
     ExportFilters filters = const ExportFilters(),
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       final txs = TransactionRepository.mockTransactions;
       return txs
           .where((t) {
@@ -606,7 +600,7 @@ class AccountRepository {
   }
 
   Future<List<Map<String, dynamic>>> _fetchWalletRows(String userId) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return WalletRepository.mockWallets
           .map(
             (w) => {
@@ -631,7 +625,7 @@ class AccountRepository {
   }
 
   Future<List<Map<String, dynamic>>> _fetchCategoryRows(String userId) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return CategoryRepository.mockCategories
           .map(
             (c) => {
@@ -672,7 +666,7 @@ class AccountRepository {
           'transaction',
           row['id'],
           '',
-          row['type'] == 'income' ? 'Thu' : 'Chi',
+          row['type'],
           row['amount'],
           wallet['name'],
           category['name'],
@@ -732,6 +726,12 @@ class AccountRepository {
     }
 
     return rows;
+  }
+
+  String _localizedExportDataTypes(ExportFilters filters, ExportFileText text) {
+    return filters.dataTypes
+        .map((type) => text.dataTypeLabels[type] ?? type.key)
+        .join(', ');
   }
 
   Future<void> _recordExport({

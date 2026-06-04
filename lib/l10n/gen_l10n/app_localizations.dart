@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginAnonymous.
   ///
   /// In vi, this message translates to:
-  /// **'Bắt đầu dùng thử ẩn danh'**
+  /// **'Kết nối ẩn danh với Supabase'**
   String get loginAnonymous;
 
   /// No description provided for @loginTerms.
@@ -4909,6 +4909,204 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Điều khoản có thể được cập nhật khi app bổ sung tính năng hoặc chuẩn bị phát hành chính thức.'**
   String get termsOfUseChangesDesc;
+
+  /// No description provided for @transactionOcrExtracting.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang trích xuất dữ liệu...'**
+  String get transactionOcrExtracting;
+
+  /// No description provided for @exportSheetTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch'**
+  String get exportSheetTransactions;
+
+  /// No description provided for @exportColumnDataType.
+  ///
+  /// In vi, this message translates to:
+  /// **'Loại dữ liệu'**
+  String get exportColumnDataType;
+
+  /// No description provided for @exportColumnId.
+  ///
+  /// In vi, this message translates to:
+  /// **'ID'**
+  String get exportColumnId;
+
+  /// No description provided for @exportColumnName.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên'**
+  String get exportColumnName;
+
+  /// No description provided for @exportColumnImagePath.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đường dẫn ảnh'**
+  String get exportColumnImagePath;
+
+  /// No description provided for @exportColumnCreatedAt.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo lúc'**
+  String get exportColumnCreatedAt;
+
+  /// No description provided for @exportReportGeneratedAt.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo báo cáo lúc'**
+  String get exportReportGeneratedAt;
+
+  /// No description provided for @exportReportRecentTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch gần đây'**
+  String get exportReportRecentTransactions;
+
+  /// No description provided for @dataRetentionCloudTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu trên cloud'**
+  String get dataRetentionCloudTitle;
+
+  /// No description provided for @dataRetentionCloudDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hồ sơ, ví, danh mục, giao dịch và đường dẫn ảnh giao dịch được giữ khi tài khoản còn hoạt động để app có thể đồng bộ và hiển thị lại dữ liệu.'**
+  String get dataRetentionCloudDesc;
+
+  /// No description provided for @dataRetentionPhotosTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh giao dịch'**
+  String get dataRetentionPhotosTitle;
+
+  /// No description provided for @dataRetentionPhotosDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh giao dịch chỉ được lưu khi người dùng chủ động chụp hoặc chọn ảnh. Ảnh sẽ được xử lý cùng dữ liệu tài khoản khi xóa tài khoản.'**
+  String get dataRetentionPhotosDesc;
+
+  /// No description provided for @dataRetentionLocalFilesTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'File cục bộ'**
+  String get dataRetentionLocalFilesTitle;
+
+  /// No description provided for @dataRetentionLocalFilesDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'File export và lịch sử request được tạo trên thiết bị. Người dùng có thể tự quản lý, chia sẻ hoặc xóa các file này khỏi bộ nhớ cục bộ.'**
+  String get dataRetentionLocalFilesDesc;
+
+  /// No description provided for @dataRetentionDeleteTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sau khi xóa tài khoản'**
+  String get dataRetentionDeleteTitle;
+
+  /// No description provided for @dataRetentionDeleteDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Moniary gọi luồng xóa tài khoản để gỡ dữ liệu app gắn với user hiện tại. Nếu thao tác thất bại, người dùng có thể tạo request xóa dữ liệu thủ công.'**
+  String get dataRetentionDeleteDesc;
+
+  /// No description provided for @financialDisclaimerInvestmentTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không phải tư vấn đầu tư'**
+  String get financialDisclaimerInvestmentTitle;
+
+  /// No description provided for @financialDisclaimerInvestmentDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Moniary không đề xuất mua, bán, đầu tư hoặc phân bổ tài sản. Người dùng tự chịu trách nhiệm với quyết định tài chính của mình.'**
+  String get financialDisclaimerInvestmentDesc;
+
+  /// No description provided for @financialDisclaimerTaxTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không phải tư vấn thuế/kế toán'**
+  String get financialDisclaimerTaxTitle;
+
+  /// No description provided for @financialDisclaimerTaxDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu trong app không thay thế chứng từ, báo cáo kế toán hoặc tư vấn thuế chuyên nghiệp.'**
+  String get financialDisclaimerTaxDesc;
+
+  /// No description provided for @financialDisclaimerReferenceTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số liệu có tính tham khảo'**
+  String get financialDisclaimerReferenceTitle;
+
+  /// No description provided for @financialDisclaimerReferenceDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng thu, tổng chi và các file export phụ thuộc vào dữ liệu người dùng nhập, có thể sai nếu nhập thiếu hoặc nhập nhầm.'**
+  String get financialDisclaimerReferenceDesc;
+
+  /// No description provided for @financialDisclaimerExpertTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khi cần quyết định quan trọng'**
+  String get financialDisclaimerExpertTitle;
+
+  /// No description provided for @financialDisclaimerExpertDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng nên kiểm tra lại dữ liệu gốc và hỏi chuyên gia phù hợp trước các quyết định tài chính, thuế hoặc pháp lý.'**
+  String get financialDisclaimerExpertDesc;
+
+  /// No description provided for @policyChangelogEntry1Title.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bổ sung Legal & Policy Center'**
+  String get policyChangelogEntry1Title;
+
+  /// No description provided for @policyChangelogEntry1Desc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm chính sách lưu giữ dữ liệu, thông báo dịch vụ bên thứ ba, miễn trừ tài chính và lịch sử thay đổi chính sách.'**
+  String get policyChangelogEntry1Desc;
+
+  /// No description provided for @policyChangelogEntry2Title.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bổ sung Privacy Requests & Support'**
+  String get policyChangelogEntry2Title;
+
+  /// No description provided for @policyChangelogEntry2Desc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm loại yêu cầu privacy, mẫu nội dung, preview, lịch sử request, trạng thái và timeline phản hồi.'**
+  String get policyChangelogEntry2Desc;
+
+  /// No description provided for @policyChangelogEntry3Title.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bổ sung Store Readiness & Trust'**
+  String get policyChangelogEntry3Title;
+
+  /// No description provided for @policyChangelogEntry3Desc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm About, Terms of Use, license entry, version/build info, checklist phát hành và liên hệ pháp lý.'**
+  String get policyChangelogEntry3Desc;
+
+  /// No description provided for @policyChangelogEntry4Title.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khởi tạo chính sách MVP'**
+  String get policyChangelogEntry4Title;
+
+  /// No description provided for @policyChangelogEntry4Desc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm privacy policy, data safety, data deletion policy, export dữ liệu và xóa tài khoản.'**
+  String get policyChangelogEntry4Desc;
 }
 
 class _AppLocalizationsDelegate

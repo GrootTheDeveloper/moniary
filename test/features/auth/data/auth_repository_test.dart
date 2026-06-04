@@ -38,6 +38,18 @@ void main() {
     expect(prefs.getBool('mock_logged_in'), isFalse);
   });
 
+  test('startGuestSession persists guest mode flags', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final repository = AuthRepository(FakeSupabaseClient(), prefs);
+
+    final session = await repository.startGuestSession();
+
+    expect(session.user.id, 'mock-user-id');
+    expect(prefs.getBool('guest_mode_enabled'), isTrue);
+    expect(prefs.getBool('mock_logged_in'), isTrue);
+  });
+
   test('linkEmailAccount reports mock profile update in mock mode', () async {
     if (AppConstants.hasSupabaseConfig) {
       markTestSkipped('Mock mode test requires missing Supabase config.');

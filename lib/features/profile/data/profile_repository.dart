@@ -8,18 +8,23 @@ import '../../../../shared/utils/app_logger.dart';
 import '../domain/user_profile.dart';
 
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
-  return ProfileRepository(ref.watch(supabaseClientProvider));
+  return ProfileRepository(
+    ref.watch(supabaseClientProvider),
+    useMockData: ref.watch(useMockDataModeProvider),
+  );
 });
 
 class ProfileRepository {
-  ProfileRepository(this._client);
+  ProfileRepository(this._client, {bool useMockData = false})
+    : _useMockData = useMockData || !AppConstants.hasSupabaseConfig;
 
   final SupabaseClient _client;
+  final bool _useMockData;
 
   static UserProfile? _mockProfile;
 
   String get _userId {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return 'mock-user-id';
     }
     final uid = _client.auth.currentSession?.user.id;
@@ -30,7 +35,7 @@ class ProfileRepository {
   }
 
   Future<UserProfile?> fetchCurrentProfile() async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       _mockProfile ??= UserProfile(
         id: 'mock-user-id',
         fullName: '',
@@ -66,7 +71,7 @@ class ProfileRepository {
     required String fullName,
     required String timezone,
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       _mockProfile = UserProfile(
         id: 'mock-user-id',
         fullName: fullName,

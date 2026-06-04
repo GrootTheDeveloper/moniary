@@ -5,10 +5,47 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:moniary/core/constants/app_constants.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/features/settings/data/account/account_repository.dart';
+import 'package:moniary/features/settings/domain/export/export_file_text.dart';
 import 'package:moniary/features/settings/domain/export/export_filters.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FakeSupabaseClient extends Fake implements SupabaseClient {}
+
+const testExportFileText = ExportFileText(
+  xlsxSheetName: 'Transactions',
+  xlsxHeaders: [
+    'Data type',
+    'ID',
+    'Name',
+    'Type',
+    'Amount',
+    'Wallet',
+    'Category',
+    'Note',
+    'Transaction date',
+    'Image path',
+    'Created at',
+    'Initial balance',
+    'Is default',
+    'Is active',
+  ],
+  pdfTitle: 'Moniary Financial Report',
+  pdfGeneratedAtLabel: 'Generated at',
+  pdfDataTypesLabel: 'Data types',
+  pdfTransactionsLabel: 'Transactions',
+  pdfWalletsLabel: 'Wallets',
+  pdfCategoriesLabel: 'Categories',
+  pdfIncomeTotalLabel: 'Total income',
+  pdfExpenseTotalLabel: 'Total expense',
+  pdfRecentTransactionsLabel: 'Recent transactions',
+  pdfIncomeTypeLabel: 'Income',
+  pdfExpenseTypeLabel: 'Expense',
+  dataTypeLabels: {
+    ExportDataType.transactions: 'Transactions',
+    ExportDataType.wallets: 'Wallets',
+    ExportDataType.categories: 'Categories',
+  },
+);
 
 void main() {
   late Directory tempDir;
@@ -100,7 +137,9 @@ void main() {
         );
       }
 
-      final file = await repository.exportTransactionsXlsx();
+      final file = await repository.exportTransactionsXlsx(
+        text: testExportFileText,
+      );
 
       expect(file.path, endsWith('.xlsx'));
       expect(await file.exists(), isTrue);
@@ -122,7 +161,9 @@ void main() {
         );
       }
 
-      final file = await repository.exportTransactionsPdf();
+      final file = await repository.exportTransactionsPdf(
+        text: testExportFileText,
+      );
 
       expect(file.path, endsWith('.pdf'));
       expect(await file.exists(), isTrue);

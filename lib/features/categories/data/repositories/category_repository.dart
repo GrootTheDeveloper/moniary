@@ -8,13 +8,18 @@ import '../../../../shared/utils/app_logger.dart';
 import '../../domain/models/category.dart';
 
 final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
-  return CategoryRepository(ref.watch(supabaseClientProvider));
+  return CategoryRepository(
+    ref.watch(supabaseClientProvider),
+    useMockData: ref.watch(useMockDataModeProvider),
+  );
 });
 
 class CategoryRepository {
-  CategoryRepository(this._client);
+  CategoryRepository(this._client, {bool useMockData = false})
+    : _useMockData = useMockData || !AppConstants.hasSupabaseConfig;
 
   final SupabaseClient _client;
+  final bool _useMockData;
 
   static List<Category> get mockCategories => _mockCategories;
 
@@ -62,7 +67,7 @@ class CategoryRepository {
   ];
 
   Future<List<Category>> fetchCategories() async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return _mockCategories.where((c) => c.isActive).toList();
     }
     final session = _client.auth.currentSession;
@@ -95,7 +100,7 @@ class CategoryRepository {
     required String name,
     required TransactionType type,
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       _mockCategories.add(
         Category(
           id: 'mock-cat-${DateTime.now().millisecondsSinceEpoch}',
@@ -137,7 +142,7 @@ class CategoryRepository {
     required TransactionType type,
     required bool isActive,
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       final index = _mockCategories.indexWhere((c) => c.id == categoryId);
       if (index != -1) {
         _mockCategories[index] = Category(

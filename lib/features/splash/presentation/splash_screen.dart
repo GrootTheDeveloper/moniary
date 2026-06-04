@@ -9,6 +9,7 @@ import '../../../l10n/l10n_extension.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/preferences/preferences_providers.dart';
 import '../../../core/supabase/supabase_providers.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
@@ -64,7 +65,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ? ProfileSetupScreen.routePath
             : CalendarScreen.routePath,
       );
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error('Failed to bootstrap splash flow', e, st);
       if (!mounted) return;
       setState(() {
         _hasError = true;

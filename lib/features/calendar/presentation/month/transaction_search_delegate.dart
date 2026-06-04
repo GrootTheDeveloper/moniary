@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -130,11 +130,11 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
                 style: const TextStyle(color: Colors.white),
               ),
               subtitle: Text(
-                '${DateFormat('dd/MM/yyyy').format(tx.transactionDate)} - ${tx.walletName}',
+                '${MaterialLocalizations.of(context).formatShortDate(tx.transactionDate)} - ${tx.walletName}',
                 style: const TextStyle(color: Colors.white54, fontSize: 12),
               ),
               trailing: ObscurableAmountText(
-                amountText: '${_formatMoney(tx.amount)}đ',
+                amountText: _formatMoney(context, tx.amount),
                 style: TextStyle(
                   color: tx.isIncome ? AppTheme.success : AppTheme.danger,
                   fontWeight: FontWeight.bold,
@@ -148,12 +148,12 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
     );
   }
 
-  String _formatMoney(double amount) {
+  String _formatMoney(BuildContext context, double amount) {
     final formatter = NumberFormat.currency(
-      locale: 'vi_VN',
+      locale: Localizations.localeOf(context).toString(),
       symbol: '',
       decimalDigits: 0,
     );
-    return formatter.format(amount).trim();
+    return '${formatter.format(amount).trim()}${context.l10n.transactionAmountSuffix}';
   }
 }

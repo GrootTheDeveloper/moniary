@@ -133,6 +133,7 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
   }
 
   Future<void> _export() async {
+    final exportText = buildExportFileText(context);
     final file = switch (_format) {
       ExportFormat.csv =>
         await ref
@@ -141,11 +142,11 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
       ExportFormat.xlsx =>
         await ref
             .read(accountActionsControllerProvider.notifier)
-            .exportXlsx(filters: _filters),
+            .exportXlsx(filters: _filters, text: exportText),
       ExportFormat.pdf =>
         await ref
             .read(accountActionsControllerProvider.notifier)
-            .exportPdf(filters: _filters),
+            .exportPdf(filters: _filters, text: exportText),
     };
     if (!mounted || file == null) {
       return;

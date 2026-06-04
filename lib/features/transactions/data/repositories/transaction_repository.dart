@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,13 +16,18 @@ import '../../../wallets/domain/models/wallet.dart';
 import '../../domain/models/transaction_entry.dart';
 
 final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
-  return TransactionRepository(ref.watch(supabaseClientProvider));
+  return TransactionRepository(
+    ref.watch(supabaseClientProvider),
+    useMockData: ref.watch(useMockDataModeProvider),
+  );
 });
 
 class TransactionRepository {
-  TransactionRepository(this._client);
+  TransactionRepository(this._client, {bool useMockData = false})
+    : _useMockData = useMockData || !AppConstants.hasSupabaseConfig;
 
   final SupabaseClient _client;
+  final bool _useMockData;
 
   static List<TransactionEntry> get mockTransactions => _mockTransactions;
 
@@ -72,7 +77,7 @@ class TransactionRepository {
   ];
 
   String get _userId {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return 'mock-user-id';
     }
     final uid = _client.auth.currentSession?.user.id;
@@ -87,7 +92,7 @@ class TransactionRepository {
     String? walletId,
     String? categoryId,
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return _mockTransactions.where((t) {
           final sameMonth =
               t.transactionDate.year == month.year &&
@@ -120,11 +125,11 @@ class TransactionRepository {
 
       return _mapList(rows);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
+      AppLogger.error('Lá»—i cÆ¡ sá»Ÿ dá»¯ liá»‡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
+      AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -135,7 +140,7 @@ class TransactionRepository {
       return const [];
     }
 
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return _filterTransactions(_mockTransactions, normalizedQuery);
     }
     try {
@@ -161,7 +166,7 @@ class TransactionRepository {
     String? walletId,
     String? categoryId,
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return _mockTransactions.where((t) {
           final sameDay =
               t.transactionDate.year == day.year &&
@@ -195,17 +200,17 @@ class TransactionRepository {
 
       return _mapList(rows);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
+      AppLogger.error('Lá»—i cÆ¡ sá»Ÿ dá»¯ liá»‡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
+      AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
       throw const AppException('errorConnection');
     }
   }
 
   Future<TransactionEntry> fetchTransactionById(String transactionId) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return _mockTransactions.firstWhere(
         (t) => t.id == transactionId,
         orElse: () => throw const AppException(
@@ -223,11 +228,11 @@ class TransactionRepository {
           .single();
       return TransactionEntry.fromMap(row);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
+      AppLogger.error('Lá»—i cÆ¡ sá»Ÿ dá»¯ liá»‡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
+      AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -243,7 +248,7 @@ class TransactionRepository {
     String source = 'manual',
     bool isImportant = false,
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       final id = 'mock-tx-${DateTime.now().millisecondsSinceEpoch}';
 
       // Look up wallet and category mock lists
@@ -320,11 +325,11 @@ class TransactionRepository {
 
       return row['id'] as String;
     } on PostgrestException catch (e, st) {
-      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
+      AppLogger.error('Lá»—i cÆ¡ sá»Ÿ dá»¯ liá»‡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
+      AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -339,7 +344,7 @@ class TransactionRepository {
     String? note,
     bool isImportant = false,
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       final index = _mockTransactions.indexWhere((t) => t.id == transactionId);
       if (index != -1) {
         final wallets = WalletRepository.mockWallets;
@@ -408,11 +413,11 @@ class TransactionRepository {
           .eq('id', transactionId)
           .eq('user_id', uid);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
+      AppLogger.error('Lá»—i cÆ¡ sá»Ÿ dá»¯ liá»‡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
+      AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -421,7 +426,7 @@ class TransactionRepository {
     String transactionId,
     bool isImportant,
   ) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       final index = _mockTransactions.indexWhere((t) => t.id == transactionId);
       if (index != -1) {
         final t = _mockTransactions[index];
@@ -452,17 +457,17 @@ class TransactionRepository {
           .eq('id', transactionId)
           .eq('user_id', uid);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
+      AppLogger.error('Lá»—i cÆ¡ sá»Ÿ dá»¯ liá»‡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
+      AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
       throw const AppException('errorConnection');
     }
   }
 
   Future<void> deleteTransaction(String transactionId) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       _mockTransactions.removeWhere((t) => t.id == transactionId);
       return;
     }
@@ -485,16 +490,20 @@ class TransactionRepository {
           await _client.storage.from('transaction-images').remove([
             transaction.imagePath!,
           ]);
-        } catch (e) {
-          // Log error but don't fail transaction deletion
+        } catch (e, st) {
+          AppLogger.error(
+            'Failed to delete transaction image from storage',
+            e,
+            st,
+          );
         }
       }
     } on PostgrestException catch (e, st) {
-      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
+      AppLogger.error('Lá»—i cÆ¡ sá»Ÿ dá»¯ liá»‡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
+      AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -503,7 +512,7 @@ class TransactionRepository {
     String transactionId,
     Uint8List bytes,
   ) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       final directory = await getTemporaryDirectory();
       final file = File('${directory.path}/$transactionId.jpg');
       await file.writeAsBytes(bytes);
@@ -527,11 +536,11 @@ class TransactionRepository {
 
       return path;
     } on PostgrestException catch (e, st) {
-      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
+      AppLogger.error('Lá»—i cÆ¡ sá»Ÿ dá»¯ liá»‡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
+      AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -541,7 +550,7 @@ class TransactionRepository {
     required String? imagePath,
     required String status,
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       final index = _mockTransactions.indexWhere((t) => t.id == transactionId);
       if (index != -1) {
         _mockTransactions[index] = TransactionEntry(
@@ -571,32 +580,32 @@ class TransactionRepository {
           .eq('id', transactionId)
           .eq('user_id', uid);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
+      AppLogger.error('Lá»—i cÆ¡ sá»Ÿ dá»¯ liá»‡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
+      AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
       throw const AppException('errorConnection');
     }
   }
 
   Future<String> getSignedImageUrl(String path) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return path;
     }
     try {
       // getSignedImageUrl does not need user session strictly for generating url,
-      // but to be consistent with wrapping MÃ¡Â»Å’I public method and duplicate check,
+      // but to be consistent with wrapping Má»ŒI public method and duplicate check,
       // let's wrap it. Since _userId isn't required by the client call, we just try/catch.
       return await _client.storage
           .from('transaction-images')
           .createSignedUrl(path, AppConstants.signedUrlTtlSeconds);
     } on PostgrestException catch (e, st) {
-      AppLogger.error('LÃ¡Â»â€”i cÃ†Â¡ sÃ¡Â»Å¸ dÃ¡Â»Â¯ liÃ¡Â»â€¡u', e, st);
+      AppLogger.error('Lá»—i cÆ¡ sá»Ÿ dá»¯ liá»‡u', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('LÃ¡Â»â€”i kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i', e, st);
+      AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
       throw const AppException('errorConnection');
     }
   }

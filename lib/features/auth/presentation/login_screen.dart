@@ -110,43 +110,36 @@ class LoginScreen extends ConsumerWidget {
                 const SizedBox(height: 20),
                 const _OrDivider(),
                 const SizedBox(height: 20),
-                OutlinedButton.icon(
+                FilledButton.icon(
                   onPressed: authAction.isLoading
                       ? null
-                      : () async {
-                          final messenger = ScaffoldMessenger.of(context);
-                          final router = GoRouter.of(context);
-
-                          try {
-                            await ref
-                                .read(authControllerProvider.notifier)
-                                .signInAnonymously();
-                            final profile = await ref
-                                .read(profileRepositoryProvider)
-                                .fetchCurrentProfile();
-
-                            if (!context.mounted) return;
-                            router.go(
-                              profile == null || profile.needsSetup
-                                  ? ProfileSetupScreen.routePath
-                                  : CalendarScreen.routePath,
-                            );
-                          } catch (error) {
-                            messenger.showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  userFriendlyMessage(context, error),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                  icon: const Icon(Icons.verified_user_outlined),
+                      : () => _enterApp(
+                          context,
+                          ref,
+                          () => ref
+                              .read(authControllerProvider.notifier)
+                              .signInAnonymously(),
+                        ),
+                  icon: const Icon(Icons.cloud_done_outlined),
                   label: Text(
                     authAction.isLoading
                         ? context.l10n.loginConnecting
-                        : context.l10n.loginTryWithoutAuth,
+                        : context.l10n.loginAnonymous,
                   ),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: authAction.isLoading
+                      ? null
+                      : () => _enterApp(
+                          context,
+                          ref,
+                          () => ref
+                              .read(authControllerProvider.notifier)
+                              .startGuestSession(),
+                        ),
+                  icon: const Icon(Icons.verified_user_outlined),
+                  label: Text(context.l10n.loginTryWithoutAuth),
                 ),
                 const Spacer(),
                 Row(
@@ -182,6 +175,33 @@ class LoginScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _enterApp(
+    BuildContext context,
+    WidgetRef ref,
+    Future<void> Function() signInAction,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final router = GoRouter.of(context);
+
+    try {
+      await signInAction();
+      final profile = await ref
+          .read(profileRepositoryProvider)
+          .fetchCurrentProfile();
+
+      if (!context.mounted) return;
+      router.go(
+        profile == null || profile.needsSetup
+            ? ProfileSetupScreen.routePath
+            : CalendarScreen.routePath,
+      );
+    } catch (error) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../l10n/l10n_extension.dart';
 
 class FinancialDisclaimerScreen extends StatelessWidget {
   const FinancialDisclaimerScreen({super.key});
@@ -10,37 +10,43 @@ class FinancialDisclaimerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final items = [
+      (
+        icon: Icons.trending_up_outlined,
+        title: context.l10n.financialDisclaimerInvestmentTitle,
+        description: context.l10n.financialDisclaimerInvestmentDesc,
+      ),
+      (
+        icon: Icons.receipt_long_outlined,
+        title: context.l10n.financialDisclaimerTaxTitle,
+        description: context.l10n.financialDisclaimerTaxDesc,
+      ),
+      (
+        icon: Icons.calculate_outlined,
+        title: context.l10n.financialDisclaimerReferenceTitle,
+        description: context.l10n.financialDisclaimerReferenceDesc,
+      ),
+      (
+        icon: Icons.person_search_outlined,
+        title: context.l10n.financialDisclaimerExpertTitle,
+        description: context.l10n.financialDisclaimerExpertDesc,
+      ),
+    ];
+
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.legalFinancialDisclaimer)),
+      appBar: AppBar(title: Text(context.l10n.financialDisclaimerTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: const [
-            _DisclaimerHero(),
-            SizedBox(height: 16),
-            _DisclaimerItem(
-              icon: Icons.trending_up_outlined,
-              title: 'Không phải tư vấn đầu tư',
-              description:
-                  'Moniary không đề xuất mua, bán, đầu tư hoặc phân bổ tài sản. Người dùng tự chịu trách nhiệm với quyết định tài chính của mình.',
-            ),
-            _DisclaimerItem(
-              icon: Icons.receipt_long_outlined,
-              title: 'Không phải tư vấn thuế/kế toán',
-              description:
-                  'Dữ liệu trong app không thay thế chứng từ, báo cáo kế toán hoặc tư vấn thuế chuyên nghiệp.',
-            ),
-            _DisclaimerItem(
-              icon: Icons.calculate_outlined,
-              title: 'Số liệu có tính tham khảo',
-              description:
-                  'Tổng thu, tổng chi và các file export phụ thuộc vào dữ liệu người dùng nhập, có thể sai nếu nhập thiếu hoặc nhập nhầm.',
-            ),
-            _DisclaimerItem(
-              icon: Icons.person_search_outlined,
-              title: 'Khi cần quyết định quan trọng',
-              description:
-                  'Người dùng nên kiểm tra lại dữ liệu gốc và hỏi chuyên gia phù hợp trước các quyết định tài chính, thuế hoặc pháp lý.',
+          children: [
+            _DisclaimerHero(message: context.l10n.financialDisclaimerSubtitle),
+            const SizedBox(height: 16),
+            ...items.map(
+              (item) => _DisclaimerItem(
+                icon: item.icon,
+                title: item.title,
+                description: item.description,
+              ),
             ),
           ],
         ),
@@ -50,7 +56,9 @@ class FinancialDisclaimerScreen extends StatelessWidget {
 }
 
 class _DisclaimerHero extends StatelessWidget {
-  const _DisclaimerHero();
+  const _DisclaimerHero({required this.message});
+
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +69,7 @@ class _DisclaimerHero extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppTheme.outline),
       ),
-      child: Text(
-        'Moniary là công cụ ghi chép thu chi cá nhân. App không thay thế lời khuyên chuyên môn về tài chính, kế toán, thuế hoặc pháp lý.',
-        style: Theme.of(context).textTheme.bodyLarge,
-      ),
+      child: Text(message, style: Theme.of(context).textTheme.bodyLarge),
     );
   }
 }

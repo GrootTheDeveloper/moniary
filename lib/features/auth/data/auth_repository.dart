@@ -12,14 +12,20 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final client = AppConstants.hasSupabaseConfig
       ? ref.watch(supabaseClientProvider)
       : null;
-  return AuthRepository(client, ref.watch(sharedPreferencesProvider));
+  return AuthRepository(
+    client,
+    ref.watch(sharedPreferencesProvider),
+    useMockData: ref.watch(useMockDataModeProvider),
+  );
 });
 
 class AuthRepository {
-  AuthRepository(this._client, this._preferences);
+  AuthRepository(this._client, this._preferences, {bool useMockData = false})
+    : _useMockData = useMockData || !AppConstants.hasSupabaseConfig;
 
   final SupabaseClient? _client;
   final SharedPreferences _preferences;
+  final bool _useMockData;
 
   SupabaseClient get _requiredClient {
     final client = _client;
@@ -33,13 +39,15 @@ class AuthRepository {
   }
 
   Future<Session?> signInAnonymously() async {
-    if (!AppConstants.hasSupabaseConfig) {
-      await _preferences.setBool('mock_logged_in', true);
+    if (_useMockData) {
+      await _preferences.setBool(mockLoggedInPreferenceKey, true);
       return _mockSession();
     }
 
     try {
       await _requiredClient.auth.signInAnonymously();
+      await _preferences.setBool(guestModePreferenceKey, false);
+      await _preferences.setBool(mockLoggedInPreferenceKey, false);
       await _initializeUserIfPossible();
       return null;
     } catch (e, st) {
@@ -49,14 +57,22 @@ class AuthRepository {
     }
   }
 
+  Future<Session> startGuestSession() async {
+    await _preferences.setBool(guestModePreferenceKey, true);
+    await _preferences.setBool(mockLoggedInPreferenceKey, true);
+    return _mockSession();
+  }
+
   Future<void> signOut() async {
-    if (!AppConstants.hasSupabaseConfig) {
-      await _preferences.setBool('mock_logged_in', false);
+    await _preferences.setBool(guestModePreferenceKey, false);
+    if (_useMockData) {
+      await _preferences.setBool(mockLoggedInPreferenceKey, false);
       return;
     }
 
     try {
       await _requiredClient.auth.signOut();
+      await _preferences.setBool(mockLoggedInPreferenceKey, false);
     } catch (e, st) {
       AppLogger.error('Sign-out failed', e, st);
       if (e is AppException) rethrow;
@@ -68,7 +84,7 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return true;
     }
 
@@ -87,7 +103,7 @@ class AuthRepository {
   }
 
   Future<bool> linkGoogleAccount() async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return true;
     }
 

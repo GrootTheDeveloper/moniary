@@ -1,4 +1,4 @@
-import 'package:fl_chart/fl_chart.dart';
+﻿import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -194,7 +194,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
             Expanded(
               child: _MetricCard(
                 label: context.l10n.statsTotalIncome,
-                value: _money(income),
+                value: _money(context, income),
                 color: AppTheme.success,
                 icon: Icons.north_east_outlined,
               ),
@@ -203,7 +203,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
             Expanded(
               child: _MetricCard(
                 label: context.l10n.statsTotalExpense,
-                value: _money(expense),
+                value: _money(context, expense),
                 color: AppTheme.danger,
                 icon: Icons.south_east_outlined,
               ),
@@ -230,7 +230,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
               ),
               ObscurableAmountText(
                 prefixText: net >= 0 ? '+' : '-',
-                amountText: _money(net.abs()),
+                amountText: _money(context, net.abs()),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -557,7 +557,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                         return BarTooltipItem(
                           context.l10n.statsDayTooltip(
                             group.x.toInt(),
-                            _money(rod.toY),
+                            _money(context, rod.toY),
                           ),
                           const TextStyle(
                             color: Colors.white,
@@ -733,9 +733,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                DateFormat(
-                                  'dd/MM/yyyy HH:mm',
-                                ).format(tx.transactionDate),
+                                '${MaterialLocalizations.of(context).formatShortDate(tx.transactionDate)} ${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(tx.transactionDate), alwaysUse24HourFormat: true)}',
                                 style: const TextStyle(
                                   fontSize: 11,
                                   color: Colors.white54,
@@ -746,7 +744,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                         ),
                         const SizedBox(width: 8),
                         ObscurableAmountText(
-                          amountText: _money(tx.amount),
+                          amountText: _money(context, tx.amount),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: tx.isIncome
@@ -766,13 +764,13 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     );
   }
 
-  String _money(double amount) {
+  String _money(BuildContext context, double amount) {
     final formatter = NumberFormat.currency(
-      locale: 'vi_VN',
+      locale: Localizations.localeOf(context).toString(),
       symbol: '',
       decimalDigits: 0,
     );
-    return '${formatter.format(amount)}Ä‘';
+    return '${formatter.format(amount).trim()}${context.l10n.transactionAmountSuffix}';
   }
 
   void _invalidateMutationMonths(TransactionMutationResult result) {

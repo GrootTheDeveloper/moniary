@@ -75,7 +75,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginSubtitle => 'Quản lý chi tiêu cá nhân';
 
   @override
-  String get loginAnonymous => 'Bắt đầu dùng thử ẩn danh';
+  String get loginAnonymous => 'Kết nối ẩn danh với Supabase';
 
   @override
   String get loginTerms =>
@@ -2706,4 +2706,115 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get termsOfUseChangesDesc =>
       'Điều khoản có thể được cập nhật khi app bổ sung tính năng hoặc chuẩn bị phát hành chính thức.';
+
+  @override
+  String get transactionOcrExtracting => 'Đang trích xuất dữ liệu...';
+
+  @override
+  String get exportSheetTransactions => 'Giao dịch';
+
+  @override
+  String get exportColumnDataType => 'Loại dữ liệu';
+
+  @override
+  String get exportColumnId => 'ID';
+
+  @override
+  String get exportColumnName => 'Tên';
+
+  @override
+  String get exportColumnImagePath => 'Đường dẫn ảnh';
+
+  @override
+  String get exportColumnCreatedAt => 'Tạo lúc';
+
+  @override
+  String get exportReportGeneratedAt => 'Tạo báo cáo lúc';
+
+  @override
+  String get exportReportRecentTransactions => 'Giao dịch gần đây';
+
+  @override
+  String get dataRetentionCloudTitle => 'Dữ liệu trên cloud';
+
+  @override
+  String get dataRetentionCloudDesc =>
+      'Hồ sơ, ví, danh mục, giao dịch và đường dẫn ảnh giao dịch được giữ khi tài khoản còn hoạt động để app có thể đồng bộ và hiển thị lại dữ liệu.';
+
+  @override
+  String get dataRetentionPhotosTitle => 'Ảnh giao dịch';
+
+  @override
+  String get dataRetentionPhotosDesc =>
+      'Ảnh giao dịch chỉ được lưu khi người dùng chủ động chụp hoặc chọn ảnh. Ảnh sẽ được xử lý cùng dữ liệu tài khoản khi xóa tài khoản.';
+
+  @override
+  String get dataRetentionLocalFilesTitle => 'File cục bộ';
+
+  @override
+  String get dataRetentionLocalFilesDesc =>
+      'File export và lịch sử request được tạo trên thiết bị. Người dùng có thể tự quản lý, chia sẻ hoặc xóa các file này khỏi bộ nhớ cục bộ.';
+
+  @override
+  String get dataRetentionDeleteTitle => 'Sau khi xóa tài khoản';
+
+  @override
+  String get dataRetentionDeleteDesc =>
+      'Moniary gọi luồng xóa tài khoản để gỡ dữ liệu app gắn với user hiện tại. Nếu thao tác thất bại, người dùng có thể tạo request xóa dữ liệu thủ công.';
+
+  @override
+  String get financialDisclaimerInvestmentTitle => 'Không phải tư vấn đầu tư';
+
+  @override
+  String get financialDisclaimerInvestmentDesc =>
+      'Moniary không đề xuất mua, bán, đầu tư hoặc phân bổ tài sản. Người dùng tự chịu trách nhiệm với quyết định tài chính của mình.';
+
+  @override
+  String get financialDisclaimerTaxTitle => 'Không phải tư vấn thuế/kế toán';
+
+  @override
+  String get financialDisclaimerTaxDesc =>
+      'Dữ liệu trong app không thay thế chứng từ, báo cáo kế toán hoặc tư vấn thuế chuyên nghiệp.';
+
+  @override
+  String get financialDisclaimerReferenceTitle => 'Số liệu có tính tham khảo';
+
+  @override
+  String get financialDisclaimerReferenceDesc =>
+      'Tổng thu, tổng chi và các file export phụ thuộc vào dữ liệu người dùng nhập, có thể sai nếu nhập thiếu hoặc nhập nhầm.';
+
+  @override
+  String get financialDisclaimerExpertTitle => 'Khi cần quyết định quan trọng';
+
+  @override
+  String get financialDisclaimerExpertDesc =>
+      'Người dùng nên kiểm tra lại dữ liệu gốc và hỏi chuyên gia phù hợp trước các quyết định tài chính, thuế hoặc pháp lý.';
+
+  @override
+  String get policyChangelogEntry1Title => 'Bổ sung Legal & Policy Center';
+
+  @override
+  String get policyChangelogEntry1Desc =>
+      'Thêm chính sách lưu giữ dữ liệu, thông báo dịch vụ bên thứ ba, miễn trừ tài chính và lịch sử thay đổi chính sách.';
+
+  @override
+  String get policyChangelogEntry2Title => 'Bổ sung Privacy Requests & Support';
+
+  @override
+  String get policyChangelogEntry2Desc =>
+      'Thêm loại yêu cầu privacy, mẫu nội dung, preview, lịch sử request, trạng thái và timeline phản hồi.';
+
+  @override
+  String get policyChangelogEntry3Title => 'Bổ sung Store Readiness & Trust';
+
+  @override
+  String get policyChangelogEntry3Desc =>
+      'Thêm About, Terms of Use, license entry, version/build info, checklist phát hành và liên hệ pháp lý.';
+
+  @override
+  String get policyChangelogEntry4Title => 'Khởi tạo chính sách MVP';
+
+  @override
+  String get policyChangelogEntry4Desc =>
+      'Thêm privacy policy, data safety, data deletion policy, export dữ liệu và xóa tài khoản.';
 }

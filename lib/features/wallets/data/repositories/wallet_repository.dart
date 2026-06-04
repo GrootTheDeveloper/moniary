@@ -8,13 +8,18 @@ import '../../../../shared/utils/app_logger.dart';
 import '../../domain/models/wallet.dart';
 
 final walletRepositoryProvider = Provider<WalletRepository>((ref) {
-  return WalletRepository(ref.watch(supabaseClientProvider));
+  return WalletRepository(
+    ref.watch(supabaseClientProvider),
+    useMockData: ref.watch(useMockDataModeProvider),
+  );
 });
 
 class WalletRepository {
-  WalletRepository(this._client);
+  WalletRepository(this._client, {bool useMockData = false})
+    : _useMockData = useMockData || !AppConstants.hasSupabaseConfig;
 
   final SupabaseClient _client;
+  final bool _useMockData;
 
   static List<Wallet> get mockWallets => _mockWallets;
 
@@ -44,7 +49,7 @@ class WalletRepository {
   ];
 
   Future<List<Wallet>> fetchWallets() async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       return _mockWallets.where((w) => w.isActive).toList();
     }
     final session = _client.auth.currentSession;
@@ -78,7 +83,7 @@ class WalletRepository {
     required double initialBalance,
     bool isDefault = false,
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       if (isDefault) {
         for (var i = 0; i < _mockWallets.length; i++) {
           _mockWallets[i] = Wallet(
@@ -144,7 +149,7 @@ class WalletRepository {
     required bool isDefault,
     required bool isActive,
   }) async {
-    if (!AppConstants.hasSupabaseConfig) {
+    if (_useMockData) {
       if (isDefault) {
         for (var i = 0; i < _mockWallets.length; i++) {
           if (_mockWallets[i].id != walletId) {

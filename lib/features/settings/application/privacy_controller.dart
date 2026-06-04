@@ -83,8 +83,8 @@ class PrivacyController extends Notifier<PrivacyState> {
         state = state.copyWith(isAuthenticated: true);
       }
       return didAuthenticate;
-    } catch (e) {
-      AppLogger.error('Biometric Auth Error: $e');
+    } catch (e, st) {
+      AppLogger.error('Biometric Auth Error', e, st);
       return false;
     }
   }

@@ -5,7 +5,7 @@ import '../data/profile_repository.dart';
 import '../domain/user_profile.dart';
 
 final currentProfileProvider = FutureProvider<UserProfile?>((ref) async {
-  ref.watch(authStateChangesProvider);
+  ref.watch(currentSessionProvider);
   return ref.watch(profileRepositoryProvider).fetchCurrentProfile();
 });
 
@@ -17,6 +17,7 @@ final profileSetupControllerProvider =
 class ProfileSetupController extends AsyncNotifier<UserProfile?> {
   @override
   Future<UserProfile?> build() {
+    ref.watch(currentSessionProvider);
     return ref.watch(profileRepositoryProvider).fetchCurrentProfile();
   }
 

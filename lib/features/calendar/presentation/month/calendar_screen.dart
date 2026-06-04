@@ -365,6 +365,7 @@ class _SeamlessHeader extends ConsumerWidget {
                 const SizedBox(height: 4),
                 ObscurableAmountText(
                   amountText: _formatMoney(
+                    context,
                     totalBalance,
                     isNegative: totalBalance < 0,
                   ),
@@ -442,6 +443,7 @@ class _IncomeExpensePill extends StatelessWidget {
           ObscurableAmountText(
             prefixText: '$label: ',
             amountText: _formatMoney(
+              context,
               amount,
               isNegative: false,
             ).replaceAll('+', ''),
@@ -1169,15 +1171,19 @@ class _CalendarSkeletonCardState extends State<_CalendarSkeletonCard>
   }
 }
 
-String _formatMoney(double amount, {required bool isNegative}) {
+String _formatMoney(
+  BuildContext context,
+  double amount, {
+  required bool isNegative,
+}) {
   final formatter = NumberFormat.currency(
-    locale: 'vi_VN',
+    locale: Localizations.localeOf(context).toString(),
     symbol: '',
     decimalDigits: 0,
   );
   final sign = isNegative ? '-' : '+';
   final formatted = formatter.format(amount).trim();
-  return '$sign$formattedđ';
+  return '$sign$formatted${context.l10n.transactionAmountSuffix}';
 }
 
 class _TodayGrid extends StatelessWidget {

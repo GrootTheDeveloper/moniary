@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../l10n/l10n_extension.dart';
 
 class PolicyChangelogScreen extends StatelessWidget {
   const PolicyChangelogScreen({super.key});
@@ -10,37 +10,43 @@ class PolicyChangelogScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final items = [
+      (
+        date: '27/05/2026',
+        title: context.l10n.policyChangelogEntry1Title,
+        description: context.l10n.policyChangelogEntry1Desc,
+      ),
+      (
+        date: '26/05/2026',
+        title: context.l10n.policyChangelogEntry2Title,
+        description: context.l10n.policyChangelogEntry2Desc,
+      ),
+      (
+        date: '26/05/2026',
+        title: context.l10n.policyChangelogEntry3Title,
+        description: context.l10n.policyChangelogEntry3Desc,
+      ),
+      (
+        date: '25/05/2026',
+        title: context.l10n.policyChangelogEntry4Title,
+        description: context.l10n.policyChangelogEntry4Desc,
+      ),
+    ];
+
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.legalPolicyChangelog)),
+      appBar: AppBar(title: Text(context.l10n.policyChangelogTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: const [
-            _ChangelogHero(),
-            SizedBox(height: 16),
-            _ChangelogItem(
-              date: '27/05/2026',
-              title: 'Bổ sung Legal & Policy Center',
-              description:
-                  'Thêm chính sách lưu giữ dữ liệu, thông báo dịch vụ bên thứ ba, miễn trừ tài chính và lịch sử thay đổi chính sách.',
-            ),
-            _ChangelogItem(
-              date: '26/05/2026',
-              title: 'Bổ sung Privacy Requests & Support',
-              description:
-                  'Thêm loại yêu cầu privacy, mẫu nội dung, preview, lịch sử request, trạng thái và timeline phản hồi.',
-            ),
-            _ChangelogItem(
-              date: '26/05/2026',
-              title: 'Bổ sung Store Readiness & Trust',
-              description:
-                  'Thêm About, Terms of Use, license entry, version/build info, checklist phát hành và liên hệ pháp lý.',
-            ),
-            _ChangelogItem(
-              date: '25/05/2026',
-              title: 'Khởi tạo chính sách MVP',
-              description:
-                  'Thêm privacy policy, data safety, data deletion policy, export dữ liệu và xóa tài khoản.',
+          children: [
+            _ChangelogHero(message: context.l10n.policyChangelogSubtitle),
+            const SizedBox(height: 16),
+            ...items.map(
+              (item) => _ChangelogItem(
+                date: item.date,
+                title: item.title,
+                description: item.description,
+              ),
             ),
           ],
         ),
@@ -50,7 +56,9 @@ class PolicyChangelogScreen extends StatelessWidget {
 }
 
 class _ChangelogHero extends StatelessWidget {
-  const _ChangelogHero();
+  const _ChangelogHero({required this.message});
+
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +69,7 @@ class _ChangelogHero extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppTheme.outline),
       ),
-      child: Text(
-        'Lịch sử này giúp người dùng biết các nội dung privacy, legal và store readiness đã thay đổi khi nào.',
-        style: Theme.of(context).textTheme.bodyLarge,
-      ),
+      child: Text(message, style: Theme.of(context).textTheme.bodyLarge),
     );
   }
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
+import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../domain/models/notification_settings.dart';
 
@@ -131,11 +131,12 @@ class MockNotificationSettingsRepository
 
 final notificationSettingsRepositoryProvider =
     Provider<NotificationSettingsRepository>((ref) {
-      if (AppConstants.hasSupabaseConfig) {
-        return SupabaseNotificationSettingsRepository(
-          SupabaseNotificationSettingsDataSource(Supabase.instance.client),
-        );
-      } else {
+      if (ref.watch(useMockDataModeProvider)) {
         return MockNotificationSettingsRepository();
       }
+      return SupabaseNotificationSettingsRepository(
+        SupabaseNotificationSettingsDataSource(
+          ref.watch(supabaseClientProvider),
+        ),
+      );
     });

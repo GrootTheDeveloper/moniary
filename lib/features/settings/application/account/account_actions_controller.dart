@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/account/account_repository.dart';
+import '../../domain/export/export_file_text.dart';
 import '../../domain/transparency/data_transparency_summary.dart';
 import '../../domain/export/export_filters.dart';
 import '../../domain/export/export_history_entry.dart';
@@ -48,13 +49,14 @@ class AccountActionsController extends AsyncNotifier<void> {
 
   Future<File?> exportXlsx({
     ExportFilters filters = const ExportFilters(),
+    required ExportFileText text,
   }) async {
     state = const AsyncLoading();
     File? exportedFile;
     state = await AsyncValue.guard(() async {
       exportedFile = await ref
           .read(accountRepositoryProvider)
-          .exportTransactionsXlsx(filters: filters);
+          .exportTransactionsXlsx(filters: filters, text: text);
     });
     ref.invalidate(exportHistoryProvider);
     return exportedFile;
@@ -62,13 +64,14 @@ class AccountActionsController extends AsyncNotifier<void> {
 
   Future<File?> exportPdf({
     ExportFilters filters = const ExportFilters(),
+    required ExportFileText text,
   }) async {
     state = const AsyncLoading();
     File? exportedFile;
     state = await AsyncValue.guard(() async {
       exportedFile = await ref
           .read(accountRepositoryProvider)
-          .exportTransactionsPdf(filters: filters);
+          .exportTransactionsPdf(filters: filters, text: text);
     });
     ref.invalidate(exportHistoryProvider);
     return exportedFile;
