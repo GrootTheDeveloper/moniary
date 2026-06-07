@@ -530,15 +530,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         backgroundColor: AppTheme.surface,
         title: Text(context.l10n.profileSignOutDialogTitle),
         content: Text(context.l10n.profileSignOutDialogMessage),
+        actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(context.l10n.profileCancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
-            child: Text(context.l10n.profileSignOut),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
+                child: Text(context.l10n.commonConfirm),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(context.l10n.profileCancel),
+              ),
+            ],
           ),
         ],
       ),

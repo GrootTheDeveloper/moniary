@@ -16,6 +16,7 @@
   "commonViewAll": "View all",
   "commonSelect": "Select",
   "commonCreate": "Create",
+  "commonConfirm": "Confirm",
   "errorGeneric": "An error occurred. Please try again.",
   "errorNotLoggedIn": "You are not logged in.",
   "errorNotFound": "Data not found.",
@@ -408,9 +409,9 @@
   "profilePrivacyCenter": "Privacy Center",
   "profilePrivacySubtitle": "Manage privacy policy, data, and permissions.",
   "profileAccount": "Account",
-  "profileSignOut": "Sign out",
+  "profileSignOut": "Sign Out",
   "profileSignOutSubtitle": "Sign out of current account on this device.",
-  "profileDeleteAccount": "Delete account",
+  "profileDeleteAccount": "Delete Account",
   "privacyClearDataSubtitle": "Clear all app data",
   "notificationSettings": "Notification Settings",
   "emailReports": "Automated Email Reports",
@@ -558,7 +559,7 @@
       }
     }
   },
-  "profileChangeTimezone": "Change timezone",
+  "profileChangeTimezone": "Change Timezone",
   "profileAnonymousBadge": "Anonymous account",
   "profileVerifiedBadge": "Verified ({provider})",
   "@profileVerifiedBadge": {
@@ -568,7 +569,7 @@
       }
     }
   },
-  "profileSignOutDialogTitle": "Sign out",
+  "profileSignOutDialogTitle": "Sign Out",
   "profileSignOutDialogMessage": "Are you sure you want to sign out?",
   "profileCancel": "Cancel",
   "exportSupportTitle": "Export support",

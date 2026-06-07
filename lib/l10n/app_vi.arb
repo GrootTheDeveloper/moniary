@@ -16,6 +16,7 @@
   "commonViewAll": "Xem tất cả",
   "commonSelect": "Chọn",
   "commonCreate": "Tạo",
+  "commonConfirm": "Xác nhận",
   "errorGeneric": "Đã xảy ra lỗi. Vui lòng thử lại.",
   "errorNotLoggedIn": "Bạn chưa đăng nhập.",
   "errorNotFound": "Dữ liệu không tồn tại.",

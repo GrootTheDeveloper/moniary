@@ -194,6 +194,12 @@ abstract class AppLocalizations {
   /// **'Tạo'**
   String get commonCreate;
 
+  /// No description provided for @commonConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận'**
+  String get commonConfirm;
+
   /// No description provided for @errorGeneric.
   ///
   /// In vi, this message translates to:

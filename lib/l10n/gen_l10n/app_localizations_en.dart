@@ -57,6 +57,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonCreate => 'Create';
 
   @override
+  String get commonConfirm => 'Confirm';
+
+  @override
   String get errorGeneric => 'An error occurred. Please try again.';
 
   @override
@@ -875,14 +878,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileAccount => 'Account';
 
   @override
-  String get profileSignOut => 'Sign out';
+  String get profileSignOut => 'Sign Out';
 
   @override
   String get profileSignOutSubtitle =>
       'Sign out of current account on this device.';
 
   @override
-  String get profileDeleteAccount => 'Delete account';
+  String get profileDeleteAccount => 'Delete Account';
 
   @override
   String get profileDeleteSubtitle =>
@@ -1219,7 +1222,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get profileChangeTimezone => 'Change timezone';
+  String get profileChangeTimezone => 'Change Timezone';
 
   @override
   String get profileAnonymousBadge => 'Anonymous account';
@@ -1230,7 +1233,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get profileSignOutDialogTitle => 'Sign out';
+  String get profileSignOutDialogTitle => 'Sign Out';
 
   @override
   String get profileSignOutDialogMessage =>

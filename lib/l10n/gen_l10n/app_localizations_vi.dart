@@ -57,6 +57,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get commonCreate => 'Tạo';
 
   @override
+  String get commonConfirm => 'Xác nhận';
+
+  @override
   String get errorGeneric => 'Đã xảy ra lỗi. Vui lòng thử lại.';
 
   @override
