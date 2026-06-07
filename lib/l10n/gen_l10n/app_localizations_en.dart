@@ -1219,9 +1219,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get profileEditInfo => 'Edit profile info';
-
-  @override
   String get profileChangeTimezone => 'Change timezone';
 
   @override

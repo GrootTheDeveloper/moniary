@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -70,24 +72,37 @@ class ProfileRepository {
   Future<UserProfile> upsertProfile({
     required String fullName,
     required String timezone,
+    String? avatarImagePath,
   }) async {
     if (_useMockData) {
       _mockProfile = UserProfile(
         id: 'mock-user-id',
         fullName: fullName,
-        email: 'guest@moniary.app',
-        avatarUrl: null,
-        loginProvider: 'anonymous',
+        email: _mockProfile?.email ?? 'guest@moniary.app',
+        avatarUrl: avatarImagePath ?? _mockProfile?.avatarUrl,
+        loginProvider: _mockProfile?.loginProvider ?? 'anonymous',
         timezone: timezone,
       );
       return _mockProfile!;
     }
     try {
       final uid = _userId;
+      final avatarUrl = avatarImagePath == null
+          ? null
+          : await _uploadAvatarImage(uid: uid, imagePath: avatarImagePath);
+
+      final values = <String, dynamic>{
+        'id': uid,
+        'full_name': fullName,
+        'timezone': timezone,
+      };
+      if (avatarUrl != null) {
+        values['avatar_url'] = avatarUrl;
+      }
 
       final row = await _client
           .from('profiles')
-          .upsert({'id': uid, 'full_name': fullName, 'timezone': timezone})
+          .upsert(values)
           .select()
           .single();
 
@@ -114,5 +129,42 @@ class ProfileRepository {
       loginProvider: loginProvider,
       timezone: _mockProfile?.timezone ?? AppConstants.defaultTimezone,
     );
+  }
+
+  Future<String> _uploadAvatarImage({
+    required String uid,
+    required String imagePath,
+  }) async {
+    if (imagePath.startsWith('avatars/') || imagePath.startsWith('http')) {
+      return imagePath;
+    }
+
+    try {
+      final bytes = await File(imagePath).readAsBytes();
+      final path = 'avatars/$uid/avatar.jpg';
+
+      await _client.storage
+          .from(AppConstants.storageBucket)
+          .uploadBinary(
+            path,
+            bytes,
+            fileOptions: const FileOptions(
+              contentType: 'image/jpeg',
+              upsert: true,
+            ),
+          );
+
+      return path;
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Failed to upload profile avatar', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to upload profile avatar', e, st);
+      throw const AppException(
+        'Failed to upload profile avatar',
+        code: 'AVATAR_UPLOAD_FAILED',
+      );
+    }
   }
 }

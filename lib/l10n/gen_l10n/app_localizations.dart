@@ -2312,12 +2312,6 @@ abstract class AppLocalizations {
   /// **'Lỗi liên kết Google: {error}'**
   String profileLinkGoogleError(String error);
 
-  /// No description provided for @profileEditInfo.
-  ///
-  /// In vi, this message translates to:
-  /// **'Chỉnh sửa thông tin'**
-  String get profileEditInfo;
-
   /// No description provided for @profileChangeTimezone.
   ///
   /// In vi, this message translates to:

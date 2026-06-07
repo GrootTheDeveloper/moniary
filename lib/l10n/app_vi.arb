@@ -554,7 +554,6 @@
       }
     }
   },
-  "profileEditInfo": "Chỉnh sửa thông tin",
   "profileChangeTimezone": "Thay đổi múi giờ",
   "profileAnonymousBadge": "Tài khoản Ẩn danh",
   "profileVerifiedBadge": "Đã Xác thực ({provider})",

@@ -558,7 +558,6 @@
       }
     }
   },
-  "profileEditInfo": "Edit profile info",
   "profileChangeTimezone": "Change timezone",
   "profileAnonymousBadge": "Anonymous account",
   "profileVerifiedBadge": "Verified ({provider})",

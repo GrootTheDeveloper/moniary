@@ -42,7 +42,10 @@ class SupabaseImage extends ConsumerWidget {
       );
     }
 
-    final isLocal = !imagePath!.startsWith('transactions/');
+    final isStoragePath =
+        imagePath!.startsWith('transactions/') ||
+        imagePath!.startsWith('avatars/');
+    final isLocal = !isStoragePath;
     if (isLocal) {
       return ClipRRect(
         borderRadius: borderRadius ?? BorderRadius.zero,

@@ -141,13 +141,11 @@ class _InfoRow extends StatelessWidget {
   const _InfoRow({
     required this.label,
     required this.value,
-    this.valueColor,
     this.isLongText = false,
   });
 
   final String label;
   final String value;
-  final Color? valueColor;
   final bool isLongText;
 
   @override
@@ -165,10 +163,7 @@ class _InfoRow extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: TextStyle(
-                    color: valueColor ?? Colors.white70,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
                 ),
               ],
             )
@@ -185,7 +180,7 @@ class _InfoRow extends StatelessWidget {
                     value,
                     textAlign: TextAlign.right,
                     style: TextStyle(
-                      color: valueColor ?? Colors.white,
+                      color: Colors.white,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),

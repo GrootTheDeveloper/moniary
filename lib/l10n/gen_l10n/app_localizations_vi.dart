@@ -1219,9 +1219,6 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get profileEditInfo => 'Chỉnh sửa thông tin';
-
-  @override
   String get profileChangeTimezone => 'Thay đổi múi giờ';
 
   @override
