@@ -429,15 +429,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         title: context.l10n.profileMyData,
                         children: [
                           _SettingsTile(
-                            icon: Icons.file_upload_outlined,
+                            icon: Icons.file_download_outlined,
                             title: context.l10n.profileImportData,
                             subtitle: context.l10n.profileImportSubtitle,
                             onTap: () =>
                                 context.push(ImportDataScreen.routePath),
                           ),
                           _SettingsTile(
-                            icon: Icons.file_download_outlined,
-                            title: context.l10n.profileExportData,
+                            icon: Icons.file_upload_outlined,
+                            title: context.l10n.exportDataTitle,
                             subtitle: context.l10n.profileExportSubtitle,
                             onTap: () =>
                                 context.push(ExportDataScreen.routePath),

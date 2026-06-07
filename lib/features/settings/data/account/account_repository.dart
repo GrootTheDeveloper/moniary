@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -31,6 +33,8 @@ final accountRepositoryProvider = Provider<AccountRepository>((ref) {
     useMockData: ref.watch(useMockDataModeProvider),
   );
 });
+
+const _fileActionsChannel = MethodChannel('moniary/file_actions');
 
 class AccountRepository {
   AccountRepository(
@@ -81,10 +85,12 @@ class AccountRepository {
     }
 
     try {
-      final directory = await _getExportDirectory();
       final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-      final file = File('${directory.path}/moniary_export_$timestamp.csv');
-      final saved = await file.writeAsString(csv.toString(), encoding: utf8);
+      final saved = await _writeExportFile(
+        fileName: 'moniary_export_$timestamp.csv',
+        mimeType: 'text/csv',
+        bytes: Uint8List.fromList(utf8.encode(csv.toString())),
+      );
       await _recordExport(format: 'CSV', file: saved, filters: filters);
       return saved;
     } catch (e, st) {
@@ -113,10 +119,13 @@ class AccountRepository {
       rows: workbookRows,
     ).build();
     try {
-      final directory = await _getExportDirectory();
       final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-      final file = File('${directory.path}/moniary_export_$timestamp.xlsx');
-      final saved = await file.writeAsBytes(bytes, flush: true);
+      final saved = await _writeExportFile(
+        fileName: 'moniary_export_$timestamp.xlsx',
+        mimeType:
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        bytes: bytes,
+      );
       await _recordExport(format: 'XLSX', file: saved, filters: filters);
       return saved;
     } catch (e, st) {
@@ -177,10 +186,12 @@ class AccountRepository {
 
     final bytes = PdfReport(title: text.pdfTitle, lines: lines).build();
     try {
-      final directory = await _getExportDirectory();
       final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-      final file = File('${directory.path}/moniary_export_$timestamp.pdf');
-      final saved = await file.writeAsBytes(bytes, flush: true);
+      final saved = await _writeExportFile(
+        fileName: 'moniary_export_$timestamp.pdf',
+        mimeType: 'application/pdf',
+        bytes: bytes,
+      );
       await _recordExport(format: 'PDF', file: saved, filters: filters);
       return saved;
     } catch (e, st) {
@@ -821,5 +832,29 @@ class AccountRepository {
       if (directory != null) return directory;
     }
     return getApplicationDocumentsDirectory();
+  }
+
+  Future<File> _writeExportFile({
+    required String fileName,
+    required String mimeType,
+    required Uint8List bytes,
+  }) async {
+    if (_exportDirectory == null && Platform.isAndroid) {
+      try {
+        final publicPath = await _fileActionsChannel.invokeMethod<String>(
+          'saveToDownloads',
+          {'fileName': fileName, 'mimeType': mimeType, 'bytes': bytes},
+        );
+        if (publicPath != null && publicPath.isNotEmpty) {
+          return File(publicPath);
+        }
+      } catch (e, st) {
+        AppLogger.error('Failed to save export to public Downloads', e, st);
+      }
+    }
+
+    final directory = await _getExportDirectory();
+    final file = File('${directory.path}/$fileName');
+    return file.writeAsBytes(bytes, flush: true);
   }
 }

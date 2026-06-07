@@ -28,8 +28,6 @@ class ExportDetailScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: [
-            _DetailHeader(entry: entry),
-            const SizedBox(height: 24),
             _InfoSection(
               title: context.l10n.exportDetailFileInfo,
               items: [
@@ -40,13 +38,6 @@ class ExportDetailScreen extends ConsumerWidget {
                 _InfoRow(
                   label: context.l10n.exportDetailFormat,
                   value: entry.format.toUpperCase(),
-                ),
-                _InfoRow(
-                  label: context.l10n.exportDetailStatus,
-                  value: exists
-                      ? context.l10n.exportDetailReady
-                      : context.l10n.exportDetailMissing,
-                  valueColor: exists ? AppTheme.success : AppTheme.danger,
                 ),
               ],
             ),
@@ -86,7 +77,7 @@ class ExportDetailScreen extends ConsumerWidget {
               OutlinedButton.icon(
                 onPressed: () => shareExportFile(context, ref, file),
                 icon: const Icon(Icons.share_outlined),
-                label: Text(context.l10n.exportDetailShareFile),
+                label: Text(context.l10n.commonShare),
               ),
             ] else
               Container(
@@ -107,50 +98,6 @@ class ExportDetailScreen extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _DetailHeader extends StatelessWidget {
-  const _DetailHeader({required this.entry});
-  final ExportHistoryEntry entry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: AppTheme.mint.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-            border: Border.all(color: AppTheme.mint.withValues(alpha: 0.2)),
-          ),
-          child: Center(
-            child: Text(
-              entry.format.toUpperCase(),
-              style: const TextStyle(
-                color: AppTheme.mint,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          context.l10n.exportDetailSuccessTitle,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          context.l10n.exportDetailReportSubtitle,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: Colors.white54),
-        ),
-      ],
     );
   }
 }

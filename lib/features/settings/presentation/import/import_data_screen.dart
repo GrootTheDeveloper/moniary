@@ -47,7 +47,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
               const SizedBox(height: 16),
               ElevatedButton.icon(
                 onPressed: _pickFile,
-                icon: const Icon(Icons.file_upload_outlined),
+                icon: const Icon(Icons.file_download_outlined),
                 label: Text(context.l10n.importSelectFile),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.mint,
