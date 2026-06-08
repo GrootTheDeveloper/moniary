@@ -60,7 +60,7 @@
   "onboardingPillStats": "Stats",
   "onboardingPage1Title1": "Track expenses",
   "onboardingPage1Title2": "with photos",
-  "onboardingPage1Subtitle": "Fast  �  Memorable  �  Never miss",
+  "onboardingPage1Subtitle": "Fast  •  Memorable  •  Never miss",
   "onboardingPage1Caption": "Save spending moments like a mini diary.",
   "onboardingPage2Title1": "View calendar",
   "onboardingPage2Title2": "intuitively",
@@ -157,7 +157,7 @@
   "transactionDeleteTitleQuestion": "Delete transaction?",
   "transactionDeleteUndone": "This action cannot be undone.",
   "transactionAmount": "Amount",
-  "transactionAmountSuffix": "?",
+  "transactionAmountSuffix": "đ",
   "transactionWallet": "Wallet",
   "transactionCategory": "Category",
   "transactionNote": "Note",
@@ -310,7 +310,7 @@
   "groupMemberEmailHint": "Email (optional)",
   "groupDeleteExpenseConfirmTitle": "Delete expense?",
   "groupDeleteExpenseConfirmMessage": "This action will update group balances.",
-  "groupPayerSubtitle": "{payer} paid � {date}",
+  "groupPayerSubtitle": "{payer} paid • {date}",
   "@groupPayerSubtitle": {
     "placeholders": {
       "payer": {
