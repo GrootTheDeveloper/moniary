@@ -963,14 +963,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'I understand that my data will be permanently deleted.';
 
   @override
-  String get deleteAccountConfirmationText => 'DELETE ACCOUNT';
-
-  @override
-  String deleteAccountConfirmInput(String text) {
-    return 'Enter $text to confirm';
-  }
-
-  @override
   String get exportTitle => 'Export data';
 
   @override

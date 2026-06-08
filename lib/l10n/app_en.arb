@@ -441,15 +441,6 @@
   "deleteAccountConsequence2": "Delete wallets, categories, and all transactions.",
   "deleteAccountConsequence3": "Delete transaction photos in Storage by user ID.",
   "deleteAccountUnderstand": "I understand that my data will be permanently deleted.",
-  "deleteAccountConfirmationText": "DELETE ACCOUNT",
-  "deleteAccountConfirmInput": "Enter {text} to confirm",
-  "@deleteAccountConfirmInput": {
-    "placeholders": {
-      "text": {
-        "type": "String"
-      }
-    }
-  },
   "exportTitle": "Export data",
   "exportFormat": "File format",
   "exportDateRange": "Date range",

@@ -437,15 +437,6 @@
   "deleteAccountConsequence2": "Xóa ví, danh mục và toàn bộ giao dịch.",
   "deleteAccountConsequence3": "Xóa ảnh giao dịch trong Storage theo user ID.",
   "deleteAccountUnderstand": "Tôi hiểu dữ liệu sẽ bị xóa khỏi tài khoản này.",
-  "deleteAccountConfirmationText": "XOA TAI KHOAN",
-  "deleteAccountConfirmInput": "Nhập {text} để xác nhận",
-  "@deleteAccountConfirmInput": {
-    "placeholders": {
-      "text": {
-        "type": "String"
-      }
-    }
-  },
   "exportTitle": "Xuất dữ liệu",
   "exportFormat": "Định dạng file",
   "exportDateRange": "Khoảng ngày",

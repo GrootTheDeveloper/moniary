@@ -1856,18 +1856,6 @@ abstract class AppLocalizations {
   /// **'Tôi hiểu dữ liệu sẽ bị xóa khỏi tài khoản này.'**
   String get deleteAccountUnderstand;
 
-  /// No description provided for @deleteAccountConfirmationText.
-  ///
-  /// In vi, this message translates to:
-  /// **'XOA TAI KHOAN'**
-  String get deleteAccountConfirmationText;
-
-  /// No description provided for @deleteAccountConfirmInput.
-  ///
-  /// In vi, this message translates to:
-  /// **'Nhập {text} để xác nhận'**
-  String deleteAccountConfirmInput(String text);
-
   /// No description provided for @exportTitle.
   ///
   /// In vi, this message translates to:

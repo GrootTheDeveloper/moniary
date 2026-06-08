@@ -963,14 +963,6 @@ class AppLocalizationsVi extends AppLocalizations {
       'Tôi hiểu dữ liệu sẽ bị xóa khỏi tài khoản này.';
 
   @override
-  String get deleteAccountConfirmationText => 'XOA TAI KHOAN';
-
-  @override
-  String deleteAccountConfirmInput(String text) {
-    return 'Nhập $text để xác nhận';
-  }
-
-  @override
   String get exportTitle => 'Xuất dữ liệu';
 
   @override
