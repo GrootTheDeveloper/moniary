@@ -907,13 +907,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailyReport => 'Daily Report';
 
   @override
+  String dailyReportDesc(String time) {
+    return 'Every day at $time';
+  }
+
+  @override
   String get weeklyReport => 'Weekly Report';
+
+  @override
+  String get weeklyReportDesc => 'Once a week';
 
   @override
   String get monthlyReport => 'Monthly Report';
 
   @override
+  String get monthlyReportDesc => 'Once a month';
+
+  @override
   String get yearlyReport => 'Yearly Report';
+
+  @override
+  String get yearlyReportDesc => 'Once a year';
 
   @override
   String get deleteAccountTitle => 'Delete account';

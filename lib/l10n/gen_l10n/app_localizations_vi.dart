@@ -907,13 +907,27 @@ class AppLocalizationsVi extends AppLocalizations {
   String get dailyReport => 'Báo cáo hàng ngày';
 
   @override
+  String dailyReportDesc(String time) {
+    return 'Mỗi ngày lúc $time';
+  }
+
+  @override
   String get weeklyReport => 'Báo cáo hàng tuần';
+
+  @override
+  String get weeklyReportDesc => 'Mỗi tuần một lần';
 
   @override
   String get monthlyReport => 'Báo cáo hàng tháng';
 
   @override
+  String get monthlyReportDesc => 'Mỗi tháng một lần';
+
+  @override
   String get yearlyReport => 'Báo cáo hàng năm';
+
+  @override
+  String get yearlyReportDesc => 'Mỗi năm một lần';
 
   @override
   String get deleteAccountTitle => 'Xóa tài khoản';

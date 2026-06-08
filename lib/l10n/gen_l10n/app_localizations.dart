@@ -1760,11 +1760,23 @@ abstract class AppLocalizations {
   /// **'Báo cáo hàng ngày'**
   String get dailyReport;
 
+  /// No description provided for @dailyReportDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi ngày lúc {time}'**
+  String dailyReportDesc(String time);
+
   /// No description provided for @weeklyReport.
   ///
   /// In vi, this message translates to:
   /// **'Báo cáo hàng tuần'**
   String get weeklyReport;
+
+  /// No description provided for @weeklyReportDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi tuần một lần'**
+  String get weeklyReportDesc;
 
   /// No description provided for @monthlyReport.
   ///
@@ -1772,11 +1784,23 @@ abstract class AppLocalizations {
   /// **'Báo cáo hàng tháng'**
   String get monthlyReport;
 
+  /// No description provided for @monthlyReportDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi tháng một lần'**
+  String get monthlyReportDesc;
+
   /// No description provided for @yearlyReport.
   ///
   /// In vi, this message translates to:
   /// **'Báo cáo hàng năm'**
   String get yearlyReport;
+
+  /// No description provided for @yearlyReportDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi năm một lần'**
+  String get yearlyReportDesc;
 
   /// No description provided for @deleteAccountTitle.
   ///

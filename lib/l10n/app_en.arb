@@ -417,9 +417,20 @@
   "emailReports": "Automated Email Reports",
   "emailReportsDesc": "Receive periodic income/expense summaries.",
   "dailyReport": "Daily Report",
+  "dailyReportDesc": "Every day at {time}",
+  "@dailyReportDesc": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "weeklyReport": "Weekly Report",
+  "weeklyReportDesc": "Once a week",
   "monthlyReport": "Monthly Report",
+  "monthlyReportDesc": "Once a month",
   "yearlyReport": "Yearly Report",
+  "yearlyReportDesc": "Once a year",
   "profileDeleteSubtitle": "Delete personal data, transactions, and saved photos.",
   "deleteAccountTitle": "Delete account",
   "deleteAccountWarning": "This action will permanently delete all your personal data, transactions, and transaction photos.",
