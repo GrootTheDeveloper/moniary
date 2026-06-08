@@ -6,6 +6,7 @@ import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
+import '../../../shared/widgets/supabase_image.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
@@ -408,6 +409,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         subtitle: email,
                         provider: provider,
                         isAnonymous: isAnonymous,
+                        avatarUrl: profile.avatarUrl,
+                        onTap: () => context.push(
+                          '${ProfileSetupScreen.routePath}?mode=edit',
+                        ),
                       ),
                       const SizedBox(height: 20),
                       if (isAnonymous) ...[
@@ -487,15 +492,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         title: context.l10n.profileMyData,
                         children: [
                           _SettingsTile(
-                            icon: Icons.file_upload_outlined,
+                            icon: Icons.file_download_outlined,
                             title: context.l10n.profileImportData,
                             subtitle: context.l10n.profileImportSubtitle,
                             onTap: () =>
                                 context.push(ImportDataScreen.routePath),
                           ),
                           _SettingsTile(
-                            icon: Icons.file_download_outlined,
-                            title: context.l10n.profileExportData,
+                            icon: Icons.file_upload_outlined,
+                            title: context.l10n.exportDataTitle,
                             subtitle: context.l10n.profileExportSubtitle,
                             onTap: () =>
                                 context.push(ExportDataScreen.routePath),
@@ -513,13 +518,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       _SettingsGroup(
                         title: context.l10n.profileAccount,
                         children: [
-                          _SettingsTile(
-                            icon: Icons.manage_accounts_outlined,
-                            title: context.l10n.profileEditInfo,
-                            subtitle: '',
-                            onTap: () =>
-                                context.push(ProfileSetupScreen.routePath),
-                          ),
                           _SettingsTile(
                             icon: Icons.notifications_outlined,
                             title: context.l10n.notificationSettings,
@@ -590,15 +588,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         backgroundColor: AppTheme.surface,
         title: Text(context.l10n.profileSignOutDialogTitle),
         content: Text(context.l10n.profileSignOutDialogMessage),
+        actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(context.l10n.profileCancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
-            child: Text(context.l10n.profileSignOut),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
+                child: Text(context.l10n.commonConfirm),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(context.l10n.profileCancel),
+              ),
+            ],
           ),
         ],
       ),
@@ -635,100 +641,121 @@ class _ProfileHeader extends StatelessWidget {
     required this.subtitle,
     required this.provider,
     required this.isAnonymous,
+    required this.avatarUrl,
+    required this.onTap,
   });
 
   final String title;
   final String subtitle;
   final String provider;
   final bool isAnonymous;
+  final String? avatarUrl;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceRaised,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.outline),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [AppTheme.mint, Colors.teal],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Center(
-              child: Text(
-                title.isNotEmpty ? title.substring(0, 1).toUpperCase() : 'U',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceRaised,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppTheme.outline),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [AppTheme.mint, Colors.teal],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
               ),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 4),
-                Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isAnonymous
-                        ? AppTheme.danger.withValues(alpha: 0.12)
-                        : AppTheme.success.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isAnonymous ? AppTheme.danger : AppTheme.success,
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        isAnonymous
-                            ? Icons.lock_open_outlined
-                            : Icons.verified_user_outlined,
-                        size: 14,
-                        color: isAnonymous ? AppTheme.danger : AppTheme.success,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        isAnonymous
-                            ? context.l10n.profileAnonymousBadge
-                            : context.l10n.profileVerifiedBadge(provider),
-                        style: TextStyle(
-                          fontSize: 10,
+              child: avatarUrl?.isNotEmpty == true
+                  ? SupabaseImage(
+                      imagePath: avatarUrl,
+                      width: 56,
+                      height: 56,
+                      borderRadius: BorderRadius.circular(28),
+                    )
+                  : Center(
+                      child: Text(
+                        title.isNotEmpty
+                            ? title.substring(0, 1).toUpperCase()
+                            : 'U',
+                        style: const TextStyle(
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 4),
+                  Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isAnonymous
+                          ? AppTheme.danger.withValues(alpha: 0.12)
+                          : AppTheme.success.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isAnonymous ? AppTheme.danger : AppTheme.success,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isAnonymous
+                              ? Icons.lock_open_outlined
+                              : Icons.verified_user_outlined,
+                          size: 14,
                           color: isAnonymous
                               ? AppTheme.danger
                               : AppTheme.success,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 4),
+                        Text(
+                          isAnonymous
+                              ? context.l10n.profileAnonymousBadge
+                              : context.l10n.profileVerifiedBadge(provider),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: isAnonymous
+                                ? AppTheme.danger
+                                : AppTheme.success,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: 10),
+            const Icon(Icons.chevron_right_outlined, color: AppTheme.mint),
+          ],
+        ),
       ),
     );
   }

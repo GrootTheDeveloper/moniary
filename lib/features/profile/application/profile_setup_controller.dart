@@ -24,12 +24,17 @@ class ProfileSetupController extends AsyncNotifier<UserProfile?> {
   Future<void> saveProfile({
     required String fullName,
     required String timezone,
+    String? avatarImagePath,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
       () => ref
           .read(profileRepositoryProvider)
-          .upsertProfile(fullName: fullName, timezone: timezone),
+          .upsertProfile(
+            fullName: fullName,
+            timezone: timezone,
+            avatarImagePath: avatarImagePath,
+          ),
     );
     ref.invalidate(currentProfileProvider);
   }

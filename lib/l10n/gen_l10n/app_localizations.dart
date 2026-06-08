@@ -194,6 +194,12 @@ abstract class AppLocalizations {
   /// **'Tạo'**
   String get commonCreate;
 
+  /// No description provided for @commonConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận'**
+  String get commonConfirm;
+
   /// No description provided for @errorGeneric.
   ///
   /// In vi, this message translates to:
@@ -2311,12 +2317,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Lỗi liên kết Google: {error}'**
   String profileLinkGoogleError(String error);
-
-  /// No description provided for @profileEditInfo.
-  ///
-  /// In vi, this message translates to:
-  /// **'Chỉnh sửa thông tin'**
-  String get profileEditInfo;
 
   /// No description provided for @profileChangeTimezone.
   ///
