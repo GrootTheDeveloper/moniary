@@ -852,7 +852,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileAnonymous => 'Anonymous trial account';
 
   @override
-  String get profileMyData => 'My data';
+  String get profileMyData => 'My Data';
 
   @override
   String get profileExportData => 'Export data';
@@ -871,8 +871,72 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilePrivacyCenter => 'Privacy Center';
 
   @override
-  String get profilePrivacySubtitle =>
-      'Manage privacy policy, data, and permissions.';
+  String get privacyGroupPrivacyTermsTitle => 'Privacy & Terms';
+
+  @override
+  String get privacyGroupPrivacyTermsSubtitle =>
+      'Policies, terms, and legal notices.';
+
+  @override
+  String get privacyTermsPolicySubtitle =>
+      'Personal data, financial records, photos, and third-party services.';
+
+  @override
+  String get privacyTermsLimitationsTitle => 'Terms & Limitations';
+
+  @override
+  String get privacyTermsLimitationsSubtitle =>
+      'Usage scope, user responsibilities, and financial disclaimer.';
+
+  @override
+  String get privacyTermsRecordsTitle => 'Policy Records';
+
+  @override
+  String get privacyTermsRecordsSubtitle =>
+      'Policy updates, acceptance notice, and legal contact.';
+
+  @override
+  String get privacyGroupDataSafetyTitle => 'Data Safety';
+
+  @override
+  String get privacyGroupDataSafetySubtitle =>
+      'Data, permissions, and Play Store disclosures.';
+
+  @override
+  String get privacyDataOverviewTitle => 'Data Overview';
+
+  @override
+  String get privacyDataOverviewSubtitle =>
+      'Stored data, collected groups, and account data summary.';
+
+  @override
+  String get privacyDataControlsTitle => 'Data Controls';
+
+  @override
+  String get privacyDataControlsSubtitle =>
+      'Data rights, retention, and deletion policies.';
+
+  @override
+  String get privacyGroupHelpRequestsTitle => 'Help & Requests';
+
+  @override
+  String get privacyGroupHelpRequestsSubtitle =>
+      'Support, contacts, and privacy requests.';
+
+  @override
+  String get privacyHelpCenterSubtitle =>
+      'Guides, troubleshooting, and safe use notes.';
+
+  @override
+  String get privacyRequestsTitle => 'Privacy Requests';
+
+  @override
+  String get privacyRequestsSubtitle =>
+      'Contact support or request help with privacy and deletion.';
+
+  @override
+  String get privacyAboutSubtitle =>
+      'App purpose, MVP status, and release information.';
 
   @override
   String get profileAccount => 'Account';
@@ -1360,7 +1424,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyFaq => 'Privacy & account FAQ';
 
   @override
-  String get privacyCenter => 'Privacy center';
+  String get privacyCenter => 'Privacy Center';
 
   @override
   String get privacyContact => 'Privacy contact';
@@ -1453,13 +1517,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get privacyCenterAppLockSubtitle =>
       'Require fingerprint or face to open the app.';
-
-  @override
-  String get privacyCenterHideBalancesTitle => 'Hide Balances Mode';
-
-  @override
-  String get privacyCenterHideBalancesSubtitle =>
-      'Automatically blur all amounts in the app.';
 
   @override
   String get biometricReasonEnable => 'Authenticate to enable App Lock';
@@ -2115,13 +2172,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get privacyContactSubtitle =>
       'Support channel for data requests, deletion requests, or privacy questions.';
-
-  @override
-  String get privacyHeroTitle => 'Your Privacy';
-
-  @override
-  String get privacyHeroSubtitle =>
-      'Manage information on data, access rights, and security options in Moniary.';
 
   @override
   String get trustHeroText =>

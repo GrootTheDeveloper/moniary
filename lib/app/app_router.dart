@@ -260,7 +260,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: PrivacyCenterScreen.routePath,
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
-          child: const PrivacyCenterScreen(),
+          child: PrivacyCenterScreen(
+            group: PrivacyCenterGroup.fromKey(
+              state.uri.queryParameters['group'],
+            ),
+          ),
         ),
       ),
       GoRoute(

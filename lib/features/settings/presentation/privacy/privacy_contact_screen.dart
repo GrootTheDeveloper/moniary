@@ -29,11 +29,15 @@ class PrivacyContactScreen extends ConsumerStatefulWidget {
 class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
   final _messageController = TextEditingController();
   String _requestTypeId = privacyRequestTypes.first.id;
+  bool _didApplyInitialTemplate = false;
 
   @override
-  void initState() {
-    super.initState();
-    _applyTemplate(notify: false);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didApplyInitialTemplate) {
+      _didApplyInitialTemplate = true;
+      _applyTemplate(notify: false);
+    }
   }
 
   @override
