@@ -98,4 +98,48 @@ class AuthController extends AsyncNotifier<void> {
       rethrow;
     }
   }
+
+  Future<void> linkAppleAccount() async {
+    state = const AsyncLoading();
+    try {
+      final usesMockProfile = await ref
+          .read(authRepositoryProvider)
+          .linkAppleAccount();
+      if (usesMockProfile) {
+        ref
+            .read(profileRepositoryProvider)
+            .setMockEmailAndProvider(
+              email: 'mock-apple@apple.com',
+              loginProvider: 'apple',
+            );
+      }
+      state = const AsyncData(null);
+    } catch (e, st) {
+      AppLogger.error('linkAppleAccount failed', e, st);
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    state = const AsyncLoading();
+    try {
+      await ref.read(authRepositoryProvider).signInWithGoogle();
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
+
+  Future<void> signInWithApple() async {
+    state = const AsyncLoading();
+    try {
+      await ref.read(authRepositoryProvider).signInWithApple();
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
 }

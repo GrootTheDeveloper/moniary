@@ -26,9 +26,9 @@
   "loginTerms": "By continuing, you agree to Moniary's terms of use and privacy policy.",
   "loginFeatureSubtitle": "Track expenses with photos",
   "loginHeader": "Sign In",
-  "loginGoogle": "Sign in with Google (Coming soon)",
-  "loginApple": "Sign in with Apple (Coming soon)",
-  "loginEmail": "Sign in with Email (Coming soon)",
+  "loginGoogle": "Sign in with Google",
+  "loginApple": "Sign in with Apple",
+  "loginEmail": "Sign in with Email",
   "loginOr": "or",
   "loginConnecting": "Connecting to Supabase...",
   "loginTryWithoutAuth": "Try without logging in",
@@ -59,7 +59,7 @@
   "onboardingPillStats": "Stats",
   "onboardingPage1Title1": "Track expenses",
   "onboardingPage1Title2": "with photos",
-  "onboardingPage1Subtitle": "Fast  •  Memorable  •  Never miss",
+  "onboardingPage1Subtitle": "Fast  �  Memorable  �  Never miss",
   "onboardingPage1Caption": "Save spending moments like a mini diary.",
   "onboardingPage2Title1": "View calendar",
   "onboardingPage2Title2": "intuitively",
@@ -156,7 +156,7 @@
   "transactionDeleteTitleQuestion": "Delete transaction?",
   "transactionDeleteUndone": "This action cannot be undone.",
   "transactionAmount": "Amount",
-  "transactionAmountSuffix": "₫",
+  "transactionAmountSuffix": "?",
   "transactionWallet": "Wallet",
   "transactionCategory": "Category",
   "transactionNote": "Note",
@@ -309,7 +309,7 @@
   "groupMemberEmailHint": "Email (optional)",
   "groupDeleteExpenseConfirmTitle": "Delete expense?",
   "groupDeleteExpenseConfirmMessage": "This action will update group balances.",
-  "groupPayerSubtitle": "{payer} paid • {date}",
+  "groupPayerSubtitle": "{payer} paid � {date}",
   "@groupPayerSubtitle": {
     "placeholders": {
       "payer": {
@@ -548,10 +548,20 @@
   "profileNewPassword": "New password",
   "profileLinkEmail": "Link Email",
   "profileLinkGoogle": "Link Google",
-  "profileLinkSuccess": "Linked email account successfully!",
+  "profileLinkApple": "Link Apple",
+  "profileLinkSuccess": "Linked account successfully!",
   "profileLinkGoogleBrowser": "Complete Google linking in browser to return to Moniary.",
+  "profileLinkAppleBrowser": "Complete Apple linking in browser to return to Moniary.",
   "profileLinkGoogleError": "Google linking error: {error}",
+  "profileLinkAppleError": "Apple linking error: {error}",
   "@profileLinkGoogleError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@profileLinkAppleError": {
     "placeholders": {
       "error": {
         "type": "String"
@@ -1181,4 +1191,3 @@
   "policyChangelogEntry3Desc": "Added About, Terms of Use, license entry, version/build info, release checklist, and legal contact flow.",
   "policyChangelogEntry4Title": "Initialized MVP policies",
   "policyChangelogEntry4Desc": "Added privacy policy, data safety, data deletion policy, data export, and account deletion flow."}
-
