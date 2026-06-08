@@ -263,19 +263,19 @@ abstract class AppLocalizations {
   /// No description provided for @loginGoogle.
   ///
   /// In vi, this message translates to:
-  /// **'Đăng nhập với Google (Sắp có)'**
+  /// **'Đăng nhập với Google'**
   String get loginGoogle;
 
   /// No description provided for @loginApple.
   ///
   /// In vi, this message translates to:
-  /// **'Đăng nhập với Apple (Sắp có)'**
+  /// **'Đăng nhập với Apple'**
   String get loginApple;
 
   /// No description provided for @loginEmail.
   ///
   /// In vi, this message translates to:
-  /// **'Đăng nhập với Email (Sắp có)'**
+  /// **'Đăng nhập với Email'**
   String get loginEmail;
 
   /// No description provided for @loginOr.
@@ -2420,6 +2420,12 @@ abstract class AppLocalizations {
   /// **'Liên kết Google'**
   String get profileLinkGoogle;
 
+  /// No description provided for @profileLinkApple.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết Apple'**
+  String get profileLinkApple;
+
   /// No description provided for @profileLinkSuccess.
   ///
   /// In vi, this message translates to:
@@ -2432,11 +2438,29 @@ abstract class AppLocalizations {
   /// **'Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.'**
   String get profileLinkGoogleBrowser;
 
+  /// No description provided for @profileLinkAppleBrowser.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoàn tất liên kết Apple trong trình duyệt để quay lại Moniary.'**
+  String get profileLinkAppleBrowser;
+
   /// No description provided for @profileLinkGoogleError.
   ///
   /// In vi, this message translates to:
   /// **'Lỗi liên kết Google: {error}'**
   String profileLinkGoogleError(String error);
+
+  /// No description provided for @profileLinkAppleError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lỗi liên kết Apple: {error}'**
+  String profileLinkAppleError(String error);
+
+  /// No description provided for @profileEditInfo.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉnh sửa thông tin'**
+  String get profileEditInfo;
 
   /// No description provided for @profileChangeTimezone.
   ///

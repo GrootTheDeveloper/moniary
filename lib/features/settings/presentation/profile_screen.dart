@@ -119,6 +119,39 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
+  Future<void> _linkAppleAccount(VoidCallback refreshSheet) async {
+    _setLinkingLoading(true, refreshSheet);
+    final messenger = ScaffoldMessenger.of(context);
+
+    try {
+      await ref.read(authControllerProvider.notifier).linkAppleAccount();
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.profileLinkAppleBrowser),
+            backgroundColor: AppTheme.success,
+          ),
+        );
+      }
+    } catch (e, st) {
+      AppLogger.error('Failed to link Apple account from profile', e, st);
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              context.l10n.profileLinkAppleError(
+                userFriendlyMessage(context, e),
+              ),
+            ),
+            backgroundColor: AppTheme.danger,
+          ),
+        );
+      }
+    } finally {
+      _setLinkingLoading(false, refreshSheet);
+    }
+  }
+
   void _showLinkAccountSheet() {
     showModalBottomSheet(
       context: context,
@@ -278,6 +311,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         label: Text(
                           context.l10n.profileLinkGoogle,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          await _linkAppleAccount(refreshSheet);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          side: const BorderSide(color: AppTheme.outline),
+                        ),
+                        icon: const Icon(
+                          Icons.apple,
+                          size: 28,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          context.l10n.profileLinkApple,
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

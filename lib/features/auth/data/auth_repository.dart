@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -114,6 +115,89 @@ class AuthRepository {
       AppLogger.error('Google account linking failed', e, st);
       if (e is AppException) rethrow;
       throw const AppException('errorGeneric', code: 'AUTH_LINK_GOOGLE_FAILED');
+    }
+  }
+
+  Future<bool> linkAppleAccount() async {
+    if (_useMockData) {
+      return true;
+    }
+
+    try {
+      await _requiredClient.auth.linkIdentity(OAuthProvider.apple);
+      return false;
+    } catch (e, st) {
+      AppLogger.error('Apple account linking failed', e, st);
+      if (e is AppException) rethrow;
+      throw const AppException('errorGeneric', code: 'AUTH_LINK_APPLE_FAILED');
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    if (_useMockData) {
+      await _preferences.setBool(mockLoggedInPreferenceKey, true);
+      return;
+    }
+    try {
+      await _requiredClient.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: kIsWeb ? null : 'io.supabase.moniary://login-callback',
+      );
+    } catch (e, st) {
+      AppLogger.error('Google sign-in failed', e, st);
+      throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
+    }
+  }
+
+  Future<void> signInWithApple() async {
+    if (_useMockData) {
+      await _preferences.setBool(mockLoggedInPreferenceKey, true);
+      return;
+    }
+    try {
+      await _requiredClient.auth.signInWithOAuth(
+        OAuthProvider.apple,
+        redirectTo: kIsWeb ? null : 'io.supabase.moniary://login-callback',
+      );
+    } catch (e, st) {
+      AppLogger.error('Apple sign-in failed', e, st);
+      throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
+    }
+  }
+
+  Future<void> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    if (_useMockData) {
+      await _preferences.setBool(mockLoggedInPreferenceKey, true);
+      return;
+    }
+    try {
+      await _requiredClient.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      await _initializeUserIfPossible();
+    } catch (e, st) {
+      AppLogger.error('Email sign-in failed', e, st);
+      throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
+    }
+  }
+
+  Future<void> signUpWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    if (_useMockData) return;
+    try {
+      await _requiredClient.auth.signUp(
+        email: email,
+        password: password,
+      );
+    } catch (e, st) {
+      AppLogger.error('Email sign-up failed', e, st);
+      throw const AppException('errorGeneric', code: 'AUTH_SIGN_UP_FAILED');
     }
   }
 

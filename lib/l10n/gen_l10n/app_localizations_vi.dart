@@ -91,13 +91,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginHeader => 'Đăng nhập';
 
   @override
-  String get loginGoogle => 'Đăng nhập với Google (Sắp có)';
+  String get loginGoogle => 'Đăng nhập với Google';
 
   @override
-  String get loginApple => 'Đăng nhập với Apple (Sắp có)';
+  String get loginApple => 'Đăng nhập với Apple';
 
   @override
-  String get loginEmail => 'Đăng nhập với Email (Sắp có)';
+  String get loginEmail => 'Đăng nhập với Email';
 
   @override
   String get loginOr => 'hoặc';
@@ -1280,6 +1280,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileLinkGoogle => 'Liên kết Google';
 
   @override
+  String get profileLinkApple => 'Liên kết Apple';
+
+  @override
   String get profileLinkSuccess => 'Liên kết tài khoản email thành công!';
 
   @override
@@ -1287,9 +1290,21 @@ class AppLocalizationsVi extends AppLocalizations {
       'Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.';
 
   @override
+  String get profileLinkAppleBrowser =>
+      'Hoàn tất liên kết Apple trong trình duyệt để quay lại Moniary.';
+
+  @override
   String profileLinkGoogleError(String error) {
     return 'Lỗi liên kết Google: $error';
   }
+
+  @override
+  String profileLinkAppleError(String error) {
+    return 'Lỗi liên kết Apple: $error';
+  }
+
+  @override
+  String get profileEditInfo => 'Chỉnh sửa thông tin';
 
   @override
   String get profileChangeTimezone => 'Thay đổi múi giờ';

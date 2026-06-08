@@ -12,6 +12,7 @@ import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../profile/data/profile_repository.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../application/auth_controller.dart';
+import '../../auth/data/auth_repository.dart';
 
 class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
@@ -54,57 +55,48 @@ class LoginScreen extends ConsumerWidget {
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 24),
-                Opacity(
-                  opacity: 0.5,
-                  child: GestureDetector(
-                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.l10n.commonFeatureUnderDevelopment,
-                        ),
-                      ),
-                    ),
-                    child: _AuthButton(
-                      icon: Icons.g_mobiledata_outlined,
-                      label: context.l10n.loginGoogle,
-                      style: _AuthButtonStyle.light,
-                    ),
+                GestureDetector(
+                  onTap: authAction.isLoading
+                      ? null
+                      : () => _enterApp(
+                            context,
+                            ref,
+                            () => ref
+                                .read(authControllerProvider.notifier)
+                                .signInWithGoogle(),
+                          ),
+                  child: _AuthButton(
+                    icon: Icons.g_mobiledata_outlined,
+                    label: context.l10n.loginGoogle,
+                    style: _AuthButtonStyle.light,
                   ),
                 ),
                 const SizedBox(height: 12),
-                Opacity(
-                  opacity: 0.5,
-                  child: GestureDetector(
-                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.l10n.commonFeatureUnderDevelopment,
-                        ),
-                      ),
-                    ),
-                    child: _AuthButton(
-                      icon: Icons.apple_outlined,
-                      label: context.l10n.loginApple,
-                      style: _AuthButtonStyle.light,
-                    ),
+                GestureDetector(
+                  onTap: authAction.isLoading
+                      ? null
+                      : () => _enterApp(
+                            context,
+                            ref,
+                            () => ref
+                                .read(authControllerProvider.notifier)
+                                .signInWithApple(),
+                          ),
+                  child: _AuthButton(
+                    icon: Icons.apple_outlined,
+                    label: context.l10n.loginApple,
+                    style: _AuthButtonStyle.light,
                   ),
                 ),
                 const SizedBox(height: 12),
-                Opacity(
-                  opacity: 0.5,
-                  child: GestureDetector(
-                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.l10n.commonFeatureUnderDevelopment,
-                        ),
-                      ),
-                    ),
-                    child: _AuthButton(
-                      icon: Icons.email_outlined,
-                      label: context.l10n.loginEmail,
-                      style: _AuthButtonStyle.dark,
-                    ),
+                GestureDetector(
+                  onTap: authAction.isLoading
+                      ? null
+                      : () => _showEmailAuthSheet(context, ref),
+                  child: _AuthButton(
+                    icon: Icons.email_outlined,
+                    label: context.l10n.loginEmail,
+                    style: _AuthButtonStyle.dark,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -202,6 +194,159 @@ class LoginScreen extends ConsumerWidget {
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+
+  void _showEmailAuthSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => _EmailAuthSheet(
+        onSuccess: () {
+          final profile =
+              ref.read(profileRepositoryProvider).fetchCurrentProfile();
+          profile.then((p) {
+            if (context.mounted) {
+              context.go(
+                p == null || p.needsSetup
+                    ? ProfileSetupScreen.routePath
+                    : CalendarScreen.routePath,
+              );
+            }
+          });
+        },
+      ),
+    );
+  }
+}
+
+class _EmailAuthSheet extends StatefulWidget {
+  const _EmailAuthSheet({required this.onSuccess});
+  final VoidCallback onSuccess;
+
+  @override
+  State<_EmailAuthSheet> createState() => _EmailAuthSheetState();
+}
+
+class _EmailAuthSheetState extends State<_EmailAuthSheet> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+  bool _isSignUp = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit(WidgetRef ref) async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+    try {
+      if (_isSignUp) {
+        await ref.read(authRepositoryProvider).signUpWithEmail(
+              email: _emailController.text.trim(),
+              password: _passwordController.text,
+            );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Please check your email for confirmation.')),
+          );
+          Navigator.pop(context);
+        }
+      } else {
+        await ref.read(authRepositoryProvider).signInWithEmail(
+              email: _emailController.text.trim(),
+              password: _passwordController.text,
+            );
+        widget.onSuccess();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, e))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, _) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  _isSignUp ? 'Create Account' : 'Sign In with Email',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.email_outlined),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (v) =>
+                      (v == null || v.isEmpty) ? 'Enter email' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: Icon(Icons.lock_outline),
+                  ),
+                  obscureText: true,
+                  validator: (v) =>
+                      (v == null || v.length < 6) ? 'Min 6 characters' : null,
+                ),
+                const SizedBox(height: 24),
+                FilledButton(
+                  onPressed: _isLoading ? null : () => _submit(ref),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(_isSignUp ? 'Sign Up' : 'Sign In'),
+                ),
+                TextButton(
+                  onPressed: () => setState(() => _isSignUp = !_isSignUp),
+                  child: Text(_isSignUp
+                      ? 'Already have an account? Sign In'
+                      : 'Don\'t have an account? Sign Up'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 

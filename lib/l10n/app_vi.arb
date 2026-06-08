@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "vi",
   "appName": "Moniary",
   "commonSave": "Lưu",
@@ -27,9 +27,9 @@
   "loginTerms": "Bằng cách tiếp tục, bạn đồng ý với các điều khoản sử dụng và chính sách bảo mật của Moniary.",
   "loginFeatureSubtitle": "Ghi chi tiêu bằng ảnh",
   "loginHeader": "Đăng nhập",
-  "loginGoogle": "Đăng nhập với Google (Sắp có)",
-  "loginApple": "Đăng nhập với Apple (Sắp có)",
-  "loginEmail": "Đăng nhập với Email (Sắp có)",
+  "loginGoogle": "Đăng nhập với Google",
+  "loginApple": "Đăng nhập với Apple",
+  "loginEmail": "Đăng nhập với Email",
   "loginOr": "hoặc",
   "loginConnecting": "Đang kết nối Supabase...",
   "loginTryWithoutAuth": "Dùng thử không cần đăng nhập",
@@ -565,9 +565,12 @@
   "profileNewPassword": "Mật khẩu mới",
   "profileLinkEmail": "Liên kết Email",
   "profileLinkGoogle": "Liên kết Google",
+  "profileLinkApple": "Liên kết Apple",
   "profileLinkSuccess": "Liên kết tài khoản email thành công!",
   "profileLinkGoogleBrowser": "Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.",
+  "profileLinkAppleBrowser": "Hoàn tất liên kết Apple trong trình duyệt để quay lại Moniary.",
   "profileLinkGoogleError": "Lỗi liên kết Google: {error}",
+  "profileLinkAppleError": "Lỗi liên kết Apple: {error}",
   "@profileLinkGoogleError": {
     "placeholders": {
       "error": {
@@ -575,6 +578,14 @@
       }
     }
   },
+  "@profileLinkAppleError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "profileEditInfo": "Chỉnh sửa thông tin",
   "profileChangeTimezone": "Thay đổi múi giờ",
   "profileAnonymousBadge": "Tài khoản Ẩn danh",
   "profileVerifiedBadge": "Đã Xác thực ({provider})",
@@ -1193,4 +1204,3 @@
   "policyChangelogEntry3Desc": "Thêm About, Terms of Use, license entry, version/build info, checklist phát hành và liên hệ pháp lý.",
   "policyChangelogEntry4Title": "Khởi tạo chính sách MVP",
   "policyChangelogEntry4Desc": "Thêm privacy policy, data safety, data deletion policy, export dữ liệu và xóa tài khoản."}
-

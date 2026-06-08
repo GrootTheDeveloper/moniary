@@ -91,13 +91,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginHeader => 'Sign In';
 
   @override
-  String get loginGoogle => 'Sign in with Google (Coming soon)';
+  String get loginGoogle => 'Sign in with Google';
 
   @override
-  String get loginApple => 'Sign in with Apple (Coming soon)';
+  String get loginApple => 'Sign in with Apple';
 
   @override
-  String get loginEmail => 'Sign in with Email (Coming soon)';
+  String get loginEmail => 'Sign in with Email';
 
   @override
   String get loginOr => 'or';
@@ -356,7 +356,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionAmount => 'Amount';
 
   @override
-  String get transactionAmountSuffix => '₫';
+  String get transactionAmountSuffix => 'đ';
 
   @override
   String get transactionWallet => 'Wallet';
@@ -1280,16 +1280,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLinkGoogle => 'Link Google';
 
   @override
-  String get profileLinkSuccess => 'Linked email account successfully!';
+  String get profileLinkApple => 'Link Apple';
+
+  @override
+  String get profileLinkSuccess => 'Linked account successfully!';
 
   @override
   String get profileLinkGoogleBrowser =>
       'Complete Google linking in browser to return to Moniary.';
 
   @override
+  String get profileLinkAppleBrowser =>
+      'Complete Apple linking in browser to return to Moniary.';
+
+  @override
   String profileLinkGoogleError(String error) {
     return 'Google linking error: $error';
   }
+
+  @override
+  String profileLinkAppleError(String error) {
+    return 'Apple linking error: $error';
+  }
+
+  @override
+  String get profileEditInfo => 'Chỉnh sửa thông tin';
 
   @override
   String get profileChangeTimezone => 'Change Timezone';
