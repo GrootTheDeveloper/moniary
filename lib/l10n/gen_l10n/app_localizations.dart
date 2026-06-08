@@ -1691,14 +1691,122 @@ abstract class AppLocalizations {
   /// No description provided for @profilePrivacyCenter.
   ///
   /// In vi, this message translates to:
-  /// **'Bảo mật & Quyền riêng tư'**
+  /// **'Bảo mật & quyền riêng tư'**
   String get profilePrivacyCenter;
 
-  /// No description provided for @profilePrivacySubtitle.
+  /// No description provided for @privacyGroupPrivacyTermsTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Quản lý privacy policy, dữ liệu và quyền truy cập.'**
-  String get profilePrivacySubtitle;
+  /// **'Quyền riêng tư & điều khoản'**
+  String get privacyGroupPrivacyTermsTitle;
+
+  /// No description provided for @privacyGroupPrivacyTermsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chính sách, điều khoản và thông báo pháp lý.'**
+  String get privacyGroupPrivacyTermsSubtitle;
+
+  /// No description provided for @privacyTermsPolicySubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu cá nhân, tài chính, ảnh và dịch vụ bên thứ ba.'**
+  String get privacyTermsPolicySubtitle;
+
+  /// No description provided for @privacyTermsLimitationsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Điều khoản & giới hạn'**
+  String get privacyTermsLimitationsTitle;
+
+  /// No description provided for @privacyTermsLimitationsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phạm vi sử dụng, trách nhiệm người dùng và miễn trừ tài chính.'**
+  String get privacyTermsLimitationsSubtitle;
+
+  /// No description provided for @privacyTermsRecordsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hồ sơ chính sách'**
+  String get privacyTermsRecordsTitle;
+
+  /// No description provided for @privacyTermsRecordsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật chính sách, thông báo đồng ý và liên hệ pháp lý.'**
+  String get privacyTermsRecordsSubtitle;
+
+  /// No description provided for @privacyGroupDataSafetyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'An toàn dữ liệu'**
+  String get privacyGroupDataSafetyTitle;
+
+  /// No description provided for @privacyGroupDataSafetySubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu, quyền truy cập và khai báo CH Play.'**
+  String get privacyGroupDataSafetySubtitle;
+
+  /// No description provided for @privacyDataOverviewTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng quan dữ liệu'**
+  String get privacyDataOverviewTitle;
+
+  /// No description provided for @privacyDataOverviewSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu đã lưu, nhóm dữ liệu thu thập và tóm tắt tài khoản.'**
+  String get privacyDataOverviewSubtitle;
+
+  /// No description provided for @privacyDataControlsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kiểm soát dữ liệu'**
+  String get privacyDataControlsTitle;
+
+  /// No description provided for @privacyDataControlsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền dữ liệu, lưu giữ dữ liệu và chính sách xóa.'**
+  String get privacyDataControlsSubtitle;
+
+  /// No description provided for @privacyGroupHelpRequestsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hỗ trợ & yêu cầu'**
+  String get privacyGroupHelpRequestsTitle;
+
+  /// No description provided for @privacyGroupHelpRequestsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trợ giúp, liên hệ và yêu cầu quyền riêng tư.'**
+  String get privacyGroupHelpRequestsSubtitle;
+
+  /// No description provided for @privacyHelpCenterSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hướng dẫn, xử lý sự cố và ghi chú sử dụng an toàn.'**
+  String get privacyHelpCenterSubtitle;
+
+  /// No description provided for @privacyRequestsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu quyền riêng tư'**
+  String get privacyRequestsTitle;
+
+  /// No description provided for @privacyRequestsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên hệ hỗ trợ hoặc yêu cầu trợ giúp về quyền riêng tư và xóa dữ liệu.'**
+  String get privacyRequestsSubtitle;
+
+  /// No description provided for @privacyAboutSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mục đích app, trạng thái MVP và thông tin phát hành.'**
+  String get privacyAboutSubtitle;
 
   /// No description provided for @profileAccount.
   ///
@@ -1760,11 +1868,23 @@ abstract class AppLocalizations {
   /// **'Báo cáo hàng ngày'**
   String get dailyReport;
 
+  /// No description provided for @dailyReportDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi ngày lúc {time}'**
+  String dailyReportDesc(String time);
+
   /// No description provided for @weeklyReport.
   ///
   /// In vi, this message translates to:
   /// **'Báo cáo hàng tuần'**
   String get weeklyReport;
+
+  /// No description provided for @weeklyReportDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi tuần một lần'**
+  String get weeklyReportDesc;
 
   /// No description provided for @monthlyReport.
   ///
@@ -1772,11 +1892,23 @@ abstract class AppLocalizations {
   /// **'Báo cáo hàng tháng'**
   String get monthlyReport;
 
+  /// No description provided for @monthlyReportDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi tháng một lần'**
+  String get monthlyReportDesc;
+
   /// No description provided for @yearlyReport.
   ///
   /// In vi, this message translates to:
   /// **'Báo cáo hàng năm'**
   String get yearlyReport;
+
+  /// No description provided for @yearlyReportDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi năm một lần'**
+  String get yearlyReportDesc;
 
   /// No description provided for @deleteAccountTitle.
   ///
@@ -1831,18 +1963,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Tôi hiểu dữ liệu sẽ bị xóa khỏi tài khoản này.'**
   String get deleteAccountUnderstand;
-
-  /// No description provided for @deleteAccountConfirmationText.
-  ///
-  /// In vi, this message translates to:
-  /// **'XOA TAI KHOAN'**
-  String get deleteAccountConfirmationText;
-
-  /// No description provided for @deleteAccountConfirmInput.
-  ///
-  /// In vi, this message translates to:
-  /// **'Nhập {text} để xác nhận'**
-  String deleteAccountConfirmInput(String text);
 
   /// No description provided for @exportTitle.
   ///
@@ -2537,7 +2657,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyDataSafety.
   ///
   /// In vi, this message translates to:
-  /// **'Data Safety'**
+  /// **'An toàn dữ liệu'**
   String get privacyDataSafety;
 
   /// No description provided for @privacyMyData.
@@ -2773,18 +2893,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Yêu cầu vân tay hoặc khuôn mặt khi mở ứng dụng.'**
   String get privacyCenterAppLockSubtitle;
-
-  /// No description provided for @privacyCenterHideBalancesTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Chế độ ẩn số dư'**
-  String get privacyCenterHideBalancesTitle;
-
-  /// No description provided for @privacyCenterHideBalancesSubtitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Tự động làm mờ tất cả số tiền trên ứng dụng.'**
-  String get privacyCenterHideBalancesSubtitle;
 
   /// No description provided for @biometricReasonEnable.
   ///
@@ -3833,7 +3941,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataSafetyTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Data Safety'**
+  /// **'An toàn dữ liệu'**
   String get dataSafetyTitle;
 
   /// No description provided for @dataSafetySubtitle.
@@ -3925,18 +4033,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Kênh hỗ trợ cho yêu cầu dữ liệu, xóa dữ liệu hoặc câu hỏi privacy.'**
   String get privacyContactSubtitle;
-
-  /// No description provided for @privacyHeroTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Quyền riêng tư của bạn'**
-  String get privacyHeroTitle;
-
-  /// No description provided for @privacyHeroSubtitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Quản lý các thông tin về dữ liệu, quyền truy cập và lựa chọn bảo mật trong Moniary.'**
-  String get privacyHeroSubtitle;
 
   /// No description provided for @trustHeroText.
   ///

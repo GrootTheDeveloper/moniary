@@ -505,13 +505,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             onTap: () =>
                                 context.push(ExportDataScreen.routePath),
                           ),
-                          _SettingsTile(
-                            icon: Icons.privacy_tip_outlined,
-                            title: context.l10n.profilePrivacyCenter,
-                            subtitle: context.l10n.profilePrivacySubtitle,
-                            onTap: () =>
-                                context.push(PrivacyCenterScreen.routePath),
-                          ),
                         ],
                       ),
                       const SizedBox(height: 20),
@@ -549,6 +542,45 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             onTap: state.isLoading
                                 ? null
                                 : () => _confirmDelete(context),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      _SettingsGroup(
+                        title: context.l10n.profilePrivacyCenter,
+                        children: [
+                          _SettingsTile(
+                            icon: Icons.privacy_tip_outlined,
+                            title: context.l10n.privacyGroupPrivacyTermsTitle,
+                            subtitle:
+                                context.l10n.privacyGroupPrivacyTermsSubtitle,
+                            onTap: () => context.push(
+                              PrivacyCenterScreen.location(
+                                PrivacyCenterGroup.privacyTerms,
+                              ),
+                            ),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.verified_user_outlined,
+                            title: context.l10n.privacyGroupDataSafetyTitle,
+                            subtitle:
+                                context.l10n.privacyGroupDataSafetySubtitle,
+                            onTap: () => context.push(
+                              PrivacyCenterScreen.location(
+                                PrivacyCenterGroup.dataSafety,
+                              ),
+                            ),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.support_agent_outlined,
+                            title: context.l10n.privacyGroupHelpRequestsTitle,
+                            subtitle:
+                                context.l10n.privacyGroupHelpRequestsSubtitle,
+                            onTap: () => context.push(
+                              PrivacyCenterScreen.location(
+                                PrivacyCenterGroup.helpRequests,
+                              ),
+                            ),
                           ),
                         ],
                       ),

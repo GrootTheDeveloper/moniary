@@ -12,23 +12,10 @@ class DeleteAccountDialog extends StatefulWidget {
 }
 
 class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
-  String get _confirmationText => context.l10n.deleteAccountConfirmationText;
-
-  final _controller = TextEditingController();
   bool _understood = false;
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final canDelete =
-        _understood &&
-        _controller.text.trim().toUpperCase() == _confirmationText;
-
     return AlertDialog(
       title: Text(context.l10n.deleteAccountTitleQuestion),
       content: SingleChildScrollView(
@@ -60,29 +47,26 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
               onChanged: (value) =>
                   setState(() => _understood = value ?? false),
             ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                labelText: context.l10n.deleteAccountConfirmInput(
-                  _confirmationText,
-                ),
-              ),
-              textCapitalization: TextCapitalization.characters,
-              onChanged: (_) => setState(() {}),
-            ),
           ],
         ),
       ),
+      actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
       actions: [
-        TextButton(
-          onPressed: () => context.pop(false),
-          child: Text(context.l10n.commonCancel),
-        ),
-        FilledButton(
-          onPressed: canDelete ? () => context.pop(true) : null,
-          style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
-          child: Text(context.l10n.deleteAccountConfirm),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FilledButton(
+              onPressed: _understood ? () => context.pop(true) : null,
+              style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
+              child: Text(context.l10n.commonConfirm),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => context.pop(false),
+              child: Text(context.l10n.commonCancel),
+            ),
+          ],
         ),
       ],
     );

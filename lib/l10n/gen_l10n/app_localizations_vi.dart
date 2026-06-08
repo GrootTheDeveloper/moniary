@@ -868,11 +868,75 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileImportSubtitle => 'Nhập từ file CSV';
 
   @override
-  String get profilePrivacyCenter => 'Bảo mật & Quyền riêng tư';
+  String get profilePrivacyCenter => 'Bảo mật & quyền riêng tư';
 
   @override
-  String get profilePrivacySubtitle =>
-      'Quản lý privacy policy, dữ liệu và quyền truy cập.';
+  String get privacyGroupPrivacyTermsTitle => 'Quyền riêng tư & điều khoản';
+
+  @override
+  String get privacyGroupPrivacyTermsSubtitle =>
+      'Chính sách, điều khoản và thông báo pháp lý.';
+
+  @override
+  String get privacyTermsPolicySubtitle =>
+      'Dữ liệu cá nhân, tài chính, ảnh và dịch vụ bên thứ ba.';
+
+  @override
+  String get privacyTermsLimitationsTitle => 'Điều khoản & giới hạn';
+
+  @override
+  String get privacyTermsLimitationsSubtitle =>
+      'Phạm vi sử dụng, trách nhiệm người dùng và miễn trừ tài chính.';
+
+  @override
+  String get privacyTermsRecordsTitle => 'Hồ sơ chính sách';
+
+  @override
+  String get privacyTermsRecordsSubtitle =>
+      'Cập nhật chính sách, thông báo đồng ý và liên hệ pháp lý.';
+
+  @override
+  String get privacyGroupDataSafetyTitle => 'An toàn dữ liệu';
+
+  @override
+  String get privacyGroupDataSafetySubtitle =>
+      'Dữ liệu, quyền truy cập và khai báo CH Play.';
+
+  @override
+  String get privacyDataOverviewTitle => 'Tổng quan dữ liệu';
+
+  @override
+  String get privacyDataOverviewSubtitle =>
+      'Dữ liệu đã lưu, nhóm dữ liệu thu thập và tóm tắt tài khoản.';
+
+  @override
+  String get privacyDataControlsTitle => 'Kiểm soát dữ liệu';
+
+  @override
+  String get privacyDataControlsSubtitle =>
+      'Quyền dữ liệu, lưu giữ dữ liệu và chính sách xóa.';
+
+  @override
+  String get privacyGroupHelpRequestsTitle => 'Hỗ trợ & yêu cầu';
+
+  @override
+  String get privacyGroupHelpRequestsSubtitle =>
+      'Trợ giúp, liên hệ và yêu cầu quyền riêng tư.';
+
+  @override
+  String get privacyHelpCenterSubtitle =>
+      'Hướng dẫn, xử lý sự cố và ghi chú sử dụng an toàn.';
+
+  @override
+  String get privacyRequestsTitle => 'Yêu cầu quyền riêng tư';
+
+  @override
+  String get privacyRequestsSubtitle =>
+      'Liên hệ hỗ trợ hoặc yêu cầu trợ giúp về quyền riêng tư và xóa dữ liệu.';
+
+  @override
+  String get privacyAboutSubtitle =>
+      'Mục đích app, trạng thái MVP và thông tin phát hành.';
 
   @override
   String get profileAccount => 'Tài khoản';
@@ -907,13 +971,27 @@ class AppLocalizationsVi extends AppLocalizations {
   String get dailyReport => 'Báo cáo hàng ngày';
 
   @override
+  String dailyReportDesc(String time) {
+    return 'Mỗi ngày lúc $time';
+  }
+
+  @override
   String get weeklyReport => 'Báo cáo hàng tuần';
+
+  @override
+  String get weeklyReportDesc => 'Mỗi tuần một lần';
 
   @override
   String get monthlyReport => 'Báo cáo hàng tháng';
 
   @override
+  String get monthlyReportDesc => 'Mỗi tháng một lần';
+
+  @override
   String get yearlyReport => 'Báo cáo hàng năm';
+
+  @override
+  String get yearlyReportDesc => 'Mỗi năm một lần';
 
   @override
   String get deleteAccountTitle => 'Xóa tài khoản';
@@ -947,14 +1025,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get deleteAccountUnderstand =>
       'Tôi hiểu dữ liệu sẽ bị xóa khỏi tài khoản này.';
-
-  @override
-  String get deleteAccountConfirmationText => 'XOA TAI KHOAN';
-
-  @override
-  String deleteAccountConfirmInput(String text) {
-    return 'Nhập $text để xác nhận';
-  }
 
   @override
   String get exportTitle => 'Xuất dữ liệu';
@@ -1342,7 +1412,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get legalUserRights => 'Quyền dữ liệu';
 
   @override
-  String get privacyDataSafety => 'Data Safety';
+  String get privacyDataSafety => 'An toàn dữ liệu';
 
   @override
   String get privacyMyData => 'Dữ liệu của tôi';
@@ -1461,13 +1531,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get privacyCenterAppLockSubtitle =>
       'Yêu cầu vân tay hoặc khuôn mặt khi mở ứng dụng.';
-
-  @override
-  String get privacyCenterHideBalancesTitle => 'Chế độ ẩn số dư';
-
-  @override
-  String get privacyCenterHideBalancesSubtitle =>
-      'Tự động làm mờ tất cả số tiền trên ứng dụng.';
 
   @override
   String get biometricReasonEnable => 'Xác thực để bật khóa ứng dụng';
@@ -2069,7 +2132,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Xem và copy email privacy, support và legal dùng cho phát hành Store.';
 
   @override
-  String get dataSafetyTitle => 'Data Safety';
+  String get dataSafetyTitle => 'An toàn dữ liệu';
 
   @override
   String get dataSafetySubtitle =>
@@ -2124,13 +2187,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get privacyContactSubtitle =>
       'Kênh hỗ trợ cho yêu cầu dữ liệu, xóa dữ liệu hoặc câu hỏi privacy.';
-
-  @override
-  String get privacyHeroTitle => 'Quyền riêng tư của bạn';
-
-  @override
-  String get privacyHeroSubtitle =>
-      'Quản lý các thông tin về dữ liệu, quyền truy cập và lựa chọn bảo mật trong Moniary.';
 
   @override
   String get trustHeroText =>
