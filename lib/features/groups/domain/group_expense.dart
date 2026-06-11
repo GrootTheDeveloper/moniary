@@ -14,7 +14,7 @@ class GroupExpense {
   final String id;
   final String groupId;
   final String payerMemberId;
-  final double amount;
+  final int amount;
   final String note;
   final DateTime date;
   final List<ExpenseSplit> splits;

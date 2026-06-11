@@ -602,7 +602,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get scanItemsTitle => 'Mục nhận diện';
 
   @override
-  String scanQuantity(int quantity) {
+  String scanQuantity(String quantity) {
     return 'Số lượng: $quantity';
   }
 
@@ -2888,4 +2888,347 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get policyChangelogEntry4Desc =>
       'Thêm privacy policy, data safety, data deletion policy, export dữ liệu và xóa tài khoản.';
+
+  @override
+  String get groupCreateNew => 'Tạo nhóm mới';
+
+  @override
+  String get groupDescriptionLabel => 'Mô tả';
+
+  @override
+  String get groupTypeLabel => 'Loại nhóm';
+
+  @override
+  String get groupTypeHint =>
+      'Ví dụ: Du lịch, Ăn uống, Ở chung, Couple, Bạn bè...';
+
+  @override
+  String get groupAvatarLabel => 'Ảnh nhóm';
+
+  @override
+  String get groupChooseImage => 'Chọn ảnh';
+
+  @override
+  String get groupNameRequired => 'Tên nhóm là bắt buộc.';
+
+  @override
+  String groupTotalSpent(String amount) {
+    return 'Tổng chi $amount';
+  }
+
+  @override
+  String get groupBalanceSettled => 'Đã cân bằng';
+
+  @override
+  String groupBalanceOwes(String amount) {
+    return 'Bạn cần trả $amount';
+  }
+
+  @override
+  String groupBalanceReceives(String amount) {
+    return 'Bạn sẽ nhận $amount';
+  }
+
+  @override
+  String get groupUnresolvedBadge => 'Chưa xử lý';
+
+  @override
+  String get groupOverviewTitle => 'Tổng quan';
+
+  @override
+  String get groupTransactionsTitle => 'Giao dịch nhóm';
+
+  @override
+  String get groupDebtAreaTitle => 'Ai nợ ai';
+
+  @override
+  String get groupLeave => 'Rời nhóm';
+
+  @override
+  String get groupLeaveConfirmTitle => 'Rời nhóm này?';
+
+  @override
+  String get groupLeaveConfirmMessage =>
+      'Bạn chỉ có thể rời nhóm khi công nợ đã được xử lý và quyền owner đã được chuyển nếu cần.';
+
+  @override
+  String get groupLeaveBlocked =>
+      'Bạn ơi! bạn còn vài khoản thu chi chưa được xử lý kìa.';
+
+  @override
+  String get groupOwnerTransferRequired =>
+      'Bạn cần chuyển quyền owner hoặc thêm một owner khác trước khi rời nhóm.';
+
+  @override
+  String get groupInviteTitle => 'Mời thành viên';
+
+  @override
+  String get groupInviteByUsername => 'Mời bằng username';
+
+  @override
+  String get groupUsernameLabel => 'Username';
+
+  @override
+  String get groupInviteAction => 'Gửi lời mời';
+
+  @override
+  String get groupInviteLinkTitle => 'Link mời nhóm';
+
+  @override
+  String get groupCreateInviteLink => 'Tạo link mời';
+
+  @override
+  String get groupInviteLinkCreated => 'Đã tạo link mời nhóm.';
+
+  @override
+  String get groupInviteSent => 'Đã gửi lời mời.';
+
+  @override
+  String get groupUserNotFound => 'Không tìm thấy người dùng này.';
+
+  @override
+  String get groupNoFriends => 'Bạn chưa có bạn bè nào để mời.';
+
+  @override
+  String get groupFriendInviteTitle => 'Mời từ danh sách bạn bè';
+
+  @override
+  String get groupMemberInvited => 'Đã mời';
+
+  @override
+  String get groupMemberActive => 'Đang tham gia';
+
+  @override
+  String get groupAddTransaction => 'Thêm giao dịch nhóm';
+
+  @override
+  String get groupTransactionCaption => 'Caption';
+
+  @override
+  String get groupTransactionNote => 'Ghi chú';
+
+  @override
+  String get groupTransactionTotal => 'Tổng tiền';
+
+  @override
+  String get groupTransactionCategory => 'Danh mục';
+
+  @override
+  String get groupTransactionImage => 'Ảnh hóa đơn';
+
+  @override
+  String get groupTransactionImageOptional =>
+      'Ảnh không bắt buộc nhưng được khuyến khích.';
+
+  @override
+  String get groupSplitModeTitle => 'Cách chia tiền';
+
+  @override
+  String get groupSplitEqual => 'Chia đều';
+
+  @override
+  String get groupSplitUnequal => 'Chia không đều';
+
+  @override
+  String get groupPaymentModeTitle => 'Người đã trả tiền';
+
+  @override
+  String get groupPaymentEveryone => 'Mọi người đều trả';
+
+  @override
+  String get groupPaymentSingle => 'Một người trả';
+
+  @override
+  String get groupPaymentMultiple => 'Nhiều người trả';
+
+  @override
+  String get groupSelectPayer => 'Vui lòng chọn người đã trả tiền.';
+
+  @override
+  String get groupSelectAtLeastTwoPayers =>
+      'Vui lòng chọn ít nhất 2 người đã trả tiền.';
+
+  @override
+  String get groupEnterPayerAmounts =>
+      'Vui lòng nhập số tiền đã trả cho từng thành viên.';
+
+  @override
+  String get groupPayerAmountPositive => 'Số tiền đã trả phải lớn hơn 0.';
+
+  @override
+  String get groupPaidTotalMismatch =>
+      'Tổng số tiền đã trả chưa khớp với tổng giá trị giao dịch.';
+
+  @override
+  String get groupConfirmationTitle => 'Bạn đã chắc chắn chưa?';
+
+  @override
+  String get groupPost => 'Đăng';
+
+  @override
+  String get groupPosting => 'Đang đăng...';
+
+  @override
+  String get groupTransactionPosted =>
+      'Giao dịch nhóm đã được đăng thành công.';
+
+  @override
+  String get groupTransactionPendingAmounts =>
+      'Vui lòng nhập số tiền bạn đã sử dụng trong giao dịch này.';
+
+  @override
+  String get groupTransactionAmountMismatch =>
+      'Tổng số tiền các thành viên nhập chưa khớp với tổng tiền giao dịch. Vui lòng kiểm tra và nhập lại.';
+
+  @override
+  String get groupTransactionMembersPending =>
+      'Vẫn còn thành viên chưa nhập số tiền đã sử dụng.';
+
+  @override
+  String get groupTransactionPendingStatus => 'Chờ thành viên nhập số tiền';
+
+  @override
+  String get groupTransactionMismatchStatus => 'Tổng tiền chưa khớp';
+
+  @override
+  String get groupTransactionPostedStatus => 'Đã đăng';
+
+  @override
+  String get groupTransactionNoData => 'Chưa có giao dịch nhóm.';
+
+  @override
+  String get groupTransactionLoadError => 'Không tải được giao dịch nhóm.';
+
+  @override
+  String get groupTransactionDetailTitle => 'Chi tiết giao dịch nhóm';
+
+  @override
+  String get groupTransactionCreator => 'Người đăng';
+
+  @override
+  String get groupTransactionPayers => 'Người đã trả';
+
+  @override
+  String get groupTransactionShares => 'Phần phải chịu';
+
+  @override
+  String get groupTransactionDeleteConfirm => 'Xóa giao dịch nhóm này?';
+
+  @override
+  String get groupTransactionCompletedEditWarning =>
+      'Giao dịch này đã có khoản nợ được xác nhận. Nếu chỉnh sửa, hệ thống sẽ tính lại công nợ của nhóm. Bạn có chắc muốn tiếp tục không?';
+
+  @override
+  String get groupTransactionCreatorOnly =>
+      'Chỉ người tạo giao dịch mới được sửa hoặc xóa.';
+
+  @override
+  String get groupAmountInputTitle => 'Số tiền bạn đã sử dụng';
+
+  @override
+  String get groupAmountUsedLabel => 'Số tiền đã sử dụng';
+
+  @override
+  String get groupAmountSubmit => 'Gửi số tiền';
+
+  @override
+  String get groupAmountNonNegative => 'Số tiền không được nhỏ hơn 0.';
+
+  @override
+  String get groupSettlementTitle => 'Công nợ nhóm';
+
+  @override
+  String get groupBalanceTableTitle => 'Bảng công nợ';
+
+  @override
+  String get groupYouNeedPay => 'Bạn cần trả';
+
+  @override
+  String get groupOthersNeedPayYou => 'Người khác cần trả cho bạn';
+
+  @override
+  String get groupMarkPaid => 'Đã trả nợ';
+
+  @override
+  String get groupConfirmReceived => 'Xác nhận đã nhận';
+
+  @override
+  String get groupSettlementPending => 'Chờ thanh toán';
+
+  @override
+  String get groupSettlementPayerMarked => 'Người trả đã báo thanh toán';
+
+  @override
+  String get groupSettlementCompleted => 'Đã hoàn tất';
+
+  @override
+  String get groupSettlementDisputed => 'Đang tranh chấp';
+
+  @override
+  String get groupSettlementEmpty => 'Không có khoản nợ cần xử lý.';
+
+  @override
+  String groupSettlementFromTo(String from, String to) {
+    return '$from trả $to';
+  }
+
+  @override
+  String groupSharePaidBalance(String share, String paid, String balance) {
+    return 'Chịu $share • Đã trả $paid • Cân đối $balance';
+  }
+
+  @override
+  String get groupCommentsTitle => 'Bình luận';
+
+  @override
+  String get groupCommentHint => 'Nhập bình luận...';
+
+  @override
+  String get groupCommentSend => 'Gửi';
+
+  @override
+  String get groupCommentsEmpty => 'Chưa có bình luận.';
+
+  @override
+  String get groupCommentRequired => 'Vui lòng nhập nội dung bình luận.';
+
+  @override
+  String get groupUnknownMember => 'Thành viên';
+
+  @override
+  String get groupNoCategory => 'Chưa chọn danh mục';
+
+  @override
+  String get groupChooseCategory => 'Chọn danh mục';
+
+  @override
+  String get groupAmountRequired => 'Vui lòng nhập tổng tiền lớn hơn 0.';
+
+  @override
+  String get groupActionFailed =>
+      'Không thể thực hiện thao tác nhóm. Vui lòng thử lại.';
+
+  @override
+  String get groupMemberAlreadyInvited =>
+      'Người dùng này đã ở trong nhóm hoặc đang có lời mời.';
+
+  @override
+  String get groupInviteLinkPlaceholder =>
+      'Deep link đã được tạo. Màn hình chấp nhận lời mời sẽ được kết nối ở phase deep linking.';
+
+  @override
+  String get groupStatsPlaceholder =>
+      'Thống kê nhóm cơ bản dùng tổng chi và công nợ hiện tại.';
+
+  @override
+  String get groupLeaveWarningActivity =>
+      'Có thành viên trong nhóm cố gắng rời khỏi nhóm khi chưa xử lý xong các khoản chi. Hãy cẩn thận.';
+
+  @override
+  String get profileUsernameHint =>
+      '3-30 ký tự: chữ thường, số hoặc dấu gạch dưới';
+
+  @override
+  String get profileUsernameInvalid =>
+      'Username phải có 3-30 ký tự và chỉ gồm chữ thường, số hoặc dấu gạch dưới.';
 }

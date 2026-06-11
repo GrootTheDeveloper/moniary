@@ -57,7 +57,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
     _amountController = TextEditingController(
       text: result.totalAmount == null
           ? ''
-          : result.totalAmount!.round().toString(),
+          : _formatDecimal(result.totalAmount!),
     );
     _noteController = TextEditingController(text: result.note ?? '');
     _date = result.transactionDate ?? DateTime.now();
@@ -194,7 +194,11 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
                 title: Text(item.name),
                 subtitle: item.quantity == null
                     ? null
-                    : Text(context.l10n.scanQuantity(item.quantity!)),
+                    : Text(
+                        context.l10n.scanQuantity(
+                          _formatDecimal(item.quantity!),
+                        ),
+                      ),
                 trailing: item.price == null
                     ? null
                     : Text(formatVnd(item.price!)),
@@ -262,9 +266,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
 
   Future<void> _save() async {
     final messenger = ScaffoldMessenger.of(context);
-    final amount = double.tryParse(
-      _amountController.text.trim().replaceAll('.', '').replaceAll(',', ''),
-    );
+    final amount = _parseDecimalAmount(_amountController.text);
     if (amount == null || amount <= 0) {
       messenger.showSnackBar(
         SnackBar(content: Text(context.l10n.transactionAmountPositive)),
@@ -320,6 +322,46 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
         ),
       );
     }
+  }
+
+  String _formatDecimal(double value) {
+    if (value == value.truncateToDouble()) {
+      return value.toInt().toString();
+    }
+    return value
+        .toStringAsFixed(6)
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+  }
+
+  double? _parseDecimalAmount(String input) {
+    final value = input.trim().replaceAll(RegExp(r'\s'), '');
+    if (value.isEmpty) {
+      return null;
+    }
+
+    final lastDot = value.lastIndexOf('.');
+    final lastComma = value.lastIndexOf(',');
+    if (lastDot >= 0 && lastComma >= 0) {
+      final decimalIndex = lastDot > lastComma ? lastDot : lastComma;
+      final decimalSeparator = value[decimalIndex];
+      final thousandsSeparator = decimalSeparator == '.' ? ',' : '.';
+      return double.tryParse(
+        value
+            .replaceAll(thousandsSeparator, '')
+            .replaceFirst(decimalSeparator, '.'),
+      );
+    }
+
+    final separator = lastDot >= 0 ? '.' : (lastComma >= 0 ? ',' : null);
+    if (separator == null) {
+      return double.tryParse(value);
+    }
+
+    final parts = value.split(separator);
+    final isThousands =
+        parts.length > 2 || (parts.length == 2 && parts.last.length == 3);
+    return double.tryParse(isThousands ? parts.join() : parts.join('.'));
   }
 }
 

@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/providers/camera_provider.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
+import '../../../scanning/presentation/scanning_screen.dart';
 import '../../domain/models/transaction_mutation_result.dart';
 
 enum _CameraError { permissionDenied, generic }
@@ -114,7 +115,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
     super.dispose();
   }
 
-  Future<void> _takePicture() async {
+  Future<void> _takePicture({bool useOcr = false}) async {
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) return;
 
@@ -122,10 +123,15 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
       final image = await controller.takePicture();
       if (!mounted) return;
 
-      final result = await context.push<TransactionMutationResult>(
-        '/transaction-form',
-        extra: {'imagePath': image.path},
-      );
+      final result = useOcr
+          ? await context.push<TransactionMutationResult>(
+              ScanningScreen.routePath,
+              extra: image.path,
+            )
+          : await context.push<TransactionMutationResult>(
+              '/transaction-form',
+              extra: {'imagePath': image.path},
+            );
 
       if (result != null && mounted) {
         context.pop(result);
@@ -305,13 +311,12 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                   _buildBottomActionButton(
                     icon: Icons.document_scanner_outlined,
                     label: context.l10n.cameraOcrScan,
-                    onTap:
-                        _takePicture, // Will capture image, OCR logic can be injected here later
+                    onTap: () => _takePicture(useOcr: true),
                   ),
 
                   // Big Capture Button
                   GestureDetector(
-                    onTap: _takePicture,
+                    onTap: () => _takePicture(),
                     child: Container(
                       width: 80,
                       height: 80,

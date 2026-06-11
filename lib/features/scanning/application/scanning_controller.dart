@@ -1,12 +1,36 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
+
+import '../../../core/constants/app_constants.dart';
 import '../../../shared/utils/app_logger.dart';
 
-import '../data/mock_ocr_service.dart';
+import '../data/fast_api_ocr_service.dart';
+import '../data/ocr_repository.dart';
 import '../data/ocr_service.dart';
 import '../domain/ocr_result.dart';
 
+final ocrHttpClientProvider = Provider<http.Client>((ref) {
+  final client = http.Client();
+  ref.onDispose(client.close);
+  return client;
+});
+
 final ocrServiceProvider = Provider<OcrService>((ref) {
-  return const MockOcrService();
+  return FastApiOcrService(
+    baseUrl: AppConstants.ocrApiUrl,
+    client: ref.watch(ocrHttpClientProvider),
+    timeout: AppConstants.ocrRequestTimeout,
+  );
+});
+
+final ocrRepositoryProvider = Provider<OcrRepository>((ref) {
+  return OcrRepository(ref.watch(ocrServiceProvider));
+});
+
+final ocrExtractionControllerProvider = Provider<OcrExtractionController>((
+  ref,
+) {
+  return OcrExtractionController(ref.watch(ocrRepositoryProvider));
 });
 
 final scanningControllerProvider =
@@ -17,6 +41,16 @@ final scanningControllerProvider =
 enum ScanningStatus { empty, imageReady, scanning, success, failure }
 
 enum ScanningError { imageSelect, imageRequired, ocrFailed }
+
+class OcrExtractionController {
+  const OcrExtractionController(this._repository);
+
+  final OcrRepository _repository;
+
+  Future<OcrResult> extractFromImage(String imagePath) {
+    return _repository.extractFromImage(imagePath);
+  }
+}
 
 class ScanningState {
   const ScanningState({
@@ -72,7 +106,7 @@ class ScanningController extends Notifier<ScanningState> {
 
     try {
       final result = await ref
-          .read(ocrServiceProvider)
+          .read(ocrExtractionControllerProvider)
           .extractFromImage(imagePath);
       state = ScanningState(
         status: ScanningStatus.success,

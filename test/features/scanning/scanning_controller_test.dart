@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:moniary/core/constants/app_constants.dart';
 import 'package:moniary/features/scanning/application/scanning_controller.dart';
+import 'package:moniary/features/scanning/data/fast_api_ocr_service.dart';
 import 'package:moniary/features/scanning/data/ocr_service.dart';
 import 'package:moniary/features/scanning/domain/ocr_result.dart';
 
@@ -13,8 +15,29 @@ class ErrorOcrService implements OcrService {
   }
 }
 
+class SuccessOcrService implements OcrService {
+  const SuccessOcrService();
+
+  @override
+  Future<OcrResult> extractFromImage(String imagePath) async {
+    return const OcrResult(
+      merchantName: 'Test merchant',
+      totalAmount: 117,
+      confidence: 0.9,
+    );
+  }
+}
+
 void main() {
   group('ScanningController Tests', () {
+    test('default OCR provider always uses FastAPI', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      expect(container.read(ocrServiceProvider), isA<FastApiOcrService>());
+      expect(AppConstants.ocrApiUrl, 'http://10.0.2.2:8000');
+    });
+
     test('Initial state is ScanningStatus.empty', () {
       final container = ProviderContainer();
       addTearDown(container.dispose);
@@ -83,9 +106,13 @@ void main() {
     });
 
     test(
-      'extract with image transition flow to success using MockOcrService',
+      'extract with image transitions to success when OCR service succeeds',
       () async {
-        final container = ProviderContainer();
+        final container = ProviderContainer(
+          overrides: [
+            ocrServiceProvider.overrideWithValue(const SuccessOcrService()),
+          ],
+        );
         addTearDown(container.dispose);
         container.listen(scanningControllerProvider, (previous, next) {});
 
@@ -97,7 +124,8 @@ void main() {
         final state = container.read(scanningControllerProvider);
         expect(result, isNotNull);
         expect(state.status, ScanningStatus.success);
-        expect(state.result?.merchantName, isNotNull);
+        expect(state.result?.merchantName, 'Test merchant');
+        expect(state.result?.totalAmount, 117);
       },
     );
 

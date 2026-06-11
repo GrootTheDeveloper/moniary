@@ -119,7 +119,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(DropdownButtonFormField<Wallet>));
+    await tester.tap(find.text(l10n.importSelectWallet));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Vi test').last);
     await tester.pumpAndSettle();
@@ -129,6 +129,6 @@ void main() {
 
     expect(find.text(l10n.importSuccess(0)), findsNothing);
     expect(find.text(l10n.errorNotLoggedIn), findsOneWidget);
-    expect(find.text(l10n.importTitle), findsOneWidget);
+    expect(find.text(l10n.profileImportData), findsOneWidget);
   });
 }

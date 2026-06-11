@@ -10,10 +10,14 @@ import '../core/preferences/preferences_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
-import '../features/groups/presentation/debt_summary_screen.dart';
-import '../features/groups/presentation/group_detail_screen.dart';
-import '../features/groups/presentation/group_expense_form_screen.dart';
 import '../features/groups/presentation/groups_screen.dart';
+import '../features/groups/presentation/screens/add_group_transaction_screen.dart';
+import '../features/groups/presentation/screens/create_group_screen.dart';
+import '../features/groups/presentation/screens/debt_settlement_screen.dart';
+import '../features/groups/presentation/screens/group_detail_screen.dart';
+import '../features/groups/presentation/screens/group_transaction_detail_screen.dart';
+import '../features/groups/presentation/screens/invite_member_screen.dart';
+import '../features/groups/presentation/screens/member_amount_input_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
 import '../features/scanning/presentation/ocr_review_screen.dart';
@@ -187,13 +191,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: 'settings',
-                pageBuilder: (context, state) => buildSlideTransitionPage(
-                  state: state,
-                  child: const Text('SettingsPlaceholder'),
-                ),
-              ),
-              GoRoute(
                 path: GroupsScreen.routePath,
                 builder: (context, state) => const GroupsScreen(),
               ),
@@ -211,10 +208,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: ScanningScreen.routePath,
-        pageBuilder: (context, state) => buildSlideUpTransitionPage(
-          state: state,
-          child: const ScanningScreen(),
-        ),
+        pageBuilder: (context, state) {
+          final extra = state.extra;
+          final initialImagePath = extra is String ? extra : null;
+          return buildSlideUpTransitionPage(
+            state: state,
+            child: ScanningScreen(initialImagePath: initialImagePath),
+          );
+        },
       ),
       GoRoute(
         path: OcrReviewScreen.routePath,
@@ -237,23 +238,60 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: GroupExpenseFormScreen.routePath,
-        pageBuilder: (context, state) {
-          final args = state.extra as GroupExpenseFormArgs?;
-          final child = args == null
-              ? const GroupsScreen()
-              : GroupExpenseFormScreen(args: args);
-          return buildSlideUpTransitionPage(state: state, child: child);
-        },
+        path: CreateGroupScreen.routePath,
+        pageBuilder: (context, state) => buildSlideUpTransitionPage(
+          state: state,
+          child: const CreateGroupScreen(),
+        ),
       ),
       GoRoute(
-        path: DebtSummaryScreen.routePath,
+        path: InviteMemberScreen.routePath,
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
               ? const GroupsScreen()
-              : DebtSummaryScreen(groupId: groupId);
+              : InviteMemberScreen(groupId: groupId);
+          return buildSlideUpTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: AddGroupTransactionScreen.routePath,
+        pageBuilder: (context, state) {
+          final args = state.extra as AddGroupTransactionArgs?;
+          final child = args == null
+              ? const GroupsScreen()
+              : AddGroupTransactionScreen(args: args);
+          return buildSlideUpTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: MemberAmountInputScreen.routePath,
+        pageBuilder: (context, state) {
+          final args = state.extra as MemberAmountInputArgs?;
+          final child = args == null
+              ? const GroupsScreen()
+              : MemberAmountInputScreen(args: args);
+          return buildSlideUpTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: DebtSettlementScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : DebtSettlementScreen(groupId: groupId);
           return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupTransactionDetailScreen.routePath,
+        pageBuilder: (context, state) {
+          final transactionId = state.extra as String?;
+          final child = transactionId == null
+              ? const GroupsScreen()
+              : GroupTransactionDetailScreen(transactionId: transactionId);
+          return buildFadeTransitionPage(state: state, child: child);
         },
       ),
       GoRoute(

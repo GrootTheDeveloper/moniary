@@ -14,6 +14,13 @@ class AppConstants {
   static bool get hasSupabaseConfig =>
       supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
 
+  // --- OCR ---
+  static const ocrApiUrl = String.fromEnvironment(
+    'OCR_API_URL',
+    defaultValue: 'http://10.0.2.2:8000',
+  );
+  static const ocrRequestTimeout = Duration(seconds: 270);
+
   /// Call once at app startup. In release mode, crash if Supabase env is missing.
   static void assertSupabaseConfig() {
     if (kReleaseMode && !hasSupabaseConfig) {

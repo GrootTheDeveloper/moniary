@@ -4,8 +4,8 @@ import '../domain/group_expense.dart';
 class DebtCalculatorService {
   const DebtCalculatorService();
 
-  Map<String, double> calculateBalances(List<GroupExpense> expenses) {
-    final balances = <String, double>{};
+  Map<String, int> calculateBalances(List<GroupExpense> expenses) {
+    final balances = <String, int>{};
     for (final expense in expenses) {
       balances[expense.payerMemberId] =
           (balances[expense.payerMemberId] ?? 0) + expense.amount;
@@ -17,16 +17,16 @@ class DebtCalculatorService {
     return balances;
   }
 
-  List<DebtSettlement> simplifyDebts(Map<String, double> balances) {
+  List<DebtSettlement> simplifyDebts(Map<String, int> balances) {
     final debtors =
         balances.entries
-            .where((entry) => entry.value < -0.01)
+            .where((entry) => entry.value < 0)
             .map((entry) => _Balance(entry.key, -entry.value))
             .toList()
           ..sort((left, right) => right.amount.compareTo(left.amount));
     final creditors =
         balances.entries
-            .where((entry) => entry.value > 0.01)
+            .where((entry) => entry.value > 0)
             .map((entry) => _Balance(entry.key, entry.value))
             .toList()
           ..sort((left, right) => right.amount.compareTo(left.amount));
@@ -49,10 +49,10 @@ class DebtCalculatorService {
       );
       debtor.amount -= amount;
       creditor.amount -= amount;
-      if (debtor.amount < 0.01) {
+      if (debtor.amount == 0) {
         debtorIndex++;
       }
-      if (creditor.amount < 0.01) {
+      if (creditor.amount == 0) {
         creditorIndex++;
       }
     }
@@ -64,5 +64,5 @@ class _Balance {
   _Balance(this.memberId, this.amount);
 
   final String memberId;
-  double amount;
+  int amount;
 }
