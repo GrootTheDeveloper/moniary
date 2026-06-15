@@ -57,7 +57,23 @@ class ProfileRepository {
           .eq('id', uid)
           .maybeSingle();
 
-      if (row == null) return null;
+      if (row == null) {
+        // Fallback: If profile record hasn't been created yet, attempt to initialize it
+        try {
+          await _client.rpc('initialize_user');
+          final retryRow = await _client
+              .from('profiles')
+              .select()
+              .eq('id', uid)
+              .maybeSingle();
+          if (retryRow != null) {
+            return UserProfile.fromMap(retryRow);
+          }
+        } catch (e, st) {
+          AppLogger.error('Failed to auto-initialize profile', e, st);
+        }
+        return null;
+      }
       return UserProfile.fromMap(row);
     } on PostgrestException catch (e, st) {
       AppLogger.error('Lỗi cơ sở dữ liệu', e, st);

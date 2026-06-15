@@ -305,6 +305,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get calendarToday => 'Hôm nay';
 
   @override
+  String get calendarStarred => 'Quan trọng';
+
+  @override
   String get calendarSearchHint => 'Tìm theo ghi chú hoặc danh mục...';
 
   @override
@@ -1244,6 +1247,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get statsLargestTransactions => 'Giao dịch lớn nhất';
+
+  @override
+  String get starredTransactionsTitle => 'Giao dịch quan trọng';
+
+  @override
+  String get starredTransactionsEmpty => 'Chưa có giao dịch quan trọng nào';
 
   @override
   String get statsCategoryTransactions => 'Giao dịch trong danh mục';

@@ -65,6 +65,7 @@ import '../features/transactions/presentation/detail/day_detail_screen.dart';
 import '../features/transactions/presentation/detail/transaction_detail_screen.dart';
 import '../features/transactions/presentation/form/transaction_form_sheet.dart';
 import '../features/transactions/presentation/detail/transaction_route_args.dart';
+import '../features/transactions/presentation/starred/starred_transactions_screen.dart';
 import '../features/auth/application/account_status_controller.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -533,6 +534,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => buildSlideUpTransitionPage(
           state: state,
           child: const CameraScreen(),
+        ),
+      ),
+      GoRoute(
+        path: StarredTransactionsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const StarredTransactionsScreen(),
         ),
       ),
       GoRoute(

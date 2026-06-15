@@ -304,6 +304,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calendarToday => 'Today';
 
   @override
+  String get calendarStarred => 'Starred';
+
+  @override
   String get calendarSearchHint => 'Search by note or category...';
 
   @override
@@ -1244,6 +1247,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statsLargestTransactions => 'Largest transactions';
+
+  @override
+  String get starredTransactionsTitle => 'Starred Transactions';
+
+  @override
+  String get starredTransactionsEmpty => 'No starred transactions yet';
 
   @override
   String get statsCategoryTransactions => 'Transactions in this category';

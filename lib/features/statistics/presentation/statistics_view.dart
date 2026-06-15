@@ -130,6 +130,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           _buildMonthSelector(context),
           const SizedBox(height: 16),
           _buildSummaryCards(income, expense, net),
+          const SizedBox(height: 16),
+          _buildImportantSpendingCard(transactions),
           const SizedBox(height: 24),
           _buildTypeToggle(),
           const SizedBox(height: 20),
@@ -241,6 +243,100 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildImportantSpendingCard(List<TransactionEntry> transactions) {
+    final importantTransactions = transactions.where((t) => t.isImportant).toList();
+    if (importantTransactions.isEmpty) return const SizedBox.shrink();
+
+    final importantIncome = importantTransactions
+        .where((t) => t.isIncome)
+        .fold<double>(0, (sum, t) => sum + t.amount);
+    final importantExpense = importantTransactions
+        .where((t) => t.isExpense)
+        .fold<double>(0, (sum, t) => sum + t.amount);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.amber.withValues(alpha: 0.1),
+            AppTheme.surface,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.stars, color: Colors.amber, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                context.l10n.starredTransactionsTitle,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.l10n.calendarIncome,
+                      style: const TextStyle(color: Colors.white54, fontSize: 12),
+                    ),
+                    const SizedBox(height: 4),
+                    ObscurableAmountText(
+                      amountText: _money(context, importantIncome),
+                      style: const TextStyle(
+                        color: AppTheme.success,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(width: 1, height: 30, color: Colors.white10),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.l10n.calendarExpense,
+                      style: const TextStyle(color: Colors.white54, fontSize: 12),
+                    ),
+                    const SizedBox(height: 4),
+                    ObscurableAmountText(
+                      amountText: _money(context, importantExpense),
+                      style: const TextStyle(
+                        color: AppTheme.danger,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

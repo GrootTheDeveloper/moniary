@@ -280,7 +280,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         },
                         style: FilledButton.styleFrom(
                           backgroundColor: AppTheme.mint,
-                          foregroundColor: Colors.black,
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -470,7 +470,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   onPressed: _showLinkAccountSheet,
                                   style: FilledButton.styleFrom(
                                     backgroundColor: AppTheme.mint,
-                                    foregroundColor: Colors.black,
+                                    foregroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(14),
                                     ),
@@ -491,6 +491,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       _SettingsGroup(
                         title: context.l10n.profileMyData,
                         children: [
+                          _SettingsTile(
+                            icon: Icons.star_outline,
+                            title: context.l10n.starredTransactionsTitle,
+                            subtitle: '',
+                            onTap: () => context.push(
+                              '/starred-transactions',
+                            ),
+                          ),
                           _SettingsTile(
                             icon: Icons.file_download_outlined,
                             title: context.l10n.profileImportData,

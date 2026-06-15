@@ -23,7 +23,7 @@ class StarredTransactionsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: Text(context.l10n.starredTransactionsTitle ?? 'Starred Transactions'),
+        title: Text(context.l10n.starredTransactionsTitle),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -41,7 +41,7 @@ class StarredTransactionsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    context.l10n.starredTransactionsEmpty ?? 'No starred transactions yet',
+                    context.l10n.starredTransactionsEmpty,
                     style: const TextStyle(color: Colors.white54),
                   ),
                 ],

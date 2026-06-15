@@ -282,6 +282,15 @@ class TransactionGridTile extends StatelessWidget {
                   end: Alignment.bottomRight,
                   colors: [accent, accent.withValues(alpha: 0.42)],
                 ),
+                boxShadow: transaction.isImportant
+                    ? [
+                        BoxShadow(
+                          color: Colors.amber.withValues(alpha: 0.2),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        )
+                      ]
+                    : null,
               ),
               child: Hero(
                 tag: 'tx_image_${transaction.id}',
@@ -339,7 +348,31 @@ class TransactionGridTile extends StatelessWidget {
                     ),
                     if (transaction.isImportant) ...[
                       const SizedBox(width: 4),
-                      const Icon(Icons.star, color: AppTheme.amber, size: 16),
+                      const Icon(Icons.star, color: AppTheme.amber, size: 16)
+                          .animate(
+                            onPlay: (controller) => controller.repeat(reverse: true),
+                          )
+                          .scale(
+                            begin: const Offset(1, 1),
+                            end: const Offset(1.2, 1.2),
+                            duration: 1000.ms,
+                            curve: Curves.easeInOut,
+                          )
+                          .custom(
+                            builder: (context, value, child) => Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.amber.withValues(alpha: 0.3 * value),
+                                    blurRadius: 8 * value,
+                                    spreadRadius: 2 * value,
+                                  ),
+                                ],
+                              ),
+                              child: child,
+                            ),
+                          ),
                     ],
                   ],
                 ),
