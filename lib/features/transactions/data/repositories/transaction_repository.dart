@@ -93,15 +93,22 @@ class TransactionRepository {
     String? categoryId,
   }) async {
     if (_useMockData) {
-      return _mockTransactions.where((t) {
-          final sameMonth =
-              t.transactionDate.year == month.year &&
-              t.transactionDate.month == month.month;
-          final matchWallet = walletId == null || t.walletId == walletId;
-          final matchCat = categoryId == null || t.categoryId == categoryId;
-          return sameMonth && matchWallet && matchCat;
-        }).toList()
-        ..sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
+      final results = _mockTransactions.where((t) {
+        final sameMonth = t.transactionDate.year == month.year &&
+            t.transactionDate.month == month.month;
+        final matchWallet = walletId == null || t.walletId == walletId;
+        final matchCat = categoryId == null || t.categoryId == categoryId;
+        return sameMonth && matchWallet && matchCat;
+      }).toList();
+
+      // Sort by importance first, then by date
+      results.sort((a, b) {
+        if (a.isImportant != b.isImportant) {
+          return b.isImportant ? 1 : -1;
+        }
+        return b.transactionDate.compareTo(a.transactionDate);
+      });
+      return results;
     }
     try {
       final uid = _userId;
@@ -121,7 +128,9 @@ class TransactionRepository {
         query = query.eq('category_id', categoryId);
       }
 
-      final rows = await query.order('transaction_date');
+      final rows = await query
+          .order('is_important', ascending: false)
+          .order('transaction_date', ascending: false);
 
       return _mapList(rows);
     } on PostgrestException catch (e, st) {
@@ -130,6 +139,33 @@ class TransactionRepository {
     } catch (e, st) {
       if (e is AppException) rethrow;
       AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
+      throw const AppException('errorConnection');
+    }
+  }
+
+  Future<List<TransactionEntry>> fetchStarredTransactions() async {
+    if (_useMockData) {
+      return _mockTransactions
+          .where((t) => t.isImportant)
+          .toList()
+        ..sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
+    }
+    try {
+      final uid = _userId;
+
+      // Use the existing _baseSelect() helper to get all required columns
+      final rows = await _baseSelect()
+          .eq('user_id', uid)
+          .eq('is_important', true)
+          .order('transaction_date', ascending: false);
+
+      return _mapList(rows);
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Lỗi truy vấn danh sách yêu thích', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Lỗi kết nối khi lấy danh sách yêu thích', e, st);
       throw const AppException('errorConnection');
     }
   }
@@ -176,7 +212,12 @@ class TransactionRepository {
           final matchCat = categoryId == null || t.categoryId == categoryId;
           return sameDay && matchWallet && matchCat;
         }).toList()
-        ..sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
+        ..sort((a, b) {
+          if (a.isImportant != b.isImportant) {
+            return b.isImportant ? 1 : -1;
+          }
+          return b.transactionDate.compareTo(a.transactionDate);
+        });
     }
     try {
       final uid = _userId;
@@ -196,7 +237,9 @@ class TransactionRepository {
         query = query.eq('category_id', categoryId);
       }
 
-      final rows = await query.order('transaction_date', ascending: false);
+      final rows = await query
+          .order('is_important', ascending: false)
+          .order('transaction_date', ascending: false);
 
       return _mapList(rows);
     } on PostgrestException catch (e, st) {

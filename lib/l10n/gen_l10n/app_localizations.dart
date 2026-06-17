@@ -656,6 +656,12 @@ abstract class AppLocalizations {
   /// **'Hôm nay'**
   String get calendarToday;
 
+  /// No description provided for @calendarStarred.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quan trọng'**
+  String get calendarStarred;
+
   /// No description provided for @calendarSearchHint.
   ///
   /// In vi, this message translates to:
@@ -2359,6 +2365,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Giao dịch lớn nhất'**
   String get statsLargestTransactions;
+
+  /// No description provided for @starredTransactionsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch quan trọng'**
+  String get starredTransactionsTitle;
+
+  /// No description provided for @starredTransactionsEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có giao dịch quan trọng nào'**
+  String get starredTransactionsEmpty;
 
   /// No description provided for @statsCategoryTransactions.
   ///

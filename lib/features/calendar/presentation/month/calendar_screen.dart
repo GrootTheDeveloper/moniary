@@ -673,39 +673,59 @@ class _UnifiedFilterRow extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _PillButton(
-            label: context.l10n.calendarAllWallets,
-            selected: isAll,
-            onTap: () => ref.read(calendarFilterProvider.notifier).reset(),
-            activeColor: AppTheme.mint.withValues(alpha: 0.2),
-            activeTextColor: AppTheme.mint,
-            inactiveColor: Colors.transparent,
-            inactiveBorderColor: Colors.white10,
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _PillButton(
+                    label: context.l10n.calendarAllWallets,
+                    selected: isAll,
+                    onTap: () => ref.read(calendarFilterProvider.notifier).reset(),
+                    activeColor: AppTheme.mint.withValues(alpha: 0.2),
+                    activeTextColor: AppTheme.mint,
+                    inactiveColor: Colors.transparent,
+                    inactiveBorderColor: Colors.white10,
+                  ),
+                  const SizedBox(width: 8),
+                  _PillButton(
+                    label: selectedWallet != null
+                        ? selectedWallet.name
+                        : context.l10n.transactionWallet,
+                    selected: filters.walletId != null,
+                    onTap: () =>
+                        _showWalletPicker(context, ref, walletsAsync.value ?? []),
+                    activeColor: AppTheme.mint.withValues(alpha: 0.2),
+                    activeTextColor: AppTheme.mint,
+                    inactiveColor: Colors.transparent,
+                    inactiveBorderColor: Colors.white10,
+                  ),
+                  const SizedBox(width: 8),
+                  _PillButton(
+                    label: context.l10n.calendarToday,
+                    selected: isTodaySelected,
+                    onTap: onTodayTap,
+                    activeColor: AppTheme.mint.withValues(alpha: 0.2),
+                    activeTextColor: AppTheme.mint,
+                    inactiveColor: Colors.transparent,
+                    inactiveBorderColor: Colors.white10,
+                  ),
+                  const SizedBox(width: 8),
+                  _PillButton(
+                    label: context.l10n.calendarStarred,
+                    selected: filters.isStarredOnly,
+                    onTap: () =>
+                        ref.read(calendarFilterProvider.notifier).toggleStarredOnly(),
+                    activeColor: Colors.amber.withValues(alpha: 0.2),
+                    activeTextColor: Colors.amber,
+                    inactiveColor: Colors.transparent,
+                    inactiveBorderColor: Colors.white10,
+                  ),
+                ],
+              ),
+            ),
           ),
           const SizedBox(width: 8),
-          _PillButton(
-            label: selectedWallet != null
-                ? selectedWallet.name
-                : context.l10n.transactionWallet,
-            selected: filters.walletId != null,
-            onTap: () =>
-                _showWalletPicker(context, ref, walletsAsync.value ?? []),
-            activeColor: AppTheme.mint.withValues(alpha: 0.2),
-            activeTextColor: AppTheme.mint,
-            inactiveColor: Colors.transparent,
-            inactiveBorderColor: Colors.white10,
-          ),
-          const SizedBox(width: 8),
-          _PillButton(
-            label: context.l10n.calendarToday,
-            selected: isTodaySelected,
-            onTap: onTodayTap,
-            activeColor: AppTheme.mint.withValues(alpha: 0.2),
-            activeTextColor: AppTheme.mint,
-            inactiveColor: Colors.transparent,
-            inactiveBorderColor: Colors.white10,
-          ),
-          const Spacer(),
           _RoundIconButton(
             icon: Icons.refresh_outlined,
             onTap: () {
@@ -990,6 +1010,26 @@ class _CalendarDayCell extends StatelessWidget {
               ),
 
             // Star Indicator for Important Transactions
+            if (day.hasImportant)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.amber.withValues(alpha: 0.15),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
             if (day.hasImportant)
               Positioned(
                 top: 2,

@@ -18,6 +18,8 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
   final WidgetRef ref;
   final String searchFieldLabelText;
 
+  bool _showStarredOnly = false;
+
   @override
   String get searchFieldLabel => searchFieldLabelText;
 
@@ -39,6 +41,23 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
+      StatefulBuilder(
+        builder: (context, setState) {
+          return IconButton(
+            icon: Icon(
+              _showStarredOnly ? Icons.star : Icons.star_border,
+              color: _showStarredOnly ? Colors.amber : Colors.white70,
+            ),
+            onPressed: () {
+              setState(() {
+                _showStarredOnly = !_showStarredOnly;
+              });
+              showSuggestions(context);
+            },
+            tooltip: context.l10n.calendarStarred,
+          );
+        },
+      ),
       if (query.isNotEmpty)
         IconButton(
           icon: const Icon(Icons.clear, color: Colors.white70),
@@ -95,8 +114,21 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
         }
 
         final transactions = snapshot.data ?? [];
+        var filtered = transactions;
 
-        if (transactions.isEmpty) {
+        if (_showStarredOnly) {
+          filtered = filtered.where((tx) => tx.isImportant).toList();
+        }
+
+        // Sort: Starred items first, then by date (already sorted by date from repo)
+        filtered.sort((a, b) {
+          if (a.isImportant != b.isImportant) {
+            return b.isImportant ? 1 : -1;
+          }
+          return b.transactionDate.compareTo(a.transactionDate);
+        });
+
+        if (filtered.isEmpty) {
           return Center(
             child: Text(
               context.l10n.calendarSearchNoResults,
@@ -106,9 +138,9 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
         }
 
         return ListView.builder(
-          itemCount: transactions.length,
+          itemCount: filtered.length,
           itemBuilder: (context, index) {
-            final tx = transactions[index];
+            final tx = filtered[index];
             return ListTile(
               leading: Container(
                 padding: const EdgeInsets.all(8),
@@ -123,11 +155,21 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
                   size: 16,
                 ),
               ),
-              title: Text(
-                tx.note?.trim().isNotEmpty == true
-                    ? tx.note!.trim()
-                    : tx.categoryName,
-                style: const TextStyle(color: Colors.white),
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      tx.note?.trim().isNotEmpty == true
+                          ? tx.note!.trim()
+                          : tx.categoryName,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  if (tx.isImportant) ...[
+                    const SizedBox(width: 4),
+                    const Icon(Icons.star, color: Colors.amber, size: 14),
+                  ],
+                ],
               ),
               subtitle: Text(
                 '${MaterialLocalizations.of(context).formatShortDate(tx.transactionDate)} - ${tx.walletName}',

@@ -110,6 +110,9 @@ class AuthRepository {
 
     try {
       await _requiredClient.auth.linkIdentity(OAuthProvider.google);
+      // Wait a moment for identity to be linked and metadata updated
+      await Future.delayed(const Duration(seconds: 1));
+      await _initializeUserIfPossible();
       return false;
     } catch (e, st) {
       AppLogger.error('Google account linking failed', e, st);

@@ -4,6 +4,7 @@ import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../data/auth_repository.dart';
 import '../../profile/data/profile_repository.dart';
+import '../../profile/application/profile_setup_controller.dart';
 
 final authControllerProvider = AsyncNotifierProvider<AuthController, void>(
   AuthController.new,
@@ -90,6 +91,9 @@ class AuthController extends AsyncNotifier<void> {
               email: 'mock-google@gmail.com',
               loginProvider: 'google',
             );
+      } else {
+        // If real linking happened, ensure the local profile provider is refreshed
+        ref.invalidate(currentProfileProvider);
       }
       state = const AsyncData(null);
     } catch (e, st) {

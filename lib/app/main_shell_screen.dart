@@ -33,48 +33,52 @@ class MainShellScreen extends ConsumerWidget {
         currentTab = MoniaryTab.calendar;
     }
 
+    final showFab = currentTab == MoniaryTab.calendar || currentTab == MoniaryTab.stats;
+
     return Scaffold(
       body: navigationShell,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: SizedBox(
-        width: 66,
-        height: 66,
-        child: FloatingActionButton(
-          backgroundColor: AppTheme.mint,
-          foregroundColor: Colors.white,
-          shape: const CircleBorder(),
-          onPressed: () async {
-            final result = await context.push<TransactionMutationResult>(
-              '/camera',
-            );
-            if (result != null) {
-              final months = <DateTime>{
-                if (result.previousDate != null)
-                  DateTime(
-                    result.previousDate!.year,
-                    result.previousDate!.month,
-                    1,
-                  ),
-                if (result.currentDate != null)
-                  DateTime(
-                    result.currentDate!.year,
-                    result.currentDate!.month,
-                    1,
-                  ),
-              };
-              for (final month in months) {
-                ref.invalidate(calendarMonthProvider(month));
-              }
-              if (result.currentDate != null) {
-                ref
-                    .read(calendarVisibleMonthProvider.notifier)
-                    .setMonth(result.currentDate!);
-              }
-            }
-          },
-          child: const Icon(Icons.add, size: 34),
-        ),
-      ),
+      floatingActionButton: showFab
+          ? SizedBox(
+              width: 66,
+              height: 66,
+              child: FloatingActionButton(
+                backgroundColor: AppTheme.mint,
+                foregroundColor: Colors.white,
+                shape: const CircleBorder(),
+                onPressed: () async {
+                  final result = await context.push<TransactionMutationResult>(
+                    '/camera',
+                  );
+                  if (result != null) {
+                    final months = <DateTime>{
+                      if (result.previousDate != null)
+                        DateTime(
+                          result.previousDate!.year,
+                          result.previousDate!.month,
+                          1,
+                        ),
+                      if (result.currentDate != null)
+                        DateTime(
+                          result.currentDate!.year,
+                          result.currentDate!.month,
+                          1,
+                        ),
+                    };
+                    for (final month in months) {
+                      ref.invalidate(calendarMonthProvider(month));
+                    }
+                    if (result.currentDate != null) {
+                      ref
+                          .read(calendarVisibleMonthProvider.notifier)
+                          .setMonth(result.currentDate!);
+                    }
+                  }
+                },
+                child: const Icon(Icons.add, size: 34),
+              ),
+            )
+          : null,
       bottomNavigationBar: MoniaryBottomNavBar(
         currentTab: currentTab,
         onTabSelected: (tab) {

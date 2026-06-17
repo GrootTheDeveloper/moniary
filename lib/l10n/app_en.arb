@@ -121,6 +121,7 @@
   "calendarSat": "Sat",
   "calendarSun": "Sun",
   "calendarToday": "Today",
+  "calendarStarred": "Starred",
   "calendarSearchHint": "Search by note or category...",
   "calendarSearchPrompt": "Enter a note or category to search.",
   "calendarSearchNoResults": "No transactions found.",
@@ -549,6 +550,8 @@
   "statsCategoryAllocation": "Category allocation",
   "statsDailyTrend": "Daily trend",
   "statsLargestTransactions": "Largest transactions",
+  "starredTransactionsTitle": "Starred Transactions",
+  "starredTransactionsEmpty": "No starred transactions yet",
   "statsCategoryTransactions": "Transactions in this category",
   "statsDayTooltip": "Day {day}\n{amount}",
   "@statsDayTooltip": {

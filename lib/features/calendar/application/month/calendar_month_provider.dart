@@ -10,13 +10,17 @@ final calendarMonthProvider =
     FutureProvider.family<CalendarMonthData, DateTime>((ref, month) async {
       final filters = ref.watch(calendarFilterProvider);
       final normalizedMonth = DateTime(month.year, month.month, 1);
-      final transactions = await ref
+      var transactions = await ref
           .watch(transactionRepositoryProvider)
           .fetchTransactionsForMonth(
             normalizedMonth,
             walletId: filters.walletId,
             categoryId: filters.categoryId,
           );
+
+      if (filters.isStarredOnly) {
+        transactions = transactions.where((tx) => tx.isImportant).toList();
+      }
 
       return _CalendarMonthBuilder.build(
         month: normalizedMonth,
