@@ -14,13 +14,35 @@ import '../../transactions/presentation/camera/camera_screen.dart';
 import '../application/scanning_controller.dart';
 import 'ocr_review_screen.dart';
 
-class ScanningScreen extends ConsumerWidget {
-  const ScanningScreen({super.key});
+class ScanningScreen extends ConsumerStatefulWidget {
+  const ScanningScreen({this.initialImagePath, super.key});
 
   static const routePath = '/scanning';
 
+  final String? initialImagePath;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ScanningScreen> createState() => _ScanningScreenState();
+}
+
+class _ScanningScreenState extends ConsumerState<ScanningScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final initialImagePath = widget.initialImagePath;
+    if (initialImagePath != null && initialImagePath.trim().isNotEmpty) {
+      Future<void>.microtask(() {
+        if (mounted) {
+          ref
+              .read(scanningControllerProvider.notifier)
+              .selectImage(initialImagePath);
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(scanningControllerProvider);
     final busy = state.status == ScanningStatus.scanning;
 

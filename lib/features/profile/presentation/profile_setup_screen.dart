@@ -25,6 +25,7 @@ class ProfileSetupScreen extends ConsumerStatefulWidget {
 
 class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   final _nameController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _currencies = const ['VND', 'USD', 'EUR'];
   String _currency = 'VND';
@@ -40,6 +41,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   @override
   void dispose() {
     _nameController.dispose();
+    _usernameController.dispose();
     _emailController.dispose();
     super.dispose();
   }
@@ -66,6 +68,11 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
           : '';
       if (_emailController.text != linkedEmail) {
         _emailController.text = linkedEmail;
+      }
+
+      final username = profile?.username?.trim() ?? '';
+      if (_usernameController.text.isEmpty && username.isNotEmpty) {
+        _usernameController.text = username;
       }
 
       if (!_avatarPicked && _avatarPath == null) {
@@ -176,6 +183,21 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
+                  context.l10n.groupUsernameLabel,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _usernameController,
+                  autocorrect: false,
+                  textCapitalization: TextCapitalization.none,
+                  decoration: InputDecoration(
+                    hintText: context.l10n.profileUsernameHint,
+                    prefixIcon: const Icon(Icons.alternate_email_outlined),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
                   context.l10n.loginEmail,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
@@ -238,6 +260,13 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       );
       return;
     }
+    final username = _usernameController.text.trim().toLowerCase();
+    if (!RegExp(r'^[a-z0-9_]{3,30}$').hasMatch(username)) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(context.l10n.profileUsernameInvalid)),
+      );
+      return;
+    }
 
     try {
       await ref.read(preferredCurrencyProvider.notifier).setCurrency(_currency);
@@ -245,6 +274,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
           .read(profileSetupControllerProvider.notifier)
           .saveProfile(
             fullName: name,
+            username: username,
             timezone: 'Asia/Ho_Chi_Minh', // TODO: detect timezone from device
             avatarImagePath: _avatarPicked ? _avatarPath : null,
           );

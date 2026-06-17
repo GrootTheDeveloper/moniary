@@ -31,19 +31,29 @@
 - **Repository**: `CategoryRepository` (Supports Mock & Supabase).
 - **UI Architecture**: Full clean architecture. Managed primarily via `CategorySection` (bottom sheets).
 
-## Feature: Groups (In-Memory Only)
-- **Purpose**: Manage group expenses and calculate debts.
+## Feature: Groups & Community
+- **Purpose**: Create spending groups, post photo-based shared expenses, calculate integer balances, settle debts, and discuss transactions.
 - **Main files**: `features/groups/`
-- **UI screens**: `GroupsScreen`, `GroupDetailScreen`, `GroupExpenseFormScreen`, `DebtSummaryScreen`.
-- **Services**: `DebtCalculatorService`, `InMemoryGroupExpenseService`.
-- **Note**: This is a planned feature. Currently, it is **implemented entirely in-memory** and does NOT sync with Supabase.
+- **UI screens**: `GroupListScreen`, `CreateGroupScreen`, `GroupDetailScreen`, `AddGroupTransactionScreen`, `MemberAmountInputScreen`, `DebtSettlementScreen`, `GroupTransactionDetailScreen`.
+- **Domain services**: `GroupSplitCalculator`, `SettlementCalculator`.
+- **Data**: `GroupRepository` supports both Supabase and mock mode. Supabase mutations that recalculate shared financial state use atomic RPCs.
+- **Storage**: Group avatars and transaction images are private paths in `transaction-images`; display uses signed URLs.
+
+## Feature: Friends
+- **Purpose**: Search users by username, send/accept/decline/cancel friend requests, remove friends, and invite friends into expense groups.
+- **Main files**: `features/friends/`
+- **UI screens**: `FriendsScreen`, `AddFriendScreen`.
+- **Data**: `FriendRepository` supports Supabase and mock mode. Supabase mutations use RPCs to avoid direct client-side writes to friend tables.
+- **Privacy**: User search returns minimal profile fields only and does not expose email addresses.
 
 ## Feature: Scanning (OCR)
 - **Purpose**: Extract data from receipts using OCR.
 - **Main files**: `features/scanning/`
 - **UI screens**: `ScanningScreen`, `OcrReviewScreen`.
-- **Services**: `OcrService` (with a `MockOcrService` fallback).
-- **Note**: The real OCR backend is not yet integrated. The app currently relies exclusively on the mock implementation.
+- **Data flow**: `ScanningController` / `OcrExtractionController` -> `OcrRepository` -> `OcrService`.
+- **Services**: `FastApiOcrService` always calls `POST /extract`; there is no mock OCR fallback.
+- **Backend**: `backend/ocr/` contains the FastAPI + Ollama receipt extraction service.
+- **Configuration**: Android emulator defaults to `http://10.0.2.2:8000`. Override `OCR_API_URL` with `--dart-define` for a physical device or hosted backend.
 
 ## Feature: Settings, Privacy & Data Export
 - **Purpose**: App settings, legal agreements, privacy requests, data export (CSV/XLSX/PDF), data import (CSV), App Security, and Automated Reports.

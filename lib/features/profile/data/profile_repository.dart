@@ -45,6 +45,7 @@ class ProfileRepository {
         avatarUrl: null,
         loginProvider: 'anonymous',
         timezone: AppConstants.defaultTimezone,
+        username: 'mock-user',
       );
       return _mockProfile;
     }
@@ -87,6 +88,7 @@ class ProfileRepository {
 
   Future<UserProfile> upsertProfile({
     required String fullName,
+    required String username,
     required String timezone,
     String? avatarImagePath,
   }) async {
@@ -98,6 +100,7 @@ class ProfileRepository {
         avatarUrl: avatarImagePath ?? _mockProfile?.avatarUrl,
         loginProvider: _mockProfile?.loginProvider ?? 'anonymous',
         timezone: timezone,
+        username: username,
       );
       return _mockProfile!;
     }
@@ -110,6 +113,7 @@ class ProfileRepository {
       final values = <String, dynamic>{
         'id': uid,
         'full_name': fullName,
+        'username': username,
         'timezone': timezone,
       };
       if (avatarUrl != null) {
@@ -144,6 +148,7 @@ class ProfileRepository {
       avatarUrl: _mockProfile?.avatarUrl,
       loginProvider: loginProvider,
       timezone: _mockProfile?.timezone ?? AppConstants.defaultTimezone,
+      username: _mockProfile?.username ?? 'mock-user',
     );
   }
 

@@ -1212,7 +1212,7 @@ abstract class AppLocalizations {
   ///
   /// In vi, this message translates to:
   /// **'Số lượng: {quantity}'**
-  String scanQuantity(int quantity);
+  String scanQuantity(String quantity);
 
   /// No description provided for @scanSuccessMessage.
   ///
@@ -5245,6 +5245,852 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thêm privacy policy, data safety, data deletion policy, export dữ liệu và xóa tài khoản.'**
   String get policyChangelogEntry4Desc;
+
+  /// No description provided for @groupCreateNew.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo nhóm mới'**
+  String get groupCreateNew;
+
+  /// No description provided for @groupDescriptionLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mô tả'**
+  String get groupDescriptionLabel;
+
+  /// No description provided for @groupTypeLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Loại nhóm'**
+  String get groupTypeLabel;
+
+  /// No description provided for @groupTypeHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví dụ: Du lịch, Ăn uống, Ở chung, Couple, Bạn bè...'**
+  String get groupTypeHint;
+
+  /// No description provided for @groupAvatarLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh nhóm'**
+  String get groupAvatarLabel;
+
+  /// No description provided for @groupChooseImage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn ảnh'**
+  String get groupChooseImage;
+
+  /// No description provided for @groupNameRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên nhóm là bắt buộc.'**
+  String get groupNameRequired;
+
+  /// No description provided for @groupTotalSpent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng chi {amount}'**
+  String groupTotalSpent(String amount);
+
+  /// No description provided for @groupBalanceSettled.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã cân bằng'**
+  String get groupBalanceSettled;
+
+  /// No description provided for @groupBalanceOwes.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn cần trả {amount}'**
+  String groupBalanceOwes(String amount);
+
+  /// No description provided for @groupBalanceReceives.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn sẽ nhận {amount}'**
+  String groupBalanceReceives(String amount);
+
+  /// No description provided for @groupUnresolvedBadge.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa xử lý'**
+  String get groupUnresolvedBadge;
+
+  /// No description provided for @groupOverviewTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng quan'**
+  String get groupOverviewTitle;
+
+  /// No description provided for @groupTransactionsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch nhóm'**
+  String get groupTransactionsTitle;
+
+  /// No description provided for @groupDebtAreaTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ai nợ ai'**
+  String get groupDebtAreaTitle;
+
+  /// No description provided for @groupLeave.
+  ///
+  /// In vi, this message translates to:
+  /// **'Rời nhóm'**
+  String get groupLeave;
+
+  /// No description provided for @groupLeaveConfirmTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Rời nhóm này?'**
+  String get groupLeaveConfirmTitle;
+
+  /// No description provided for @groupLeaveConfirmMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chỉ có thể rời nhóm khi công nợ đã được xử lý và quyền owner đã được chuyển nếu cần.'**
+  String get groupLeaveConfirmMessage;
+
+  /// No description provided for @groupLeaveBlocked.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn ơi! bạn còn vài khoản thu chi chưa được xử lý kìa.'**
+  String get groupLeaveBlocked;
+
+  /// No description provided for @groupOwnerTransferRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn cần chuyển quyền owner hoặc thêm một owner khác trước khi rời nhóm.'**
+  String get groupOwnerTransferRequired;
+
+  /// No description provided for @groupInviteTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mời thành viên'**
+  String get groupInviteTitle;
+
+  /// No description provided for @groupInviteByUsername.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mời bằng username'**
+  String get groupInviteByUsername;
+
+  /// No description provided for @groupUsernameLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Username'**
+  String get groupUsernameLabel;
+
+  /// No description provided for @groupInviteAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi lời mời'**
+  String get groupInviteAction;
+
+  /// No description provided for @groupInviteLinkTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link mời nhóm'**
+  String get groupInviteLinkTitle;
+
+  /// No description provided for @groupCreateInviteLink.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo link mời'**
+  String get groupCreateInviteLink;
+
+  /// No description provided for @groupInviteLinkCreated.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tạo link mời nhóm.'**
+  String get groupInviteLinkCreated;
+
+  /// No description provided for @groupInviteSent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi lời mời.'**
+  String get groupInviteSent;
+
+  /// No description provided for @groupUserNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy người dùng này.'**
+  String get groupUserNotFound;
+
+  /// No description provided for @groupNoFriends.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chưa có bạn bè nào để mời.'**
+  String get groupNoFriends;
+
+  /// No description provided for @groupFriendInviteTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mời từ danh sách bạn bè'**
+  String get groupFriendInviteTitle;
+
+  /// No description provided for @groupMemberInvited.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã mời'**
+  String get groupMemberInvited;
+
+  /// No description provided for @groupMemberActive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tham gia'**
+  String get groupMemberActive;
+
+  /// No description provided for @groupAddTransaction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm giao dịch nhóm'**
+  String get groupAddTransaction;
+
+  /// No description provided for @groupTransactionCaption.
+  ///
+  /// In vi, this message translates to:
+  /// **'Caption'**
+  String get groupTransactionCaption;
+
+  /// No description provided for @groupTransactionNote.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi chú'**
+  String get groupTransactionNote;
+
+  /// No description provided for @groupTransactionTotal.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng tiền'**
+  String get groupTransactionTotal;
+
+  /// No description provided for @groupTransactionCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Danh mục'**
+  String get groupTransactionCategory;
+
+  /// No description provided for @groupTransactionImage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh hóa đơn'**
+  String get groupTransactionImage;
+
+  /// No description provided for @groupTransactionImageOptional.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh không bắt buộc nhưng được khuyến khích.'**
+  String get groupTransactionImageOptional;
+
+  /// No description provided for @groupSplitModeTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cách chia tiền'**
+  String get groupSplitModeTitle;
+
+  /// No description provided for @groupSplitEqual.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia đều'**
+  String get groupSplitEqual;
+
+  /// No description provided for @groupSplitUnequal.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia không đều'**
+  String get groupSplitUnequal;
+
+  /// No description provided for @groupPaymentModeTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người đã trả tiền'**
+  String get groupPaymentModeTitle;
+
+  /// No description provided for @groupPaymentEveryone.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mọi người đều trả'**
+  String get groupPaymentEveryone;
+
+  /// No description provided for @groupPaymentSingle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Một người trả'**
+  String get groupPaymentSingle;
+
+  /// No description provided for @groupPaymentMultiple.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhiều người trả'**
+  String get groupPaymentMultiple;
+
+  /// No description provided for @groupSelectPayer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng chọn người đã trả tiền.'**
+  String get groupSelectPayer;
+
+  /// No description provided for @groupSelectAtLeastTwoPayers.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng chọn ít nhất 2 người đã trả tiền.'**
+  String get groupSelectAtLeastTwoPayers;
+
+  /// No description provided for @groupEnterPayerAmounts.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập số tiền đã trả cho từng thành viên.'**
+  String get groupEnterPayerAmounts;
+
+  /// No description provided for @groupPayerAmountPositive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền đã trả phải lớn hơn 0.'**
+  String get groupPayerAmountPositive;
+
+  /// No description provided for @groupPaidTotalMismatch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng số tiền đã trả chưa khớp với tổng giá trị giao dịch.'**
+  String get groupPaidTotalMismatch;
+
+  /// No description provided for @groupConfirmationTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã chắc chắn chưa?'**
+  String get groupConfirmationTitle;
+
+  /// No description provided for @groupPost.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng'**
+  String get groupPost;
+
+  /// No description provided for @groupPosting.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang đăng...'**
+  String get groupPosting;
+
+  /// No description provided for @groupTransactionPosted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch nhóm đã được đăng thành công.'**
+  String get groupTransactionPosted;
+
+  /// No description provided for @groupTransactionPendingAmounts.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập số tiền bạn đã sử dụng trong giao dịch này.'**
+  String get groupTransactionPendingAmounts;
+
+  /// No description provided for @groupTransactionAmountMismatch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng số tiền các thành viên nhập chưa khớp với tổng tiền giao dịch. Vui lòng kiểm tra và nhập lại.'**
+  String get groupTransactionAmountMismatch;
+
+  /// No description provided for @groupTransactionMembersPending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vẫn còn thành viên chưa nhập số tiền đã sử dụng.'**
+  String get groupTransactionMembersPending;
+
+  /// No description provided for @groupTransactionPendingStatus.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ thành viên nhập số tiền'**
+  String get groupTransactionPendingStatus;
+
+  /// No description provided for @groupTransactionMismatchStatus.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng tiền chưa khớp'**
+  String get groupTransactionMismatchStatus;
+
+  /// No description provided for @groupTransactionPostedStatus.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã đăng'**
+  String get groupTransactionPostedStatus;
+
+  /// No description provided for @groupTransactionNoData.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có giao dịch nhóm.'**
+  String get groupTransactionNoData;
+
+  /// No description provided for @groupTransactionLoadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được giao dịch nhóm.'**
+  String get groupTransactionLoadError;
+
+  /// No description provided for @groupTransactionDetailTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiết giao dịch nhóm'**
+  String get groupTransactionDetailTitle;
+
+  /// No description provided for @groupTransactionCreator.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người đăng'**
+  String get groupTransactionCreator;
+
+  /// No description provided for @groupTransactionPayers.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người đã trả'**
+  String get groupTransactionPayers;
+
+  /// No description provided for @groupTransactionShares.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phần phải chịu'**
+  String get groupTransactionShares;
+
+  /// No description provided for @groupTransactionDeleteConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa giao dịch nhóm này?'**
+  String get groupTransactionDeleteConfirm;
+
+  /// No description provided for @groupTransactionCompletedEditWarning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch này đã có khoản nợ được xác nhận. Nếu chỉnh sửa, hệ thống sẽ tính lại công nợ của nhóm. Bạn có chắc muốn tiếp tục không?'**
+  String get groupTransactionCompletedEditWarning;
+
+  /// No description provided for @groupTransactionCreatorOnly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ người tạo giao dịch mới được sửa hoặc xóa.'**
+  String get groupTransactionCreatorOnly;
+
+  /// No description provided for @groupAmountInputTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền bạn đã sử dụng'**
+  String get groupAmountInputTitle;
+
+  /// No description provided for @groupAmountUsedLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền đã sử dụng'**
+  String get groupAmountUsedLabel;
+
+  /// No description provided for @groupAmountSubmit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi số tiền'**
+  String get groupAmountSubmit;
+
+  /// No description provided for @groupAmountNonNegative.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền không được nhỏ hơn 0.'**
+  String get groupAmountNonNegative;
+
+  /// No description provided for @groupSettlementTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Công nợ nhóm'**
+  String get groupSettlementTitle;
+
+  /// No description provided for @groupBalanceTableTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bảng công nợ'**
+  String get groupBalanceTableTitle;
+
+  /// No description provided for @groupYouNeedPay.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn cần trả'**
+  String get groupYouNeedPay;
+
+  /// No description provided for @groupOthersNeedPayYou.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người khác cần trả cho bạn'**
+  String get groupOthersNeedPayYou;
+
+  /// No description provided for @groupMarkPaid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã trả nợ'**
+  String get groupMarkPaid;
+
+  /// No description provided for @groupConfirmReceived.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận đã nhận'**
+  String get groupConfirmReceived;
+
+  /// No description provided for @groupSettlementPending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ thanh toán'**
+  String get groupSettlementPending;
+
+  /// No description provided for @groupSettlementPayerMarked.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người trả đã báo thanh toán'**
+  String get groupSettlementPayerMarked;
+
+  /// No description provided for @groupSettlementCompleted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hoàn tất'**
+  String get groupSettlementCompleted;
+
+  /// No description provided for @groupSettlementDisputed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tranh chấp'**
+  String get groupSettlementDisputed;
+
+  /// No description provided for @groupSettlementEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có khoản nợ cần xử lý.'**
+  String get groupSettlementEmpty;
+
+  /// No description provided for @groupSettlementFromTo.
+  ///
+  /// In vi, this message translates to:
+  /// **'{from} trả {to}'**
+  String groupSettlementFromTo(String from, String to);
+
+  /// No description provided for @groupSharePaidBalance.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chịu {share} • Đã trả {paid} • Cân đối {balance}'**
+  String groupSharePaidBalance(String share, String paid, String balance);
+
+  /// No description provided for @groupCommentsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bình luận'**
+  String get groupCommentsTitle;
+
+  /// No description provided for @groupCommentHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập bình luận...'**
+  String get groupCommentHint;
+
+  /// No description provided for @groupCommentSend.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi'**
+  String get groupCommentSend;
+
+  /// No description provided for @groupCommentsEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có bình luận.'**
+  String get groupCommentsEmpty;
+
+  /// No description provided for @groupCommentRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập nội dung bình luận.'**
+  String get groupCommentRequired;
+
+  /// No description provided for @groupUnknownMember.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành viên'**
+  String get groupUnknownMember;
+
+  /// No description provided for @groupNoCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa chọn danh mục'**
+  String get groupNoCategory;
+
+  /// No description provided for @groupChooseCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn danh mục'**
+  String get groupChooseCategory;
+
+  /// No description provided for @groupAmountRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập tổng tiền lớn hơn 0.'**
+  String get groupAmountRequired;
+
+  /// No description provided for @groupActionFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể thực hiện thao tác nhóm. Vui lòng thử lại.'**
+  String get groupActionFailed;
+
+  /// No description provided for @groupMemberAlreadyInvited.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng này đã ở trong nhóm hoặc đang có lời mời.'**
+  String get groupMemberAlreadyInvited;
+
+  /// No description provided for @groupInviteLinkPlaceholder.
+  ///
+  /// In vi, this message translates to:
+  /// **'Deep link đã được tạo. Màn hình chấp nhận lời mời sẽ được kết nối ở phase deep linking.'**
+  String get groupInviteLinkPlaceholder;
+
+  /// No description provided for @groupStatsPlaceholder.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thống kê nhóm cơ bản dùng tổng chi và công nợ hiện tại.'**
+  String get groupStatsPlaceholder;
+
+  /// No description provided for @groupLeaveWarningActivity.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có thành viên trong nhóm cố gắng rời khỏi nhóm khi chưa xử lý xong các khoản chi. Hãy cẩn thận.'**
+  String get groupLeaveWarningActivity;
+
+  /// No description provided for @cancel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hủy'**
+  String get cancel;
+
+  /// No description provided for @retry.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử lại'**
+  String get retry;
+
+  /// No description provided for @friendsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn bè'**
+  String get friendsTitle;
+
+  /// No description provided for @friendsProfileSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quản lý bạn bè và lời mời kết bạn'**
+  String get friendsProfileSubtitle;
+
+  /// No description provided for @friendAdd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm bạn'**
+  String get friendAdd;
+
+  /// No description provided for @friendSearchUsername.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm bằng username'**
+  String get friendSearchUsername;
+
+  /// No description provided for @friendSearchHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví dụ: an_nguyen'**
+  String get friendSearchHint;
+
+  /// No description provided for @friendSearch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm kiếm'**
+  String get friendSearch;
+
+  /// No description provided for @friendSearchPrompt.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập username để tìm người dùng Moniary.'**
+  String get friendSearchPrompt;
+
+  /// No description provided for @friendSearchEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy người dùng “{query}”.'**
+  String friendSearchEmpty(String query);
+
+  /// No description provided for @friendSearchError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tìm bạn bè. Vui lòng thử lại.'**
+  String get friendSearchError;
+
+  /// No description provided for @friendLoadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được danh sách bạn bè.'**
+  String get friendLoadError;
+
+  /// No description provided for @friendNoFriends.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chưa có bạn bè nào.'**
+  String get friendNoFriends;
+
+  /// No description provided for @friendNoFriendsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm bạn bè để mời vào nhóm chi tiêu nhanh hơn.'**
+  String get friendNoFriendsSubtitle;
+
+  /// No description provided for @friendIncomingRequests.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời kết bạn'**
+  String get friendIncomingRequests;
+
+  /// No description provided for @friendOutgoingRequests.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi lời mời'**
+  String get friendOutgoingRequests;
+
+  /// No description provided for @friendAccept.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chấp nhận'**
+  String get friendAccept;
+
+  /// No description provided for @friendDecline.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ chối'**
+  String get friendDecline;
+
+  /// No description provided for @friendCancel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hủy lời mời'**
+  String get friendCancel;
+
+  /// No description provided for @friendRemove.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa bạn'**
+  String get friendRemove;
+
+  /// No description provided for @friendRemoveTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa bạn bè?'**
+  String get friendRemoveTitle;
+
+  /// No description provided for @friendRemoveMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có chắc muốn xóa {name} khỏi danh sách bạn bè?'**
+  String friendRemoveMessage(String name);
+
+  /// No description provided for @friendRemoved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xóa bạn bè.'**
+  String get friendRemoved;
+
+  /// No description provided for @friendRequestSent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi lời mời kết bạn.'**
+  String get friendRequestSent;
+
+  /// No description provided for @friendRequestAccepted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chấp nhận lời mời kết bạn.'**
+  String get friendRequestAccepted;
+
+  /// No description provided for @friendRequestDeclined.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã từ chối lời mời kết bạn.'**
+  String get friendRequestDeclined;
+
+  /// No description provided for @friendRequestCancelled.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hủy lời mời kết bạn.'**
+  String get friendRequestCancelled;
+
+  /// No description provided for @friendRequestPending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chờ phản hồi'**
+  String get friendRequestPending;
+
+  /// No description provided for @friendIncomingPending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người này đã gửi lời mời cho bạn'**
+  String get friendIncomingPending;
+
+  /// No description provided for @friendSendRequest.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết bạn'**
+  String get friendSendRequest;
+
+  /// No description provided for @friendAlreadyFriends.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã là bạn bè'**
+  String get friendAlreadyFriends;
+
+  /// No description provided for @friendAlreadyExists.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hai bạn đã là bạn bè.'**
+  String get friendAlreadyExists;
+
+  /// No description provided for @friendUserNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy người dùng này.'**
+  String get friendUserNotFound;
+
+  /// No description provided for @friendCannotAddSelf.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không thể tự kết bạn với chính mình.'**
+  String get friendCannotAddSelf;
+
+  /// No description provided for @friendRequestAlreadyPending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã có lời mời kết bạn đang chờ xử lý.'**
+  String get friendRequestAlreadyPending;
+
+  /// No description provided for @friendRequestNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy lời mời kết bạn.'**
+  String get friendRequestNotFound;
+
+  /// No description provided for @friendNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy bạn bè này.'**
+  String get friendNotFound;
+
+  /// No description provided for @profileUsernameHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'3-30 ký tự: chữ thường, số hoặc dấu gạch dưới'**
+  String get profileUsernameHint;
+
+  /// No description provided for @profileUsernameInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Username phải có 3-30 ký tự và chỉ gồm chữ thường, số hoặc dấu gạch dưới.'**
+  String get profileUsernameInvalid;
 }
 
 class _AppLocalizationsDelegate

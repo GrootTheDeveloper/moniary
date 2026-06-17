@@ -23,6 +23,7 @@ class ProfileSetupController extends AsyncNotifier<UserProfile?> {
 
   Future<void> saveProfile({
     required String fullName,
+    required String username,
     required String timezone,
     String? avatarImagePath,
   }) async {
@@ -32,6 +33,7 @@ class ProfileSetupController extends AsyncNotifier<UserProfile?> {
           .read(profileRepositoryProvider)
           .upsertProfile(
             fullName: fullName,
+            username: username,
             timezone: timezone,
             avatarImagePath: avatarImagePath,
           ),

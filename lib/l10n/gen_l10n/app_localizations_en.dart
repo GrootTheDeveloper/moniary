@@ -605,7 +605,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanItemsTitle => 'Detected items';
 
   @override
-  String scanQuantity(int quantity) {
+  String scanQuantity(String quantity) {
     return 'Quantity: $quantity';
   }
 
@@ -2899,4 +2899,461 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get policyChangelogEntry4Desc =>
       'Added privacy policy, data safety, data deletion policy, data export, and account deletion flow.';
+
+  @override
+  String get groupCreateNew => 'Create new group';
+
+  @override
+  String get groupDescriptionLabel => 'Description';
+
+  @override
+  String get groupTypeLabel => 'Group type';
+
+  @override
+  String get groupTypeHint =>
+      'For example: Travel, Food, Housemates, Couple, Friends...';
+
+  @override
+  String get groupAvatarLabel => 'Group image';
+
+  @override
+  String get groupChooseImage => 'Choose image';
+
+  @override
+  String get groupNameRequired => 'Group name is required.';
+
+  @override
+  String groupTotalSpent(String amount) {
+    return 'Total spent $amount';
+  }
+
+  @override
+  String get groupBalanceSettled => 'Settled';
+
+  @override
+  String groupBalanceOwes(String amount) {
+    return 'You need to pay $amount';
+  }
+
+  @override
+  String groupBalanceReceives(String amount) {
+    return 'You will receive $amount';
+  }
+
+  @override
+  String get groupUnresolvedBadge => 'Unresolved';
+
+  @override
+  String get groupOverviewTitle => 'Overview';
+
+  @override
+  String get groupTransactionsTitle => 'Group transactions';
+
+  @override
+  String get groupDebtAreaTitle => 'Who owes whom';
+
+  @override
+  String get groupLeave => 'Leave group';
+
+  @override
+  String get groupLeaveConfirmTitle => 'Leave this group?';
+
+  @override
+  String get groupLeaveConfirmMessage =>
+      'You can leave only after balances are resolved and ownership is transferred when required.';
+
+  @override
+  String get groupLeaveBlocked => 'You still have unresolved group expenses.';
+
+  @override
+  String get groupOwnerTransferRequired =>
+      'Transfer ownership or add another owner before leaving.';
+
+  @override
+  String get groupInviteTitle => 'Invite members';
+
+  @override
+  String get groupInviteByUsername => 'Invite by username';
+
+  @override
+  String get groupUsernameLabel => 'Username';
+
+  @override
+  String get groupInviteAction => 'Send invite';
+
+  @override
+  String get groupInviteLinkTitle => 'Group invite link';
+
+  @override
+  String get groupCreateInviteLink => 'Create invite link';
+
+  @override
+  String get groupInviteLinkCreated => 'Group invite link created.';
+
+  @override
+  String get groupInviteSent => 'Invite sent.';
+
+  @override
+  String get groupUserNotFound => 'User not found.';
+
+  @override
+  String get groupNoFriends => 'You do not have friends to invite yet.';
+
+  @override
+  String get groupFriendInviteTitle => 'Invite from friends';
+
+  @override
+  String get groupMemberInvited => 'Invited';
+
+  @override
+  String get groupMemberActive => 'Active';
+
+  @override
+  String get groupAddTransaction => 'Add group transaction';
+
+  @override
+  String get groupTransactionCaption => 'Caption';
+
+  @override
+  String get groupTransactionNote => 'Note';
+
+  @override
+  String get groupTransactionTotal => 'Total amount';
+
+  @override
+  String get groupTransactionCategory => 'Category';
+
+  @override
+  String get groupTransactionImage => 'Receipt image';
+
+  @override
+  String get groupTransactionImageOptional =>
+      'An image is optional but recommended.';
+
+  @override
+  String get groupSplitModeTitle => 'Split method';
+
+  @override
+  String get groupSplitEqual => 'Equal split';
+
+  @override
+  String get groupSplitUnequal => 'Unequal split';
+
+  @override
+  String get groupPaymentModeTitle => 'Who paid';
+
+  @override
+  String get groupPaymentEveryone => 'Everyone paid';
+
+  @override
+  String get groupPaymentSingle => 'One person paid';
+
+  @override
+  String get groupPaymentMultiple => 'Multiple people paid';
+
+  @override
+  String get groupSelectPayer => 'Please select who paid.';
+
+  @override
+  String get groupSelectAtLeastTwoPayers => 'Please select at least 2 payers.';
+
+  @override
+  String get groupEnterPayerAmounts =>
+      'Enter the amount paid by each selected member.';
+
+  @override
+  String get groupPayerAmountPositive => 'Paid amount must be greater than 0.';
+
+  @override
+  String get groupPaidTotalMismatch =>
+      'Total paid does not match the transaction total.';
+
+  @override
+  String get groupConfirmationTitle => 'Are you sure?';
+
+  @override
+  String get groupPost => 'Post';
+
+  @override
+  String get groupPosting => 'Posting...';
+
+  @override
+  String get groupTransactionPosted => 'Group transaction posted successfully.';
+
+  @override
+  String get groupTransactionPendingAmounts =>
+      'Please enter the amount you used in this transaction.';
+
+  @override
+  String get groupTransactionAmountMismatch =>
+      'Member amounts do not match the transaction total. Please review and enter them again.';
+
+  @override
+  String get groupTransactionMembersPending =>
+      'Some members have not entered their used amount.';
+
+  @override
+  String get groupTransactionPendingStatus => 'Waiting for member amounts';
+
+  @override
+  String get groupTransactionMismatchStatus => 'Amounts do not match';
+
+  @override
+  String get groupTransactionPostedStatus => 'Posted';
+
+  @override
+  String get groupTransactionNoData => 'No group transactions yet.';
+
+  @override
+  String get groupTransactionLoadError => 'Could not load group transactions.';
+
+  @override
+  String get groupTransactionDetailTitle => 'Group transaction details';
+
+  @override
+  String get groupTransactionCreator => 'Posted by';
+
+  @override
+  String get groupTransactionPayers => 'Payers';
+
+  @override
+  String get groupTransactionShares => 'Member shares';
+
+  @override
+  String get groupTransactionDeleteConfirm => 'Delete this group transaction?';
+
+  @override
+  String get groupTransactionCompletedEditWarning =>
+      'This transaction has a confirmed settlement. Editing it recalculates group balances. Continue?';
+
+  @override
+  String get groupTransactionCreatorOnly =>
+      'Only the transaction creator can edit or delete it.';
+
+  @override
+  String get groupAmountInputTitle => 'Your used amount';
+
+  @override
+  String get groupAmountUsedLabel => 'Amount used';
+
+  @override
+  String get groupAmountSubmit => 'Submit amount';
+
+  @override
+  String get groupAmountNonNegative => 'Amount cannot be negative.';
+
+  @override
+  String get groupSettlementTitle => 'Group debt';
+
+  @override
+  String get groupBalanceTableTitle => 'Balance table';
+
+  @override
+  String get groupYouNeedPay => 'You need to pay';
+
+  @override
+  String get groupOthersNeedPayYou => 'Others need to pay you';
+
+  @override
+  String get groupMarkPaid => 'Mark as paid';
+
+  @override
+  String get groupConfirmReceived => 'Confirm received';
+
+  @override
+  String get groupSettlementPending => 'Pending payment';
+
+  @override
+  String get groupSettlementPayerMarked => 'Payer marked as paid';
+
+  @override
+  String get groupSettlementCompleted => 'Completed';
+
+  @override
+  String get groupSettlementDisputed => 'Disputed';
+
+  @override
+  String get groupSettlementEmpty => 'No debt needs action.';
+
+  @override
+  String groupSettlementFromTo(String from, String to) {
+    return '$from pays $to';
+  }
+
+  @override
+  String groupSharePaidBalance(String share, String paid, String balance) {
+    return 'Share $share • Paid $paid • Balance $balance';
+  }
+
+  @override
+  String get groupCommentsTitle => 'Comments';
+
+  @override
+  String get groupCommentHint => 'Write a comment...';
+
+  @override
+  String get groupCommentSend => 'Send';
+
+  @override
+  String get groupCommentsEmpty => 'No comments yet.';
+
+  @override
+  String get groupCommentRequired => 'Enter a comment.';
+
+  @override
+  String get groupUnknownMember => 'Member';
+
+  @override
+  String get groupNoCategory => 'No category selected';
+
+  @override
+  String get groupChooseCategory => 'Choose category';
+
+  @override
+  String get groupAmountRequired => 'Enter a total amount greater than 0.';
+
+  @override
+  String get groupActionFailed =>
+      'Could not complete the group action. Please try again.';
+
+  @override
+  String get groupMemberAlreadyInvited =>
+      'This user is already in the group or has a pending invite.';
+
+  @override
+  String get groupInviteLinkPlaceholder =>
+      'The deep link is created. Invite acceptance will be connected in the deep-linking phase.';
+
+  @override
+  String get groupStatsPlaceholder =>
+      'Basic group statistics use current total spending and balances.';
+
+  @override
+  String get groupLeaveWarningActivity =>
+      'A member tried to leave before resolving group expenses. Please be careful.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get friendsTitle => 'Friends';
+
+  @override
+  String get friendsProfileSubtitle => 'Manage friends and friend requests';
+
+  @override
+  String get friendAdd => 'Add friend';
+
+  @override
+  String get friendSearchUsername => 'Search by username';
+
+  @override
+  String get friendSearchHint => 'For example: an_nguyen';
+
+  @override
+  String get friendSearch => 'Search';
+
+  @override
+  String get friendSearchPrompt => 'Enter a username to find a Moniary user.';
+
+  @override
+  String friendSearchEmpty(String query) {
+    return 'No user found for “$query”.';
+  }
+
+  @override
+  String get friendSearchError => 'Could not search friends. Please try again.';
+
+  @override
+  String get friendLoadError => 'Could not load friends.';
+
+  @override
+  String get friendNoFriends => 'You do not have friends yet.';
+
+  @override
+  String get friendNoFriendsSubtitle =>
+      'Add friends to invite them to expense groups faster.';
+
+  @override
+  String get friendIncomingRequests => 'Friend requests';
+
+  @override
+  String get friendOutgoingRequests => 'Sent requests';
+
+  @override
+  String get friendAccept => 'Accept';
+
+  @override
+  String get friendDecline => 'Decline';
+
+  @override
+  String get friendCancel => 'Cancel request';
+
+  @override
+  String get friendRemove => 'Remove friend';
+
+  @override
+  String get friendRemoveTitle => 'Remove friend?';
+
+  @override
+  String friendRemoveMessage(String name) {
+    return 'Remove $name from your friends?';
+  }
+
+  @override
+  String get friendRemoved => 'Friend removed.';
+
+  @override
+  String get friendRequestSent => 'Friend request sent.';
+
+  @override
+  String get friendRequestAccepted => 'Friend request accepted.';
+
+  @override
+  String get friendRequestDeclined => 'Friend request declined.';
+
+  @override
+  String get friendRequestCancelled => 'Friend request cancelled.';
+
+  @override
+  String get friendRequestPending => 'Waiting for response';
+
+  @override
+  String get friendIncomingPending => 'This user already sent you a request';
+
+  @override
+  String get friendSendRequest => 'Add';
+
+  @override
+  String get friendAlreadyFriends => 'Already friends';
+
+  @override
+  String get friendAlreadyExists => 'You are already friends.';
+
+  @override
+  String get friendUserNotFound => 'User not found.';
+
+  @override
+  String get friendCannotAddSelf => 'You cannot add yourself as a friend.';
+
+  @override
+  String get friendRequestAlreadyPending =>
+      'A friend request is already pending.';
+
+  @override
+  String get friendRequestNotFound => 'Friend request not found.';
+
+  @override
+  String get friendNotFound => 'Friend not found.';
+
+  @override
+  String get profileUsernameHint =>
+      '3-30 characters: lowercase letters, numbers, or underscores';
+
+  @override
+  String get profileUsernameInvalid =>
+      'Username must be 3-30 characters using lowercase letters, numbers, or underscores only.';
 }

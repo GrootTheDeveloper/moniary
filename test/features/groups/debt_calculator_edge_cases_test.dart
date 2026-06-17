@@ -28,15 +28,12 @@ void main() {
         ];
 
         final balances = service.calculateBalances(expenses);
-        expect(balances['a'], 0.0);
+        expect(balances['a'], 0);
       },
     );
 
-    test('simplifyDebts with balances near 0.01 threshold are ignored', () {
-      final balances = {
-        'a': 0.009, // near positive threshold
-        'b': -0.009, // near negative threshold
-      };
+    test('simplifyDebts ignores zero balances', () {
+      final balances = {'a': 0, 'b': 0};
 
       final settlements = service.simplifyDebts(balances);
       expect(settlements, isEmpty);
@@ -47,13 +44,13 @@ void main() {
       // A: +100000 (net)
       // B: -100000 (net)
       // C: 0 (net)
-      final balances = {'a': 100000.0, 'b': -100000.0, 'c': 0.0};
+      final balances = {'a': 100000, 'b': -100000, 'c': 0};
 
       final settlements = service.simplifyDebts(balances);
       expect(settlements, hasLength(1));
       expect(settlements.first.fromMemberId, 'b');
       expect(settlements.first.toMemberId, 'a');
-      expect(settlements.first.amount, 100000.0);
+      expect(settlements.first.amount, 100000);
     });
   });
 }

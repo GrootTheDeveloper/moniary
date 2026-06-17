@@ -18,27 +18,26 @@ class GroupExpenseValidationService {
   const GroupExpenseValidationService();
 
   List<ExpenseSplit> createEqualSplits({
-    required double amount,
+    required int amount,
     required List<String> participantIds,
   }) {
     if (amount <= 0 || participantIds.isEmpty) {
       return const [];
     }
-    final wholeAmount = amount.round();
-    final base = wholeAmount ~/ participantIds.length;
-    var remainder = wholeAmount - (base * participantIds.length);
+    final base = amount ~/ participantIds.length;
+    var remainder = amount - (base * participantIds.length);
     return participantIds.map((memberId) {
       final share = base + (remainder > 0 ? 1 : 0);
       if (remainder > 0) {
         remainder--;
       }
-      return ExpenseSplit(memberId: memberId, amount: share.toDouble());
+      return ExpenseSplit(memberId: memberId, amount: share);
     }).toList();
   }
 
   GroupExpenseValidationError? validate({
     required ExpenseGroup group,
-    required double amount,
+    required int amount,
     required String? payerMemberId,
     required List<String> participantIds,
     required List<ExpenseSplit> splits,
@@ -73,11 +72,8 @@ class GroupExpenseValidationService {
     if (splits.any((split) => split.amount < 0)) {
       return GroupExpenseValidationError.negativeSplit;
     }
-    final splitTotal = splits.fold<double>(
-      0,
-      (sum, split) => sum + split.amount,
-    );
-    if ((splitTotal - amount).abs() > 0.01) {
+    final splitTotal = splits.fold<int>(0, (sum, split) => sum + split.amount);
+    if (splitTotal != amount) {
       return GroupExpenseValidationError.splitMismatch;
     }
     return null;

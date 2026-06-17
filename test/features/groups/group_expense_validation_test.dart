@@ -25,7 +25,7 @@ void main() {
     );
 
     expect(splits.map((split) => split.amount), [33334, 33333, 33333]);
-    expect(splits.fold<double>(0, (sum, split) => sum + split.amount), 100000);
+    expect(splits.fold<int>(0, (sum, split) => sum + split.amount), 100000);
   });
 
   test('cho phép chia tay khi tổng khớp chi phí', () {

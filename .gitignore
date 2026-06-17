@@ -2,6 +2,10 @@
 *.class
 *.log
 *.pyc
+**/__pycache__/
+**/.pytest_cache/
+**/.venv/
+**/venv/
 *.swp
 .DS_Store
 .atom/

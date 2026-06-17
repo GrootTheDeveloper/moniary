@@ -13,6 +13,7 @@ The project strictly follows a **Feature-First** directory structure inside `lib
 | `lib/features/` | Feature modules | 12 features: `auth`, `calendar`, `categories`, `groups`, `onboarding`, `profile`, `scanning`, `settings`, `splash`, `statistics`, `transactions`, `wallets`. |
 | `lib/l10n/` | Localization files | Contains `.arb` files and generated localizations. |
 | `lib/shared/` | Shared UI and Utils | Common widgets, formatters, loggers used across features. |
+| `backend/ocr/` | Receipt OCR API | FastAPI + Ollama vision backend used by the scanning feature. |
 | `test/` | Tests | Contains unit and widget tests. |
 
 ## Feature Module Internal Structure

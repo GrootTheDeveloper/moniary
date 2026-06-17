@@ -9,6 +9,7 @@ import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/widgets/supabase_image.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/presentation/login_screen.dart';
+import '../../friends/presentation/screens/friends_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../application/account/account_actions_controller.dart';
@@ -519,6 +520,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       _SettingsGroup(
                         title: context.l10n.profileAccount,
                         children: [
+                          _SettingsTile(
+                            icon: Icons.people_outline,
+                            title: context.l10n.friendsTitle,
+                            subtitle: context.l10n.friendsProfileSubtitle,
+                            onTap: () => context.push(FriendsScreen.routePath),
+                          ),
                           _SettingsTile(
                             icon: Icons.notifications_outlined,
                             title: context.l10n.notificationSettings,

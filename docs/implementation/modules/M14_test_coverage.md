@@ -21,7 +21,7 @@ CHỈ tạo 6 files TEST mới. KHÔNG sửa source code.
 | 2 | `test/features/groups/debt_calculator_edge_cases_test.dart` | Empty list, single member, circular debts |
 | 3 | `test/features/groups/group_expense_validation_full_test.dart` | < 2 members, missing payer, 0/negative amount |
 | 4 | `test/features/scanning/scanning_controller_test.dart` | State transitions |
-| 5 | `test/features/scanning/mock_ocr_service_extended_test.dart` | Whitespace path, items, confidence |
+| 5 | `test/features/scanning/fast_api_ocr_service_test.dart` | Multipart upload, response mapping, API errors |
 | 6 | `test/shared/utils/currency_formatter_test.dart` | formatVnd edge cases |
 
 ## Step-by-step Implementation
@@ -50,10 +50,10 @@ CHỈ tạo 6 files TEST mới. KHÔNG sửa source code.
    - Sau extract thành công → `success` với OcrResult
    - Sau extract fail → `failure` với error message
 
-5. **`mock_ocr_service_extended_test.dart`**:
-   - Returns valid OcrResult
-   - Items content check
-   - Confidence value check (0-1 range)
+5. **`fast_api_ocr_service_test.dart`**:
+   - Multipart image upload to `POST /extract`
+   - Response mapping to `OcrResult`
+   - HTTP and missing-image error handling
 
 6. **`currency_formatter_test.dart`**:
    - `formatVnd(0)` → contains `'0'`
@@ -88,7 +88,7 @@ Tạo 6 test files MỚI. Chạy flutter test sau mỗi file:
 2. test/features/groups/debt_calculator_edge_cases_test.dart — empty, single, circular
 3. test/features/groups/group_expense_validation_full_test.dart — < 2 members, 0 amount, missing payer
 4. test/features/scanning/scanning_controller_test.dart — state transitions
-5. test/features/scanning/mock_ocr_service_extended_test.dart — valid data checks
+5. test/features/scanning/fast_api_ocr_service_test.dart — FastAPI contract checks
 6. test/shared/utils/currency_formatter_test.dart — 0, positive, negative
 
 Chạy: flutter test (ALL pass)

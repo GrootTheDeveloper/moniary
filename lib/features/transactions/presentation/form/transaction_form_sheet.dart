@@ -80,7 +80,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     _amountFormatter = CurrencyTextInputFormatter.currency(
       locale: 'vi_VN',
       symbol: '',
-      decimalDigits: 0,
+      decimalDigits: 2,
     );
 
     final initialAmount = transaction?.amount ?? 0;
@@ -174,7 +174,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
 
     try {
       final ocrResult = await ref
-          .read(ocrServiceProvider)
+          .read(ocrExtractionControllerProvider)
           .extractFromImage(_pickedFile!.path);
 
       if (!mounted) return;
