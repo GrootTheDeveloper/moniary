@@ -39,6 +39,13 @@
 - **Data**: `GroupRepository` supports both Supabase and mock mode. Supabase mutations that recalculate shared financial state use atomic RPCs.
 - **Storage**: Group avatars and transaction images are private paths in `transaction-images`; display uses signed URLs.
 
+## Feature: Friends
+- **Purpose**: Search users by username, send/accept/decline/cancel friend requests, remove friends, and invite friends into expense groups.
+- **Main files**: `features/friends/`
+- **UI screens**: `FriendsScreen`, `AddFriendScreen`.
+- **Data**: `FriendRepository` supports Supabase and mock mode. Supabase mutations use RPCs to avoid direct client-side writes to friend tables.
+- **Privacy**: User search returns minimal profile fields only and does not expose email addresses.
+
 ## Feature: Scanning (OCR)
 - **Purpose**: Extract data from receipts using OCR.
 - **Main files**: `features/scanning/`

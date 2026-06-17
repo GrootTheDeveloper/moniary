@@ -100,6 +100,18 @@ class GroupActionController extends AsyncNotifier<void> {
     });
   }
 
+  Future<void> inviteByUserId({
+    required String groupId,
+    required String userId,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .inviteByUserId(groupId: groupId, userId: userId);
+      _invalidateGroup(groupId);
+    });
+  }
+
   Future<String> createTransaction(GroupTransactionDraft draft) {
     return _run(() async {
       final id = await ref

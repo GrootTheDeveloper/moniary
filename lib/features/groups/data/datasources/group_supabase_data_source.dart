@@ -142,6 +142,16 @@ class GroupSupabaseDataSource {
     );
   }
 
+  Future<void> inviteByUserId({
+    required String groupId,
+    required String userId,
+  }) {
+    return client.rpc(
+      'invite_group_member_by_user_id',
+      params: {'p_group_id': groupId, 'p_user_id': userId},
+    );
+  }
+
   Future<String> createTransaction(GroupTransactionDraft draft) async {
     final result = await client.rpc(
       'create_group_transaction',

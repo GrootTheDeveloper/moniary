@@ -34,6 +34,18 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupCommentRequired;
       case 'GROUP_CREATOR_ONLY':
         return l10n.groupTransactionCreatorOnly;
+      case 'FRIEND_USER_NOT_FOUND':
+        return l10n.friendUserNotFound;
+      case 'FRIEND_CANNOT_ADD_SELF':
+        return l10n.friendCannotAddSelf;
+      case 'FRIEND_ALREADY_EXISTS':
+        return l10n.friendAlreadyExists;
+      case 'FRIEND_REQUEST_ALREADY_PENDING':
+        return l10n.friendRequestAlreadyPending;
+      case 'FRIEND_REQUEST_NOT_FOUND':
+        return l10n.friendRequestNotFound;
+      case 'FRIEND_NOT_FOUND':
+        return l10n.friendNotFound;
     }
 
     switch (error.message) {

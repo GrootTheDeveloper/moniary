@@ -135,6 +135,38 @@ class GroupMockDataSource {
     throw const AppException('User not found', code: 'GROUP_USER_NOT_FOUND');
   }
 
+  Future<void> inviteByUserId({
+    required String groupId,
+    required String userId,
+  }) async {
+    _requireAdmin(groupId);
+    final members = _members[groupId] ?? [];
+    if (members.any(
+      (member) =>
+          member.userId == userId &&
+          (member.status == GroupMemberStatus.active ||
+              member.status == GroupMemberStatus.invited),
+    )) {
+      throw const AppException(
+        'Member already invited',
+        code: 'GROUP_MEMBER_ALREADY_INVITED',
+      );
+    }
+    _members[groupId] = [
+      ...members,
+      SpendingGroupMember(
+        id: _id('member'),
+        groupId: groupId,
+        userId: userId,
+        role: GroupRole.member,
+        status: GroupMemberStatus.invited,
+        joinedAt: DateTime.now(),
+        displayName: userId,
+        username: userId,
+      ),
+    ];
+  }
+
   Future<List<GroupTransaction>> fetchTransactions(String groupId) async {
     _requireGroup(groupId);
     final result =

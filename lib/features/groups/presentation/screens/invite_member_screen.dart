@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../friends/application/friend_controller.dart';
+import '../../../friends/domain/entities/friend_profile.dart';
+import '../../../friends/presentation/widgets/friend_profile_tile.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
@@ -30,6 +33,7 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
   @override
   Widget build(BuildContext context) {
     final action = ref.watch(groupActionControllerProvider);
+    final friendsAsync = ref.watch(friendsControllerProvider);
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.groupInviteTitle)),
       body: ListView(
@@ -87,13 +91,60 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8),
-                Text(context.l10n.groupNoFriends),
+                friendsAsync.when(
+                  loading: () => const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                  error: (_, _) => Text(context.l10n.friendLoadError),
+                  data: (friends) {
+                    if (friends.isEmpty) {
+                      return Text(context.l10n.groupNoFriends);
+                    }
+                    return Column(
+                      children: [
+                        for (final friend in friends) ...[
+                          FriendProfileTile(
+                            profile: friend,
+                            trailing: FilledButton(
+                              onPressed: action.isLoading
+                                  ? null
+                                  : () => _inviteFriend(friend),
+                              child: Text(context.l10n.groupInviteAction),
+                            ),
+                          ),
+                          if (friend != friends.last)
+                            const SizedBox(height: 10),
+                        ],
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _inviteFriend(FriendProfile friend) async {
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .inviteByUserId(groupId: widget.groupId, userId: friend.userId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.groupInviteSent)));
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
   }
 
   Future<void> _inviteUsername() async {

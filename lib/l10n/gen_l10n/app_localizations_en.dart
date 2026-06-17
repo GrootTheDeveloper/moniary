@@ -3224,6 +3224,123 @@ class AppLocalizationsEn extends AppLocalizations {
       'A member tried to leave before resolving group expenses. Please be careful.';
 
   @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get friendsTitle => 'Friends';
+
+  @override
+  String get friendsProfileSubtitle => 'Manage friends and friend requests';
+
+  @override
+  String get friendAdd => 'Add friend';
+
+  @override
+  String get friendSearchUsername => 'Search by username';
+
+  @override
+  String get friendSearchHint => 'For example: an_nguyen';
+
+  @override
+  String get friendSearch => 'Search';
+
+  @override
+  String get friendSearchPrompt => 'Enter a username to find a Moniary user.';
+
+  @override
+  String friendSearchEmpty(String query) {
+    return 'No user found for “$query”.';
+  }
+
+  @override
+  String get friendSearchError => 'Could not search friends. Please try again.';
+
+  @override
+  String get friendLoadError => 'Could not load friends.';
+
+  @override
+  String get friendNoFriends => 'You do not have friends yet.';
+
+  @override
+  String get friendNoFriendsSubtitle =>
+      'Add friends to invite them to expense groups faster.';
+
+  @override
+  String get friendIncomingRequests => 'Friend requests';
+
+  @override
+  String get friendOutgoingRequests => 'Sent requests';
+
+  @override
+  String get friendAccept => 'Accept';
+
+  @override
+  String get friendDecline => 'Decline';
+
+  @override
+  String get friendCancel => 'Cancel request';
+
+  @override
+  String get friendRemove => 'Remove friend';
+
+  @override
+  String get friendRemoveTitle => 'Remove friend?';
+
+  @override
+  String friendRemoveMessage(String name) {
+    return 'Remove $name from your friends?';
+  }
+
+  @override
+  String get friendRemoved => 'Friend removed.';
+
+  @override
+  String get friendRequestSent => 'Friend request sent.';
+
+  @override
+  String get friendRequestAccepted => 'Friend request accepted.';
+
+  @override
+  String get friendRequestDeclined => 'Friend request declined.';
+
+  @override
+  String get friendRequestCancelled => 'Friend request cancelled.';
+
+  @override
+  String get friendRequestPending => 'Waiting for response';
+
+  @override
+  String get friendIncomingPending => 'This user already sent you a request';
+
+  @override
+  String get friendSendRequest => 'Add';
+
+  @override
+  String get friendAlreadyFriends => 'Already friends';
+
+  @override
+  String get friendAlreadyExists => 'You are already friends.';
+
+  @override
+  String get friendUserNotFound => 'User not found.';
+
+  @override
+  String get friendCannotAddSelf => 'You cannot add yourself as a friend.';
+
+  @override
+  String get friendRequestAlreadyPending =>
+      'A friend request is already pending.';
+
+  @override
+  String get friendRequestNotFound => 'Friend request not found.';
+
+  @override
+  String get friendNotFound => 'Friend not found.';
+
+  @override
   String get profileUsernameHint =>
       '3-30 characters: lowercase letters, numbers, or underscores';
 

@@ -5840,6 +5840,228 @@ abstract class AppLocalizations {
   /// **'Có thành viên trong nhóm cố gắng rời khỏi nhóm khi chưa xử lý xong các khoản chi. Hãy cẩn thận.'**
   String get groupLeaveWarningActivity;
 
+  /// No description provided for @cancel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hủy'**
+  String get cancel;
+
+  /// No description provided for @retry.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử lại'**
+  String get retry;
+
+  /// No description provided for @friendsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn bè'**
+  String get friendsTitle;
+
+  /// No description provided for @friendsProfileSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quản lý bạn bè và lời mời kết bạn'**
+  String get friendsProfileSubtitle;
+
+  /// No description provided for @friendAdd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm bạn'**
+  String get friendAdd;
+
+  /// No description provided for @friendSearchUsername.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm bằng username'**
+  String get friendSearchUsername;
+
+  /// No description provided for @friendSearchHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví dụ: an_nguyen'**
+  String get friendSearchHint;
+
+  /// No description provided for @friendSearch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm kiếm'**
+  String get friendSearch;
+
+  /// No description provided for @friendSearchPrompt.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập username để tìm người dùng Moniary.'**
+  String get friendSearchPrompt;
+
+  /// No description provided for @friendSearchEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy người dùng “{query}”.'**
+  String friendSearchEmpty(String query);
+
+  /// No description provided for @friendSearchError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tìm bạn bè. Vui lòng thử lại.'**
+  String get friendSearchError;
+
+  /// No description provided for @friendLoadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được danh sách bạn bè.'**
+  String get friendLoadError;
+
+  /// No description provided for @friendNoFriends.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chưa có bạn bè nào.'**
+  String get friendNoFriends;
+
+  /// No description provided for @friendNoFriendsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm bạn bè để mời vào nhóm chi tiêu nhanh hơn.'**
+  String get friendNoFriendsSubtitle;
+
+  /// No description provided for @friendIncomingRequests.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời kết bạn'**
+  String get friendIncomingRequests;
+
+  /// No description provided for @friendOutgoingRequests.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi lời mời'**
+  String get friendOutgoingRequests;
+
+  /// No description provided for @friendAccept.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chấp nhận'**
+  String get friendAccept;
+
+  /// No description provided for @friendDecline.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ chối'**
+  String get friendDecline;
+
+  /// No description provided for @friendCancel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hủy lời mời'**
+  String get friendCancel;
+
+  /// No description provided for @friendRemove.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa bạn'**
+  String get friendRemove;
+
+  /// No description provided for @friendRemoveTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa bạn bè?'**
+  String get friendRemoveTitle;
+
+  /// No description provided for @friendRemoveMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có chắc muốn xóa {name} khỏi danh sách bạn bè?'**
+  String friendRemoveMessage(String name);
+
+  /// No description provided for @friendRemoved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xóa bạn bè.'**
+  String get friendRemoved;
+
+  /// No description provided for @friendRequestSent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi lời mời kết bạn.'**
+  String get friendRequestSent;
+
+  /// No description provided for @friendRequestAccepted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chấp nhận lời mời kết bạn.'**
+  String get friendRequestAccepted;
+
+  /// No description provided for @friendRequestDeclined.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã từ chối lời mời kết bạn.'**
+  String get friendRequestDeclined;
+
+  /// No description provided for @friendRequestCancelled.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hủy lời mời kết bạn.'**
+  String get friendRequestCancelled;
+
+  /// No description provided for @friendRequestPending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chờ phản hồi'**
+  String get friendRequestPending;
+
+  /// No description provided for @friendIncomingPending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người này đã gửi lời mời cho bạn'**
+  String get friendIncomingPending;
+
+  /// No description provided for @friendSendRequest.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết bạn'**
+  String get friendSendRequest;
+
+  /// No description provided for @friendAlreadyFriends.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã là bạn bè'**
+  String get friendAlreadyFriends;
+
+  /// No description provided for @friendAlreadyExists.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hai bạn đã là bạn bè.'**
+  String get friendAlreadyExists;
+
+  /// No description provided for @friendUserNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy người dùng này.'**
+  String get friendUserNotFound;
+
+  /// No description provided for @friendCannotAddSelf.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không thể tự kết bạn với chính mình.'**
+  String get friendCannotAddSelf;
+
+  /// No description provided for @friendRequestAlreadyPending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã có lời mời kết bạn đang chờ xử lý.'**
+  String get friendRequestAlreadyPending;
+
+  /// No description provided for @friendRequestNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy lời mời kết bạn.'**
+  String get friendRequestNotFound;
+
+  /// No description provided for @friendNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy bạn bè này.'**
+  String get friendNotFound;
+
   /// No description provided for @profileUsernameHint.
   ///
   /// In vi, this message translates to:

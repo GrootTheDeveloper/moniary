@@ -23,6 +23,11 @@ abstract interface class GroupRepository {
     required String username,
   });
 
+  Future<void> inviteByUserId({
+    required String groupId,
+    required String userId,
+  });
+
   Future<List<GroupTransaction>> fetchTransactions(String groupId);
 
   Future<GroupTransactionDetail> fetchTransactionDetail(String transactionId);

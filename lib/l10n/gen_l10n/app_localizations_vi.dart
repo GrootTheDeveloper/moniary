@@ -3225,6 +3225,123 @@ class AppLocalizationsVi extends AppLocalizations {
       'Có thành viên trong nhóm cố gắng rời khỏi nhóm khi chưa xử lý xong các khoản chi. Hãy cẩn thận.';
 
   @override
+  String get cancel => 'Hủy';
+
+  @override
+  String get retry => 'Thử lại';
+
+  @override
+  String get friendsTitle => 'Bạn bè';
+
+  @override
+  String get friendsProfileSubtitle => 'Quản lý bạn bè và lời mời kết bạn';
+
+  @override
+  String get friendAdd => 'Thêm bạn';
+
+  @override
+  String get friendSearchUsername => 'Tìm bằng username';
+
+  @override
+  String get friendSearchHint => 'Ví dụ: an_nguyen';
+
+  @override
+  String get friendSearch => 'Tìm kiếm';
+
+  @override
+  String get friendSearchPrompt => 'Nhập username để tìm người dùng Moniary.';
+
+  @override
+  String friendSearchEmpty(String query) {
+    return 'Không tìm thấy người dùng “$query”.';
+  }
+
+  @override
+  String get friendSearchError => 'Không thể tìm bạn bè. Vui lòng thử lại.';
+
+  @override
+  String get friendLoadError => 'Không tải được danh sách bạn bè.';
+
+  @override
+  String get friendNoFriends => 'Bạn chưa có bạn bè nào.';
+
+  @override
+  String get friendNoFriendsSubtitle =>
+      'Thêm bạn bè để mời vào nhóm chi tiêu nhanh hơn.';
+
+  @override
+  String get friendIncomingRequests => 'Lời mời kết bạn';
+
+  @override
+  String get friendOutgoingRequests => 'Đã gửi lời mời';
+
+  @override
+  String get friendAccept => 'Chấp nhận';
+
+  @override
+  String get friendDecline => 'Từ chối';
+
+  @override
+  String get friendCancel => 'Hủy lời mời';
+
+  @override
+  String get friendRemove => 'Xóa bạn';
+
+  @override
+  String get friendRemoveTitle => 'Xóa bạn bè?';
+
+  @override
+  String friendRemoveMessage(String name) {
+    return 'Bạn có chắc muốn xóa $name khỏi danh sách bạn bè?';
+  }
+
+  @override
+  String get friendRemoved => 'Đã xóa bạn bè.';
+
+  @override
+  String get friendRequestSent => 'Đã gửi lời mời kết bạn.';
+
+  @override
+  String get friendRequestAccepted => 'Đã chấp nhận lời mời kết bạn.';
+
+  @override
+  String get friendRequestDeclined => 'Đã từ chối lời mời kết bạn.';
+
+  @override
+  String get friendRequestCancelled => 'Đã hủy lời mời kết bạn.';
+
+  @override
+  String get friendRequestPending => 'Đang chờ phản hồi';
+
+  @override
+  String get friendIncomingPending => 'Người này đã gửi lời mời cho bạn';
+
+  @override
+  String get friendSendRequest => 'Kết bạn';
+
+  @override
+  String get friendAlreadyFriends => 'Đã là bạn bè';
+
+  @override
+  String get friendAlreadyExists => 'Hai bạn đã là bạn bè.';
+
+  @override
+  String get friendUserNotFound => 'Không tìm thấy người dùng này.';
+
+  @override
+  String get friendCannotAddSelf => 'Bạn không thể tự kết bạn với chính mình.';
+
+  @override
+  String get friendRequestAlreadyPending =>
+      'Đã có lời mời kết bạn đang chờ xử lý.';
+
+  @override
+  String get friendRequestNotFound => 'Không tìm thấy lời mời kết bạn.';
+
+  @override
+  String get friendNotFound => 'Không tìm thấy bạn bè này.';
+
+  @override
   String get profileUsernameHint =>
       '3-30 ký tự: chữ thường, số hoặc dấu gạch dưới';
 

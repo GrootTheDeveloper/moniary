@@ -10,6 +10,8 @@ import '../core/preferences/preferences_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
+import '../features/friends/presentation/screens/add_friend_screen.dart';
+import '../features/friends/presentation/screens/friends_screen.dart';
 import '../features/groups/presentation/groups_screen.dart';
 import '../features/groups/presentation/screens/add_group_transaction_screen.dart';
 import '../features/groups/presentation/screens/create_group_screen.dart';
@@ -293,6 +295,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               : GroupTransactionDetailScreen(transactionId: transactionId);
           return buildFadeTransitionPage(state: state, child: child);
         },
+      ),
+      GoRoute(
+        path: FriendsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const FriendsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AddFriendScreen.routePath,
+        pageBuilder: (context, state) => buildSlideUpTransitionPage(
+          state: state,
+          child: const AddFriendScreen(),
+        ),
       ),
       GoRoute(
         path: PrivacyCenterScreen.routePath,

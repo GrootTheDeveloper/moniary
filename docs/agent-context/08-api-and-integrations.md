@@ -5,6 +5,7 @@
 ## Supabase Database
 - Tables interacted with: `transactions`, `wallets`, `categories`, `profiles`.
 - The **Groups & Community** feature uses group tables, RLS, private Storage paths, and RPCs for atomic split/settlement updates.
+- The **Friends** feature uses `friend_requests` and `friendships` with RLS and RPCs for search, request lifecycle, and friend removal. Friend search is username-based and returns only minimal profile fields.
 - Mock Mode is built into the repositories. If `AppConstants.hasSupabaseConfig` is false, DB calls are bypassed, and data is kept in-memory.
 
 ## Supabase Auth

@@ -182,6 +182,20 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<void> inviteByUserId({
+    required String groupId,
+    required String userId,
+  }) {
+    if (_useMockData) {
+      return _mock.inviteByUserId(groupId: groupId, userId: userId);
+    }
+    return _guard(
+      'invite group member by user id',
+      () => _remote.inviteByUserId(groupId: groupId, userId: userId),
+    );
+  }
+
+  @override
   Future<List<GroupTransaction>> fetchTransactions(String groupId) {
     if (_useMockData) {
       return _mock.fetchTransactions(groupId);
