@@ -1,10 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/app_constants.dart';
-import '../../../core/preferences/preferences_providers.dart';
 import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
@@ -15,17 +13,15 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
       : null;
   return AuthRepository(
     client,
-    ref.watch(sharedPreferencesProvider),
     useMockData: ref.watch(useMockDataModeProvider),
   );
 });
 
 class AuthRepository {
-  AuthRepository(this._client, this._preferences, {bool useMockData = false})
+  AuthRepository(this._client, {bool useMockData = false})
     : _useMockData = useMockData || !AppConstants.hasSupabaseConfig;
 
   final SupabaseClient? _client;
-  final SharedPreferences _preferences;
   final bool _useMockData;
 
   SupabaseClient get _requiredClient {
@@ -41,14 +37,11 @@ class AuthRepository {
 
   Future<Session?> signInAnonymously() async {
     if (_useMockData) {
-      await _preferences.setBool(mockLoggedInPreferenceKey, true);
       return _mockSession();
     }
 
     try {
       await _requiredClient.auth.signInAnonymously();
-      await _preferences.setBool(guestModePreferenceKey, false);
-      await _preferences.setBool(mockLoggedInPreferenceKey, false);
       await _initializeUserIfPossible();
       return null;
     } catch (e, st) {
@@ -59,21 +52,14 @@ class AuthRepository {
   }
 
   Future<Session> startGuestSession() async {
-    await _preferences.setBool(guestModePreferenceKey, true);
-    await _preferences.setBool(mockLoggedInPreferenceKey, true);
     return _mockSession();
   }
 
   Future<void> signOut() async {
-    await _preferences.setBool(guestModePreferenceKey, false);
-    if (_useMockData) {
-      await _preferences.setBool(mockLoggedInPreferenceKey, false);
-      return;
-    }
+    if (_useMockData) return;
 
     try {
       await _requiredClient.auth.signOut();
-      await _preferences.setBool(mockLoggedInPreferenceKey, false);
     } catch (e, st) {
       AppLogger.error('Sign-out failed', e, st);
       if (e is AppException) rethrow;
@@ -136,45 +122,44 @@ class AuthRepository {
     }
   }
 
-  Future<void> signInWithGoogle() async {
+  Future<Session?> signInWithGoogle() async {
     if (_useMockData) {
-      await _preferences.setBool(mockLoggedInPreferenceKey, true);
-      return;
+      return _mockSession();
     }
     try {
       await _requiredClient.auth.signInWithOAuth(
         OAuthProvider.google,
         redirectTo: kIsWeb ? null : 'io.supabase.moniary://login-callback',
       );
+      return null;
     } catch (e, st) {
       AppLogger.error('Google sign-in failed', e, st);
       throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
     }
   }
 
-  Future<void> signInWithApple() async {
+  Future<Session?> signInWithApple() async {
     if (_useMockData) {
-      await _preferences.setBool(mockLoggedInPreferenceKey, true);
-      return;
+      return _mockSession();
     }
     try {
       await _requiredClient.auth.signInWithOAuth(
         OAuthProvider.apple,
         redirectTo: kIsWeb ? null : 'io.supabase.moniary://login-callback',
       );
+      return null;
     } catch (e, st) {
       AppLogger.error('Apple sign-in failed', e, st);
       throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
     }
   }
 
-  Future<void> signInWithEmail({
+  Future<Session?> signInWithEmail({
     required String email,
     required String password,
   }) async {
     if (_useMockData) {
-      await _preferences.setBool(mockLoggedInPreferenceKey, true);
-      return;
+      return _mockSession();
     }
     try {
       await _requiredClient.auth.signInWithPassword(
@@ -182,6 +167,7 @@ class AuthRepository {
         password: password,
       );
       await _initializeUserIfPossible();
+      return null;
     } catch (e, st) {
       AppLogger.error('Email sign-in failed', e, st);
       throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');

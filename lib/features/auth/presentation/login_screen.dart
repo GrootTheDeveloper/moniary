@@ -377,7 +377,7 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
         }
       } else {
         await ref
-            .read(authRepositoryProvider)
+            .read(authControllerProvider.notifier)
             .signInWithEmail(
               email: _emailController.text.trim(),
               password: _passwordController.text,

@@ -128,7 +128,12 @@ class AuthController extends AsyncNotifier<void> {
   Future<void> signInWithGoogle() async {
     state = const AsyncLoading();
     try {
-      await ref.read(authRepositoryProvider).signInWithGoogle();
+      final mockSession = await ref
+          .read(authRepositoryProvider)
+          .signInWithGoogle();
+      if (mockSession != null) {
+        ref.read(mockSessionProvider.notifier).setSession(mockSession);
+      }
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -139,7 +144,34 @@ class AuthController extends AsyncNotifier<void> {
   Future<void> signInWithApple() async {
     state = const AsyncLoading();
     try {
-      await ref.read(authRepositoryProvider).signInWithApple();
+      final mockSession = await ref
+          .read(authRepositoryProvider)
+          .signInWithApple();
+      if (mockSession != null) {
+        ref.read(mockSessionProvider.notifier).setSession(mockSession);
+      }
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
+
+  Future<void> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    state = const AsyncLoading();
+    try {
+      final mockSession = await ref
+          .read(authRepositoryProvider)
+          .signInWithEmail(email: email, password: password);
+      if (mockSession != null) {
+        ref.read(mockSessionProvider.notifier).setSession(mockSession);
+        ref
+            .read(profileRepositoryProvider)
+            .setMockEmailAndProvider(email: email, loginProvider: 'email');
+      }
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
