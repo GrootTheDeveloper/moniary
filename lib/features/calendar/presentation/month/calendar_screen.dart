@@ -681,7 +681,8 @@ class _UnifiedFilterRow extends ConsumerWidget {
                   _PillButton(
                     label: context.l10n.calendarAllWallets,
                     selected: isAll,
-                    onTap: () => ref.read(calendarFilterProvider.notifier).reset(),
+                    onTap: () =>
+                        ref.read(calendarFilterProvider.notifier).reset(),
                     activeColor: AppTheme.mint.withValues(alpha: 0.2),
                     activeTextColor: AppTheme.mint,
                     inactiveColor: Colors.transparent,
@@ -693,8 +694,11 @@ class _UnifiedFilterRow extends ConsumerWidget {
                         ? selectedWallet.name
                         : context.l10n.transactionWallet,
                     selected: filters.walletId != null,
-                    onTap: () =>
-                        _showWalletPicker(context, ref, walletsAsync.value ?? []),
+                    onTap: () => _showWalletPicker(
+                      context,
+                      ref,
+                      walletsAsync.value ?? [],
+                    ),
                     activeColor: AppTheme.mint.withValues(alpha: 0.2),
                     activeTextColor: AppTheme.mint,
                     inactiveColor: Colors.transparent,
@@ -714,8 +718,9 @@ class _UnifiedFilterRow extends ConsumerWidget {
                   _PillButton(
                     label: context.l10n.calendarStarred,
                     selected: filters.isStarredOnly,
-                    onTap: () =>
-                        ref.read(calendarFilterProvider.notifier).toggleStarredOnly(),
+                    onTap: () => ref
+                        .read(calendarFilterProvider.notifier)
+                        .toggleStarredOnly(),
                     activeColor: Colors.amber.withValues(alpha: 0.2),
                     activeTextColor: Colors.amber,
                     inactiveColor: Colors.transparent,

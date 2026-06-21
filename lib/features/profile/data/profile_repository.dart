@@ -25,6 +25,10 @@ class ProfileRepository {
 
   static UserProfile? _mockProfile;
 
+  void resetMockProfile() {
+    if (_useMockData) _mockProfile = null;
+  }
+
   String get _userId {
     if (_useMockData) {
       return 'mock-user-id';

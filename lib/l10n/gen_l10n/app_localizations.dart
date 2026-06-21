@@ -206,6 +206,18 @@ abstract class AppLocalizations {
   /// **'Đã xảy ra lỗi. Vui lòng thử lại.'**
   String get errorGeneric;
 
+  /// No description provided for @errorLocalAuthUnavailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết bị này không hỗ trợ xác thực sinh trắc học hoặc mã khóa màn hình.'**
+  String get errorLocalAuthUnavailable;
+
+  /// No description provided for @errorLocalAuthFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể xác thực thiết bị. Vui lòng thử lại.'**
+  String get errorLocalAuthFailed;
+
   /// No description provided for @errorNotLoggedIn.
   ///
   /// In vi, this message translates to:
@@ -607,6 +619,30 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thống kê'**
   String get calendarStatsTab;
+
+  /// No description provided for @calendarLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang đồng bộ lịch...'**
+  String get calendarLoading;
+
+  /// No description provided for @calendarEmptyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có dữ liệu'**
+  String get calendarEmptyTitle;
+
+  /// No description provided for @calendarEmptyBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chưa có giao dịch nào trong tháng này. Hãy thêm giao dịch để bắt đầu theo dõi.'**
+  String get calendarEmptyBody;
+
+  /// No description provided for @calendarErrorTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lỗi tải dữ liệu'**
+  String get calendarErrorTitle;
 
   /// No description provided for @calendarMon.
   ///
@@ -6091,6 +6127,312 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Username phải có 3-30 ký tự và chỉ gồm chữ thường, số hoặc dấu gạch dưới.'**
   String get profileUsernameInvalid;
+
+  /// No description provided for @privacyProtectionSettingsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết lập bảo vệ'**
+  String get privacyProtectionSettingsTitle;
+
+  /// No description provided for @privacyHideBalancesTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ẩn số dư'**
+  String get privacyHideBalancesTitle;
+
+  /// No description provided for @privacyHideBalancesSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Che số tiền trên các màn hình tổng quan và chi tiết.'**
+  String get privacyHideBalancesSubtitle;
+
+  /// No description provided for @privacyExploreTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông tin và kiểm soát'**
+  String get privacyExploreTitle;
+
+  /// No description provided for @privacyStatusProtected.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang bảo vệ'**
+  String get privacyStatusProtected;
+
+  /// No description provided for @privacyStatusReview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần kiểm tra'**
+  String get privacyStatusReview;
+
+  /// No description provided for @privacyRequestCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} yêu cầu'**
+  String privacyRequestCount(int count);
+
+  /// No description provided for @biometricReasonDisable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác thực để tắt khóa ứng dụng'**
+  String get biometricReasonDisable;
+
+  /// No description provided for @biometricReasonDeleteAccount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác thực để yêu cầu xóa tài khoản'**
+  String get biometricReasonDeleteAccount;
+
+  /// No description provided for @deleteAccountGraceTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tài khoản sẽ được xóa sau 30 ngày'**
+  String get deleteAccountGraceTitle;
+
+  /// No description provided for @deleteAccountGraceBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn sẽ được đăng xuất ngay. Trong 30 ngày, hãy đăng nhập bằng đúng phương thức hiện tại nếu muốn khôi phục tài khoản trước khi dữ liệu bị xóa vĩnh viễn.'**
+  String get deleteAccountGraceBody;
+
+  /// No description provided for @deleteGuestDataTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa dữ liệu Guest'**
+  String get deleteGuestDataTitle;
+
+  /// No description provided for @deleteGuestDataBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu Guest chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và trạng thái onboarding vẫn được giữ lại.'**
+  String get deleteGuestDataBody;
+
+  /// No description provided for @deleteGuestDataUnderstand.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tôi hiểu dữ liệu Guest trên thiết bị sẽ bị xóa ngay.'**
+  String get deleteGuestDataUnderstand;
+
+  /// No description provided for @deleteGuestDataAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa dữ liệu Guest'**
+  String get deleteGuestDataAction;
+
+  /// No description provided for @deleteAccountExportTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giữ một bản sao trước khi xóa'**
+  String get deleteAccountExportTitle;
+
+  /// No description provided for @deleteAccountExportBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có thể xuất dữ liệu trước khi gửi yêu cầu xóa. Lỗi xuất dữ liệu không ngăn bạn thực hiện quyền xóa tài khoản.'**
+  String get deleteAccountExportBody;
+
+  /// No description provided for @deleteAccountExportAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở trang xuất dữ liệu'**
+  String get deleteAccountExportAction;
+
+  /// No description provided for @deleteAccountReasonTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vì sao bạn rời Moniary?'**
+  String get deleteAccountReasonTitle;
+
+  /// No description provided for @deleteAccountReasonHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn một lý do'**
+  String get deleteAccountReasonHint;
+
+  /// No description provided for @deleteAccountDetailsLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi chú bổ sung (không bắt buộc)'**
+  String get deleteAccountDetailsLabel;
+
+  /// No description provided for @deleteAccountDetailsHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Điều gì có thể khiến trải nghiệm tốt hơn?'**
+  String get deleteAccountDetailsHint;
+
+  /// No description provided for @deleteAccountDetailsHelper.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không nhập email, thông tin tài chính hoặc dữ liệu nhạy cảm.'**
+  String get deleteAccountDetailsHelper;
+
+  /// No description provided for @deleteAccountGraceUnderstand.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tôi hiểu tài khoản sẽ bị khóa sử dụng và xóa vĩnh viễn sau 30 ngày nếu không khôi phục.'**
+  String get deleteAccountGraceUnderstand;
+
+  /// No description provided for @deleteAccountConfirmationPhrase.
+  ///
+  /// In vi, this message translates to:
+  /// **'XÓA'**
+  String get deleteAccountConfirmationPhrase;
+
+  /// No description provided for @deleteAccountConfirmationLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập {phrase} để xác nhận'**
+  String deleteAccountConfirmationLabel(String phrase);
+
+  /// No description provided for @deleteAccountScheduleAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu xóa tài khoản'**
+  String get deleteAccountScheduleAction;
+
+  /// No description provided for @deleteReasonDifficultToUse.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khó sử dụng'**
+  String get deleteReasonDifficultToUse;
+
+  /// No description provided for @deleteReasonMissingFeatures.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiếu tính năng'**
+  String get deleteReasonMissingFeatures;
+
+  /// No description provided for @deleteReasonTechnicalIssues.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gặp lỗi kỹ thuật'**
+  String get deleteReasonTechnicalIssues;
+
+  /// No description provided for @deleteReasonPrivacyConcerns.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lo ngại quyền riêng tư'**
+  String get deleteReasonPrivacyConcerns;
+
+  /// No description provided for @deleteReasonNoLongerNeeded.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không còn nhu cầu'**
+  String get deleteReasonNoLongerNeeded;
+
+  /// No description provided for @deleteReasonOther.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khác'**
+  String get deleteReasonOther;
+
+  /// No description provided for @deleteAccountImpactTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu bị ảnh hưởng'**
+  String get deleteAccountImpactTitle;
+
+  /// No description provided for @deleteAccountTransactionsCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} giao dịch'**
+  String deleteAccountTransactionsCount(int count);
+
+  /// No description provided for @deleteAccountWalletsCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ví'**
+  String deleteAccountWalletsCount(int count);
+
+  /// No description provided for @deleteAccountPhotosCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ảnh'**
+  String deleteAccountPhotosCount(int count);
+
+  /// No description provided for @deleteAccountImpactUnavailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tải số lượng chi tiết lúc này. Bạn vẫn có thể tiếp tục yêu cầu xóa.'**
+  String get deleteAccountImpactUnavailable;
+
+  /// No description provided for @restoreAccountPendingBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu xóa được tạo ngày {requestedDate}. Dữ liệu sẽ bị xóa vĩnh viễn ngày {deletionDate}.\n\nKhôi phục tài khoản để tiếp tục sử dụng Moniary.'**
+  String restoreAccountPendingBody(String requestedDate, String deletionDate);
+
+  /// No description provided for @commonUnknown.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không xác định'**
+  String get commonUnknown;
+
+  /// No description provided for @loginEmailConfirmationSent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng kiểm tra email để xác nhận tài khoản.'**
+  String get loginEmailConfirmationSent;
+
+  /// No description provided for @loginCreateAccount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo tài khoản'**
+  String get loginCreateAccount;
+
+  /// No description provided for @loginEmailTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng nhập bằng email'**
+  String get loginEmailTitle;
+
+  /// No description provided for @loginEmailLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Email'**
+  String get loginEmailLabel;
+
+  /// No description provided for @loginEmailRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập email'**
+  String get loginEmailRequired;
+
+  /// No description provided for @loginPasswordLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mật khẩu'**
+  String get loginPasswordLabel;
+
+  /// No description provided for @loginPasswordMinLength.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mật khẩu cần ít nhất 6 ký tự'**
+  String get loginPasswordMinLength;
+
+  /// No description provided for @loginSignUp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ký'**
+  String get loginSignUp;
+
+  /// No description provided for @loginSignIn.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng nhập'**
+  String get loginSignIn;
+
+  /// No description provided for @loginAlreadyHaveAccount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã có tài khoản? Đăng nhập'**
+  String get loginAlreadyHaveAccount;
+
+  /// No description provided for @loginNeedAccount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có tài khoản? Đăng ký'**
+  String get loginNeedAccount;
 }
 
 class _AppLocalizationsDelegate

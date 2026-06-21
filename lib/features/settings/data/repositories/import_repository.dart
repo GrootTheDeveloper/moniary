@@ -257,4 +257,17 @@ class ImportRepository {
       );
     }
   }
+
+  Future<void> clearLocalHistory() async {
+    final file = await _importHistoryFile();
+    try {
+      if (await file.exists()) await file.delete();
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to clear import history', error, stackTrace);
+      throw const AppException(
+        'Failed to clear import history',
+        code: 'IMPORT_HISTORY_CLEAR_ERROR',
+      );
+    }
+  }
 }

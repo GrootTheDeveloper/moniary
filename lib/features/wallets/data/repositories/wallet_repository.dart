@@ -48,6 +48,10 @@ class WalletRepository {
     ),
   ];
 
+  void clearMockUserData() {
+    if (_useMockData) _mockWallets.clear();
+  }
+
   Future<List<Wallet>> fetchWallets() async {
     if (_useMockData) {
       return _mockWallets.where((w) => w.isActive).toList();

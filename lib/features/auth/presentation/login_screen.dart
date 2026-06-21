@@ -7,22 +7,52 @@ import '../../../l10n/l10n_extension.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/error_helpers.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
-import '../../profile/data/profile_repository.dart';
+import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../application/auth_controller.dart';
+import '../application/account_status_controller.dart';
+import '../application/post_auth_decision_provider.dart';
 import '../../auth/data/auth_repository.dart';
+import '../../settings/domain/account/account_deletion_status.dart';
 
-class LoginScreen extends ConsumerWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   static const routePath = '/login';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  bool _isRecoverySheetOpen = false;
+  bool _isResolvingPostAuth = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (ref.read(currentSessionProvider) != null) {
+        await _completeAuthentication();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authAction = ref.watch(authControllerProvider);
     final hasSession = ref.watch(currentSessionProvider) != null;
+
+    ref.listen(currentSessionProvider, (previous, next) {
+      if (previous == null && next != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _completeAuthentication();
+        });
+      }
+    });
 
     return Scaffold(
       body: AuroraBackground(
@@ -59,12 +89,10 @@ class LoginScreen extends ConsumerWidget {
                   onTap: authAction.isLoading
                       ? null
                       : () => _enterApp(
-                            context,
-                            ref,
-                            () => ref
-                                .read(authControllerProvider.notifier)
-                                .signInWithGoogle(),
-                          ),
+                          () => ref
+                              .read(authControllerProvider.notifier)
+                              .signInWithGoogle(),
+                        ),
                   child: _AuthButton(
                     icon: Icons.g_mobiledata_outlined,
                     label: context.l10n.loginGoogle,
@@ -76,12 +104,10 @@ class LoginScreen extends ConsumerWidget {
                   onTap: authAction.isLoading
                       ? null
                       : () => _enterApp(
-                            context,
-                            ref,
-                            () => ref
-                                .read(authControllerProvider.notifier)
-                                .signInWithApple(),
-                          ),
+                          () => ref
+                              .read(authControllerProvider.notifier)
+                              .signInWithApple(),
+                        ),
                   child: _AuthButton(
                     icon: Icons.apple_outlined,
                     label: context.l10n.loginApple,
@@ -106,8 +132,6 @@ class LoginScreen extends ConsumerWidget {
                   onPressed: authAction.isLoading
                       ? null
                       : () => _enterApp(
-                          context,
-                          ref,
                           () => ref
                               .read(authControllerProvider.notifier)
                               .signInAnonymously(),
@@ -124,8 +148,6 @@ class LoginScreen extends ConsumerWidget {
                   onPressed: authAction.isLoading
                       ? null
                       : () => _enterApp(
-                          context,
-                          ref,
                           () => ref
                               .read(authControllerProvider.notifier)
                               .startGuestSession(),
@@ -169,27 +191,16 @@ class LoginScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _enterApp(
-    BuildContext context,
-    WidgetRef ref,
-    Future<void> Function() signInAction,
-  ) async {
+  Future<void> _enterApp(Future<void> Function() signInAction) async {
     final messenger = ScaffoldMessenger.of(context);
-    final router = GoRouter.of(context);
 
     try {
       await signInAction();
-      final profile = await ref
-          .read(profileRepositoryProvider)
-          .fetchCurrentProfile();
-
-      if (!context.mounted) return;
-      router.go(
-        profile == null || profile.needsSetup
-            ? ProfileSetupScreen.routePath
-            : CalendarScreen.routePath,
-      );
-    } catch (error) {
+      if (!mounted) return;
+      await _completeAuthentication();
+    } catch (error, stackTrace) {
+      AppLogger.error('Post-authentication decision failed', error, stackTrace);
+      if (!mounted) return;
       messenger.showSnackBar(
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
@@ -206,27 +217,127 @@ class LoginScreen extends ConsumerWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) => _EmailAuthSheet(
-        onSuccess: () {
-          final profile =
-              ref.read(profileRepositoryProvider).fetchCurrentProfile();
-          profile.then((p) {
-            if (context.mounted) {
-              context.go(
-                p == null || p.needsSetup
-                    ? ProfileSetupScreen.routePath
-                    : CalendarScreen.routePath,
-              );
-            }
-          });
+        onSuccess: () async {
+          if (context.mounted) Navigator.of(context).pop();
+          await _completeAuthentication();
         },
       ),
     );
+  }
+
+  Future<void> _completeAuthentication() async {
+    if (_isResolvingPostAuth) return;
+    _isResolvingPostAuth = true;
+    late final PostAuthDecision decision;
+    try {
+      decision = await ref.refresh(postAuthDecisionProvider.future);
+    } finally {
+      _isResolvingPostAuth = false;
+    }
+    if (!mounted) return;
+
+    switch (decision.destination) {
+      case PostAuthDestination.noSession:
+        return;
+      case PostAuthDestination.profileSetup:
+        context.go(ProfileSetupScreen.routePath);
+      case PostAuthDestination.home:
+        context.go(CalendarScreen.routePath);
+      case PostAuthDestination.pendingDeletion:
+        await _showRecoverySheet(decision.deletionStatus!);
+    }
+  }
+
+  Future<void> _showRecoverySheet(AccountDeletionStatus status) async {
+    if (_isRecoverySheetOpen || !mounted) return;
+    _isRecoverySheetOpen = true;
+    await showModalBottomSheet<void>(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      useSafeArea: true,
+      builder: (sheetContext) => PopScope(
+        canPop: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 26, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Icon(
+                Icons.restore_outlined,
+                size: 54,
+                color: AppTheme.amber,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                context.l10n.restoreAccountTitle,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                context.l10n.restoreAccountPendingBody(
+                  _formatDate(status.deletedAt),
+                  _formatDate(status.scheduledDeletionAt),
+                ),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                onPressed: () => _restoreAccount(sheetContext),
+                icon: const Icon(Icons.restore),
+                label: Text(context.l10n.restoreAccountButton),
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: () => _signOutPendingAccount(sheetContext),
+                icon: const Icon(Icons.logout_outlined),
+                label: Text(context.l10n.profileSignOut),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    _isRecoverySheetOpen = false;
+  }
+
+  Future<void> _restoreAccount(BuildContext sheetContext) async {
+    await ref.read(accountStatusControllerProvider.notifier).restoreAccount();
+    final restoreState = ref.read(accountStatusControllerProvider);
+    if (!mounted) return;
+    if (restoreState.hasError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(userFriendlyMessage(context, restoreState.error!)),
+        ),
+      );
+      return;
+    }
+    if (sheetContext.mounted) Navigator.of(sheetContext).pop();
+    ref.invalidate(currentProfileProvider);
+    await _completeAuthentication();
+  }
+
+  Future<void> _signOutPendingAccount(BuildContext sheetContext) async {
+    await ref.read(authControllerProvider.notifier).signOut();
+    if (sheetContext.mounted) Navigator.of(sheetContext).pop();
+    if (mounted) context.go(LoginScreen.routePath);
+  }
+
+  String _formatDate(DateTime? value) {
+    if (value == null) return context.l10n.commonUnknown;
+    final local = value.toLocal();
+    return '${local.day.toString().padLeft(2, '0')}/'
+        '${local.month.toString().padLeft(2, '0')}/${local.year}';
   }
 }
 
 class _EmailAuthSheet extends StatefulWidget {
   const _EmailAuthSheet({required this.onSuccess});
-  final VoidCallback onSuccess;
+  final Future<void> Function() onSuccess;
 
   @override
   State<_EmailAuthSheet> createState() => _EmailAuthSheetState();
@@ -252,22 +363,26 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
     setState(() => _isLoading = true);
     try {
       if (_isSignUp) {
-        await ref.read(authRepositoryProvider).signUpWithEmail(
+        await ref
+            .read(authRepositoryProvider)
+            .signUpWithEmail(
               email: _emailController.text.trim(),
               password: _passwordController.text,
             );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please check your email for confirmation.')),
+            SnackBar(content: Text(context.l10n.loginEmailConfirmationSent)),
           );
           Navigator.pop(context);
         }
       } else {
-        await ref.read(authRepositoryProvider).signInWithEmail(
+        await ref
+            .read(authRepositoryProvider)
+            .signInWithEmail(
               email: _emailController.text.trim(),
               password: _passwordController.text,
             );
-        widget.onSuccess();
+        await widget.onSuccess();
       }
     } catch (e) {
       if (mounted) {
@@ -298,31 +413,35 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  _isSignUp ? 'Create Account' : 'Sign In with Email',
+                  _isSignUp
+                      ? context.l10n.loginCreateAccount
+                      : context.l10n.loginEmailTitle,
                   style: Theme.of(context).textTheme.headlineSmall,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email_outlined),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.loginEmailLabel,
+                    prefixIcon: const Icon(Icons.email_outlined),
                   ),
                   keyboardType: TextInputType.emailAddress,
-                  validator: (v) =>
-                      (v == null || v.isEmpty) ? 'Enter email' : null,
+                  validator: (v) => (v == null || v.isEmpty)
+                      ? context.l10n.loginEmailRequired
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock_outline),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.loginPasswordLabel,
+                    prefixIcon: const Icon(Icons.lock_outline),
                   ),
                   obscureText: true,
-                  validator: (v) =>
-                      (v == null || v.length < 6) ? 'Min 6 characters' : null,
+                  validator: (v) => (v == null || v.length < 6)
+                      ? context.l10n.loginPasswordMinLength
+                      : null,
                 ),
                 const SizedBox(height: 24),
                 FilledButton(
@@ -333,13 +452,19 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text(_isSignUp ? 'Sign Up' : 'Sign In'),
+                      : Text(
+                          _isSignUp
+                              ? context.l10n.loginSignUp
+                              : context.l10n.loginSignIn,
+                        ),
                 ),
                 TextButton(
                   onPressed: () => setState(() => _isSignUp = !_isSignUp),
-                  child: Text(_isSignUp
-                      ? 'Already have an account? Sign In'
-                      : 'Don\'t have an account? Sign Up'),
+                  child: Text(
+                    _isSignUp
+                        ? context.l10n.loginAlreadyHaveAccount
+                        : context.l10n.loginNeedAccount,
+                  ),
                 ),
               ],
             ),

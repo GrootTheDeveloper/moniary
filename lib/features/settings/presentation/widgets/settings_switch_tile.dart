@@ -7,6 +7,8 @@ class SettingsSwitchTile extends StatelessWidget {
   final String subtitle;
   final bool value;
   final ValueChanged<bool> onChanged;
+  final bool grouped;
+  final bool enabled;
 
   const SettingsSwitchTile({
     super.key,
@@ -15,16 +17,20 @@ class SettingsSwitchTile extends StatelessWidget {
     required this.subtitle,
     required this.value,
     required this.onChanged,
+    this.grouped = false,
+    this.enabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.outline),
-      ),
+      decoration: grouped
+          ? null
+          : BoxDecoration(
+              color: AppTheme.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppTheme.outline),
+            ),
       child: SwitchListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         secondary: Container(
@@ -54,7 +60,7 @@ class SettingsSwitchTile extends StatelessWidget {
           ),
         ),
         value: value,
-        onChanged: onChanged,
+        onChanged: enabled ? onChanged : null,
         activeThumbColor: AppTheme.mint,
       ),
     );

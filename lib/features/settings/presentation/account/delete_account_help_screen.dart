@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
-import 'deletion_request_screen.dart';
+import 'delete_account_screen.dart';
 import '../export/export_data_screen.dart';
 import '../privacy/privacy_contact_screen.dart';
 
@@ -46,7 +46,7 @@ class DeleteAccountHelpScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             OutlinedButton.icon(
-              onPressed: () => context.push(DeletionRequestScreen.routePath),
+              onPressed: () => context.push(DeleteAccountScreen.routePath),
               icon: const Icon(Icons.description_outlined),
               label: Text(context.l10n.deleteAccountHelpCreateRequest),
             ),

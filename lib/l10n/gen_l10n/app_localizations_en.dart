@@ -63,6 +63,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorGeneric => 'An error occurred. Please try again.';
 
   @override
+  String get errorLocalAuthUnavailable =>
+      'This device does not support biometric or screen-lock authentication.';
+
+  @override
+  String get errorLocalAuthFailed =>
+      'Device authentication failed. Please try again.';
+
+  @override
   String get errorNotLoggedIn => 'You are not logged in.';
 
   @override
@@ -278,6 +286,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calendarStatsTab => 'Stats';
+
+  @override
+  String get calendarLoading => 'Syncing calendar...';
+
+  @override
+  String get calendarEmptyTitle => 'Nothing here!';
+
+  @override
+  String get calendarEmptyBody =>
+      'You don\'t have any transactions this month. Add a new transaction to start tracking.';
+
+  @override
+  String get calendarErrorTitle => 'Data load error';
 
   @override
   String get calendarMon => 'Mon';
@@ -1313,7 +1334,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get profileEditInfo => 'Chỉnh sửa thông tin';
+  String get profileEditInfo => 'Edit information';
 
   @override
   String get profileChangeTimezone => 'Change Timezone';
@@ -3356,4 +3377,182 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profileUsernameInvalid =>
       'Username must be 3-30 characters using lowercase letters, numbers, or underscores only.';
+
+  @override
+  String get privacyProtectionSettingsTitle => 'Protection settings';
+
+  @override
+  String get privacyHideBalancesTitle => 'Hide balances';
+
+  @override
+  String get privacyHideBalancesSubtitle =>
+      'Mask monetary amounts on overview and detail screens.';
+
+  @override
+  String get privacyExploreTitle => 'Information and controls';
+
+  @override
+  String get privacyStatusProtected => 'Protected';
+
+  @override
+  String get privacyStatusReview => 'Review';
+
+  @override
+  String privacyRequestCount(int count) {
+    return '$count requests';
+  }
+
+  @override
+  String get biometricReasonDisable => 'Authenticate to disable app lock';
+
+  @override
+  String get biometricReasonDeleteAccount =>
+      'Authenticate to request account deletion';
+
+  @override
+  String get deleteAccountGraceTitle =>
+      'Your account will be deleted after 30 days';
+
+  @override
+  String get deleteAccountGraceBody =>
+      'You will be signed out immediately. During the next 30 days, sign in with the same method to restore your account before its data is permanently deleted.';
+
+  @override
+  String get deleteGuestDataTitle => 'Delete guest data';
+
+  @override
+  String get deleteGuestDataBody =>
+      'Guest data is stored only on this device and will be deleted immediately. Language, currency, and onboarding preferences will be kept.';
+
+  @override
+  String get deleteGuestDataUnderstand =>
+      'I understand that guest data on this device will be deleted immediately.';
+
+  @override
+  String get deleteGuestDataAction => 'Delete guest data';
+
+  @override
+  String get deleteAccountExportTitle => 'Keep a copy before deletion';
+
+  @override
+  String get deleteAccountExportBody =>
+      'You can export your data before requesting deletion. An export error never blocks your right to delete the account.';
+
+  @override
+  String get deleteAccountExportAction => 'Open data export';
+
+  @override
+  String get deleteAccountReasonTitle => 'Why are you leaving Moniary?';
+
+  @override
+  String get deleteAccountReasonHint => 'Choose a reason';
+
+  @override
+  String get deleteAccountDetailsLabel => 'Additional note (optional)';
+
+  @override
+  String get deleteAccountDetailsHint =>
+      'What could have made the experience better?';
+
+  @override
+  String get deleteAccountDetailsHelper =>
+      'Do not enter email, financial information, or sensitive data.';
+
+  @override
+  String get deleteAccountGraceUnderstand =>
+      'I understand the account will be unavailable and permanently deleted after 30 days unless I restore it.';
+
+  @override
+  String get deleteAccountConfirmationPhrase => 'DELETE';
+
+  @override
+  String deleteAccountConfirmationLabel(String phrase) {
+    return 'Type $phrase to confirm';
+  }
+
+  @override
+  String get deleteAccountScheduleAction => 'Request account deletion';
+
+  @override
+  String get deleteReasonDifficultToUse => 'Difficult to use';
+
+  @override
+  String get deleteReasonMissingFeatures => 'Missing features';
+
+  @override
+  String get deleteReasonTechnicalIssues => 'Technical issues';
+
+  @override
+  String get deleteReasonPrivacyConcerns => 'Privacy concerns';
+
+  @override
+  String get deleteReasonNoLongerNeeded => 'No longer needed';
+
+  @override
+  String get deleteReasonOther => 'Other';
+
+  @override
+  String get deleteAccountImpactTitle => 'Data affected';
+
+  @override
+  String deleteAccountTransactionsCount(int count) {
+    return '$count transactions';
+  }
+
+  @override
+  String deleteAccountWalletsCount(int count) {
+    return '$count wallets';
+  }
+
+  @override
+  String deleteAccountPhotosCount(int count) {
+    return '$count photos';
+  }
+
+  @override
+  String get deleteAccountImpactUnavailable =>
+      'Detailed counts are unavailable right now. You can still continue with deletion.';
+
+  @override
+  String restoreAccountPendingBody(String requestedDate, String deletionDate) {
+    return 'The deletion request was created on $requestedDate. Your data will be permanently deleted on $deletionDate.\n\nRestore the account to continue using Moniary.';
+  }
+
+  @override
+  String get commonUnknown => 'Unknown';
+
+  @override
+  String get loginEmailConfirmationSent =>
+      'Check your email to confirm the account.';
+
+  @override
+  String get loginCreateAccount => 'Create account';
+
+  @override
+  String get loginEmailTitle => 'Sign in with email';
+
+  @override
+  String get loginEmailLabel => 'Email';
+
+  @override
+  String get loginEmailRequired => 'Enter your email';
+
+  @override
+  String get loginPasswordLabel => 'Password';
+
+  @override
+  String get loginPasswordMinLength =>
+      'Password must contain at least 6 characters';
+
+  @override
+  String get loginSignUp => 'Sign up';
+
+  @override
+  String get loginSignIn => 'Sign in';
+
+  @override
+  String get loginAlreadyHaveAccount => 'Already have an account? Sign in';
+
+  @override
+  String get loginNeedAccount => 'Need an account? Sign up';
 }

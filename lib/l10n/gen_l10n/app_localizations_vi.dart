@@ -63,6 +63,14 @@ class AppLocalizationsVi extends AppLocalizations {
   String get errorGeneric => 'Đã xảy ra lỗi. Vui lòng thử lại.';
 
   @override
+  String get errorLocalAuthUnavailable =>
+      'Thiết bị này không hỗ trợ xác thực sinh trắc học hoặc mã khóa màn hình.';
+
+  @override
+  String get errorLocalAuthFailed =>
+      'Không thể xác thực thiết bị. Vui lòng thử lại.';
+
+  @override
   String get errorNotLoggedIn => 'Bạn chưa đăng nhập.';
 
   @override
@@ -279,6 +287,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get calendarStatsTab => 'Thống kê';
+
+  @override
+  String get calendarLoading => 'Đang đồng bộ lịch...';
+
+  @override
+  String get calendarEmptyTitle => 'Chưa có dữ liệu';
+
+  @override
+  String get calendarEmptyBody =>
+      'Bạn chưa có giao dịch nào trong tháng này. Hãy thêm giao dịch để bắt đầu theo dõi.';
+
+  @override
+  String get calendarErrorTitle => 'Lỗi tải dữ liệu';
 
   @override
   String get calendarMon => 'T2';
@@ -3357,4 +3378,180 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get profileUsernameInvalid =>
       'Username phải có 3-30 ký tự và chỉ gồm chữ thường, số hoặc dấu gạch dưới.';
+
+  @override
+  String get privacyProtectionSettingsTitle => 'Thiết lập bảo vệ';
+
+  @override
+  String get privacyHideBalancesTitle => 'Ẩn số dư';
+
+  @override
+  String get privacyHideBalancesSubtitle =>
+      'Che số tiền trên các màn hình tổng quan và chi tiết.';
+
+  @override
+  String get privacyExploreTitle => 'Thông tin và kiểm soát';
+
+  @override
+  String get privacyStatusProtected => 'Đang bảo vệ';
+
+  @override
+  String get privacyStatusReview => 'Cần kiểm tra';
+
+  @override
+  String privacyRequestCount(int count) {
+    return '$count yêu cầu';
+  }
+
+  @override
+  String get biometricReasonDisable => 'Xác thực để tắt khóa ứng dụng';
+
+  @override
+  String get biometricReasonDeleteAccount =>
+      'Xác thực để yêu cầu xóa tài khoản';
+
+  @override
+  String get deleteAccountGraceTitle => 'Tài khoản sẽ được xóa sau 30 ngày';
+
+  @override
+  String get deleteAccountGraceBody =>
+      'Bạn sẽ được đăng xuất ngay. Trong 30 ngày, hãy đăng nhập bằng đúng phương thức hiện tại nếu muốn khôi phục tài khoản trước khi dữ liệu bị xóa vĩnh viễn.';
+
+  @override
+  String get deleteGuestDataTitle => 'Xóa dữ liệu Guest';
+
+  @override
+  String get deleteGuestDataBody =>
+      'Dữ liệu Guest chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và trạng thái onboarding vẫn được giữ lại.';
+
+  @override
+  String get deleteGuestDataUnderstand =>
+      'Tôi hiểu dữ liệu Guest trên thiết bị sẽ bị xóa ngay.';
+
+  @override
+  String get deleteGuestDataAction => 'Xóa dữ liệu Guest';
+
+  @override
+  String get deleteAccountExportTitle => 'Giữ một bản sao trước khi xóa';
+
+  @override
+  String get deleteAccountExportBody =>
+      'Bạn có thể xuất dữ liệu trước khi gửi yêu cầu xóa. Lỗi xuất dữ liệu không ngăn bạn thực hiện quyền xóa tài khoản.';
+
+  @override
+  String get deleteAccountExportAction => 'Mở trang xuất dữ liệu';
+
+  @override
+  String get deleteAccountReasonTitle => 'Vì sao bạn rời Moniary?';
+
+  @override
+  String get deleteAccountReasonHint => 'Chọn một lý do';
+
+  @override
+  String get deleteAccountDetailsLabel => 'Ghi chú bổ sung (không bắt buộc)';
+
+  @override
+  String get deleteAccountDetailsHint =>
+      'Điều gì có thể khiến trải nghiệm tốt hơn?';
+
+  @override
+  String get deleteAccountDetailsHelper =>
+      'Không nhập email, thông tin tài chính hoặc dữ liệu nhạy cảm.';
+
+  @override
+  String get deleteAccountGraceUnderstand =>
+      'Tôi hiểu tài khoản sẽ bị khóa sử dụng và xóa vĩnh viễn sau 30 ngày nếu không khôi phục.';
+
+  @override
+  String get deleteAccountConfirmationPhrase => 'XÓA';
+
+  @override
+  String deleteAccountConfirmationLabel(String phrase) {
+    return 'Nhập $phrase để xác nhận';
+  }
+
+  @override
+  String get deleteAccountScheduleAction => 'Yêu cầu xóa tài khoản';
+
+  @override
+  String get deleteReasonDifficultToUse => 'Khó sử dụng';
+
+  @override
+  String get deleteReasonMissingFeatures => 'Thiếu tính năng';
+
+  @override
+  String get deleteReasonTechnicalIssues => 'Gặp lỗi kỹ thuật';
+
+  @override
+  String get deleteReasonPrivacyConcerns => 'Lo ngại quyền riêng tư';
+
+  @override
+  String get deleteReasonNoLongerNeeded => 'Không còn nhu cầu';
+
+  @override
+  String get deleteReasonOther => 'Khác';
+
+  @override
+  String get deleteAccountImpactTitle => 'Dữ liệu bị ảnh hưởng';
+
+  @override
+  String deleteAccountTransactionsCount(int count) {
+    return '$count giao dịch';
+  }
+
+  @override
+  String deleteAccountWalletsCount(int count) {
+    return '$count ví';
+  }
+
+  @override
+  String deleteAccountPhotosCount(int count) {
+    return '$count ảnh';
+  }
+
+  @override
+  String get deleteAccountImpactUnavailable =>
+      'Không thể tải số lượng chi tiết lúc này. Bạn vẫn có thể tiếp tục yêu cầu xóa.';
+
+  @override
+  String restoreAccountPendingBody(String requestedDate, String deletionDate) {
+    return 'Yêu cầu xóa được tạo ngày $requestedDate. Dữ liệu sẽ bị xóa vĩnh viễn ngày $deletionDate.\n\nKhôi phục tài khoản để tiếp tục sử dụng Moniary.';
+  }
+
+  @override
+  String get commonUnknown => 'Không xác định';
+
+  @override
+  String get loginEmailConfirmationSent =>
+      'Vui lòng kiểm tra email để xác nhận tài khoản.';
+
+  @override
+  String get loginCreateAccount => 'Tạo tài khoản';
+
+  @override
+  String get loginEmailTitle => 'Đăng nhập bằng email';
+
+  @override
+  String get loginEmailLabel => 'Email';
+
+  @override
+  String get loginEmailRequired => 'Vui lòng nhập email';
+
+  @override
+  String get loginPasswordLabel => 'Mật khẩu';
+
+  @override
+  String get loginPasswordMinLength => 'Mật khẩu cần ít nhất 6 ký tự';
+
+  @override
+  String get loginSignUp => 'Đăng ký';
+
+  @override
+  String get loginSignIn => 'Đăng nhập';
+
+  @override
+  String get loginAlreadyHaveAccount => 'Đã có tài khoản? Đăng nhập';
+
+  @override
+  String get loginNeedAccount => 'Chưa có tài khoản? Đăng ký';
 }

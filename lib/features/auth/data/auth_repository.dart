@@ -194,10 +194,7 @@ class AuthRepository {
   }) async {
     if (_useMockData) return;
     try {
-      await _requiredClient.auth.signUp(
-        email: email,
-        password: password,
-      );
+      await _requiredClient.auth.signUp(email: email, password: password);
     } catch (e, st) {
       AppLogger.error('Email sign-up failed', e, st);
       throw const AppException('errorGeneric', code: 'AUTH_SIGN_UP_FAILED');

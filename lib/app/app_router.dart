@@ -33,8 +33,7 @@ import '../features/settings/presentation/privacy/data_safety_screen.dart';
 import '../features/settings/presentation/privacy/data_transparency_screen.dart';
 import '../features/settings/presentation/account/active_sessions_screen.dart';
 import '../features/settings/presentation/account/delete_account_help_screen.dart';
-import '../features/settings/presentation/account/deletion_request_screen.dart';
-import '../features/settings/presentation/account/restore_account_screen.dart';
+import '../features/settings/presentation/account/delete_account_screen.dart';
 import '../features/settings/presentation/export/export_data_screen.dart';
 import '../features/settings/presentation/export/export_detail_screen.dart';
 import '../features/settings/presentation/export/export_history_screen.dart';
@@ -116,14 +115,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // Handle account soft delete status
       final accountStatus = ref.read(accountStatusControllerProvider).value;
-      if (session != null && accountStatus == true) {
-        if (location != RestoreAccountScreen.routePath) {
-          return RestoreAccountScreen.routePath;
-        }
-      } else if (session != null &&
-          accountStatus == false &&
-          location == RestoreAccountScreen.routePath) {
-        return CalendarScreen.routePath;
+      if (session != null &&
+          accountStatus?.isPending == true &&
+          location != LoginScreen.routePath) {
+        return LoginScreen.routePath;
       }
 
       if (!onboardingSeen &&
@@ -449,10 +444,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
-        path: DeletionRequestScreen.routePath,
+        path: DeleteAccountScreen.routePath,
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
-          child: const DeletionRequestScreen(),
+          child: const DeleteAccountScreen(),
         ),
       ),
       GoRoute(
@@ -461,10 +456,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           state: state,
           child: const ActiveSessionsScreen(),
         ),
-      ),
-      GoRoute(
-        path: RestoreAccountScreen.routePath,
-        builder: (context, state) => const RestoreAccountScreen(),
       ),
       GoRoute(
         path: ExportDataScreen.routePath,
@@ -619,7 +610,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   });
 
   ref.listen(accountStatusControllerProvider, (previous, next) {
-    if (previous?.value != next.value) {
+    if (previous?.value?.isPending != next.value?.isPending) {
       router.refresh();
     }
   });

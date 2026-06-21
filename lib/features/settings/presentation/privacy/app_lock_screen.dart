@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/privacy_controller.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/app_logger.dart';
+import '../../../../shared/utils/error_helpers.dart';
 
 class AppLockScreen extends ConsumerStatefulWidget {
   const AppLockScreen({super.key});
@@ -14,6 +16,7 @@ class AppLockScreen extends ConsumerStatefulWidget {
 }
 
 class _AppLockScreenState extends ConsumerState<AppLockScreen> {
+  bool _isAuthenticating = false;
   @override
   void initState() {
     super.initState();
@@ -23,9 +26,22 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
   }
 
   Future<void> _promptAuth() async {
-    await ref
-        .read(privacyControllerProvider.notifier)
-        .authenticateUser(context.l10n.biometricReasonUnlock);
+    if (_isAuthenticating) return;
+    setState(() => _isAuthenticating = true);
+    try {
+      await ref
+          .read(privacyControllerProvider.notifier)
+          .authenticateUser(context.l10n.biometricReasonUnlock);
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to unlock app', error, stackTrace);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isAuthenticating = false);
+    }
   }
 
   @override
@@ -53,9 +69,15 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
             ),
             const SizedBox(height: 32),
             FilledButton.icon(
-              onPressed: _promptAuth,
+              onPressed: _isAuthenticating ? null : _promptAuth,
               icon: const Icon(Icons.fingerprint),
-              label: Text(context.l10n.appLockUnlockButton),
+              label: _isAuthenticating
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(context.l10n.appLockUnlockButton),
               style: FilledButton.styleFrom(
                 backgroundColor: AppTheme.mint,
                 foregroundColor: Colors.black,

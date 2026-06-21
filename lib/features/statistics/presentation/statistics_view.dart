@@ -1,4 +1,4 @@
-﻿import 'package:fl_chart/fl_chart.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -247,7 +247,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   }
 
   Widget _buildImportantSpendingCard(List<TransactionEntry> transactions) {
-    final importantTransactions = transactions.where((t) => t.isImportant).toList();
+    final importantTransactions = transactions
+        .where((t) => t.isImportant)
+        .toList();
     if (importantTransactions.isEmpty) return const SizedBox.shrink();
 
     final importantIncome = importantTransactions
@@ -261,10 +263,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.amber.withValues(alpha: 0.1),
-            AppTheme.surface,
-          ],
+          colors: [Colors.amber.withValues(alpha: 0.1), AppTheme.surface],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -297,7 +296,10 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                   children: [
                     Text(
                       context.l10n.calendarIncome,
-                      style: const TextStyle(color: Colors.white54, fontSize: 12),
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 12,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     ObscurableAmountText(
@@ -319,7 +321,10 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                   children: [
                     Text(
                       context.l10n.calendarExpense,
-                      style: const TextStyle(color: Colors.white54, fontSize: 12),
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 12,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     ObscurableAmountText(

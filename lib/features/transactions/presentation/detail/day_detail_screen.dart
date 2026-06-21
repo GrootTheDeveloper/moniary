@@ -288,7 +288,7 @@ class TransactionGridTile extends StatelessWidget {
                           color: Colors.amber.withValues(alpha: 0.2),
                           blurRadius: 8,
                           spreadRadius: 1,
-                        )
+                        ),
                       ]
                     : null,
               ),
@@ -350,7 +350,8 @@ class TransactionGridTile extends StatelessWidget {
                       const SizedBox(width: 4),
                       const Icon(Icons.star, color: AppTheme.amber, size: 16)
                           .animate(
-                            onPlay: (controller) => controller.repeat(reverse: true),
+                            onPlay: (controller) =>
+                                controller.repeat(reverse: true),
                           )
                           .scale(
                             begin: const Offset(1, 1),
@@ -364,7 +365,9 @@ class TransactionGridTile extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.amber.withValues(alpha: 0.3 * value),
+                                    color: Colors.amber.withValues(
+                                      alpha: 0.3 * value,
+                                    ),
                                     blurRadius: 8 * value,
                                     spreadRadius: 2 * value,
                                   ),

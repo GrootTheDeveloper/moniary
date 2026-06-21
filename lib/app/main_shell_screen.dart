@@ -33,7 +33,8 @@ class MainShellScreen extends ConsumerWidget {
         currentTab = MoniaryTab.calendar;
     }
 
-    final showFab = currentTab == MoniaryTab.calendar || currentTab == MoniaryTab.stats;
+    final showFab =
+        currentTab == MoniaryTab.calendar || currentTab == MoniaryTab.stats;
 
     return Scaffold(
       body: navigationShell,
