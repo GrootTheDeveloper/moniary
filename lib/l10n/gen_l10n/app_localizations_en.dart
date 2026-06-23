@@ -1304,7 +1304,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get profileEditInfo => 'Chỉnh sửa thông tin';
+  String get profileEditInfo => 'Edit information';
 
   @override
   String get profileChangeTimezone => 'Change Timezone';
@@ -1602,6 +1602,107 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsTitle => 'Settings';
+
+  @override
+  String get themeAppearanceSection => 'Appearance';
+
+  @override
+  String get themeSettingsTitle => 'Custom Theme';
+
+  @override
+  String get themeSettingsSubtitle => 'Choose colors for the whole app.';
+
+  @override
+  String get themePresetSection => 'Quick presets';
+
+  @override
+  String get themeColorsSection => 'Custom colors';
+
+  @override
+  String get themePresetDefault => 'Default';
+
+  @override
+  String get themePresetEmerald => 'Emerald';
+
+  @override
+  String get themePresetRose => 'Rose';
+
+  @override
+  String get themePresetHighContrast => 'High contrast';
+
+  @override
+  String get themePresetCustom => 'Custom';
+
+  @override
+  String get themePrimaryColor => 'Primary color';
+
+  @override
+  String get themeSecondaryColor => 'Secondary color';
+
+  @override
+  String get themeBackgroundColor => 'Background color';
+
+  @override
+  String get themeSurfaceColor => 'Card/container color';
+
+  @override
+  String get themeTextPrimaryColor => 'Primary text color';
+
+  @override
+  String get themeTextSecondaryColor => 'Secondary text color';
+
+  @override
+  String get themeButtonColor => 'Button color';
+
+  @override
+  String get themeIconColor => 'Icon color';
+
+  @override
+  String get themeAppBarColor => 'AppBar color';
+
+  @override
+  String get themeNavigationBarColor => 'NavigationBar color';
+
+  @override
+  String get themePreviewTitle => 'Preview';
+
+  @override
+  String get themePreviewHeadline => 'Moniary interface';
+
+  @override
+  String get themePreviewBody =>
+      'Cards, text, buttons, icons, and navigation will use this palette.';
+
+  @override
+  String get themePreviewButton => 'Sample button';
+
+  @override
+  String get themeApplySave => 'Apply and save';
+
+  @override
+  String get themeResetDefault => 'Reset default';
+
+  @override
+  String get themeSaveHint =>
+      'Preview changes apply across the app after saving.';
+
+  @override
+  String get themeSavedMessage => 'Theme saved.';
+
+  @override
+  String get themeResetMessage => 'Default theme restored.';
+
+  @override
+  String get themeHexLabel => 'HEX color';
+
+  @override
+  String get themeRedChannel => 'R';
+
+  @override
+  String get themeGreenChannel => 'G';
+
+  @override
+  String get themeBlueChannel => 'B';
 
   @override
   String importPreviewTitle(int count) {

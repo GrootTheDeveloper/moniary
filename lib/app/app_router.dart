@@ -27,6 +27,7 @@ import '../features/scanning/presentation/scanning_screen.dart';
 import '../features/settings/domain/export/export_history_entry.dart';
 import '../features/settings/domain/privacy_requests/privacy_request_history_entry.dart';
 import '../features/settings/presentation/store/about_moniary_screen.dart';
+import '../features/settings/presentation/theme/theme_settings_screen.dart';
 import '../features/settings/presentation/legal/data_deletion_policy_screen.dart';
 import '../features/settings/presentation/legal/data_retention_policy_screen.dart';
 import '../features/settings/presentation/privacy/data_safety_screen.dart';
@@ -477,6 +478,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
           child: const NotificationSettingsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: ThemeSettingsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const ThemeSettingsScreen(),
         ),
       ),
       GoRoute(

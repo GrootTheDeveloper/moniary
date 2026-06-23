@@ -7,6 +7,7 @@ import 'package:moniary/features/friends/domain/repositories/friend_repository.d
 import 'package:moniary/features/friends/presentation/screens/add_friend_screen.dart';
 import 'package:moniary/features/friends/presentation/screens/friends_screen.dart';
 import 'package:moniary/features/groups/data/repositories/group_repository_impl.dart';
+import 'package:moniary/features/groups/domain/entities/group_enums.dart';
 import 'package:moniary/features/groups/domain/entities/group_settlement.dart';
 import 'package:moniary/features/groups/domain/entities/group_transaction.dart';
 import 'package:moniary/features/groups/domain/entities/spending_group.dart';
@@ -65,6 +66,52 @@ void main() {
 
     expect(repository.sentUsernames, ['an_nguyen']);
     expect(find.text('Đã gửi lời mời kết bạn.'), findsOneWidget);
+  });
+
+  testWidgets('AddFriendScreen chấp nhận lời mời đến từ kết quả tìm kiếm', (
+    tester,
+  ) async {
+    final repository = FakeFriendRepository(
+      incoming: [
+        FriendRequest(
+          id: 'request-1',
+          fromUserId: 'user-an',
+          toUserId: 'mock-user-id',
+          otherUserId: 'user-an',
+          status: FriendRequestStatus.pending,
+          createdAt: DateTime(2026),
+          isIncoming: true,
+          fullName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ],
+      searchResults: [
+        const FriendSearchResult(
+          profile: FriendProfile(
+            userId: 'user-an',
+            fullName: 'An Nguyen',
+            username: 'an_nguyen',
+          ),
+          relationStatus: FriendRelationStatus.incomingPending,
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      app(const AddFriendScreen(), friendRepository: repository),
+    );
+
+    await tester.enterText(find.byType(TextField), 'an');
+    await tester.tap(find.text('Tìm kiếm'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Người này đã gửi lời mời cho bạn'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Chấp nhận'));
+    await tester.pumpAndSettle();
+
+    expect(repository.acceptedRequestIds, ['request-1']);
+    expect(find.text('Đã chấp nhận lời mời kết bạn.'), findsOneWidget);
   });
 
   testWidgets('FriendsScreen hiển thị empty state khi chưa có bạn', (
@@ -143,6 +190,48 @@ void main() {
     expect(groupRepository.invitedUserIds, ['user-an']);
     expect(find.text('Đã gửi lời mời.'), findsOneWidget);
   });
+
+  testWidgets('InviteMemberScreen disable bạn đã là thành viên nhóm', (
+    tester,
+  ) async {
+    final friendRepository = FakeFriendRepository(
+      friends: const [
+        FriendProfile(
+          userId: 'user-an',
+          fullName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ],
+    );
+    final groupRepository = FakeGroupRepository(
+      members: [
+        SpendingGroupMember(
+          id: 'member-an',
+          groupId: 'group-1',
+          userId: 'user-an',
+          role: GroupRole.member,
+          status: GroupMemberStatus.active,
+          joinedAt: DateTime(2026),
+          displayName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      app(
+        const InviteMemberScreen(groupId: 'group-1'),
+        friendRepository: friendRepository,
+        groupRepository: groupRepository,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('An Nguyen'), findsOneWidget);
+    expect(find.text('Đang tham gia'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Gửi lời mời'), findsOneWidget);
+    expect(groupRepository.invitedUserIds, isEmpty);
+  });
 }
 
 class FakeFriendRepository implements FriendRepository {
@@ -214,6 +303,10 @@ class FakeFriendRepository implements FriendRepository {
 }
 
 class FakeGroupRepository implements GroupRepository {
+  FakeGroupRepository({List<SpendingGroupMember>? members})
+    : members = members ?? const [];
+
+  final List<SpendingGroupMember> members;
   final List<String> invitedUserIds = [];
 
   @override
@@ -274,8 +367,32 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
-  Future<SpendingGroupDetail> fetchGroupDetail(String groupId) {
-    throw UnimplementedError();
+  Future<SpendingGroupDetail> fetchGroupDetail(String groupId) async {
+    final now = DateTime(2026);
+    return SpendingGroupDetail(
+      group: SpendingGroup(
+        id: groupId,
+        name: 'Group',
+        createdBy: currentUserId,
+        status: GroupStatus.active,
+        createdAt: now,
+        updatedAt: now,
+      ),
+      members: [
+        SpendingGroupMember(
+          id: 'member-current',
+          groupId: groupId,
+          userId: currentUserId,
+          role: GroupRole.owner,
+          status: GroupMemberStatus.active,
+          joinedAt: now,
+          displayName: 'Mock User',
+          username: 'mock-user',
+        ),
+        ...members,
+      ],
+      currentUserRole: GroupRole.owner,
+    );
   }
 
   @override

@@ -1,5 +1,129 @@
 import 'package:flutter/material.dart';
 
+import '../features/settings/domain/theme/app_theme_settings.dart';
+
+class MoniaryColors extends ThemeExtension<MoniaryColors> {
+  const MoniaryColors({
+    required this.background,
+    required this.backgroundSoft,
+    required this.surface,
+    required this.surfaceRaised,
+    required this.outline,
+    required this.primary,
+    required this.secondary,
+    required this.button,
+    required this.icon,
+    required this.navBar,
+    required this.navInactive,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.textDim,
+    required this.success,
+    required this.danger,
+    required this.warning,
+    required this.accentPink,
+    required this.surfaceOverlay,
+  });
+
+  final Color background;
+  final Color backgroundSoft;
+  final Color surface;
+  final Color surfaceRaised;
+  final Color outline;
+  final Color primary;
+  final Color secondary;
+  final Color button;
+  final Color icon;
+  final Color navBar;
+  final Color navInactive;
+  final Color textPrimary;
+  final Color textSecondary;
+  final Color textDim;
+  final Color success;
+  final Color danger;
+  final Color warning;
+  final Color accentPink;
+  final Color surfaceOverlay;
+
+  @override
+  MoniaryColors copyWith({
+    Color? background,
+    Color? backgroundSoft,
+    Color? surface,
+    Color? surfaceRaised,
+    Color? outline,
+    Color? primary,
+    Color? secondary,
+    Color? button,
+    Color? icon,
+    Color? navBar,
+    Color? navInactive,
+    Color? textPrimary,
+    Color? textSecondary,
+    Color? textDim,
+    Color? success,
+    Color? danger,
+    Color? warning,
+    Color? accentPink,
+    Color? surfaceOverlay,
+  }) {
+    return MoniaryColors(
+      background: background ?? this.background,
+      backgroundSoft: backgroundSoft ?? this.backgroundSoft,
+      surface: surface ?? this.surface,
+      surfaceRaised: surfaceRaised ?? this.surfaceRaised,
+      outline: outline ?? this.outline,
+      primary: primary ?? this.primary,
+      secondary: secondary ?? this.secondary,
+      button: button ?? this.button,
+      icon: icon ?? this.icon,
+      navBar: navBar ?? this.navBar,
+      navInactive: navInactive ?? this.navInactive,
+      textPrimary: textPrimary ?? this.textPrimary,
+      textSecondary: textSecondary ?? this.textSecondary,
+      textDim: textDim ?? this.textDim,
+      success: success ?? this.success,
+      danger: danger ?? this.danger,
+      warning: warning ?? this.warning,
+      accentPink: accentPink ?? this.accentPink,
+      surfaceOverlay: surfaceOverlay ?? this.surfaceOverlay,
+    );
+  }
+
+  @override
+  MoniaryColors lerp(ThemeExtension<MoniaryColors>? other, double t) {
+    if (other is! MoniaryColors) {
+      return this;
+    }
+    return MoniaryColors(
+      background: Color.lerp(background, other.background, t)!,
+      backgroundSoft: Color.lerp(backgroundSoft, other.backgroundSoft, t)!,
+      surface: Color.lerp(surface, other.surface, t)!,
+      surfaceRaised: Color.lerp(surfaceRaised, other.surfaceRaised, t)!,
+      outline: Color.lerp(outline, other.outline, t)!,
+      primary: Color.lerp(primary, other.primary, t)!,
+      secondary: Color.lerp(secondary, other.secondary, t)!,
+      button: Color.lerp(button, other.button, t)!,
+      icon: Color.lerp(icon, other.icon, t)!,
+      navBar: Color.lerp(navBar, other.navBar, t)!,
+      navInactive: Color.lerp(navInactive, other.navInactive, t)!,
+      textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
+      textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,
+      textDim: Color.lerp(textDim, other.textDim, t)!,
+      success: Color.lerp(success, other.success, t)!,
+      danger: Color.lerp(danger, other.danger, t)!,
+      warning: Color.lerp(warning, other.warning, t)!,
+      accentPink: Color.lerp(accentPink, other.accentPink, t)!,
+      surfaceOverlay: Color.lerp(surfaceOverlay, other.surfaceOverlay, t)!,
+    );
+  }
+}
+
+extension MoniaryThemeExtension on BuildContext {
+  MoniaryColors get moniaryColors =>
+      Theme.of(this).extension<MoniaryColors>() ?? AppTheme.defaultColors;
+}
+
 class AppTheme {
   static const background = Color(0xFF09111B);
   static const backgroundSoft = Color(0xFF101B28);
@@ -18,101 +142,148 @@ class AppTheme {
   static const surfaceOverlay = Color(0x66000000);
   static const navInactive = Color(0xFF74889A);
 
-  static ThemeData get darkTheme {
-    const colorScheme = ColorScheme.dark(
-      primary: mint,
-      secondary: mintSoft,
-      surface: surface,
-      onSurface: Colors.white,
-      error: danger,
+  static const defaultColors = MoniaryColors(
+    background: background,
+    backgroundSoft: backgroundSoft,
+    surface: surface,
+    surfaceRaised: surfaceRaised,
+    outline: outline,
+    primary: mint,
+    secondary: mintSoft,
+    button: mint,
+    icon: Colors.white,
+    navBar: Color(0xFF0D1622),
+    navInactive: navInactive,
+    textPrimary: Colors.white,
+    textSecondary: textMuted,
+    textDim: textDim,
+    success: success,
+    danger: danger,
+    warning: amber,
+    accentPink: pink,
+    surfaceOverlay: surfaceOverlay,
+  );
+
+  static ThemeData get darkTheme => fromSettings(AppThemeSettings.defaults);
+
+  static ThemeData fromSettings(AppThemeSettings settings) {
+    final colors = _colorsFromSettings(settings);
+    final colorScheme = ColorScheme.dark(
+      primary: colors.primary,
+      secondary: colors.secondary,
+      surface: colors.surface,
+      onSurface: colors.textPrimary,
+      onSurfaceVariant: colors.textSecondary,
+      error: colors.danger,
+      outline: colors.outline,
+      outlineVariant: colors.outline,
+      primaryContainer: colors.primary.withValues(alpha: 0.16),
+      onPrimaryContainer: colors.primary,
+      secondaryContainer: colors.secondary.withValues(alpha: 0.16),
+      onSecondaryContainer: colors.secondary,
     );
 
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: background,
+      scaffoldBackgroundColor: colors.background,
       splashFactory: NoSplash.splashFactory,
-      textTheme: const TextTheme(
+      extensions: <ThemeExtension<dynamic>>[colors],
+      textTheme: TextTheme(
         headlineLarge: TextStyle(
           fontSize: 36,
           fontWeight: FontWeight.w800,
-          letterSpacing: -1.1,
           height: 1.02,
+          color: colors.textPrimary,
         ),
         headlineMedium: TextStyle(
           fontSize: 30,
           fontWeight: FontWeight.w800,
-          letterSpacing: -0.8,
           height: 1.05,
+          color: colors.textPrimary,
         ),
         titleLarge: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w700,
-          letterSpacing: -0.3,
+          color: colors.textPrimary,
         ),
-        titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        titleMedium: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: colors.textPrimary,
+        ),
+        titleSmall: TextStyle(color: colors.textPrimary),
         bodyLarge: TextStyle(
           fontSize: 15,
-          color: textMuted, // Custom onSurfaceVariant — design token
+          color: colors.textSecondary,
           height: 1.45,
         ),
         bodyMedium: TextStyle(
           fontSize: 13,
-          color: textSubtle, // Custom onSurfaceVariant — design token
+          color: colors.textSecondary,
           height: 1.4,
         ),
-        labelLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        bodySmall: TextStyle(color: colors.textDim),
+        labelLarge: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: colors.textPrimary,
+        ),
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         centerTitle: true,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
+        backgroundColor: Color(settings.appBarColor),
+        foregroundColor: colors.textPrimary,
         elevation: 0,
       ),
       cardTheme: CardThemeData(
-        color: surface,
+        color: colors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(26),
-          side: const BorderSide(color: outline),
+          side: BorderSide(color: colors.outline),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceRaised,
+        fillColor: colors.surfaceRaised,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 16,
         ),
-        hintStyle: const TextStyle(color: textDim),
-        labelStyle: const TextStyle(color: textSubtle),
+        hintStyle: TextStyle(color: colors.textDim),
+        labelStyle: TextStyle(color: colors.textSecondary),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: outline),
+          borderSide: BorderSide(color: colors.outline),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: outline),
+          borderSide: BorderSide(color: colors.outline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: mint, width: 1.2),
+          borderSide: BorderSide(color: colors.primary, width: 1.2),
         ),
       ),
-      iconTheme: const IconThemeData(color: Colors.white),
-      dividerColor: outline,
-      bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: surface,
+      iconTheme: IconThemeData(color: colors.icon),
+      dividerColor: colors.outline,
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: colors.surface,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
       ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: colors.button,
+        foregroundColor: _foregroundFor(colors.button),
+      ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: mint,
-          foregroundColor: Colors.white,
+          backgroundColor: colors.button,
+          foregroundColor: _foregroundFor(colors.button),
           minimumSize: const Size.fromHeight(58),
           textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           shape: RoundedRectangleBorder(
@@ -123,25 +294,65 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           minimumSize: const Size.fromHeight(58),
-          foregroundColor: Colors.white,
-          side: const BorderSide(color: outline),
+          foregroundColor: colors.textPrimary,
+          side: BorderSide(color: colors.outline),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
         ),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: surfaceRaised,
-        selectedColor: mint,
-        side: const BorderSide(color: outline),
-        disabledColor: surfaceRaised,
-        labelStyle: const TextStyle(
-          color: Colors.white,
+        backgroundColor: colors.surfaceRaised,
+        selectedColor: colors.primary,
+        side: BorderSide(color: colors.outline),
+        disabledColor: colors.surfaceRaised,
+        labelStyle: TextStyle(
+          color: colors.textPrimary,
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
       ),
     );
+  }
+
+  static MoniaryColors _colorsFromSettings(AppThemeSettings settings) {
+    final primary = Color(settings.primaryColor);
+    final secondary = Color(settings.secondaryColor);
+    final backgroundColor = Color(settings.backgroundColor);
+    final surfaceColor = Color(settings.surfaceColor);
+    final textPrimary = Color(settings.textPrimaryColor);
+    final textSecondary = Color(settings.textSecondaryColor);
+    final button = Color(settings.buttonColor);
+    final icon = Color(settings.iconColor);
+    final navBar = Color(settings.navigationBarColor);
+
+    return MoniaryColors(
+      background: backgroundColor,
+      backgroundSoft: Color.lerp(backgroundColor, surfaceColor, 0.45)!,
+      surface: surfaceColor,
+      surfaceRaised: Color.lerp(surfaceColor, textPrimary, 0.06)!,
+      outline: Color.lerp(surfaceColor, textSecondary, 0.22)!,
+      primary: primary,
+      secondary: secondary,
+      button: button,
+      icon: icon,
+      navBar: navBar,
+      navInactive: Color.lerp(navBar, textSecondary, 0.68)!,
+      textPrimary: textPrimary,
+      textSecondary: textSecondary,
+      textDim: Color.lerp(surfaceColor, textSecondary, 0.62)!,
+      success: success,
+      danger: danger,
+      warning: amber,
+      accentPink: pink,
+      surfaceOverlay: surfaceOverlay,
+    );
+  }
+
+  static Color _foregroundFor(Color backgroundColor) {
+    return backgroundColor.computeLuminance() > 0.45
+        ? Colors.black
+        : Colors.white;
   }
 }

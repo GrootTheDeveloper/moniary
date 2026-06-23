@@ -31,6 +31,7 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
   @override
   Widget build(BuildContext context) {
     final action = ref.watch(friendActionControllerProvider);
+    final incomingAsync = ref.watch(incomingFriendRequestsProvider);
     final searchAsync = _query.isEmpty
         ? null
         : ref.watch(friendSearchProvider(_query));
@@ -79,7 +80,14 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                         trailing: _SearchResultAction(
                           result: result,
                           isLoading: action.isLoading,
+                          incomingRequest: _incomingRequestFor(
+                            incomingAsync,
+                            result.profile.userId,
+                          ),
+                          incomingRequestsLoading: incomingAsync.isLoading,
                           onSend: () => _sendRequest(result),
+                          onAccept: _acceptIncomingRequest,
+                          onDecline: _declineIncomingRequest,
                         ),
                       ),
                       if (result != results.last) const SizedBox(height: 10),
@@ -98,6 +106,20 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
     setState(() => _query = value);
   }
 
+  FriendRequest? _incomingRequestFor(
+    AsyncValue<List<FriendRequest>> incomingAsync,
+    String userId,
+  ) {
+    final requests = incomingAsync.asData?.value;
+    if (requests == null) return null;
+    for (final request in requests) {
+      if (request.otherUserId == userId) {
+        return request;
+      }
+    }
+    return null;
+  }
+
   Future<void> _sendRequest(FriendSearchResult result) async {
     try {
       await ref
@@ -108,6 +130,42 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(context.l10n.friendRequestSent)));
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
+  }
+
+  Future<void> _acceptIncomingRequest(FriendRequest request) async {
+    try {
+      await ref
+          .read(friendActionControllerProvider.notifier)
+          .acceptRequest(request.id);
+      ref.invalidate(friendSearchProvider(_query));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.friendRequestAccepted)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
+  }
+
+  Future<void> _declineIncomingRequest(FriendRequest request) async {
+    try {
+      await ref
+          .read(friendActionControllerProvider.notifier)
+          .declineRequest(request.id);
+      ref.invalidate(friendSearchProvider(_query));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.friendRequestDeclined)),
+      );
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -134,12 +192,20 @@ class _SearchResultAction extends StatelessWidget {
   const _SearchResultAction({
     required this.result,
     required this.isLoading,
+    required this.incomingRequest,
+    required this.incomingRequestsLoading,
     required this.onSend,
+    required this.onAccept,
+    required this.onDecline,
   });
 
   final FriendSearchResult result;
   final bool isLoading;
+  final FriendRequest? incomingRequest;
+  final bool incomingRequestsLoading;
   final VoidCallback onSend;
+  final ValueChanged<FriendRequest> onAccept;
+  final ValueChanged<FriendRequest> onDecline;
 
   @override
   Widget build(BuildContext context) {
@@ -149,9 +215,38 @@ class _SearchResultAction extends StatelessWidget {
           onPressed: isLoading ? null : onSend,
           child: Text(context.l10n.friendSendRequest),
         );
+      case FriendRelationStatus.incomingPending:
+        final request = incomingRequest;
+        if (incomingRequestsLoading && request == null) {
+          return const SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          );
+        }
+        if (request == null) {
+          return const Icon(
+            Icons.check_circle_outline,
+            color: AppTheme.success,
+          );
+        }
+        return Wrap(
+          spacing: 8,
+          children: [
+            IconButton.filledTonal(
+              tooltip: context.l10n.friendDecline,
+              onPressed: isLoading ? null : () => onDecline(request),
+              icon: const Icon(Icons.close_outlined),
+            ),
+            IconButton.filled(
+              tooltip: context.l10n.friendAccept,
+              onPressed: isLoading ? null : () => onAccept(request),
+              icon: const Icon(Icons.check_outlined),
+            ),
+          ],
+        );
       case FriendRelationStatus.friends:
       case FriendRelationStatus.outgoingPending:
-      case FriendRelationStatus.incomingPending:
         return const Icon(Icons.check_circle_outline, color: AppTheme.success);
     }
   }

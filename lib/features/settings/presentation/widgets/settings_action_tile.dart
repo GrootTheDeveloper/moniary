@@ -22,7 +22,8 @@ class SettingsActionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = destructive ? AppTheme.danger : AppTheme.mint;
+    final colors = context.moniaryColors;
+    final color = destructive ? colors.danger : colors.primary;
 
     return InkWell(
       onTap: onTap,
@@ -31,9 +32,9 @@ class SettingsActionTile extends StatelessWidget {
         margin: margin,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: colors.surface,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppTheme.outline),
+          border: Border.all(color: colors.outline),
         ),
         child: Row(
           children: [
@@ -54,7 +55,7 @@ class SettingsActionTile extends StatelessWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: destructive ? AppTheme.danger : Colors.white,
+                      color: destructive ? colors.danger : colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),

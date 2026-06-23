@@ -17,6 +17,7 @@ import 'export/export_data_screen.dart';
 import 'import/import_data_screen.dart';
 import 'notifications/notification_settings_screen.dart';
 import 'privacy/privacy_center_screen.dart';
+import 'theme/theme_settings_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -370,18 +371,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       );
     });
 
+    final colors = context.moniaryColors;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.profileTitle),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
       ),
       body: DecoratedBox(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF0B1521), AppTheme.background, Color(0xFF08111B)],
+            colors: [
+              colors.backgroundSoft,
+              colors.background,
+              Color.lerp(colors.background, Colors.black, 0.12)!,
+            ],
           ),
         ),
         child: SafeArea(
@@ -505,6 +512,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             subtitle: context.l10n.profileExportSubtitle,
                             onTap: () =>
                                 context.push(ExportDataScreen.routePath),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      _SettingsGroup(
+                        title: context.l10n.themeAppearanceSection,
+                        children: [
+                          _SettingsTile(
+                            icon: Icons.palette_outlined,
+                            title: context.l10n.themeSettingsTitle,
+                            subtitle: context.l10n.themeSettingsSubtitle,
+                            onTap: () =>
+                                context.push(ThemeSettingsScreen.routePath),
                           ),
                         ],
                       ),
@@ -693,25 +713,27 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(24),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: AppTheme.surfaceRaised,
+          color: colors.surfaceRaised,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppTheme.outline),
+          border: Border.all(color: colors.outline),
         ),
         child: Row(
           children: [
             Container(
               width: 56,
               height: 56,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [AppTheme.mint, Colors.teal],
+                  colors: [colors.primary, colors.secondary],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -792,7 +814,7 @@ class _ProfileHeader extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            const Icon(Icons.chevron_right_outlined, color: AppTheme.mint),
+            Icon(Icons.chevron_right_outlined, color: colors.primary),
           ],
         ),
       ),
@@ -808,6 +830,8 @@ class _SettingsGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -817,9 +841,9 @@ class _SettingsGroup extends StatelessWidget {
         ),
         Container(
           decoration: BoxDecoration(
-            color: AppTheme.surface,
+            color: colors.surface,
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: AppTheme.outline),
+            border: Border.all(color: colors.outline),
           ),
           child: Column(children: children),
         ),
@@ -845,7 +869,8 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = destructive ? AppTheme.danger : AppTheme.mint;
+    final colors = context.moniaryColors;
+    final color = destructive ? colors.danger : colors.primary;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(22),
@@ -870,7 +895,7 @@ class _SettingsTile extends StatelessWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: destructive ? AppTheme.danger : Colors.white,
+                      color: destructive ? colors.danger : colors.textPrimary,
                     ),
                   ),
                   if (subtitle.isNotEmpty) ...[

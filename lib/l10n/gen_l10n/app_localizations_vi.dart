@@ -1603,6 +1603,107 @@ class AppLocalizationsVi extends AppLocalizations {
   String get settingsTitle => 'Cài đặt';
 
   @override
+  String get themeAppearanceSection => 'Giao diện';
+
+  @override
+  String get themeSettingsTitle => 'Tùy chỉnh giao diện';
+
+  @override
+  String get themeSettingsSubtitle => 'Chọn màu cho toàn bộ ứng dụng.';
+
+  @override
+  String get themePresetSection => 'Bộ màu nhanh';
+
+  @override
+  String get themeColorsSection => 'Màu tùy chỉnh';
+
+  @override
+  String get themePresetDefault => 'Mặc định';
+
+  @override
+  String get themePresetEmerald => 'Xanh ngọc';
+
+  @override
+  String get themePresetRose => 'Hồng';
+
+  @override
+  String get themePresetHighContrast => 'Tương phản cao';
+
+  @override
+  String get themePresetCustom => 'Tùy chỉnh';
+
+  @override
+  String get themePrimaryColor => 'Màu chính';
+
+  @override
+  String get themeSecondaryColor => 'Màu phụ';
+
+  @override
+  String get themeBackgroundColor => 'Màu nền';
+
+  @override
+  String get themeSurfaceColor => 'Màu card/container';
+
+  @override
+  String get themeTextPrimaryColor => 'Màu chữ chính';
+
+  @override
+  String get themeTextSecondaryColor => 'Màu chữ phụ';
+
+  @override
+  String get themeButtonColor => 'Màu button';
+
+  @override
+  String get themeIconColor => 'Màu icon';
+
+  @override
+  String get themeAppBarColor => 'Màu AppBar';
+
+  @override
+  String get themeNavigationBarColor => 'Màu NavigationBar';
+
+  @override
+  String get themePreviewTitle => 'Xem trước';
+
+  @override
+  String get themePreviewHeadline => 'Giao diện Moniary';
+
+  @override
+  String get themePreviewBody =>
+      'Card, chữ, nút, icon và thanh điều hướng sẽ dùng bảng màu này.';
+
+  @override
+  String get themePreviewButton => 'Nút mẫu';
+
+  @override
+  String get themeApplySave => 'Áp dụng và lưu';
+
+  @override
+  String get themeResetDefault => 'Khôi phục mặc định';
+
+  @override
+  String get themeSaveHint =>
+      'Các thay đổi trong phần xem trước chỉ áp dụng toàn app sau khi lưu.';
+
+  @override
+  String get themeSavedMessage => 'Đã lưu giao diện.';
+
+  @override
+  String get themeResetMessage => 'Đã khôi phục giao diện mặc định.';
+
+  @override
+  String get themeHexLabel => 'Mã màu HEX';
+
+  @override
+  String get themeRedChannel => 'R';
+
+  @override
+  String get themeGreenChannel => 'G';
+
+  @override
+  String get themeBlueChannel => 'B';
+
+  @override
   String importPreviewTitle(int count) {
     return 'Xem trước ($count dòng hợp lệ)';
   }

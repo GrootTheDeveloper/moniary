@@ -6,6 +6,7 @@ import '../l10n/gen_l10n/app_localizations.dart';
 import 'app_router.dart';
 import 'app_theme.dart';
 import '../features/settings/application/privacy_controller.dart';
+import '../features/settings/application/theme_settings_controller.dart';
 
 class MoniaryApp extends ConsumerStatefulWidget {
   const MoniaryApp({super.key});
@@ -38,10 +39,12 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
 
   @override
   Widget build(BuildContext context) {
+    final themeSettings = ref.watch(themeSettingsControllerProvider);
+
     return MaterialApp.router(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.fromSettings(themeSettings),
       routerConfig: ref.watch(appRouterProvider),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
