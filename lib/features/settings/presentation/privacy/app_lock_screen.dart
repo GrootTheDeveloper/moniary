@@ -52,7 +52,7 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.lock_outline, size: 80, color: AppTheme.mint),
+            const Icon(Icons.lock_outlined, size: 80, color: AppTheme.mint),
             const SizedBox(height: 24),
             Text(
               context.l10n.appLockTitle,
