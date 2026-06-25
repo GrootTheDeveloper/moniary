@@ -47,15 +47,7 @@ class SettingsGroupCard extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(23),
-            child: Column(
-              children: [
-                for (var index = 0; index < children.length; index++) ...[
-                  children[index],
-                  if (index != children.length - 1)
-                    const Divider(height: 1, indent: 72),
-                ],
-              ],
-            ),
+            child: Column(children: [for (final child in children) child]),
           ),
         ),
       ],

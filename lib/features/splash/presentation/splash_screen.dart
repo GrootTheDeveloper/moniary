@@ -55,7 +55,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         return;
       }
 
-      final decision = await ref.refresh(postAuthDecisionProvider.future);
+      final PostAuthDecision decision;
+      try {
+        decision = await ref.refresh(postAuthDecisionProvider.future);
+      } catch (e, st) {
+        AppLogger.error('Failed to resolve existing auth session', e, st);
+        await _clearBrokenSession();
+        if (!mounted) return;
+        context.go(LoginScreen.routePath);
+        return;
+      }
       if (!mounted) return;
 
       switch (decision.destination) {
@@ -73,6 +82,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       setState(() {
         _hasError = true;
       });
+    }
+  }
+
+  Future<void> _clearBrokenSession() async {
+    ref.read(mockSessionProvider.notifier).setSession(null);
+    try {
+      await ref.read(supabaseClientProvider).auth.signOut();
+    } catch (e, st) {
+      AppLogger.error('Failed to clear broken splash session', e, st);
     }
   }
 

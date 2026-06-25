@@ -51,7 +51,7 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
   Widget build(BuildContext context) {
     final action = ref.watch(accountActionsControllerProvider);
     final summary = ref.watch(dataTransparencySummaryProvider);
-    final isGuest = ref.watch(useMockDataModeProvider);
+    final isGuest = ref.watch(guestModeEnabledProvider);
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -87,81 +87,106 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
                       : context.l10n.deleteAccountGraceBody,
                 ),
                 const SizedBox(height: 16),
-                _DataImpactCard(summary: summary),
+                _DeleteStepSection(
+                  number: 1,
+                  title: context.l10n.deleteAccountImpactTitle,
+                  subtitle: context.l10n.deleteAccountSubtitle2,
+                  child: _DataImpactCard(summary: summary),
+                ),
                 const SizedBox(height: 16),
-                SettingsInfoBanner(
-                  icon: Icons.download_outlined,
+                _DeleteStepSection(
+                  number: 2,
                   title: context.l10n.deleteAccountExportTitle,
-                  body: context.l10n.deleteAccountExportBody,
-                  action: TextButton.icon(
-                    onPressed: () => context.push(ExportDataScreen.routePath),
-                    icon: const Icon(Icons.arrow_forward_outlined),
-                    label: Text(context.l10n.deleteAccountExportAction),
+                  subtitle: context.l10n.deleteAccountExportBody,
+                  child: SettingsInfoBanner(
+                    icon: Icons.download_outlined,
+                    title: context.l10n.deleteAccountExportTitle,
+                    body: context.l10n.deleteAccountExportBody,
+                    action: TextButton.icon(
+                      onPressed: () => context.push(ExportDataScreen.routePath),
+                      icon: const Icon(Icons.arrow_forward_outlined),
+                      label: Text(context.l10n.deleteAccountExportAction),
+                    ),
                   ),
                 ),
                 if (!isGuest) ...[
-                  const SizedBox(height: 22),
-                  Text(
-                    context.l10n.deleteAccountReasonTitle,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField<AccountDeletionReason>(
-                    initialValue: _reason,
-                    decoration: InputDecoration(
-                      hintText: context.l10n.deleteAccountReasonHint,
-                    ),
-                    items: AccountDeletionReason.values
-                        .map(
-                          (reason) => DropdownMenuItem(
-                            value: reason,
-                            child: Text(_reasonLabel(context, reason)),
+                  const SizedBox(height: 16),
+                  _DeleteStepSection(
+                    number: 3,
+                    title: context.l10n.deleteAccountReasonTitle,
+                    subtitle: context.l10n.deleteAccountDetailsHelper,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final reason in AccountDeletionReason.values)
+                              _ReasonChip(
+                                label: _reasonLabel(context, reason),
+                                selected: _reason == reason,
+                                enabled: !action.isLoading,
+                                onSelected: () =>
+                                    setState(() => _reason = reason),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        TextField(
+                          controller: _detailsController,
+                          enabled: !action.isLoading,
+                          minLines: 3,
+                          maxLines: 5,
+                          maxLength: 500,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.deleteAccountDetailsLabel,
+                            hintText: context.l10n.deleteAccountDetailsHint,
+                            helperText: context.l10n.deleteAccountDetailsHelper,
                           ),
-                        )
-                        .toList(),
-                    onChanged: action.isLoading
-                        ? null
-                        : (value) => setState(() => _reason = value),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _detailsController,
-                    enabled: !action.isLoading,
-                    minLines: 3,
-                    maxLines: 5,
-                    maxLength: 500,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.deleteAccountDetailsLabel,
-                      hintText: context.l10n.deleteAccountDetailsHint,
-                      helperText: context.l10n.deleteAccountDetailsHelper,
+                        ),
+                      ],
                     ),
                   ),
                 ],
-                const SizedBox(height: 18),
-                CheckboxListTile(
-                  value: _understood,
-                  contentPadding: EdgeInsets.zero,
-                  controlAffinity: ListTileControlAffinity.leading,
-                  activeColor: AppTheme.danger,
-                  title: Text(
-                    isGuest
-                        ? context.l10n.deleteGuestDataUnderstand
-                        : context.l10n.deleteAccountGraceUnderstand,
-                  ),
-                  onChanged: action.isLoading
-                      ? null
-                      : (value) => setState(() => _understood = value ?? false),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _confirmationController,
-                  enabled: !action.isLoading,
-                  textCapitalization: TextCapitalization.characters,
-                  onChanged: (_) => setState(() {}),
-                  decoration: InputDecoration(
-                    labelText: context.l10n.deleteAccountConfirmationLabel(
-                      context.l10n.deleteAccountConfirmationPhrase,
-                    ),
+                const SizedBox(height: 16),
+                _DeleteStepSection(
+                  number: isGuest ? 3 : 4,
+                  title: context.l10n.deleteAccountConfirm,
+                  subtitle: isGuest
+                      ? context.l10n.deleteGuestDataUnderstand
+                      : context.l10n.deleteAccountGraceUnderstand,
+                  child: Column(
+                    children: [
+                      CheckboxListTile(
+                        value: _understood,
+                        contentPadding: EdgeInsets.zero,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        activeColor: AppTheme.danger,
+                        title: Text(
+                          isGuest
+                              ? context.l10n.deleteGuestDataUnderstand
+                              : context.l10n.deleteAccountGraceUnderstand,
+                        ),
+                        onChanged: action.isLoading
+                            ? null
+                            : (value) =>
+                                  setState(() => _understood = value ?? false),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: _confirmationController,
+                        enabled: !action.isLoading,
+                        textCapitalization: TextCapitalization.characters,
+                        onChanged: (_) => setState(() {}),
+                        decoration: InputDecoration(
+                          labelText: context.l10n
+                              .deleteAccountConfirmationLabel(
+                                context.l10n.deleteAccountConfirmationPhrase,
+                              ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -257,6 +282,112 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
         context.l10n.deleteReasonNoLongerNeeded,
       AccountDeletionReason.other => context.l10n.deleteReasonOther,
     };
+  }
+}
+
+class _DeleteStepSection extends StatelessWidget {
+  const _DeleteStepSection({
+    required this.number,
+    required this.title,
+    required this.subtitle,
+    required this.child,
+  });
+
+  final int number;
+  final String title;
+  final String subtitle;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: AppTheme.danger.withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    '$number',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: AppTheme.danger,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _ReasonChip extends StatelessWidget {
+  const _ReasonChip({
+    required this.label,
+    required this.selected,
+    required this.enabled,
+    required this.onSelected,
+  });
+
+  final String label;
+  final bool selected;
+  final bool enabled;
+  final VoidCallback onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? AppTheme.danger : AppTheme.textSubtle;
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: enabled ? (_) => onSelected() : null,
+      selectedColor: AppTheme.danger.withValues(alpha: 0.16),
+      backgroundColor: AppTheme.surfaceRaised,
+      disabledColor: AppTheme.surfaceRaised.withValues(alpha: 0.55),
+      side: BorderSide(
+        color: selected
+            ? AppTheme.danger.withValues(alpha: 0.5)
+            : AppTheme.outline,
+      ),
+      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        color: color,
+        fontWeight: FontWeight.w700,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+    );
   }
 }
 

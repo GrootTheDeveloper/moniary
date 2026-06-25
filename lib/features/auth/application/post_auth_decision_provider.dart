@@ -21,6 +21,15 @@ final postAuthDecisionProvider = FutureProvider.autoDispose<PostAuthDecision>((
     return const PostAuthDecision(PostAuthDestination.noSession);
   }
 
+  // OAuth callbacks can restore a Supabase session before the app has created
+  // the user's profile/default data. Load the profile first because
+  // ProfileRepository can safely initialize a missing profile; then account
+  // deletion status can read from `profiles` without turning a first-time
+  // Google sign-in into a splash "Cannot connect" state.
+  final profile = await ref
+      .read(profileRepositoryProvider)
+      .fetchCurrentProfile();
+
   final deletionStatus = await ref.refresh(
     accountStatusControllerProvider.future,
   );
@@ -31,9 +40,6 @@ final postAuthDecisionProvider = FutureProvider.autoDispose<PostAuthDecision>((
     );
   }
 
-  final profile = await ref
-      .read(profileRepositoryProvider)
-      .fetchCurrentProfile();
   return PostAuthDecision(
     profile == null || profile.needsSetup
         ? PostAuthDestination.profileSetup

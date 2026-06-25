@@ -892,6 +892,56 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileImportSubtitle => 'Nhập từ file CSV';
 
   @override
+  String get profileMoniarySetup => 'Thiết lập Moniary';
+
+  @override
+  String get profileGeneralSection => 'Chung';
+
+  @override
+  String get profileSupportSection => 'Hỗ trợ';
+
+  @override
+  String get profilePrivacySafetySection => 'Quyền riêng tư & an toàn';
+
+  @override
+  String get profileDangerZoneSection => 'Vùng nguy hiểm';
+
+  @override
+  String get profileHowMoniaryWorksTitle => 'Cách Moniary hoạt động';
+
+  @override
+  String get profileHowMoniaryWorksSubtitle =>
+      'Hướng dẫn nhanh để ghi nhận và xem lại tài chính cá nhân.';
+
+  @override
+  String get profileSetupGuideWalletTitle => 'Thiết lập ví';
+
+  @override
+  String get profileSetupGuideWalletBody =>
+      'Tạo hoặc kiểm tra ví để mỗi giao dịch có nguồn tiền rõ ràng.';
+
+  @override
+  String get profileSetupGuideTransactionTitle => 'Thêm giao dịch';
+
+  @override
+  String get profileSetupGuideTransactionBody =>
+      'Chụp chi tiêu bằng ảnh hoặc nhập giao dịch thủ công.';
+
+  @override
+  String get profileSetupGuideReviewTitle => 'Xem Calendar và Statistics';
+
+  @override
+  String get profileSetupGuideReviewBody =>
+      'Dùng Calendar và Statistics để hiểu chi tiêu theo ngày và tháng.';
+
+  @override
+  String get profileSetupGuideExportTitle => 'Xuất và bảo vệ dữ liệu';
+
+  @override
+  String get profileSetupGuideExportBody =>
+      'Xuất dữ liệu và kiểm tra quyền riêng tư khi cần.';
+
+  @override
   String get profilePrivacyCenter => 'Bảo mật & quyền riêng tư';
 
   @override

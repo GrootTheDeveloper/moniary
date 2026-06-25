@@ -174,13 +174,21 @@ class AuthRepository {
     }
   }
 
-  Future<void> signUpWithEmail({
+  Future<Session?> signUpWithEmail({
     required String email,
     required String password,
   }) async {
-    if (_useMockData) return;
+    if (_useMockData) return _mockSession();
     try {
-      await _requiredClient.auth.signUp(email: email, password: password);
+      final response = await _requiredClient.auth.signUp(
+        email: email,
+        password: password,
+        emailRedirectTo: kIsWeb ? null : 'io.supabase.moniary://login-callback',
+      );
+      if (response.session != null) {
+        await _initializeUserIfPossible();
+      }
+      return response.session;
     } catch (e, st) {
       AppLogger.error('Email sign-up failed', e, st);
       throw const AppException('errorGeneric', code: 'AUTH_SIGN_UP_FAILED');

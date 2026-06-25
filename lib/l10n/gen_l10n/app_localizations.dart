@@ -1730,6 +1730,96 @@ abstract class AppLocalizations {
   /// **'Nhập từ file CSV'**
   String get profileImportSubtitle;
 
+  /// No description provided for @profileMoniarySetup.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết lập Moniary'**
+  String get profileMoniarySetup;
+
+  /// No description provided for @profileGeneralSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chung'**
+  String get profileGeneralSection;
+
+  /// No description provided for @profileSupportSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hỗ trợ'**
+  String get profileSupportSection;
+
+  /// No description provided for @profilePrivacySafetySection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền riêng tư & an toàn'**
+  String get profilePrivacySafetySection;
+
+  /// No description provided for @profileDangerZoneSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vùng nguy hiểm'**
+  String get profileDangerZoneSection;
+
+  /// No description provided for @profileHowMoniaryWorksTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cách Moniary hoạt động'**
+  String get profileHowMoniaryWorksTitle;
+
+  /// No description provided for @profileHowMoniaryWorksSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hướng dẫn nhanh để ghi nhận và xem lại tài chính cá nhân.'**
+  String get profileHowMoniaryWorksSubtitle;
+
+  /// No description provided for @profileSetupGuideWalletTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết lập ví'**
+  String get profileSetupGuideWalletTitle;
+
+  /// No description provided for @profileSetupGuideWalletBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo hoặc kiểm tra ví để mỗi giao dịch có nguồn tiền rõ ràng.'**
+  String get profileSetupGuideWalletBody;
+
+  /// No description provided for @profileSetupGuideTransactionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm giao dịch'**
+  String get profileSetupGuideTransactionTitle;
+
+  /// No description provided for @profileSetupGuideTransactionBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chụp chi tiêu bằng ảnh hoặc nhập giao dịch thủ công.'**
+  String get profileSetupGuideTransactionBody;
+
+  /// No description provided for @profileSetupGuideReviewTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem Calendar và Statistics'**
+  String get profileSetupGuideReviewTitle;
+
+  /// No description provided for @profileSetupGuideReviewBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng Calendar và Statistics để hiểu chi tiêu theo ngày và tháng.'**
+  String get profileSetupGuideReviewBody;
+
+  /// No description provided for @profileSetupGuideExportTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất và bảo vệ dữ liệu'**
+  String get profileSetupGuideExportTitle;
+
+  /// No description provided for @profileSetupGuideExportBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất dữ liệu và kiểm tra quyền riêng tư khi cần.'**
+  String get profileSetupGuideExportBody;
+
   /// No description provided for @profilePrivacyCenter.
   ///
   /// In vi, this message translates to:
