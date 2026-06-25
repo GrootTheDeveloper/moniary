@@ -76,6 +76,17 @@ class TransactionRepository {
     ),
   ];
 
+  Future<void> clearMockUserData() async {
+    if (!_useMockData) return;
+    for (final transaction in List<TransactionEntry>.from(_mockTransactions)) {
+      final imagePath = transaction.imagePath;
+      if (imagePath == null || imagePath.startsWith('http')) continue;
+      final image = File(imagePath);
+      if (await image.exists()) await image.delete();
+    }
+    _mockTransactions.clear();
+  }
+
   String get _userId {
     if (_useMockData) {
       return 'mock-user-id';
@@ -94,7 +105,8 @@ class TransactionRepository {
   }) async {
     if (_useMockData) {
       final results = _mockTransactions.where((t) {
-        final sameMonth = t.transactionDate.year == month.year &&
+        final sameMonth =
+            t.transactionDate.year == month.year &&
             t.transactionDate.month == month.month;
         final matchWallet = walletId == null || t.walletId == walletId;
         final matchCat = categoryId == null || t.categoryId == categoryId;
@@ -145,9 +157,7 @@ class TransactionRepository {
 
   Future<List<TransactionEntry>> fetchStarredTransactions() async {
     if (_useMockData) {
-      return _mockTransactions
-          .where((t) => t.isImportant)
-          .toList()
+      return _mockTransactions.where((t) => t.isImportant).toList()
         ..sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
     }
     try {
@@ -204,20 +214,19 @@ class TransactionRepository {
   }) async {
     if (_useMockData) {
       return _mockTransactions.where((t) {
-          final sameDay =
-              t.transactionDate.year == day.year &&
-              t.transactionDate.month == day.month &&
-              t.transactionDate.day == day.day;
-          final matchWallet = walletId == null || t.walletId == walletId;
-          final matchCat = categoryId == null || t.categoryId == categoryId;
-          return sameDay && matchWallet && matchCat;
-        }).toList()
-        ..sort((a, b) {
-          if (a.isImportant != b.isImportant) {
-            return b.isImportant ? 1 : -1;
-          }
-          return b.transactionDate.compareTo(a.transactionDate);
-        });
+        final sameDay =
+            t.transactionDate.year == day.year &&
+            t.transactionDate.month == day.month &&
+            t.transactionDate.day == day.day;
+        final matchWallet = walletId == null || t.walletId == walletId;
+        final matchCat = categoryId == null || t.categoryId == categoryId;
+        return sameDay && matchWallet && matchCat;
+      }).toList()..sort((a, b) {
+        if (a.isImportant != b.isImportant) {
+          return b.isImportant ? 1 : -1;
+        }
+        return b.transactionDate.compareTo(a.transactionDate);
+      });
     }
     try {
       final uid = _userId;

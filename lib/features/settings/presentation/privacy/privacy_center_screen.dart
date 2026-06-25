@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/app_logger.dart';
+import '../../../../shared/utils/error_helpers.dart';
+import '../../application/account/account_actions_controller.dart';
 import '../../application/privacy_controller.dart';
 import '../legal/data_deletion_policy_screen.dart';
 import '../legal/policy_changelog_screen.dart';
@@ -11,6 +14,8 @@ import '../store/about_moniary_screen.dart';
 import '../support/help_center_screen.dart';
 import '../widgets/settings_action_tile.dart';
 import '../widgets/settings_switch_tile.dart';
+import '../widgets/settings_group_card.dart';
+import '../widgets/settings_status_chip.dart';
 import 'data_safety_screen.dart';
 import 'permission_rationale_screen.dart';
 import 'privacy_contact_screen.dart';
@@ -50,6 +55,7 @@ class PrivacyCenterScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final privacyState = ref.watch(privacyControllerProvider);
+    final requestHistory = ref.watch(privacyRequestHistoryProvider);
     final links = _linksFor(context);
 
     return Scaffold(
@@ -59,32 +65,101 @@ class PrivacyCenterScreen extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: [
             if (group == PrivacyCenterGroup.dataSafety) ...[
-              SettingsSwitchTile(
-                icon: Icons.fingerprint,
-                title: context.l10n.privacyCenterAppLockTitle,
-                subtitle: context.l10n.privacyCenterAppLockSubtitle,
-                value: privacyState.isAppLocked,
-                onChanged: (val) => ref
-                    .read(privacyControllerProvider.notifier)
-                    .toggleAppLock(
-                      val,
-                      reason: context.l10n.biometricReasonEnable,
-                    ),
+              SettingsGroupCard(
+                title: context.l10n.privacyProtectionSettingsTitle,
+                children: [
+                  SettingsSwitchTile(
+                    grouped: true,
+                    icon: Icons.fingerprint,
+                    title: context.l10n.privacyCenterAppLockTitle,
+                    subtitle: context.l10n.privacyCenterAppLockSubtitle,
+                    value: privacyState.isAppLocked,
+                    onChanged: (value) => _toggleAppLock(context, ref, value),
+                  ),
+                  SettingsSwitchTile(
+                    grouped: true,
+                    icon: Icons.visibility_off_outlined,
+                    title: context.l10n.privacyHideBalancesTitle,
+                    subtitle: context.l10n.privacyHideBalancesSubtitle,
+                    value: privacyState.isBalancesHidden,
+                    onChanged: (value) => _toggleBalances(context, ref, value),
+                  ),
+                ],
               ),
+              const SizedBox(height: 20),
             ],
-            for (final link in links) ...[
-              const SizedBox(height: 12),
-              SettingsActionTile(
-                icon: link.icon,
-                title: link.title,
-                subtitle: link.subtitle,
-                onTap: () => context.push(link.routePath),
-              ),
-            ],
+            SettingsGroupCard(
+              title: context.l10n.privacyExploreTitle,
+              children: [
+                for (final link in links)
+                  SettingsActionTile(
+                    grouped: true,
+                    icon: link.icon,
+                    title: link.title,
+                    subtitle: link.subtitle,
+                    status: link.routePath == PrivacyContactScreen.routePath
+                        ? requestHistory.whenOrNull(
+                            data: (items) => SettingsStatusChip(
+                              label: context.l10n.privacyRequestCount(
+                                items.length,
+                              ),
+                              tone: items.isEmpty
+                                  ? SettingsStatusTone.neutral
+                                  : SettingsStatusTone.info,
+                            ),
+                          )
+                        : null,
+                    onTap: () => context.push(link.routePath),
+                  ),
+              ],
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _toggleAppLock(
+    BuildContext context,
+    WidgetRef ref,
+    bool value,
+  ) async {
+    try {
+      await ref
+          .read(privacyControllerProvider.notifier)
+          .toggleAppLock(
+            value,
+            reason: value
+                ? context.l10n.biometricReasonEnable
+                : context.l10n.biometricReasonDisable,
+          );
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to update app lock', error, stackTrace);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
+        );
+      }
+    }
+  }
+
+  Future<void> _toggleBalances(
+    BuildContext context,
+    WidgetRef ref,
+    bool value,
+  ) async {
+    try {
+      await ref
+          .read(privacyControllerProvider.notifier)
+          .toggleHideBalances(value);
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to update balance visibility', error, stackTrace);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
+        );
+      }
+    }
   }
 
   List<_PrivacyLink> _linksFor(BuildContext context) {

@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/repositories/privacy_repository.dart';
 import 'package:local_auth/local_auth.dart';
-import '../../../../shared/utils/app_logger.dart';
+import '../../../core/supabase/app_exception.dart';
+import '../../../shared/utils/app_logger.dart';
 
 class PrivacyState {
   final bool isAppLocked;
@@ -46,15 +47,15 @@ class PrivacyController extends Notifier<PrivacyState> {
     );
   }
 
-  Future<void> toggleAppLock(bool value, {required String reason}) async {
-    // If trying to turn on lock, verify identity first
-    if (value) {
-      final success = await authenticateUser(reason);
-      if (!success) return;
-    }
+  Future<bool> toggleAppLock(bool value, {required String reason}) async {
+    if (value == state.isAppLocked) return true;
+
+    final success = await authenticateUser(reason);
+    if (!success) return false;
 
     await ref.read(privacyRepositoryProvider).setIsAppLocked(value);
     state = state.copyWith(isAppLocked: value, isAuthenticated: true);
+    return true;
   }
 
   Future<void> toggleHideBalances(bool value) async {
@@ -62,8 +63,11 @@ class PrivacyController extends Notifier<PrivacyState> {
     state = state.copyWith(isBalancesHidden: value);
   }
 
-  /// Triggers Face ID / Touch ID or fallback to PIN
-  Future<bool> authenticateUser(String reason) async {
+  /// Triggers Face ID / Touch ID or the device credential configured by the OS.
+  Future<bool> authenticateUser(
+    String reason, {
+    bool allowUnavailable = false,
+  }) async {
     try {
       final auth = ref.read(localAuthProvider);
       final bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
@@ -71,10 +75,12 @@ class PrivacyController extends Notifier<PrivacyState> {
           canAuthenticateWithBiometrics || await auth.isDeviceSupported();
 
       if (!canAuthenticate) {
-        // If device has no biometrics/PIN setup, we bypass or fail depending on security policy.
-        // For now, we return true if unsupported to not brick the app, but log it.
         AppLogger.warning('Device does not support local auth');
-        return true;
+        if (allowUnavailable) return true;
+        throw const AppException(
+          'Device authentication is unavailable',
+          code: 'LOCAL_AUTH_UNAVAILABLE',
+        );
       }
 
       final didAuthenticate = await auth.authenticate(localizedReason: reason);
@@ -83,9 +89,14 @@ class PrivacyController extends Notifier<PrivacyState> {
         state = state.copyWith(isAuthenticated: true);
       }
       return didAuthenticate;
+    } on AppException {
+      rethrow;
     } catch (e, st) {
       AppLogger.error('Biometric Auth Error', e, st);
-      return false;
+      throw const AppException(
+        'Device authentication failed',
+        code: 'LOCAL_AUTH_FAILED',
+      );
     }
   }
 

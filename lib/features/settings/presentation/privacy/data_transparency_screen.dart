@@ -7,13 +7,12 @@ import 'package:intl/intl.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/error_helpers.dart';
-import '../../../auth/presentation/login_screen.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../../domain/transparency/data_transparency_summary.dart';
 import '../export/export_data_screen.dart';
 import '../export/export_history_screen.dart';
 import 'privacy_contact_screen.dart';
-import '../widgets/delete_account_dialog.dart';
+import '../account/delete_account_screen.dart';
 
 class DataTransparencyScreen extends ConsumerWidget {
   const DataTransparencyScreen({super.key});
@@ -51,7 +50,7 @@ class DataTransparencyScreen extends ConsumerWidget {
                 isBusy: actionState.isLoading,
                 onDeleteAccount: actionState.isLoading
                     ? null
-                    : () => _confirmDelete(context, ref),
+                    : () => context.push(DeleteAccountScreen.routePath),
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stackTrace) {
@@ -74,22 +73,6 @@ class DataTransparencyScreen extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => const DeleteAccountDialog(),
-    );
-
-    if (confirmed != true) {
-      return;
-    }
-
-    await ref.read(accountActionsControllerProvider.notifier).deleteAccount();
-    if (context.mounted) {
-      context.go(LoginScreen.routePath);
-    }
   }
 }
 

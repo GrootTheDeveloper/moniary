@@ -60,15 +60,18 @@ class StarredTransactionsScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               final tx = transactions[index];
               return TransactionGridTile(
-                transaction: tx,
-                onTap: () => context.push(
-                  TransactionDetailScreen.routePath,
-                  extra: TransactionDetailRouteArgs(
                     transaction: tx,
-                    day: tx.transactionDate,
-                  ),
-                ),
-              ).animate(delay: (30 * index).ms).fade().slideY(
+                    onTap: () => context.push(
+                      TransactionDetailScreen.routePath,
+                      extra: TransactionDetailRouteArgs(
+                        transaction: tx,
+                        day: tx.transactionDate,
+                      ),
+                    ),
+                  )
+                  .animate(delay: (30 * index).ms)
+                  .fade()
+                  .slideY(
                     begin: 0.1,
                     end: 0,
                     curve: Curves.easeOutQuad,
@@ -80,9 +83,8 @@ class StarredTransactionsScreen extends ConsumerWidget {
         loading: () => const Center(
           child: CircularProgressIndicator(color: AppTheme.mint),
         ),
-        error: (error, stack) => Center(
-          child: Text(userFriendlyMessage(context, error)),
-        ),
+        error: (error, stack) =>
+            Center(child: Text(userFriendlyMessage(context, error))),
       ),
     );
   }

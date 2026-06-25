@@ -7,6 +7,7 @@ import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../shared/widgets/supabase_image.dart';
+import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../application/queries/transaction_queries.dart';
 import '../../data/repositories/transaction_repository.dart';
@@ -291,8 +292,9 @@ class _TransactionDetailBody extends ConsumerWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
+                            ObscurableAmountText(
+                              amountText: formatVnd(transaction.amount),
+                              prefixText: transaction.isIncome ? '+' : '-',
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
@@ -300,7 +302,6 @@ class _TransactionDetailBody extends ConsumerWidget {
                                     ? AppTheme.success
                                     : Colors.white,
                               ),
-                              textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 8),
                             if (transaction.note?.trim().isNotEmpty == true)

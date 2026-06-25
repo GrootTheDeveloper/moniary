@@ -4,6 +4,10 @@ class AppConstants {
   const AppConstants._();
 
   static const appName = 'Moniary';
+  static const appVersion = String.fromEnvironment(
+    'APP_VERSION',
+    defaultValue: '1.0.0+1',
+  );
   static const defaultTimezone = 'Asia/Ho_Chi_Minh';
   static const defaultLocale = 'vi_VN';
 

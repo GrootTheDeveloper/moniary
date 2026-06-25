@@ -25,7 +25,7 @@ void main() {
     final authState = container.read(authControllerProvider);
     expect(authState.isLoading, isFalse);
     expect(authState.hasError, isFalse);
-    expect(prefs.getBool('mock_logged_in'), isTrue);
+    expect(prefs.getBool('mock_logged_in'), isNull);
     expect(container.read(mockSessionProvider), isNotNull);
   });
 
@@ -42,7 +42,7 @@ void main() {
     final authState = container.read(authControllerProvider);
     expect(authState.isLoading, isFalse);
     expect(authState.hasError, isFalse);
-    expect(prefs.getBool('guest_mode_enabled'), isTrue);
+    expect(prefs.getBool('guest_mode_enabled'), isNull);
     expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
   });
 }

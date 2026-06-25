@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/widgets/supabase_image.dart';
@@ -13,11 +14,15 @@ import '../../friends/presentation/screens/friends_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../application/account/account_actions_controller.dart';
+import '../application/privacy_controller.dart';
 import 'export/export_data_screen.dart';
 import 'import/import_data_screen.dart';
 import 'notifications/notification_settings_screen.dart';
 import 'privacy/privacy_center_screen.dart';
-import 'widgets/delete_account_dialog.dart';
+import 'account/delete_account_screen.dart';
+import 'widgets/settings_action_tile.dart';
+import 'widgets/settings_group_card.dart';
+import 'widgets/settings_status_chip.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -359,6 +364,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final profileAsync = ref.watch(currentProfileProvider);
     final state = ref.watch(accountActionsControllerProvider);
+    final privacyState = ref.watch(privacyControllerProvider);
+    final requestHistory = ref.watch(privacyRequestHistoryProvider);
+    final isGuest = ref.watch(useMockDataModeProvider);
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -496,9 +504,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             icon: Icons.star_outline,
                             title: context.l10n.starredTransactionsTitle,
                             subtitle: '',
-                            onTap: () => context.push(
-                              '/starred-transactions',
-                            ),
+                            onTap: () => context.push('/starred-transactions'),
                           ),
                           _SettingsTile(
                             icon: Icons.file_download_outlined,
@@ -551,12 +557,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           _SettingsTile(
                             icon: Icons.delete_forever_outlined,
-                            title: context.l10n.profileDeleteAccount,
-                            subtitle: context.l10n.profileDeleteSubtitle,
+                            title: isGuest
+                                ? context.l10n.deleteGuestDataTitle
+                                : context.l10n.profileDeleteAccount,
+                            subtitle: isGuest
+                                ? context.l10n.deleteGuestDataBody
+                                : context.l10n.profileDeleteSubtitle,
                             destructive: true,
                             onTap: state.isLoading
                                 ? null
-                                : () => _confirmDelete(context),
+                                : () => context.push(
+                                    DeleteAccountScreen.routePath,
+                                  ),
                           ),
                         ],
                       ),
@@ -580,6 +592,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             title: context.l10n.privacyGroupDataSafetyTitle,
                             subtitle:
                                 context.l10n.privacyGroupDataSafetySubtitle,
+                            status: SettingsStatusChip(
+                              label: privacyState.isAppLocked
+                                  ? context.l10n.privacyStatusProtected
+                                  : context.l10n.privacyStatusReview,
+                              tone: privacyState.isAppLocked
+                                  ? SettingsStatusTone.success
+                                  : SettingsStatusTone.warning,
+                            ),
                             onTap: () => context.push(
                               PrivacyCenterScreen.location(
                                 PrivacyCenterGroup.dataSafety,
@@ -591,6 +611,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             title: context.l10n.privacyGroupHelpRequestsTitle,
                             subtitle:
                                 context.l10n.privacyGroupHelpRequestsSubtitle,
+                            status: requestHistory.whenOrNull(
+                              data: (items) => SettingsStatusChip(
+                                label: context.l10n.privacyRequestCount(
+                                  items.length,
+                                ),
+                                tone: items.isEmpty
+                                    ? SettingsStatusTone.neutral
+                                    : SettingsStatusTone.info,
+                              ),
+                            ),
                             onTap: () => context.push(
                               PrivacyCenterScreen.location(
                                 PrivacyCenterGroup.helpRequests,
@@ -662,22 +692,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (context.mounted) {
         context.go(LoginScreen.routePath);
       }
-    }
-  }
-
-  Future<void> _confirmDelete(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => const DeleteAccountDialog(),
-    );
-
-    if (confirmed != true) {
-      return;
-    }
-
-    await ref.read(accountActionsControllerProvider.notifier).deleteAccount();
-    if (context.mounted) {
-      context.go(LoginScreen.routePath);
     }
   }
 }
@@ -816,23 +830,7 @@ class _SettingsGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 10),
-          child: Text(title, style: Theme.of(context).textTheme.titleMedium),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: AppTheme.surface,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: AppTheme.outline),
-          ),
-          child: Column(children: children),
-        ),
-      ],
-    );
+    return SettingsGroupCard(title: title, children: children);
   }
 }
 
@@ -843,6 +841,7 @@ class _SettingsTile extends StatelessWidget {
     required this.subtitle,
     required this.onTap,
     this.destructive = false,
+    this.status,
   });
 
   final IconData icon;
@@ -850,52 +849,18 @@ class _SettingsTile extends StatelessWidget {
   final String subtitle;
   final VoidCallback? onTap;
   final bool destructive;
+  final Widget? status;
 
   @override
   Widget build(BuildContext context) {
-    final color = destructive ? AppTheme.danger : AppTheme.mint;
-    return InkWell(
+    return SettingsActionTile(
+      grouped: true,
       onTap: onTap,
-      borderRadius: BorderRadius.circular(22),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.14),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: destructive ? AppTheme.danger : Colors.white,
-                    ),
-                  ),
-                  if (subtitle.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            Icon(Icons.chevron_right_outlined, color: color),
-          ],
-        ),
-      ),
+      icon: icon,
+      title: title,
+      subtitle: subtitle,
+      destructive: destructive,
+      status: status,
     );
   }
 }

@@ -12,9 +12,9 @@ import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../auth/presentation/login_screen.dart';
+import '../../auth/application/post_auth_decision_provider.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../onboarding/presentation/onboarding_screen.dart';
-import '../../profile/data/profile_repository.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -55,16 +55,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         return;
       }
 
-      final profile = await ref
-          .read(profileRepositoryProvider)
-          .fetchCurrentProfile();
+      final decision = await ref.refresh(postAuthDecisionProvider.future);
       if (!mounted) return;
 
-      context.go(
-        profile == null || profile.needsSetup
-            ? ProfileSetupScreen.routePath
-            : CalendarScreen.routePath,
-      );
+      switch (decision.destination) {
+        case PostAuthDestination.profileSetup:
+          context.go(ProfileSetupScreen.routePath);
+        case PostAuthDestination.home:
+          context.go(CalendarScreen.routePath);
+        case PostAuthDestination.pendingDeletion:
+        case PostAuthDestination.noSession:
+          context.go(LoginScreen.routePath);
+      }
     } catch (e, st) {
       AppLogger.error('Failed to bootstrap splash flow', e, st);
       if (!mounted) return;

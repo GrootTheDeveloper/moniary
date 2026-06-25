@@ -19,6 +19,8 @@ import '../../domain/export/export_filters.dart';
 import '../../domain/export/export_file_text.dart';
 import '../../domain/export/export_history_entry.dart';
 import '../../domain/account/active_session.dart';
+import '../../domain/account/account_deletion_status.dart';
+import '../../domain/account/deletion_feedback.dart';
 import '../../domain/transparency/data_transparency_summary.dart';
 import '../../domain/privacy_requests/privacy_request_history_entry.dart';
 import '../export/pdf_report.dart';
@@ -358,32 +360,54 @@ class AccountRepository {
     );
   }
 
-  Future<void> deleteAccount() async {
+  Future<DateTime> requestSoftDelete({
+    required AccountDeletionReason reason,
+    String? details,
+    required DeletionFeedbackContext feedbackContext,
+  }) async {
     if (_useMockData) {
-      await _client.auth.signOut();
-      return;
+      throw const AppException(
+        'Cloud account deletion is unavailable in guest mode',
+        code: 'GUEST_ACCOUNT_DELETE_UNAVAILABLE',
+      );
     }
     final session = _client.auth.currentSession;
     if (session == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
     }
 
-    await _client.functions.invoke('delete-account');
-    await _client.auth.signOut();
-  }
-
-  Future<void> requestSoftDelete() async {
-    if (_useMockData) {
-      await _client.auth.signOut();
-      return;
-    }
-    final session = _client.auth.currentSession;
-    if (session == null) {
-      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
+    final normalizedDetails = details?.trim();
+    if (normalizedDetails != null && normalizedDetails.length > 500) {
+      throw const AppException(
+        'Deletion feedback is too long',
+        code: 'DELETION_DETAILS_TOO_LONG',
+      );
     }
 
-    await _client.functions.invoke('soft-delete-account');
+    final response = await _client.functions.invoke(
+      'soft-delete-account',
+      body: {
+        'reasonCode': reason.id,
+        if (normalizedDetails?.isNotEmpty == true) 'details': normalizedDetails,
+        ...feedbackContext.toMap(),
+      },
+    );
+    final data = response.data;
+    if (data is! Map<String, dynamic>) {
+      throw const AppException(
+        'Invalid account deletion response',
+        code: 'ACCOUNT_DELETE_INVALID_RESPONSE',
+      );
+    }
+    final deletedAt = DateTime.tryParse(data['deleted_at'] as String? ?? '');
+    if (deletedAt == null) {
+      throw const AppException(
+        'Missing account deletion timestamp',
+        code: 'ACCOUNT_DELETE_INVALID_RESPONSE',
+      );
+    }
     await _client.auth.signOut();
+    return deletedAt.toLocal();
   }
 
   Future<void> restoreAccount() async {
@@ -400,11 +424,11 @@ class AccountRepository {
         .eq('id', session.user.id);
   }
 
-  Future<bool> isAccountPendingDeletion() async {
-    if (_useMockData) return false;
+  Future<AccountDeletionStatus> fetchAccountDeletionStatus() async {
+    if (_useMockData) return AccountDeletionStatus.active;
 
     final session = _client.auth.currentSession;
-    if (session == null) return false;
+    if (session == null) return AccountDeletionStatus.active;
 
     try {
       final row = await _client
@@ -413,7 +437,8 @@ class AccountRepository {
           .eq('id', session.user.id)
           .maybeSingle();
 
-      return row != null && row['deleted_at'] != null;
+      final deletedAt = DateTime.tryParse(row?['deleted_at'] as String? ?? '');
+      return AccountDeletionStatus(deletedAt: deletedAt?.toLocal());
     } on PostgrestException catch (e, st) {
       AppLogger.error('Failed to load account status', e, st);
       throw AppException(e.message, code: e.code);
@@ -787,6 +812,28 @@ class AccountRepository {
     final directory =
         _documentsDirectory ?? await getApplicationDocumentsDirectory();
     return File('${directory.path}/moniary_privacy_request_history.json');
+  }
+
+  Future<void> clearLocalUserFiles() async {
+    try {
+      final directory = await _getExportDirectory();
+      if (!await directory.exists()) return;
+      await for (final entity in directory.list()) {
+        if (entity is! File) continue;
+        final name = entity.uri.pathSegments.last;
+        final isMoniaryUserFile =
+            name == 'moniary_export_history.json' ||
+            name == 'moniary_privacy_request_history.json' ||
+            name.startsWith('moniary_export_');
+        if (isMoniaryUserFile) await entity.delete();
+      }
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to clear local account files', error, stackTrace);
+      throw const AppException(
+        'Failed to clear local account files',
+        code: 'ACCOUNT_LOCAL_DATA_CLEAR_ERROR',
+      );
+    }
   }
 
   Future<void> _recordPrivacyRequest({
