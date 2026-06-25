@@ -3032,204 +3032,6 @@ abstract class AppLocalizations {
   /// **'Cài đặt'**
   String get settingsTitle;
 
-  /// No description provided for @themeAppearanceSection.
-  ///
-  /// In vi, this message translates to:
-  /// **'Giao diện'**
-  String get themeAppearanceSection;
-
-  /// No description provided for @themeSettingsTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Tùy chỉnh giao diện'**
-  String get themeSettingsTitle;
-
-  /// No description provided for @themeSettingsSubtitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Chọn màu cho toàn bộ ứng dụng.'**
-  String get themeSettingsSubtitle;
-
-  /// No description provided for @themePresetSection.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bộ màu nhanh'**
-  String get themePresetSection;
-
-  /// No description provided for @themeColorsSection.
-  ///
-  /// In vi, this message translates to:
-  /// **'Màu tùy chỉnh'**
-  String get themeColorsSection;
-
-  /// No description provided for @themePresetDefault.
-  ///
-  /// In vi, this message translates to:
-  /// **'Mặc định'**
-  String get themePresetDefault;
-
-  /// No description provided for @themePresetEmerald.
-  ///
-  /// In vi, this message translates to:
-  /// **'Xanh ngọc'**
-  String get themePresetEmerald;
-
-  /// No description provided for @themePresetRose.
-  ///
-  /// In vi, this message translates to:
-  /// **'Hồng'**
-  String get themePresetRose;
-
-  /// No description provided for @themePresetHighContrast.
-  ///
-  /// In vi, this message translates to:
-  /// **'Tương phản cao'**
-  String get themePresetHighContrast;
-
-  /// No description provided for @themePresetCustom.
-  ///
-  /// In vi, this message translates to:
-  /// **'Tùy chỉnh'**
-  String get themePresetCustom;
-
-  /// No description provided for @themePrimaryColor.
-  ///
-  /// In vi, this message translates to:
-  /// **'Màu chính'**
-  String get themePrimaryColor;
-
-  /// No description provided for @themeSecondaryColor.
-  ///
-  /// In vi, this message translates to:
-  /// **'Màu phụ'**
-  String get themeSecondaryColor;
-
-  /// No description provided for @themeBackgroundColor.
-  ///
-  /// In vi, this message translates to:
-  /// **'Màu nền'**
-  String get themeBackgroundColor;
-
-  /// No description provided for @themeSurfaceColor.
-  ///
-  /// In vi, this message translates to:
-  /// **'Màu card/container'**
-  String get themeSurfaceColor;
-
-  /// No description provided for @themeTextPrimaryColor.
-  ///
-  /// In vi, this message translates to:
-  /// **'Màu chữ chính'**
-  String get themeTextPrimaryColor;
-
-  /// No description provided for @themeTextSecondaryColor.
-  ///
-  /// In vi, this message translates to:
-  /// **'Màu chữ phụ'**
-  String get themeTextSecondaryColor;
-
-  /// No description provided for @themeButtonColor.
-  ///
-  /// In vi, this message translates to:
-  /// **'Màu button'**
-  String get themeButtonColor;
-
-  /// No description provided for @themeIconColor.
-  ///
-  /// In vi, this message translates to:
-  /// **'Màu icon'**
-  String get themeIconColor;
-
-  /// No description provided for @themeAppBarColor.
-  ///
-  /// In vi, this message translates to:
-  /// **'Màu AppBar'**
-  String get themeAppBarColor;
-
-  /// No description provided for @themeNavigationBarColor.
-  ///
-  /// In vi, this message translates to:
-  /// **'Màu NavigationBar'**
-  String get themeNavigationBarColor;
-
-  /// No description provided for @themePreviewTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Xem trước'**
-  String get themePreviewTitle;
-
-  /// No description provided for @themePreviewHeadline.
-  ///
-  /// In vi, this message translates to:
-  /// **'Giao diện Moniary'**
-  String get themePreviewHeadline;
-
-  /// No description provided for @themePreviewBody.
-  ///
-  /// In vi, this message translates to:
-  /// **'Card, chữ, nút, icon và thanh điều hướng sẽ dùng bảng màu này.'**
-  String get themePreviewBody;
-
-  /// No description provided for @themePreviewButton.
-  ///
-  /// In vi, this message translates to:
-  /// **'Nút mẫu'**
-  String get themePreviewButton;
-
-  /// No description provided for @themeApplySave.
-  ///
-  /// In vi, this message translates to:
-  /// **'Áp dụng và lưu'**
-  String get themeApplySave;
-
-  /// No description provided for @themeResetDefault.
-  ///
-  /// In vi, this message translates to:
-  /// **'Khôi phục mặc định'**
-  String get themeResetDefault;
-
-  /// No description provided for @themeSaveHint.
-  ///
-  /// In vi, this message translates to:
-  /// **'Các thay đổi trong phần xem trước chỉ áp dụng toàn app sau khi lưu.'**
-  String get themeSaveHint;
-
-  /// No description provided for @themeSavedMessage.
-  ///
-  /// In vi, this message translates to:
-  /// **'Đã lưu giao diện.'**
-  String get themeSavedMessage;
-
-  /// No description provided for @themeResetMessage.
-  ///
-  /// In vi, this message translates to:
-  /// **'Đã khôi phục giao diện mặc định.'**
-  String get themeResetMessage;
-
-  /// No description provided for @themeHexLabel.
-  ///
-  /// In vi, this message translates to:
-  /// **'Mã màu HEX'**
-  String get themeHexLabel;
-
-  /// No description provided for @themeRedChannel.
-  ///
-  /// In vi, this message translates to:
-  /// **'R'**
-  String get themeRedChannel;
-
-  /// No description provided for @themeGreenChannel.
-  ///
-  /// In vi, this message translates to:
-  /// **'G'**
-  String get themeGreenChannel;
-
-  /// No description provided for @themeBlueChannel.
-  ///
-  /// In vi, this message translates to:
-  /// **'B'**
-  String get themeBlueChannel;
-
   /// No description provided for @importPreviewTitle.
   ///
   /// In vi, this message translates to:
@@ -6259,6 +6061,102 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Không tìm thấy bạn bè này.'**
   String get friendNotFound;
+
+  /// No description provided for @friendShareInviteLink.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ link kết bạn'**
+  String get friendShareInviteLink;
+
+  /// No description provided for @friendInviteShareDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi link cho người khác để họ kết bạn với bạn nhanh hơn.'**
+  String get friendInviteShareDescription;
+
+  /// No description provided for @friendInviteShareMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết bạn với mình trên Moniary nhé: {link}'**
+  String friendInviteShareMessage(String link);
+
+  /// No description provided for @friendInviteAcceptTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời kết bạn'**
+  String get friendInviteAcceptTitle;
+
+  /// No description provided for @friendInviteAcceptSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} muốn kết bạn với bạn trên Moniary.'**
+  String friendInviteAcceptSubtitle(String name);
+
+  /// No description provided for @friendInviteAcceptButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết bạn'**
+  String get friendInviteAcceptButton;
+
+  /// No description provided for @friendInviteAccepted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã kết bạn thành công.'**
+  String get friendInviteAccepted;
+
+  /// No description provided for @friendInviteLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải lời mời...'**
+  String get friendInviteLoading;
+
+  /// No description provided for @friendInvitePreviewError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được lời mời kết bạn.'**
+  String get friendInvitePreviewError;
+
+  /// No description provided for @friendInviteInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link kết bạn không hợp lệ.'**
+  String get friendInviteInvalid;
+
+  /// No description provided for @friendInviteExpired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link kết bạn đã hết hạn.'**
+  String get friendInviteExpired;
+
+  /// No description provided for @friendInviteUsed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link kết bạn đã được sử dụng.'**
+  String get friendInviteUsed;
+
+  /// No description provided for @friendInviteRevoked.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link kết bạn đã bị hủy.'**
+  String get friendInviteRevoked;
+
+  /// No description provided for @friendInviteSelf.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không thể dùng link kết bạn của chính mình.'**
+  String get friendInviteSelf;
+
+  /// No description provided for @friendInviteAlreadyFriends.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hai bạn đã là bạn bè.'**
+  String get friendInviteAlreadyFriends;
+
+  /// No description provided for @friendInviteOpenFriends.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem danh sách bạn bè'**
+  String get friendInviteOpenFriends;
 
   /// No description provided for @profileUsernameHint.
   ///

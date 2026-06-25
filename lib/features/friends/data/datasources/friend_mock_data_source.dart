@@ -1,3 +1,4 @@
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../domain/entities/friend_profile.dart';
 
@@ -26,11 +27,13 @@ class FriendMockDataSource {
 
   static final Map<String, Set<String>> _friendships = {};
   static final Map<String, _MockFriendRequest> _requests = {};
+  static final Map<String, _MockFriendInvite> _invites = {};
   static var _sequence = 0;
 
   static void resetForTesting() {
     _friendships.clear();
     _requests.clear();
+    _invites.clear();
     _sequence = 0;
   }
 
@@ -81,6 +84,118 @@ class FriendMockDataSource {
           ),
         )
         .toList(growable: false);
+  }
+
+  Future<FriendInviteLink> createInviteLink() async {
+    final token = _id('friend-invite-token');
+    final expiresAt = DateTime.now().add(const Duration(days: 30));
+    _invites[token] = _MockFriendInvite(
+      token: token,
+      creatorUserId: currentUserId,
+      status: FriendInviteStatus.active,
+      expiresAt: expiresAt,
+    );
+    return FriendInviteLink(
+      token: token,
+      link: AppConstants.friendInviteLink(token),
+      expiresAt: expiresAt,
+    );
+  }
+
+  Future<FriendInvitePreview> fetchInvitePreview(String token) async {
+    final invite = _invites[token.trim()];
+    if (invite == null) {
+      return const FriendInvitePreview(
+        status: FriendInviteStatus.invalid,
+        relationStatus: FriendRelationStatus.none,
+      );
+    }
+    final inviter = _directory[invite.creatorUserId];
+    return FriendInvitePreview(
+      status: _inviteStatus(invite),
+      relationStatus: _inviteRelationStatus(invite.creatorUserId),
+      inviter: inviter,
+      expiresAt: invite.expiresAt,
+    );
+  }
+
+  Future<FriendInviteAcceptResult> acceptInvite(String token) async {
+    final invite = _invites[token.trim()];
+    if (invite == null) {
+      throw const AppException(
+        'Friend invite link is invalid',
+        code: 'FRIEND_INVITE_INVALID',
+      );
+    }
+    if (invite.creatorUserId == currentUserId) {
+      throw const AppException(
+        'Cannot use your own friend invite link',
+        code: 'FRIEND_INVITE_SELF',
+      );
+    }
+    if (_areFriends(currentUserId, invite.creatorUserId)) {
+      return FriendInviteAcceptResult(
+        status: FriendInviteAcceptStatus.alreadyFriends,
+        inviterUserId: invite.creatorUserId,
+      );
+    }
+    switch (_inviteStatus(invite)) {
+      case FriendInviteStatus.active:
+        break;
+      case FriendInviteStatus.used:
+        throw const AppException(
+          'Friend invite link already used',
+          code: 'FRIEND_INVITE_USED',
+        );
+      case FriendInviteStatus.revoked:
+        throw const AppException(
+          'Friend invite link revoked',
+          code: 'FRIEND_INVITE_REVOKED',
+        );
+      case FriendInviteStatus.expired:
+        throw const AppException(
+          'Friend invite link expired',
+          code: 'FRIEND_INVITE_EXPIRED',
+        );
+      case FriendInviteStatus.invalid:
+      case FriendInviteStatus.self:
+      case FriendInviteStatus.alreadyFriends:
+        throw const AppException(
+          'Friend invite link is invalid',
+          code: 'FRIEND_INVITE_INVALID',
+        );
+    }
+
+    for (final request in _requests.values) {
+      final samePair =
+          (request.fromUserId == currentUserId &&
+              request.toUserId == invite.creatorUserId) ||
+          (request.fromUserId == invite.creatorUserId &&
+              request.toUserId == currentUserId);
+      if (samePair && request.status == FriendRequestStatus.pending) {
+        request.status = FriendRequestStatus.accepted;
+      }
+    }
+    _friendships.putIfAbsent(currentUserId, () => {}).add(invite.creatorUserId);
+    _friendships.putIfAbsent(invite.creatorUserId, () => {}).add(currentUserId);
+    invite.status = FriendInviteStatus.used;
+    return FriendInviteAcceptResult(
+      status: FriendInviteAcceptStatus.accepted,
+      inviterUserId: invite.creatorUserId,
+    );
+  }
+
+  Future<void> revokeInviteLink(String token) async {
+    final invite = _invites[token.trim()];
+    if (invite == null ||
+        invite.creatorUserId != currentUserId ||
+        invite.status != FriendInviteStatus.active) {
+      throw const AppException(
+        'Friend invite link not found',
+        code: 'FRIEND_INVITE_NOT_FOUND',
+      );
+    }
+    invite.status = FriendInviteStatus.revoked;
   }
 
   Future<void> sendRequest(String username) async {
@@ -189,6 +304,25 @@ class FriendMockDataSource {
         : FriendRelationStatus.incomingPending;
   }
 
+  FriendInviteStatus _inviteStatus(_MockFriendInvite invite) {
+    if (invite.status != FriendInviteStatus.active) return invite.status;
+    if (invite.expiresAt.isBefore(DateTime.now())) {
+      return FriendInviteStatus.expired;
+    }
+    if (invite.creatorUserId == currentUserId) {
+      return FriendInviteStatus.self;
+    }
+    if (_areFriends(currentUserId, invite.creatorUserId)) {
+      return FriendInviteStatus.alreadyFriends;
+    }
+    return FriendInviteStatus.active;
+  }
+
+  FriendRelationStatus _inviteRelationStatus(String inviterUserId) {
+    if (inviterUserId == currentUserId) return FriendRelationStatus.self;
+    return _relationStatus(inviterUserId);
+  }
+
   bool _areFriends(String left, String right) {
     return _friendships[left]?.contains(right) ?? false;
   }
@@ -247,4 +381,18 @@ class _MockFriendRequest {
       avatarPath: profile?.avatarPath,
     );
   }
+}
+
+class _MockFriendInvite {
+  _MockFriendInvite({
+    required this.token,
+    required this.creatorUserId,
+    required this.status,
+    required this.expiresAt,
+  });
+
+  final String token;
+  final String creatorUserId;
+  FriendInviteStatus status;
+  final DateTime expiresAt;
 }

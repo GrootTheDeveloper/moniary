@@ -134,4 +134,81 @@ void main() {
     expect(await sender.fetchFriends(), isEmpty);
     expect(await receiver.fetchFriends(), isEmpty);
   });
+
+  test('tạo link kết bạn và receiver xem preview được inviter', () async {
+    final creator = source('mock-user-id');
+    final receiver = source('mock-friend-1');
+
+    final invite = await creator.createInviteLink();
+    final preview = await receiver.fetchInvitePreview(invite.token);
+
+    expect(invite.link, startsWith('moniary://friends/invite/'));
+    expect(preview.status, FriendInviteStatus.active);
+    expect(preview.inviter?.userId, 'mock-user-id');
+    expect(preview.inviter?.username, 'mock-user');
+  });
+
+  test(
+    'accept friend invite tạo friendship hai chiều và đánh dấu link used',
+    () async {
+      final creator = source('mock-user-id');
+      final receiver = source('mock-friend-1');
+      final invite = await creator.createInviteLink();
+
+      final result = await receiver.acceptInvite(invite.token);
+
+      expect(result.status, FriendInviteAcceptStatus.accepted);
+      expect(
+        (await creator.fetchFriends()).map((friend) => friend.userId),
+        contains('mock-friend-1'),
+      );
+      expect(
+        (await receiver.fetchFriends()).map((friend) => friend.userId),
+        contains('mock-user-id'),
+      );
+      expect(
+        (await source('mock-friend-2').fetchInvitePreview(invite.token)).status,
+        FriendInviteStatus.used,
+      );
+    },
+  );
+
+  test('không cho dùng link kết bạn của chính mình', () async {
+    final creator = source('mock-user-id');
+    final invite = await creator.createInviteLink();
+
+    await expectLater(
+      creator.acceptInvite(invite.token),
+      throwsA(
+        isA<AppException>().having(
+          (error) => error.code,
+          'code',
+          'FRIEND_INVITE_SELF',
+        ),
+      ),
+    );
+  });
+
+  test('revoke link khiến receiver không accept được', () async {
+    final creator = source('mock-user-id');
+    final receiver = source('mock-friend-1');
+    final invite = await creator.createInviteLink();
+
+    await creator.revokeInviteLink(invite.token);
+
+    expect(
+      (await receiver.fetchInvitePreview(invite.token)).status,
+      FriendInviteStatus.revoked,
+    );
+    await expectLater(
+      receiver.acceptInvite(invite.token),
+      throwsA(
+        isA<AppException>().having(
+          (error) => error.code,
+          'code',
+          'FRIEND_INVITE_REVOKED',
+        ),
+      ),
+    );
+  });
 }

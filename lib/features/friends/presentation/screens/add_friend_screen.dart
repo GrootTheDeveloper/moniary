@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
@@ -57,6 +58,11 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
             icon: const Icon(Icons.search_outlined),
             label: Text(context.l10n.friendSearch),
           ),
+          const SizedBox(height: 12),
+          _ShareInviteCard(
+            isLoading: action.isLoading,
+            onShare: _shareInviteLink,
+          ),
           const SizedBox(height: 24),
           if (searchAsync == null)
             _SearchHint()
@@ -104,6 +110,24 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
   void _search() {
     final value = _usernameController.text.trim().toLowerCase();
     setState(() => _query = value);
+  }
+
+  Future<void> _shareInviteLink() async {
+    try {
+      final invite = await ref
+          .read(friendActionControllerProvider.notifier)
+          .createInviteLink();
+      if (!mounted) return;
+      await Share.share(
+        context.l10n.friendInviteShareMessage(invite.link),
+        subject: context.l10n.friendShareInviteLink,
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
   }
 
   FriendRequest? _incomingRequestFor(
@@ -182,9 +206,38 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
         return context.l10n.friendRequestPending;
       case FriendRelationStatus.incomingPending:
         return context.l10n.friendIncomingPending;
+      case FriendRelationStatus.self:
+        return context.l10n.friendCannotAddSelf;
       case FriendRelationStatus.none:
         return result.profile.displayUsername;
     }
+  }
+}
+
+class _ShareInviteCard extends StatelessWidget {
+  const _ShareInviteCard({required this.isLoading, required this.onShare});
+
+  final bool isLoading;
+  final VoidCallback onShare;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: ListTile(
+        leading: const Icon(Icons.ios_share_outlined, color: AppTheme.mint),
+        title: Text(context.l10n.friendShareInviteLink),
+        subtitle: Text(context.l10n.friendInviteShareDescription),
+        trailing: isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.chevron_right_outlined),
+        onTap: isLoading ? null : onShare,
+      ),
+    );
   }
 }
 
@@ -247,6 +300,7 @@ class _SearchResultAction extends StatelessWidget {
         );
       case FriendRelationStatus.friends:
       case FriendRelationStatus.outgoingPending:
+      case FriendRelationStatus.self:
         return const Icon(Icons.check_circle_outline, color: AppTheme.success);
     }
   }

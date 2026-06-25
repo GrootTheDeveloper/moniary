@@ -37,6 +37,16 @@ class AppConstants {
   static const signedUrlTtlSeconds = 3600; // 1 hour
   static const storageBucket = 'transaction-images';
 
+  // --- Deep links ---
+  static const friendInviteScheme = 'moniary';
+  static const friendInviteHost = 'friends';
+  static const friendInvitePath = 'invite';
+
+  static String friendInviteLink(String token) {
+    return '$friendInviteScheme://$friendInviteHost/'
+        '$friendInvitePath/${Uri.encodeComponent(token)}';
+  }
+
   // --- Contact ---
   static const privacyEmail = 'privacy@moniary.app';
   static const supportEmail = 'support@moniary.app';

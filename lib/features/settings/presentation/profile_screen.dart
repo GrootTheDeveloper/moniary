@@ -17,7 +17,6 @@ import 'export/export_data_screen.dart';
 import 'import/import_data_screen.dart';
 import 'notifications/notification_settings_screen.dart';
 import 'privacy/privacy_center_screen.dart';
-import 'theme/theme_settings_screen.dart';
 import 'widgets/delete_account_dialog.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -512,19 +511,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             subtitle: context.l10n.profileExportSubtitle,
                             onTap: () =>
                                 context.push(ExportDataScreen.routePath),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      _SettingsGroup(
-                        title: context.l10n.themeAppearanceSection,
-                        children: [
-                          _SettingsTile(
-                            icon: Icons.palette_outlined,
-                            title: context.l10n.themeSettingsTitle,
-                            subtitle: context.l10n.themeSettingsSubtitle,
-                            onTap: () =>
-                                context.push(ThemeSettingsScreen.routePath),
                           ),
                         ],
                       ),

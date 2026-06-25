@@ -11,6 +11,14 @@ abstract interface class FriendRepository {
 
   Future<List<FriendSearchResult>> searchUsers(String usernameQuery);
 
+  Future<FriendInviteLink> createInviteLink();
+
+  Future<FriendInvitePreview> fetchInvitePreview(String token);
+
+  Future<FriendInviteAcceptResult> acceptInvite(String token);
+
+  Future<void> revokeInviteLink(String token);
+
   Future<void> sendRequest(String username);
 
   Future<void> acceptRequest(String requestId);

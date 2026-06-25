@@ -1,0 +1,243 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../app/app_theme.dart';
+import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/app_logger.dart';
+import '../../../../shared/utils/error_helpers.dart';
+import '../../application/friend_controller.dart';
+import '../../domain/entities/friend_profile.dart';
+import '../widgets/friend_profile_tile.dart';
+import 'friends_screen.dart';
+
+class FriendInviteAcceptScreen extends ConsumerWidget {
+  const FriendInviteAcceptScreen({required this.token, super.key});
+
+  static const routePath = '/friends/invite/:token';
+
+  static String routeLocation(String token) {
+    return '/friends/invite/${Uri.encodeComponent(token)}';
+  }
+
+  final String token;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final previewAsync = ref.watch(friendInvitePreviewProvider(token));
+    final action = ref.watch(friendActionControllerProvider);
+
+    ref.listen(friendActionControllerProvider, (previous, next) {
+      next.whenOrNull(
+        error: (error, stackTrace) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(userFriendlyMessage(context, error))),
+          );
+        },
+      );
+    });
+
+    return Scaffold(
+      appBar: AppBar(title: Text(context.l10n.friendInviteAcceptTitle)),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+          child: previewAsync.when(
+            loading: () => _MessageState(
+              icon: Icons.mark_email_unread_outlined,
+              title: context.l10n.friendInviteLoading,
+            ),
+            error: (error, stackTrace) {
+              AppLogger.error(
+                'Failed to load friend invite preview',
+                error,
+                stackTrace,
+              );
+              return _MessageState(
+                icon: Icons.link_off_outlined,
+                title: context.l10n.friendInvitePreviewError,
+                action: OutlinedButton(
+                  onPressed: () =>
+                      ref.invalidate(friendInvitePreviewProvider(token)),
+                  child: Text(context.l10n.retry),
+                ),
+              );
+            },
+            data: (preview) => _InviteBody(
+              preview: preview,
+              actionLoading: action.isLoading,
+              onAccept: () => _accept(context, ref),
+              onOpenFriends: () => context.go(FriendsScreen.routePath),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _accept(BuildContext context, WidgetRef ref) async {
+    try {
+      final result = await ref
+          .read(friendActionControllerProvider.notifier)
+          .acceptInvite(token);
+      if (!context.mounted) return;
+      final message = result.status == FriendInviteAcceptStatus.alreadyFriends
+          ? context.l10n.friendInviteAlreadyFriends
+          : context.l10n.friendInviteAccepted;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+      context.go(FriendsScreen.routePath);
+    } catch (_) {
+      // The listener above maps AppException codes to localized SnackBars.
+    }
+  }
+}
+
+class _InviteBody extends StatelessWidget {
+  const _InviteBody({
+    required this.preview,
+    required this.actionLoading,
+    required this.onAccept,
+    required this.onOpenFriends,
+  });
+
+  final FriendInvitePreview preview;
+  final bool actionLoading;
+  final VoidCallback onAccept;
+  final VoidCallback onOpenFriends;
+
+  @override
+  Widget build(BuildContext context) {
+    final inviter = preview.inviter;
+    final statusMessage = _statusMessage(context, preview.status);
+    if (!preview.canAccept) {
+      return _MessageState(
+        icon: _statusIcon(preview.status),
+        title: statusMessage,
+        action: FilledButton(
+          onPressed: onOpenFriends,
+          child: Text(context.l10n.friendInviteOpenFriends),
+        ),
+        child: inviter == null
+            ? null
+            : FriendProfileTile(
+                profile: inviter,
+                subtitle: inviter.displayUsername,
+              ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 24),
+        const Icon(
+          Icons.person_add_alt_1_outlined,
+          color: AppTheme.mint,
+          size: 64,
+        ),
+        const SizedBox(height: 20),
+        Text(
+          context.l10n.friendInviteAcceptTitle,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        const SizedBox(height: 12),
+        Text(
+          context.l10n.friendInviteAcceptSubtitle(
+            inviter?.displayName ?? context.l10n.friendsTitle,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 28),
+        if (inviter != null)
+          FriendProfileTile(
+            profile: inviter,
+            subtitle: inviter.displayUsername,
+          ),
+        const Spacer(),
+        FilledButton.icon(
+          onPressed: actionLoading ? null : onAccept,
+          icon: actionLoading
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.person_add_alt_1_outlined),
+          label: Text(context.l10n.friendInviteAcceptButton),
+        ),
+      ],
+    );
+  }
+
+  String _statusMessage(BuildContext context, FriendInviteStatus status) {
+    switch (status) {
+      case FriendInviteStatus.active:
+        return context.l10n.friendInviteAcceptTitle;
+      case FriendInviteStatus.used:
+        return context.l10n.friendInviteUsed;
+      case FriendInviteStatus.revoked:
+        return context.l10n.friendInviteRevoked;
+      case FriendInviteStatus.expired:
+        return context.l10n.friendInviteExpired;
+      case FriendInviteStatus.invalid:
+        return context.l10n.friendInviteInvalid;
+      case FriendInviteStatus.self:
+        return context.l10n.friendInviteSelf;
+      case FriendInviteStatus.alreadyFriends:
+        return context.l10n.friendInviteAlreadyFriends;
+    }
+  }
+
+  IconData _statusIcon(FriendInviteStatus status) {
+    switch (status) {
+      case FriendInviteStatus.alreadyFriends:
+        return Icons.people_alt_outlined;
+      case FriendInviteStatus.self:
+        return Icons.person_off_outlined;
+      case FriendInviteStatus.used:
+      case FriendInviteStatus.revoked:
+      case FriendInviteStatus.expired:
+      case FriendInviteStatus.invalid:
+      case FriendInviteStatus.active:
+        return Icons.link_off_outlined;
+    }
+  }
+}
+
+class _MessageState extends StatelessWidget {
+  const _MessageState({
+    required this.icon,
+    required this.title,
+    this.child,
+    this.action,
+  });
+
+  final IconData icon;
+  final String title;
+  final Widget? child;
+  final Widget? action;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Icon(icon, size: 64, color: AppTheme.mintSoft),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          if (child != null) ...[const SizedBox(height: 20), child!],
+          if (action != null) ...[const SizedBox(height: 24), action!],
+        ],
+      ),
+    );
+  }
+}

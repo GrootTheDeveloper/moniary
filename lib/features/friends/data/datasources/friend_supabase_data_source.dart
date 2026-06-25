@@ -34,6 +34,31 @@ class FriendSupabaseDataSource {
     return _rows(rows);
   }
 
+  Future<Map<String, dynamic>> createInviteLink() async {
+    final rows = await client.rpc('create_friend_invite_link');
+    return _singleRow(rows);
+  }
+
+  Future<Map<String, dynamic>> fetchInvitePreview(String token) async {
+    final rows = await client.rpc(
+      'get_friend_invite_preview',
+      params: {'p_token': token},
+    );
+    return _singleRow(rows);
+  }
+
+  Future<Map<String, dynamic>> acceptInvite(String token) async {
+    final rows = await client.rpc(
+      'accept_friend_invite',
+      params: {'p_token': token},
+    );
+    return _singleRow(rows);
+  }
+
+  Future<void> revokeInviteLink(String token) {
+    return client.rpc('revoke_friend_invite_link', params: {'p_token': token});
+  }
+
   Future<void> sendRequest(String username) {
     return client.rpc('send_friend_request', params: {'p_username': username});
   }
@@ -68,4 +93,11 @@ class FriendSupabaseDataSource {
 
   List<Map<String, dynamic>> _rows(dynamic rows) =>
       (rows as List<dynamic>).cast<Map<String, dynamic>>();
+
+  Map<String, dynamic> _singleRow(dynamic rows) {
+    if (rows is Map<String, dynamic>) return rows;
+    final list = _rows(rows);
+    if (list.isEmpty) return const {};
+    return list.first;
+  }
 }

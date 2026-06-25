@@ -11,6 +11,7 @@ import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/friends/presentation/screens/add_friend_screen.dart';
+import '../features/friends/presentation/screens/friend_invite_accept_screen.dart';
 import '../features/friends/presentation/screens/friends_screen.dart';
 import '../features/groups/presentation/groups_screen.dart';
 import '../features/groups/presentation/screens/add_group_transaction_screen.dart';
@@ -27,7 +28,6 @@ import '../features/scanning/presentation/scanning_screen.dart';
 import '../features/settings/domain/export/export_history_entry.dart';
 import '../features/settings/domain/privacy_requests/privacy_request_history_entry.dart';
 import '../features/settings/presentation/store/about_moniary_screen.dart';
-import '../features/settings/presentation/theme/theme_settings_screen.dart';
 import '../features/settings/presentation/legal/data_deletion_policy_screen.dart';
 import '../features/settings/presentation/legal/data_retention_policy_screen.dart';
 import '../features/settings/presentation/privacy/data_safety_screen.dart';
@@ -312,6 +312,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: FriendInviteAcceptScreen.routePath,
+        pageBuilder: (context, state) {
+          final token = state.pathParameters['token'];
+          final child = token == null
+              ? const FriendsScreen()
+              : FriendInviteAcceptScreen(token: token);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
         path: PrivacyCenterScreen.routePath,
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
@@ -478,13 +488,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
           child: const NotificationSettingsScreen(),
-        ),
-      ),
-      GoRoute(
-        path: ThemeSettingsScreen.routePath,
-        pageBuilder: (context, state) => buildSlideTransitionPage(
-          state: state,
-          child: const ThemeSettingsScreen(),
         ),
       ),
       GoRoute(

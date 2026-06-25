@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../features/settings/domain/theme/app_theme_settings.dart';
-
 class MoniaryColors extends ThemeExtension<MoniaryColors> {
   const MoniaryColors({
     required this.background,
@@ -164,10 +162,8 @@ class AppTheme {
     surfaceOverlay: surfaceOverlay,
   );
 
-  static ThemeData get darkTheme => fromSettings(AppThemeSettings.defaults);
-
-  static ThemeData fromSettings(AppThemeSettings settings) {
-    final colors = _colorsFromSettings(settings);
+  static ThemeData get darkTheme {
+    const colors = defaultColors;
     final colorScheme = ColorScheme.dark(
       primary: colors.primary,
       secondary: colors.secondary,
@@ -233,7 +229,7 @@ class AppTheme {
       ),
       appBarTheme: AppBarTheme(
         centerTitle: true,
-        backgroundColor: Color(settings.appBarColor),
+        backgroundColor: Colors.transparent,
         foregroundColor: colors.textPrimary,
         elevation: 0,
       ),
@@ -313,40 +309,6 @@ class AppTheme {
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
       ),
-    );
-  }
-
-  static MoniaryColors _colorsFromSettings(AppThemeSettings settings) {
-    final primary = Color(settings.primaryColor);
-    final secondary = Color(settings.secondaryColor);
-    final backgroundColor = Color(settings.backgroundColor);
-    final surfaceColor = Color(settings.surfaceColor);
-    final textPrimary = Color(settings.textPrimaryColor);
-    final textSecondary = Color(settings.textSecondaryColor);
-    final button = Color(settings.buttonColor);
-    final icon = Color(settings.iconColor);
-    final navBar = Color(settings.navigationBarColor);
-
-    return MoniaryColors(
-      background: backgroundColor,
-      backgroundSoft: Color.lerp(backgroundColor, surfaceColor, 0.45)!,
-      surface: surfaceColor,
-      surfaceRaised: Color.lerp(surfaceColor, textPrimary, 0.06)!,
-      outline: Color.lerp(surfaceColor, textSecondary, 0.22)!,
-      primary: primary,
-      secondary: secondary,
-      button: button,
-      icon: icon,
-      navBar: navBar,
-      navInactive: Color.lerp(navBar, textSecondary, 0.68)!,
-      textPrimary: textPrimary,
-      textSecondary: textSecondary,
-      textDim: Color.lerp(surfaceColor, textSecondary, 0.62)!,
-      success: success,
-      danger: danger,
-      warning: amber,
-      accentPink: pink,
-      surfaceOverlay: surfaceOverlay,
     );
   }
 

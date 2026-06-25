@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../core/deeplinks/pending_deep_link_controller.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/supabase_providers.dart';
@@ -59,12 +60,12 @@ class LoginScreen extends ConsumerWidget {
                   onTap: authAction.isLoading
                       ? null
                       : () => _enterApp(
-                            context,
-                            ref,
-                            () => ref
-                                .read(authControllerProvider.notifier)
-                                .signInWithGoogle(),
-                          ),
+                          context,
+                          ref,
+                          () => ref
+                              .read(authControllerProvider.notifier)
+                              .signInWithGoogle(),
+                        ),
                   child: _AuthButton(
                     icon: Icons.g_mobiledata_outlined,
                     label: context.l10n.loginGoogle,
@@ -76,12 +77,12 @@ class LoginScreen extends ConsumerWidget {
                   onTap: authAction.isLoading
                       ? null
                       : () => _enterApp(
-                            context,
-                            ref,
-                            () => ref
-                                .read(authControllerProvider.notifier)
-                                .signInWithApple(),
-                          ),
+                          context,
+                          ref,
+                          () => ref
+                              .read(authControllerProvider.notifier)
+                              .signInWithApple(),
+                        ),
                   child: _AuthButton(
                     icon: Icons.apple_outlined,
                     label: context.l10n.loginApple,
@@ -184,10 +185,14 @@ class LoginScreen extends ConsumerWidget {
           .fetchCurrentProfile();
 
       if (!context.mounted) return;
+      final needsSetup = profile == null || profile.needsSetup;
+      final pendingRoute = needsSetup
+          ? null
+          : ref.read(pendingDeepLinkProvider.notifier).consume();
       router.go(
-        profile == null || profile.needsSetup
+        needsSetup
             ? ProfileSetupScreen.routePath
-            : CalendarScreen.routePath,
+            : pendingRoute ?? CalendarScreen.routePath,
       );
     } catch (error) {
       messenger.showSnackBar(
@@ -207,14 +212,19 @@ class LoginScreen extends ConsumerWidget {
       ),
       builder: (context) => _EmailAuthSheet(
         onSuccess: () {
-          final profile =
-              ref.read(profileRepositoryProvider).fetchCurrentProfile();
+          final profile = ref
+              .read(profileRepositoryProvider)
+              .fetchCurrentProfile();
           profile.then((p) {
             if (context.mounted) {
+              final needsSetup = p == null || p.needsSetup;
+              final pendingRoute = needsSetup
+                  ? null
+                  : ref.read(pendingDeepLinkProvider.notifier).consume();
               context.go(
-                p == null || p.needsSetup
+                needsSetup
                     ? ProfileSetupScreen.routePath
-                    : CalendarScreen.routePath,
+                    : pendingRoute ?? CalendarScreen.routePath,
               );
             }
           });
@@ -252,18 +262,24 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
     setState(() => _isLoading = true);
     try {
       if (_isSignUp) {
-        await ref.read(authRepositoryProvider).signUpWithEmail(
+        await ref
+            .read(authRepositoryProvider)
+            .signUpWithEmail(
               email: _emailController.text.trim(),
               password: _passwordController.text,
             );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please check your email for confirmation.')),
+            const SnackBar(
+              content: Text('Please check your email for confirmation.'),
+            ),
           );
           Navigator.pop(context);
         }
       } else {
-        await ref.read(authRepositoryProvider).signInWithEmail(
+        await ref
+            .read(authRepositoryProvider)
+            .signInWithEmail(
               email: _emailController.text.trim(),
               password: _passwordController.text,
             );
@@ -337,9 +353,11 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
                 ),
                 TextButton(
                   onPressed: () => setState(() => _isSignUp = !_isSignUp),
-                  child: Text(_isSignUp
-                      ? 'Already have an account? Sign In'
-                      : 'Don\'t have an account? Sign Up'),
+                  child: Text(
+                    _isSignUp
+                        ? 'Already have an account? Sign In'
+                        : 'Don\'t have an account? Sign Up',
+                  ),
                 ),
               ],
             ),

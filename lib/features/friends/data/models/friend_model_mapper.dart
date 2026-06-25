@@ -1,3 +1,4 @@
+import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/friend_profile.dart';
 
 class FriendModelMapper {
@@ -37,6 +38,42 @@ class FriendModelMapper {
       status: FriendRequestStatus.fromValue(row['status'] as String?),
       createdAt: _date(row['created_at']) ?? DateTime.now(),
       isIncoming: isIncoming,
+    );
+  }
+
+  static FriendInviteLink inviteLink(Map<String, dynamic> row) {
+    final token = row['token'] as String;
+    return FriendInviteLink(
+      token: token,
+      link: AppConstants.friendInviteLink(token),
+      expiresAt: _date(row['expires_at']) ?? DateTime.now(),
+    );
+  }
+
+  static FriendInvitePreview invitePreview(Map<String, dynamic> row) {
+    final inviterUserId = row['inviter_user_id'] as String?;
+    final inviter = inviterUserId == null
+        ? null
+        : FriendProfile(
+            userId: inviterUserId,
+            fullName: row['full_name'] as String?,
+            username: row['username'] as String?,
+            avatarPath: row['avatar_url'] as String?,
+          );
+    return FriendInvitePreview(
+      status: FriendInviteStatus.fromValue(row['invite_status'] as String?),
+      relationStatus: FriendRelationStatus.fromValue(
+        row['relation_status'] as String?,
+      ),
+      inviter: inviter,
+      expiresAt: _date(row['expires_at']),
+    );
+  }
+
+  static FriendInviteAcceptResult inviteAcceptResult(Map<String, dynamic> row) {
+    return FriendInviteAcceptResult(
+      status: FriendInviteAcceptStatus.fromValue(row['status'] as String?),
+      inviterUserId: row['inviter_user_id'] as String?,
     );
   }
 

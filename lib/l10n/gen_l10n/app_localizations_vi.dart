@@ -1603,107 +1603,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get settingsTitle => 'Cài đặt';
 
   @override
-  String get themeAppearanceSection => 'Giao diện';
-
-  @override
-  String get themeSettingsTitle => 'Tùy chỉnh giao diện';
-
-  @override
-  String get themeSettingsSubtitle => 'Chọn màu cho toàn bộ ứng dụng.';
-
-  @override
-  String get themePresetSection => 'Bộ màu nhanh';
-
-  @override
-  String get themeColorsSection => 'Màu tùy chỉnh';
-
-  @override
-  String get themePresetDefault => 'Mặc định';
-
-  @override
-  String get themePresetEmerald => 'Xanh ngọc';
-
-  @override
-  String get themePresetRose => 'Hồng';
-
-  @override
-  String get themePresetHighContrast => 'Tương phản cao';
-
-  @override
-  String get themePresetCustom => 'Tùy chỉnh';
-
-  @override
-  String get themePrimaryColor => 'Màu chính';
-
-  @override
-  String get themeSecondaryColor => 'Màu phụ';
-
-  @override
-  String get themeBackgroundColor => 'Màu nền';
-
-  @override
-  String get themeSurfaceColor => 'Màu card/container';
-
-  @override
-  String get themeTextPrimaryColor => 'Màu chữ chính';
-
-  @override
-  String get themeTextSecondaryColor => 'Màu chữ phụ';
-
-  @override
-  String get themeButtonColor => 'Màu button';
-
-  @override
-  String get themeIconColor => 'Màu icon';
-
-  @override
-  String get themeAppBarColor => 'Màu AppBar';
-
-  @override
-  String get themeNavigationBarColor => 'Màu NavigationBar';
-
-  @override
-  String get themePreviewTitle => 'Xem trước';
-
-  @override
-  String get themePreviewHeadline => 'Giao diện Moniary';
-
-  @override
-  String get themePreviewBody =>
-      'Card, chữ, nút, icon và thanh điều hướng sẽ dùng bảng màu này.';
-
-  @override
-  String get themePreviewButton => 'Nút mẫu';
-
-  @override
-  String get themeApplySave => 'Áp dụng và lưu';
-
-  @override
-  String get themeResetDefault => 'Khôi phục mặc định';
-
-  @override
-  String get themeSaveHint =>
-      'Các thay đổi trong phần xem trước chỉ áp dụng toàn app sau khi lưu.';
-
-  @override
-  String get themeSavedMessage => 'Đã lưu giao diện.';
-
-  @override
-  String get themeResetMessage => 'Đã khôi phục giao diện mặc định.';
-
-  @override
-  String get themeHexLabel => 'Mã màu HEX';
-
-  @override
-  String get themeRedChannel => 'R';
-
-  @override
-  String get themeGreenChannel => 'G';
-
-  @override
-  String get themeBlueChannel => 'B';
-
-  @override
   String importPreviewTitle(int count) {
     return 'Xem trước ($count dòng hợp lệ)';
   }
@@ -3441,6 +3340,60 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get friendNotFound => 'Không tìm thấy bạn bè này.';
+
+  @override
+  String get friendShareInviteLink => 'Chia sẻ link kết bạn';
+
+  @override
+  String get friendInviteShareDescription =>
+      'Gửi link cho người khác để họ kết bạn với bạn nhanh hơn.';
+
+  @override
+  String friendInviteShareMessage(String link) {
+    return 'Kết bạn với mình trên Moniary nhé: $link';
+  }
+
+  @override
+  String get friendInviteAcceptTitle => 'Lời mời kết bạn';
+
+  @override
+  String friendInviteAcceptSubtitle(String name) {
+    return '$name muốn kết bạn với bạn trên Moniary.';
+  }
+
+  @override
+  String get friendInviteAcceptButton => 'Kết bạn';
+
+  @override
+  String get friendInviteAccepted => 'Đã kết bạn thành công.';
+
+  @override
+  String get friendInviteLoading => 'Đang tải lời mời...';
+
+  @override
+  String get friendInvitePreviewError => 'Không tải được lời mời kết bạn.';
+
+  @override
+  String get friendInviteInvalid => 'Link kết bạn không hợp lệ.';
+
+  @override
+  String get friendInviteExpired => 'Link kết bạn đã hết hạn.';
+
+  @override
+  String get friendInviteUsed => 'Link kết bạn đã được sử dụng.';
+
+  @override
+  String get friendInviteRevoked => 'Link kết bạn đã bị hủy.';
+
+  @override
+  String get friendInviteSelf =>
+      'Bạn không thể dùng link kết bạn của chính mình.';
+
+  @override
+  String get friendInviteAlreadyFriends => 'Hai bạn đã là bạn bè.';
+
+  @override
+  String get friendInviteOpenFriends => 'Xem danh sách bạn bè';
 
   @override
   String get profileUsernameHint =>

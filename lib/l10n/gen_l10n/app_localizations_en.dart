@@ -1604,107 +1604,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTitle => 'Settings';
 
   @override
-  String get themeAppearanceSection => 'Appearance';
-
-  @override
-  String get themeSettingsTitle => 'Custom Theme';
-
-  @override
-  String get themeSettingsSubtitle => 'Choose colors for the whole app.';
-
-  @override
-  String get themePresetSection => 'Quick presets';
-
-  @override
-  String get themeColorsSection => 'Custom colors';
-
-  @override
-  String get themePresetDefault => 'Default';
-
-  @override
-  String get themePresetEmerald => 'Emerald';
-
-  @override
-  String get themePresetRose => 'Rose';
-
-  @override
-  String get themePresetHighContrast => 'High contrast';
-
-  @override
-  String get themePresetCustom => 'Custom';
-
-  @override
-  String get themePrimaryColor => 'Primary color';
-
-  @override
-  String get themeSecondaryColor => 'Secondary color';
-
-  @override
-  String get themeBackgroundColor => 'Background color';
-
-  @override
-  String get themeSurfaceColor => 'Card/container color';
-
-  @override
-  String get themeTextPrimaryColor => 'Primary text color';
-
-  @override
-  String get themeTextSecondaryColor => 'Secondary text color';
-
-  @override
-  String get themeButtonColor => 'Button color';
-
-  @override
-  String get themeIconColor => 'Icon color';
-
-  @override
-  String get themeAppBarColor => 'AppBar color';
-
-  @override
-  String get themeNavigationBarColor => 'NavigationBar color';
-
-  @override
-  String get themePreviewTitle => 'Preview';
-
-  @override
-  String get themePreviewHeadline => 'Moniary interface';
-
-  @override
-  String get themePreviewBody =>
-      'Cards, text, buttons, icons, and navigation will use this palette.';
-
-  @override
-  String get themePreviewButton => 'Sample button';
-
-  @override
-  String get themeApplySave => 'Apply and save';
-
-  @override
-  String get themeResetDefault => 'Reset default';
-
-  @override
-  String get themeSaveHint =>
-      'Preview changes apply across the app after saving.';
-
-  @override
-  String get themeSavedMessage => 'Theme saved.';
-
-  @override
-  String get themeResetMessage => 'Default theme restored.';
-
-  @override
-  String get themeHexLabel => 'HEX color';
-
-  @override
-  String get themeRedChannel => 'R';
-
-  @override
-  String get themeGreenChannel => 'G';
-
-  @override
-  String get themeBlueChannel => 'B';
-
-  @override
   String importPreviewTitle(int count) {
     return 'Preview ($count valid rows)';
   }
@@ -3440,6 +3339,59 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get friendNotFound => 'Friend not found.';
+
+  @override
+  String get friendShareInviteLink => 'Share friend link';
+
+  @override
+  String get friendInviteShareDescription =>
+      'Send a link so others can add you faster.';
+
+  @override
+  String friendInviteShareMessage(String link) {
+    return 'Add me on Moniary: $link';
+  }
+
+  @override
+  String get friendInviteAcceptTitle => 'Friend invite';
+
+  @override
+  String friendInviteAcceptSubtitle(String name) {
+    return '$name wants to add you on Moniary.';
+  }
+
+  @override
+  String get friendInviteAcceptButton => 'Add friend';
+
+  @override
+  String get friendInviteAccepted => 'Friend added.';
+
+  @override
+  String get friendInviteLoading => 'Loading invite...';
+
+  @override
+  String get friendInvitePreviewError => 'Could not load the friend invite.';
+
+  @override
+  String get friendInviteInvalid => 'This friend link is invalid.';
+
+  @override
+  String get friendInviteExpired => 'This friend link has expired.';
+
+  @override
+  String get friendInviteUsed => 'This friend link has already been used.';
+
+  @override
+  String get friendInviteRevoked => 'This friend link was revoked.';
+
+  @override
+  String get friendInviteSelf => 'You cannot use your own friend link.';
+
+  @override
+  String get friendInviteAlreadyFriends => 'You are already friends.';
+
+  @override
+  String get friendInviteOpenFriends => 'Open friends';
 
   @override
   String get profileUsernameHint =>

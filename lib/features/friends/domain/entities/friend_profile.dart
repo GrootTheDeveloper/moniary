@@ -20,7 +20,8 @@ enum FriendRelationStatus {
   none('none'),
   friends('friends'),
   outgoingPending('outgoing_pending'),
-  incomingPending('incoming_pending');
+  incomingPending('incoming_pending'),
+  self('self');
 
   const FriendRelationStatus(this.value);
 
@@ -105,4 +106,76 @@ class FriendRequest {
     username: username,
     avatarPath: avatarPath,
   );
+}
+
+enum FriendInviteStatus {
+  active('active'),
+  used('used'),
+  revoked('revoked'),
+  expired('expired'),
+  invalid('invalid'),
+  self('self'),
+  alreadyFriends('already_friends');
+
+  const FriendInviteStatus(this.value);
+
+  final String value;
+
+  static FriendInviteStatus fromValue(String? value) {
+    return FriendInviteStatus.values.firstWhere(
+      (status) => status.value == value,
+      orElse: () => FriendInviteStatus.invalid,
+    );
+  }
+}
+
+enum FriendInviteAcceptStatus {
+  accepted('accepted'),
+  alreadyFriends('already_friends');
+
+  const FriendInviteAcceptStatus(this.value);
+
+  final String value;
+
+  static FriendInviteAcceptStatus fromValue(String? value) {
+    return FriendInviteAcceptStatus.values.firstWhere(
+      (status) => status.value == value,
+      orElse: () => FriendInviteAcceptStatus.accepted,
+    );
+  }
+}
+
+class FriendInviteLink {
+  const FriendInviteLink({
+    required this.token,
+    required this.link,
+    required this.expiresAt,
+  });
+
+  final String token;
+  final String link;
+  final DateTime expiresAt;
+}
+
+class FriendInvitePreview {
+  const FriendInvitePreview({
+    required this.status,
+    required this.relationStatus,
+    this.inviter,
+    this.expiresAt,
+  });
+
+  final FriendInviteStatus status;
+  final FriendRelationStatus relationStatus;
+  final FriendProfile? inviter;
+  final DateTime? expiresAt;
+
+  bool get canAccept => status == FriendInviteStatus.active;
+}
+
+class FriendInviteAcceptResult {
+  const FriendInviteAcceptResult({required this.status, this.inviterUserId});
+
+  final FriendInviteAcceptStatus status;
+  final String? inviterUserId;
 }
