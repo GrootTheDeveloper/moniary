@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PlaceholderCard extends StatelessWidget {
-  const PlaceholderCard({
-    required this.title,
-    required this.body,
-    super.key,
-  });
+  const PlaceholderCard({required this.title, required this.body, super.key});
 
   final String title;
   final String body;

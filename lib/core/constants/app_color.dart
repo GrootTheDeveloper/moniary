@@ -1,9 +1,12 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class AppColor {
   const AppColor._();
 
-  static Color fromHex(String? hex, {Color fallback = const Color(0xFF4EA1FF)}) {
+  static Color fromHex(
+    String? hex, {
+    Color fallback = const Color(0xFF4EA1FF),
+  }) {
     if (hex == null || hex.isEmpty) {
       return fallback;
     }
@@ -17,4 +20,3 @@ class AppColor {
     return Color(int.parse(normalized, radix: 16));
   }
 }
-

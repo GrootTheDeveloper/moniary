@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class AppTheme {
   static const background = Color(0xFF09111B);
@@ -46,10 +46,7 @@ class AppTheme {
           fontWeight: FontWeight.w700,
           letterSpacing: -0.3,
         ),
-        titleMedium: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
+        titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         bodyLarge: TextStyle(
           fontSize: 15,
           color: Color(0xFFBECCD9),
@@ -60,10 +57,7 @@ class AppTheme {
           color: Color(0xFF9CB0C2),
           height: 1.4,
         ),
-        labelLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
+        labelLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
       ),
       appBarTheme: const AppBarTheme(
         centerTitle: true,
@@ -82,7 +76,10 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surfaceRaised,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 16,
+        ),
         hintStyle: const TextStyle(color: Color(0xFF70869A)),
         labelStyle: const TextStyle(color: Color(0xFF9CB0C2)),
         border: OutlineInputBorder(
@@ -112,10 +109,7 @@ class AppTheme {
           backgroundColor: mint,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(58),
-          textStyle: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-          ),
+          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -141,9 +135,7 @@ class AppTheme {
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(999),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
       ),
     );
   }
