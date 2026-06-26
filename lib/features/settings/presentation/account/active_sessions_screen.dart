@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../app/app_theme.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
@@ -204,7 +205,7 @@ class _SessionTile extends ConsumerWidget {
       trailing: isCurrent
           ? null
           : IconButton(
-              icon: const Icon(Icons.logout, color: Colors.red),
+              icon: const Icon(Icons.logout, color: AppTheme.danger),
               onPressed: () => _showRevokeDialog(context, ref),
               tooltip: context.l10n.activeSessionsRevokeTooltip,
             ),

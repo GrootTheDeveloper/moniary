@@ -263,19 +263,19 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.amber.withValues(alpha: 0.1), AppTheme.surface],
+          colors: [AppTheme.amber.withValues(alpha: 0.1), AppTheme.surface],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+        border: Border.all(color: AppTheme.amber.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.stars, color: Colors.amber, size: 20),
+              const Icon(Icons.stars, color: AppTheme.amber, size: 20),
               const SizedBox(width: 8),
               Text(
                 context.l10n.starredTransactionsTitle,
@@ -984,7 +984,7 @@ class _ToggleButton extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? color : Colors.grey,
+            color: selected ? color : AppTheme.textDim,
             fontWeight: FontWeight.bold,
           ),
         ),

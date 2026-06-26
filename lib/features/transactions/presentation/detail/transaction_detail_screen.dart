@@ -42,7 +42,9 @@ class TransactionDetailScreen extends ConsumerWidget {
               IconButton(
                 icon: Icon(
                   transaction.isImportant ? Icons.star : Icons.star_border,
-                  color: transaction.isImportant ? Colors.amber : Colors.grey,
+                  color: transaction.isImportant
+                      ? AppTheme.amber
+                      : AppTheme.textDim,
                 ),
                 onPressed: () async {
                   final repo = ref.read(transactionRepositoryProvider);

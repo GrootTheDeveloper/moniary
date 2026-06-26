@@ -428,7 +428,7 @@ class _SeamlessHeader extends ConsumerWidget {
                 _IncomeExpensePill(
                   label: context.l10n.calendarExpense,
                   amount: monthData.totalExpense,
-                  color: Colors.redAccent,
+                  color: AppTheme.danger,
                   icon: Icons.arrow_upward_outlined,
                 ),
               ],
@@ -781,8 +781,8 @@ class _UnifiedFilterRow extends ConsumerWidget {
                     onTap: () => ref
                         .read(calendarFilterProvider.notifier)
                         .toggleStarredOnly(),
-                    activeColor: Colors.amber.withValues(alpha: 0.2),
-                    activeTextColor: Colors.amber,
+                    activeColor: AppTheme.amber.withValues(alpha: 0.2),
+                    activeTextColor: AppTheme.amber,
                     inactiveColor: Colors.transparent,
                     inactiveBorderColor: Colors.white10,
                   ),
@@ -975,7 +975,7 @@ class _CalendarDayCell extends StatelessWidget {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: Colors.orange,
+                              color: AppTheme.amber,
                               width: 1.5,
                             ),
                           ),
@@ -992,7 +992,7 @@ class _CalendarDayCell extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.orange, width: 1.5),
+                        border: Border.all(color: AppTheme.amber, width: 1.5),
                       ),
                       child: SupabaseImage(
                         imagePath: images[0].imagePath,
@@ -1013,7 +1013,7 @@ class _CalendarDayCell extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.orange,
+                            color: AppTheme.amber,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                               color: AppTheme.surface,
@@ -1086,7 +1086,7 @@ class _CalendarDayCell extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.amber.withValues(alpha: 0.15),
+                        color: AppTheme.amber.withValues(alpha: 0.15),
                         blurRadius: 12,
                         spreadRadius: 2,
                       ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../app/app_theme.dart';
 import '../../../../core/providers/camera_provider.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
@@ -191,7 +192,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
             child: Text(
               _cameraErrorMessage(context, cameraError),
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.redAccent, fontSize: 16),
+              style: const TextStyle(color: AppTheme.danger, fontSize: 16),
             ),
           ),
         ),
@@ -364,7 +365,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: isActive
-              ? Colors.amber.withValues(alpha: 0.8)
+              ? AppTheme.amber.withValues(alpha: 0.8)
               : Colors.black.withValues(alpha: 0.5),
           shape: BoxShape.circle,
         ),
