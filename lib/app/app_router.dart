@@ -462,7 +462,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
-        path: '/active-sessions',
+        path: ActiveSessionsScreen.routePath,
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
           child: const ActiveSessionsScreen(),
