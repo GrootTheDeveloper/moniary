@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../core/deeplinks/pending_deep_link_controller.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/supabase_providers.dart';
@@ -242,7 +243,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       case PostAuthDestination.profileSetup:
         context.go(ProfileSetupScreen.routePath);
       case PostAuthDestination.home:
-        context.go(CalendarScreen.routePath);
+        final pendingRoute = ref
+            .read(pendingDeepLinkProvider.notifier)
+            .consume();
+        context.go(pendingRoute ?? CalendarScreen.routePath);
       case PostAuthDestination.pendingDeletion:
         await _showRecoverySheet(decision.deletionStatus!);
     }

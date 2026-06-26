@@ -15,6 +15,7 @@ class MainShellScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.moniaryColors;
     MoniaryTab currentTab;
     switch (navigationShell.currentIndex) {
       case 0:
@@ -44,8 +45,10 @@ class MainShellScreen extends ConsumerWidget {
               width: 66,
               height: 66,
               child: FloatingActionButton(
-                backgroundColor: AppTheme.mint,
-                foregroundColor: Colors.white,
+                backgroundColor: colors.button,
+                foregroundColor: Theme.of(
+                  context,
+                ).floatingActionButtonTheme.foregroundColor,
                 shape: const CircleBorder(),
                 onPressed: () async {
                   final result = await context.push<TransactionMutationResult>(

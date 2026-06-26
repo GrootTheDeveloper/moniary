@@ -12,6 +12,7 @@ import '../../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../../transactions/presentation/detail/day_detail_screen.dart';
 import '../../../transactions/presentation/detail/transaction_detail_screen.dart';
 import '../../../transactions/presentation/detail/transaction_route_args.dart';
+import '../../../friends/presentation/screens/friends_screen.dart';
 import '../../../wallets/domain/models/wallet.dart';
 import '../../../wallets/application/wallets_controller.dart';
 import '../../application/month/calendar_filter_provider.dart';
@@ -72,6 +73,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           userName:
                               session?.user.userMetadata?['name'] ?? 'groot',
                           onProfileTap: () => _openManager(context),
+                          onFriendsTap: () => _openFriendsSheet(context),
                           onTransactionTap: _openTransactionDetail,
                           walletsAsync: walletsAsync,
                           monthAsync: monthAsync,
@@ -182,6 +184,25 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 
+  Future<void> _openFriendsSheet(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      enableDrag: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.94,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            child: const FriendsScreen(),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _openDayDetail(DateTime date) async {
     final result = await context.push<TransactionMutationResult>(
       DayDetailScreen.routePath,
@@ -231,6 +252,7 @@ class _SeamlessHeader extends ConsumerWidget {
   const _SeamlessHeader({
     required this.userName,
     required this.onProfileTap,
+    required this.onFriendsTap,
     required this.onTransactionTap,
     required this.walletsAsync,
     required this.monthAsync,
@@ -238,6 +260,7 @@ class _SeamlessHeader extends ConsumerWidget {
 
   final String userName;
   final VoidCallback onProfileTap;
+  final VoidCallback onFriendsTap;
   final Future<void> Function(TransactionEntry transaction) onTransactionTap;
   final AsyncValue<List<Wallet>> walletsAsync;
   final AsyncValue<CalendarMonthData> monthAsync;
@@ -293,6 +316,12 @@ class _SeamlessHeader extends ConsumerWidget {
                       size: 20,
                     ),
                   ),
+                ),
+                const SizedBox(width: 8),
+                _HeaderCircleButton(
+                  tooltip: context.l10n.friendsTitle,
+                  icon: Icons.people_outline,
+                  onTap: onFriendsTap,
                 ),
                 const SizedBox(width: 8),
                 GestureDetector(
@@ -409,6 +438,37 @@ class _SeamlessHeader extends ConsumerWidget {
           error: (_, _) => const SizedBox(height: 30),
         ),
       ],
+    );
+  }
+}
+
+class _HeaderCircleButton extends StatelessWidget {
+  const _HeaderCircleButton({
+    required this.tooltip,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: Colors.white70, size: 20),
+        ),
+      ),
     );
   }
 }

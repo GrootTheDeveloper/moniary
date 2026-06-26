@@ -378,18 +378,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       );
     });
 
+    final colors = context.moniaryColors;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.profileTitle),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
       ),
       body: DecoratedBox(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF0B1521), AppTheme.background, Color(0xFF08111B)],
+            colors: [
+              colors.backgroundSoft,
+              colors.background,
+              Color.lerp(colors.background, Colors.black, 0.12)!,
+            ],
           ),
         ),
         child: SafeArea(
@@ -715,25 +721,27 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(24),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: AppTheme.surfaceRaised,
+          color: colors.surfaceRaised,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppTheme.outline),
+          border: Border.all(color: colors.outline),
         ),
         child: Row(
           children: [
             Container(
               width: 56,
               height: 56,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
-                  colors: [AppTheme.mint, Colors.teal],
+                  colors: [colors.primary, colors.secondary],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -814,7 +822,7 @@ class _ProfileHeader extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            const Icon(Icons.chevron_right_outlined, color: AppTheme.mint),
+            Icon(Icons.chevron_right_outlined, color: colors.primary),
           ],
         ),
       ),

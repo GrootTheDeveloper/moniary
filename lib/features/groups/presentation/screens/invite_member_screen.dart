@@ -8,6 +8,8 @@ import '../../../friends/presentation/widgets/friend_profile_tile.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
+import '../../domain/entities/group_enums.dart';
+import '../../domain/entities/spending_group.dart';
 
 class InviteMemberScreen extends ConsumerStatefulWidget {
   const InviteMemberScreen({required this.groupId, super.key});
@@ -34,6 +36,7 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
   Widget build(BuildContext context) {
     final action = ref.watch(groupActionControllerProvider);
     final friendsAsync = ref.watch(friendsControllerProvider);
+    final detailAsync = ref.watch(groupDetailProvider(widget.groupId));
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.groupInviteTitle)),
       body: ListView(
@@ -103,17 +106,33 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
                     if (friends.isEmpty) {
                       return Text(context.l10n.groupNoFriends);
                     }
+                    final members = detailAsync.asData?.value.members;
                     return Column(
                       children: [
                         for (final friend in friends) ...[
-                          FriendProfileTile(
-                            profile: friend,
-                            trailing: FilledButton(
-                              onPressed: action.isLoading
-                                  ? null
-                                  : () => _inviteFriend(friend),
-                              child: Text(context.l10n.groupInviteAction),
-                            ),
+                          Builder(
+                            builder: (context) {
+                              final member = _memberForFriend(
+                                members,
+                                friend.userId,
+                              );
+                              final alreadyInGroup =
+                                  member?.status == GroupMemberStatus.active ||
+                                  member?.status == GroupMemberStatus.invited;
+                              return FriendProfileTile(
+                                profile: friend,
+                                trailing: alreadyInGroup
+                                    ? _MemberStatusChip(member: member!)
+                                    : FilledButton(
+                                        onPressed: action.isLoading
+                                            ? null
+                                            : () => _inviteFriend(friend),
+                                        child: Text(
+                                          context.l10n.groupInviteAction,
+                                        ),
+                                      ),
+                              );
+                            },
                           ),
                           if (friend != friends.last)
                             const SizedBox(height: 10),
@@ -128,6 +147,19 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
         ],
       ),
     );
+  }
+
+  SpendingGroupMember? _memberForFriend(
+    List<SpendingGroupMember>? members,
+    String userId,
+  ) {
+    if (members == null) return null;
+    for (final member in members) {
+      if (member.userId == userId) {
+        return member;
+      }
+    }
+    return null;
   }
 
   Future<void> _inviteFriend(FriendProfile friend) async {
@@ -183,5 +215,19 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+}
+
+class _MemberStatusChip extends StatelessWidget {
+  const _MemberStatusChip({required this.member});
+
+  final SpendingGroupMember member;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = member.status == GroupMemberStatus.active
+        ? context.l10n.groupMemberActive
+        : context.l10n.groupMemberInvited;
+    return Chip(label: Text(label));
   }
 }

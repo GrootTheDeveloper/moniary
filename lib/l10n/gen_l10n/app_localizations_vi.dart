@@ -3372,6 +3372,60 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendNotFound => 'Không tìm thấy bạn bè này.';
 
   @override
+  String get friendShareInviteLink => 'Chia sẻ link kết bạn';
+
+  @override
+  String get friendInviteShareDescription =>
+      'Gửi link cho người khác để họ kết bạn với bạn nhanh hơn.';
+
+  @override
+  String friendInviteShareMessage(String link) {
+    return 'Kết bạn với mình trên Moniary nhé: $link';
+  }
+
+  @override
+  String get friendInviteAcceptTitle => 'Lời mời kết bạn';
+
+  @override
+  String friendInviteAcceptSubtitle(String name) {
+    return '$name muốn kết bạn với bạn trên Moniary.';
+  }
+
+  @override
+  String get friendInviteAcceptButton => 'Kết bạn';
+
+  @override
+  String get friendInviteAccepted => 'Đã kết bạn thành công.';
+
+  @override
+  String get friendInviteLoading => 'Đang tải lời mời...';
+
+  @override
+  String get friendInvitePreviewError => 'Không tải được lời mời kết bạn.';
+
+  @override
+  String get friendInviteInvalid => 'Link kết bạn không hợp lệ.';
+
+  @override
+  String get friendInviteExpired => 'Link kết bạn đã hết hạn.';
+
+  @override
+  String get friendInviteUsed => 'Link kết bạn đã được sử dụng.';
+
+  @override
+  String get friendInviteRevoked => 'Link kết bạn đã bị hủy.';
+
+  @override
+  String get friendInviteSelf =>
+      'Bạn không thể dùng link kết bạn của chính mình.';
+
+  @override
+  String get friendInviteAlreadyFriends => 'Hai bạn đã là bạn bè.';
+
+  @override
+  String get friendInviteOpenFriends => 'Xem danh sách bạn bè';
+
+  @override
   String get profileUsernameHint =>
       '3-30 ký tự: chữ thường, số hoặc dấu gạch dưới';
 

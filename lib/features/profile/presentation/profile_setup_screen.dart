@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../core/deeplinks/pending_deep_link_controller.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../core/preferences/preferences_providers.dart';
@@ -282,7 +283,10 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       if (context.canPop()) {
         context.pop();
       } else {
-        context.go(CalendarScreen.routePath);
+        final pendingRoute = widget.isEditMode
+            ? null
+            : ref.read(pendingDeepLinkProvider.notifier).consume();
+        context.go(pendingRoute ?? CalendarScreen.routePath);
       }
     } catch (error) {
       messenger.showSnackBar(

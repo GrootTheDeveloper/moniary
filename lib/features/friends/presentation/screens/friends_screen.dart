@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
@@ -37,6 +38,13 @@ class FriendsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(context.l10n.friendsTitle),
         actions: [
+          IconButton(
+            tooltip: context.l10n.friendShareInviteLink,
+            onPressed: action.isLoading
+                ? null
+                : () => _shareInviteLink(context, ref),
+            icon: const Icon(Icons.ios_share_outlined),
+          ),
           IconButton(
             tooltip: context.l10n.friendAdd,
             onPressed: () => context.push(AddFriendScreen.routePath),
@@ -110,6 +118,24 @@ class FriendsScreen extends ConsumerWidget {
     ref.invalidate(incomingFriendRequestsProvider);
     ref.invalidate(outgoingFriendRequestsProvider);
     await ref.read(friendsControllerProvider.notifier).refresh();
+  }
+
+  Future<void> _shareInviteLink(BuildContext context, WidgetRef ref) async {
+    try {
+      final invite = await ref
+          .read(friendActionControllerProvider.notifier)
+          .createInviteLink();
+      if (!context.mounted) return;
+      await Share.share(
+        context.l10n.friendInviteShareMessage(invite.link),
+        subject: context.l10n.friendShareInviteLink,
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
   }
 
   Future<void> _accept(

@@ -32,6 +32,14 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="io.supabase.moniary" android:host="login-callback" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="moniary"
+                    android:host="friends"/>
+            </intent-filter>
         </activity>
         <meta-data
             android:name="flutterEmbedding"

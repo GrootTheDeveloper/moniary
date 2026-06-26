@@ -6116,6 +6116,102 @@ abstract class AppLocalizations {
   /// **'Không tìm thấy bạn bè này.'**
   String get friendNotFound;
 
+  /// No description provided for @friendShareInviteLink.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ link kết bạn'**
+  String get friendShareInviteLink;
+
+  /// No description provided for @friendInviteShareDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi link cho người khác để họ kết bạn với bạn nhanh hơn.'**
+  String get friendInviteShareDescription;
+
+  /// No description provided for @friendInviteShareMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết bạn với mình trên Moniary nhé: {link}'**
+  String friendInviteShareMessage(String link);
+
+  /// No description provided for @friendInviteAcceptTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời kết bạn'**
+  String get friendInviteAcceptTitle;
+
+  /// No description provided for @friendInviteAcceptSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} muốn kết bạn với bạn trên Moniary.'**
+  String friendInviteAcceptSubtitle(String name);
+
+  /// No description provided for @friendInviteAcceptButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết bạn'**
+  String get friendInviteAcceptButton;
+
+  /// No description provided for @friendInviteAccepted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã kết bạn thành công.'**
+  String get friendInviteAccepted;
+
+  /// No description provided for @friendInviteLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải lời mời...'**
+  String get friendInviteLoading;
+
+  /// No description provided for @friendInvitePreviewError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được lời mời kết bạn.'**
+  String get friendInvitePreviewError;
+
+  /// No description provided for @friendInviteInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link kết bạn không hợp lệ.'**
+  String get friendInviteInvalid;
+
+  /// No description provided for @friendInviteExpired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link kết bạn đã hết hạn.'**
+  String get friendInviteExpired;
+
+  /// No description provided for @friendInviteUsed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link kết bạn đã được sử dụng.'**
+  String get friendInviteUsed;
+
+  /// No description provided for @friendInviteRevoked.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link kết bạn đã bị hủy.'**
+  String get friendInviteRevoked;
+
+  /// No description provided for @friendInviteSelf.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không thể dùng link kết bạn của chính mình.'**
+  String get friendInviteSelf;
+
+  /// No description provided for @friendInviteAlreadyFriends.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hai bạn đã là bạn bè.'**
+  String get friendInviteAlreadyFriends;
+
+  /// No description provided for @friendInviteOpenFriends.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem danh sách bạn bè'**
+  String get friendInviteOpenFriends;
+
   /// No description provided for @profileUsernameHint.
   ///
   /// In vi, this message translates to:

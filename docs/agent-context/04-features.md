@@ -40,9 +40,10 @@
 - **Storage**: Group avatars and transaction images are private paths in `transaction-images`; display uses signed URLs.
 
 ## Feature: Friends
-- **Purpose**: Search users by username, send/accept/decline/cancel friend requests, remove friends, and invite friends into expense groups.
+- **Purpose**: Search users by username, send/accept/decline/cancel friend requests, create shareable friend invite links, accept friend invites from deep links, remove friends, and invite friends into expense groups.
 - **Main files**: `features/friends/`
-- **UI screens**: `FriendsScreen`, `AddFriendScreen`.
+- **UI screens**: `FriendsScreen`, `AddFriendScreen`, `FriendInviteAcceptScreen`.
+- **Deep links**: Android handles `moniary://friends/invite/<token>` via `app_links`; unauthenticated users keep a pending route and continue after login/profile setup.
 - **Data**: `FriendRepository` supports Supabase and mock mode. Supabase mutations use RPCs to avoid direct client-side writes to friend tables.
 - **Privacy**: User search returns minimal profile fields only and does not expose email addresses.
 

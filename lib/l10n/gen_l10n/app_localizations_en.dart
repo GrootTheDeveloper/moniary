@@ -3371,6 +3371,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendNotFound => 'Friend not found.';
 
   @override
+  String get friendShareInviteLink => 'Share friend link';
+
+  @override
+  String get friendInviteShareDescription =>
+      'Send a link so others can add you faster.';
+
+  @override
+  String friendInviteShareMessage(String link) {
+    return 'Add me on Moniary: $link';
+  }
+
+  @override
+  String get friendInviteAcceptTitle => 'Friend invite';
+
+  @override
+  String friendInviteAcceptSubtitle(String name) {
+    return '$name wants to add you on Moniary.';
+  }
+
+  @override
+  String get friendInviteAcceptButton => 'Add friend';
+
+  @override
+  String get friendInviteAccepted => 'Friend added.';
+
+  @override
+  String get friendInviteLoading => 'Loading invite...';
+
+  @override
+  String get friendInvitePreviewError => 'Could not load the friend invite.';
+
+  @override
+  String get friendInviteInvalid => 'This friend link is invalid.';
+
+  @override
+  String get friendInviteExpired => 'This friend link has expired.';
+
+  @override
+  String get friendInviteUsed => 'This friend link has already been used.';
+
+  @override
+  String get friendInviteRevoked => 'This friend link was revoked.';
+
+  @override
+  String get friendInviteSelf => 'You cannot use your own friend link.';
+
+  @override
+  String get friendInviteAlreadyFriends => 'You are already friends.';
+
+  @override
+  String get friendInviteOpenFriends => 'Open friends';
+
+  @override
   String get profileUsernameHint =>
       '3-30 characters: lowercase letters, numbers, or underscores';
 
