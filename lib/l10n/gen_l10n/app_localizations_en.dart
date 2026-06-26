@@ -892,6 +892,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileImportSubtitle => 'Import from CSV file';
 
   @override
+  String get profileMoniarySetup => 'Moniary Setup';
+
+  @override
+  String get profileGeneralSection => 'General';
+
+  @override
+  String get profileSupportSection => 'Support';
+
+  @override
+  String get profilePrivacySafetySection => 'Privacy & Safety';
+
+  @override
+  String get profileDangerZoneSection => 'Danger Zone';
+
+  @override
+  String get profileHowMoniaryWorksTitle => 'How Moniary works';
+
+  @override
+  String get profileHowMoniaryWorksSubtitle =>
+      'Quick guide for recording and reviewing your finances.';
+
+  @override
+  String get profileSetupGuideWalletTitle => 'Set up wallets';
+
+  @override
+  String get profileSetupGuideWalletBody =>
+      'Create or review wallets so transactions have a clear money source.';
+
+  @override
+  String get profileSetupGuideTransactionTitle => 'Add transactions';
+
+  @override
+  String get profileSetupGuideTransactionBody =>
+      'Capture spending with photos or enter transactions manually.';
+
+  @override
+  String get profileSetupGuideReviewTitle => 'Review Calendar and Stats';
+
+  @override
+  String get profileSetupGuideReviewBody =>
+      'Use Calendar and Statistics to understand spending by day and month.';
+
+  @override
+  String get profileSetupGuideExportTitle => 'Export and protect data';
+
+  @override
+  String get profileSetupGuideExportBody =>
+      'Export your data and review privacy controls whenever needed.';
+
+  @override
   String get profilePrivacyCenter => 'Privacy Center';
 
   @override

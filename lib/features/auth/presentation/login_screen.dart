@@ -16,7 +16,6 @@ import '../../profile/presentation/profile_setup_screen.dart';
 import '../application/auth_controller.dart';
 import '../application/account_status_controller.dart';
 import '../application/post_auth_decision_provider.dart';
-import '../../auth/data/auth_repository.dart';
 import '../../settings/domain/account/account_deletion_status.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -367,13 +366,16 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
     setState(() => _isLoading = true);
     try {
       if (_isSignUp) {
-        await ref
-            .read(authRepositoryProvider)
+        final signedIn = await ref
+            .read(authControllerProvider.notifier)
             .signUpWithEmail(
               email: _emailController.text.trim(),
               password: _passwordController.text,
             );
-        if (mounted) {
+        if (!mounted) return;
+        if (signedIn) {
+          await widget.onSuccess();
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.loginEmailConfirmationSent)),
           );

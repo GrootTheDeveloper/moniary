@@ -178,4 +178,27 @@ class AuthController extends AsyncNotifier<void> {
       rethrow;
     }
   }
+
+  Future<bool> signUpWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    state = const AsyncLoading();
+    try {
+      final session = await ref
+          .read(authRepositoryProvider)
+          .signUpWithEmail(email: email, password: password);
+      if (session?.user.id == 'mock-user-id') {
+        ref.read(mockSessionProvider.notifier).setSession(session);
+        ref
+            .read(profileRepositoryProvider)
+            .setMockEmailAndProvider(email: email, loginProvider: 'email');
+      }
+      state = const AsyncData(null);
+      return session != null;
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
 }
