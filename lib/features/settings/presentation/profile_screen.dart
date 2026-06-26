@@ -820,8 +820,6 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.moniaryColors;
-
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(32),
