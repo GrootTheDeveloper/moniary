@@ -130,6 +130,21 @@ class ProfileRepository {
           .select()
           .single();
 
+      // Fix for Problem 3: Also update Supabase Auth metadata so login doesn't reset full_name
+      try {
+        await _client.auth.updateUser(
+          UserAttributes(
+            data: {
+              'full_name': fullName,
+              'username': username,
+              if (avatarUrl != null) 'avatar_url': avatarUrl,
+            },
+          ),
+        );
+      } catch (e, st) {
+        AppLogger.error('Failed to sync auth metadata (non-blocking)', e, st);
+      }
+
       return UserProfile.fromMap(row);
     } on PostgrestException catch (e, st) {
       AppLogger.error('Lỗi cơ sở dữ liệu', e, st);

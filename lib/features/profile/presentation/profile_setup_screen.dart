@@ -11,6 +11,7 @@ import '../../../features/calendar/presentation/month/calendar_screen.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../../shared/widgets/supabase_image.dart';
 import '../../auth/presentation/login_screen.dart';
+import '../../auth/application/auth_controller.dart';
 import '../application/profile_setup_controller.dart';
 
 class ProfileSetupScreen extends ConsumerStatefulWidget {
@@ -89,9 +90,13 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 IconButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (context.canPop()) {
                       context.pop();
+                    } else if (!widget.isEditMode) {
+                      // If mandatory setup, sign out when going back
+                      await ref.read(authControllerProvider.notifier).signOut();
+                      if (context.mounted) context.go(LoginScreen.routePath);
                     } else {
                       context.go(LoginScreen.routePath);
                     }

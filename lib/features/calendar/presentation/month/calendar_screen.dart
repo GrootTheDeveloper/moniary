@@ -25,6 +25,7 @@ import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../settings/application/privacy_controller.dart';
+import '../../../profile/application/profile_setup_controller.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -41,6 +42,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final session = ref.watch(currentSessionProvider);
+    final profileAsync = ref.watch(currentProfileProvider);
     final userId = session?.user.id ?? '';
     final visibleMonth = ref.watch(calendarVisibleMonthProvider);
     final monthAsync = ref.watch(calendarMonthProvider(visibleMonth));
@@ -69,8 +71,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                         child: _SeamlessHeader(
-                          userName:
-                              session?.user.userMetadata?['name'] ?? 'groot',
+                          userName: profileAsync.value?.fullName ??
+                              session?.user.userMetadata?['name'] ??
+                              'User',
+                          avatarUrl: profileAsync.value?.avatarUrl,
                           onProfileTap: () => _openManager(context),
                           onTransactionTap: _openTransactionDetail,
                           walletsAsync: walletsAsync,
@@ -230,6 +234,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 class _SeamlessHeader extends ConsumerWidget {
   const _SeamlessHeader({
     required this.userName,
+    this.avatarUrl,
     required this.onProfileTap,
     required this.onTransactionTap,
     required this.walletsAsync,
@@ -237,6 +242,7 @@ class _SeamlessHeader extends ConsumerWidget {
   });
 
   final String userName;
+  final String? avatarUrl;
   final VoidCallback onProfileTap;
   final Future<void> Function(TransactionEntry transaction) onTransactionTap;
   final AsyncValue<List<Wallet>> walletsAsync;
@@ -296,6 +302,36 @@ class _SeamlessHeader extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 GestureDetector(
+                  onTap: onProfileTap,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: const BoxDecoration(
+                      color: AppTheme.mint,
+                      shape: BoxShape.circle,
+                    ),
+                    child: avatarUrl?.isNotEmpty == true
+                        ? SupabaseImage(
+                            imagePath: avatarUrl,
+                            width: 40,
+                            height: 40,
+                            borderRadius: BorderRadius.circular(20),
+                          )
+                        : Center(
+                            child: Text(
+                              userName.isNotEmpty
+                                  ? userName.substring(0, 1).toUpperCase()
+                                  : 'U',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
                   onTap: () async {
                     final transaction = await showSearch<TransactionEntry?>(
                       context: context,
@@ -318,23 +354,6 @@ class _SeamlessHeader extends ConsumerWidget {
                     ),
                     child: const Icon(
                       Icons.search,
-                      color: Colors.white70,
-                      size: 20,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: onProfileTap,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.account_balance_wallet_outlined,
                       color: Colors.white70,
                       size: 20,
                     ),

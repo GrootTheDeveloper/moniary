@@ -59,7 +59,9 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.errorGeneric;
     }
 
-    return l10n.errorGeneric;
+    // Return the actual message if it's not a generic key, 
+    // helpful for debugging Supabase specific errors
+    return error.message.isNotEmpty ? error.message : l10n.errorGeneric;
   }
-  return l10n.errorGeneric;
+  return error.toString();
 }

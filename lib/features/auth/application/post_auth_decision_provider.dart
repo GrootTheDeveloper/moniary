@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../profile/data/profile_repository.dart';
 import '../../settings/domain/account/account_deletion_status.dart';
 import 'account_status_controller.dart';
@@ -14,29 +15,35 @@ class PostAuthDecision {
   final AccountDeletionStatus? deletionStatus;
 }
 
-final postAuthDecisionProvider = FutureProvider.autoDispose<PostAuthDecision>((
+final postAuthDecisionProvider = FutureProvider<PostAuthDecision>((
   ref,
 ) async {
-  if (ref.read(currentSessionProvider) == null) {
+  final session = ref.watch(currentSessionProvider);
+  // Use ref.read for repositories to avoid race conditions during rebuilds
+  final profileRepo = ref.read(profileRepositoryProvider);
+  final statusController = ref.read(accountStatusControllerProvider.notifier);
+
+  if (session == null) {
     return const PostAuthDecision(PostAuthDestination.noSession);
   }
 
-  final deletionStatus = await ref.refresh(
-    accountStatusControllerProvider.future,
-  );
-  if (deletionStatus.isPending) {
-    return PostAuthDecision(
-      PostAuthDestination.pendingDeletion,
-      deletionStatus: deletionStatus,
-    );
-  }
+  try {
+    final deletionStatus = await ref.read(accountStatusControllerProvider.future);
+    if (deletionStatus.isPending) {
+      return PostAuthDecision(
+        PostAuthDestination.pendingDeletion,
+        deletionStatus: deletionStatus,
+      );
+    }
 
-  final profile = await ref
-      .read(profileRepositoryProvider)
-      .fetchCurrentProfile();
-  return PostAuthDecision(
-    profile == null || profile.needsSetup
-        ? PostAuthDestination.profileSetup
-        : PostAuthDestination.home,
-  );
+    final profile = await profileRepo.fetchCurrentProfile();
+    return PostAuthDecision(
+      profile == null || profile.needsSetup
+          ? PostAuthDestination.profileSetup
+          : PostAuthDestination.home,
+    );
+  } catch (e, st) {
+    AppLogger.error('Post-auth decision calculation failed', e, st);
+    rethrow;
+  }
 });
