@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
@@ -14,50 +15,46 @@ class ExportTroubleshootingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Hỗ trợ export dữ liệu')),
+      appBar: AppBar(title: Text(context.l10n.exportSupportTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: [
             const _ExportHelpHero(),
             const SizedBox(height: 16),
-            const _TroubleshootingStep(
-              title: '1. Kiểm tra loại dữ liệu đã chọn',
-              description:
-                  'Nếu file trống, hãy kiểm tra bạn đã chọn Giao dịch, Ví hoặc Danh mục trong bộ lọc export.',
+            _TroubleshootingStep(
+              title: context.l10n.exportTroubleshootingTypeTitle,
+              description: context.l10n.exportTroubleshootingTypeDesc,
             ),
-            const _TroubleshootingStep(
-              title: '2. Kiểm tra khoảng ngày',
-              description:
-                  'Nếu chọn khoảng ngày quá hẹp, file có thể không có giao dịch phù hợp.',
+            _TroubleshootingStep(
+              title: context.l10n.exportTroubleshootingDateTitle,
+              description: context.l10n.exportTroubleshootingDateDesc,
             ),
-            const _TroubleshootingStep(
-              title: '3. Mở lại từ lịch sử export',
-              description:
-                  'Sau khi tạo file, vào lịch sử export để mở lại đường dẫn file và chia sẻ khi cần.',
+            _TroubleshootingStep(
+              title: context.l10n.exportTroubleshootingHistoryTitle,
+              description: context.l10n.exportTroubleshootingHistoryDesc,
             ),
-            const _TroubleshootingStep(
-              title: '4. Tạo request hỗ trợ',
-              description:
-                  'Nếu file không tạo được hoặc không mở được, hãy tạo request privacy/support kèm mô tả lỗi.',
+            _TroubleshootingStep(
+              title: context.l10n.exportTroubleshootingSupportTitle,
+              description: context.l10n.exportTroubleshootingSupportDesc,
             ),
             const SizedBox(height: 4),
             OutlinedButton.icon(
               onPressed: () => context.push(ExportDataScreen.routePath),
               icon: const Icon(Icons.file_download_outlined),
-              label: const Text('Mở export dữ liệu'),
+              label: Text(context.l10n.exportOpenData),
             ),
             const SizedBox(height: 10),
             OutlinedButton.icon(
               onPressed: () => context.push(ExportHistoryScreen.routePath),
-              icon: const Icon(Icons.history_rounded),
-              label: const Text('Mở lịch sử export'),
+              icon: const Icon(Icons.history_outlined),
+              label: Text(context.l10n.exportOpenHistory),
             ),
             const SizedBox(height: 10),
             OutlinedButton.icon(
               onPressed: () => context.push(PrivacyContactScreen.routePath),
               icon: const Icon(Icons.support_agent_outlined),
-              label: const Text('Tạo yêu cầu hỗ trợ'),
+              label: Text(context.l10n.exportCreateSupportRequest),
             ),
           ],
         ),
@@ -79,7 +76,7 @@ class _ExportHelpHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Hướng dẫn này giúp xử lý nhanh khi file CSV, Excel hoặc PDF không có dữ liệu, không mở được hoặc không tìm thấy sau khi export.',
+        context.l10n.exportTroubleshootingHero,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );

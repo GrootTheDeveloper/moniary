@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
 
@@ -10,45 +11,40 @@ class DataSafetyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Data Safety')),
+      appBar: AppBar(title: Text(context.l10n.privacyDataSafety)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: const [
+          children: [
             _DataSafetyCard(
-              icon: Icons.person_outline_rounded,
-              title: 'Personal info',
-              status: 'Có, khi đăng nhập email hoặc Google',
-              description:
-                  'Tên hiển thị, email, avatar và user ID dùng cho đăng nhập và đồng bộ dữ liệu.',
+              icon: Icons.person_outlined,
+              title: context.l10n.dataSafetyPersonalInfoTitle,
+              status: context.l10n.dataSafetyPersonalInfoStatus,
+              description: context.l10n.dataSafetyPersonalInfoDesc,
             ),
             _DataSafetyCard(
               icon: Icons.account_balance_wallet_outlined,
-              title: 'Financial info',
-              status: 'Có',
-              description:
-                  'Ví, danh mục, số tiền, ghi chú và ngày giao dịch do người dùng nhập.',
+              title: context.l10n.dataSafetyFinancialInfoTitle,
+              status: context.l10n.dataSafetyFinancialInfoStatus,
+              description: context.l10n.dataSafetyFinancialInfoDesc,
             ),
             _DataSafetyCard(
               icon: Icons.photo_camera_outlined,
-              title: 'Photos',
-              status: 'Có, khi người dùng chủ động chọn/chụp',
-              description:
-                  'Ảnh giao dịch được lưu trong private storage và chỉ hiển thị qua signed URL.',
+              title: context.l10n.dataSafetyPhotosTitle,
+              status: context.l10n.dataSafetyPhotosStatus,
+              description: context.l10n.dataSafetyPhotosDesc,
             ),
             _DataSafetyCard(
-              icon: Icons.fingerprint_rounded,
-              title: 'User ID',
-              status: 'Có',
-              description:
-                  'Dùng để gắn dữ liệu với đúng tài khoản và áp dụng RLS trên Supabase.',
+              icon: Icons.fingerprint_outlined,
+              title: context.l10n.dataSafetyUserIdTitle,
+              status: context.l10n.dataSafetyUserIdStatus,
+              description: context.l10n.dataSafetyUserIdDesc,
             ),
             _DataSafetyCard(
               icon: Icons.location_off_outlined,
-              title: 'Location, Contacts, SMS',
-              status: 'Không thu thập trong MVP',
-              description:
-                  'Moniary không xin quyền vị trí, danh bạ hoặc đọc SMS/email để import giao dịch.',
+              title: context.l10n.dataSafetyLocationTitle,
+              status: context.l10n.dataSafetyLocationStatus,
+              description: context.l10n.dataSafetyLocationDesc,
             ),
           ],
         ),

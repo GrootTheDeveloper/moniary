@@ -98,7 +98,7 @@ class BrandMark extends StatelessWidget {
                   border: Border.all(color: const Color(0xFF0A121D), width: 3),
                 ),
                 child: const Icon(
-                  Icons.auto_awesome_rounded,
+                  Icons.auto_awesome_outlined,
                   size: 16,
                   color: Colors.white,
                 ),

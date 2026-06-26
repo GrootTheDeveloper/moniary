@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
 
@@ -10,59 +11,59 @@ class PrivacyPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chính sách bảo mật')),
-      body: const SafeArea(
+      appBar: AppBar(title: Text(context.l10n.privacyPolicyTitle)),
+      body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(20, 8, 20, 28),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _LeadCard(),
-              SizedBox(height: 18),
+              const _LeadCard(),
+              const SizedBox(height: 18),
               _PolicySection(
-                title: 'Dữ liệu Moniary xử lý',
+                title: context.l10n.privacyPolicyDataTitle,
                 items: [
-                  'Thông tin tài khoản như tên hiển thị, email, avatar và user ID khi người dùng đăng nhập.',
-                  'Dữ liệu tài chính do người dùng nhập gồm ví, danh mục, giao dịch, số tiền, ghi chú và ngày giờ.',
-                  'Ảnh giao dịch do người dùng chụp hoặc chọn từ thiết bị.',
-                  'Thiết lập ứng dụng như nhắc nhở và tùy chọn hồ sơ.',
+                  context.l10n.privacyPolicyDataItem1,
+                  context.l10n.privacyPolicyDataItem2,
+                  context.l10n.privacyPolicyDataItem3,
+                  context.l10n.privacyPolicyDataItem4,
                 ],
               ),
               _PolicySection(
-                title: 'Mục đích sử dụng',
+                title: context.l10n.privacyPolicyPurposeTitle,
                 items: [
-                  'Đăng nhập, đồng bộ dữ liệu và khôi phục dữ liệu khi đổi thiết bị.',
-                  'Hiển thị lịch chi tiêu, chi tiết giao dịch, bộ lọc và thống kê tháng.',
-                  'Lưu ảnh giao dịch trong Supabase Storage private bucket và cấp signed URL khi cần hiển thị.',
-                  'Bảo vệ tài khoản, kiểm soát truy cập bằng RLS và hỗ trợ người dùng khi có yêu cầu.',
+                  context.l10n.privacyPolicyPurposeItem1,
+                  context.l10n.privacyPolicyPurposeItem2,
+                  context.l10n.privacyPolicyPurposeItem3,
+                  context.l10n.privacyPolicyPurposeItem4,
                 ],
               ),
               _PolicySection(
-                title: 'Chia sẻ dữ liệu',
+                title: context.l10n.privacyPolicyShareTitle,
                 items: [
-                  'Moniary không bán dữ liệu cá nhân hoặc dữ liệu tài chính của người dùng.',
-                  'Dữ liệu được lưu trên Supabase để cung cấp Auth, Database và Storage cho ứng dụng.',
-                  'MVP không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.',
+                  context.l10n.privacyPolicyShareItem1,
+                  context.l10n.privacyPolicyShareItem2,
+                  context.l10n.privacyPolicyShareItem3,
                 ],
               ),
               _PolicySection(
-                title: 'Xóa dữ liệu',
+                title: context.l10n.privacyPolicyDeleteTitle,
                 items: [
-                  'Người dùng có thể xóa từng giao dịch trong app.',
-                  'Người dùng có thể xuất dữ liệu CSV trước khi xóa tài khoản.',
-                  'Khi xóa tài khoản, Moniary yêu cầu xóa hồ sơ, ví, danh mục, giao dịch và ảnh trong Storage thuộc user ID hiện tại.',
+                  context.l10n.privacyPolicyDeleteItem1,
+                  context.l10n.privacyPolicyDeleteItem2,
+                  context.l10n.privacyPolicyDeleteItem3,
                 ],
               ),
               _PolicySection(
-                title: 'Khai báo Google Play Data Safety',
+                title: context.l10n.privacyPolicySafetyTitle,
                 items: [
-                  'Personal info: chỉ thu thập khi người dùng đăng nhập bằng email hoặc Google.',
-                  'Financial info: thu thập để lưu và hiển thị thu chi cá nhân.',
-                  'Photos: chỉ thu thập ảnh người dùng chủ động chụp hoặc chọn.',
-                  'Location, Contacts, SMS: không thu thập trong MVP.',
+                  context.l10n.privacyPolicySafetyItem1,
+                  context.l10n.privacyPolicySafetyItem2,
+                  context.l10n.privacyPolicySafetyItem3,
+                  context.l10n.privacyPolicySafetyItem4,
                 ],
               ),
-              _ContactBox(),
+              const _ContactBox(),
             ],
           ),
         ),
@@ -88,12 +89,12 @@ class _LeadCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Moniary bảo vệ dữ liệu chi tiêu cá nhân của bạn.',
+            context.l10n.privacyPolicyLeadTitle,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Nội dung này dùng cho màn hình trong app và làm bản nháp public Privacy Policy trước khi submit Google Play.',
+            context.l10n.privacyPolicyLeadDesc,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
@@ -161,7 +162,7 @@ class _ContactBox extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Trước khi phát hành, team cần đưa nội dung này lên một URL public và cập nhật email liên hệ chính thức trong Play Console.',
+        context.l10n.privacyPolicyContactDesc,
         style: Theme.of(context).textTheme.bodyMedium,
       ),
     );

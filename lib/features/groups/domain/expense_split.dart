@@ -2,5 +2,5 @@ class ExpenseSplit {
   const ExpenseSplit({required this.memberId, required this.amount});
 
   final String memberId;
-  final double amount;
+  final int amount;
 }

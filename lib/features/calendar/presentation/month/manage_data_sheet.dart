@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/l10n_extension.dart';
 import '../../../categories/presentation/category_section.dart';
 import '../../../wallets/presentation/wallet_section.dart';
 
@@ -26,7 +27,7 @@ class ManageDataSheet extends StatelessWidget {
               ),
               const SizedBox(height: 18),
               Text(
-                'Quản lý dữ liệu',
+                context.l10n.manageDataTitle,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
@@ -39,9 +40,9 @@ class ManageDataSheet extends StatelessWidget {
                 ),
                 labelColor: Colors.white,
                 unselectedLabelColor: const Color(0xFF9CB0C2),
-                tabs: const [
-                  Tab(text: 'Ví'),
-                  Tab(text: 'Danh mục'),
+                tabs: [
+                  Tab(text: context.l10n.walletTitle),
+                  Tab(text: context.l10n.categoryTitle),
                 ],
               ),
               const SizedBox(height: 18),

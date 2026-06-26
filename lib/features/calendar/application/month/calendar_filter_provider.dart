@@ -27,6 +27,10 @@ class CalendarFilterNotifier extends Notifier<CalendarFilters> {
     state = state.copyWith(clearCategory: true);
   }
 
+  void toggleStarredOnly() {
+    state = state.copyWith(isStarredOnly: !state.isStarredOnly);
+  }
+
   void reset() {
     state = const CalendarFilters();
   }

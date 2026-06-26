@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_color.dart';
+import '../../../shared/utils/error_helpers.dart';
+import '../../../shared/utils/app_logger.dart';
+import '../../../l10n/l10n_extension.dart';
+import '../../../shared/widgets/obscurable_amount_text.dart';
 import '../domain/models/wallet.dart';
 import '../application/wallets_controller.dart';
 
@@ -12,7 +17,12 @@ class WalletSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final walletsAsync = ref.watch(walletsControllerProvider);
-    final currency = NumberFormat.currency(locale: 'vi_VN', symbol: 'd');
+    final currency = NumberFormat.currency(
+      locale: Localizations.localeOf(context).toString(),
+      symbol: '',
+      decimalDigits: 0,
+    );
+    final amountSuffix = context.l10n.transactionAmountSuffix;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
@@ -27,7 +37,7 @@ class WalletSection extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'Ví / Tài khoản',
+                      context.l10n.walletTitle,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -36,20 +46,20 @@ class WalletSection extends ConsumerWidget {
                   TextButton.icon(
                     onPressed: () => _showWalletForm(context, ref),
                     icon: const Icon(Icons.add),
-                    label: const Text('Thêm'),
+                    label: Text(context.l10n.commonAdd),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
               Text(
-                'Quản lý ví mặc định, số dư khởi tạo và trạng thái kích hoạt.',
+                context.l10n.walletDescription,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 16),
               walletsAsync.when(
                 data: (wallets) {
                   if (wallets.isEmpty) {
-                    return const Text('Chưa có ví nào.');
+                    return Text(context.l10n.walletEmpty);
                   }
 
                   return Column(
@@ -59,9 +69,8 @@ class WalletSection extends ConsumerWidget {
                             padding: const EdgeInsets.only(bottom: 12),
                             child: _WalletTile(
                               wallet: wallet,
-                              balanceLabel: currency.format(
-                                wallet.initialBalance,
-                              ),
+                              balanceLabel:
+                                  '${currency.format(wallet.initialBalance).trim()}$amountSuffix',
                               onEdit: () =>
                                   _showWalletForm(context, ref, wallet: wallet),
                             ),
@@ -70,7 +79,18 @@ class WalletSection extends ConsumerWidget {
                         .toList(),
                   );
                 },
-                error: (error, stackTrace) => Text('Lỗi ví: $error'),
+                error: (error, stackTrace) {
+                  AppLogger.error(
+                    'Failed to load wallets section',
+                    error,
+                    stackTrace,
+                  );
+                  return Text(
+                    context.l10n.walletError(
+                      userFriendlyMessage(context, error),
+                    ),
+                  );
+                },
                 loading: () => const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: LinearProgressIndicator(),
@@ -118,16 +138,19 @@ class _WalletTile extends StatelessWidget {
           children: [
             Expanded(child: Text(wallet.name)),
             if (wallet.isDefault)
-              const Padding(
-                padding: EdgeInsets.only(left: 8),
-                child: Chip(label: Text('Mặc định')),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Chip(label: Text(context.l10n.walletDefault)),
               ),
           ],
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 8),
-          child: Text(
-            '${wallet.type.label} • $balanceLabel • ${wallet.isActive ? 'Đang dùng' : 'Đã ẩn'}',
+          child: ObscurableAmountText(
+            prefixText: '${_walletTypeLabel(context, wallet.type)} • ',
+            amountText: balanceLabel,
+            suffixText:
+                ' • ${wallet.isActive ? context.l10n.walletActive : context.l10n.walletInactive}',
           ),
         ),
         trailing: IconButton(
@@ -147,6 +170,7 @@ Future<void> _showWalletForm(
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     builder: (context) => _WalletFormSheet(wallet: wallet),
   );
 }
@@ -200,7 +224,9 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isEditing ? 'Sửa ví' : 'Tạo ví',
+              isEditing
+                  ? context.l10n.walletEditTitle
+                  : context.l10n.walletCreateTitle,
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -208,22 +234,24 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
             const SizedBox(height: 16),
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Tên ví'),
+              decoration: InputDecoration(labelText: context.l10n.walletName),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<WalletType>(
               initialValue: _selectedType,
               items: WalletType.values
                   .map(
-                    (type) =>
-                        DropdownMenuItem(value: type, child: Text(type.label)),
+                    (type) => DropdownMenuItem(
+                      value: type,
+                      child: Text(_walletTypeLabel(context, type)),
+                    ),
                   )
                   .toList(),
               onChanged: (value) {
                 if (value == null) return;
                 setState(() => _selectedType = value);
               },
-              decoration: const InputDecoration(labelText: 'Loại ví'),
+              decoration: InputDecoration(labelText: context.l10n.walletType),
             ),
             const SizedBox(height: 12),
             TextField(
@@ -231,25 +259,31 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
-              decoration: const InputDecoration(labelText: 'Số dư ban đầu'),
+              decoration: InputDecoration(
+                labelText: context.l10n.walletInitialBalance,
+              ),
             ),
             const SizedBox(height: 8),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               value: _isDefault,
               onChanged: (value) => setState(() => _isDefault = value),
-              title: const Text('Đặt làm ví mặc định'),
+              title: Text(context.l10n.walletSetDefault),
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               value: _isActive,
               onChanged: (value) => setState(() => _isActive = value),
-              title: const Text('Đang kích hoạt'),
+              title: Text(context.l10n.walletActivated),
             ),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _isSubmitting ? null : _submit,
-              child: Text(_isSubmitting ? 'Đang lưu...' : 'Lưu ví'),
+              child: Text(
+                _isSubmitting
+                    ? context.l10n.walletSaving
+                    : context.l10n.walletSave,
+              ),
             ),
           ],
         ),
@@ -264,7 +298,7 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
 
     if (name.isEmpty) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Tên ví không được trống.')),
+        SnackBar(content: Text(context.l10n.walletNameRequired)),
       );
       return;
     }
@@ -295,10 +329,22 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
         return;
       }
 
-      Navigator.of(context).pop();
+      context.pop();
     } catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(error.toString())));
+      messenger.showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
       setState(() => _isSubmitting = false);
     }
   }
+}
+
+String _walletTypeLabel(BuildContext context, WalletType type) {
+  return switch (type) {
+    WalletType.cash => context.l10n.walletTypeCash,
+    WalletType.bank => context.l10n.walletTypeBank,
+    WalletType.ewallet => context.l10n.walletTypeEwallet,
+    WalletType.credit => context.l10n.walletTypeCredit,
+    WalletType.other => context.l10n.walletTypeOther,
+  };
 }

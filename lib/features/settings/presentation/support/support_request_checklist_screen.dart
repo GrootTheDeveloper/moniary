@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
@@ -13,49 +14,44 @@ class SupportRequestChecklistScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Checklist gửi hỗ trợ')),
+      appBar: AppBar(title: Text(context.l10n.supportRequestChecklist)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: [
             const _ChecklistHero(),
             const SizedBox(height: 16),
-            const _ChecklistItem(
-              title: 'Mô tả thao tác đã làm',
-              description:
-                  'Ghi rõ bạn đang export, xóa tài khoản, tạo request hay mở file nào.',
+            _ChecklistItem(
+              title: context.l10n.supportChecklistActionTitle,
+              description: context.l10n.supportChecklistActionDesc,
             ),
-            const _ChecklistItem(
-              title: 'Thêm thông báo lỗi nếu có',
-              description:
-                  'Copy nội dung lỗi hoặc mô tả màn hình đang hiển thị để team dễ kiểm tra.',
+            _ChecklistItem(
+              title: context.l10n.supportChecklistErrorTitle,
+              description: context.l10n.supportChecklistErrorDesc,
             ),
-            const _ChecklistItem(
-              title: 'Đính kèm file request/export khi phù hợp',
-              description:
-                  'Nếu là yêu cầu privacy hoặc xóa dữ liệu thủ công, gửi kèm file JSON đã tạo.',
+            _ChecklistItem(
+              title: context.l10n.supportChecklistFileTitle,
+              description: context.l10n.supportChecklistFileDesc,
             ),
-            const _ChecklistItem(
-              title: 'Copy diagnostic info',
-              description:
-                  'Gửi kèm version, build và kênh release từ Trung tâm trợ giúp.',
+            _ChecklistItem(
+              title: context.l10n.supportChecklistDiagnosticTitle,
+              description: context.l10n.supportChecklistDiagnosticDesc,
             ),
-            const _ChecklistItem(
-              title: 'Không gửi dữ liệu quá nhạy cảm',
-              description:
-                  'Không gửi mật khẩu, access token hoặc ảnh hóa đơn nhạy cảm nếu không thật sự cần thiết.',
+            _ChecklistItem(
+              title: context.l10n.supportChecklistSensitiveTitle,
+              description: context.l10n.supportChecklistSensitiveDesc,
             ),
             const SizedBox(height: 4),
             OutlinedButton.icon(
               onPressed: () => context.push(HelpCenterScreen.routePath),
-              icon: const Icon(Icons.help_outline_rounded),
-              label: const Text('Mở trung tâm trợ giúp'),
+              icon: const Icon(Icons.help_outlined),
+              label: Text(context.l10n.supportOpenHelpCenter),
             ),
             const SizedBox(height: 10),
             FilledButton.icon(
               onPressed: () => context.push(PrivacyContactScreen.routePath),
               icon: const Icon(Icons.support_agent_outlined),
-              label: const Text('Tạo yêu cầu hỗ trợ'),
+              label: Text(context.l10n.exportCreateSupportRequest),
             ),
           ],
         ),
@@ -77,7 +73,7 @@ class _ChecklistHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Chuẩn bị đủ thông tin trước khi gửi yêu cầu giúp team hỗ trợ nhanh hơn và tránh chia sẻ dữ liệu nhạy cảm không cần thiết.',
+        context.l10n.supportChecklistHero,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );
@@ -111,7 +107,7 @@ class _ChecklistItem extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: const Icon(
-              Icons.check_rounded,
+              Icons.check_outlined,
               color: AppTheme.success,
               size: 20,
             ),

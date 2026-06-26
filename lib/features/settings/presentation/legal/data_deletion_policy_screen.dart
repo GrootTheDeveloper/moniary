@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
 
@@ -10,34 +11,30 @@ class DataDeletionPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chính sách xóa dữ liệu')),
+      appBar: AppBar(title: Text(context.l10n.legalDataDeletionPolicy)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: const [
+          children: [
             _PolicyStep(
               number: '1',
-              title: 'Trước khi xóa',
-              description:
-                  'Người dùng có thể xuất CSV để giữ lại lịch sử giao dịch cá nhân.',
+              title: context.l10n.deletionPolicyStep1Title,
+              description: context.l10n.deletionPolicyStep1Desc,
             ),
             _PolicyStep(
               number: '2',
-              title: 'Dữ liệu sẽ bị xóa',
-              description:
-                  'Hồ sơ, ví, danh mục, giao dịch, thiết lập nhắc nhở và ảnh trong Storage thuộc user ID hiện tại.',
+              title: context.l10n.deletionPolicyStep2Title,
+              description: context.l10n.deletionPolicyStep2Desc,
             ),
             _PolicyStep(
               number: '3',
-              title: 'Cách xóa',
-              description:
-                  'App gọi Edge Function delete-account. Function xác thực session, xóa ảnh giao dịch rồi xóa Auth user.',
+              title: context.l10n.deletionPolicyStep3Title,
+              description: context.l10n.deletionPolicyStep3Desc,
             ),
             _PolicyStep(
               number: '4',
-              title: 'Dữ liệu ngoài app',
-              description:
-                  'Nếu cần xóa dữ liệu backup, log hoặc yêu cầu ngoài app, người dùng có thể liên hệ qua kênh privacy support của team.',
+              title: context.l10n.deletionPolicyStep4Title,
+              description: context.l10n.deletionPolicyStep4Desc,
             ),
           ],
         ),

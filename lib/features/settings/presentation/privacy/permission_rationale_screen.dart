@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
 
@@ -10,45 +11,40 @@ class PermissionRationaleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Quyền truy cập')),
+      appBar: AppBar(title: Text(context.l10n.privacyPermissionRationale)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: const [
+          children: [
             _PermissionCard(
-              icon: Icons.wifi_rounded,
-              title: 'Internet',
-              status: 'Cần thiết',
-              description:
-                  'Dùng để đăng nhập, đồng bộ Supabase Database và tải ảnh giao dịch từ Storage.',
+              icon: Icons.wifi_outlined,
+              title: context.l10n.permissionInternetTitle,
+              status: context.l10n.permissionInternetStatus,
+              description: context.l10n.permissionInternetDesc,
             ),
             _PermissionCard(
               icon: Icons.camera_alt_outlined,
-              title: 'Camera',
-              status: 'Chỉ hỏi khi người dùng chụp ảnh',
-              description:
-                  'Dùng để chụp hóa đơn hoặc hình ảnh liên quan đến giao dịch.',
+              title: context.l10n.permissionCameraTitle,
+              status: context.l10n.permissionCameraStatus,
+              description: context.l10n.permissionCameraDesc,
             ),
             _PermissionCard(
               icon: Icons.photo_library_outlined,
-              title: 'Photo Picker',
-              status: 'Chỉ mở khi người dùng chọn ảnh',
-              description:
-                  'Dùng Android Photo Picker để chọn ảnh mà không cần đọc toàn bộ thư viện.',
+              title: context.l10n.permissionPhotoTitle,
+              status: context.l10n.permissionPhotoStatus,
+              description: context.l10n.permissionPhotoDesc,
             ),
             _PermissionCard(
-              icon: Icons.notifications_none_rounded,
-              title: 'Notifications',
-              status: 'Chỉ dùng khi bật nhắc nhở',
-              description:
-                  'MVP hiện không bắt buộc quyền này nếu chưa triển khai reminder production.',
+              icon: Icons.notifications_none_outlined,
+              title: context.l10n.permissionNotiTitle,
+              status: context.l10n.permissionNotiStatus,
+              description: context.l10n.permissionNotiDesc,
             ),
             _PermissionCard(
-              icon: Icons.block_rounded,
-              title: 'Không dùng Location, Contacts, SMS',
-              status: 'Không khai báo trong MVP',
-              description:
-                  'Moniary không cần vị trí, danh bạ hoặc SMS để ghi chi tiêu bằng ảnh.',
+              icon: Icons.block_outlined,
+              title: context.l10n.permissionLocationTitle,
+              status: context.l10n.permissionLocationStatus,
+              description: context.l10n.permissionLocationDesc,
             ),
           ],
         ),

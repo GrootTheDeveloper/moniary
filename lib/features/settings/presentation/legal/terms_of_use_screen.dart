@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
 
@@ -10,37 +11,32 @@ class TermsOfUseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Điều khoản sử dụng')),
+      appBar: AppBar(title: Text(context.l10n.legalTermsOfUse)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: const [
-            _TermsHero(),
-            SizedBox(height: 16),
+          children: [
+            const _TermsHero(),
+            const SizedBox(height: 16),
             _TermSection(
-              title: '1. Phạm vi sử dụng',
-              body:
-                  'Moniary được cung cấp để người dùng ghi chép và tự quản lý dữ liệu thu chi cá nhân. Người dùng chịu trách nhiệm về độ chính xác của dữ liệu đã nhập.',
+              title: context.l10n.termsOfUseScopeTitle,
+              body: context.l10n.termsOfUseScopeDesc,
             ),
             _TermSection(
-              title: '2. Dữ liệu tài khoản',
-              body:
-                  'Người dùng có thể xuất dữ liệu, gửi yêu cầu privacy và xóa tài khoản theo các công cụ được cung cấp trong app.',
+              title: context.l10n.termsOfUseAccountTitle,
+              body: context.l10n.termsOfUseAccountDesc,
             ),
             _TermSection(
-              title: '3. Nội dung người dùng',
-              body:
-                  'Ghi chú, số tiền và ảnh giao dịch do người dùng nhập hoặc tải lên chỉ nên phục vụ mục đích quản lý chi tiêu cá nhân.',
+              title: context.l10n.termsOfUseContentTitle,
+              body: context.l10n.termsOfUseContentDesc,
             ),
             _TermSection(
-              title: '4. Giới hạn trách nhiệm',
-              body:
-                  'Moniary không phải công cụ tư vấn tài chính, kế toán, thuế hoặc pháp lý. Các thống kê trong app chỉ có tính tham khảo.',
+              title: context.l10n.termsOfUseLiabilityTitle,
+              body: context.l10n.termsOfUseLiabilityDesc,
             ),
             _TermSection(
-              title: '5. Thay đổi điều khoản',
-              body:
-                  'Điều khoản có thể được cập nhật khi app bổ sung tính năng hoặc chuẩn bị phát hành chính thức.',
+              title: context.l10n.termsOfUseChangesTitle,
+              body: context.l10n.termsOfUseChangesDesc,
             ),
           ],
         ),
@@ -68,7 +64,7 @@ class _TermsHero extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Các điều khoản này tóm tắt cách người dùng nên sử dụng Moniary trong phiên bản MVP.',
+              context.l10n.termsOfUseHeroDesc,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),

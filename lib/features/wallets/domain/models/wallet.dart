@@ -9,14 +9,6 @@ extension WalletTypeX on WalletType {
     WalletType.other => 'other',
   };
 
-  String get label => switch (this) {
-    WalletType.cash => 'Tiền mặt',
-    WalletType.bank => 'Ngân hàng',
-    WalletType.ewallet => 'Ví điện tử',
-    WalletType.credit => 'Thẻ tín dụng',
-    WalletType.other => 'Khác',
-  };
-
   static WalletType fromValue(String value) {
     return WalletType.values.firstWhere(
       (type) => type.value == value,

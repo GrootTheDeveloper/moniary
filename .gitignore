@@ -2,6 +2,10 @@
 *.class
 *.log
 *.pyc
+**/__pycache__/
+**/.pytest_cache/
+**/.venv/
+**/venv/
 *.swp
 .DS_Store
 .atom/
@@ -27,7 +31,9 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+.gradle/
 .flutter-plugins-dependencies
+local.properties
 .pub-cache/
 .pub/
 /build/
@@ -41,7 +47,16 @@ app.*.map.json
 
 # Android Studio will place build artifacts here
 /android/app/debug
+/android/app/build/
 /android/app/profile
 /android/app/release
 
 README.md
+
+# Secrets & signing
+key.properties
+*.jks
+*.keystore
+.env
+*.env
+.gemini/

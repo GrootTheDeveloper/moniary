@@ -1,6 +1,10 @@
 package com.moniary.moniary
 
+import android.content.ContentValues
 import android.content.Intent
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -29,6 +33,16 @@ class MainActivity : FlutterActivity() {
                         }
                         result.success(shareFile(path))
                     }
+                    "saveToDownloads" -> {
+                        val fileName = call.argument<String>("fileName")
+                        val mimeType = call.argument<String>("mimeType")
+                        val bytes = call.argument<ByteArray>("bytes")
+                        if (fileName.isNullOrBlank() || mimeType.isNullOrBlank() || bytes == null) {
+                            result.success(null)
+                            return@setMethodCallHandler
+                        }
+                        result.success(saveToDownloads(fileName, mimeType, bytes))
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -45,7 +59,7 @@ class MainActivity : FlutterActivity() {
         }
 
         if (intent.resolveActivity(packageManager) == null) return false
-        startActivity(Intent.createChooser(intent, "Open exported file"))
+        startActivity(Intent.createChooser(intent, "Mở file đã xuất"))
         return true
     }
 
@@ -61,7 +75,7 @@ class MainActivity : FlutterActivity() {
         }
 
         if (intent.resolveActivity(packageManager) == null) return false
-        startActivity(Intent.createChooser(intent, "Share exported file"))
+        startActivity(Intent.createChooser(intent, "Chia sẻ file"))
         return true
     }
 
@@ -71,6 +85,40 @@ class MainActivity : FlutterActivity() {
             path.endsWith(".xlsx", ignoreCase = true) -> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             path.endsWith(".pdf", ignoreCase = true) -> "application/pdf"
             else -> "application/octet-stream"
+        }
+    }
+
+    private fun saveToDownloads(fileName: String, mimeType: String, bytes: ByteArray): String? {
+        return try {
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val publicFile = File(downloadsDir, fileName)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val values = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                    put(MediaStore.MediaColumns.IS_PENDING, 1)
+                }
+
+                val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                    ?: return null
+
+                contentResolver.openOutputStream(uri)?.use { output ->
+                    output.write(bytes)
+                } ?: return null
+
+                values.clear()
+                values.put(MediaStore.MediaColumns.IS_PENDING, 0)
+                contentResolver.update(uri, values, null, null)
+                publicFile.absolutePath
+            } else {
+                downloadsDir.mkdirs()
+                publicFile.writeBytes(bytes)
+                publicFile.absolutePath
+            }
+        } catch (_: Exception) {
+            null
         }
     }
 }

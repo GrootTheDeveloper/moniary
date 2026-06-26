@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../l10n/l10n_extension.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../shared/widgets/supabase_image.dart';
+import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../application/queries/transaction_queries.dart';
+import '../../../calendar/application/month/calendar_month_provider.dart';
+import '../../../statistics/presentation/statistics_view.dart';
 import '../../domain/models/transaction_mutation_result.dart';
 import '../../domain/models/transaction_entry.dart';
 import '../form/transaction_form_sheet.dart';
@@ -29,9 +36,19 @@ class DayDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Column(
           children: [
-            const Text('Hôm nay'),
             Text(
-              DateFormat('dd MMMM, yyyy', 'vi_VN').format(date),
+              DateUtils.isSameDay(date, DateTime.now())
+                  ? context.l10n.calendarToday
+                  : DateFormat(
+                      'EEEE, d/M',
+                      Localizations.localeOf(context).toString(),
+                    ).format(date),
+            ),
+            Text(
+              DateFormat(
+                'dd MMMM, yyyy',
+                Localizations.localeOf(context).toString(),
+              ).format(date),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
@@ -41,15 +58,20 @@ class DayDetailScreen extends ConsumerWidget {
         data: (transactions) =>
             _DayDetailBody(date: date, transactions: transactions),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(
-              'Không tải được giao dịch trong ngày.\n$error',
-              textAlign: TextAlign.center,
+        error: (error, stackTrace) {
+          AppLogger.error('Failed to load day transactions', error, stackTrace);
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                context.l10n.transactionLoadDayError(
+                  userFriendlyMessage(context, error),
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppTheme.mint,
@@ -84,77 +106,106 @@ class _DayDetailBody extends ConsumerWidget {
         .where((transaction) => transaction.isExpense)
         .fold<double>(0, (sum, item) => sum + item.amount);
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _SummaryCard(
-                label: 'Tổng thu',
-                value: '+${_money(income)}',
-                color: AppTheme.success,
-              ),
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.all(16),
+          sliver: SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: _SummaryCard(
+                        label: context.l10n.transactionTotalIncome,
+                        value: '+${formatVnd(income)}',
+                        color: AppTheme.success,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _SummaryCard(
+                        label: context.l10n.transactionTotalExpense,
+                        value: '-${formatVnd(expense)}',
+                        color: AppTheme.danger,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _SummaryCard(
+                  label: context.l10n.transactionNetTotal,
+                  value:
+                      '${income - expense >= 0 ? '+' : '-'}${formatVnd((income - expense).abs())}',
+                  color: income - expense >= 0
+                      ? AppTheme.success
+                      : AppTheme.danger,
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  context.l10n.transactionCount(transactions.length),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 12),
+              ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _SummaryCard(
-                label: 'Tổng chi',
-                value: '-${_money(expense)}',
-                color: AppTheme.danger,
-              ),
-            ),
-          ],
+          ),
         ),
-        const SizedBox(height: 12),
-        _SummaryCard(
-          label: 'Tổng cộng',
-          value:
-              '${income - expense >= 0 ? '+' : '-'}${_money((income - expense).abs())}',
-          color: income - expense >= 0 ? AppTheme.success : AppTheme.danger,
-        ),
-        const SizedBox(height: 18),
-        Row(
-          children: [
-            Text(
-              '${transactions.length} giao dịch',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
         if (transactions.isEmpty)
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppTheme.surface,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppTheme.outline),
-            ),
-            child: Text(
-              'Ngày này chưa có giao dịch. Bạn có thể bấm nút + để thêm ngay.',
-              style: Theme.of(context).textTheme.bodyLarge,
-              textAlign: TextAlign.center,
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: AppTheme.outline),
+                ),
+                child: Text(
+                  context.l10n.transactionDayEmpty,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
           )
         else
-          ...transactions.map(
-            (transaction) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _TransactionTile(
-                transaction: transaction,
-                onTap: () async {
-                  final result = await context.push<TransactionMutationResult>(
-                    TransactionDetailScreen.routePath,
-                    extra: TransactionDetailRouteArgs(
-                      transactionId: transaction.id,
-                      day: date,
-                    ),
-                  );
-                  if (result == null || !context.mounted) return;
-                  _applyMutation(ref, result);
-                },
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
               ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final transaction = transactions[index];
+                return TransactionGridTile(
+                      transaction: transaction,
+                      onTap: () async {
+                        final result = await context
+                            .push<TransactionMutationResult>(
+                              TransactionDetailScreen.routePath,
+                              extra: TransactionDetailRouteArgs(
+                                transaction: transaction,
+                                day: date,
+                              ),
+                            );
+                        if (result == null || !context.mounted) return;
+                        _applyMutation(ref, result);
+                      },
+                    )
+                    .animate(delay: (30 * index).ms)
+                    .fade()
+                    .slideY(
+                      begin: 0.1,
+                      end: 0,
+                      curve: Curves.easeOutQuad,
+                      duration: 300.ms,
+                    );
+              }, childCount: transactions.length),
             ),
           ),
       ],
@@ -199,8 +250,12 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
-class _TransactionTile extends StatelessWidget {
-  const _TransactionTile({required this.transaction, required this.onTap});
+class TransactionGridTile extends StatelessWidget {
+  const TransactionGridTile({
+    super.key,
+    required this.transaction,
+    required this.onTap,
+  });
 
   final TransactionEntry transaction;
   final VoidCallback onTap;
@@ -214,71 +269,116 @@ class _TransactionTile extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(22),
-      child: Ink(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppTheme.surface,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppTheme.outline),
-        ),
-        child: Row(
+      borderRadius: BorderRadius.circular(16),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          fit: StackFit.expand,
           children: [
             Container(
-              width: 54,
-              height: 54,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [accent, accent.withValues(alpha: 0.42)],
                 ),
+                boxShadow: transaction.isImportant
+                    ? [
+                        BoxShadow(
+                          color: Colors.amber.withValues(alpha: 0.2),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                      ]
+                    : null,
               ),
-              child: SupabaseImage(
-                imagePath: transaction.imagePath,
-                width: 54,
-                height: 54,
-                borderRadius: BorderRadius.circular(16),
-                fallbackIcon: Icons.receipt_long_rounded,
+              child: Hero(
+                tag: 'tx_image_${transaction.id}',
+                child: SupabaseImage(
+                  imagePath: transaction.imagePath,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                  fallbackIcon: Icons.receipt_long_outlined,
+                ),
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
+            Positioned(
+              top: 6,
+              left: 6,
+              right: 6,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    transaction.note?.trim().isNotEmpty == true
-                        ? transaction.note!.trim()
-                        : transaction.categoryName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 6),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 6,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Text(
-                        DateFormat('HH:mm').format(transaction.transactionDate),
-                      ),
-                      _MiniTag(label: transaction.categoryName, color: accent),
-                      Text(transaction.walletName),
-                    ],
-                  ),
+                  GridTag(label: transaction.categoryName),
+                  const SizedBox(height: 4),
+                  GridTag(label: transaction.walletName),
                 ],
               ),
             ),
-            const SizedBox(width: 8),
-            Text(
-              '${transaction.isIncome ? '+' : '-'}${_money(transaction.amount)}',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: transaction.isIncome
-                    ? AppTheme.success
-                    : AppTheme.danger,
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Colors.black87,
+                      Colors.black54,
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    if (transaction.isImportant) ...[
+                      const SizedBox(width: 4),
+                      const Icon(Icons.star, color: AppTheme.amber, size: 16)
+                          .animate(
+                            onPlay: (controller) =>
+                                controller.repeat(reverse: true),
+                          )
+                          .scale(
+                            begin: const Offset(1, 1),
+                            end: const Offset(1.2, 1.2),
+                            duration: 1000.ms,
+                            curve: Curves.easeInOut,
+                          )
+                          .custom(
+                            builder: (context, value, child) => Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.amber.withValues(
+                                      alpha: 0.3 * value,
+                                    ),
+                                    blurRadius: 8 * value,
+                                    spreadRadius: 2 * value,
+                                  ),
+                                ],
+                              ),
+                              child: child,
+                            ),
+                          ),
+                    ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -288,38 +388,30 @@ class _TransactionTile extends StatelessWidget {
   }
 }
 
-class _MiniTag extends StatelessWidget {
-  const _MiniTag({required this.label, required this.color});
-
+class GridTag extends StatelessWidget {
+  const GridTag({super.key, required this.label});
   final String label;
-  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(999),
+        color: Colors.black.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
         label,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: color,
-          fontWeight: FontWeight.w700,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 9,
+          fontWeight: FontWeight.w500,
         ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
-}
-
-String _money(double amount) {
-  final formatter = NumberFormat.currency(
-    locale: 'vi_VN',
-    symbol: '',
-    decimalDigits: 0,
-  );
-  return '${formatter.format(amount)}d';
 }
 
 void _applyMutation(WidgetRef ref, TransactionMutationResult result) {
@@ -340,5 +432,17 @@ void _applyMutation(WidgetRef ref, TransactionMutationResult result) {
 
   for (final day in days) {
     ref.invalidate(transactionsForDayProvider(day));
+  }
+
+  final months = <DateTime>{
+    if (result.previousDate != null)
+      DateTime(result.previousDate!.year, result.previousDate!.month, 1),
+    if (result.currentDate != null)
+      DateTime(result.currentDate!.year, result.currentDate!.month, 1),
+  };
+
+  for (final month in months) {
+    ref.invalidate(calendarMonthProvider(month));
+    ref.invalidate(statisticsMonthProvider(month));
   }
 }

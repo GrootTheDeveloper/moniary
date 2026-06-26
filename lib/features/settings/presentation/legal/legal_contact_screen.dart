@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/constants/app_constants.dart';
 
 class LegalContactScreen extends StatelessWidget {
   const LegalContactScreen({super.key});
 
   static const routePath = '/legal-contact';
 
-  static const _privacyEmail = 'privacy@moniary.app';
-  static const _supportEmail = 'support@moniary.app';
-  static const _legalEmail = 'legal@moniary.app';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Liên hệ pháp lý')),
+      appBar: AppBar(title: Text(context.l10n.legalContact)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
@@ -25,29 +23,26 @@ class LegalContactScreen extends StatelessWidget {
             _ContactCard(
               icon: Icons.privacy_tip_outlined,
               title: 'Privacy',
-              value: _privacyEmail,
-              description:
-                  'Yêu cầu dữ liệu cá nhân, xóa dữ liệu hoặc câu hỏi privacy.',
+              value: AppConstants.privacyEmail,
+              description: context.l10n.legalContactPrivacyDesc,
             ),
             _ContactCard(
               icon: Icons.support_agent_outlined,
               title: 'Support',
-              value: _supportEmail,
-              description:
-                  'Hỗ trợ chung về app, file export hoặc thao tác người dùng.',
+              value: AppConstants.supportEmail,
+              description: context.l10n.legalContactSupportDesc,
             ),
             _ContactCard(
               icon: Icons.gavel_outlined,
               title: 'Legal',
-              value: _legalEmail,
-              description:
-                  'Vấn đề điều khoản, phát hành Store hoặc yêu cầu pháp lý.',
+              value: AppConstants.legalEmail,
+              description: context.l10n.legalContactLegalDesc,
             ),
             const SizedBox(height: 4),
             FilledButton.icon(
               onPressed: () => _copyAll(context),
               icon: const Icon(Icons.content_copy_outlined),
-              label: const Text('Copy tất cả liên hệ'),
+              label: Text(context.l10n.legalCopyAllContacts),
             ),
           ],
         ),
@@ -57,14 +52,14 @@ class LegalContactScreen extends StatelessWidget {
 
   void _copyAll(BuildContext context) {
     Clipboard.setData(
-      const ClipboardData(
+      ClipboardData(
         text:
-            'Privacy: $_privacyEmail\nSupport: $_supportEmail\nLegal: $_legalEmail',
+            'Privacy: ${AppConstants.privacyEmail}\nSupport: ${AppConstants.supportEmail}\nLegal: ${AppConstants.legalEmail}',
       ),
     );
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Đã copy thông tin liên hệ.')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.l10n.legalCopyContactSuccess)),
+    );
   }
 }
 
@@ -81,7 +76,7 @@ class _LegalHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Các kênh liên hệ này giúp người dùng, reviewer hoặc team phát hành biết nơi gửi yêu cầu phù hợp.',
+        context.l10n.legalContactHero,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );
@@ -126,7 +121,7 @@ class _ContactCard extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () => _copy(context),
-                icon: const Icon(Icons.copy_rounded),
+                icon: const Icon(Icons.copy_outlined),
                 tooltip: 'Copy',
               ),
             ],
@@ -142,8 +137,8 @@ class _ContactCard extends StatelessWidget {
 
   void _copy(BuildContext context) {
     Clipboard.setData(ClipboardData(text: value));
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Đã copy $value')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.l10n.legalCopyContactValue(value))),
+    );
   }
 }

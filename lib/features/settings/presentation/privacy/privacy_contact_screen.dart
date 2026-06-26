@@ -1,4 +1,4 @@
-import 'dart:io';
+import '../../../../l10n/l10n_extension.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,12 +7,14 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../shared/utils/error_helpers.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../../domain/privacy_requests/privacy_request_history_entry.dart';
 import '../../domain/privacy_requests/privacy_request_sla.dart';
-import '../../domain/privacy_requests/privacy_request_template.dart';
 import '../../domain/privacy_requests/privacy_request_type.dart';
 import 'privacy_request_detail_screen.dart';
+import 'utils/privacy_request_l10n.dart';
 
 class PrivacyContactScreen extends ConsumerStatefulWidget {
   const PrivacyContactScreen({super.key});
@@ -27,11 +29,15 @@ class PrivacyContactScreen extends ConsumerStatefulWidget {
 class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
   final _messageController = TextEditingController();
   String _requestTypeId = privacyRequestTypes.first.id;
+  bool _didApplyInitialTemplate = false;
 
   @override
-  void initState() {
-    super.initState();
-    _applyTemplate(notify: false);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didApplyInitialTemplate) {
+      _didApplyInitialTemplate = true;
+      _applyTemplate(notify: false);
+    }
   }
 
   @override
@@ -48,15 +54,15 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(error.toString())));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(userFriendlyMessage(context, error))),
+          );
         },
       );
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Liên hệ quyền riêng tư')),
+      appBar: AppBar(title: Text(context.l10n.privacyContact)),
       body: SafeArea(
         child: Stack(
           children: [
@@ -65,26 +71,23 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
               children: [
                 const _ContactHero(),
                 const SizedBox(height: 16),
-                const _ContactInfoTile(
+                _ContactInfoTile(
                   icon: Icons.email_outlined,
-                  title: 'Email hỗ trợ',
-                  value: 'privacy@moniary.app',
-                  description:
-                      'Dùng cho yêu cầu xóa dữ liệu, xuất dữ liệu hoặc câu hỏi về quyền riêng tư.',
+                  title: context.l10n.privacyContactEmailTitle,
+                  value: AppConstants.privacyEmail,
+                  description: context.l10n.privacyContactEmailDesc,
                 ),
-                const _ContactInfoTile(
-                  icon: Icons.info_outline_rounded,
-                  title: 'Thông tin cần gửi',
-                  value: 'User ID hoặc email đăng nhập',
-                  description:
-                      'Không gửi mật khẩu, access token, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.',
+                _ContactInfoTile(
+                  icon: Icons.info_outline,
+                  title: context.l10n.privacyContactInfoTitle,
+                  value: context.l10n.privacyContactInfoValue,
+                  description: context.l10n.privacyContactInfoDesc,
                 ),
-                const _ContactInfoTile(
+                _ContactInfoTile(
                   icon: Icons.schedule_outlined,
-                  title: 'Thời gian phản hồi',
-                  value: 'Trong vòng 7 ngày làm việc',
-                  description:
-                      'Team cần cập nhật thời gian thực tế trước khi phát hành production.',
+                  title: context.l10n.privacyContactTimeTitle,
+                  value: context.l10n.privacyContactTimeValue,
+                  description: context.l10n.privacyContactTimeDesc,
                 ),
                 const SizedBox(height: 8),
                 const _SupportShortcutsCard(),
@@ -95,15 +98,15 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: _requestTypeId,
-                  decoration: const InputDecoration(labelText: 'Loại yêu cầu'),
-                  items: privacyRequestTypes
-                      .map(
-                        (type) => DropdownMenuItem(
-                          value: type.id,
-                          child: Text(type.label),
-                        ),
-                      )
-                      .toList(),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.privacyContactRequestType,
+                  ),
+                  items: privacyRequestTypes.map((type) {
+                    return DropdownMenuItem(
+                      value: type.id,
+                      child: Text(type.label(context)),
+                    );
+                  }).toList(),
                   onChanged: (value) {
                     if (value != null) {
                       _requestTypeId = value;
@@ -113,7 +116,9 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  privacyRequestTypeById(_requestTypeId).description,
+                  privacyRequestTypeByStoredValue(
+                    _requestTypeId,
+                  ).description(context),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 12),
@@ -122,27 +127,27 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                   minLines: 4,
                   maxLines: 6,
                   onChanged: (_) => setState(() {}),
-                  decoration: const InputDecoration(
-                    labelText: 'Nội dung yêu cầu',
-                    hintText: 'Mô tả ngắn điều bạn muốn team hỗ trợ.',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.privacyContactRequestContent,
+                    hintText: context.l10n.privacyContactRequestHint,
                   ),
                 ),
                 const SizedBox(height: 8),
                 TextButton.icon(
                   onPressed: _applyTemplate,
                   icon: const Icon(Icons.auto_fix_high_outlined),
-                  label: const Text('Dùng mẫu nội dung'),
+                  label: Text(context.l10n.privacyUseTemplate),
                 ),
                 const SizedBox(height: 8),
                 _RequestPreviewCard(
-                  requestType: privacyRequestTypeById(_requestTypeId),
+                  requestType: privacyRequestTypeByStoredValue(_requestTypeId),
                   message: _messageController.text,
                 ),
                 const SizedBox(height: 16),
                 FilledButton.icon(
                   onPressed: state.isLoading ? null : _createPrivacyRequest,
                   icon: const Icon(Icons.mark_email_read_outlined),
-                  label: const Text('Tạo yêu cầu privacy'),
+                  label: Text(context.l10n.privacyCreateRequest),
                 ),
               ],
             ),
@@ -160,9 +165,9 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
   }
 
   void _applyTemplate({bool notify = true}) {
-    final template = privacyRequestTemplateFor(
-      privacyRequestTypeById(_requestTypeId),
-    );
+    final template = privacyRequestTypeByStoredValue(
+      _requestTypeId,
+    ).template(context);
     _messageController.text = template;
     _messageController.selection = TextSelection.collapsed(
       offset: _messageController.text.length,
@@ -173,42 +178,28 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
   }
 
   Future<void> _createPrivacyRequest() async {
-    final file = await ref
-        .read(accountActionsControllerProvider.notifier)
-        .createPrivacyRequest(
-          requestType: privacyRequestTypeById(_requestTypeId).label,
-          message: _messageController.text,
-        );
-    if (!mounted || file == null) {
-      return;
-    }
+    final notifier = ref.read(accountActionsControllerProvider.notifier);
+    await notifier.createPrivacyRequest(
+      requestType: _requestTypeId,
+      message: _messageController.text,
+    );
+
+    if (!mounted || ref.read(accountActionsControllerProvider).hasError) return;
 
     await showDialog<void>(
       context: context,
-      builder: (context) => _PrivacyRequestDialog(file: file),
-    );
-  }
-}
-
-class _PrivacyRequestDialog extends StatelessWidget {
-  const _PrivacyRequestDialog({required this.file});
-
-  final File file;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Đã tạo yêu cầu'),
-      content: Text(
-        'File yêu cầu đã được lưu tại:\n${file.path}',
-        style: Theme.of(context).textTheme.bodyMedium,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.privacyRequestCreated),
+        content: Text(context.l10n.privacyRequestSuccessDesc),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(context.l10n.commonClose),
+          ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Đóng'),
-        ),
-      ],
     );
   }
 }
@@ -222,7 +213,7 @@ class _RequestPreviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cleanMessage = message.trim().isEmpty
-        ? 'Chưa nhập nội dung yêu cầu.'
+        ? context.l10n.privacyContactPreviewEmpty
         : message.trim();
 
     return Container(
@@ -240,13 +231,16 @@ class _RequestPreviewCard extends StatelessWidget {
               const Icon(Icons.preview_outlined, color: AppTheme.mint),
               const SizedBox(width: 8),
               Text(
-                'Xem trước yêu cầu',
+                context.l10n.privacyContactPreview,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ],
           ),
           const SizedBox(height: 12),
-          Text(requestType.label, style: Theme.of(context).textTheme.bodyLarge),
+          Text(
+            requestType.label(context),
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
           const SizedBox(height: 8),
           Text(cleanMessage, style: Theme.of(context).textTheme.bodyMedium),
         ],
@@ -275,24 +269,27 @@ class _ResponseTimelineCard extends StatelessWidget {
               const Icon(Icons.timeline_outlined, color: AppTheme.mint),
               const SizedBox(width: 8),
               Text(
-                'Quy trình phản hồi',
+                context.l10n.privacyContactProcessTimeline,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ],
           ),
           const SizedBox(height: 12),
-          const _TimelineStep(
-            label: 'Tạo request trong app',
-            description: 'App tạo file JSON để bạn gửi cho kênh hỗ trợ.',
-          ),
-          const _TimelineStep(
-            label: 'Gửi request thủ công',
-            description: 'Gửi file qua email privacy@moniary.app.',
+          _TimelineStep(
+            label: context.l10n.privacyContactProcessStep1,
+            description: context.l10n.privacyContactProcessStep1Desc,
           ),
           _TimelineStep(
-            label: 'Theo dõi phản hồi',
-            description:
-                'Mốc phản hồi dự kiến là $privacyRequestResponseBusinessDays ngày làm việc.',
+            label: context.l10n.privacyContactProcessStep2,
+            description: context.l10n.privacyContactProcessStep2Desc(
+              AppConstants.privacyEmail,
+            ),
+          ),
+          _TimelineStep(
+            label: context.l10n.privacyContactProcessStep3,
+            description: context.l10n.privacyContactProcessStep3Desc(
+              privacyRequestResponseBusinessDays,
+            ),
           ),
         ],
       ),
@@ -302,8 +299,6 @@ class _ResponseTimelineCard extends StatelessWidget {
 
 class _SupportShortcutsCard extends StatelessWidget {
   const _SupportShortcutsCard();
-
-  static const _privacyEmail = 'privacy@moniary.app';
 
   @override
   Widget build(BuildContext context) {
@@ -322,7 +317,7 @@ class _SupportShortcutsCard extends StatelessWidget {
               const Icon(Icons.contact_support_outlined, color: AppTheme.mint),
               const SizedBox(width: 8),
               Text(
-                'Lối tắt hỗ trợ',
+                context.l10n.privacyContactShortcuts,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ],
@@ -331,20 +326,25 @@ class _SupportShortcutsCard extends StatelessWidget {
           Column(
             children: [
               OutlinedButton.icon(
-                onPressed: () =>
-                    _copy(context, _privacyEmail, 'Đã copy email support.'),
+                onPressed: () => _copy(
+                  context,
+                  AppConstants.privacyEmail,
+                  context.l10n.privacyContactCopyEmailSuccess,
+                ),
                 icon: const Icon(Icons.email_outlined),
-                label: const Text('Copy email'),
+                label: Text(context.l10n.privacyCopyEmail),
               ),
               const SizedBox(height: 10),
               OutlinedButton.icon(
                 onPressed: () => _copy(
                   context,
-                  'Email: $_privacyEmail\nChủ đề: Moniary privacy request\nĐính kèm file request JSON đã tạo trong app.',
-                  'Đã copy hướng dẫn gửi request.',
+                  context.l10n.privacyContactCopyGuide(
+                    AppConstants.privacyEmail,
+                  ),
+                  context.l10n.privacyContactCopyGuideSuccess,
                 ),
                 icon: const Icon(Icons.content_copy_outlined),
-                label: const Text('Copy hướng dẫn'),
+                label: Text(context.l10n.privacyCopyInstructions),
               ),
             ],
           ),
@@ -403,13 +403,13 @@ class _TimelineStep extends StatelessWidget {
   }
 }
 
-class _PrivacyRequestHistorySection extends StatelessWidget {
+class _PrivacyRequestHistorySection extends ConsumerWidget {
   const _PrivacyRequestHistorySection({required this.historyAsync});
 
   final AsyncValue<List<PrivacyRequestHistoryEntry>> historyAsync;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return historyAsync.when(
       data: (history) {
         if (history.isEmpty) {
@@ -428,10 +428,10 @@ class _PrivacyRequestHistorySection extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.history_rounded, color: AppTheme.mint),
+                  const Icon(Icons.history_outlined, color: AppTheme.mint),
                   const SizedBox(width: 8),
                   Text(
-                    'Yêu cầu gần đây',
+                    context.l10n.privacyContactRecentRequests,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ],
@@ -454,7 +454,30 @@ class _PrivacyRequestHistorySection extends StatelessWidget {
         );
       },
       loading: () => const SizedBox.shrink(),
-      error: (error, stackTrace) => const SizedBox.shrink(),
+      error: (error, stackTrace) => Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppTheme.danger),
+        ),
+        child: Column(
+          children: [
+            Text(
+              context.l10n.errorGeneric,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppTheme.danger),
+            ),
+            const SizedBox(height: 8),
+            TextButton.icon(
+              onPressed: () => ref.invalidate(privacyRequestHistoryProvider),
+              icon: const Icon(Icons.refresh_outlined),
+              label: Text(context.l10n.commonRetry),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -497,7 +520,9 @@ class _PrivacyRequestHistoryTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    entry.requestType,
+                    privacyRequestTypeByStoredValue(
+                      entry.requestType,
+                    ).label(context),
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 2),
@@ -507,7 +532,7 @@ class _PrivacyRequestHistoryTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    status.label,
+                    status.label(context),
                     style: Theme.of(
                       context,
                     ).textTheme.bodyMedium?.copyWith(color: AppTheme.mint),
@@ -516,7 +541,7 @@ class _PrivacyRequestHistoryTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(Icons.chevron_right_rounded, color: AppTheme.mint),
+            const Icon(Icons.chevron_right_outlined, color: AppTheme.mint),
           ],
         ),
       ),
@@ -540,18 +565,18 @@ class _ContactHero extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Icon(
-            Icons.support_agent_rounded,
+            Icons.support_agent_outlined,
             color: AppTheme.mint,
             size: 34,
           ),
           const SizedBox(height: 12),
           Text(
-            'Yêu cầu về dữ liệu cá nhân',
+            context.l10n.privacyContactHeroTitle,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
           Text(
-            'Nếu không thể xử lý trực tiếp trong app, người dùng có thể liên hệ team để yêu cầu hỗ trợ về dữ liệu.',
+            context.l10n.privacyContactHeroDesc,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],

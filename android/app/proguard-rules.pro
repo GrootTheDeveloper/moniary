@@ -1,0 +1,5 @@
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class io.supabase.** { *; }
+-keep class com.google.gson.** { *; }
+-dontwarn io.flutter.embedding.**

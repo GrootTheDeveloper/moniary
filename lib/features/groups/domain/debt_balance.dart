@@ -7,5 +7,5 @@ class DebtSettlement {
 
   final String fromMemberId;
   final String toMemberId;
-  final double amount;
+  final int amount;
 }

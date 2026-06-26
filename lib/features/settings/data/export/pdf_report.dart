@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 class PdfReport {
-  PdfReport({required this.lines});
+  PdfReport({required this.title, required this.lines});
 
+  final String title;
   final List<String> lines;
 
   Uint8List build() {
@@ -12,7 +13,7 @@ class PdfReport {
       ..writeln('BT')
       ..writeln('/F1 18 Tf')
       ..writeln('50 780 Td')
-      ..writeln('(${_pdfText('Moniary Export Report')}) Tj')
+      ..writeln('(${_pdfText(title)}) Tj')
       ..writeln('/F1 10 Tf');
 
     for (final line in pageLines) {

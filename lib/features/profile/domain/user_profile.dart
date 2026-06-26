@@ -1,4 +1,4 @@
-﻿class UserProfile {
+class UserProfile {
   const UserProfile({
     required this.id,
     required this.fullName,
@@ -6,6 +6,7 @@
     required this.avatarUrl,
     required this.loginProvider,
     required this.timezone,
+    this.username,
   });
 
   final String id;
@@ -14,9 +15,11 @@
   final String? avatarUrl;
   final String loginProvider;
   final String timezone;
+  final String? username;
 
   bool get needsSetup {
     final name = fullName?.trim() ?? '';
+    // Assumption: default displayName from Supabase trigger is 'guest'
     return name.isEmpty || name.toLowerCase() == 'guest';
   }
 
@@ -28,6 +31,7 @@
       avatarUrl: map['avatar_url'] as String?,
       loginProvider: (map['login_provider'] as String?) ?? 'anonymous',
       timezone: (map['timezone'] as String?) ?? 'Asia/Ho_Chi_Minh',
+      username: map['username'] as String?,
     );
   }
 }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/error_helpers.dart';
 import '../../../categories/domain/models/category.dart';
 import '../../../categories/application/categories_controller.dart';
 import '../../../wallets/domain/models/wallet.dart';
@@ -16,6 +19,7 @@ Future<DateTime?> showCreateTransactionSheet(
   return showModalBottomSheet<DateTime>(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     builder: (context) => const _CreateTransactionSheet(),
   );
 }
@@ -38,6 +42,50 @@ class _CreateTransactionSheetState
   String? _selectedCategoryId;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _setDefaultSelections();
+    });
+  }
+
+  void _setDefaultSelections() {
+    final walletsAsync = ref.read(walletsControllerProvider);
+    final categoriesAsync = ref.read(categoriesControllerProvider);
+
+    final wallets =
+        walletsAsync.asData?.value
+            .where((wallet) => wallet.isActive)
+            .toList() ??
+        const <Wallet>[];
+    final categories =
+        categoriesAsync.asData?.value
+            .where((category) => category.isActive && category.type == _type)
+            .toList() ??
+        const <Category>[];
+
+    bool needsUpdate = false;
+
+    if (_selectedWalletId == null && wallets.isNotEmpty) {
+      _selectedWalletId = wallets
+          .firstWhere((wallet) => wallet.isDefault, orElse: () => wallets.first)
+          .id;
+      needsUpdate = true;
+    }
+
+    if (categories.isNotEmpty &&
+        !categories.any((category) => category.id == _selectedCategoryId)) {
+      _selectedCategoryId = categories.first.id;
+      needsUpdate = true;
+    }
+
+    if (needsUpdate) {
+      setState(() {});
+    }
+  }
+
+  @override
   void dispose() {
     _amountController.dispose();
     _noteController.dispose();
@@ -46,6 +94,15 @@ class _CreateTransactionSheetState
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(walletsControllerProvider, (_, _) {
+      if (!mounted) return;
+      _setDefaultSelections();
+    });
+    ref.listen(categoriesControllerProvider, (_, _) {
+      if (!mounted) return;
+      _setDefaultSelections();
+    });
+
     final walletsAsync = ref.watch(walletsControllerProvider);
     final categoriesAsync = ref.watch(categoriesControllerProvider);
     final composerState = ref.watch(transactionComposerProvider);
@@ -60,18 +117,6 @@ class _CreateTransactionSheetState
             .where((category) => category.isActive && category.type == _type)
             .toList() ??
         const <Category>[];
-
-    _selectedWalletId ??= wallets.isNotEmpty
-        ? (wallets.firstWhere(
-            (wallet) => wallet.isDefault,
-            orElse: () => wallets.first,
-          )).id
-        : null;
-
-    if (categories.isNotEmpty &&
-        !categories.any((category) => category.id == _selectedCategoryId)) {
-      _selectedCategoryId = categories.first.id;
-    }
 
     final canSubmit =
         wallets.isNotEmpty && categories.isNotEmpty && !composerState.isLoading;
@@ -101,12 +146,12 @@ class _CreateTransactionSheetState
               ),
               const SizedBox(height: 18),
               Text(
-                'Them giao dich',
+                context.l10n.transactionCreateTitle,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
               Text(
-                'Luu giao dich truoc, phan anh se duoc them o buoc tiep theo.',
+                context.l10n.transactionCreateSubtitle,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 20),
@@ -114,15 +159,30 @@ class _CreateTransactionSheetState
                 spacing: 10,
                 children: [
                   _ChoiceChip(
-                    label: 'Chi',
+                    label: context.l10n.categoryExpense,
                     selected: _type == TransactionType.expense,
-                    onTap: () =>
-                        setState(() => _type = TransactionType.expense),
+                    onTap: () {
+                      setState(() {
+                        _type = TransactionType.expense;
+                        _selectedCategoryId = null;
+                      });
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) _setDefaultSelections();
+                      });
+                    },
                   ),
                   _ChoiceChip(
-                    label: 'Thu',
+                    label: context.l10n.categoryIncome,
                     selected: _type == TransactionType.income,
-                    onTap: () => setState(() => _type = TransactionType.income),
+                    onTap: () {
+                      setState(() {
+                        _type = TransactionType.income;
+                        _selectedCategoryId = null;
+                      });
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) _setDefaultSelections();
+                      });
+                    },
                   ),
                 ],
               ),
@@ -132,10 +192,10 @@ class _CreateTransactionSheetState
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: const InputDecoration(
-                  labelText: 'So tien',
+                decoration: InputDecoration(
+                  labelText: context.l10n.transactionAmount,
                   hintText: '57000',
-                  prefixIcon: Icon(Icons.payments_outlined),
+                  prefixIcon: const Icon(Icons.payments_outlined),
                 ),
               ),
               const SizedBox(height: 14),
@@ -152,9 +212,9 @@ class _CreateTransactionSheetState
                 onChanged: wallets.isEmpty
                     ? null
                     : (value) => setState(() => _selectedWalletId = value),
-                decoration: const InputDecoration(
-                  labelText: 'Wallet',
-                  prefixIcon: Icon(Icons.account_balance_wallet_outlined),
+                decoration: InputDecoration(
+                  labelText: context.l10n.transactionWallet,
+                  prefixIcon: const Icon(Icons.account_balance_wallet_outlined),
                 ),
               ),
               const SizedBox(height: 14),
@@ -171,9 +231,9 @@ class _CreateTransactionSheetState
                 onChanged: categories.isEmpty
                     ? null
                     : (value) => setState(() => _selectedCategoryId = value),
-                decoration: const InputDecoration(
-                  labelText: 'Category',
-                  prefixIcon: Icon(Icons.category_outlined),
+                decoration: InputDecoration(
+                  labelText: context.l10n.transactionCategory,
+                  prefixIcon: const Icon(Icons.category_outlined),
                 ),
               ),
               const SizedBox(height: 14),
@@ -183,16 +243,16 @@ class _CreateTransactionSheetState
                 controller: _noteController,
                 minLines: 2,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Ghi chu',
-                  hintText: 'Tra sua KOI / Luong freelance / ...',
+                decoration: InputDecoration(
+                  labelText: context.l10n.transactionNote,
+                  hintText: context.l10n.transactionNoteHint,
                   alignLabelWithHint: true,
                 ),
               ),
               if (walletsAsync.hasError || categoriesAsync.hasError) ...[
                 const SizedBox(height: 12),
                 Text(
-                  'Khong tai duoc wallet/category. Mo quan ly du lieu de kiem tra.',
+                  context.l10n.transactionWalletCategoryLoadError,
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: AppTheme.danger),
@@ -202,8 +262,8 @@ class _CreateTransactionSheetState
                 const SizedBox(height: 12),
                 Text(
                   wallets.isEmpty
-                      ? 'Ban can it nhat 1 wallet dang hoat dong de tao giao dich.'
-                      : 'Ban can it nhat 1 category dang hoat dong cho loai giao dich nay.',
+                      ? context.l10n.walletNeedOneActive
+                      : context.l10n.categoryNeedOneActive,
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: AppTheme.amber),
@@ -213,7 +273,9 @@ class _CreateTransactionSheetState
               FilledButton(
                 onPressed: canSubmit ? _submit : null,
                 child: Text(
-                  composerState.isLoading ? 'Dang luu...' : 'Luu giao dich',
+                  composerState.isLoading
+                      ? context.l10n.transactionSaving
+                      : context.l10n.transactionSaveTransaction,
                 ),
               ),
             ],
@@ -257,14 +319,14 @@ class _CreateTransactionSheetState
 
     if (amount == null || amount <= 0) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Nhap so tien hop le.')),
+        SnackBar(content: Text(context.l10n.transactionAmountInvalid)),
       );
       return;
     }
 
     if (_selectedWalletId == null || _selectedCategoryId == null) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Chon wallet va category truoc khi luu.')),
+        SnackBar(content: Text(context.l10n.transactionSelectWalletCategory)),
       );
       return;
     }
@@ -284,9 +346,11 @@ class _CreateTransactionSheetState
           );
 
       if (!mounted) return;
-      Navigator.of(context).pop(_selectedDate);
+      context.pop(_selectedDate);
     } catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(error.toString())));
+      messenger.showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
     }
   }
 }
@@ -321,7 +385,7 @@ class _DateTimeTile extends StatelessWidget {
                 ).textTheme.bodyLarge?.copyWith(color: Colors.white),
               ),
             ),
-            const Icon(Icons.chevron_right_rounded),
+            const Icon(Icons.chevron_right_outlined),
           ],
         ),
       ),

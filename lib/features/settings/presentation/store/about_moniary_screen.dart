@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../domain/store/app_release_info.dart';
 
 class AboutMoniaryScreen extends StatelessWidget {
@@ -11,34 +13,31 @@ class AboutMoniaryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Giới thiệu Moniary')),
+      appBar: AppBar(title: Text(context.l10n.storeAboutMoniary)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: const [
-            _AboutHero(),
-            SizedBox(height: 16),
-            _BuildInfoCard(),
-            SizedBox(height: 12),
-            _LicenseEntry(),
+          children: [
+            const _AboutHero(),
+            const SizedBox(height: 16),
+            const _BuildInfoCard(),
+            const SizedBox(height: 12),
+            const _LicenseEntry(),
             SizedBox(height: 12),
             _AboutTile(
               icon: Icons.account_balance_wallet_outlined,
-              title: 'Mục đích',
-              description:
-                  'Moniary giúp người dùng ghi lại thu chi cá nhân, quản lý ví, danh mục và ảnh giao dịch trong một trải nghiệm đơn giản.',
+              title: context.l10n.aboutMoniaryPurposeTitle,
+              description: context.l10n.aboutMoniaryPurposeDesc,
             ),
             _AboutTile(
-              icon: Icons.lock_outline_rounded,
-              title: 'Định hướng dữ liệu',
-              description:
-                  'Dữ liệu tài chính thuộc về người dùng. App cung cấp công cụ xuất dữ liệu, xóa tài khoản và liên hệ privacy khi cần hỗ trợ.',
+              icon: Icons.lock_outline,
+              title: context.l10n.aboutMoniaryDataDirTitle,
+              description: context.l10n.aboutMoniaryDataDirDesc,
             ),
             _AboutTile(
               icon: Icons.verified_user_outlined,
-              title: 'Trạng thái MVP',
-              description:
-                  'Phiên bản hiện tại tập trung vào ghi chép chi tiêu, minh bạch dữ liệu và các yêu cầu cần thiết để chuẩn bị phát hành Store.',
+              title: context.l10n.aboutMoniaryMvpStatusTitle,
+              description: context.l10n.aboutMoniaryMvpStatusDesc,
             ),
           ],
         ),
@@ -56,8 +55,8 @@ class _LicenseEntry extends StatelessWidget {
       onTap: () {
         showLicensePage(
           context: context,
-          applicationName: 'Moniary',
-          applicationLegalese: 'MVP build for personal finance tracking.',
+          applicationName: AppConstants.appName,
+          applicationLegalese: context.l10n.aboutMoniaryHeroDesc,
         );
       },
       borderRadius: BorderRadius.circular(22),
@@ -89,19 +88,19 @@ class _LicenseEntry extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Giấy phép mã nguồn mở',
+                    context.l10n.aboutMoniaryLicenseTitle,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Xem license của Flutter và các package đang dùng trong app.',
+                    context.l10n.aboutMoniaryLicenseDesc,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
               ),
             ),
             const SizedBox(width: 10),
-            const Icon(Icons.chevron_right_rounded, color: AppTheme.mint),
+            const Icon(Icons.chevron_right_outlined, color: AppTheme.mint),
           ],
         ),
       ),
@@ -123,12 +122,18 @@ class _BuildInfoCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _BuildInfoRow(label: 'Phiên bản', value: appReleaseInfo.version),
-          const Divider(height: 24),
-          _BuildInfoRow(label: 'Build', value: appReleaseInfo.buildNumber),
+          _BuildInfoRow(
+            label: context.l10n.aboutMoniaryVersionLabel,
+            value: appReleaseInfo.version,
+          ),
           const Divider(height: 24),
           _BuildInfoRow(
-            label: 'Kênh phát hành',
+            label: context.l10n.aboutMoniaryBuildLabel,
+            value: appReleaseInfo.buildNumber,
+          ),
+          const Divider(height: 24),
+          _BuildInfoRow(
+            label: context.l10n.aboutMoniaryChannelLabel,
             value: appReleaseInfo.releaseChannel,
           ),
         ],
@@ -186,10 +191,13 @@ class _AboutHero extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          Text('Moniary', style: Theme.of(context).textTheme.headlineMedium),
+          Text(
+            context.l10n.aboutMoniaryHeroTitle,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
           const SizedBox(height: 8),
           Text(
-            'Sổ tay thu chi cá nhân có kiểm soát dữ liệu rõ ràng cho người dùng.',
+            context.l10n.aboutMoniaryHeroDesc,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],

@@ -1,14 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../features/transactions/data/repositories/transaction_repository.dart';
-
-final signedUrlProvider = FutureProvider.family<String, String>((
-  ref,
-  path,
-) async {
-  final repo = ref.read(transactionRepositoryProvider);
-  return await repo.getSignedImageUrl(path);
-});
+import '../../core/supabase/signed_url_provider.dart';
 
 class SupabaseImage extends ConsumerWidget {
   const SupabaseImage({
@@ -17,7 +11,7 @@ class SupabaseImage extends ConsumerWidget {
     this.height,
     this.fit = BoxFit.cover,
     this.borderRadius,
-    this.fallbackIcon = Icons.photo_rounded,
+    this.fallbackIcon = Icons.photo_outlined,
     super.key,
   });
 
@@ -32,6 +26,39 @@ class SupabaseImage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (imagePath == null || imagePath!.isEmpty) {
       return _buildFallback();
+    }
+
+    final isHttp = imagePath!.startsWith('http');
+    if (isHttp) {
+      return ClipRRect(
+        borderRadius: borderRadius ?? BorderRadius.zero,
+        child: Image.network(
+          imagePath!,
+          width: width,
+          height: height,
+          fit: fit,
+          errorBuilder: (context, error, stackTrace) => _buildFallback(),
+        ),
+      );
+    }
+
+    final isStoragePath =
+        imagePath!.startsWith('transactions/') ||
+        imagePath!.startsWith('avatars/') ||
+        imagePath!.startsWith('groups/') ||
+        imagePath!.startsWith('group-transactions/');
+    final isLocal = !isStoragePath;
+    if (isLocal) {
+      return ClipRRect(
+        borderRadius: borderRadius ?? BorderRadius.zero,
+        child: Image.file(
+          File(imagePath!),
+          width: width,
+          height: height,
+          fit: fit,
+          errorBuilder: (context, error, stackTrace) => _buildFallback(),
+        ),
+      );
     }
 
     final signedUrlAsync = ref.watch(signedUrlProvider(imagePath!));

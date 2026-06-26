@@ -24,12 +24,13 @@ class TransactionComposerController extends AsyncNotifier<void> {
     String? merchantName,
     String source = 'manual',
     Uint8List? imageBytes,
+    bool isImportant = false,
   }) async {
     state = const AsyncLoading();
 
     final repo = ref.read(transactionRepositoryProvider);
 
-    state = await AsyncValue.guard(() async {
+    try {
       // 1. Create transaction record (pending status)
       final transactionId = await repo.createTransaction(
         amount: amount,
@@ -40,6 +41,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
         note: note,
         merchantName: merchantName,
         source: source,
+        isImportant: isImportant,
       );
 
       // 2. If no image, we are done (but status is pending, maybe we should update to uploaded if no image?
@@ -48,6 +50,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
       if (imageBytes == null) {
         // Update to 'uploaded' even if no image? Or just leave it?
         // PRD says: image_path is null and status pending/failed is allowed.
+        state = const AsyncData(null);
         return;
       }
 
@@ -73,9 +76,10 @@ class TransactionComposerController extends AsyncNotifier<void> {
         );
         rethrow;
       }
-    });
-    if (state.hasError) {
-      throw state.error!;
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
     }
   }
 
@@ -88,11 +92,12 @@ class TransactionComposerController extends AsyncNotifier<void> {
     required DateTime transactionDate,
     String? note,
     Uint8List? imageBytes,
+    bool isImportant = false,
   }) async {
     state = const AsyncLoading();
     final repo = ref.read(transactionRepositoryProvider);
 
-    state = await AsyncValue.guard(() async {
+    try {
       await repo.updateTransaction(
         transactionId: transactionId,
         amount: amount,
@@ -101,6 +106,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
         categoryId: categoryId,
         transactionDate: transactionDate,
         note: note,
+        isImportant: isImportant,
       );
 
       if (imageBytes != null) {
@@ -123,15 +129,23 @@ class TransactionComposerController extends AsyncNotifier<void> {
           rethrow;
         }
       }
-    });
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
   }
 
   Future<void> deleteTransaction(String transactionId) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref
+    try {
+      await ref
           .read(transactionRepositoryProvider)
-          .deleteTransaction(transactionId),
-    );
+          .deleteTransaction(transactionId);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
   }
 }

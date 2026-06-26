@@ -20,6 +20,6 @@ class OcrLineItem {
   const OcrLineItem({required this.name, this.quantity, this.price});
 
   final String name;
-  final int? quantity;
+  final double? quantity;
   final double? price;
 }

@@ -1,0 +1,1421 @@
+{
+  "@@locale": "vi",
+  "appName": "Moniary",
+  "commonSave": "Lưu",
+  "commonCancel": "Hủy",
+  "commonDelete": "Xóa",
+  "commonEdit": "Sửa",
+  "commonRetry": "Thử lại",
+  "commonAdd": "Thêm",
+  "commonClose": "Đóng",
+  "commonSaving": "Đang lưu...",
+  "commonLoading": "Đang tải...",
+  "commonCopy": "Copy",
+  "commonShare": "Chia sẻ",
+  "commonOpen": "Mở",
+  "commonViewAll": "Xem tất cả",
+  "commonSelect": "Chọn",
+  "commonCreate": "Tạo",
+  "commonConfirm": "Xác nhận",
+  "errorGeneric": "Đã xảy ra lỗi. Vui lòng thử lại.",
+  "errorLocalAuthUnavailable": "Thiết bị này không hỗ trợ xác thực sinh trắc học hoặc mã khóa màn hình.",
+  "errorLocalAuthFailed": "Không thể xác thực thiết bị. Vui lòng thử lại.",
+  "errorNotLoggedIn": "Bạn chưa đăng nhập.",
+  "errorNotFound": "Dữ liệu không tồn tại.",
+  "errorConnection": "Lỗi kết nối. Vui lòng thử lại.",
+  "loginTitle": "Moniary",
+  "loginSubtitle": "Quản lý chi tiêu cá nhân",
+  "loginAnonymous": "Kết nối ẩn danh với Supabase",
+  "loginTerms": "Bằng cách tiếp tục, bạn đồng ý với các điều khoản sử dụng và chính sách bảo mật của Moniary.",
+  "loginFeatureSubtitle": "Ghi chi tiêu bằng ảnh",
+  "loginHeader": "Đăng nhập",
+  "loginGoogle": "Đăng nhập với Google",
+  "loginApple": "Đăng nhập với Apple",
+  "loginEmail": "Đăng nhập với Email",
+  "loginOr": "hoặc",
+  "loginConnecting": "Đang kết nối Supabase...",
+  "loginTryWithoutAuth": "Dùng thử không cần đăng nhập",
+  "loginSessionReady": "Phiên đăng nhập đã sẵn sàng. Bạn có thể vào thẳng Lịch.",
+  "loginDataSecure": "Dữ liệu của bạn được bảo mật và đồng bộ với Supabase.",
+  "splashLoading": "Đang tải ứng dụng...",
+  "splashRetry": "Thử lại",
+  "splashError": "Không thể kết nối. Vui lòng kiểm tra mạng và thử lại.",
+  "splashErrorConnecting": "Không thể kết nối",
+  "splashSubtitle": "Ghi chi tiêu bằng ảnh",
+  "splashDescription": "Chụp lại khoản chi, lưu vào lịch,\nquản lý tiền dễ như lưu kỷ niệm.",
+  "splashStarting": "Đang khởi động {appName}...",
+  "@splashStarting": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingSkip": "Bỏ qua",
+  "onboardingStart": "Bắt đầu",
+  "onboardingNext": "Tiếp",
+  "onboardingNextPage": "Xem tiếp",
+  "onboardingFinish": "Tiếp tục",
+  "onboardingMonthMock": "Tháng 5",
+  "onboardingPillCapture": "Chụp & lưu",
+  "onboardingPillCalendar": "Xem theo ngày",
+  "onboardingPillStats": "Thống kê",
+  "onboardingPage1Title1": "Ghi chi tiêu",
+  "onboardingPage1Title2": "bằng ảnh",
+  "onboardingPage1Subtitle": "Nhanh gọn  •  Dễ nhớ  •  Không bỏ sót",
+  "onboardingPage1Caption": "Lưu khoảnh khắc chi tiêu như một cuốn nhật ký mini.",
+  "onboardingPage2Title1": "Xem lịch tháng",
+  "onboardingPage2Title2": "trực quan",
+  "onboardingPage2Subtitle": "Ảnh, tổng chi, bộ lọc và nhắc nhở trong một màn hình",
+  "onboardingPage2Caption": "Mỗi ngày là một ô nhỏ, mỗi giao dịch là một kỷ niệm.",
+  "onboardingPage3Title1": "Thống kê",
+  "onboardingPage3Title2": "dễ hiểu",
+  "onboardingPage3Subtitle": "Theo dõi thu chi và thói quen tiêu dùng không cần bảng biểu khó",
+  "onboardingPage3Caption": "Moniary giúp bạn nhìn tiền theo ngữ cảnh sống thật.",
+  "profileSetupTitle": "Thiết lập hồ sơ",
+  "profileSetupSubtitle": "Hoàn tất thông tin để bắt đầu",
+  "profileSetupDisplayName": "Tên hiển thị",
+  "profileSetupDisplayNameHint": "Nhập tên của bạn",
+  "profileSetupCurrency": "Đơn vị tiền tệ",
+  "profileSetupStart": "Bắt đầu",
+  "profileSetupNameRequired": "Nhập tên hiển thị trước.",
+  "calendarTitle": "Lịch",
+  "calendarAllWallets": "Tất cả ví",
+  "calendarAllCategories": "Tất cả danh mục",
+  "calendarNoTransactions": "Không có giao dịch trong tháng này.",
+  "calendarIncome": "Thu",
+  "calendarExpense": "Chi",
+  "calendarBalance": "Số dư",
+  "calendarSelectWalletFilter": "Chọn ví lọc",
+  "calendarSelectCategoryFilter": "Chọn danh mục lọc",
+  "calendarMonthlyExpense": "Tổng chi tháng",
+  "calendarMonthlyIncome": "Tổng thu tháng",
+  "calendarEmptyMessage": "Chưa có giao dịch nào trong tháng này. Bước tiếp theo là thêm giao dịch để lịch hiện dữ liệu thật.",
+  "calendarStatsMessage": "{count} giao dịch trong {days} ngày có hoạt động. Lịch đang đọc dữ liệu thật từ Supabase.",
+  "@calendarStatsMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarLoadError": "Không tải được lịch tháng: {error}",
+  "@calendarLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarStatsTab": "Thống kê",
+  "calendarLoading": "Đang đồng bộ lịch...",
+  "calendarEmptyTitle": "Chưa có dữ liệu",
+  "calendarEmptyBody": "Bạn chưa có giao dịch nào trong tháng này. Hãy thêm giao dịch để bắt đầu theo dõi.",
+  "calendarErrorTitle": "Lỗi tải dữ liệu",
+  "calendarMon": "T2",
+  "calendarTue": "T3",
+  "calendarWed": "T4",
+  "calendarThu": "T5",
+  "calendarFri": "T6",
+  "calendarSat": "T7",
+  "calendarSun": "CN",
+  "calendarToday": "Hôm nay",
+  "calendarStarred": "Quan trọng",
+  "calendarSearchHint": "Tìm theo ghi chú hoặc danh mục...",
+  "calendarSearchPrompt": "Nhập ghi chú hoặc danh mục để tìm kiếm.",
+  "calendarSearchNoResults": "Không tìm thấy giao dịch nào.",
+  "transactionSaveTransaction": "Lưu giao dịch",
+  "transactionLoadDayError": "Không tải được giao dịch trong ngày.\n{error}",
+  "@transactionLoadDayError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "transactionTotalIncome": "Tổng thu",
+  "transactionTotalExpense": "Tổng chi",
+  "transactionNetTotal": "Tổng cộng",
+  "transactionCount": "{count} giao dịch",
+  "@transactionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "transactionDayEmpty": "Ngày này chưa có giao dịch. Bạn có thể bấm nút + để thêm ngay.",
+  "transactionLoadDetailError": "Không tải được chi tiết giao dịch.\n{error}",
+  "@transactionLoadDetailError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "transactionNoteEmpty": "Chưa có ghi chú cho giao dịch này.",
+  "transactionDeleteTitleQuestion": "Xóa giao dịch?",
+  "transactionDeleteUndone": "Hành động này không thể hoàn tác.",
+  "transactionAmount": "Số tiền",
+  "transactionAmountSuffix": "đ",
+  "transactionWallet": "Ví",
+  "transactionCategory": "Danh mục",
+  "transactionNote": "Ghi chú",
+  "transactionNoteHint": "Tra sua KOI / Luong freelance / ...",
+  "transactionDate": "Ngày giao dịch",
+  "transactionSelectWalletCategory": "Chọn ví và danh mục trước khi lưu.",
+  "transactionAmountInvalid": "Nhập số tiền hợp lệ.",
+  "transactionSaving": "Đang lưu...",
+  "transactionCreateTitle": "Tạo giao dịch",
+  "transactionEditTitle": "Sửa giao dịch",
+  "transactionDeleteConfirm": "Xác nhận xóa giao dịch này?",
+  "transactionDeleteSuccess": "Đã xóa giao dịch.",
+  "transactionSaveError": "Không lưu được giao dịch: {error}",
+  "@transactionSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "transactionCreateSubtitle": "Lưu giao dịch trước, phần ảnh sẽ được thêm ở bước tiếp theo.",
+  "transactionWalletCategoryLoadError": "Không tải được ví/danh mục. Mở quản lý dữ liệu để kiểm tra.",
+  "transactionChangePhoto": "Thay đổi ảnh",
+  "transactionEnterNote": "Nhập ghi chú...",
+  "transactionSelectCategory": "Chọn danh mục",
+  "transactionSelectWallet": "Chọn ví",
+  "transactionDateTime": "Ngày giờ",
+  "transactionWalletAccount": "Ví / Tài khoản",
+  "transactionExpenseCategory": "Danh mục chi",
+  "transactionLoadingWalletCategory": "Đang tải ví và danh mục...",
+  "transactionWalletCategoryError": "Không tải được ví hoặc danh mục. Vui lòng thử lại.",
+  "transactionWalletCategoryRequired": "Cần có ví và danh mục chi đang hoạt động trước khi lưu.",
+  "transactionAmountPositive": "Nhập số tiền lớn hơn 0.",
+  "transactionType": "Loại giao dịch",
+  "walletTitle": "Ví / Tài khoản",
+  "walletDescription": "Quản lý ví mặc định, số dư khởi tạo và trạng thái kích hoạt.",
+  "walletEmpty": "Chưa có ví nào.",
+  "walletDefault": "Mặc định",
+  "walletActive": "Đang dùng",
+  "walletInactive": "Đã ẩn",
+  "walletCreateTitle": "Tạo ví",
+  "walletEditTitle": "Sửa ví",
+  "walletName": "Tên ví",
+  "walletType": "Loại ví",
+  "walletInitialBalance": "Số dư ban đầu",
+  "walletSetDefault": "Đặt làm ví mặc định",
+  "walletActivated": "Đang kích hoạt",
+  "walletSaving": "Đang lưu...",
+  "walletSave": "Lưu ví",
+  "walletNameRequired": "Tên ví không được trống.",
+  "walletTypeCash": "Tiền mặt",
+  "walletTypeBank": "Ngân hàng",
+  "walletTypeEwallet": "Ví điện tử",
+  "walletTypeCredit": "Thẻ tín dụng",
+  "walletTypeOther": "Khác",
+  "walletError": "Lỗi ví: {error}",
+  "@walletError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "walletNeedOneActive": "Bạn cần ít nhất 1 ví đang hoạt động để tạo giao dịch.",
+  "categoryTitle": "Danh mục",
+  "categoryDescription": "Quản lý danh mục thu/chi để chuẩn bị cho giao dịch.",
+  "categoryEmpty": "Chưa có danh mục nào.",
+  "categoryNoData": "Chưa có dữ liệu.",
+  "categoryCreateTitle": "Tạo danh mục",
+  "categoryEditTitle": "Sửa danh mục",
+  "categoryName": "Tên danh mục",
+  "categoryType": "Loại danh mục",
+  "categoryActivated": "Đang kích hoạt",
+  "categorySaving": "Đang lưu...",
+  "categorySave": "Lưu danh mục",
+  "categoryNameRequired": "Tên danh mục không được trống.",
+  "categoryError": "Category error: {error}",
+  "@categoryError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryExpense": "Chi",
+  "categoryIncome": "Thu",
+  "categoryNeedOneActive": "Bạn cần ít nhất 1 danh mục đang hoạt động cho loại giao dịch này.",
+  "scanTitle": "Quét hóa đơn",
+  "scanTakePhoto": "Chụp ảnh",
+  "scanChooseGallery": "Chọn từ thư viện",
+  "scanExtracting": "Đang trích xuất dữ liệu...",
+  "scanFailed": "Không thể đọc hóa đơn. Vui lòng thử lại.",
+  "scanReviewTitle": "Kiểm tra hóa đơn",
+  "scanMerchant": "Cửa hàng",
+  "scanOcrConfidence": "Độ tin cậy OCR: {percent}%. Hãy kiểm tra thông tin trước khi lưu.",
+  "@scanOcrConfidence": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "scanItemsTitle": "Mục nhận diện",
+  "scanQuantity": "Số lượng: {quantity}",
+  "@scanQuantity": {
+    "placeholders": {
+      "quantity": {
+        "type": "String"
+      }
+    }
+  },
+  "scanSuccessMessage": "Đã đọc hóa đơn. Bạn có thể kiểm tra và chỉnh sửa thông tin.",
+  "scanScanning": "Đang quét...",
+  "scanExtractButton": "Trích xuất dữ liệu",
+  "scanManualEntry": "Nhập giao dịch thủ công",
+  "scanNoReceipt": "Chưa có ảnh hóa đơn",
+  "scanNoReceiptSubtitle": "Chụp ảnh hoặc chọn ảnh từ thư viện để bắt đầu.",
+  "scanImageError": "Không thể hiển thị ảnh đã chọn.",
+  "groupTitle": "Nhóm chi tiêu",
+  "groupEmpty": "Chưa có nhóm chi tiêu",
+  "groupEmptySubtitle": "Tạo nhóm để cùng theo dõi hóa đơn và chia tiền.",
+  "groupCreate": "Tạo nhóm",
+  "groupCreateDialog": "Tạo nhóm mới",
+  "groupNameLabel": "Tên nhóm",
+  "groupNeedLogin": "Bạn cần đăng nhập để tạo nhóm.",
+  "groupMemberCount": "{count} thành viên",
+  "@groupMemberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupLoadError": "Không tải được danh sách nhóm.",
+  "groupAddMember": "Thêm thành viên",
+  "groupMemberName": "Tên thành viên",
+  "groupExpenses": "Chi phí nhóm",
+  "groupAddExpense": "Thêm chi phí",
+  "groupNoExpenses": "Chưa có chi phí nào.",
+  "groupNoMembers": "Nhóm chưa có thành viên nào ngoài bạn.",
+  "groupDebtSummary": "Tổng hợp nợ",
+  "groupRemoveMemberConfirm": "Xóa thành viên này?",
+  "groupDetailTitle": "Chi tiêu nhóm",
+  "groupLoadSingleError": "Không tải được nhóm.",
+  "groupNotExists": "Nhóm không còn tồn tại.",
+  "groupMembersHeader": "Thành viên",
+  "groupExpenseHistory": "Lịch sử chi tiêu",
+  "groupLoadExpensesError": "Không tải được chi phí nhóm.",
+  "groupDeletedMember": "Thành viên đã xóa",
+  "groupMemberEmailHint": "Email (không bắt buộc)",
+  "groupDeleteExpenseConfirmTitle": "Xóa chi phí?",
+  "groupDeleteExpenseConfirmMessage": "Thao tác này sẽ cập nhật lại công nợ của nhóm.",
+  "groupPayerSubtitle": "{payer} đã trả • {date}",
+  "@groupPayerSubtitle": {
+    "placeholders": {
+      "payer": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "groupEmptyExpensesMessage": "Chưa có chi phí. Thêm hóa đơn đầu tiên để bắt đầu tính nợ.",
+  "debtSummaryTitle": "Tổng hợp nợ",
+  "debtNoData": "Chưa có dữ liệu chi phí.",
+  "debtSettlementTitle": "Gợi ý thanh toán",
+  "debtNoSettlement": "Không có khoản nợ nào cần thanh toán.",
+  "debtOwes": "{from} trả {to} {amount}",
+  "@debtOwes": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "debtSummaryAppBarTitle": "Tổng kết công nợ",
+  "debtLoadError": "Không tính được công nợ.",
+  "debtExplanation": "Số dương là số tiền cần nhận, số âm là số tiền cần trả.",
+  "debtOwesPayerToPayee": "{from} trả {to}",
+  "@debtOwesPayerToPayee": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "debtMember": "Thành viên",
+  "debtToReceive": "Sẽ nhận",
+  "debtToPay": "Cần trả",
+  "expenseFormTitle": "Thêm chi phí nhóm",
+  "expenseFormEditTitle": "Sửa chi phí",
+  "expenseAmount": "Số tiền",
+  "expenseNote": "Ghi chú",
+  "expenseDate": "Ngày",
+  "expensePayer": "Người trả",
+  "expenseParticipants": "Người tham gia",
+  "expenseSplitEqual": "Chia đều",
+  "expenseSplitManual": "Tự nhập số tiền",
+  "expenseSplitPercentage": "Theo phần trăm",
+  "expenseSave": "Lưu chi phí",
+  "expenseFormMinMembersNotice": "Hãy thêm ít nhất 2 thành viên trước khi chia chi phí.",
+  "expenseFormTotalCost": "Tổng chi phí",
+  "expenseFormContentLabel": "Nội dung",
+  "expenseFormPayer": "Người thanh toán",
+  "expenseFormDate": "Ngày chi",
+  "validationAmountPositive": "Số tiền phải lớn hơn 0.",
+  "validationMinMembers": "Nhóm phải có ít nhất {min} thành viên.",
+  "@validationMinMembers": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "validationSelectPayer": "Chọn người trả tiền.",
+  "validationSelectParticipant": "Chọn ít nhất một người tham gia.",
+  "validationSplitMismatch": "Tổng chia ({splitTotal}) phải bằng tổng chi phí ({total}).",
+  "@validationSplitMismatch": {
+    "placeholders": {
+      "splitTotal": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "validationNegativeSplit": "Phần chia không được âm.",
+  "validationInvalidParticipants": "Danh sách người tham gia không hợp lệ.",
+  "validationSplitCountMismatch": "Mỗi người tham gia cần đúng một phần chia.",
+  "profileTitle": "Hồ sơ",
+  "profileUserDefault": "Người dùng Moniary",
+  "profileAnonymous": "Tài khoản dùng thử ẩn danh",
+  "profileMyData": "Dữ liệu của tôi",
+  "profileExportData": "Xuất dữ liệu",
+  "profileExportSubtitle": "CSV, XLSX, PDF",
+  "profileImportData": "Nhập dữ liệu",
+  "profileImportSubtitle": "Nhập từ file CSV",
+  "profilePrivacyCenter": "Bảo mật & quyền riêng tư",
+  "privacyGroupPrivacyTermsTitle": "Quyền riêng tư & điều khoản",
+  "privacyGroupPrivacyTermsSubtitle": "Chính sách, điều khoản và thông báo pháp lý.",
+  "privacyTermsPolicySubtitle": "Dữ liệu cá nhân, tài chính, ảnh và dịch vụ bên thứ ba.",
+  "privacyTermsLimitationsTitle": "Điều khoản & giới hạn",
+  "privacyTermsLimitationsSubtitle": "Phạm vi sử dụng, trách nhiệm người dùng và miễn trừ tài chính.",
+  "privacyTermsRecordsTitle": "Hồ sơ chính sách",
+  "privacyTermsRecordsSubtitle": "Cập nhật chính sách, thông báo đồng ý và liên hệ pháp lý.",
+  "privacyGroupDataSafetyTitle": "An toàn dữ liệu",
+  "privacyGroupDataSafetySubtitle": "Dữ liệu, quyền truy cập và khai báo CH Play.",
+  "privacyDataOverviewTitle": "Tổng quan dữ liệu",
+  "privacyDataOverviewSubtitle": "Dữ liệu đã lưu, nhóm dữ liệu thu thập và tóm tắt tài khoản.",
+  "privacyDataControlsTitle": "Kiểm soát dữ liệu",
+  "privacyDataControlsSubtitle": "Quyền dữ liệu, lưu giữ dữ liệu và chính sách xóa.",
+  "privacyGroupHelpRequestsTitle": "Hỗ trợ & yêu cầu",
+  "privacyGroupHelpRequestsSubtitle": "Trợ giúp, liên hệ và yêu cầu quyền riêng tư.",
+  "privacyHelpCenterSubtitle": "Hướng dẫn, xử lý sự cố và ghi chú sử dụng an toàn.",
+  "privacyRequestsTitle": "Yêu cầu quyền riêng tư",
+  "privacyRequestsSubtitle": "Liên hệ hỗ trợ hoặc yêu cầu trợ giúp về quyền riêng tư và xóa dữ liệu.",
+  "privacyAboutSubtitle": "Mục đích app, trạng thái MVP và thông tin phát hành.",
+  "profileAccount": "Tài khoản",
+  "profileSignOut": "Đăng xuất",
+  "profileSignOutSubtitle": "Thoát khỏi tài khoản hiện tại trên thiết bị này.",
+  "profileDeleteAccount": "Xóa tài khoản",
+  "profileDeleteSubtitle": "Xóa dữ liệu cá nhân, giao dịch và ảnh đã lưu.",
+  "privacyClearDataSubtitle": "Xóa toàn bộ dữ liệu ứng dụng",
+  "notificationSettings": "Cài đặt thông báo",
+  "emailReports": "Báo cáo Email Tự động",
+  "emailReportsDesc": "Nhận tổng hợp thu chi định kỳ qua email.",
+  "dailyReport": "Báo cáo hàng ngày",
+  "dailyReportDesc": "Mỗi ngày lúc {time}",
+  "@dailyReportDesc": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "weeklyReport": "Báo cáo hàng tuần",
+  "weeklyReportDesc": "Mỗi tuần một lần",
+  "monthlyReport": "Báo cáo hàng tháng",
+  "monthlyReportDesc": "Mỗi tháng một lần",
+  "yearlyReport": "Báo cáo hàng năm",
+  "yearlyReportDesc": "Mỗi năm một lần",
+  "deleteAccountTitle": "Xóa tài khoản",
+  "deleteAccountWarning": "Hành động này sẽ xóa toàn bộ dữ liệu cá nhân, giao dịch và ảnh giao dịch của bạn.",
+  "deleteAccountConfirm": "Xóa tài khoản",
+  "deleteAccountTitleQuestion": "Xóa tài khoản?",
+  "deleteAccountUndone": "Thao tác này không thể hoàn tác trong app.",
+  "deleteAccountConsequence1": "Xóa hồ sơ và phiên đăng nhập hiện tại.",
+  "deleteAccountConsequence2": "Xóa ví, danh mục và toàn bộ giao dịch.",
+  "deleteAccountConsequence3": "Xóa ảnh giao dịch trong Storage theo user ID.",
+  "deleteAccountUnderstand": "Tôi hiểu dữ liệu sẽ bị xóa khỏi tài khoản này.",
+  "exportTitle": "Xuất dữ liệu",
+  "exportFormat": "Định dạng file",
+  "exportDateRange": "Khoảng ngày",
+  "exportAllTime": "Tất cả thời gian",
+  "exportDataTypes": "Loại dữ liệu",
+  "exportDataTypeTransactions": "Giao dịch",
+  "exportDataTypeWallets": "Ví",
+  "exportDataTypeCategories": "Danh mục",
+  "exportButton": "Xuất dữ liệu",
+  "exportDone": "Đã xuất dữ liệu",
+  "exportHistoryTitle": "Lịch sử export",
+  "exportHistoryEmpty": "Chưa có file export nào.",
+  "exportRecentTitle": "Lần xuất gần đây",
+  "exportRecentHistoryError": "Không tải được lần xuất gần đây.",
+  "manageDataTitle": "Quản lý dữ liệu",
+  "cameraTakePhoto": "Chụp",
+  "cameraFlip": "Lật camera",
+  "cameraNoPermission": "Không có quyền truy cập camera",
+  "cameraTitle": "Chụp hóa đơn",
+  "cameraOcrScan": "Quét OCR",
+  "cameraGallery": "Thư viện",
+  "accountDeletionRequestTitle": "Yêu cầu xóa dữ liệu",
+  "accountDeletionRequestDesc": "Dùng lựa chọn này khi không thể xóa tài khoản trực tiếp trong app. Moniary sẽ tạo một file yêu cầu để bạn gửi cho kênh hỗ trợ quyền riêng tư.",
+  "accountDeletionRequestReasonLabel": "Lý do hoặc ghi chú cho yêu cầu",
+  "accountDeletionRequestReasonHint": "Ví dụ: Tôi không còn sử dụng app và muốn xóa toàn bộ dữ liệu.",
+  "accountDeletionRequestSubmit": "Tạo yêu cầu xóa dữ liệu",
+  "accountDeletionRequestSuccessDesc": "Yêu cầu đã được tạo. Vui lòng kiểm tra lịch sử và gửi yêu cầu thủ công.",
+  "deleteAccountHelpTitle": "Hỗ trợ xóa tài khoản",
+  "deleteAccountHelpHero": "Xóa tài khoản là thao tác quan trọng. Hướng dẫn này giúp người dùng chuẩn bị dữ liệu và biết cách gửi yêu cầu hỗ trợ khi cần.",
+  "deleteAccountHelpStep1Title": "1. Xuất dữ liệu trước khi xóa",
+  "deleteAccountHelpStep1Desc": "Sau khi xóa tài khoản, dữ liệu app gắn với user hiện tại có thể không khôi phục được. Hãy export CSV, Excel hoặc PDF trước nếu cần giữ bản sao.",
+  "deleteAccountHelpStep2Title": "2. Kiểm tra ảnh giao dịch",
+  "deleteAccountHelpStep2Desc": "Ảnh giao dịch được xử lý cùng dữ liệu tài khoản. Hãy tải hoặc lưu lại file cần thiết trước khi xóa.",
+  "deleteAccountHelpStep3Title": "3. Xác nhận kỹ trong app",
+  "deleteAccountHelpStep3Desc": "Luồng xóa tài khoản yêu cầu xác nhận mạnh để tránh thao tác nhầm.",
+  "deleteAccountHelpStep4Title": "4. Dùng fallback nếu xóa thất bại",
+  "deleteAccountHelpStep4Desc": "Nếu thao tác trực tiếp lỗi, tạo file yêu cầu xóa dữ liệu thủ công và gửi kèm mô tả lỗi cho kênh hỗ trợ.",
+  "deleteAccountHelpExportBefore": "Xuất dữ liệu trước",
+  "deleteAccountHelpCreateRequest": "Tạo request xóa dữ liệu",
+  "deleteAccountHelpContactPrivacy": "Liên hệ privacy",
+  "legalContactHero": "Các kênh liên hệ này giúp người dùng, reviewer hoặc team phát hành biết nơi gửi yêu cầu phù hợp.",
+  "legalContactPrivacyDesc": "Yêu cầu dữ liệu cá nhân, xóa dữ liệu hoặc câu hỏi privacy.",
+  "legalContactSupportDesc": "Hỗ trợ chung về app, file export hoặc thao tác người dùng.",
+  "legalContactLegalDesc": "Vấn đề điều khoản, phát hành Store hoặc yêu cầu pháp lý.",
+  "privacyDetailCreatedAt": "Tạo lúc {date}",
+  "@privacyDetailCreatedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyDetailExpectedResponse": "Dự kiến phản hồi",
+  "privacyDetailExpectedResponseDesc": "{date} hoặc trong {days} ngày làm việc sau khi gửi.",
+  "@privacyDetailExpectedResponseDesc": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "privacyDetailMarkStatus": "Đánh dấu: {status}",
+  "@privacyDetailMarkStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyDetailContentTitle": "Nội dung yêu cầu",
+  "privacyDetailContentEmpty": "Không có nội dung bổ sung.",
+  "privacyDetailFileTitle": "File đã tạo",
+  "routeNotFound": "Trang không tồn tại",
+  "routeGoBack": "Quay lại",
+  "statsDevelopingMessage": "Tính năng Thống kê đang được phát triển.",
+  "transactionIsImportant": "Giao dịch quan trọng",
+  "statsTitle": "Thống kê chi tiêu",
+  "statsTotalIncome": "Tổng thu",
+  "statsTotalExpense": "Tổng chi",
+  "statsNetBalance": "Số dư ròng",
+  "statsExpenseButton": "Tổng Chi",
+  "statsIncomeButton": "Tổng Thu",
+  "statsEmptyTitle": "Chưa có giao dịch nào loại này",
+  "statsEmptySubtitle": "Các biểu đồ thống kê sẽ hiện ra sau khi bạn thêm giao dịch.",
+  "statsCategoryAllocation": "Phân bổ danh mục",
+  "statsDailyTrend": "Xu hướng hàng ngày",
+  "statsLargestTransactions": "Giao dịch lớn nhất",
+  "starredTransactionsTitle": "Giao dịch quan trọng",
+  "starredTransactionsEmpty": "Chưa có giao dịch quan trọng nào",
+  "statsCategoryTransactions": "Giao dịch trong danh mục",
+  "statsDayTooltip": "Ngày {day}\n{amount}",
+  "@statsDayTooltip": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "profileProtectAccount": "Bảo vệ tài khoản của bạn",
+  "profileAnonymousWarning": "Bạn đang đăng nhập bằng tài khoản khách. Hãy liên kết tài khoản để tránh mất mát dữ liệu khi đổi thiết bị.",
+  "profileLinkNow": "Liên kết ngay",
+  "profileLinkAccountTitle": "Liên kết tài khoản",
+  "profileLinkAccountSubtitle": "Tài khoản của bạn hiện là ẩn danh. Liên kết với Email hoặc Google để lưu trữ dữ liệu vĩnh viễn và đăng nhập trên nhiều thiết bị.",
+  "profileNewPassword": "Mật khẩu mới",
+  "profileLinkEmail": "Liên kết Email",
+  "profileLinkGoogle": "Liên kết Google",
+  "profileLinkApple": "Liên kết Apple",
+  "profileLinkSuccess": "Liên kết tài khoản email thành công!",
+  "profileLinkGoogleBrowser": "Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.",
+  "profileLinkAppleBrowser": "Hoàn tất liên kết Apple trong trình duyệt để quay lại Moniary.",
+  "profileLinkGoogleError": "Lỗi liên kết Google: {error}",
+  "profileLinkAppleError": "Lỗi liên kết Apple: {error}",
+  "@profileLinkGoogleError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@profileLinkAppleError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "profileEditInfo": "Chỉnh sửa thông tin",
+  "profileChangeTimezone": "Thay đổi múi giờ",
+  "profileAnonymousBadge": "Tài khoản Ẩn danh",
+  "profileVerifiedBadge": "Đã Xác thực ({provider})",
+  "@profileVerifiedBadge": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "profileSignOutDialogTitle": "Đăng xuất",
+  "profileSignOutDialogMessage": "Bạn có chắc chắn muốn đăng xuất không?",
+  "profileCancel": "Hủy",
+  "exportSupportTitle": "Hỗ trợ export dữ liệu",
+  "exportOpenData": "Mở export dữ liệu",
+  "exportOpenHistory": "Mở lịch sử export",
+  "exportCreateSupportRequest": "Tạo yêu cầu hỗ trợ",
+  "exportTroubleshootingHero": "Hướng dẫn này giúp xử lý nhanh khi file CSV, Excel hoặc PDF không có dữ liệu, không mở được hoặc không tìm thấy sau khi export.",
+  "exportTroubleshootingTypeTitle": "1. Kiểm tra loại dữ liệu đã chọn",
+  "exportTroubleshootingTypeDesc": "Nếu file trống, hãy kiểm tra bạn đã chọn Giao dịch, Ví hoặc Danh mục trong bộ lọc export.",
+  "exportTroubleshootingDateTitle": "2. Kiểm tra khoảng ngày",
+  "exportTroubleshootingDateDesc": "Nếu chọn khoảng ngày quá hẹp, file có thể không có giao dịch phù hợp.",
+  "exportTroubleshootingHistoryTitle": "3. Mở lại từ lịch sử export",
+  "exportTroubleshootingHistoryDesc": "Sau khi tạo file, vào lịch sử export để mở lại đường dẫn file và chia sẻ khi cần.",
+  "exportTroubleshootingSupportTitle": "4. Tạo request hỗ trợ",
+  "exportTroubleshootingSupportDesc": "Nếu file không tạo được hoặc không mở được, hãy tạo request privacy/support kèm mô tả lỗi.",
+  "legalDataDeletionPolicy": "Chính sách xóa dữ liệu",
+  "legalDataRetention": "Lưu giữ dữ liệu",
+  "legalFinancialDisclaimer": "Miễn trừ tài chính",
+  "legalContact": "Liên hệ pháp lý",
+  "legalCopyAllContacts": "Copy tất cả liên hệ",
+  "legalCopyContactSuccess": "Đã copy thông tin liên hệ.",
+  "legalPolicyAcceptance": "Đồng ý chính sách",
+  "legalViewPrivacyPolicy": "Xem chính sách bảo mật",
+  "legalViewTermsOfUse": "Xem điều khoản sử dụng",
+  "legalPolicyChangelog": "Lịch sử chính sách",
+  "legalTermsOfUse": "Điều khoản sử dụng",
+  "legalThirdPartyServices": "Dịch vụ bên thứ ba",
+  "legalUserRights": "Quyền dữ liệu",
+  "privacyDataSafety": "An toàn dữ liệu",
+  "privacyMyData": "Dữ liệu của tôi",
+  "privacyPhotoData": "Dữ liệu ảnh",
+  "privacyDataFreshness": "Độ mới dữ liệu",
+  "privacyLocalFiles": "File cục bộ",
+  "privacyTransactionPhotos": "Ảnh giao dịch",
+  "privacyViewExportHistory": "Xem lịch sử export",
+  "privacyPermissionRationale": "Quyền truy cập",
+  "privacyFaq": "FAQ privacy & tài khoản",
+  "privacyCenter": "Trung tâm riêng tư",
+  "privacyContact": "Liên hệ quyền riêng tư",
+  "privacyUseTemplate": "Dùng mẫu nội dung",
+  "privacyCreateRequest": "Tạo yêu cầu privacy",
+  "privacyRequestCreated": "Đã tạo yêu cầu",
+  "privacyCopyEmail": "Copy email",
+  "privacyCopyInstructions": "Copy hướng dẫn",
+  "privacyPolicyTitle": "Chính sách bảo mật",
+  "privacyRequestDetailTitle": "Chi tiết yêu cầu",
+  "privacyCopyFilePath": "Copy file path",
+  "privacyCopyFilePathSuccess": "Đã copy đường dẫn file",
+  "privacyCopyRequest": "Copy request",
+  "privacyCopyRequestSuccess": "Đã copy nội dung yêu cầu",
+  "storeAboutMoniary": "Giới thiệu Moniary",
+  "storeComplianceChecklist": "Checklist phát hành",
+  "storeTrustSafety": "Tin cậy & an toàn",
+  "supportHelpCenter": "Trung tâm trợ giúp",
+  "supportCopySuccess": "Đã copy thông tin support.",
+  "supportCopyDiagnostic": "Copy diagnostic info",
+  "supportRequestChecklist": "Checklist gửi hỗ trợ",
+  "supportOpenHelpCenter": "Mở trung tâm trợ giúp",
+  "transactionOcrSuccess": "Tự động trích xuất dữ liệu thành công!",
+  "scanImageSelectError": "Không thể chọn ảnh. Vui lòng thử lại.",
+  "scanImageRequiredError": "Vui lòng chọn ảnh hóa đơn trước.",
+  "scanReadError": "Không thể đọc hóa đơn. Vui lòng thử lại.",
+  "commonFeatureUnderDevelopment": "Tính năng đang được phát triển",
+  "appLockTitle": "Ứng dụng đã bị khóa",
+  "appLockSubtitle": "Vui lòng xác thực để tiếp tục sử dụng",
+  "appLockUnlockButton": "Mở khóa",
+  "privacyCenterAppLockTitle": "Khóa ứng dụng",
+  "privacyCenterAppLockSubtitle": "Yêu cầu vân tay hoặc khuôn mặt khi mở ứng dụng.",
+  "biometricReasonEnable": "Xác thực để bật khóa ứng dụng",
+  "biometricReasonUnlock": "Mở khóa Moniary",
+  "importTitle": "Nhập dữ liệu (CSV)",
+  "importSelectFile": "Chọn tệp CSV",
+  "importCsvFormatTitle": "Định dạng CSV yêu cầu:",
+  "importCsvFormatBody": "1. Ngày giao dịch (YYYY-MM-DD)\n2. Số tiền (Ví dụ: 100000)\n3. Loại (Thu / Chi)\n4. Hạng mục\n5. Ghi chú (Tùy chọn)\n\nLưu ý: Bỏ qua dòng tiêu đề nếu có.",
+  "importConfirm": "Xác nhận nhập",
+  "importRecentTitle": "Lần nạp gần đây",
+  "importRecentHistoryError": "Không tải được lần nạp gần đây.",
+  "importViewHistory": "Xem lịch sử nạp",
+  "importHistoryTitle": "Lịch sử nạp dữ liệu",
+  "importDetailTitle": "Chi tiết nạp dữ liệu",
+  "importNoHistory": "Chưa có lịch sử nạp dữ liệu.",
+  "importDetailFileName": "Tên file",
+  "importDetailImportedCount": "Số giao dịch nạp thành công",
+  "importDetailWallet": "Ví đích",
+  "importDetailDate": "Ngày nạp",
+  "importDetailStatus": "Trạng thái",
+  "importDetailError": "Lỗi",
+  "importStatusPending": "Đang nạp",
+  "importStatusCompleted": "Hoàn tất",
+  "importStatusFailed": "Thất bại",
+  "settingsTitle": "Cài đặt",
+  "importPreviewTitle": "Xem trước ({count} dòng hợp lệ)",
+  "@importPreviewTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importSuccess": "Đã nhập {count} giao dịch",
+  "@importSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importNoWallets": "Không tìm thấy ví. Hãy tạo ví trước.",
+  "importSelectWallet": "Chọn ví đích",
+  "importErrorWallets": "Lỗi tải danh sách ví: {error}",
+  "@importErrorWallets": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importErrorUnknown": "Lỗi không xác định",
+  "importErrorMissingColumns": "Thiếu cột (yêu cầu 5)",
+  "importErrorInvalidDate": "Định dạng ngày không hợp lệ (dùng YYYY-MM-DD)",
+  "importErrorInvalidAmount": "Số tiền không hợp lệ",
+  "importErrorInvalidType": "Loại giao dịch không hợp lệ",
+  "importErrorCategoryNotFound": "Không tìm thấy danh mục",
+  "importRetry": "Thử lại",
+  "activeSessionsTitle": "Thiết bị & Phiên",
+  "activeSessionsEmpty": "Không có dữ liệu.",
+  "activeSessionsError": "Lỗi: {error}",
+  "@activeSessionsError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsUnknownDevice": "Thiết bị không xác định",
+  "activeSessionsThisDevice": "Thiết bị này",
+  "activeSessionsFirstLogin": "Đăng nhập lần đầu: {date}",
+  "@activeSessionsFirstLogin": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsLastActive": "Hoạt động gần nhất: {date}",
+  "@activeSessionsLastActive": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsIp": "IP: {ip}",
+  "@activeSessionsIp": {
+    "placeholders": {
+      "ip": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsRevokeTooltip": "Đăng xuất thiết bị này",
+  "activeSessionsRevokeTitle": "Đăng xuất thiết bị?",
+  "activeSessionsRevokeContent": "Thiết bị này sẽ bị đăng xuất khỏi tài khoản của bạn ngay lập tức.",
+  "activeSessionsRevokeConfirm": "Đăng xuất",
+  "restoreAccountTitle": "Tài khoản đang chờ xóa",
+  "restoreAccountBody": "Tài khoản của bạn đã bị vô hiệu hóa và đang trong thời gian ân hạn 30 ngày trước khi bị xóa vĩnh viễn.\n\nBạn có muốn khôi phục lại tài khoản không?",
+  "restoreAccountButton": "Khôi phục tài khoản",
+  "validationEmailRequired": "Email không được trống",
+  "validationEmailInvalid": "Email không hợp lệ",
+  "validationPasswordMinLength": "Mật khẩu phải từ {min} ký tự",
+  "@validationPasswordMinLength": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "exportFormatCsvLabel": "CSV",
+  "exportFormatCsvDesc": "Bảng dữ liệu nhẹ, mở được bằng Excel hoặc Google Sheets.",
+  "exportFormatXlsxLabel": "Excel",
+  "exportFormatXlsxDesc": "Workbook .xlsx cho Excel, Sheets hoặc WPS Office.",
+  "exportFormatPdfLabel": "PDF",
+  "exportFormatPdfDesc": "Báo cáo dễ đọc để lưu hoặc gửi cho người khác.",
+  "exportFileSavedAt": "File đã được lưu tại:\n{path}",
+  "@exportFileSavedAt": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "exportNoAppToShare": "Chưa tìm thấy app phù hợp để chia sẻ file.",
+  "exportNoAppToOpen": "Chưa tìm thấy app phù hợp để mở file.",
+  "exportDetailTitle": "Chi tiết bản xuất",
+  "exportDetailFileInfo": "Thông tin file",
+  "exportDetailTime": "Thời gian",
+  "exportDetailFormat": "Định dạng",
+  "exportDetailStatus": "Trạng thái",
+  "exportDetailReady": "Sẵn sàng",
+  "exportDetailMissing": "File đã bị xóa",
+  "exportDetailDataConfig": "Cấu hình dữ liệu",
+  "exportDetailDataRange": "Thời gian dữ liệu",
+  "exportDetailDataGroups": "Các nhóm dữ liệu",
+  "exportDetailStoragePath": "Đường dẫn lưu trữ",
+  "exportDetailLocation": "Vị trí",
+  "exportDetailOpenFile": "Mở xem file ngay",
+  "exportDetailShareFile": "Chia sẻ qua Email / Zalo",
+  "exportDetailMissingMessage": "Tệp tin này không còn tồn tại trên thiết bị. Bạn có thể thực hiện xuất lại dữ liệu với các bộ lọc tương tự.",
+  "exportDetailSuccessTitle": "Xuất dữ liệu thành công",
+  "exportDetailReportSubtitle": "Moniary Financial Report",
+  "commonComingSoon": "Sắp có",
+  "activeSessionsDeviceOn": "{browser} trên {os}",
+  "@activeSessionsDeviceOn": {
+    "placeholders": {
+      "browser": {
+        "type": "String"
+      },
+      "os": {
+        "type": "String"
+      }
+    }
+  },
+  "activeSessionsOtherOs": "Hệ điều hành khác",
+  "activeSessionsOtherBrowser": "Trình duyệt/App khác",
+  "privacyReqDataAccess": "Xem dữ liệu đang lưu",
+  "privacyReqDataAccessDesc": "Yêu cầu Moniary cung cấp thông tin về dữ liệu đang gắn với tài khoản.",
+  "privacyReqExportHelp": "Hỗ trợ xuất dữ liệu",
+  "privacyReqExportHelpDesc": "Yêu cầu hỗ trợ khi không thể tự xuất dữ liệu trong app.",
+  "privacyReqCorrection": "Chỉnh sửa dữ liệu",
+  "privacyReqCorrectionDesc": "Yêu cầu điều chỉnh dữ liệu cá nhân hoặc dữ liệu tài chính bị sai.",
+  "privacyReqDeletion": "Xóa dữ liệu",
+  "privacyReqDeletionDesc": "Yêu cầu xóa dữ liệu hoặc hỗ trợ khi xóa tài khoản không thành công.",
+  "privacyReqComplaint": "Khiếu nại quyền riêng tư",
+  "privacyReqComplaintDesc": "Gửi phản hồi về cách dữ liệu cá nhân được xử lý trong Moniary.",
+  "privacyStatusReady": "Sẵn sàng gửi",
+  "privacyStatusReadyDesc": "File request đã được tạo và đang chờ người dùng gửi đi.",
+  "privacyStatusSent": "Đã gửi thủ công",
+  "privacyStatusSentDesc": "Người dùng đã gửi request qua email hoặc kênh hỗ trợ.",
+  "privacyStatusResolved": "Đã xử lý",
+  "privacyStatusResolvedDesc": "Yêu cầu đã được xử lý xong hoặc không cần theo dõi nữa.",
+  "privacyTplDataAccess": "Tôi muốn biết Moniary hiện đang lưu những nhóm dữ liệu nào liên quan đến tài khoản của tôi.",
+  "privacyTplExportHelp": "Tôi cần hỗ trợ xuất dữ liệu tài khoản vì không thể hoàn tất thao tác xuất dữ liệu trong app.",
+  "privacyTplCorrection": "Tôi muốn yêu cầu chỉnh sửa dữ liệu chưa chính xác trong tài khoản của mình. Dữ liệu cần kiểm tra là:",
+  "privacyTplDeletion": "Tôi muốn yêu cầu xóa dữ liệu cá nhân và dữ liệu tài chính liên quan đến tài khoản của mình.",
+  "privacyTplComplaint": "Tôi muốn gửi phản hồi hoặc khiếu nại về cách Moniary xử lý dữ liệu cá nhân của tôi.",
+  "privacyTplDefault": "Tôi cần hỗ trợ về quyền riêng tư và dữ liệu cá nhân trong Moniary.",
+  "privacyContactRequestType": "Loại yêu cầu",
+  "privacyContactRequestContent": "Nội dung yêu cầu",
+  "privacyContactRequestHint": "Mô tả ngắn điều bạn muốn team hỗ trợ.",
+  "privacyContactPreview": "Xem trước yêu cầu",
+  "privacyContactPreviewEmpty": "Chưa nhập nội dung yêu cầu.",
+  "privacyContactProcessTimeline": "Quy trình phản hồi",
+  "privacyContactProcessStep1": "Tạo request trong app",
+  "privacyContactProcessStep1Desc": "App chuẩn bị nội dung để bạn gửi cho kênh hỗ trợ.",
+  "privacyContactProcessStep2": "Gửi request thủ công",
+  "privacyContactProcessStep2Desc": "Gửi yêu cầu qua email {email}.",
+  "@privacyContactProcessStep2Desc": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyContactProcessStep3": "Theo dõi phản hồi",
+  "privacyContactProcessStep3Desc": "Mốc phản hồi dự kiến là {days} ngày làm việc.",
+  "@privacyContactProcessStep3Desc": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "privacyContactShortcuts": "Lối tắt hỗ trợ",
+  "privacyContactCopyEmailSuccess": "Đã copy email support.",
+  "privacyContactCopyGuide": "Email: {email}\nChủ đề: Moniary privacy request\nNội dung: Dán nội dung yêu cầu đã copy từ app.",
+  "@privacyContactCopyGuide": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyContactCopyGuideSuccess": "Đã copy hướng dẫn gửi request.",
+  "privacyContactHeroTitle": "Yêu cầu về dữ liệu cá nhân",
+  "privacyContactHeroDesc": "Nếu không thể xử lý trực tiếp trong app, người dùng có thể liên hệ team để yêu cầu hỗ trợ về dữ liệu.",
+  "privacyContactEmailTitle": "Email hỗ trợ",
+  "privacyContactEmailDesc": "Dùng cho yêu cầu xóa dữ liệu, xuất dữ liệu hoặc câu hỏi về quyền riêng tư.",
+  "privacyContactInfoTitle": "Thông tin cần gửi",
+  "privacyContactInfoValue": "User ID hoặc email đăng nhập",
+  "privacyContactInfoDesc": "Không gửi mật khẩu, access token, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.",
+  "privacyContactTimeTitle": "Thời gian phản hồi",
+  "privacyContactTimeValue": "Trong vòng 7 ngày làm việc",
+  "privacyContactTimeDesc": "Team cần cập nhật thời gian thực tế trước khi phát hành production.",
+  "privacyContactRecentRequests": "Yêu cầu gần đây",
+  "privacyContactRequestStatus": "Trạng thái",
+  "privacyContactRequestFile": "File đính kèm",
+  "privacyRequestSuccessDesc": "Yêu cầu đã được tạo. Vui lòng kiểm tra lịch sử và gửi yêu cầu thủ công.",
+  "privacyAndAccountTitle": "Privacy & tài khoản",
+  "privacyAndAccountSubtitle": "Xem quyền dữ liệu, yêu cầu privacy và các lựa chọn liên quan tài khoản.",
+  "dataRightsTitle": "Quyền dữ liệu",
+  "dataRightsSubtitle": "Tóm tắt quyền xem, xuất, sửa/xóa dữ liệu và liên hệ privacy.",
+  "exportDataSubTitle": "Xử lý khi export CSV, Excel hoặc PDF lỗi, trống hoặc không tìm thấy file.",
+  "createExportFileTitle": "Tạo file export",
+  "createExportFileSubtitle": "Mở luồng export khi cần tạo bản sao dữ liệu cá nhân.",
+  "contactSupportSubtitle": "Tạo request privacy hoặc copy thông tin liên hệ để gửi cho team hỗ trợ.",
+  "deleteAccountSubtitle": "Chuẩn bị trước khi xóa, hiểu dữ liệu bị ảnh hưởng và fallback khi có lỗi.",
+  "supportChecklistTitle": "Checklist gửi hỗ trợ",
+  "supportChecklistSubtitle": "Chuẩn bị mô tả lỗi, file liên quan và diagnostic info trước khi gửi request.",
+  "helpHeroText": "Tìm nhanh các hướng dẫn liên quan đến dữ liệu, quyền riêng tư, export và hỗ trợ tài khoản trong Moniary.",
+  "supportDiagnosticTitle": "Thông tin gửi support",
+  "supportDiagnosticSubtitle": "Copy version, build và kênh liên hệ để gửi kèm khi báo lỗi.",
+  "helpCenterTitle": "Trung tâm trợ giúp",
+  "helpCenterSubtitle": "Tìm hướng dẫn về privacy, tài khoản, export dữ liệu và cách liên hệ hỗ trợ.",
+  "aboutMoniaryTitle": "Giới thiệu Moniary",
+  "aboutMoniarySubtitle": "Xem mục đích app, định hướng dữ liệu và trạng thái MVP trước khi phát hành.",
+  "privacyPolicySubtitle": "Xem cách Moniary xử lý dữ liệu cá nhân, tài chính và ảnh giao dịch.",
+  "termsOfUseTitle": "Điều khoản sử dụng",
+  "termsOfUseSubtitle": "Xem phạm vi sử dụng, trách nhiệm người dùng và giới hạn của phiên bản MVP.",
+  "dataRetentionPolicyTitle": "Chính sách lưu giữ dữ liệu",
+  "dataRetentionPolicySubtitle": "Xem dữ liệu nào được lưu trên cloud, dữ liệu nào nằm cục bộ và cách xử lý sau khi xóa tài khoản.",
+  "thirdPartyServicesTitle": "Dịch vụ bên thứ ba",
+  "thirdPartyServicesSubtitle": "Xem app đang dùng Supabase, Flutter/package và bộ nhớ thiết bị như thế nào.",
+  "releaseChecklistTitle": "Checklist phát hành",
+  "releaseChecklistSubtitle": "Rà soát các mục privacy, data export, xóa tài khoản và contact trước khi lên Store.",
+  "trustSafetyTitle": "Tin cậy & an toàn",
+  "trustSafetySubtitle": "Xem ghi chú về giới hạn tư vấn tài chính, dữ liệu người dùng và chia sẻ file.",
+  "financialDisclaimerTitle": "Miễn trừ tài chính",
+  "financialDisclaimerSubtitle": "Xem giới hạn trách nhiệm: app không phải tư vấn đầu tư, thuế, kế toán hoặc pháp lý.",
+  "policyChangelogTitle": "Lịch sử chính sách",
+  "policyChangelogSubtitle": "Xem các mốc cập nhật privacy, legal và store readiness trong app.",
+  "userDataRightsTitle": "Quyền dữ liệu của người dùng",
+  "userDataRightsSubtitle": "Tóm tắt quyền xem dữ liệu, xuất dữ liệu, yêu cầu sửa/xóa và liên hệ privacy.",
+  "policyAcceptanceNoticeTitle": "Thông báo đồng ý chính sách",
+  "policyAcceptanceNoticeSubtitle": "Giải thích rằng việc tiếp tục sử dụng app áp dụng theo chính sách và điều khoản hiện tại.",
+  "legalContactTitle": "Liên hệ pháp lý",
+  "legalContactSubtitle": "Xem và copy email privacy, support và legal dùng cho phát hành Store.",
+  "dataSafetyTitle": "An toàn dữ liệu",
+  "dataSafetySubtitle": "Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong MVP.",
+  "myDataTitle": "Dữ liệu của tôi",
+  "myDataSubtitle": "Xem nhanh app đang lưu bao nhiêu dữ liệu trong tài khoản này.",
+  "permissionsTitle": "Quyền truy cập",
+  "permissionsSubtitle": "Giải thích lý do Moniary dùng hoặc không dùng từng quyền Android.",
+  "exportMyDataTitle": "Xuất dữ liệu của tôi",
+  "exportMyDataSubtitle": "Chọn định dạng file và tạo bản sao dữ liệu cá nhân.",
+  "exportHistorySubtitle": "Xem các file CSV, Excel hoặc PDF đã tạo từ tài khoản này.",
+  "deleteAccountSubtitle2": "Xóa hồ sơ, ví, danh mục, giao dịch và ảnh giao dịch đã lưu.",
+  "dataDeletionPolicyTitle": "Chính sách xóa dữ liệu",
+  "dataDeletionPolicySubtitle": "Xem dữ liệu nào bị xóa và cách Moniary xử lý yêu cầu xóa.",
+  "dataDeletionRequestTitle": "Yêu cầu xóa dữ liệu",
+  "dataDeletionRequestSubtitle": "Tạo file yêu cầu xóa thủ công nếu xóa trực tiếp không thành công.",
+  "privacyContactTitle": "Liên hệ quyền riêng tư",
+  "privacyContactSubtitle": "Kênh hỗ trợ cho yêu cầu dữ liệu, xóa dữ liệu hoặc câu hỏi privacy.",
+  "trustHeroText": "Các ghi chú này giúp người dùng hiểu rõ app làm gì, không làm gì và nên bảo vệ dữ liệu tài chính cá nhân ra sao.",
+  "notFinancialAdviceTitle": "Không phải tư vấn tài chính",
+  "notFinancialAdviceDesc": "Moniary chỉ giúp ghi chép và xem lại dữ liệu thu chi cá nhân. App không đưa ra lời khuyên đầu tư, thuế hoặc kế toán.",
+  "userEnteredDataTitle": "Dữ liệu do người dùng nhập",
+  "userEnteredDataDesc": "Số tiền, ghi chú, danh mục và ảnh giao dịch phụ thuộc vào dữ liệu người dùng tạo trong app.",
+  "noOverCollectionTitle": "Không thu thập ngoài phạm vi",
+  "noOverCollectionDesc": "MVP không đọc danh bạ, SMS, email inbox, vị trí hoặc tài khoản ngân hàng tự động.",
+  "carefulFileSharingTitle": "Cẩn thận khi chia sẻ file",
+  "carefulFileSharingDesc": "File export có thể chứa dữ liệu tài chính cá nhân. Chỉ chia sẻ với người hoặc kênh hỗ trợ đáng tin cậy.",
+  "exportDataTitle": "Xuất dữ liệu",
+  "supportContactTitle": "Liên hệ hỗ trợ",
+  "importSuccessWithHistoryError": "Đã import thành công {count} giao dịch, nhưng lỗi khi lưu lịch sử cục bộ.",
+  "@importSuccessWithHistoryError": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "legalCopyContactValue": "Đã copy {value}",
+  "@legalCopyContactValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "storeComplianceHero": "Các mục dưới đây giúp rà soát nhanh những phần người dùng và reviewer cần thấy trước khi app được phát hành.",
+  "storeCompliancePrivacyTitle": "Chính sách bảo mật",
+  "storeCompliancePrivacyDesc": "Có màn privacy policy mô tả dữ liệu tài chính, ảnh giao dịch và cách xử lý dữ liệu.",
+  "storeComplianceDeleteTitle": "Xóa tài khoản",
+  "storeComplianceDeleteDesc": "Có luồng xóa tài khoản trong app và fallback tạo request thủ công.",
+  "storeComplianceExportTitle": "Xuất dữ liệu",
+  "storeComplianceExportDesc": "Người dùng có thể export dữ liệu CSV, Excel hoặc PDF trước khi rời app.",
+  "storeComplianceDataSafetyTitle": "Data Safety",
+  "storeComplianceDataSafetyDesc": "Có phần tóm tắt nhóm dữ liệu được lưu và nhóm dữ liệu app không thu thập.",
+  "storeComplianceContactTitle": "Liên hệ privacy",
+  "storeComplianceContactDesc": "Có kênh hỗ trợ, request history và trạng thái xử lý yêu cầu privacy.",
+  "storeComplianceTermsTitle": "Điều khoản sử dụng",
+  "storeComplianceTermsDesc": "Có terms of use và ghi chú giới hạn trách nhiệm của app MVP.",
+  "privacyNoData": "Chưa có dữ liệu",
+  "privacyDataOverview": "Tổng quan dữ liệu",
+  "privacyDataInventory": "Nhóm dữ liệu đang lưu",
+  "privacySensitiveData": "Lưu ý dữ liệu nhạy cảm",
+  "privacyTransparencyReport": "Báo cáo minh bạch",
+  "privacyDataControl": "Kiểm soát dữ liệu",
+  "metricTransaction": "Giao dịch",
+  "metricWallet": "Ví",
+  "metricCategory": "Danh mục",
+  "metricHasPhoto": "Có ảnh",
+  "metricNoPhoto": "Không ảnh",
+  "inventoryProfileTitle": "Hồ sơ tài khoản",
+  "inventoryProfileDesc": "Tên hiển thị, email, avatar, timezone và trạng thái đăng nhập.",
+  "inventoryWalletTitle": "Ví",
+  "inventoryWalletDesc": "Tên ví, loại ví, số dư ban đầu, trạng thái mặc định và hiển thị.",
+  "inventoryCategoryTitle": "Danh mục",
+  "inventoryCategoryDesc": "Tên danh mục, loại thu/chi, trạng thái mặc định và hiển thị.",
+  "inventoryTransactionTitle": "Giao dịch",
+  "inventoryTransactionDesc": "Số tiền, loại giao dịch, ví, danh mục, ghi chú và ngày giờ.",
+  "inventoryPhotoTitle": "Ảnh giao dịch",
+  "inventoryPhotoDesc": "Đường dẫn ảnh trong Storage private bucket, hiển thị qua signed URL.",
+  "inventorySettingsTitle": "Thiết lập nhắc nhở",
+  "inventorySettingsDesc": "Các tùy chọn nhắc ghi chi tiêu khi tính năng reminder được bật.",
+  "sensitiveDataDesc": "Dữ liệu tài chính có thể gồm số tiền, ghi chú, ảnh hóa đơn và file đã xuất. Chỉ chia sẻ file export với người bạn tin cậy và xóa file cục bộ khi không còn cần dùng.",
+  "localFilesExportCount": "{count} file đã xuất",
+  "@localFilesExportCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localFilesLatest": "Gần nhất: {date}",
+  "@localFilesLatest": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "localFilesNoExport": "Chưa có file export",
+  "localFilesDesc": "Các file CSV, Excel và PDF được tạo trên thiết bị này. Bạn có thể mở lại, chia sẻ hoặc tự xóa file trong bộ nhớ cục bộ.",
+  "reportSummaryDesc": "Tài khoản này hiện có {txs} giao dịch, {wallets} ví và {categories} danh mục.",
+  "@reportSummaryDesc": {
+    "placeholders": {
+      "txs": {
+        "type": "int"
+      },
+      "wallets": {
+        "type": "int"
+      },
+      "categories": {
+        "type": "int"
+      }
+    }
+  },
+  "reportPhotoDesc": "{percent}% giao dịch đang có ảnh đính kèm trong dữ liệu của bạn.",
+  "@reportPhotoDesc": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportExportDesc": "{count} file export đã được ghi nhận trên thiết bị này.",
+  "@reportExportDesc": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportPrivacyDesc": "Moniary không bán dữ liệu cá nhân và chỉ dùng dữ liệu để vận hành trải nghiệm quản lý chi tiêu.",
+  "controlExportTitle": "Xuất dữ liệu",
+  "controlExportDesc": "Tạo file CSV, Excel hoặc PDF từ dữ liệu tài khoản.",
+  "controlContactTitle": "Liên hệ quyền riêng tư",
+  "controlContactDesc": "Tạo yêu cầu hỗ trợ về dữ liệu, quyền riêng tư hoặc xóa dữ liệu.",
+  "controlDeleteTitle": "Xóa tài khoản",
+  "controlDeleteDesc": "Mở xác nhận xóa tài khoản và toàn bộ dữ liệu liên quan.",
+  "freshOldestTx": "Giao dịch cũ nhất",
+  "freshNewestTx": "Giao dịch mới nhất",
+  "freshLatestExport": "Lần xuất dữ liệu gần nhất",
+  "supportChecklistHero": "Chuẩn bị đủ thông tin trước khi gửi yêu cầu giúp team hỗ trợ nhanh hơn và tránh chia sẻ dữ liệu nhạy cảm không cần thiết.",
+  "supportChecklistActionTitle": "Mô tả thao tác đã làm",
+  "supportChecklistActionDesc": "Ghi rõ bạn đang export, xóa tài khoản, tạo request hay mở file nào.",
+  "supportChecklistErrorTitle": "Thêm thông báo lỗi nếu có",
+  "supportChecklistErrorDesc": "Copy nội dung lỗi hoặc mô tả màn hình đang hiển thị để team dễ kiểm tra.",
+  "supportChecklistFileTitle": "Đính kèm file request/export khi phù hợp",
+  "supportChecklistFileDesc": "Nếu là yêu cầu privacy hoặc xóa dữ liệu thủ công, gửi kèm file JSON đã tạo.",
+  "supportChecklistDiagnosticTitle": "Copy diagnostic info",
+  "supportChecklistDiagnosticDesc": "Gửi kèm version, build và kênh release từ Trung tâm trợ giúp.",
+  "supportChecklistSensitiveTitle": "Không gửi dữ liệu quá nhạy cảm",
+  "supportChecklistSensitiveDesc": "Không gửi mật khẩu, access token hoặc ảnh hóa đơn nhạy cảm nếu không thật sự cần thiết.",
+  "dataSafetyPersonalInfoTitle": "Personal info",
+  "dataSafetyPersonalInfoStatus": "Có, khi đăng nhập email hoặc Google",
+  "dataSafetyPersonalInfoDesc": "Tên hiển thị, email, avatar và user ID dùng cho đăng nhập và đồng bộ dữ liệu.",
+  "dataSafetyFinancialInfoTitle": "Financial info",
+  "dataSafetyFinancialInfoStatus": "Có",
+  "dataSafetyFinancialInfoDesc": "Ví, danh mục, số tiền, ghi chú và ngày giao dịch do người dùng nhập.",
+  "dataSafetyPhotosTitle": "Photos",
+  "dataSafetyPhotosStatus": "Có, khi người dùng chủ động chọn/chụp",
+  "dataSafetyPhotosDesc": "Ảnh giao dịch được lưu trong private storage và chỉ hiển thị qua signed URL.",
+  "dataSafetyUserIdTitle": "User ID",
+  "dataSafetyUserIdStatus": "Có",
+  "dataSafetyUserIdDesc": "Dùng để gắn dữ liệu với đúng tài khoản và áp dụng RLS trên Supabase.",
+  "dataSafetyLocationTitle": "Location, Contacts, SMS",
+  "dataSafetyLocationStatus": "Không thu thập trong MVP",
+  "dataSafetyLocationDesc": "Moniary không xin quyền vị trí, danh bạ hoặc đọc SMS/email để import giao dịch.",
+  "aboutMoniaryHeroTitle": "Moniary",
+  "aboutMoniaryHeroDesc": "Sổ tay thu chi cá nhân có kiểm soát dữ liệu rõ ràng cho người dùng.",
+  "aboutMoniaryVersionLabel": "Phiên bản",
+  "aboutMoniaryBuildLabel": "Build",
+  "aboutMoniaryChannelLabel": "Kênh phát hành",
+  "aboutMoniaryLicenseTitle": "Giấy phép mã nguồn mở",
+  "aboutMoniaryLicenseDesc": "Xem license của Flutter và các package đang dùng trong app.",
+  "aboutMoniaryPurposeTitle": "Mục đích",
+  "aboutMoniaryPurposeDesc": "Moniary giúp người dùng ghi lại thu chi cá nhân, quản lý ví, danh mục và ảnh giao dịch trong một trải nghiệm đơn giản.",
+  "aboutMoniaryDataDirTitle": "Định hướng dữ liệu",
+  "aboutMoniaryDataDirDesc": "Dữ liệu tài chính thuộc về người dùng. App cung cấp công cụ xuất dữ liệu, xóa tài khoản và liên hệ privacy khi cần hỗ trợ.",
+  "aboutMoniaryMvpStatusTitle": "Trạng thái MVP",
+  "aboutMoniaryMvpStatusDesc": "Phiên bản hiện tại tập trung vào ghi chép chi tiêu, minh bạch dữ liệu và các yêu cầu cần thiết để chuẩn bị phát hành Store.",
+  "permissionInternetTitle": "Internet",
+  "permissionInternetStatus": "Cần thiết",
+  "permissionInternetDesc": "Dùng để đăng nhập, đồng bộ Supabase Database và tải ảnh giao dịch từ Storage.",
+  "permissionCameraTitle": "Camera",
+  "permissionCameraStatus": "Chỉ hỏi khi người dùng chụp ảnh",
+  "permissionCameraDesc": "Dùng để chụp hóa đơn hoặc hình ảnh liên quan đến giao dịch.",
+  "permissionPhotoTitle": "Photo Picker",
+  "permissionPhotoStatus": "Chỉ mở khi người dùng chọn ảnh",
+  "permissionPhotoDesc": "Dùng Android Photo Picker để chọn ảnh mà không cần đọc toàn bộ thư viện.",
+  "permissionNotiTitle": "Notifications",
+  "permissionNotiStatus": "Chỉ dùng khi bật nhắc nhở",
+  "permissionNotiDesc": "MVP hiện không bắt buộc quyền này nếu chưa triển khai reminder production.",
+  "permissionLocationTitle": "Không dùng Location, Contacts, SMS",
+  "permissionLocationStatus": "Không khai báo trong MVP",
+  "permissionLocationDesc": "Moniary không cần vị trí, danh bạ hoặc SMS để ghi chi tiêu bằng ảnh.",
+  "privacyPolicyLeadTitle": "Moniary bảo vệ dữ liệu chi tiêu cá nhân của bạn.",
+  "privacyPolicyLeadDesc": "Nội dung này dùng cho màn hình trong app và làm bản nháp public Privacy Policy trước khi submit Google Play.",
+  "privacyPolicyDataTitle": "Dữ liệu Moniary xử lý",
+  "privacyPolicyDataItem1": "Thông tự tài khoản như tên hiển thị, email, avatar và user ID khi người dùng đăng nhập.",
+  "privacyPolicyDataItem2": "Dữ liệu tài chính do người dùng nhập gồm ví, danh mục, giao dịch, số tiền, ghi chú và ngày giờ.",
+  "privacyPolicyDataItem3": "Ảnh giao dịch do người dùng chụp hoặc chọn từ thiết bị.",
+  "privacyPolicyDataItem4": "Thiết lập ứng dụng như nhắc nhở và tùy chọn hồ sơ.",
+  "privacyPolicyPurposeTitle": "Mục đích sử dụng",
+  "privacyPolicyPurposeItem1": "Đăng nhập, đồng bộ dữ liệu và khôi phục dữ liệu khi đổi thiết bị.",
+  "privacyPolicyPurposeItem2": "Hiển thị lịch chi tiêu, chi tiết giao dịch, bộ lọc và thống kê tháng.",
+  "privacyPolicyPurposeItem3": "Lưu ảnh giao dịch trong Supabase Storage private bucket và cấp signed URL khi cần hiển thị.",
+  "privacyPolicyPurposeItem4": "Bảo vệ tài khoản, kiểm soát truy cập bằng RLS và hỗ trợ người dùng khi có yêu cầu.",
+  "privacyPolicyShareTitle": "Chia sẻ dữ liệu",
+  "privacyPolicyShareItem1": "Moniary không bán dữ liệu cá nhân hoặc dữ liệu tài chính của người dùng.",
+  "privacyPolicyShareItem2": "Dữ liệu được lưu trên Supabase để cung cấp Auth, Database và Storage cho ứng dụng.",
+  "privacyPolicyShareItem3": "MVP không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.",
+  "privacyPolicyDeleteTitle": "Xóa dữ liệu",
+  "privacyPolicyDeleteItem1": "Người dùng có thể xóa từng giao dịch trong app.",
+  "privacyPolicyDeleteItem2": "Người dùng có thể xuất dữ liệu CSV trước khi xóa tài khoản.",
+  "privacyPolicyDeleteItem3": "Khi xóa tài khoản, Moniary yêu cầu xóa hồ sơ, ví, danh mục, giao dịch và ảnh trong Storage thuộc user ID hiện tại.",
+  "privacyPolicySafetyTitle": "Khai báo Google Play Data Safety",
+  "privacyPolicySafetyItem1": "Personal info: chỉ thu thập khi người dùng đăng nhập bằng email hoặc Google.",
+  "privacyPolicySafetyItem2": "Financial info: thu thập để lưu và hiển thị thu chi cá nhân.",
+  "privacyPolicySafetyItem3": "Photos: chỉ thu thập ảnh người dùng chủ động chụp hoặc chọn.",
+  "privacyPolicySafetyItem4": "Location, Contacts, SMS: không thu thập trong MVP.",
+  "privacyPolicyContactDesc": "Trước khi phát hành, team cần đưa nội dung này lên một URL public và cập nhật email liên hệ chính thức trong Play Console.",
+  "deletionPolicyStep1Title": "Trước khi xóa",
+  "deletionPolicyStep1Desc": "Người dùng có thể xuất CSV để giữ lại lịch sử giao dịch cá nhân.",
+  "deletionPolicyStep2Title": "Dữ liệu sẽ bị xóa",
+  "deletionPolicyStep2Desc": "Hồ sơ, ví, danh mục, giao dịch, thiết lập nhắc nhở và ảnh trong Storage thuộc user ID hiện tại.",
+  "deletionPolicyStep3Title": "Cách xóa",
+  "deletionPolicyStep3Desc": "App gọi Edge Function delete-account. Function xác thực session, xóa ảnh giao dịch rồi xóa Auth user.",
+  "deletionPolicyStep4Title": "Dữ liệu ngoài app",
+  "deletionPolicyStep4Desc": "Nếu cần xóa dữ liệu backup, log hoặc yêu cầu ngoài app, người dùng có thể liên hệ qua kênh privacy support của team.",
+  "termsOfUseHeroDesc": "Các điều khoản này tóm tắt cách người dùng nên sử dụng Moniary trong phiên bản MVP.",
+  "termsOfUseScopeTitle": "1. Phạm vi sử dụng",
+  "termsOfUseScopeDesc": "Moniary được cung cấp để người dùng ghi chép và tự quản lý dữ liệu thu chi cá nhân. Người dùng chịu trách nhiệm về độ chính xác của dữ liệu đã nhập.",
+  "termsOfUseAccountTitle": "2. Dữ liệu tài khoản",
+  "termsOfUseAccountDesc": "Người dùng có thể xuất dữ liệu, gửi yêu cầu privacy và xóa tài khoản theo các công cụ được cung cấp trong app.",
+  "termsOfUseContentTitle": "3. Nội dung người dùng",
+  "termsOfUseContentDesc": "Ghi chú, số tiền và ảnh giao dịch do người dùng nhập hoặc tải lên chỉ nên phục vụ mục đích quản lý chi tiêu cá nhân.",
+  "termsOfUseLiabilityTitle": "4. Giới hạn trách nhiệm",
+  "termsOfUseLiabilityDesc": "Moniary không phải công cụ tư vấn tài chính, kế toán, thuế hoặc pháp lý. Các thống kê trong app chỉ có tính tham khảo.",
+  "termsOfUseChangesTitle": "5. Thay đổi điều khoản",
+  "termsOfUseChangesDesc": "Điều khoản có thể được cập nhật khi app bổ sung tính năng hoặc chuẩn bị phát hành chính thức."
+,
+  "transactionOcrExtracting": "Đang trích xuất dữ liệu...",
+  "exportSheetTransactions": "Giao dịch",
+  "exportColumnDataType": "Loại dữ liệu",
+  "exportColumnId": "ID",
+  "exportColumnName": "Tên",
+  "exportColumnImagePath": "Đường dẫn ảnh",
+  "exportColumnCreatedAt": "Tạo lúc",
+  "exportReportGeneratedAt": "Tạo báo cáo lúc",
+  "exportReportRecentTransactions": "Giao dịch gần đây",
+  "dataRetentionCloudTitle": "Dữ liệu trên cloud",
+  "dataRetentionCloudDesc": "Hồ sơ, ví, danh mục, giao dịch và đường dẫn ảnh giao dịch được giữ khi tài khoản còn hoạt động để app có thể đồng bộ và hiển thị lại dữ liệu.",
+  "dataRetentionPhotosTitle": "Ảnh giao dịch",
+  "dataRetentionPhotosDesc": "Ảnh giao dịch chỉ được lưu khi người dùng chủ động chụp hoặc chọn ảnh. Ảnh sẽ được xử lý cùng dữ liệu tài khoản khi xóa tài khoản.",
+  "dataRetentionLocalFilesTitle": "File cục bộ",
+  "dataRetentionLocalFilesDesc": "File export và lịch sử request được tạo trên thiết bị. Người dùng có thể tự quản lý, chia sẻ hoặc xóa các file này khỏi bộ nhớ cục bộ.",
+  "dataRetentionDeleteTitle": "Sau khi xóa tài khoản",
+  "dataRetentionDeleteDesc": "Moniary gọi luồng xóa tài khoản để gỡ dữ liệu app gắn với user hiện tại. Nếu thao tác thất bại, người dùng có thể tạo request xóa dữ liệu thủ công.",
+  "financialDisclaimerInvestmentTitle": "Không phải tư vấn đầu tư",
+  "financialDisclaimerInvestmentDesc": "Moniary không đề xuất mua, bán, đầu tư hoặc phân bổ tài sản. Người dùng tự chịu trách nhiệm với quyết định tài chính của mình.",
+  "financialDisclaimerTaxTitle": "Không phải tư vấn thuế/kế toán",
+  "financialDisclaimerTaxDesc": "Dữ liệu trong app không thay thế chứng từ, báo cáo kế toán hoặc tư vấn thuế chuyên nghiệp.",
+  "financialDisclaimerReferenceTitle": "Số liệu có tính tham khảo",
+  "financialDisclaimerReferenceDesc": "Tổng thu, tổng chi và các file export phụ thuộc vào dữ liệu người dùng nhập, có thể sai nếu nhập thiếu hoặc nhập nhầm.",
+  "financialDisclaimerExpertTitle": "Khi cần quyết định quan trọng",
+  "financialDisclaimerExpertDesc": "Người dùng nên kiểm tra lại dữ liệu gốc và hỏi chuyên gia phù hợp trước các quyết định tài chính, thuế hoặc pháp lý.",
+  "policyChangelogEntry1Title": "Bổ sung Legal & Policy Center",
+  "policyChangelogEntry1Desc": "Thêm chính sách lưu giữ dữ liệu, thông báo dịch vụ bên thứ ba, miễn trừ tài chính và lịch sử thay đổi chính sách.",
+  "policyChangelogEntry2Title": "Bổ sung Privacy Requests & Support",
+  "policyChangelogEntry2Desc": "Thêm loại yêu cầu privacy, mẫu nội dung, preview, lịch sử request, trạng thái và timeline phản hồi.",
+  "policyChangelogEntry3Title": "Bổ sung Store Readiness & Trust",
+  "policyChangelogEntry3Desc": "Thêm About, Terms of Use, license entry, version/build info, checklist phát hành và liên hệ pháp lý.",
+  "policyChangelogEntry4Title": "Khởi tạo chính sách MVP",
+  "policyChangelogEntry4Desc": "Thêm privacy policy, data safety, data deletion policy, export dữ liệu và xóa tài khoản.",
+  "groupCreateNew": "Tạo nhóm mới",
+  "groupDescriptionLabel": "Mô tả",
+  "groupTypeLabel": "Loại nhóm",
+  "groupTypeHint": "Ví dụ: Du lịch, Ăn uống, Ở chung, Couple, Bạn bè...",
+  "groupAvatarLabel": "Ảnh nhóm",
+  "groupChooseImage": "Chọn ảnh",
+  "groupNameRequired": "Tên nhóm là bắt buộc.",
+  "groupTotalSpent": "Tổng chi {amount}",
+  "@groupTotalSpent": {"placeholders": {"amount": {"type": "String"}}},
+  "groupBalanceSettled": "Đã cân bằng",
+  "groupBalanceOwes": "Bạn cần trả {amount}",
+  "@groupBalanceOwes": {"placeholders": {"amount": {"type": "String"}}},
+  "groupBalanceReceives": "Bạn sẽ nhận {amount}",
+  "@groupBalanceReceives": {"placeholders": {"amount": {"type": "String"}}},
+  "groupUnresolvedBadge": "Chưa xử lý",
+  "groupOverviewTitle": "Tổng quan",
+  "groupTransactionsTitle": "Giao dịch nhóm",
+  "groupDebtAreaTitle": "Ai nợ ai",
+  "groupLeave": "Rời nhóm",
+  "groupLeaveConfirmTitle": "Rời nhóm này?",
+  "groupLeaveConfirmMessage": "Bạn chỉ có thể rời nhóm khi công nợ đã được xử lý và quyền owner đã được chuyển nếu cần.",
+  "groupLeaveBlocked": "Bạn ơi! bạn còn vài khoản thu chi chưa được xử lý kìa.",
+  "groupOwnerTransferRequired": "Bạn cần chuyển quyền owner hoặc thêm một owner khác trước khi rời nhóm.",
+  "groupInviteTitle": "Mời thành viên",
+  "groupInviteByUsername": "Mời bằng username",
+  "groupUsernameLabel": "Username",
+  "groupInviteAction": "Gửi lời mời",
+  "groupInviteLinkTitle": "Link mời nhóm",
+  "groupCreateInviteLink": "Tạo link mời",
+  "groupInviteLinkCreated": "Đã tạo link mời nhóm.",
+  "groupInviteSent": "Đã gửi lời mời.",
+  "groupUserNotFound": "Không tìm thấy người dùng này.",
+  "groupNoFriends": "Bạn chưa có bạn bè nào để mời.",
+  "groupFriendInviteTitle": "Mời từ danh sách bạn bè",
+  "groupMemberInvited": "Đã mời",
+  "groupMemberActive": "Đang tham gia",
+  "groupAddTransaction": "Thêm giao dịch nhóm",
+  "groupTransactionCaption": "Caption",
+  "groupTransactionNote": "Ghi chú",
+  "groupTransactionTotal": "Tổng tiền",
+  "groupTransactionCategory": "Danh mục",
+  "groupTransactionImage": "Ảnh hóa đơn",
+  "groupTransactionImageOptional": "Ảnh không bắt buộc nhưng được khuyến khích.",
+  "groupSplitModeTitle": "Cách chia tiền",
+  "groupSplitEqual": "Chia đều",
+  "groupSplitUnequal": "Chia không đều",
+  "groupPaymentModeTitle": "Người đã trả tiền",
+  "groupPaymentEveryone": "Mọi người đều trả",
+  "groupPaymentSingle": "Một người trả",
+  "groupPaymentMultiple": "Nhiều người trả",
+  "groupSelectPayer": "Vui lòng chọn người đã trả tiền.",
+  "groupSelectAtLeastTwoPayers": "Vui lòng chọn ít nhất 2 người đã trả tiền.",
+  "groupEnterPayerAmounts": "Vui lòng nhập số tiền đã trả cho từng thành viên.",
+  "groupPayerAmountPositive": "Số tiền đã trả phải lớn hơn 0.",
+  "groupPaidTotalMismatch": "Tổng số tiền đã trả chưa khớp với tổng giá trị giao dịch.",
+  "groupConfirmationTitle": "Bạn đã chắc chắn chưa?",
+  "groupPost": "Đăng",
+  "groupPosting": "Đang đăng...",
+  "groupTransactionPosted": "Giao dịch nhóm đã được đăng thành công.",
+  "groupTransactionPendingAmounts": "Vui lòng nhập số tiền bạn đã sử dụng trong giao dịch này.",
+  "groupTransactionAmountMismatch": "Tổng số tiền các thành viên nhập chưa khớp với tổng tiền giao dịch. Vui lòng kiểm tra và nhập lại.",
+  "groupTransactionMembersPending": "Vẫn còn thành viên chưa nhập số tiền đã sử dụng.",
+  "groupTransactionPendingStatus": "Chờ thành viên nhập số tiền",
+  "groupTransactionMismatchStatus": "Tổng tiền chưa khớp",
+  "groupTransactionPostedStatus": "Đã đăng",
+  "groupTransactionNoData": "Chưa có giao dịch nhóm.",
+  "groupTransactionLoadError": "Không tải được giao dịch nhóm.",
+  "groupTransactionDetailTitle": "Chi tiết giao dịch nhóm",
+  "groupTransactionCreator": "Người đăng",
+  "groupTransactionPayers": "Người đã trả",
+  "groupTransactionShares": "Phần phải chịu",
+  "groupTransactionDeleteConfirm": "Xóa giao dịch nhóm này?",
+  "groupTransactionCompletedEditWarning": "Giao dịch này đã có khoản nợ được xác nhận. Nếu chỉnh sửa, hệ thống sẽ tính lại công nợ của nhóm. Bạn có chắc muốn tiếp tục không?",
+  "groupTransactionCreatorOnly": "Chỉ người tạo giao dịch mới được sửa hoặc xóa.",
+  "groupAmountInputTitle": "Số tiền bạn đã sử dụng",
+  "groupAmountUsedLabel": "Số tiền đã sử dụng",
+  "groupAmountSubmit": "Gửi số tiền",
+  "groupAmountNonNegative": "Số tiền không được nhỏ hơn 0.",
+  "groupSettlementTitle": "Công nợ nhóm",
+  "groupBalanceTableTitle": "Bảng công nợ",
+  "groupYouNeedPay": "Bạn cần trả",
+  "groupOthersNeedPayYou": "Người khác cần trả cho bạn",
+  "groupMarkPaid": "Đã trả nợ",
+  "groupConfirmReceived": "Xác nhận đã nhận",
+  "groupSettlementPending": "Chờ thanh toán",
+  "groupSettlementPayerMarked": "Người trả đã báo thanh toán",
+  "groupSettlementCompleted": "Đã hoàn tất",
+  "groupSettlementDisputed": "Đang tranh chấp",
+  "groupSettlementEmpty": "Không có khoản nợ cần xử lý.",
+  "groupSettlementFromTo": "{from} trả {to}",
+  "@groupSettlementFromTo": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
+  "groupSharePaidBalance": "Chịu {share} • Đã trả {paid} • Cân đối {balance}",
+  "@groupSharePaidBalance": {"placeholders": {"share": {"type": "String"}, "paid": {"type": "String"}, "balance": {"type": "String"}}},
+  "groupCommentsTitle": "Bình luận",
+  "groupCommentHint": "Nhập bình luận...",
+  "groupCommentSend": "Gửi",
+  "groupCommentsEmpty": "Chưa có bình luận.",
+  "groupCommentRequired": "Vui lòng nhập nội dung bình luận.",
+  "groupUnknownMember": "Thành viên",
+  "groupNoCategory": "Chưa chọn danh mục",
+  "groupChooseCategory": "Chọn danh mục",
+  "groupAmountRequired": "Vui lòng nhập tổng tiền lớn hơn 0.",
+  "groupActionFailed": "Không thể thực hiện thao tác nhóm. Vui lòng thử lại.",
+  "groupMemberAlreadyInvited": "Người dùng này đã ở trong nhóm hoặc đang có lời mời.",
+  "groupInviteLinkPlaceholder": "Deep link đã được tạo. Màn hình chấp nhận lời mời sẽ được kết nối ở phase deep linking.",
+  "groupStatsPlaceholder": "Thống kê nhóm cơ bản dùng tổng chi và công nợ hiện tại.",
+  "groupLeaveWarningActivity": "Có thành viên trong nhóm cố gắng rời khỏi nhóm khi chưa xử lý xong các khoản chi. Hãy cẩn thận.",
+  "cancel": "Hủy",
+  "retry": "Thử lại",
+  "friendsTitle": "Bạn bè",
+  "friendsProfileSubtitle": "Quản lý bạn bè và lời mời kết bạn",
+  "friendAdd": "Thêm bạn",
+  "friendSearchUsername": "Tìm bằng username",
+  "friendSearchHint": "Ví dụ: an_nguyen",
+  "friendSearch": "Tìm kiếm",
+  "friendSearchPrompt": "Nhập username để tìm người dùng Moniary.",
+  "friendSearchEmpty": "Không tìm thấy người dùng “{query}”.",
+  "@friendSearchEmpty": {"placeholders": {"query": {"type": "String"}}},
+  "friendSearchError": "Không thể tìm bạn bè. Vui lòng thử lại.",
+  "friendLoadError": "Không tải được danh sách bạn bè.",
+  "friendNoFriends": "Bạn chưa có bạn bè nào.",
+  "friendNoFriendsSubtitle": "Thêm bạn bè để mời vào nhóm chi tiêu nhanh hơn.",
+  "friendIncomingRequests": "Lời mời kết bạn",
+  "friendOutgoingRequests": "Đã gửi lời mời",
+  "friendAccept": "Chấp nhận",
+  "friendDecline": "Từ chối",
+  "friendCancel": "Hủy lời mời",
+  "friendRemove": "Xóa bạn",
+  "friendRemoveTitle": "Xóa bạn bè?",
+  "friendRemoveMessage": "Bạn có chắc muốn xóa {name} khỏi danh sách bạn bè?",
+  "@friendRemoveMessage": {"placeholders": {"name": {"type": "String"}}},
+  "friendRemoved": "Đã xóa bạn bè.",
+  "friendRequestSent": "Đã gửi lời mời kết bạn.",
+  "friendRequestAccepted": "Đã chấp nhận lời mời kết bạn.",
+  "friendRequestDeclined": "Đã từ chối lời mời kết bạn.",
+  "friendRequestCancelled": "Đã hủy lời mời kết bạn.",
+  "friendRequestPending": "Đang chờ phản hồi",
+  "friendIncomingPending": "Người này đã gửi lời mời cho bạn",
+  "friendSendRequest": "Kết bạn",
+  "friendAlreadyFriends": "Đã là bạn bè",
+  "friendAlreadyExists": "Hai bạn đã là bạn bè.",
+  "friendUserNotFound": "Không tìm thấy người dùng này.",
+  "friendCannotAddSelf": "Bạn không thể tự kết bạn với chính mình.",
+  "friendRequestAlreadyPending": "Đã có lời mời kết bạn đang chờ xử lý.",
+  "friendRequestNotFound": "Không tìm thấy lời mời kết bạn.",
+  "friendNotFound": "Không tìm thấy bạn bè này.",
+  "profileUsernameHint": "3-30 ký tự: chữ thường, số hoặc dấu gạch dưới",
+  "profileUsernameInvalid": "Username phải có 3-30 ký tự và chỉ gồm chữ thường, số hoặc dấu gạch dưới.",
+  "privacyProtectionSettingsTitle": "Thiết lập bảo vệ",
+  "privacyHideBalancesTitle": "Ẩn số dư",
+  "privacyHideBalancesSubtitle": "Che số tiền trên các màn hình tổng quan và chi tiết.",
+  "privacyExploreTitle": "Thông tin và kiểm soát",
+  "privacyStatusProtected": "Đang bảo vệ",
+  "privacyStatusReview": "Cần kiểm tra",
+  "privacyRequestCount": "{count} yêu cầu",
+  "@privacyRequestCount": {"placeholders": {"count": {"type": "int"}}},
+  "biometricReasonDisable": "Xác thực để tắt khóa ứng dụng",
+  "biometricReasonDeleteAccount": "Xác thực để yêu cầu xóa tài khoản",
+  "deleteAccountGraceTitle": "Tài khoản sẽ được xóa sau 30 ngày",
+  "deleteAccountGraceBody": "Bạn sẽ được đăng xuất ngay. Trong 30 ngày, hãy đăng nhập bằng đúng phương thức hiện tại nếu muốn khôi phục tài khoản trước khi dữ liệu bị xóa vĩnh viễn.",
+  "deleteGuestDataTitle": "Xóa dữ liệu Guest",
+  "deleteGuestDataBody": "Dữ liệu Guest chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và trạng thái onboarding vẫn được giữ lại.",
+  "deleteGuestDataUnderstand": "Tôi hiểu dữ liệu Guest trên thiết bị sẽ bị xóa ngay.",
+  "deleteGuestDataAction": "Xóa dữ liệu Guest",
+  "deleteAccountExportTitle": "Giữ một bản sao trước khi xóa",
+  "deleteAccountExportBody": "Bạn có thể xuất dữ liệu trước khi gửi yêu cầu xóa. Lỗi xuất dữ liệu không ngăn bạn thực hiện quyền xóa tài khoản.",
+  "deleteAccountExportAction": "Mở trang xuất dữ liệu",
+  "deleteAccountReasonTitle": "Vì sao bạn rời Moniary?",
+  "deleteAccountReasonHint": "Chọn một lý do",
+  "deleteAccountDetailsLabel": "Ghi chú bổ sung (không bắt buộc)",
+  "deleteAccountDetailsHint": "Điều gì có thể khiến trải nghiệm tốt hơn?",
+  "deleteAccountDetailsHelper": "Không nhập email, thông tin tài chính hoặc dữ liệu nhạy cảm.",
+  "deleteAccountGraceUnderstand": "Tôi hiểu tài khoản sẽ bị khóa sử dụng và xóa vĩnh viễn sau 30 ngày nếu không khôi phục.",
+  "deleteAccountConfirmationPhrase": "XÓA",
+  "deleteAccountConfirmationLabel": "Nhập {phrase} để xác nhận",
+  "@deleteAccountConfirmationLabel": {"placeholders": {"phrase": {"type": "String"}}},
+  "deleteAccountScheduleAction": "Yêu cầu xóa tài khoản",
+  "deleteReasonDifficultToUse": "Khó sử dụng",
+  "deleteReasonMissingFeatures": "Thiếu tính năng",
+  "deleteReasonTechnicalIssues": "Gặp lỗi kỹ thuật",
+  "deleteReasonPrivacyConcerns": "Lo ngại quyền riêng tư",
+  "deleteReasonNoLongerNeeded": "Không còn nhu cầu",
+  "deleteReasonOther": "Khác",
+  "deleteAccountImpactTitle": "Dữ liệu bị ảnh hưởng",
+  "deleteAccountTransactionsCount": "{count} giao dịch",
+  "@deleteAccountTransactionsCount": {"placeholders": {"count": {"type": "int"}}},
+  "deleteAccountWalletsCount": "{count} ví",
+  "@deleteAccountWalletsCount": {"placeholders": {"count": {"type": "int"}}},
+  "deleteAccountPhotosCount": "{count} ảnh",
+  "@deleteAccountPhotosCount": {"placeholders": {"count": {"type": "int"}}},
+  "deleteAccountImpactUnavailable": "Không thể tải số lượng chi tiết lúc này. Bạn vẫn có thể tiếp tục yêu cầu xóa.",
+  "restoreAccountPendingBody": "Yêu cầu xóa được tạo ngày {requestedDate}. Dữ liệu sẽ bị xóa vĩnh viễn ngày {deletionDate}.\n\nKhôi phục tài khoản để tiếp tục sử dụng Moniary.",
+  "@restoreAccountPendingBody": {"placeholders": {"requestedDate": {"type": "String"}, "deletionDate": {"type": "String"}}},
+  "commonUnknown": "Không xác định",
+  "loginEmailConfirmationSent": "Vui lòng kiểm tra email để xác nhận tài khoản.",
+  "loginCreateAccount": "Tạo tài khoản",
+  "loginEmailTitle": "Đăng nhập bằng email",
+  "loginEmailLabel": "Email",
+  "loginEmailRequired": "Vui lòng nhập email",
+  "loginPasswordLabel": "Mật khẩu",
+  "loginPasswordMinLength": "Mật khẩu cần ít nhất 6 ký tự",
+  "loginSignUp": "Đăng ký",
+  "loginSignIn": "Đăng nhập",
+  "loginAlreadyHaveAccount": "Đã có tài khoản? Đăng nhập",
+  "loginNeedAccount": "Chưa có tài khoản? Đăng ký"
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/l10n_extension.dart';
 
 import '../../../../app/app_theme.dart';
 
@@ -10,42 +11,36 @@ class StoreComplianceChecklistScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Checklist phát hành')),
+      appBar: AppBar(title: Text(context.l10n.storeComplianceChecklist)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: const [
-            _ChecklistHero(),
-            SizedBox(height: 16),
+          children: [
+            const _ChecklistHero(),
+            const SizedBox(height: 16),
             _ChecklistItem(
-              title: 'Chính sách bảo mật',
-              description:
-                  'Có màn privacy policy mô tả dữ liệu tài chính, ảnh giao dịch và cách xử lý dữ liệu.',
+              title: context.l10n.storeCompliancePrivacyTitle,
+              description: context.l10n.storeCompliancePrivacyDesc,
             ),
             _ChecklistItem(
-              title: 'Xóa tài khoản',
-              description:
-                  'Có luồng xóa tài khoản trong app và fallback tạo request thủ công.',
+              title: context.l10n.storeComplianceDeleteTitle,
+              description: context.l10n.storeComplianceDeleteDesc,
             ),
             _ChecklistItem(
-              title: 'Xuất dữ liệu',
-              description:
-                  'Người dùng có thể export dữ liệu CSV, Excel hoặc PDF trước khi rời app.',
+              title: context.l10n.storeComplianceExportTitle,
+              description: context.l10n.storeComplianceExportDesc,
             ),
             _ChecklistItem(
-              title: 'Data Safety',
-              description:
-                  'Có phần tóm tắt nhóm dữ liệu được lưu và nhóm dữ liệu app không thu thập.',
+              title: context.l10n.storeComplianceDataSafetyTitle,
+              description: context.l10n.storeComplianceDataSafetyDesc,
             ),
             _ChecklistItem(
-              title: 'Liên hệ privacy',
-              description:
-                  'Có kênh hỗ trợ, request history và trạng thái xử lý yêu cầu privacy.',
+              title: context.l10n.storeComplianceContactTitle,
+              description: context.l10n.storeComplianceContactDesc,
             ),
             _ChecklistItem(
-              title: 'Điều khoản sử dụng',
-              description:
-                  'Có terms of use và ghi chú giới hạn trách nhiệm của app MVP.',
+              title: context.l10n.storeComplianceTermsTitle,
+              description: context.l10n.storeComplianceTermsDesc,
             ),
           ],
         ),
@@ -67,7 +62,7 @@ class _ChecklistHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Các mục dưới đây giúp rà soát nhanh những phần người dùng và reviewer cần thấy trước khi app được phát hành.',
+        context.l10n.storeComplianceHero,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );
@@ -101,7 +96,7 @@ class _ChecklistItem extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: const Icon(
-              Icons.check_rounded,
+              Icons.check_outlined,
               color: AppTheme.success,
               size: 20,
             ),

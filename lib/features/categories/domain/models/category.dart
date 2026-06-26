@@ -6,11 +6,6 @@ extension TransactionTypeX on TransactionType {
     TransactionType.expense => 'expense',
   };
 
-  String get label => switch (this) {
-    TransactionType.income => 'Thu',
-    TransactionType.expense => 'Chi',
-  };
-
   static TransactionType fromValue(String value) {
     return TransactionType.values.firstWhere(
       (type) => type.value == value,
