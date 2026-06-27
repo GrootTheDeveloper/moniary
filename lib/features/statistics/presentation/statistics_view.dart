@@ -984,7 +984,7 @@ class _ToggleButton extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? color : AppTheme.textDim,
+            color: selected ? color : AppTheme.textSubtle,
             fontWeight: FontWeight.bold,
           ),
         ),

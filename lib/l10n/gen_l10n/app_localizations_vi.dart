@@ -3658,4 +3658,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get loginNeedAccount => 'Chưa có tài khoản? Đăng ký';
+
+  @override
+  String get cameraFallbackPermissionDenied =>
+      'Không có quyền truy cập camera. Bạn có thể nhập giao dịch thủ công.';
+
+  @override
+  String get cameraFallbackGenericError =>
+      'Không thể mở camera. Bạn có thể nhập giao dịch thủ công.';
 }

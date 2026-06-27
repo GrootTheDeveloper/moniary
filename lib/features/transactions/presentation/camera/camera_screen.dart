@@ -10,8 +10,6 @@ import '../../../../shared/utils/app_logger.dart';
 import '../../../scanning/presentation/scanning_screen.dart';
 import '../../domain/models/transaction_mutation_result.dart';
 
-enum _CameraError { permissionDenied, generic }
-
 class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({super.key});
 
@@ -27,6 +25,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
   List<CameraDescription> _cameras = [];
   int _selectedCameraIndex = 0;
   bool _isFlashOn = false;
+  bool _isInitializing = true;
 
   @override
   void initState() {
@@ -37,13 +36,19 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
 
   Future<void> _initCameras() async {
     final cameras = await ref.read(cameraProvider.future);
-    if (mounted && cameras.isNotEmpty) {
-      _cameras = cameras;
-      await _initializeCamera(cameras, index: _selectedCameraIndex);
+    if (!mounted) return;
+    if (cameras.isEmpty) {
+      // No cameras available on this device — signal failure immediately
+      ref.read(cameraFailureReasonProvider.notifier).setFailure(
+          CameraFailureReason.generic,
+        );
+      AppLogger.warning('No cameras available — signalling fallback');
+      context.pop();
+      return;
     }
+    _cameras = cameras;
+    await _initializeCamera(cameras, index: _selectedCameraIndex);
   }
-
-  _CameraError? _cameraError;
 
   Future<void> _initializeCamera(
     List<CameraDescription> cameras, {
@@ -72,22 +77,23 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
         _isFlashOn ? FlashMode.torch : FlashMode.off,
       );
       setState(() {
-        _cameraError = null;
+        _isInitializing = false;
       });
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          if (e is CameraException && e.code == 'CameraAccessDenied') {
-            _cameraError = _CameraError.permissionDenied;
-          } else if (e.toString().contains('disposed')) {
-            // Ignore disposed errors from interrupted initializations
-            return;
-          } else {
-            _cameraError = _CameraError.generic;
-          }
-        });
+      if (e.toString().contains('disposed')) {
+        // Ignore disposed errors from interrupted initializations
+        return;
       }
-      AppLogger.error('Error initializing camera', e);
+      if (mounted) {
+        // Signal failure reason to MainShellScreen via provider,
+        // then auto-pop — no error UI shown to the user.
+        final reason = (e is CameraException && e.code == 'CameraAccessDenied')
+            ? CameraFailureReason.permissionDenied
+            : CameraFailureReason.generic;
+        ref.read(cameraFailureReasonProvider.notifier).setFailure(reason);
+        AppLogger.error('Camera init failed ($reason) — signalling fallback', e);
+        context.pop();
+      }
     }
   }
 
@@ -166,13 +172,6 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
     });
   }
 
-  String _cameraErrorMessage(BuildContext context, _CameraError error) {
-    return switch (error) {
-      _CameraError.permissionDenied => context.l10n.cameraNoPermission,
-      _CameraError.generic => context.l10n.errorGeneric,
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     final cameraError = _cameraError;
@@ -199,6 +198,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
       );
     }
 
+
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) {
       return Scaffold(
@@ -210,8 +210,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
             onPressed: () => context.pop(),
           ),
         ),
-        body: const Center(
-          child: CircularProgressIndicator(color: Colors.white),
+        body: Center(
+          child: _isInitializing
+              ? const CircularProgressIndicator(color: Colors.white)
+              : const SizedBox.shrink(),
         ),
       );
     }

@@ -1450,5 +1450,7 @@
   "loginSignUp": "Đăng ký",
   "loginSignIn": "Đăng nhập",
   "loginAlreadyHaveAccount": "Đã có tài khoản? Đăng nhập",
-  "loginNeedAccount": "Chưa có tài khoản? Đăng ký"
+  "loginNeedAccount": "Chưa có tài khoản? Đăng ký",
+  "cameraFallbackPermissionDenied": "Không có quyền truy cập camera. Bạn có thể nhập giao dịch thủ công.",
+  "cameraFallbackGenericError": "Không thể mở camera. Bạn có thể nhập giao dịch thủ công."
 }

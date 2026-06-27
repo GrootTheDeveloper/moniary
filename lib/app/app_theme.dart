@@ -130,6 +130,8 @@ class AppTheme {
   static const outline = Color(0xFF243344);
   static const mint = Color(0xFF2563EB); // Deep Professional Blue
   static const mintSoft = Color(0xFF60A5FA); // Soft Blue
+  static const mintTeal = Color(0xFF68E5D8); // Teal accent, used in avatar gradient
+  static const mintTealDark = Color(0xFF10333B); // Dark teal, icon on teal surface
   static const pink = Color(0xFFE45CA6);
   static const amber = Color(0xFFF6B24D);
   static const danger = Color(0xFFFC8181);

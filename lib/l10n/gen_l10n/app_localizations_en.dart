@@ -3658,4 +3658,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginNeedAccount => 'Need an account? Sign up';
+
+  @override
+  String get cameraFallbackPermissionDenied =>
+      'Camera permission denied. You can enter the transaction manually.';
+
+  @override
+  String get cameraFallbackGenericError =>
+      'Could not open camera. You can enter the transaction manually.';
 }

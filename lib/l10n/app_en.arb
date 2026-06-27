@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "en",
   "appName": "Moniary",
   "commonSave": "Save",
@@ -1450,5 +1450,7 @@
   "loginSignUp": "Sign up",
   "loginSignIn": "Sign in",
   "loginAlreadyHaveAccount": "Already have an account? Sign in",
-  "loginNeedAccount": "Need an account? Sign up"
+  "loginNeedAccount": "Need an account? Sign up",
+  "cameraFallbackPermissionDenied": "Camera permission denied. You can enter the transaction manually.",
+  "cameraFallbackGenericError": "Could not open camera. You can enter the transaction manually."
 }

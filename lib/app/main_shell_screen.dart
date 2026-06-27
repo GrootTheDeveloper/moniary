@@ -4,9 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import 'app_theme.dart';
 import '../shared/widgets/bottom_nav_bar.dart';
+import '../core/providers/camera_provider.dart';
 import '../features/calendar/application/month/calendar_month_provider.dart';
 import '../features/calendar/application/month/calendar_visible_month_provider.dart';
 import '../features/transactions/domain/models/transaction_mutation_result.dart';
+import '../features/transactions/presentation/form/create_transaction_sheet.dart';
+import '../l10n/l10n_extension.dart';
 
 class MainShellScreen extends ConsumerWidget {
   const MainShellScreen({super.key, required this.navigationShell});
@@ -51,32 +54,69 @@ class MainShellScreen extends ConsumerWidget {
                 ).floatingActionButtonTheme.foregroundColor,
                 shape: const CircleBorder(),
                 onPressed: () async {
-                  final result = await context.push<TransactionMutationResult>(
-                    '/camera',
-                  );
-                  if (result != null) {
+                  // Reset any previous failure signal before opening camera.
+                  ref.read(cameraFailureReasonProvider.notifier).clear();
+
+                  // Primary path: open camera screen.
+                  final cameraResult =
+                      await context.push<TransactionMutationResult>('/camera');
+
+                  if (!context.mounted) return;
+
+                  if (cameraResult != null) {
+                    // ✅ Camera flow succeeded — refresh calendar.
                     final months = <DateTime>{
-                      if (result.previousDate != null)
+                      if (cameraResult.previousDate != null)
                         DateTime(
-                          result.previousDate!.year,
-                          result.previousDate!.month,
+                          cameraResult.previousDate!.year,
+                          cameraResult.previousDate!.month,
                           1,
                         ),
-                      if (result.currentDate != null)
+                      if (cameraResult.currentDate != null)
                         DateTime(
-                          result.currentDate!.year,
-                          result.currentDate!.month,
+                          cameraResult.currentDate!.year,
+                          cameraResult.currentDate!.month,
                           1,
                         ),
                     };
                     for (final month in months) {
                       ref.invalidate(calendarMonthProvider(month));
                     }
-                    if (result.currentDate != null) {
+                    if (cameraResult.currentDate != null) {
                       ref
                           .read(calendarVisibleMonthProvider.notifier)
-                          .setMonth(result.currentDate!);
+                          .setMonth(cameraResult.currentDate!);
                     }
+                    return;
+                  }
+
+                  // Check if camera closed due to failure (not user pressing ×).
+                  final failureReason = ref.read(cameraFailureReasonProvider);
+                  if (failureReason == null) return; // User cancelled — do nothing.
+
+                  // ⚠️ Camera failed — show user-friendly SnackBar then open manual sheet.
+                  final errorMessage =
+                      failureReason == CameraFailureReason.permissionDenied
+                          ? context.l10n.cameraFallbackPermissionDenied
+                          : context.l10n.cameraFallbackGenericError;
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(errorMessage),
+                      duration: const Duration(seconds: 4),
+                    ),
+                  );
+
+                  // Fallback path: manual entry sheet opens immediately.
+                  final createdAt =
+                      await showCreateTransactionSheet(context, ref);
+                  if (createdAt != null && context.mounted) {
+                    final month =
+                        DateTime(createdAt.year, createdAt.month, 1);
+                    ref.invalidate(calendarMonthProvider(month));
+                    ref
+                        .read(calendarVisibleMonthProvider.notifier)
+                        .setMonth(month);
                   }
                 },
                 child: const Icon(Icons.add, size: 34),
