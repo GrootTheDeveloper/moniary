@@ -6523,6 +6523,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa có tài khoản? Đăng ký'**
   String get loginNeedAccount;
+
+  /// No description provided for @cameraFallbackPermissionDenied.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có quyền truy cập camera. Bạn có thể nhập giao dịch thủ công.'**
+  String get cameraFallbackPermissionDenied;
+
+  /// No description provided for @cameraFallbackGenericError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể mở camera. Bạn có thể nhập giao dịch thủ công.'**
+  String get cameraFallbackGenericError;
 }
 
 class _AppLocalizationsDelegate
