@@ -6,7 +6,7 @@ import 'app_theme.dart';
 import '../shared/widgets/bottom_nav_bar.dart';
 import '../features/calendar/application/month/calendar_month_provider.dart';
 import '../features/calendar/application/month/calendar_visible_month_provider.dart';
-import '../features/transactions/domain/models/transaction_mutation_result.dart';
+import '../features/transactions/presentation/form/create_transaction_sheet.dart';
 
 class MainShellScreen extends ConsumerWidget {
   const MainShellScreen({super.key, required this.navigationShell});
@@ -48,32 +48,16 @@ class MainShellScreen extends ConsumerWidget {
                 foregroundColor: Colors.white,
                 shape: const CircleBorder(),
                 onPressed: () async {
-                  final result = await context.push<TransactionMutationResult>(
-                    '/camera',
+                  final createdAt = await showCreateTransactionSheet(
+                    context,
+                    ref,
                   );
-                  if (result != null) {
-                    final months = <DateTime>{
-                      if (result.previousDate != null)
-                        DateTime(
-                          result.previousDate!.year,
-                          result.previousDate!.month,
-                          1,
-                        ),
-                      if (result.currentDate != null)
-                        DateTime(
-                          result.currentDate!.year,
-                          result.currentDate!.month,
-                          1,
-                        ),
-                    };
-                    for (final month in months) {
-                      ref.invalidate(calendarMonthProvider(month));
-                    }
-                    if (result.currentDate != null) {
-                      ref
-                          .read(calendarVisibleMonthProvider.notifier)
-                          .setMonth(result.currentDate!);
-                    }
+                  if (createdAt != null) {
+                    final month = DateTime(createdAt.year, createdAt.month, 1);
+                    ref.invalidate(calendarMonthProvider(month));
+                    ref
+                        .read(calendarVisibleMonthProvider.notifier)
+                        .setMonth(month);
                   }
                 },
                 child: const Icon(Icons.add, size: 34),
