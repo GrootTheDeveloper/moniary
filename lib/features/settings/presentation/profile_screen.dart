@@ -829,7 +829,7 @@ class _ProfileHeader extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: AppTheme.mint, width: 2),
                 gradient: const LinearGradient(
-                  colors: [AppTheme.mint, Colors.teal],
+                  colors: [AppTheme.mint, AppTheme.mintTeal],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),

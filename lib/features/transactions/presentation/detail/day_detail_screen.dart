@@ -285,7 +285,7 @@ class TransactionGridTile extends StatelessWidget {
                 boxShadow: transaction.isImportant
                     ? [
                         BoxShadow(
-                          color: Colors.amber.withValues(alpha: 0.2),
+                          color: AppTheme.amber.withValues(alpha: 0.2),
                           blurRadius: 8,
                           spreadRadius: 1,
                         ),
@@ -365,7 +365,7 @@ class TransactionGridTile extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.amber.withValues(
+                                    color: AppTheme.amber.withValues(
                                       alpha: 0.3 * value,
                                     ),
                                     blurRadius: 8 * value,

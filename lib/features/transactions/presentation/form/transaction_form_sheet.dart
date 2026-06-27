@@ -281,7 +281,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
           IconButton(
             icon: Icon(
               Icons.check_circle_outline,
-              color: canSubmit ? AppTheme.mint : Colors.grey,
+              color: canSubmit ? AppTheme.mint : AppTheme.textDim,
               size: 32,
             ),
             onPressed: canSubmit ? _submit : null,
@@ -966,7 +966,7 @@ class _CategoryIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColor.fromHex(category.color, fallback: Colors.orange);
+    final color = AppColor.fromHex(category.color, fallback: AppTheme.amber);
     return Container(
       width: 32,
       height: 32,
@@ -1004,7 +1004,7 @@ class _WalletIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColor.fromHex(wallet.color, fallback: Colors.pink);
+    final color = AppColor.fromHex(wallet.color, fallback: AppTheme.pink);
     return Container(
       width: 32,
       height: 32,

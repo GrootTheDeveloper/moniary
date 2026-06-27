@@ -46,7 +46,7 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
           return IconButton(
             icon: Icon(
               _showStarredOnly ? Icons.star : Icons.star_border,
-              color: _showStarredOnly ? Colors.amber : Colors.white70,
+              color: _showStarredOnly ? AppTheme.amber : Colors.white70,
             ),
             onPressed: () {
               setState(() {
@@ -167,7 +167,7 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
                   ),
                   if (tx.isImportant) ...[
                     const SizedBox(width: 4),
-                    const Icon(Icons.star, color: Colors.amber, size: 14),
+                    const Icon(Icons.star, color: AppTheme.amber, size: 14),
                   ],
                 ],
               ),
