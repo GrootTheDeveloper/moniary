@@ -147,7 +147,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                                           begin: Alignment.topLeft,
                                           end: Alignment.bottomRight,
                                           colors: [
-                                            Color(0xFF68E5D8),
+                                            AppTheme.mintTeal,
                                             AppTheme.mint,
                                           ],
                                         ),
@@ -167,7 +167,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                                           : const Icon(
                                               Icons.face_outlined,
                                               size: 76,
-                                              color: Color(0xFF10333B),
+                                              color: AppTheme.mintTealDark,
                                             ),
                                     ),
                                     Container(
