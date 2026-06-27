@@ -41,6 +41,9 @@ Read these files first:
 - Read `18-ocr-pipeline.md` for the receipt OCR pipeline architecture and rules.
 - Read `19-ocr-backend.md` for backend integration details.
 
+### 8. Legal
+- Read `23-privacy-policy.md` for the app's privacy policy.
+
 ## Suggested Reading Order
 1. `01-system-overview.md`
 2. `02-project-structure.md`
