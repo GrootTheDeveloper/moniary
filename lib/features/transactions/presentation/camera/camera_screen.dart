@@ -174,31 +174,6 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
 
   @override
   Widget build(BuildContext context) {
-    final cameraError = _cameraError;
-    if (cameraError != null) {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          leading: IconButton(
-            icon: const Icon(Icons.close, color: Colors.white),
-            onPressed: () => context.pop(),
-          ),
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Text(
-              _cameraErrorMessage(context, cameraError),
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: AppTheme.danger, fontSize: 16),
-            ),
-          ),
-        ),
-      );
-    }
-
-
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) {
       return Scaffold(
