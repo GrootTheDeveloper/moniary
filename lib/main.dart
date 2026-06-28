@@ -21,7 +21,7 @@ Future<void> main() async {
     return true;
   };
 
-  await initializeDateFormatting(AppConstants.defaultLocale);
+  await initializeDateFormatting();
   AppConstants.assertSupabaseConfig();
   await bootstrapPreferences();
   await bootstrapSupabase();

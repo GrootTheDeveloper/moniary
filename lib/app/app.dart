@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/constants/app_constants.dart';
+import '../core/preferences/preferences_providers.dart';
 import '../core/deeplinks/app_deep_link.dart';
 import '../core/deeplinks/pending_deep_link_controller.dart';
 import '../core/supabase/supabase_providers.dart';
@@ -57,6 +58,7 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
+      locale: ref.watch(preferredLocaleProvider),
       routerConfig: ref.watch(appRouterProvider),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,10 +12,30 @@ final onboardingSeenProvider = NotifierProvider<OnboardingSeenNotifier, bool>(
   OnboardingSeenNotifier.new,
 );
 
+final preferredLocaleProvider = NotifierProvider<PreferredLocaleNotifier, Locale>(
+  PreferredLocaleNotifier.new,
+);
+
 final preferredCurrencyProvider =
     NotifierProvider<PreferredCurrencyNotifier, String>(
       PreferredCurrencyNotifier.new,
     );
+
+class PreferredLocaleNotifier extends Notifier<Locale> {
+  static const _key = 'preferred_locale';
+
+  @override
+  Locale build() {
+    final code = ref.read(sharedPreferencesProvider).getString(_key);
+    return code == 'en' ? const Locale('en') : const Locale('vi');
+  }
+
+  Future<void> setLocale(Locale locale) async {
+    final code = locale.languageCode == 'en' ? 'en' : 'vi';
+    state = Locale(code);
+    await ref.read(sharedPreferencesProvider).setString(_key, code);
+  }
+}
 
 class OnboardingSeenNotifier extends Notifier<bool> {
   static const _key = 'onboarding_seen';
