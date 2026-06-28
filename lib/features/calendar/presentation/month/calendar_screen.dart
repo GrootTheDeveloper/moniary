@@ -42,7 +42,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final displayName =
-        ref.watch(currentProfileProvider).value?.fullName?.trim() ?? 'groot';
+        ref.watch(currentProfileProvider).value?.fullName?.trim() ??
+            context.l10n.profileUserDefault;
     final visibleMonth = ref.watch(calendarVisibleMonthProvider);
     final monthAsync = ref.watch(calendarMonthProvider(visibleMonth));
     final walletsAsync = ref.watch(walletsControllerProvider);
@@ -283,7 +284,7 @@ class _SeamlessHeader extends ConsumerWidget {
                   ).textTheme.bodyMedium?.copyWith(color: Colors.white54),
                 ),
                 Text(
-                  userName.isEmpty ? 'User' : userName,
+                  userName.isEmpty ? context.l10n.profileUserDefault : userName,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
