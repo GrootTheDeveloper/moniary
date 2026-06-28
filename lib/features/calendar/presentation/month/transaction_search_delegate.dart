@@ -159,7 +159,9 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
                     child: Text(
                       tx.note?.trim().isNotEmpty == true
                           ? tx.note!.trim()
-                          : tx.categoryName,
+                          : tx.categoryName.trim().isEmpty
+                              ? context.l10n.categoryOther
+                              : tx.categoryName,
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),

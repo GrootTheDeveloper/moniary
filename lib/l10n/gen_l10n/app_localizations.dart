@@ -1172,6 +1172,12 @@ abstract class AppLocalizations {
   /// **'Lỗi danh mục: {error}'**
   String categoryError(String error);
 
+  /// No description provided for @categoryOther.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khác'**
+  String get categoryOther;
+
   /// No description provided for @categoryExpense.
   ///
   /// In vi, this message translates to:

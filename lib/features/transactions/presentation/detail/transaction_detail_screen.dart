@@ -236,7 +236,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                                 Flexible(
                                   child: _TagPill(
                                     icon: Icons.category_outlined,
-                                    label: transaction.categoryName,
+                                    label: transaction.categoryName.trim().isEmpty ? context.l10n.categoryOther : transaction.categoryName,
                                     color: categoryColor,
                                   ),
                                 ),

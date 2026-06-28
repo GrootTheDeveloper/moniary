@@ -587,6 +587,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get categoryOther => 'Other';
+
+  @override
   String get categoryExpense => 'Expense';
 
   @override

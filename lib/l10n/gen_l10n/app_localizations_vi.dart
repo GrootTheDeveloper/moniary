@@ -587,6 +587,9 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get categoryOther => 'Khác';
+
+  @override
   String get categoryExpense => 'Chi';
 
   @override

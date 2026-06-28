@@ -245,6 +245,7 @@
       }
     }
   },
+  "categoryOther": "Other",
   "categoryExpense": "Expense",
   "categoryIncome": "Income",
   "categoryNeedOneActive": "You need at least 1 active category for this transaction type.",
