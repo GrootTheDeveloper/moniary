@@ -2239,6 +2239,38 @@ class AppLocalizationsVi extends AppLocalizations {
       'Tóm tắt quyền xem dữ liệu, xuất dữ liệu, yêu cầu sửa/xóa và liên hệ privacy.';
 
   @override
+  String get userRightsHeroBody =>
+      'Người dùng có quyền hiểu dữ liệu nào đang được lưu, xuất dữ liệu của mình và gửi yêu cầu privacy khi cần.';
+
+  @override
+  String get userRightsAccessTitle => 'Xem dữ liệu đang lưu';
+
+  @override
+  String get userRightsAccessDescription =>
+      'Người dùng có thể xem tổng quan dữ liệu, nhóm dữ liệu, ảnh giao dịch và file cục bộ.';
+
+  @override
+  String get userRightsExportTitle => 'Xuất dữ liệu';
+
+  @override
+  String get userRightsExportDescription =>
+      'Người dùng có thể xuất dữ liệu ở định dạng CSV, Excel hoặc PDF trước khi chia sẻ hoặc rời app.';
+
+  @override
+  String get userRightsCorrectionTitle => 'Yêu cầu sửa hoặc hỗ trợ';
+
+  @override
+  String get userRightsCorrectionDescription =>
+      'Người dùng có thể tạo yêu cầu privacy nếu dữ liệu cần kiểm tra, sửa hoặc giải thích thêm.';
+
+  @override
+  String get userRightsDeletionTitle => 'Yêu cầu xóa dữ liệu';
+
+  @override
+  String get userRightsDeletionDescription =>
+      'Người dùng có thể xóa tài khoản trong app hoặc tạo request thủ công khi luồng trực tiếp thất bại.';
+
+  @override
   String get policyAcceptanceNoticeTitle => 'Thông báo đồng ý chính sách';
 
   @override

@@ -2239,6 +2239,38 @@ class AppLocalizationsEn extends AppLocalizations {
       'Summary of data viewing, exporting, edit/delete requests, and privacy contact.';
 
   @override
+  String get userRightsHeroBody =>
+      'Users have the right to understand what data is stored, export their own data, and submit a privacy request when needed.';
+
+  @override
+  String get userRightsAccessTitle => 'View stored data';
+
+  @override
+  String get userRightsAccessDescription =>
+      'Users can view a data overview, data groups, transaction images, and local files.';
+
+  @override
+  String get userRightsExportTitle => 'Export data';
+
+  @override
+  String get userRightsExportDescription =>
+      'Users can export data in CSV, Excel, or PDF format before sharing or leaving the app.';
+
+  @override
+  String get userRightsCorrectionTitle => 'Request correction or support';
+
+  @override
+  String get userRightsCorrectionDescription =>
+      'Users can submit a privacy request if their data needs review, correction, or further explanation.';
+
+  @override
+  String get userRightsDeletionTitle => 'Request data deletion';
+
+  @override
+  String get userRightsDeletionDescription =>
+      'Users can delete their account in-app or submit a manual request if the direct flow fails.';
+
+  @override
   String get policyAcceptanceNoticeTitle => 'Policy Acceptance Notice';
 
   @override

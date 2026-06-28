@@ -24,30 +24,26 @@ class UserRightsSummaryScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _RightItem(
               icon: Icons.visibility_outlined,
-              title: 'Xem dữ liệu đang lưu',
-              description:
-                  'Người dùng có thể xem tổng quan dữ liệu, nhóm dữ liệu, ảnh giao dịch và file cục bộ.',
+              title: context.l10n.userRightsAccessTitle,
+              description: context.l10n.userRightsAccessDescription,
               onTap: () => context.push(DataTransparencyScreen.routePath),
             ),
             _RightItem(
               icon: Icons.file_download_outlined,
-              title: 'Xuất dữ liệu',
-              description:
-                  'Người dùng có thể xuất dữ liệu ở định dạng CSV, Excel hoặc PDF trước khi chia sẻ hoặc rời app.',
+              title: context.l10n.userRightsExportTitle,
+              description: context.l10n.userRightsExportDescription,
               onTap: () => context.push(ExportDataScreen.routePath),
             ),
             _RightItem(
               icon: Icons.edit_note_outlined,
-              title: 'Yêu cầu sửa hoặc hỗ trợ',
-              description:
-                  'Người dùng có thể tạo yêu cầu privacy nếu dữ liệu cần kiểm tra, sửa hoặc giải thích thêm.',
+              title: context.l10n.userRightsCorrectionTitle,
+              description: context.l10n.userRightsCorrectionDescription,
               onTap: () => context.push(PrivacyContactScreen.routePath),
             ),
             _RightItem(
               icon: Icons.delete_outlined,
-              title: 'Yêu cầu xóa dữ liệu',
-              description:
-                  'Người dùng có thể xóa tài khoản trong app hoặc tạo request thủ công khi luồng trực tiếp thất bại.',
+              title: context.l10n.userRightsDeletionTitle,
+              description: context.l10n.userRightsDeletionDescription,
               onTap: () => context.push(PrivacyContactScreen.routePath),
             ),
           ],
@@ -70,7 +66,7 @@ class _RightsHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Người dùng có quyền hiểu dữ liệu nào đang được lưu, xuất dữ liệu của mình và gửi yêu cầu privacy khi cần.',
+        context.l10n.userRightsHeroBody,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );

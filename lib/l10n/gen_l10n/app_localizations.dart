@@ -4130,6 +4130,60 @@ abstract class AppLocalizations {
   /// **'Tóm tắt quyền xem dữ liệu, xuất dữ liệu, yêu cầu sửa/xóa và liên hệ privacy.'**
   String get userDataRightsSubtitle;
 
+  /// No description provided for @userRightsHeroBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng có quyền hiểu dữ liệu nào đang được lưu, xuất dữ liệu của mình và gửi yêu cầu privacy khi cần.'**
+  String get userRightsHeroBody;
+
+  /// No description provided for @userRightsAccessTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem dữ liệu đang lưu'**
+  String get userRightsAccessTitle;
+
+  /// No description provided for @userRightsAccessDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng có thể xem tổng quan dữ liệu, nhóm dữ liệu, ảnh giao dịch và file cục bộ.'**
+  String get userRightsAccessDescription;
+
+  /// No description provided for @userRightsExportTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất dữ liệu'**
+  String get userRightsExportTitle;
+
+  /// No description provided for @userRightsExportDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng có thể xuất dữ liệu ở định dạng CSV, Excel hoặc PDF trước khi chia sẻ hoặc rời app.'**
+  String get userRightsExportDescription;
+
+  /// No description provided for @userRightsCorrectionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu sửa hoặc hỗ trợ'**
+  String get userRightsCorrectionTitle;
+
+  /// No description provided for @userRightsCorrectionDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng có thể tạo yêu cầu privacy nếu dữ liệu cần kiểm tra, sửa hoặc giải thích thêm.'**
+  String get userRightsCorrectionDescription;
+
+  /// No description provided for @userRightsDeletionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu xóa dữ liệu'**
+  String get userRightsDeletionTitle;
+
+  /// No description provided for @userRightsDeletionDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng có thể xóa tài khoản trong app hoặc tạo request thủ công khi luồng trực tiếp thất bại.'**
+  String get userRightsDeletionDescription;
+
   /// No description provided for @policyAcceptanceNoticeTitle.
   ///
   /// In vi, this message translates to:
