@@ -6,7 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
-import '../../../../core/supabase/supabase_providers.dart';
+import '../../../profile/application/profile_setup_controller.dart';
 import '../../../transactions/domain/models/transaction_entry.dart';
 import '../../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../../transactions/presentation/detail/day_detail_screen.dart';
@@ -41,8 +41,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final session = ref.watch(currentSessionProvider);
-    final userId = session?.user.id ?? '';
+    final displayName =
+        ref.watch(currentProfileProvider).value?.fullName?.trim() ?? 'groot';
     final visibleMonth = ref.watch(calendarVisibleMonthProvider);
     final monthAsync = ref.watch(calendarMonthProvider(visibleMonth));
     final walletsAsync = ref.watch(walletsControllerProvider);
@@ -70,8 +70,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                         child: _SeamlessHeader(
-                          userName:
-                              session?.user.userMetadata?['name'] ?? 'groot',
+                          userName: displayName,
                           onProfileTap: () => _openManager(context),
                           onFriendsTap: () => _openFriendsSheet(context),
                           onTransactionTap: _openTransactionDetail,
@@ -82,7 +81,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: _UnifiedFilterRow(
-                          userId: userId,
                           isTodaySelected: _isTodayGridMode,
                           onTodayTap: () {
                             setState(() {
@@ -707,13 +705,11 @@ class _MonthPickerContentState extends State<_MonthPickerContent> {
 
 class _UnifiedFilterRow extends ConsumerWidget {
   const _UnifiedFilterRow({
-    required this.userId,
     required this.isTodaySelected,
     required this.onTodayTap,
     required this.onResetTap,
   });
 
-  final String userId;
   final bool isTodaySelected;
   final VoidCallback onTodayTap;
   final VoidCallback onResetTap;
