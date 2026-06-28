@@ -39,7 +39,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get commonLoading => 'Đang tải...';
 
   @override
-  String get commonCopy => 'Copy';
+  String get commonCopy => 'Sao chép';
 
   @override
   String get commonShare => 'Chia sẻ';

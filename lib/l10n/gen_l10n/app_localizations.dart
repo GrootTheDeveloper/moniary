@@ -161,7 +161,7 @@ abstract class AppLocalizations {
   /// No description provided for @commonCopy.
   ///
   /// In vi, this message translates to:
-  /// **'Copy'**
+  /// **'Sao chép'**
   String get commonCopy;
 
   /// No description provided for @commonShare.
