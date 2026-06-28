@@ -37,7 +37,7 @@ class ExportDetailScreen extends ConsumerWidget {
                 ),
                 _InfoRow(
                   label: context.l10n.exportDetailFormat,
-                  value: entry.format.toUpperCase(),
+                  value: entry.format.trim().isEmpty ? context.l10n.commonUnknown : entry.format.toUpperCase(),
                 ),
               ],
             ),

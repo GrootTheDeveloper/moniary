@@ -110,7 +110,7 @@ class _HistoryCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${context.l10n.importDetailWallet}: ${entry.walletName}',
+              '${context.l10n.importDetailWallet}: ${entry.walletName.trim().isEmpty ? context.l10n.walletUnknown : entry.walletName}',
               style: const TextStyle(color: Colors.white70, fontSize: 13),
             ),
             const SizedBox(height: 4),

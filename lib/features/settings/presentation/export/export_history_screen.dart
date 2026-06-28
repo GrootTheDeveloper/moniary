@@ -82,7 +82,7 @@ class _HistoryTile extends ConsumerWidget {
               CircleAvatar(
                 backgroundColor: AppTheme.mint.withValues(alpha: 0.16),
                 child: Text(
-                  entry.format,
+                  entry.format.trim().isEmpty ? context.l10n.commonUnknown : entry.format,
                   style: const TextStyle(color: AppTheme.mint, fontSize: 11),
                 ),
               ),
