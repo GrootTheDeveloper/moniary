@@ -2271,6 +2271,49 @@ class AppLocalizationsEn extends AppLocalizations {
       'Users can delete their account in-app or submit a manual request if the direct flow fails.';
 
   @override
+  String get privacyFaqHeroBody =>
+      'Frequently asked questions about personal data, export, account deletion, and privacy requests.';
+
+  @override
+  String get privacyFaqStoredDataQuestion => 'What data does Moniary store?';
+
+  @override
+  String get privacyFaqStoredDataAnswer =>
+      'The app stores profiles, wallets, categories, transactions, notes, and transaction image paths when users create data in the app.';
+
+  @override
+  String get privacyFaqExportBeforeDeletionQuestion =>
+      'Can I export my data before deleting my account?';
+
+  @override
+  String get privacyFaqExportBeforeDeletionAnswer =>
+      'Yes. You can export data as CSV, Excel, or PDF in the Export my data section.';
+
+  @override
+  String get privacyFaqDeletionImagesQuestion =>
+      'Does deleting my account also delete transaction images?';
+
+  @override
+  String get privacyFaqDeletionImagesAnswer =>
+      'The account deletion flow is designed to delete app data and transaction images linked to the current user.';
+
+  @override
+  String get privacyFaqDeletionFailQuestion =>
+      'What if direct account deletion fails?';
+
+  @override
+  String get privacyFaqDeletionFailAnswer =>
+      'You can create a manual data deletion request file and send it to the privacy support channel.';
+
+  @override
+  String get privacyFaqExportLocationQuestion =>
+      'Where are export files stored?';
+
+  @override
+  String get privacyFaqExportLocationAnswer =>
+      'Export files are saved in the app\'s documents folder on the device and can be opened or shared from the export history.';
+
+  @override
   String get policyAcceptanceNoticeTitle => 'Policy Acceptance Notice';
 
   @override

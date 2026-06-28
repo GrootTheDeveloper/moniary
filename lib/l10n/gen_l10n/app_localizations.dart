@@ -4184,6 +4184,72 @@ abstract class AppLocalizations {
   /// **'Người dùng có thể xóa tài khoản trong app hoặc tạo request thủ công khi luồng trực tiếp thất bại.'**
   String get userRightsDeletionDescription;
 
+  /// No description provided for @privacyFaqHeroBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Các câu hỏi thường gặp về dữ liệu cá nhân, export, xóa tài khoản và yêu cầu privacy.'**
+  String get privacyFaqHeroBody;
+
+  /// No description provided for @privacyFaqStoredDataQuestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'Moniary lưu những dữ liệu nào?'**
+  String get privacyFaqStoredDataQuestion;
+
+  /// No description provided for @privacyFaqStoredDataAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'App lưu hồ sơ, ví, danh mục, giao dịch, ghi chú và đường dẫn ảnh giao dịch khi người dùng tạo dữ liệu trong app.'**
+  String get privacyFaqStoredDataAnswer;
+
+  /// No description provided for @privacyFaqExportBeforeDeletionQuestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tôi có thể xuất dữ liệu trước khi xóa tài khoản không?'**
+  String get privacyFaqExportBeforeDeletionQuestion;
+
+  /// No description provided for @privacyFaqExportBeforeDeletionAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có. Bạn có thể xuất dữ liệu thành CSV, Excel hoặc PDF trong phần Xuất dữ liệu của tôi.'**
+  String get privacyFaqExportBeforeDeletionAnswer;
+
+  /// No description provided for @privacyFaqDeletionImagesQuestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa tài khoản có xóa ảnh giao dịch không?'**
+  String get privacyFaqDeletionImagesQuestion;
+
+  /// No description provided for @privacyFaqDeletionImagesAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Luồng xóa tài khoản được thiết kế để xóa dữ liệu app và ảnh giao dịch gắn với user hiện tại.'**
+  String get privacyFaqDeletionImagesAnswer;
+
+  /// No description provided for @privacyFaqDeletionFailQuestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nếu xóa tài khoản trực tiếp thất bại thì sao?'**
+  String get privacyFaqDeletionFailQuestion;
+
+  /// No description provided for @privacyFaqDeletionFailAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có thể tạo file yêu cầu xóa dữ liệu thủ công và gửi cho kênh hỗ trợ privacy.'**
+  String get privacyFaqDeletionFailAnswer;
+
+  /// No description provided for @privacyFaqExportLocationQuestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'File export nằm ở đâu?'**
+  String get privacyFaqExportLocationQuestion;
+
+  /// No description provided for @privacyFaqExportLocationAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'File export được lưu trong thư mục tài liệu của app trên thiết bị và có thể mở/chia sẻ từ lịch sử export.'**
+  String get privacyFaqExportLocationAnswer;
+
   /// No description provided for @policyAcceptanceNoticeTitle.
   ///
   /// In vi, this message translates to:

@@ -15,34 +15,28 @@ class PrivacyAccountFaqScreen extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: const [
-            _FaqHero(),
-            SizedBox(height: 16),
+          children: [
+            const _FaqHero(),
+            const SizedBox(height: 16),
             _FaqItem(
-              question: 'Moniary lưu những dữ liệu nào?',
-              answer:
-                  'App lưu hồ sơ, ví, danh mục, giao dịch, ghi chú và đường dẫn ảnh giao dịch khi người dùng tạo dữ liệu trong app.',
+              question: context.l10n.privacyFaqStoredDataQuestion,
+              answer: context.l10n.privacyFaqStoredDataAnswer,
             ),
             _FaqItem(
-              question:
-                  'Tôi có thể xuất dữ liệu trước khi xóa tài khoản không?',
-              answer:
-                  'Có. Bạn có thể xuất dữ liệu thành CSV, Excel hoặc PDF trong phần Xuất dữ liệu của tôi.',
+              question: context.l10n.privacyFaqExportBeforeDeletionQuestion,
+              answer: context.l10n.privacyFaqExportBeforeDeletionAnswer,
             ),
             _FaqItem(
-              question: 'Xóa tài khoản có xóa ảnh giao dịch không?',
-              answer:
-                  'Luồng xóa tài khoản được thiết kế để xóa dữ liệu app và ảnh giao dịch gắn với user hiện tại.',
+              question: context.l10n.privacyFaqDeletionImagesQuestion,
+              answer: context.l10n.privacyFaqDeletionImagesAnswer,
             ),
             _FaqItem(
-              question: 'Nếu xóa tài khoản trực tiếp thất bại thì sao?',
-              answer:
-                  'Bạn có thể tạo file yêu cầu xóa dữ liệu thủ công và gửi cho kênh hỗ trợ privacy.',
+              question: context.l10n.privacyFaqDeletionFailQuestion,
+              answer: context.l10n.privacyFaqDeletionFailAnswer,
             ),
             _FaqItem(
-              question: 'File export nằm ở đâu?',
-              answer:
-                  'File export được lưu trong thư mục tài liệu của app trên thiết bị và có thể mở/chia sẻ từ lịch sử export.',
+              question: context.l10n.privacyFaqExportLocationQuestion,
+              answer: context.l10n.privacyFaqExportLocationAnswer,
             ),
           ],
         ),
@@ -64,7 +58,7 @@ class _FaqHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Các câu hỏi thường gặp về dữ liệu cá nhân, export, xóa tài khoản và yêu cầu privacy.',
+        context.l10n.privacyFaqHeroBody,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );

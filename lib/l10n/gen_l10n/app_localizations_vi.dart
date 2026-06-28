@@ -2271,6 +2271,48 @@ class AppLocalizationsVi extends AppLocalizations {
       'Người dùng có thể xóa tài khoản trong app hoặc tạo request thủ công khi luồng trực tiếp thất bại.';
 
   @override
+  String get privacyFaqHeroBody =>
+      'Các câu hỏi thường gặp về dữ liệu cá nhân, export, xóa tài khoản và yêu cầu privacy.';
+
+  @override
+  String get privacyFaqStoredDataQuestion => 'Moniary lưu những dữ liệu nào?';
+
+  @override
+  String get privacyFaqStoredDataAnswer =>
+      'App lưu hồ sơ, ví, danh mục, giao dịch, ghi chú và đường dẫn ảnh giao dịch khi người dùng tạo dữ liệu trong app.';
+
+  @override
+  String get privacyFaqExportBeforeDeletionQuestion =>
+      'Tôi có thể xuất dữ liệu trước khi xóa tài khoản không?';
+
+  @override
+  String get privacyFaqExportBeforeDeletionAnswer =>
+      'Có. Bạn có thể xuất dữ liệu thành CSV, Excel hoặc PDF trong phần Xuất dữ liệu của tôi.';
+
+  @override
+  String get privacyFaqDeletionImagesQuestion =>
+      'Xóa tài khoản có xóa ảnh giao dịch không?';
+
+  @override
+  String get privacyFaqDeletionImagesAnswer =>
+      'Luồng xóa tài khoản được thiết kế để xóa dữ liệu app và ảnh giao dịch gắn với user hiện tại.';
+
+  @override
+  String get privacyFaqDeletionFailQuestion =>
+      'Nếu xóa tài khoản trực tiếp thất bại thì sao?';
+
+  @override
+  String get privacyFaqDeletionFailAnswer =>
+      'Bạn có thể tạo file yêu cầu xóa dữ liệu thủ công và gửi cho kênh hỗ trợ privacy.';
+
+  @override
+  String get privacyFaqExportLocationQuestion => 'File export nằm ở đâu?';
+
+  @override
+  String get privacyFaqExportLocationAnswer =>
+      'File export được lưu trong thư mục tài liệu của app trên thiết bị và có thể mở/chia sẻ từ lịch sử export.';
+
+  @override
   String get policyAcceptanceNoticeTitle => 'Thông báo đồng ý chính sách';
 
   @override
