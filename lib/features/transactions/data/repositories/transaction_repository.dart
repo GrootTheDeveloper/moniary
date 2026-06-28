@@ -567,7 +567,7 @@ class TransactionRepository {
         (element) => element.id == walletId,
         orElse: () => Wallet(
           id: walletId,
-          name: 'Wallet',
+          name: '',
           type: WalletType.cash,
           initialBalance: 0,
           isDefault: false,
@@ -581,7 +581,7 @@ class TransactionRepository {
         (element) => element.id == categoryId,
         orElse: () => Category(
           id: categoryId,
-          name: 'Other',
+          name: '',
           type: type,
           icon: null,
           color: null,
@@ -662,7 +662,7 @@ class TransactionRepository {
           (element) => element.id == walletId,
           orElse: () => Wallet(
             id: walletId,
-            name: 'Wallet',
+            name: '',
             type: WalletType.cash,
             initialBalance: 0,
             isDefault: false,
@@ -676,7 +676,7 @@ class TransactionRepository {
           (element) => element.id == categoryId,
           orElse: () => Category(
             id: categoryId,
-            name: 'Other',
+            name: '',
             type: type,
             icon: null,
             color: null,
