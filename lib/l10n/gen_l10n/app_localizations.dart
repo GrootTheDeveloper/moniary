@@ -1169,7 +1169,7 @@ abstract class AppLocalizations {
   /// No description provided for @categoryError.
   ///
   /// In vi, this message translates to:
-  /// **'Category error: {error}'**
+  /// **'Lỗi danh mục: {error}'**
   String categoryError(String error);
 
   /// No description provided for @categoryExpense.
@@ -2359,6 +2359,24 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Vấn đề điều khoản, phát hành Store hoặc yêu cầu pháp lý.'**
   String get legalContactLegalDesc;
+
+  /// No description provided for @legalContactPrivacy.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền riêng tư'**
+  String get legalContactPrivacy;
+
+  /// No description provided for @legalContactSupport.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hỗ trợ'**
+  String get legalContactSupport;
+
+  /// No description provided for @legalContactLegal.
+  ///
+  /// In vi, this message translates to:
+  /// **'Pháp lý'**
+  String get legalContactLegal;
 
   /// No description provided for @privacyDetailCreatedAt.
   ///
@@ -4069,6 +4087,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Giải thích rằng việc tiếp tục sử dụng app áp dụng theo chính sách và điều khoản hiện tại.'**
   String get policyAcceptanceNoticeSubtitle;
+
+  /// No description provided for @policyAcceptanceHero.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo này giúp người dùng hiểu rằng các chính sách hiện tại áp dụng khi tiếp tục sử dụng Moniary.'**
+  String get policyAcceptanceHero;
+
+  /// No description provided for @policyAcceptanceBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khi tiếp tục dùng Moniary, người dùng xác nhận đã có cơ hội đọc Chính sách bảo mật, Điều khoản sử dụng, thông báo lưu giữ dữ liệu và các ghi chú an toàn liên quan.'**
+  String get policyAcceptanceBody;
 
   /// No description provided for @legalContactTitle.
   ///

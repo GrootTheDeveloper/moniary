@@ -54,7 +54,7 @@ class _AcceptanceHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Thông báo này giúp người dùng hiểu rằng các chính sách hiện tại áp dụng khi tiếp tục sử dụng Moniary.',
+        context.l10n.policyAcceptanceHero,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );
@@ -80,7 +80,7 @@ class _AcceptanceCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Khi tiếp tục dùng Moniary, người dùng xác nhận đã có cơ hội đọc Chính sách bảo mật, Điều khoản sử dụng, thông báo lưu giữ dữ liệu và các ghi chú an toàn liên quan.',
+              context.l10n.policyAcceptanceBody,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),

@@ -22,19 +22,19 @@ class LegalContactScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _ContactCard(
               icon: Icons.privacy_tip_outlined,
-              title: 'Privacy',
+              title: context.l10n.legalContactPrivacy,
               value: AppConstants.privacyEmail,
               description: context.l10n.legalContactPrivacyDesc,
             ),
             _ContactCard(
               icon: Icons.support_agent_outlined,
-              title: 'Support',
+              title: context.l10n.legalContactSupport,
               value: AppConstants.supportEmail,
               description: context.l10n.legalContactSupportDesc,
             ),
             _ContactCard(
               icon: Icons.gavel_outlined,
-              title: 'Legal',
+              title: context.l10n.legalContactLegal,
               value: AppConstants.legalEmail,
               description: context.l10n.legalContactLegalDesc,
             ),
@@ -122,7 +122,7 @@ class _ContactCard extends StatelessWidget {
               IconButton(
                 onPressed: () => _copy(context),
                 icon: const Icon(Icons.copy_outlined),
-                tooltip: 'Copy',
+                tooltip: context.l10n.commonCopy,
               ),
             ],
           ),

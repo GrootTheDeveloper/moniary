@@ -521,6 +521,9 @@
   "legalContactPrivacyDesc": "Personal data requests, data deletion, or privacy questions.",
   "legalContactSupportDesc": "General app support, file export, or user actions.",
   "legalContactLegalDesc": "Terms issues, Store releases, or legal requests.",
+  "legalContactPrivacy": "Privacy",
+  "legalContactSupport": "Support",
+  "legalContactLegal": "Legal",
   "privacyDetailCreatedAt": "Created at {date}",
   "@privacyDetailCreatedAt": {
     "placeholders": {
@@ -955,6 +958,8 @@
   "userDataRightsSubtitle": "Summary of data viewing, exporting, edit/delete requests, and privacy contact.",
   "policyAcceptanceNoticeTitle": "Policy Acceptance Notice",
   "policyAcceptanceNoticeSubtitle": "Explains that continued use applies current policies and terms.",
+  "policyAcceptanceHero": "This notice helps users understand that the current policies apply when continuing to use Moniary.",
+  "policyAcceptanceBody": "By continuing to use Moniary, the user confirms they have had the opportunity to read the Privacy Policy, Terms of Use, data retention notice, and related safety notes.",
   "legalContactTitle": "Legal Contact",
   "legalContactSubtitle": "View and copy privacy, support, and legal emails for Store release.",
   "dataSafetyTitle": "Data Safety",
