@@ -778,7 +778,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String categoryError(String error) {
-    return 'Category error: $error';
+    return 'Lỗi danh mục: $error';
   }
 
   @override
@@ -1619,6 +1619,15 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get userRightsDeletionDesc =>
       'Bạn có thể xóa tài khoản trong app hoặc tạo yêu cầu thủ công khi luồng trực tiếp thất bại.';
+
+  @override
+  String get legalContactPrivacy => 'Quyền riêng tư';
+
+  @override
+  String get legalContactSupport => 'Hỗ trợ';
+
+  @override
+  String get legalContactLegal => 'Pháp lý';
 
   @override
   String privacyDetailCreatedAt(String date) {
@@ -2631,6 +2640,14 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get policyAcceptanceNoticeSubtitle =>
       'Giải thích rằng việc tiếp tục sử dụng app áp dụng theo chính sách và điều khoản hiện tại.';
+
+  @override
+  String get policyAcceptanceHero =>
+      'Thông báo này giúp người dùng hiểu rằng các chính sách hiện tại áp dụng khi tiếp tục sử dụng Moniary.';
+
+  @override
+  String get policyAcceptanceBody =>
+      'Khi tiếp tục dùng Moniary, người dùng xác nhận đã có cơ hội đọc Chính sách bảo mật, Điều khoản sử dụng, thông báo lưu giữ dữ liệu và các ghi chú an toàn liên quan.';
 
   @override
   String get legalContactTitle => 'Liên hệ pháp lý';

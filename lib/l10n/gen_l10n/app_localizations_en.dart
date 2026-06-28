@@ -1623,6 +1623,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'You can delete your account in the app or create a manual request if direct deletion fails.';
 
   @override
+  String get legalContactPrivacy => 'Privacy';
+
+  @override
+  String get legalContactSupport => 'Support';
+
+  @override
+  String get legalContactLegal => 'Legal';
+
+  @override
   String privacyDetailCreatedAt(String date) {
     return 'Created at $date';
   }
@@ -2632,6 +2641,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get policyAcceptanceNoticeSubtitle =>
       'Explains that continued use applies current policies and terms.';
+
+  @override
+  String get policyAcceptanceHero =>
+      'This notice helps users understand that the current policies apply when continuing to use Moniary.';
+
+  @override
+  String get policyAcceptanceBody =>
+      'By continuing to use Moniary, the user confirms they have had the opportunity to read the Privacy Policy, Terms of Use, data retention notice, and related safety notes.';
 
   @override
   String get legalContactTitle => 'Legal Contact';

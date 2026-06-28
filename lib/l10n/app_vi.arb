@@ -316,7 +316,7 @@
   "categorySaving": "Đang lưu...",
   "categorySave": "Lưu danh mục",
   "categoryNameRequired": "Tên danh mục không được trống.",
-  "categoryError": "Category error: {error}",
+  "categoryError": "Lỗi danh mục: {error}",
   "@categoryError": {
     "placeholders": {
       "error": {
@@ -1146,6 +1146,8 @@
   "userDataRightsSubtitle": "Tóm tắt quyền xem dữ liệu, xuất dữ liệu, yêu cầu sửa/xóa và liên hệ quyền riêng tư.",
   "policyAcceptanceNoticeTitle": "Thông báo đồng ý chính sách",
   "policyAcceptanceNoticeSubtitle": "Giải thích rằng việc tiếp tục sử dụng app áp dụng theo chính sách và điều khoản hiện tại.",
+  "policyAcceptanceHero": "Thông báo này giúp người dùng hiểu rằng các chính sách hiện tại áp dụng khi tiếp tục sử dụng Moniary.",
+  "policyAcceptanceBody": "Khi tiếp tục dùng Moniary, người dùng xác nhận đã có cơ hội đọc Chính sách bảo mật, Điều khoản sử dụng, thông báo lưu giữ dữ liệu và các ghi chú an toàn liên quan.",
   "legalContactTitle": "Liên hệ pháp lý",
   "legalContactSubtitle": "Xem và sao chép email quyền riêng tư, hỗ trợ và pháp lý.",
   "dataSafetyTitle": "An toàn dữ liệu",
