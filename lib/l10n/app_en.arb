@@ -290,6 +290,7 @@
   "walletSaving": "Saving...",
   "walletSave": "Save wallet",
   "walletNameRequired": "Wallet name cannot be empty.",
+  "walletUnknown": "Unknown wallet",
   "walletTypeCash": "Cash",
   "walletTypeBank": "Bank",
   "walletTypeEwallet": "E-Wallet",

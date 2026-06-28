@@ -485,7 +485,7 @@ class _SearchResultRow extends StatelessWidget {
                         Text(
                           '${_formatSearchDate(context, transaction.transactionDate)} · '
                           '${DateFormat('HH:mm').format(transaction.transactionDate)} · '
-                          '${transaction.walletName.toUpperCase()}',
+                          '${(transaction.walletName.trim().isEmpty ? context.l10n.walletUnknown : transaction.walletName).toUpperCase()}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: context.moniaryTypography.metadata.copyWith(

@@ -55,6 +55,9 @@ class _TransactionDetailBody extends ConsumerWidget {
     final categoryLabel = transaction.categoryName.trim().isEmpty
         ? context.l10n.categoryOther
         : transaction.categoryName;
+    final walletLabel = transaction.walletName.trim().isEmpty
+        ? context.l10n.walletUnknown
+        : transaction.walletName;
     final title = note?.isNotEmpty == true ? note! : categoryLabel;
 
     return SafeArea(
@@ -224,7 +227,7 @@ class _TransactionDetailBody extends ConsumerWidget {
               const SizedBox(height: 21),
               _DetailMetaRow(
                 label: context.l10n.transactionWallet,
-                value: transaction.walletName,
+                value: walletLabel,
               ),
               _DetailMetaRow(
                 label: context.l10n.transactionCategory,

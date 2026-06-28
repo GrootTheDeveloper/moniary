@@ -717,6 +717,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get walletNameRequired => 'Wallet name cannot be empty.';
 
   @override
+  String get walletUnknown => 'Unknown wallet';
+
+  @override
   String get walletTypeCash => 'Cash';
 
   @override

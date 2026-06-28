@@ -716,6 +716,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get walletNameRequired => 'Tên ví không được trống.';
 
   @override
+  String get walletUnknown => 'Ví không xác định';
+
+  @override
   String get walletTypeCash => 'Tiền mặt';
 
   @override

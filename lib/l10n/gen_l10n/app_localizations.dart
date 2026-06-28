@@ -1424,6 +1424,12 @@ abstract class AppLocalizations {
   /// **'Tên ví không được trống.'**
   String get walletNameRequired;
 
+  /// No description provided for @walletUnknown.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví không xác định'**
+  String get walletUnknown;
+
   /// No description provided for @walletTypeCash.
   ///
   /// In vi, this message translates to:

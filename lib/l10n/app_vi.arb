@@ -290,6 +290,7 @@
   "walletSaving": "Đang lưu...",
   "walletSave": "Lưu ví",
   "walletNameRequired": "Tên ví không được trống.",
+  "walletUnknown": "Ví không xác định",
   "walletTypeCash": "Tiền mặt",
   "walletTypeBank": "Ngân hàng",
   "walletTypeEwallet": "Ví điện tử",
