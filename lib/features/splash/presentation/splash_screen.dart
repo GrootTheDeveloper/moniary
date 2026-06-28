@@ -11,6 +11,7 @@ import '../../../core/preferences/preferences_providers.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/widgets/aurora_background.dart';
+import '../../auth/application/auth_controller.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../auth/application/post_auth_decision_provider.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
@@ -86,9 +87,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _clearBrokenSession() async {
-    ref.read(mockSessionProvider.notifier).setSession(null);
     try {
-      await ref.read(supabaseClientProvider).auth.signOut();
+      await ref.read(authControllerProvider.notifier).signOut();
     } catch (e, st) {
       AppLogger.error('Failed to clear broken splash session', e, st);
     }
