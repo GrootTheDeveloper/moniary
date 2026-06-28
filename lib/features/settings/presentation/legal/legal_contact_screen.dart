@@ -54,7 +54,7 @@ class LegalContactScreen extends StatelessWidget {
     Clipboard.setData(
       ClipboardData(
         text:
-            'Privacy: ${AppConstants.privacyEmail}\nSupport: ${AppConstants.supportEmail}\nLegal: ${AppConstants.legalEmail}',
+            '${context.l10n.legalContactPrivacy}: ${AppConstants.privacyEmail}\n${context.l10n.legalContactSupport}: ${AppConstants.supportEmail}\n${context.l10n.legalContactLegal}: ${AppConstants.legalEmail}',
       ),
     );
     ScaffoldMessenger.of(context).showSnackBar(
