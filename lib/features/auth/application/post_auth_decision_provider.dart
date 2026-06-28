@@ -21,7 +21,6 @@ final postAuthDecisionProvider = FutureProvider<PostAuthDecision>((
   final session = ref.watch(currentSessionProvider);
   // Use ref.read for repositories to avoid race conditions during rebuilds
   final profileRepo = ref.read(profileRepositoryProvider);
-  final statusController = ref.read(accountStatusControllerProvider.notifier);
 
   if (session == null) {
     return const PostAuthDecision(PostAuthDestination.noSession);

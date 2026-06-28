@@ -337,29 +337,37 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                 Row(
                   children: [
                     Expanded(
+                      flex: 3,
                       child: SizedBox(
-                        height: 40,
+                        height: 44,
                         child: OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white54,
+                            foregroundColor: Colors.white,
                             side: const BorderSide(
-                              color: Colors.white54,
+                              color: Colors.white24,
                               width: 1.0,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(100),
                             ),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
                           ),
                           onPressed: () => _showImageSourceOptions(context),
-                          icon: const Icon(Icons.camera_alt_outlined, size: 20),
-                          label: Text(context.l10n.transactionChangePhoto),
+                          icon: const Icon(Icons.camera_alt_outlined, size: 18),
+                          label: Text(
+                            context.l10n.transactionChangePhoto,
+                            style: const TextStyle(fontSize: 12),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     Expanded(
+                      flex: 2,
                       child: SizedBox(
-                        height: 40,
+                        height: 44,
                         child: OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppTheme.mint,
@@ -370,18 +378,21 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(100),
                             ),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
                           ),
                           onPressed: _runOcr,
                           icon: const Icon(
                             Icons.document_scanner_outlined,
-                            size: 20,
+                            size: 18,
                           ),
                           label: Text(
                             context.l10n.cameraOcrScan,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 13,
+                              fontSize: 12,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ),
@@ -392,11 +403,11 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
-                height: 40,
+                height: 44,
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white54,
-                    side: const BorderSide(color: Colors.white54, width: 1.0),
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white24, width: 1.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(100),
                     ),

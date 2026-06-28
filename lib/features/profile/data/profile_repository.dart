@@ -119,10 +119,8 @@ class ProfileRepository {
         'full_name': fullName,
         'username': username,
         'timezone': timezone,
+        if (avatarUrl != null) 'avatar_url': avatarUrl,
       };
-      if (avatarUrl != null) {
-        values['avatar_url'] = avatarUrl;
-      }
 
       final row = await _client
           .from('profiles')

@@ -17,11 +17,19 @@ import '../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../transactions/presentation/detail/transaction_detail_screen.dart';
 import '../../transactions/presentation/detail/transaction_route_args.dart';
 import '../../../shared/widgets/obscurable_amount_text.dart';
+import '../application/stats_insights_logic.dart';
 
 final statisticsMonthProvider =
     FutureProvider.family<List<TransactionEntry>, DateTime>((ref, month) async {
       final repo = ref.watch(transactionRepositoryProvider);
       return repo.fetchTransactionsForMonth(month);
+    });
+
+final previousMonthStatisticsProvider =
+    FutureProvider.family<List<TransactionEntry>, DateTime>((ref, month) async {
+      final prevMonth = DateTime(month.year, month.month - 1, 1);
+      final repo = ref.watch(transactionRepositoryProvider);
+      return repo.fetchTransactionsForMonth(prevMonth);
     });
 
 class StatisticsView extends ConsumerStatefulWidget {
@@ -75,6 +83,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   @override
   Widget build(BuildContext context) {
     final statsAsync = ref.watch(statisticsMonthProvider(_selectedMonth));
+    final prevStatsAsync = ref.watch(previousMonthStatisticsProvider(_selectedMonth));
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -88,7 +97,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         centerTitle: true,
       ),
       body: statsAsync.when(
-        data: (transactions) => _buildBody(context, transactions),
+        data: (transactions) => _buildBody(context, transactions, prevStatsAsync.value ?? []),
         loading: () => const Center(
           child: CircularProgressIndicator(color: AppTheme.mint),
         ),
@@ -100,7 +109,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     );
   }
 
-  Widget _buildBody(BuildContext context, List<TransactionEntry> transactions) {
+  Widget _buildBody(BuildContext context, List<TransactionEntry> transactions, List<TransactionEntry> prevTransactions) {
     final income = transactions
         .where((t) => t.isIncome)
         .fold<double>(0, (sum, t) => sum + t.amount);
@@ -108,6 +117,13 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         .where((t) => t.isExpense)
         .fold<double>(0, (sum, t) => sum + t.amount);
     final net = income - expense;
+
+    final prevIncome = prevTransactions
+        .where((t) => t.isIncome)
+        .fold<double>(0, (sum, t) => sum + t.amount);
+    final prevExpense = prevTransactions
+        .where((t) => t.isExpense)
+        .fold<double>(0, (sum, t) => sum + t.amount);
 
     // Filter transactions by type for chart calculations
     final filteredByType = transactions
@@ -123,13 +139,16 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(statisticsMonthProvider(_selectedMonth));
+        ref.invalidate(previousMonthStatisticsProvider(_selectedMonth));
       },
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         children: [
           _buildMonthSelector(context),
           const SizedBox(height: 16),
-          _buildSummaryCards(income, expense, net),
+          _buildSummaryCards(income, expense, net, prevIncome, prevExpense),
+          const SizedBox(height: 16),
+          _buildInsightsSection(transactions, prevTransactions),
           const SizedBox(height: 16),
           _buildImportantSpendingCard(transactions),
           const SizedBox(height: 24),
@@ -188,7 +207,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     );
   }
 
-  Widget _buildSummaryCards(double income, double expense, double net) {
+  Widget _buildSummaryCards(double income, double expense, double net, double prevIncome, double prevExpense) {
     return Column(
       children: [
         Row(
@@ -199,6 +218,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                 value: _money(context, income),
                 color: AppTheme.success,
                 icon: Icons.north_east_outlined,
+                trend: _calculateDiff(income, prevIncome),
               ),
             ),
             const SizedBox(width: 12),
@@ -208,6 +228,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                 value: _money(context, expense),
                 color: AppTheme.danger,
                 icon: Icons.south_east_outlined,
+                trend: _calculateDiff(expense, prevExpense, isExpense: true),
               ),
             ),
           ],
@@ -884,8 +905,81 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
 
     for (final month in months) {
       ref.invalidate(statisticsMonthProvider(month));
+      ref.invalidate(previousMonthStatisticsProvider(month));
       ref.invalidate(calendarMonthProvider(month));
     }
+  }
+
+  String? _calculateDiff(double current, double prev, {bool isExpense = false}) {
+    if (prev <= 0) return null;
+    final diff = ((current - prev) / prev) * 100;
+    final sign = diff >= 0 ? '+' : '';
+    return '$sign${diff.toStringAsFixed(0)}%';
+  }
+
+  Widget _buildInsightsSection(List<TransactionEntry> current, List<TransactionEntry> prev) {
+    final insights = StatsInsightsLogic.generateInsights(context, current, prev);
+    if (insights.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          child: Text(
+            'Gợi ý thông minh', // TODO: l10n
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+        SizedBox(
+          height: 100,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: insights.length,
+            itemBuilder: (context, index) {
+              final insight = insights[index];
+              final color = insight.type == InsightType.warning 
+                ? AppTheme.danger 
+                : insight.type == InsightType.success 
+                  ? AppTheme.success 
+                  : AppTheme.mint;
+
+              return Container(
+                width: 260,
+                margin: const EdgeInsets.only(right: 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: color.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(insight.icon, color: color, size: 20),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        insight.message,
+                        style: const TextStyle(fontSize: 13, height: 1.3),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -895,12 +989,14 @@ class _MetricCard extends StatelessWidget {
     required this.value,
     required this.color,
     required this.icon,
+    this.trend,
   });
 
   final String label;
   final String value;
   final Color color;
   final IconData icon;
+  final String? trend;
 
   @override
   Widget build(BuildContext context) {
@@ -926,13 +1022,27 @@ class _MetricCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w500,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.white54,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    if (trend != null)
+                      Text(
+                        trend!,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: trend!.startsWith('+') ? AppTheme.danger : AppTheme.success,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 FittedBox(

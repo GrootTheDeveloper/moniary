@@ -405,23 +405,26 @@ class _SeamlessHeader extends ConsumerWidget {
         // Row 3: Income & Expense (Pills)
         monthAsync.when(
           data: (monthData) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _IncomeExpensePill(
-                  label: context.l10n.calendarIncome,
-                  amount: monthData.totalIncome,
-                  color: AppTheme.mint,
-                  icon: Icons.arrow_downward_outlined,
-                ),
-                const SizedBox(width: 12),
-                _IncomeExpensePill(
-                  label: context.l10n.calendarExpense,
-                  amount: monthData.totalExpense,
-                  color: Colors.redAccent,
-                  icon: Icons.arrow_upward_outlined,
-                ),
-              ],
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _IncomeExpensePill(
+                    label: context.l10n.calendarIncome,
+                    amount: monthData.totalIncome,
+                    color: AppTheme.mint,
+                    icon: Icons.arrow_downward_outlined,
+                  ),
+                  const SizedBox(width: 12),
+                  _IncomeExpensePill(
+                    label: context.l10n.calendarExpense,
+                    amount: monthData.totalExpense,
+                    color: Colors.redAccent,
+                    icon: Icons.arrow_upward_outlined,
+                  ),
+                ],
+              ),
             );
           },
           loading: () => const SizedBox(height: 30),

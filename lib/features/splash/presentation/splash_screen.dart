@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,8 +6,6 @@ import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/preferences/preferences_providers.dart';
-import '../../../core/supabase/supabase_providers.dart';
-import '../../../shared/utils/app_logger.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../auth/application/post_auth_decision_provider.dart';
