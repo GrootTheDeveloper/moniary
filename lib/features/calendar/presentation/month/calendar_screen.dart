@@ -53,7 +53,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         ?.trim();
     final displayName = profileName?.isNotEmpty == true
         ? profileName!
-        : context.l10n.profileSurveyFallbackName;
+        : context.l10n.profileUserDefault;
     final visibleMonth = ref.watch(calendarVisibleMonthProvider);
     final monthAsync = ref.watch(calendarMonthProvider(visibleMonth));
     final walletsAsync = ref.watch(walletsControllerProvider);
