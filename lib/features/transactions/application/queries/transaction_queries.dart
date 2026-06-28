@@ -29,3 +29,10 @@ final starredTransactionsProvider = FutureProvider<List<TransactionEntry>>((
 ) async {
   return ref.watch(transactionRepositoryProvider).fetchStarredTransactions();
 });
+
+final transactionSearchProvider =
+    FutureProvider.family<List<TransactionEntry>, String>((ref, query) async {
+      return ref
+          .watch(transactionRepositoryProvider)
+          .searchTransactions(query);
+    });

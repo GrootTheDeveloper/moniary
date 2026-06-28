@@ -6,7 +6,7 @@ import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
-import '../../../transactions/data/repositories/transaction_repository.dart';
+import '../../../transactions/application/queries/transaction_queries.dart';
 import '../../../transactions/domain/models/transaction_entry.dart';
 
 class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
@@ -93,10 +93,8 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
   }
 
   Widget _buildSearchList(BuildContext context) {
-    final repo = ref.read(transactionRepositoryProvider);
-
     return FutureBuilder<List<TransactionEntry>>(
-      future: repo.searchTransactions(query),
+      future: ref.read(transactionSearchProvider(query).future),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
