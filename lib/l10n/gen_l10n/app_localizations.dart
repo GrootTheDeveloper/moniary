@@ -4028,6 +4028,48 @@ abstract class AppLocalizations {
   /// **'Xem app đang dùng Supabase, Flutter/package và bộ nhớ thiết bị như thế nào.'**
   String get thirdPartyServicesSubtitle;
 
+  /// No description provided for @thirdPartyHeroBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo này giúp người dùng hiểu app dựa vào dịch vụ nào để đăng nhập, lưu trữ và vận hành dữ liệu.'**
+  String get thirdPartyHeroBody;
+
+  /// No description provided for @thirdPartySupabaseDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Được dùng cho đăng nhập, cơ sở dữ liệu, storage ảnh giao dịch và edge function xóa tài khoản.'**
+  String get thirdPartySupabaseDescription;
+
+  /// No description provided for @thirdPartyFlutterDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Framework giao diện chính của app, kèm các package hỗ trợ điều hướng, trạng thái, camera, chọn ảnh và xử lý file.'**
+  String get thirdPartyFlutterDescription;
+
+  /// No description provided for @thirdPartyDeviceStorageTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bộ nhớ thiết bị'**
+  String get thirdPartyDeviceStorageTitle;
+
+  /// No description provided for @thirdPartyDeviceStorageDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'File export, request privacy và lịch sử export/request được ghi trong thư mục tài liệu của app trên thiết bị.'**
+  String get thirdPartyDeviceStorageDescription;
+
+  /// No description provided for @thirdPartyNoAdsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tích hợp quảng cáo'**
+  String get thirdPartyNoAdsTitle;
+
+  /// No description provided for @thirdPartyNoAdsDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'MVP không dùng SDK quảng cáo, tracking marketing, danh bạ, SMS, email inbox hoặc kết nối ngân hàng tự động.'**
+  String get thirdPartyNoAdsDescription;
+
   /// No description provided for @releaseChecklistTitle.
   ///
   /// In vi, this message translates to:

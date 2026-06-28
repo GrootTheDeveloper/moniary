@@ -2178,6 +2178,32 @@ class AppLocalizationsVi extends AppLocalizations {
       'Xem app đang dùng Supabase, Flutter/package và bộ nhớ thiết bị như thế nào.';
 
   @override
+  String get thirdPartyHeroBody =>
+      'Thông báo này giúp người dùng hiểu app dựa vào dịch vụ nào để đăng nhập, lưu trữ và vận hành dữ liệu.';
+
+  @override
+  String get thirdPartySupabaseDescription =>
+      'Được dùng cho đăng nhập, cơ sở dữ liệu, storage ảnh giao dịch và edge function xóa tài khoản.';
+
+  @override
+  String get thirdPartyFlutterDescription =>
+      'Framework giao diện chính của app, kèm các package hỗ trợ điều hướng, trạng thái, camera, chọn ảnh và xử lý file.';
+
+  @override
+  String get thirdPartyDeviceStorageTitle => 'Bộ nhớ thiết bị';
+
+  @override
+  String get thirdPartyDeviceStorageDescription =>
+      'File export, request privacy và lịch sử export/request được ghi trong thư mục tài liệu của app trên thiết bị.';
+
+  @override
+  String get thirdPartyNoAdsTitle => 'Không tích hợp quảng cáo';
+
+  @override
+  String get thirdPartyNoAdsDescription =>
+      'MVP không dùng SDK quảng cáo, tracking marketing, danh bạ, SMS, email inbox hoặc kết nối ngân hàng tự động.';
+
+  @override
   String get releaseChecklistTitle => 'Checklist phát hành';
 
   @override

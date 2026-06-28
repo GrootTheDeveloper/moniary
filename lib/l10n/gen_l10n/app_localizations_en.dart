@@ -2178,6 +2178,32 @@ class AppLocalizationsEn extends AppLocalizations {
       'See how the app uses Supabase, Flutter packages, and device storage.';
 
   @override
+  String get thirdPartyHeroBody =>
+      'This notice helps users understand which services the app relies on for sign-in, storage, and data operations.';
+
+  @override
+  String get thirdPartySupabaseDescription =>
+      'Used for sign-in, database, transaction image storage, and the account-deletion edge function.';
+
+  @override
+  String get thirdPartyFlutterDescription =>
+      'The app\'s main UI framework, together with packages for navigation, state, camera, image picking, and file handling.';
+
+  @override
+  String get thirdPartyDeviceStorageTitle => 'Device storage';
+
+  @override
+  String get thirdPartyDeviceStorageDescription =>
+      'Export files, privacy requests, and export/request history are written to the app\'s documents folder on the device.';
+
+  @override
+  String get thirdPartyNoAdsTitle => 'No advertising integration';
+
+  @override
+  String get thirdPartyNoAdsDescription =>
+      'The MVP does not use advertising SDKs, marketing tracking, contacts, SMS, email inbox access, or automatic bank connections.';
+
+  @override
   String get releaseChecklistTitle => 'Release Checklist';
 
   @override
