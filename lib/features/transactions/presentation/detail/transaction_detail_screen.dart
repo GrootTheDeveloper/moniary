@@ -52,7 +52,10 @@ class _TransactionDetailBody extends ConsumerWidget {
       fallback: transaction.isIncome ? colors.success : colors.warning,
     );
     final note = transaction.note?.trim();
-    final title = note?.isNotEmpty == true ? note! : transaction.categoryName;
+    final categoryLabel = transaction.categoryName.trim().isEmpty
+        ? context.l10n.categoryOther
+        : transaction.categoryName;
+    final title = note?.isNotEmpty == true ? note! : categoryLabel;
 
     return SafeArea(
       bottom: false,
@@ -200,7 +203,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                                 spacing: 8,
                                 runSpacing: 6,
                                 children: [
-                                  _HeroTag(label: transaction.categoryName),
+                                  _HeroTag(label: categoryLabel),
                                   _HeroTag(
                                     label: transaction.imagePath == null
                                         ? context.l10n.transactionSourceManual
@@ -225,7 +228,7 @@ class _TransactionDetailBody extends ConsumerWidget {
               ),
               _DetailMetaRow(
                 label: context.l10n.transactionCategory,
-                value: transaction.categoryName,
+                value: categoryLabel,
                 indicatorColor: categoryColor,
               ),
               _DetailMetaRow(

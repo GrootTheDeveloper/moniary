@@ -324,6 +324,7 @@
       }
     }
   },
+  "categoryOther": "Khác",
   "categoryExpense": "Chi",
   "categoryIncome": "Thu",
   "categoryNeedOneActive": "Bạn cần ít nhất 1 danh mục đang hoạt động cho loại giao dịch này.",

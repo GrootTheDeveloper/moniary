@@ -580,7 +580,7 @@ class TransactionGridTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GridTag(label: transaction.categoryName),
+                  GridTag(label: transaction.categoryName.trim().isEmpty ? context.l10n.categoryOther : transaction.categoryName),
                   const SizedBox(height: 4),
                   GridTag(label: transaction.walletName),
                 ],

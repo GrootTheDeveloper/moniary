@@ -427,9 +427,11 @@ class _SearchResultRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
-    final title = transaction.note?.trim().isNotEmpty == true
-        ? transaction.note!.trim()
-        : transaction.categoryName;
+      final title = transaction.note?.trim().isNotEmpty == true
+          ? transaction.note!.trim()
+          : transaction.categoryName.trim().isEmpty
+              ? context.l10n.categoryOther
+              : transaction.categoryName;
     final amountColor = transaction.isIncome
         ? colors.success
         : colors.textPrimary;
