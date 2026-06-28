@@ -10,8 +10,6 @@ import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../application/queries/transaction_queries.dart';
-import '../../data/repositories/transaction_repository.dart';
-import '../../../calendar/application/month/calendar_month_provider.dart';
 import '../../domain/models/transaction_mutation_result.dart';
 import '../../domain/models/transaction_entry.dart';
 import '../../application/composer/transaction_composer_controller.dart';
@@ -47,28 +45,13 @@ class TransactionDetailScreen extends ConsumerWidget {
                       : AppTheme.textDim,
                 ),
                 onPressed: () async {
-                  final repo = ref.read(transactionRepositoryProvider);
-                  final nextVal = !transaction.isImportant;
-                  await repo.toggleTransactionImportance(
-                    transaction.id,
-                    nextVal,
-                  );
-
-                  // Refresh local cache
-                  ref.invalidate(transactionByIdProvider(args.transaction.id));
-
-                  // Invalidate day detail queries
-                  final txDate = transaction.transactionDate;
-                  final dayStart = DateTime(
-                    txDate.year,
-                    txDate.month,
-                    txDate.day,
-                  );
-                  ref.invalidate(transactionsForDayProvider(dayStart));
-
-                  // Invalidate calendar month queries
-                  final monthStart = DateTime(txDate.year, txDate.month, 1);
-                  ref.invalidate(calendarMonthProvider(monthStart));
+                  await ref
+                      .read(transactionComposerProvider.notifier)
+                      .toggleImportance(
+                        transaction.id,
+                        !transaction.isImportant,
+                        transaction.transactionDate,
+                      );
                 },
               ),
               PopupMenuButton<String>(

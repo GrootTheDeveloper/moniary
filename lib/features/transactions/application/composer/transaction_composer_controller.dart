@@ -2,8 +2,10 @@ import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../calendar/application/month/calendar_month_provider.dart';
 import '../../../categories/domain/models/category.dart';
 import '../../data/repositories/transaction_repository.dart';
+import '../queries/transaction_queries.dart';
 
 final transactionComposerProvider =
     AsyncNotifierProvider<TransactionComposerController, void>(
@@ -129,6 +131,36 @@ class TransactionComposerController extends AsyncNotifier<void> {
           rethrow;
         }
       }
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
+
+  Future<void> toggleImportance(
+    String transactionId,
+    bool value,
+    DateTime transactionDate,
+  ) async {
+    state = const AsyncLoading();
+    try {
+      await ref
+          .read(transactionRepositoryProvider)
+          .toggleTransactionImportance(transactionId, value);
+      final dayStart = DateTime(
+        transactionDate.year,
+        transactionDate.month,
+        transactionDate.day,
+      );
+      final monthStart = DateTime(
+        transactionDate.year,
+        transactionDate.month,
+        1,
+      );
+      ref.invalidate(transactionByIdProvider(transactionId));
+      ref.invalidate(transactionsForDayProvider(dayStart));
+      ref.invalidate(calendarMonthProvider(monthStart));
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
