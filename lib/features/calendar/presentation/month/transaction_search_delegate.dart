@@ -172,7 +172,7 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
                 ],
               ),
               subtitle: Text(
-                '${MaterialLocalizations.of(context).formatShortDate(tx.transactionDate)} - ${tx.walletName}',
+                '${MaterialLocalizations.of(context).formatShortDate(tx.transactionDate)} - ${tx.walletName.trim().isEmpty ? context.l10n.walletUnknown : tx.walletName}',
                 style: const TextStyle(color: Colors.white54, fontSize: 12),
               ),
               trailing: ObscurableAmountText(

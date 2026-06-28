@@ -244,7 +244,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                                 Flexible(
                                   child: _TagPill(
                                     icon: Icons.account_balance_wallet_outlined,
-                                    label: transaction.walletName,
+                                    label: transaction.walletName.trim().isEmpty ? context.l10n.walletUnknown : transaction.walletName,
                                     color: walletColor,
                                   ),
                                 ),

@@ -312,7 +312,7 @@ class TransactionGridTile extends StatelessWidget {
                 children: [
                   GridTag(label: transaction.categoryName.trim().isEmpty ? context.l10n.categoryOther : transaction.categoryName),
                   const SizedBox(height: 4),
-                  GridTag(label: transaction.walletName),
+                  GridTag(label: transaction.walletName.trim().isEmpty ? context.l10n.walletUnknown : transaction.walletName),
                 ],
               ),
             ),

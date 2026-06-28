@@ -48,7 +48,7 @@ class TransactionEntry {
         map['transaction_date'] as String,
       ).toLocal(),
       walletId: (wallet['id'] ?? '') as String,
-      walletName: (wallet['name'] ?? 'Wallet') as String,
+      walletName: (wallet['name'] ?? '') as String,
       walletColor: wallet['color'] as String?,
       categoryId: (category['id'] ?? '') as String,
       categoryName: (category['name'] ?? '') as String,
