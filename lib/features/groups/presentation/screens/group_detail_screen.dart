@@ -162,7 +162,7 @@ class GroupDetailScreen extends ConsumerWidget {
                                       context.l10n.groupUnknownMember,
                                 ),
                               ),
-                              trailing: Text(formatVnd(item.amount)),
+                              trailing: Text(formatVnd(item.amount, locale: Localizations.localeOf(context).toString())),
                             ),
                           )
                           .toList(),
@@ -332,7 +332,7 @@ class _OverviewCards extends StatelessWidget {
           child: _MetricCard(
             icon: Icons.payments_outlined,
             label: context.l10n.groupTransactionTotal,
-            value: formatVnd(totalSpent),
+            value: formatVnd(totalSpent, locale: Localizations.localeOf(context).toString()),
           ),
         ),
         const SizedBox(width: 10),
@@ -416,7 +416,7 @@ class _TransactionCard extends StatelessWidget {
           '$status • ${DateFormat('dd/MM/yyyy HH:mm').format(transaction.transactionDate)}',
         ),
         trailing: Text(
-          formatVnd(transaction.totalAmount),
+          formatVnd(transaction.totalAmount, locale: Localizations.localeOf(context).toString()),
           style: const TextStyle(fontWeight: FontWeight.w700),
         ),
       ),

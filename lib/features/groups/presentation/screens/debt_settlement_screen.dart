@@ -147,9 +147,9 @@ class _BalanceRow extends StatelessWidget {
         title: Text(balance.displayName ?? context.l10n.groupUnknownMember),
         subtitle: Text(
           context.l10n.groupSharePaidBalance(
-            formatVnd(balance.totalShareAmount),
-            formatVnd(balance.totalPaidAmount),
-            formatVnd(balance.balance),
+            formatVnd(balance.totalShareAmount, locale: Localizations.localeOf(context).toString()),
+            formatVnd(balance.totalPaidAmount, locale: Localizations.localeOf(context).toString()),
+            formatVnd(balance.balance, locale: Localizations.localeOf(context).toString()),
           ),
         ),
         trailing: Icon(Icons.circle_outlined, color: color),
@@ -187,7 +187,7 @@ class _SettlementCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              formatVnd(item.amount),
+              formatVnd(item.amount, locale: Localizations.localeOf(context).toString()),
               style: const TextStyle(
                 color: AppTheme.amber,
                 fontWeight: FontWeight.w700,

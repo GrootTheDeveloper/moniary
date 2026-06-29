@@ -15,11 +15,12 @@ class GroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final balance = group.currentUserBalance;
+    final localeName = Localizations.localeOf(context).toString();
     final balanceText = balance == 0
         ? context.l10n.groupBalanceSettled
         : balance > 0
-        ? context.l10n.groupBalanceOwes(formatVnd(balance))
-        : context.l10n.groupBalanceReceives(formatVnd(balance.abs()));
+        ? context.l10n.groupBalanceOwes(formatVnd(balance, locale: localeName))
+        : context.l10n.groupBalanceReceives(formatVnd(balance.abs(), locale: localeName));
     final balanceColor = balance == 0
         ? AppTheme.success
         : balance > 0
@@ -64,7 +65,7 @@ class GroupCard extends StatelessWidget {
                     const SizedBox(height: 5),
                     Text(
                       '${context.l10n.groupMemberCount(group.memberCount)} • '
-                      '${context.l10n.groupTotalSpent(formatVnd(group.totalSpent))}',
+                      '${context.l10n.groupTotalSpent(formatVnd(group.totalSpent, locale: Localizations.localeOf(context).toString()))}',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 7),

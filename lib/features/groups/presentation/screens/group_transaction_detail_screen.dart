@@ -78,7 +78,7 @@ class _GroupTransactionDetailScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                formatVnd(transaction.totalAmount),
+                formatVnd(transaction.totalAmount, locale: Localizations.localeOf(context).toString()),
                 style: const TextStyle(
                   color: AppTheme.mintSoft,
                   fontSize: 24,
@@ -140,7 +140,7 @@ class _GroupTransactionDetailScreenState
                   title: Text(
                     payer.displayName ?? context.l10n.groupUnknownMember,
                   ),
-                  trailing: Text(formatVnd(payer.paidAmount)),
+                  trailing: Text(formatVnd(payer.paidAmount, locale: Localizations.localeOf(context).toString())),
                 ),
               ),
               const SizedBox(height: 18),
@@ -161,9 +161,9 @@ class _GroupTransactionDetailScreenState
                   ),
                   subtitle: Text(
                     context.l10n.groupSharePaidBalance(
-                      formatVnd(share.shareAmount),
-                      formatVnd(paid),
-                      formatVnd(share.shareAmount - paid),
+                      formatVnd(share.shareAmount, locale: Localizations.localeOf(context).toString()),
+                      formatVnd(paid, locale: Localizations.localeOf(context).toString()),
+                      formatVnd(share.shareAmount - paid, locale: Localizations.localeOf(context).toString()),
                     ),
                   ),
                 );
