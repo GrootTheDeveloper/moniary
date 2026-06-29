@@ -8,6 +8,7 @@ import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../shared/widgets/supabase_image.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/utils/app_logger.dart';
@@ -105,6 +106,7 @@ class _DayDetailBody extends ConsumerWidget {
     final expense = transactions
         .where((transaction) => transaction.isExpense)
         .fold<double>(0, (sum, item) => sum + item.amount);
+    final currencyCode = ref.watch(preferredCurrencyProvider);
 
     return CustomScrollView(
       slivers: [
@@ -119,7 +121,7 @@ class _DayDetailBody extends ConsumerWidget {
                     Expanded(
                       child: _SummaryCard(
                         label: context.l10n.transactionTotalIncome,
-                        value: '+${formatVnd(income, locale: Localizations.localeOf(context).toString())}',
+                        value: '+${formatCurrency(income, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}',
                         color: AppTheme.success,
                       ),
                     ),
@@ -127,7 +129,7 @@ class _DayDetailBody extends ConsumerWidget {
                     Expanded(
                       child: _SummaryCard(
                         label: context.l10n.transactionTotalExpense,
-                        value: '-${formatVnd(expense, locale: Localizations.localeOf(context).toString())}',
+                        value: '-${formatCurrency(expense, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}',
                         color: AppTheme.danger,
                       ),
                     ),
@@ -137,7 +139,7 @@ class _DayDetailBody extends ConsumerWidget {
                 _SummaryCard(
                   label: context.l10n.transactionNetTotal,
                   value:
-                      '${income - expense >= 0 ? '+' : '-'}${formatVnd((income - expense).abs(), locale: Localizations.localeOf(context).toString())}',
+                      '${income - expense >= 0 ? '+' : '-'}${formatCurrency((income - expense).abs(), currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}',
                   color: income - expense >= 0
                       ? AppTheme.success
                       : AppTheme.danger,
@@ -250,7 +252,7 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
-class TransactionGridTile extends StatelessWidget {
+class TransactionGridTile extends ConsumerWidget {
   const TransactionGridTile({
     super.key,
     required this.transaction,
@@ -261,7 +263,8 @@ class TransactionGridTile extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     final accent = AppColor.fromHex(
       transaction.categoryColor ?? transaction.walletColor,
       fallback: transaction.isIncome ? AppTheme.success : AppTheme.amber,
@@ -337,7 +340,7 @@ class TransactionGridTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount, locale: Localizations.localeOf(context).toString())}',
+                        '${transaction.isIncome ? '+' : '-'}${formatCurrency(transaction.amount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(

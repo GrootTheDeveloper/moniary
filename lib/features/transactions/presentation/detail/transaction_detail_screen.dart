@@ -8,6 +8,7 @@ import '../../../../l10n/l10n_extension.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../application/queries/transaction_queries.dart';
 import '../../domain/models/transaction_mutation_result.dart';
@@ -278,7 +279,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ObscurableAmountText(
-                              amountText: formatVnd(transaction.amount, locale: Localizations.localeOf(context).toString()),
+                              amountText: formatCurrency(transaction.amount, currencyCode: ref.watch(preferredCurrencyProvider), locale: Localizations.localeOf(context).toString()),
                               prefixText: transaction.isIncome ? '+' : '-',
                               style: TextStyle(
                                 fontSize: 28,
