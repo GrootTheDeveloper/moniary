@@ -686,52 +686,60 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     showModalBottomSheet(
       context: context,
       useSafeArea: true,
+      isScrollControlled: true,
       backgroundColor: AppTheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                context.l10n.profileHowMoniaryWorksTitle,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    context.l10n.profileHowMoniaryWorksTitle,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 18),
+                  _SetupStep(
+                    icon: Icons.account_balance_wallet_outlined,
+                    title: context.l10n.profileSetupGuideWalletTitle,
+                    body: context.l10n.profileSetupGuideWalletBody,
+                  ),
+                  _SetupStep(
+                    icon: Icons.camera_alt_outlined,
+                    title: context.l10n.profileSetupGuideTransactionTitle,
+                    body: context.l10n.profileSetupGuideTransactionBody,
+                  ),
+                  _SetupStep(
+                    icon: Icons.calendar_month_outlined,
+                    title: context.l10n.profileSetupGuideReviewTitle,
+                    body: context.l10n.profileSetupGuideReviewBody,
+                  ),
+                  _SetupStep(
+                    icon: Icons.ios_share_outlined,
+                    title: context.l10n.profileSetupGuideExportTitle,
+                    body: context.l10n.profileSetupGuideExportBody,
+                  ),
+                  const SizedBox(height: 18),
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      context.go(CalendarScreen.routePath);
+                    },
+                    child: Text(context.l10n.calendarTitle),
+                  ),
+                ],
               ),
-              const SizedBox(height: 18),
-              _SetupStep(
-                icon: Icons.account_balance_wallet_outlined,
-                title: context.l10n.profileSetupGuideWalletTitle,
-                body: context.l10n.profileSetupGuideWalletBody,
-              ),
-              _SetupStep(
-                icon: Icons.camera_alt_outlined,
-                title: context.l10n.profileSetupGuideTransactionTitle,
-                body: context.l10n.profileSetupGuideTransactionBody,
-              ),
-              _SetupStep(
-                icon: Icons.calendar_month_outlined,
-                title: context.l10n.profileSetupGuideReviewTitle,
-                body: context.l10n.profileSetupGuideReviewBody,
-              ),
-              _SetupStep(
-                icon: Icons.ios_share_outlined,
-                title: context.l10n.profileSetupGuideExportTitle,
-                body: context.l10n.profileSetupGuideExportBody,
-              ),
-              const SizedBox(height: 18),
-              FilledButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  context.go(CalendarScreen.routePath);
-                },
-                child: Text(context.l10n.calendarTitle),
-              ),
-            ],
+            ),
           ),
         );
       },
