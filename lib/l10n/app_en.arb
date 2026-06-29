@@ -835,6 +835,20 @@
   "legalFinancialDisclaimer": "Financial disclaimer",
   "legalContact": "Legal contact",
   "legalCopyAllContacts": "Copy all contacts",
+  "legalCopyAllText": "Privacy: {privacyEmail}\nSupport: {supportEmail}\nLegal: {legalEmail}",
+  "@legalCopyAllText": {
+    "placeholders": {
+      "privacyEmail": {
+        "type": "String"
+      },
+      "supportEmail": {
+        "type": "String"
+      },
+      "legalEmail": {
+        "type": "String"
+      }
+    }
+  },
   "legalCopyContactSuccess": "Copied contact info.",
   "legalPolicyAcceptance": "Policy acceptance",
   "legalViewPrivacyPolicy": "View privacy policy",

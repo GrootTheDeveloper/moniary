@@ -835,6 +835,20 @@
   "legalFinancialDisclaimer": "Miễn trừ tài chính",
   "legalContact": "Liên hệ pháp lý",
   "legalCopyAllContacts": "Sao chép tất cả liên hệ",
+  "legalCopyAllText": "Quyền riêng tư: {privacyEmail}\nHỗ trợ: {supportEmail}\nPháp lý: {legalEmail}",
+  "@legalCopyAllText": {
+    "placeholders": {
+      "privacyEmail": {
+        "type": "String"
+      },
+      "supportEmail": {
+        "type": "String"
+      },
+      "legalEmail": {
+        "type": "String"
+      }
+    }
+  },
   "legalCopyContactSuccess": "Đã sao chép thông tin liên hệ.",
   "legalPolicyAcceptance": "Đồng ý chính sách",
   "legalViewPrivacyPolicy": "Xem chính sách bảo mật",
