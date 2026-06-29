@@ -379,7 +379,7 @@ class _DateTimeTile extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                DateFormat('dd/MM/yyyy • HH:mm', 'vi_VN').format(value),
+                DateFormat('dd/MM/yyyy • HH:mm', Localizations.localeOf(context).toString()).format(value),
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(color: Colors.white),
