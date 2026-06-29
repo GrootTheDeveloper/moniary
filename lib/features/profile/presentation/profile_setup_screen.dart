@@ -125,7 +125,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                           children: [
                             Text(
                               isEditMode
-                                  ? '${context.l10n.commonEdit} ${context.l10n.profileTitle}'
+                                  ? context.l10n.editProfileTitle
                                   : context.l10n.profileSetupTitle,
                               style: Theme.of(context).textTheme.headlineMedium,
                             ),

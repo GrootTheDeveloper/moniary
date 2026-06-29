@@ -1141,6 +1141,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileTitle => 'Hồ sơ';
 
   @override
+  String get editProfileTitle => 'Chỉnh sửa hồ sơ';
+
+  @override
   String get profileUserDefault => 'Người dùng Moniary';
 
   @override
