@@ -12,6 +12,7 @@ class PayerAmountInputList extends StatelessWidget {
     required this.controllers,
     required this.onSingleSelected,
     required this.onMultipleToggled,
+    required this.currencySuffix,
     super.key,
   });
 
@@ -21,6 +22,7 @@ class PayerAmountInputList extends StatelessWidget {
   final Map<String, TextEditingController> controllers;
   final ValueChanged<String> onSingleSelected;
   final void Function(String userId, bool selected) onMultipleToggled;
+  final String currencySuffix;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +73,7 @@ class PayerAmountInputList extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText: context.l10n.groupTransactionTotal,
-                    suffixText: context.l10n.transactionAmountSuffix,
+                    suffixText: currencySuffix,
                   ),
                 ),
               ),

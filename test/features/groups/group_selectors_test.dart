@@ -95,6 +95,7 @@ void main() {
           paymentMode: GroupPaymentMode.multiplePayers,
           selectedPayerIds: const {'a', 'b'},
           controllers: controllers,
+          currencySuffix: '₫',
           onSingleSelected: (_) {},
           onMultipleToggled: (_, _) {},
         ),

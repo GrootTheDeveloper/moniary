@@ -9,8 +9,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../../core/constants/app_color.dart';
@@ -302,6 +304,10 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
               noteController: _noteController,
               onClear: () => setState(() => _pickedFile = null),
               onPick: () => _showImageSourceOptions(context),
+              currencySuffix: currencySymbolFor(
+                currencyCode: ref.watch(preferredCurrencyProvider),
+                locale: Localizations.localeOf(context).toString(),
+              ),
             ),
             if (_pickedFile != null) ...[
               const SizedBox(height: 12),
@@ -714,6 +720,7 @@ class _ImagePreview extends StatelessWidget {
     required this.noteController,
     required this.onClear,
     required this.onPick,
+    required this.currencySuffix,
   });
   final XFile? file;
   final String? initialImagePath;
@@ -722,6 +729,7 @@ class _ImagePreview extends StatelessWidget {
   final TextEditingController noteController;
   final VoidCallback onClear;
   final VoidCallback onPick;
+  final String currencySuffix;
 
   @override
   Widget build(BuildContext context) {
@@ -816,7 +824,7 @@ class _ImagePreview extends StatelessWidget {
                               filled: false,
                               hintText: '0',
                               hintStyle: const TextStyle(color: Colors.white54),
-                              suffixText: context.l10n.transactionAmountSuffix,
+                              suffixText: currencySuffix,
                               suffixStyle: const TextStyle(
                                 fontSize: 20,
                                 color: Colors.white70,
