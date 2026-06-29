@@ -17,6 +17,8 @@ import '../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../transactions/presentation/detail/transaction_detail_screen.dart';
 import '../../transactions/presentation/detail/transaction_route_args.dart';
 import '../../../shared/widgets/obscurable_amount_text.dart';
+import '../../../core/preferences/preferences_providers.dart';
+import '../../../shared/utils/currency_formatter.dart';
 
 final statisticsMonthProvider =
     FutureProvider.family<List<TransactionEntry>, DateTime>((ref, month) async {
@@ -868,12 +870,11 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   }
 
   String _money(BuildContext context, double amount) {
-    final formatter = NumberFormat.currency(
+    return formatCurrency(
+      amount,
+      currencyCode: ref.watch(preferredCurrencyProvider),
       locale: Localizations.localeOf(context).toString(),
-      symbol: '',
-      decimalDigits: 0,
     );
-    return '${formatter.format(amount).trim()}${context.l10n.transactionAmountSuffix}';
   }
 
   void _invalidateMutationMonths(TransactionMutationResult result) {

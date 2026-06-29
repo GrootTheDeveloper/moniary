@@ -25,6 +25,8 @@ import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../core/preferences/preferences_providers.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../settings/application/privacy_controller.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
@@ -396,6 +398,7 @@ class _SeamlessHeader extends ConsumerWidget {
                     context,
                     totalBalance,
                     isNegative: totalBalance < 0,
+                    currencyCode: ref.watch(preferredCurrencyProvider),
                   ),
                   style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     color: Colors.white,
@@ -472,7 +475,7 @@ class _HeaderCircleButton extends StatelessWidget {
   }
 }
 
-class _IncomeExpensePill extends StatelessWidget {
+class _IncomeExpensePill extends ConsumerWidget {
   const _IncomeExpensePill({
     required this.label,
     required this.amount,
@@ -486,7 +489,7 @@ class _IncomeExpensePill extends StatelessWidget {
   final IconData icon;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -505,6 +508,7 @@ class _IncomeExpensePill extends StatelessWidget {
               context,
               amount,
               isNegative: false,
+              currencyCode: ref.watch(preferredCurrencyProvider),
             ).replaceAll('+', ''),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: color,
@@ -1277,15 +1281,10 @@ String _formatMoney(
   BuildContext context,
   double amount, {
   required bool isNegative,
+  required String currencyCode,
 }) {
-  final formatter = NumberFormat.currency(
-    locale: Localizations.localeOf(context).toString(),
-    symbol: '',
-    decimalDigits: 0,
-  );
   final sign = isNegative ? '-' : '+';
-  final formatted = formatter.format(amount).trim();
-  return '$sign$formatted${context.l10n.transactionAmountSuffix}';
+  return '$sign${formatCurrency(amount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}';
 }
 
 class _TodayGrid extends StatelessWidget {

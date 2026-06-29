@@ -1,8 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-
 import '../../../../app/app_theme.dart';
+import '../../../../core/preferences/preferences_providers.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
@@ -191,11 +191,10 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
   }
 
   String _formatMoney(BuildContext context, double amount) {
-    final formatter = NumberFormat.currency(
+    return formatCurrency(
+      amount,
+      currencyCode: ref.read(preferredCurrencyProvider),
       locale: Localizations.localeOf(context).toString(),
-      symbol: '',
-      decimalDigits: 0,
     );
-    return '${formatter.format(amount).trim()}${context.l10n.transactionAmountSuffix}';
   }
 }

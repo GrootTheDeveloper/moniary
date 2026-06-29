@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-
 import '../../../core/constants/app_color.dart';
+import '../../../core/preferences/preferences_providers.dart';
+import '../../../shared/utils/currency_formatter.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../l10n/l10n_extension.dart';
@@ -17,12 +17,8 @@ class WalletSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final walletsAsync = ref.watch(walletsControllerProvider);
-    final currency = NumberFormat.currency(
-      locale: Localizations.localeOf(context).toString(),
-      symbol: '',
-      decimalDigits: 0,
-    );
-    final amountSuffix = context.l10n.transactionAmountSuffix;
+    final currencyCode = ref.watch(preferredCurrencyProvider);
+    final localeName = Localizations.localeOf(context).toString();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
@@ -70,7 +66,7 @@ class WalletSection extends ConsumerWidget {
                             child: _WalletTile(
                               wallet: wallet,
                               balanceLabel:
-                                  '${currency.format(wallet.initialBalance).trim()}$amountSuffix',
+                                  formatCurrency(wallet.initialBalance, currencyCode: currencyCode, locale: localeName),
                               onEdit: () =>
                                   _showWalletForm(context, ref, wallet: wallet),
                             ),
