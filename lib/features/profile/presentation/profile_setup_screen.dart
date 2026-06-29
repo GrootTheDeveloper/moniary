@@ -7,7 +7,9 @@ import '../../../app/app_theme.dart';
 import '../../../core/deeplinks/pending_deep_link_controller.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/error_helpers.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/preferences/preferences_providers.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import '../../../features/calendar/presentation/month/calendar_screen.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../../shared/widgets/supabase_image.dart';
@@ -302,12 +304,26 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
     try {
       await ref.read(preferredCurrencyProvider.notifier).setCurrency(_currency);
+      final String timezone;
+      if (widget.isEditMode) {
+        timezone = ref.read(profileSetupControllerProvider).asData?.value?.timezone
+            ?? AppConstants.defaultTimezone;
+      } else {
+        String detected;
+        try {
+          detected = await FlutterTimezone.getLocalTimezone();
+        } catch (_) {
+          detected = AppConstants.defaultTimezone;
+        }
+        if (!mounted) return;
+        timezone = detected;
+      }
       await ref
           .read(profileSetupControllerProvider.notifier)
           .saveProfile(
             fullName: name,
             username: username,
-            timezone: 'Asia/Ho_Chi_Minh', // TODO: detect timezone from device
+            timezone: timezone,
             avatarImagePath: _avatarPicked ? _avatarPath : null,
           );
       if (!mounted) return;
