@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/supabase_image.dart';
@@ -41,6 +42,7 @@ class _GroupTransactionDetailScreenState
       groupTransactionDetailProvider(widget.transactionId),
     );
     final currentUserId = ref.watch(currentGroupUserIdProvider);
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.groupTransactionDetailTitle)),
       body: detailAsync.when(
@@ -78,7 +80,7 @@ class _GroupTransactionDetailScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                formatVnd(transaction.totalAmount, locale: Localizations.localeOf(context).toString()),
+                formatCurrency(transaction.totalAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
                 style: const TextStyle(
                   color: AppTheme.mintSoft,
                   fontSize: 24,
@@ -140,7 +142,7 @@ class _GroupTransactionDetailScreenState
                   title: Text(
                     payer.displayName ?? context.l10n.groupUnknownMember,
                   ),
-                  trailing: Text(formatVnd(payer.paidAmount, locale: Localizations.localeOf(context).toString())),
+                  trailing: Text(formatCurrency(payer.paidAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())),
                 ),
               ),
               const SizedBox(height: 18),
@@ -161,9 +163,9 @@ class _GroupTransactionDetailScreenState
                   ),
                   subtitle: Text(
                     context.l10n.groupSharePaidBalance(
-                      formatVnd(share.shareAmount, locale: Localizations.localeOf(context).toString()),
-                      formatVnd(paid, locale: Localizations.localeOf(context).toString()),
-                      formatVnd(share.shareAmount - paid, locale: Localizations.localeOf(context).toString()),
+                      formatCurrency(share.shareAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
+                      formatCurrency(paid, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
+                      formatCurrency(share.shareAmount - paid, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
                     ),
                   ),
                 );

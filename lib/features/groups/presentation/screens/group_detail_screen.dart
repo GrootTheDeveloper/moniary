@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
@@ -332,7 +333,7 @@ class _TopIconButton extends StatelessWidget {
   }
 }
 
-class _GroupHero extends StatelessWidget {
+class _GroupHero extends ConsumerWidget {
   const _GroupHero({
     required this.detail,
     required this.transactionsAsync,
@@ -344,7 +345,8 @@ class _GroupHero extends StatelessWidget {
   final VoidCallback onSettle;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     final colors = context.moniaryColors;
     final group = detail.group;
     final balance = group.currentUserBalance;
@@ -364,8 +366,9 @@ class _GroupHero extends StatelessWidget {
         ?.where((item) => item.splitStatus == GroupSplitStatus.posted)
         .fold<int>(0, (sum, item) => sum + item.totalAmount);
     final transactionCount = transactions?.length ?? group.transactionCount;
-    final totalText = formatVnd(
+    final totalText = formatCurrency(
       total ?? group.totalSpent,
+      currencyCode: currencyCode,
       locale: Localizations.localeOf(context).toString(),
     );
 
@@ -425,8 +428,9 @@ class _GroupHero extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      formatVnd(
+                      formatCurrency(
                         balance.abs(),
+                        currencyCode: currencyCode,
                         locale: Localizations.localeOf(context).toString(),
                       ),
                       style: context.moniaryTypography.displaySmall.copyWith(
@@ -486,7 +490,7 @@ class _MemberBalances extends StatelessWidget {
   }
 }
 
-class _BalanceRow extends StatelessWidget {
+class _BalanceRow extends ConsumerWidget {
   const _BalanceRow({
     required this.balance,
     required this.avatarPath,
@@ -498,7 +502,8 @@ class _BalanceRow extends StatelessWidget {
   final bool showTopDivider;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     final colors = context.moniaryColors;
     final valueColor = balance.balance == 0
         ? colors.textDim
@@ -506,11 +511,12 @@ class _BalanceRow extends StatelessWidget {
         ? colors.danger
         : colors.success;
     final valueText = balance.balance == 0
-        ? formatVnd(
+        ? formatCurrency(
             0,
+            currencyCode: currencyCode,
             locale: Localizations.localeOf(context).toString(),
           )
-        : '${balance.balance > 0 ? '-' : '+'}${formatVnd(balance.balance.abs(), locale: Localizations.localeOf(context).toString())}';
+        : '${balance.balance > 0 ? '-' : '+'}${formatCurrency(balance.balance.abs(), currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}';
 
     return Container(
       constraints: const BoxConstraints(minHeight: 62),
@@ -599,7 +605,7 @@ class _TransactionHistory extends StatelessWidget {
   }
 }
 
-class _TransactionRow extends StatelessWidget {
+class _TransactionRow extends ConsumerWidget {
   const _TransactionRow({
     required this.transaction,
     required this.memberCount,
@@ -613,7 +619,8 @@ class _TransactionRow extends StatelessWidget {
   final bool showTopDivider;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     final colors = context.moniaryColors;
     final payerName = transaction.creatorName?.trim().isNotEmpty == true
         ? transaction.creatorName!
@@ -688,8 +695,9 @@ class _TransactionRow extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                formatVnd(
+                formatCurrency(
                   transaction.totalAmount,
+                  currencyCode: currencyCode,
                   locale: Localizations.localeOf(context).toString(),
                 ),
                 style: context.moniaryTypography.metadataStrong.copyWith(

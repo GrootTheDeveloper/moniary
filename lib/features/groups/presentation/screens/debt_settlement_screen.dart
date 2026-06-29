@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
@@ -264,7 +265,7 @@ class _BackButton extends StatelessWidget {
   }
 }
 
-class _SettlementCard extends StatelessWidget {
+class _SettlementCard extends ConsumerWidget {
   const _SettlementCard({
     required this.item,
     required this.currentUserId,
@@ -278,7 +279,8 @@ class _SettlementCard extends StatelessWidget {
   final String? toAvatarPath;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     final colors = context.moniaryColors;
     return Container(
       constraints: const BoxConstraints(minHeight: 68),
@@ -344,8 +346,9 @@ class _SettlementCard extends StatelessWidget {
           ),
           const SizedBox(width: 15),
           Text(
-            formatVnd(
+            formatCurrency(
               item.amount,
+              currencyCode: currencyCode,
               locale: Localizations.localeOf(context).toString(),
             ),
             style: context.moniaryTypography.metadataStrong.copyWith(
