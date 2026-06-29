@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_settlement.dart';
-import '../widgets/settlement_action_button.dart';
+import '../widgets/balance_table.dart';
+import '../widgets/settlement_suggestion_card.dart';
 
 class DebtSettlementScreen extends ConsumerWidget {
   const DebtSettlementScreen({required this.groupId, super.key});
@@ -21,6 +21,12 @@ class DebtSettlementScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final overviewAsync = ref.watch(groupSettlementOverviewProvider(groupId));
     final currentUserId = ref.watch(currentGroupUserIdProvider);
+    final role = ref
+        .watch(groupDetailProvider(groupId))
+        .asData
+        ?.value
+        .currentUserRole;
+    final canResetDisputed = role == GroupRole.owner || role == GroupRole.admin;
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.groupSettlementTitle)),
       body: overviewAsync.when(
@@ -34,6 +40,16 @@ class DebtSettlementScreen extends ConsumerWidget {
           final receive = overview.suggestions
               .where((item) => item.toUserId == currentUserId)
               .toList();
+          final disputedReview = canResetDisputed
+              ? overview.suggestions
+                    .where(
+                      (item) =>
+                          item.status == GroupSettlementStatus.disputed &&
+                          item.fromUserId != currentUserId &&
+                          item.toUserId != currentUserId,
+                    )
+                    .toList()
+              : <GroupSettlementSuggestion>[];
           return RefreshIndicator(
             onRefresh: () async =>
                 ref.invalidate(groupSettlementOverviewProvider(groupId)),
@@ -48,9 +64,7 @@ class DebtSettlementScreen extends ConsumerWidget {
                 if (overview.balances.isEmpty)
                   _EmptyCard(text: context.l10n.debtNoData)
                 else
-                  ...overview.balances.map(
-                    (balance) => _BalanceRow(balance: balance),
-                  ),
+                  BalanceTable(balances: overview.balances),
                 const SizedBox(height: 24),
                 Text(
                   context.l10n.groupYouNeedPay,
@@ -61,10 +75,15 @@ class DebtSettlementScreen extends ConsumerWidget {
                   _EmptyCard(text: context.l10n.groupSettlementEmpty)
                 else
                   ...needPay.map(
-                    (item) => _SettlementCard(
-                      item: item,
-                      isReceiverAction: false,
-                      onAction: () => _markPaid(context, ref, item.id),
+                    (item) => SettlementSuggestionCard(
+                      suggestion: item,
+                      currentUserId: currentUserId,
+                      canResetDisputed: canResetDisputed,
+                      onMarkPaid: () => _markPaid(context, ref, item.id),
+                      onConfirmReceived: () =>
+                          _confirmReceived(context, ref, item.id),
+                      onDispute: () => _dispute(context, ref, item.id),
+                      onReset: () => _resetDisputed(context, ref, item.id),
                     ),
                   ),
                 const SizedBox(height: 24),
@@ -77,12 +96,37 @@ class DebtSettlementScreen extends ConsumerWidget {
                   _EmptyCard(text: context.l10n.groupSettlementEmpty)
                 else
                   ...receive.map(
-                    (item) => _SettlementCard(
-                      item: item,
-                      isReceiverAction: true,
-                      onAction: () => _confirmReceived(context, ref, item.id),
+                    (item) => SettlementSuggestionCard(
+                      suggestion: item,
+                      currentUserId: currentUserId,
+                      canResetDisputed: canResetDisputed,
+                      onMarkPaid: () => _markPaid(context, ref, item.id),
+                      onConfirmReceived: () =>
+                          _confirmReceived(context, ref, item.id),
+                      onDispute: () => _dispute(context, ref, item.id),
+                      onReset: () => _resetDisputed(context, ref, item.id),
                     ),
                   ),
+                if (disputedReview.isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  Text(
+                    'Đang tranh chấp',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 10),
+                  ...disputedReview.map(
+                    (item) => SettlementSuggestionCard(
+                      suggestion: item,
+                      currentUserId: currentUserId,
+                      canResetDisputed: canResetDisputed,
+                      onMarkPaid: () => _markPaid(context, ref, item.id),
+                      onConfirmReceived: () =>
+                          _confirmReceived(context, ref, item.id),
+                      onDispute: () => _dispute(context, ref, item.id),
+                      onReset: () => _resetDisputed(context, ref, item.id),
+                    ),
+                  ),
+                ],
               ],
             ),
           );
@@ -127,95 +171,62 @@ class DebtSettlementScreen extends ConsumerWidget {
       );
     }
   }
-}
 
-class _BalanceRow extends StatelessWidget {
-  const _BalanceRow({required this.balance});
-
-  final GroupBalance balance;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = balance.balance == 0
-        ? AppTheme.success
-        : balance.balance > 0
-        ? AppTheme.danger
-        : AppTheme.mintSoft;
-    return Card(
-      margin: const EdgeInsets.only(bottom: 9),
-      child: ListTile(
-        title: Text(balance.displayName ?? context.l10n.groupUnknownMember),
-        subtitle: Text(
-          context.l10n.groupSharePaidBalance(
-            formatVnd(balance.totalShareAmount),
-            formatVnd(balance.totalPaidAmount),
-            formatVnd(balance.balance),
+  Future<void> _dispute(
+    BuildContext context,
+    WidgetRef ref,
+    String settlementId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: const Text(
+          'Bạn có chắc muốn tranh chấp khoản thanh toán này không?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Huỷ'),
           ),
-        ),
-        trailing: Icon(Icons.circle_outlined, color: color),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Xác nhận tranh chấp'),
+          ),
+        ],
       ),
     );
-  }
-}
-
-class _SettlementCard extends StatelessWidget {
-  const _SettlementCard({
-    required this.item,
-    required this.isReceiverAction,
-    required this.onAction,
-  });
-
-  final GroupSettlementSuggestion item;
-  final bool isReceiverAction;
-  final VoidCallback onAction;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              context.l10n.groupSettlementFromTo(
-                item.fromDisplayName ?? context.l10n.groupUnknownMember,
-                item.toDisplayName ?? context.l10n.groupUnknownMember,
-              ),
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              formatVnd(item.amount),
-              style: const TextStyle(
-                color: AppTheme.amber,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(_statusLabel(context, item.status)),
-            const SizedBox(height: 12),
-            SettlementActionButton(
-              status: item.status,
-              isReceiverAction: isReceiverAction,
-              onPressed: onAction,
-            ),
-          ],
-        ),
-      ),
-    );
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .disputeSettlement(settlementId: settlementId, groupId: groupId);
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
   }
 
-  String _statusLabel(BuildContext context, GroupSettlementStatus status) =>
-      switch (status) {
-        GroupSettlementStatus.pending => context.l10n.groupSettlementPending,
-        GroupSettlementStatus.payerMarkedPaid =>
-          context.l10n.groupSettlementPayerMarked,
-        GroupSettlementStatus.completed =>
-          context.l10n.groupSettlementCompleted,
-        GroupSettlementStatus.disputed => context.l10n.groupSettlementDisputed,
-      };
+  Future<void> _resetDisputed(
+    BuildContext context,
+    WidgetRef ref,
+    String settlementId,
+  ) async {
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .resetDisputedSettlement(
+            settlementId: settlementId,
+            groupId: groupId,
+          );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
+  }
 }
 
 class _EmptyCard extends StatelessWidget {

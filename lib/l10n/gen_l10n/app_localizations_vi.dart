@@ -2960,7 +2960,29 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bạn cần chuyển quyền owner hoặc thêm một owner khác trước khi rời nhóm.';
 
   @override
+  String get groupOwnerRequired =>
+      'Chỉ owner của nhóm mới có thể thực hiện thao tác này.';
+
+  @override
+  String get groupOwnerTransferTargetRequired =>
+      'Vui lòng chọn một thành viên đang tham gia khác để làm owner.';
+
+  @override
+  String get groupTransferOwnership => 'Chuyển owner';
+
+  @override
+  String groupTransferOwnershipConfirm(String member) {
+    return 'Chuyển quyền owner của nhóm cho $member?';
+  }
+
+  @override
+  String get groupTransferOwnershipDone => 'Đã chuyển quyền owner của nhóm.';
+
+  @override
   String get groupInviteTitle => 'Mời thành viên';
+
+  @override
+  String get groupInviteAfterCreate => 'Mời thành viên sau khi tạo nhóm';
 
   @override
   String get groupInviteByUsername => 'Mời bằng username';
@@ -2981,6 +3003,20 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupInviteLinkCreated => 'Đã tạo link mời nhóm.';
 
   @override
+  String get groupCopyInviteLink => 'Sao chép link';
+
+  @override
+  String get groupShareInviteLink => 'Chia sẻ link';
+
+  @override
+  String get groupInviteLinkCopied => 'Đã sao chép link mời nhóm.';
+
+  @override
+  String groupInviteShareMessage(String link) {
+    return 'Tham gia nhóm chi tiêu của mình trên Moniary nhé: $link';
+  }
+
+  @override
   String get groupInviteSent => 'Đã gửi lời mời.';
 
   @override
@@ -2991,6 +3027,58 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupFriendInviteTitle => 'Mời từ danh sách bạn bè';
+
+  @override
+  String get groupInviteAcceptTitle => 'Lời mời vào nhóm';
+
+  @override
+  String groupInviteAcceptSubtitle(String group, String inviter) {
+    return 'Bạn được mời tham gia nhóm $group bởi $inviter.';
+  }
+
+  @override
+  String get groupInviteAcceptButton => 'Tham gia nhóm';
+
+  @override
+  String get groupInviteDeclineButton => 'Từ chối';
+
+  @override
+  String get groupInviteAccepted => 'Đã tham gia nhóm thành công.';
+
+  @override
+  String get groupInviteDeclined => 'Đã từ chối lời mời nhóm.';
+
+  @override
+  String get groupInviteLoading => 'Đang tải lời mời nhóm...';
+
+  @override
+  String get groupInvitePreviewError => 'Không tải được lời mời nhóm.';
+
+  @override
+  String get groupInviteInvalid => 'Link mời nhóm không hợp lệ.';
+
+  @override
+  String get groupInviteExpired => 'Link mời nhóm đã hết hạn.';
+
+  @override
+  String get groupInviteAlreadyMember => 'Bạn đã là thành viên của nhóm này.';
+
+  @override
+  String get groupInviteAlreadyAccepted => 'Link mời nhóm đã được sử dụng.';
+
+  @override
+  String get groupInviteDeclinedStatus => 'Link mời nhóm đã bị từ chối.';
+
+  @override
+  String get groupInviteGroupArchived => 'Nhóm này đã được lưu trữ.';
+
+  @override
+  String get groupInviteOpenGroups => 'Xem nhóm chi tiêu';
+
+  @override
+  String groupInviteMemberCount(int count) {
+    return '$count thành viên';
+  }
 
   @override
   String get groupMemberInvited => 'Đã mời';
@@ -3019,6 +3107,10 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get groupTransactionImageOptional =>
       'Ảnh không bắt buộc nhưng được khuyến khích.';
+
+  @override
+  String get groupTransactionImageUploadFailed =>
+      'Upload ảnh thất bại. Hãy chọn lại ảnh để thử lại.';
 
   @override
   String get groupSplitModeTitle => 'Cách chia tiền';
@@ -3193,6 +3285,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupCommentRequired => 'Vui lòng nhập nội dung bình luận.';
 
   @override
+  String get groupCommentDeleteConfirm => 'Xóa bình luận này?';
+
+  @override
   String get groupUnknownMember => 'Thành viên';
 
   @override
@@ -3214,11 +3309,82 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupInviteLinkPlaceholder =>
-      'Deep link đã được tạo. Màn hình chấp nhận lời mời sẽ được kết nối ở phase deep linking.';
+      'Sao chép hoặc chia sẻ link để mời thành viên vào nhóm.';
 
   @override
   String get groupStatsPlaceholder =>
       'Thống kê nhóm cơ bản dùng tổng chi và công nợ hiện tại.';
+
+  @override
+  String get groupStatsLoadError => 'Không tải được thống kê nhóm.';
+
+  @override
+  String get groupStatsTransactionCount => 'Số giao dịch';
+
+  @override
+  String get groupStatsPendingCount => 'Chờ xử lý';
+
+  @override
+  String get groupNotificationsTitle => 'Thông báo nhóm';
+
+  @override
+  String get groupNotificationsEmpty => 'Chưa có thông báo nhóm.';
+
+  @override
+  String get groupNotificationInvite => 'Bạn có lời mời vào nhóm.';
+
+  @override
+  String get groupNotificationMemberJoined =>
+      'Có thành viên mới tham gia nhóm.';
+
+  @override
+  String get groupNotificationTransactionCreated => 'Có giao dịch nhóm mới.';
+
+  @override
+  String get groupNotificationOwnerTransferred =>
+      'Quyền owner của nhóm đã được chuyển.';
+
+  @override
+  String get groupNotificationGeneric => 'Có cập nhật mới trong nhóm.';
+
+  @override
+  String get groupActivitiesTitle => 'Hoạt động nhóm';
+
+  @override
+  String get groupActivitiesEmpty => 'Chưa có hoạt động nhóm.';
+
+  @override
+  String get groupActivitiesLoadError => 'Không tải được hoạt động nhóm.';
+
+  @override
+  String groupActivityMemberJoined(String actor) {
+    return '$actor đã tham gia nhóm.';
+  }
+
+  @override
+  String groupActivityMemberLeft(String actor) {
+    return '$actor đã rời nhóm.';
+  }
+
+  @override
+  String groupActivityTransactionCreated(String actor) {
+    return '$actor đã tạo giao dịch nhóm.';
+  }
+
+  @override
+  String groupActivityTransactionPosted(String actor) {
+    return '$actor đã đăng giao dịch nhóm.';
+  }
+
+  @override
+  String groupActivityOwnerTransferred(String actor) {
+    return '$actor đã chuyển quyền owner của nhóm.';
+  }
+
+  @override
+  String groupActivityGeneric(String actor) {
+    return '$actor đã cập nhật nhóm.';
+  }
 
   @override
   String get groupLeaveWarningActivity =>

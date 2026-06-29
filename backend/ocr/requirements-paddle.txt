@@ -1,0 +1,4 @@
+# Optional server-side OCR engine.
+# Install this file when running OCR_ENGINE=paddleocr or OCR_ENGINE=auto
+# with PaddleOCR preferred over Tesseract.
+paddleocr>=2.8.0

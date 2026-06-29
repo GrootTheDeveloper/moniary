@@ -10,6 +10,7 @@ import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_transaction.dart';
+import '../widgets/comment_list.dart';
 import 'add_group_transaction_screen.dart';
 import 'member_amount_input_screen.dart';
 
@@ -69,7 +70,19 @@ class _GroupTransactionDetailScreenState
                     borderRadius: BorderRadius.circular(32),
                   ),
                 ),
-              if (transaction.imagePath != null) const SizedBox(height: 18),
+              if (transaction.imagePath != null ||
+                  transaction.imageUploadStatus ==
+                      GroupImageUploadStatus.failed)
+                const SizedBox(height: 18),
+              if (transaction.imageUploadStatus ==
+                  GroupImageUploadStatus.failed)
+                _ImageUploadFailureNotice(
+                  canRetry: isCreator,
+                  onRetry: () => _openEdit(detail),
+                ),
+              if (transaction.imageUploadStatus ==
+                  GroupImageUploadStatus.failed)
+                const SizedBox(height: 18),
               Text(
                 transaction.caption?.isNotEmpty == true
                     ? transaction.caption!
@@ -174,13 +187,7 @@ class _GroupTransactionDetailScreenState
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () => context.push(
-                          AddGroupTransactionScreen.routePath,
-                          extra: AddGroupTransactionArgs(
-                            groupId: transaction.groupId,
-                            initialDetail: detail,
-                          ),
-                        ),
+                        onPressed: () => _openEdit(detail),
                         icon: const Icon(Icons.edit_outlined),
                         label: Text(context.l10n.commonEdit),
                       ),
@@ -205,18 +212,11 @@ class _GroupTransactionDetailScreenState
               if (detail.comments.isEmpty)
                 Text(context.l10n.groupCommentsEmpty)
               else
-                ...detail.comments.map(
-                  (comment) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      backgroundColor: AppTheme.surfaceRaised,
-                      child: const Icon(Icons.person_outline),
-                    ),
-                    title: Text(
-                      comment.displayName ?? context.l10n.groupUnknownMember,
-                    ),
-                    subtitle: Text(comment.content),
-                  ),
+                CommentList(
+                  comments: detail.comments,
+                  currentUserId: currentUserId,
+                  onEdit: _editComment,
+                  onDelete: _deleteComment,
                 ),
               const SizedBox(height: 10),
               Row(
@@ -240,6 +240,16 @@ class _GroupTransactionDetailScreenState
             ],
           );
         },
+      ),
+    );
+  }
+
+  Future<void> _openEdit(GroupTransactionDetail detail) {
+    return context.push(
+      AddGroupTransactionScreen.routePath,
+      extra: AddGroupTransactionArgs(
+        groupId: detail.transaction.groupId,
+        initialDetail: detail,
       ),
     );
   }
@@ -275,6 +285,90 @@ class _GroupTransactionDetailScreenState
     }
   }
 
+  Future<void> _editComment(GroupTransactionComment comment) async {
+    final controller = TextEditingController(text: comment.content);
+    final commentRequiredMessage = context.l10n.groupCommentRequired;
+    final content = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.commonEdit),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          minLines: 2,
+          maxLines: 4,
+          decoration: InputDecoration(hintText: context.l10n.groupCommentHint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: Text(context.l10n.commonSave),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    final trimmed = content?.trim();
+    if (trimmed == null) return;
+    if (trimmed.isEmpty) {
+      _showMessage(commentRequiredMessage);
+      return;
+    }
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .updateComment(
+            commentId: comment.id,
+            transactionId: widget.transactionId,
+            content: trimmed,
+          );
+    } catch (error) {
+      if (!mounted) return;
+      _showMessage(userFriendlyMessage(context, error));
+    }
+  }
+
+  Future<void> _deleteComment(GroupTransactionComment comment) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text(context.l10n.groupCommentDeleteConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.commonDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .deleteComment(
+            commentId: comment.id,
+            transactionId: widget.transactionId,
+          );
+    } catch (error) {
+      if (!mounted) return;
+      _showMessage(userFriendlyMessage(context, error));
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
   Future<void> _delete(GroupTransactionDetail detail) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -308,6 +402,44 @@ class _GroupTransactionDetailScreenState
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+}
+
+class _ImageUploadFailureNotice extends StatelessWidget {
+  const _ImageUploadFailureNotice({
+    required this.canRetry,
+    required this.onRetry,
+  });
+
+  final bool canRetry;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.amber.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, color: AppTheme.amber),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              context.l10n.groupTransactionImageUploadFailed,
+              style: const TextStyle(color: AppTheme.amber),
+            ),
+          ),
+          if (canRetry)
+            TextButton(
+              onPressed: onRetry,
+              child: Text(context.l10n.commonRetry),
+            ),
+        ],
+      ),
+    );
   }
 }
 

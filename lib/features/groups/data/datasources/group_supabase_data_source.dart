@@ -112,6 +112,26 @@ class GroupSupabaseDataSource {
     return _rows(rows);
   }
 
+  Future<List<Map<String, dynamic>>> fetchNotifications() async {
+    final rows = await client.rpc('list_group_notifications');
+    return _rows(rows);
+  }
+
+  Future<void> markNotificationRead(String notificationId) {
+    return client.rpc(
+      'mark_group_notification_read',
+      params: {'p_notification_id': notificationId},
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> fetchActivities(String groupId) async {
+    final rows = await client.rpc(
+      'list_group_activities',
+      params: {'p_group_id': groupId},
+    );
+    return _rows(rows);
+  }
+
   Future<String> createGroup({
     required String name,
     String? description,
@@ -130,6 +150,26 @@ class GroupSupabaseDataSource {
       params: {'p_group_id': groupId},
     );
     return result as String;
+  }
+
+  Future<Map<String, dynamic>> fetchInvitePreview(String token) async {
+    final rows = await client.rpc(
+      'get_group_invite_preview',
+      params: {'p_token': token},
+    );
+    return _singleRow(rows);
+  }
+
+  Future<Map<String, dynamic>> acceptInvite(String token) async {
+    final rows = await client.rpc(
+      'accept_group_invite',
+      params: {'p_token': token},
+    );
+    return _singleRow(rows);
+  }
+
+  Future<void> declineInvite(String token) {
+    return client.rpc('decline_group_invite', params: {'p_token': token});
   }
 
   Future<void> inviteByUsername({
@@ -224,6 +264,20 @@ class GroupSupabaseDataSource {
     );
   }
 
+  Future<void> disputeSettlement(String settlementId) {
+    return client.rpc(
+      'dispute_settlement',
+      params: {'p_settlement_id': settlementId},
+    );
+  }
+
+  Future<void> resetDisputedSettlement(String settlementId) {
+    return client.rpc(
+      'reset_disputed_settlement',
+      params: {'p_settlement_id': settlementId},
+    );
+  }
+
   Future<void> leaveGroup(String groupId) {
     return client
         .rpc('leave_expense_group', params: {'p_group_id': groupId})
@@ -243,6 +297,16 @@ class GroupSupabaseDataSource {
         });
   }
 
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) {
+    return client.rpc(
+      'transfer_group_ownership',
+      params: {'p_group_id': groupId, 'p_new_owner_user_id': newOwnerUserId},
+    );
+  }
+
   Future<void> addComment({
     required String transactionId,
     required String content,
@@ -256,6 +320,23 @@ class GroupSupabaseDataSource {
       'user_id': userId,
       'content': content,
     });
+  }
+
+  Future<void> updateComment({
+    required String commentId,
+    required String content,
+  }) {
+    return client
+        .from('group_transaction_comments')
+        .update({'content': content})
+        .eq('id', commentId);
+  }
+
+  Future<void> deleteComment(String commentId) {
+    return client
+        .from('group_transaction_comments')
+        .delete()
+        .eq('id', commentId);
   }
 
   Future<String> uploadGroupAvatar({
@@ -319,4 +400,11 @@ class GroupSupabaseDataSource {
 
   List<Map<String, dynamic>> _rows(dynamic rows) =>
       (rows as List<dynamic>).cast<Map<String, dynamic>>();
+
+  Map<String, dynamic> _singleRow(dynamic rows) {
+    if (rows is Map<String, dynamic>) return rows;
+    final list = _rows(rows);
+    if (list.isEmpty) return const {};
+    return list.first;
+  }
 }

@@ -1,7 +1,10 @@
 # Receipt OCR Regex Patterns
 
-The backend uses Tesseract only to convert pixels to text. All structured
-fields are extracted by deterministic regex and keyword matching.
+The backend uses a configurable OCR engine to convert pixels to text. Set
+`OCR_ENGINE=auto`, `OCR_ENGINE=paddleocr`, or `OCR_ENGINE=tesseract`.
+PaddleOCR is the preferred server-side engine when installed; Tesseract remains
+the lightweight fallback. All structured fields are extracted by deterministic
+regex and keyword matching after OCR.
 
 ## Header
 
@@ -36,6 +39,9 @@ matching is case-insensitive and ignores Vietnamese diacritics.
 
 - Rules depend on OCR line grouping and whitespace.
 - Unseen receipt layouts may require another explicit pattern.
-- Tesseract must have both `eng` and `vie` language packs for bilingual bills.
+- PaddleOCR must be installed separately from `requirements-paddle.txt` when
+  `OCR_ENGINE=paddleocr` is used.
+- Tesseract must have both `eng` and `vie` language packs when the Tesseract
+  fallback is used for bilingual bills.
 - Confidence reflects field completeness and arithmetic consistency, not
-  Tesseract's word-level confidence.
+  OCR word-level confidence.

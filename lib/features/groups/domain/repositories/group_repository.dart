@@ -1,3 +1,4 @@
+import '../entities/group_community.dart';
 import '../entities/group_settlement.dart';
 import '../entities/group_transaction.dart';
 import '../entities/spending_group.dart';
@@ -17,6 +18,12 @@ abstract interface class GroupRepository {
   });
 
   Future<String> createInviteLink(String groupId);
+
+  Future<GroupInvitePreview> fetchInvitePreview(String token);
+
+  Future<GroupInviteAcceptResult> acceptInvite(String token);
+
+  Future<void> declineInvite(String token);
 
   Future<void> inviteByUsername({
     required String groupId,
@@ -48,14 +55,42 @@ abstract interface class GroupRepository {
 
   Future<GroupSettlementOverview> fetchSettlementOverview(String groupId);
 
+  Future<GroupStatsOverview> fetchStats(String groupId);
+
+  Future<List<GroupNotification>> fetchNotifications();
+
+  Future<void> markNotificationRead(String notificationId);
+
+  Future<List<GroupActivity>> fetchActivities(String groupId);
+
   Future<void> markSettlementPaid(String settlementId);
 
   Future<void> confirmSettlementReceived(String settlementId);
 
+  Future<void> disputeSettlement(String settlementId);
+
+  Future<void> resetDisputedSettlement(String settlementId);
+
   Future<void> leaveGroup(String groupId);
+
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  });
 
   Future<void> addComment({
     required String transactionId,
     required String content,
+  });
+
+  Future<void> updateComment({
+    required String commentId,
+    required String transactionId,
+    required String content,
+  });
+
+  Future<void> deleteComment({
+    required String commentId,
+    required String transactionId,
   });
 }
