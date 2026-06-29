@@ -186,7 +186,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                   final row = state.parsedRows[index];
                   return _PreviewRowTile(
                     title:
-                        '${row.categoryName} - ${formatVnd(row.amount ?? 0)}',
+                        '${row.categoryName} - ${formatVnd(row.amount ?? 0, locale: Localizations.localeOf(context).toString())}',
                     subtitle: row.isValid
                         ? DateFormat('dd/MM/yyyy').format(row.date!)
                         : _getErrorMessage(context, row.errorMessage ?? ''),

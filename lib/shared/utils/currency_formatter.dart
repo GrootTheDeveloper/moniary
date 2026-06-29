@@ -1,8 +1,8 @@
 import 'package:intl/intl.dart';
 
-String formatVnd(num amount) {
+String formatVnd(num amount, {String locale = 'vi_VN'}) {
   return NumberFormat.currency(
-    locale: 'vi_VN',
+    locale: locale,
     symbol: '₫',
     decimalDigits: 0,
   ).format(amount);

@@ -178,7 +178,10 @@ class _TransactionDetailBody extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               ObscurableAmountText(
-                                amountText: formatVnd(transaction.amount),
+                                amountText: formatVnd(
+                                  transaction.amount,
+                                  locale: Localizations.localeOf(context).toString(),
+                                ),
                                 prefixText: transaction.isIncome ? '+' : '-',
                                 style: typography.displayMedium.copyWith(
                                   color: transaction.isIncome

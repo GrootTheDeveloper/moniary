@@ -161,7 +161,7 @@ class _DayDetailBody extends ConsumerWidget {
                           const TextSpan(text: '   '),
                           TextSpan(
                             text:
-                                '${net >= 0 ? '+' : '-'}${formatVnd(net.abs())}',
+                                '${net >= 0 ? '+' : '-'}${formatVnd(net.abs(), locale: Localizations.localeOf(context).toString())}',
                             style: TextStyle(
                               color: net >= 0 ? colors.success : colors.danger,
                               letterSpacing: 0.45,
@@ -502,7 +502,7 @@ class _DayTransactionRow extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
+                '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount, locale: Localizations.localeOf(context).toString())}',
                 textAlign: TextAlign.right,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: transaction.isIncome
@@ -607,7 +607,7 @@ class TransactionGridTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
+                        '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount, locale: Localizations.localeOf(context).toString())}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
