@@ -1,3 +1,4 @@
+import '../../domain/entities/group_community.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
@@ -148,6 +149,58 @@ class GroupModelMapper {
       updatedAt: _date(row['updated_at']),
       fromDisplayName: fromProfile?['full_name'] as String?,
       toDisplayName: toProfile?['full_name'] as String?,
+    );
+  }
+
+  static GroupInvitePreview invitePreview(Map<String, dynamic> row) {
+    return GroupInvitePreview(
+      status: GroupInviteStatus.fromValue(row['invite_status'] as String?),
+      groupId: row['group_id'] as String?,
+      groupName: row['group_name'] as String?,
+      avatarPath: row['group_avatar_path'] as String?,
+      description: row['group_description'] as String?,
+      type: row['group_type'] as String?,
+      invitedBy: row['invited_by'] as String?,
+      inviterName: row['inviter_full_name'] as String?,
+      memberCount: _money(row['member_count']),
+      expiresAt: _nullableDate(row['expires_at']),
+    );
+  }
+
+  static GroupInviteAcceptResult inviteAcceptResult(Map<String, dynamic> row) {
+    return GroupInviteAcceptResult(
+      groupId: row['group_id'] as String?,
+      status: GroupInviteAcceptStatus.fromValue(
+        row['result_status'] as String?,
+      ),
+    );
+  }
+
+  static GroupNotification notification(Map<String, dynamic> row) {
+    return GroupNotification(
+      id: row['id'] as String,
+      groupId: row['group_id'] as String,
+      groupName: row['group_name'] as String? ?? '',
+      groupTransactionId: row['group_transaction_id'] as String?,
+      inviteToken: row['invite_token'] as String?,
+      type: row['type'] as String,
+      isRead: row['is_read'] as bool? ?? false,
+      createdAt: _date(row['created_at']),
+    );
+  }
+
+  static GroupActivity activity(Map<String, dynamic> row) {
+    final metadata = row['metadata'];
+    return GroupActivity(
+      id: row['id'] as String,
+      groupId: row['group_id'] as String,
+      actorUserId: row['actor_user_id'] as String,
+      actorName: row['actor_name'] as String?,
+      type: row['type'] as String,
+      metadata: metadata is Map
+          ? Map<String, dynamic>.from(metadata)
+          : const <String, dynamic>{},
+      createdAt: _date(row['created_at']),
     );
   }
 

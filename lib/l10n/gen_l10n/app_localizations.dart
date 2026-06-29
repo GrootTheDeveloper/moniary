@@ -5492,11 +5492,47 @@ abstract class AppLocalizations {
   /// **'Bạn cần chuyển quyền owner hoặc thêm một owner khác trước khi rời nhóm.'**
   String get groupOwnerTransferRequired;
 
+  /// No description provided for @groupOwnerRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ owner của nhóm mới có thể thực hiện thao tác này.'**
+  String get groupOwnerRequired;
+
+  /// No description provided for @groupOwnerTransferTargetRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng chọn một thành viên đang tham gia khác để làm owner.'**
+  String get groupOwnerTransferTargetRequired;
+
+  /// No description provided for @groupTransferOwnership.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển owner'**
+  String get groupTransferOwnership;
+
+  /// No description provided for @groupTransferOwnershipConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển quyền owner của nhóm cho {member}?'**
+  String groupTransferOwnershipConfirm(String member);
+
+  /// No description provided for @groupTransferOwnershipDone.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chuyển quyền owner của nhóm.'**
+  String get groupTransferOwnershipDone;
+
   /// No description provided for @groupInviteTitle.
   ///
   /// In vi, this message translates to:
   /// **'Mời thành viên'**
   String get groupInviteTitle;
+
+  /// No description provided for @groupInviteAfterCreate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mời thành viên sau khi tạo nhóm'**
+  String get groupInviteAfterCreate;
 
   /// No description provided for @groupInviteByUsername.
   ///
@@ -5534,6 +5570,30 @@ abstract class AppLocalizations {
   /// **'Đã tạo link mời nhóm.'**
   String get groupInviteLinkCreated;
 
+  /// No description provided for @groupCopyInviteLink.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sao chép link'**
+  String get groupCopyInviteLink;
+
+  /// No description provided for @groupShareInviteLink.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ link'**
+  String get groupShareInviteLink;
+
+  /// No description provided for @groupInviteLinkCopied.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã sao chép link mời nhóm.'**
+  String get groupInviteLinkCopied;
+
+  /// No description provided for @groupInviteShareMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tham gia nhóm chi tiêu của mình trên Moniary nhé: {link}'**
+  String groupInviteShareMessage(String link);
+
   /// No description provided for @groupInviteSent.
   ///
   /// In vi, this message translates to:
@@ -5557,6 +5617,102 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Mời từ danh sách bạn bè'**
   String get groupFriendInviteTitle;
+
+  /// No description provided for @groupInviteAcceptTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời vào nhóm'**
+  String get groupInviteAcceptTitle;
+
+  /// No description provided for @groupInviteAcceptSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn được mời tham gia nhóm {group} bởi {inviter}.'**
+  String groupInviteAcceptSubtitle(String group, String inviter);
+
+  /// No description provided for @groupInviteAcceptButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tham gia nhóm'**
+  String get groupInviteAcceptButton;
+
+  /// No description provided for @groupInviteDeclineButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ chối'**
+  String get groupInviteDeclineButton;
+
+  /// No description provided for @groupInviteAccepted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tham gia nhóm thành công.'**
+  String get groupInviteAccepted;
+
+  /// No description provided for @groupInviteDeclined.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã từ chối lời mời nhóm.'**
+  String get groupInviteDeclined;
+
+  /// No description provided for @groupInviteLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải lời mời nhóm...'**
+  String get groupInviteLoading;
+
+  /// No description provided for @groupInvitePreviewError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được lời mời nhóm.'**
+  String get groupInvitePreviewError;
+
+  /// No description provided for @groupInviteInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link mời nhóm không hợp lệ.'**
+  String get groupInviteInvalid;
+
+  /// No description provided for @groupInviteExpired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link mời nhóm đã hết hạn.'**
+  String get groupInviteExpired;
+
+  /// No description provided for @groupInviteAlreadyMember.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã là thành viên của nhóm này.'**
+  String get groupInviteAlreadyMember;
+
+  /// No description provided for @groupInviteAlreadyAccepted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link mời nhóm đã được sử dụng.'**
+  String get groupInviteAlreadyAccepted;
+
+  /// No description provided for @groupInviteDeclinedStatus.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link mời nhóm đã bị từ chối.'**
+  String get groupInviteDeclinedStatus;
+
+  /// No description provided for @groupInviteGroupArchived.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhóm này đã được lưu trữ.'**
+  String get groupInviteGroupArchived;
+
+  /// No description provided for @groupInviteOpenGroups.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem nhóm chi tiêu'**
+  String get groupInviteOpenGroups;
+
+  /// No description provided for @groupInviteMemberCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} thành viên'**
+  String groupInviteMemberCount(int count);
 
   /// No description provided for @groupMemberInvited.
   ///
@@ -5611,6 +5767,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Ảnh không bắt buộc nhưng được khuyến khích.'**
   String get groupTransactionImageOptional;
+
+  /// No description provided for @groupTransactionImageUploadFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Upload ảnh thất bại. Hãy chọn lại ảnh để thử lại.'**
+  String get groupTransactionImageUploadFailed;
 
   /// No description provided for @groupSplitModeTitle.
   ///
@@ -5930,6 +6092,12 @@ abstract class AppLocalizations {
   /// **'Vui lòng nhập nội dung bình luận.'**
   String get groupCommentRequired;
 
+  /// No description provided for @groupCommentDeleteConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa bình luận này?'**
+  String get groupCommentDeleteConfirm;
+
   /// No description provided for @groupUnknownMember.
   ///
   /// In vi, this message translates to:
@@ -5969,7 +6137,7 @@ abstract class AppLocalizations {
   /// No description provided for @groupInviteLinkPlaceholder.
   ///
   /// In vi, this message translates to:
-  /// **'Deep link đã được tạo. Màn hình chấp nhận lời mời sẽ được kết nối ở phase deep linking.'**
+  /// **'Sao chép hoặc chia sẻ link để mời thành viên vào nhóm.'**
   String get groupInviteLinkPlaceholder;
 
   /// No description provided for @groupStatsPlaceholder.
@@ -5977,6 +6145,120 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thống kê nhóm cơ bản dùng tổng chi và công nợ hiện tại.'**
   String get groupStatsPlaceholder;
+
+  /// No description provided for @groupStatsLoadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được thống kê nhóm.'**
+  String get groupStatsLoadError;
+
+  /// No description provided for @groupStatsTransactionCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số giao dịch'**
+  String get groupStatsTransactionCount;
+
+  /// No description provided for @groupStatsPendingCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ xử lý'**
+  String get groupStatsPendingCount;
+
+  /// No description provided for @groupNotificationsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo nhóm'**
+  String get groupNotificationsTitle;
+
+  /// No description provided for @groupNotificationsEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có thông báo nhóm.'**
+  String get groupNotificationsEmpty;
+
+  /// No description provided for @groupNotificationInvite.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có lời mời vào nhóm.'**
+  String get groupNotificationInvite;
+
+  /// No description provided for @groupNotificationMemberJoined.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có thành viên mới tham gia nhóm.'**
+  String get groupNotificationMemberJoined;
+
+  /// No description provided for @groupNotificationTransactionCreated.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có giao dịch nhóm mới.'**
+  String get groupNotificationTransactionCreated;
+
+  /// No description provided for @groupNotificationOwnerTransferred.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền owner của nhóm đã được chuyển.'**
+  String get groupNotificationOwnerTransferred;
+
+  /// No description provided for @groupNotificationGeneric.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có cập nhật mới trong nhóm.'**
+  String get groupNotificationGeneric;
+
+  /// No description provided for @groupActivitiesTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoạt động nhóm'**
+  String get groupActivitiesTitle;
+
+  /// No description provided for @groupActivitiesEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có hoạt động nhóm.'**
+  String get groupActivitiesEmpty;
+
+  /// No description provided for @groupActivitiesLoadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được hoạt động nhóm.'**
+  String get groupActivitiesLoadError;
+
+  /// No description provided for @groupActivityMemberJoined.
+  ///
+  /// In vi, this message translates to:
+  /// **'{actor} đã tham gia nhóm.'**
+  String groupActivityMemberJoined(String actor);
+
+  /// No description provided for @groupActivityMemberLeft.
+  ///
+  /// In vi, this message translates to:
+  /// **'{actor} đã rời nhóm.'**
+  String groupActivityMemberLeft(String actor);
+
+  /// No description provided for @groupActivityTransactionCreated.
+  ///
+  /// In vi, this message translates to:
+  /// **'{actor} đã tạo giao dịch nhóm.'**
+  String groupActivityTransactionCreated(String actor);
+
+  /// No description provided for @groupActivityTransactionPosted.
+  ///
+  /// In vi, this message translates to:
+  /// **'{actor} đã đăng giao dịch nhóm.'**
+  String groupActivityTransactionPosted(String actor);
+
+  /// No description provided for @groupActivityOwnerTransferred.
+  ///
+  /// In vi, this message translates to:
+  /// **'{actor} đã chuyển quyền owner của nhóm.'**
+  String groupActivityOwnerTransferred(String actor);
+
+  /// No description provided for @groupActivityGeneric.
+  ///
+  /// In vi, this message translates to:
+  /// **'{actor} đã cập nhật nhóm.'**
+  String groupActivityGeneric(String actor);
 
   /// No description provided for @groupLeaveWarningActivity.
   ///

@@ -18,6 +18,8 @@ import '../features/groups/presentation/screens/add_group_transaction_screen.dar
 import '../features/groups/presentation/screens/create_group_screen.dart';
 import '../features/groups/presentation/screens/debt_settlement_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
+import '../features/groups/presentation/screens/group_invite_accept_screen.dart';
+import '../features/groups/presentation/screens/group_notifications_screen.dart';
 import '../features/groups/presentation/screens/group_transaction_detail_screen.dart';
 import '../features/groups/presentation/screens/invite_member_screen.dart';
 import '../features/groups/presentation/screens/member_amount_input_screen.dart';
@@ -316,6 +318,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               : FriendInviteAcceptScreen(token: token);
           return buildSlideTransitionPage(state: state, child: child);
         },
+      ),
+      GoRoute(
+        path: GroupInviteAcceptScreen.routePath,
+        pageBuilder: (context, state) {
+          final token = state.pathParameters['token'];
+          final child = token == null
+              ? const GroupsScreen()
+              : GroupInviteAcceptScreen(token: token);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupNotificationsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const GroupNotificationsScreen(),
+        ),
       ),
       GoRoute(
         path: PrivacyCenterScreen.routePath,

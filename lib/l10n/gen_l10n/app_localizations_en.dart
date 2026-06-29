@@ -3041,7 +3041,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'Transfer ownership or add another owner before leaving.';
 
   @override
+  String get groupOwnerRequired => 'Only the group owner can do this.';
+
+  @override
+  String get groupOwnerTransferTargetRequired =>
+      'Choose another active member to become owner.';
+
+  @override
+  String get groupTransferOwnership => 'Transfer owner';
+
+  @override
+  String groupTransferOwnershipConfirm(String member) {
+    return 'Transfer group ownership to $member?';
+  }
+
+  @override
+  String get groupTransferOwnershipDone => 'Group ownership transferred.';
+
+  @override
   String get groupInviteTitle => 'Invite members';
+
+  @override
+  String get groupInviteAfterCreate => 'Invite members after creating';
 
   @override
   String get groupInviteByUsername => 'Invite by username';
@@ -3062,6 +3083,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupInviteLinkCreated => 'Group invite link created.';
 
   @override
+  String get groupCopyInviteLink => 'Copy link';
+
+  @override
+  String get groupShareInviteLink => 'Share link';
+
+  @override
+  String get groupInviteLinkCopied => 'Group invite link copied.';
+
+  @override
+  String groupInviteShareMessage(String link) {
+    return 'Join my Moniary expense group: $link';
+  }
+
+  @override
   String get groupInviteSent => 'Invite sent.';
 
   @override
@@ -3072,6 +3107,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupFriendInviteTitle => 'Invite from friends';
+
+  @override
+  String get groupInviteAcceptTitle => 'Group invite';
+
+  @override
+  String groupInviteAcceptSubtitle(String group, String inviter) {
+    return 'You were invited to join $group by $inviter.';
+  }
+
+  @override
+  String get groupInviteAcceptButton => 'Join group';
+
+  @override
+  String get groupInviteDeclineButton => 'Decline';
+
+  @override
+  String get groupInviteAccepted => 'Joined group successfully.';
+
+  @override
+  String get groupInviteDeclined => 'Group invite declined.';
+
+  @override
+  String get groupInviteLoading => 'Loading group invite...';
+
+  @override
+  String get groupInvitePreviewError => 'Could not load the group invite.';
+
+  @override
+  String get groupInviteInvalid => 'This group invite link is invalid.';
+
+  @override
+  String get groupInviteExpired => 'This group invite link has expired.';
+
+  @override
+  String get groupInviteAlreadyMember =>
+      'You are already a member of this group.';
+
+  @override
+  String get groupInviteAlreadyAccepted =>
+      'This group invite link has already been used.';
+
+  @override
+  String get groupInviteDeclinedStatus =>
+      'This group invite link was declined.';
+
+  @override
+  String get groupInviteGroupArchived => 'This group has been archived.';
+
+  @override
+  String get groupInviteOpenGroups => 'Open expense groups';
+
+  @override
+  String groupInviteMemberCount(int count) {
+    return '$count members';
+  }
 
   @override
   String get groupMemberInvited => 'Invited';
@@ -3100,6 +3190,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get groupTransactionImageOptional =>
       'An image is optional but recommended.';
+
+  @override
+  String get groupTransactionImageUploadFailed =>
+      'Image upload failed. Choose the image again to retry.';
 
   @override
   String get groupSplitModeTitle => 'Split method';
@@ -3272,6 +3366,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupCommentRequired => 'Enter a comment.';
 
   @override
+  String get groupCommentDeleteConfirm => 'Delete this comment?';
+
+  @override
   String get groupUnknownMember => 'Member';
 
   @override
@@ -3293,11 +3390,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupInviteLinkPlaceholder =>
-      'The deep link is created. Invite acceptance will be connected in the deep-linking phase.';
+      'Copy or share this link to invite members into the group.';
 
   @override
   String get groupStatsPlaceholder =>
       'Basic group statistics use current total spending and balances.';
+
+  @override
+  String get groupStatsLoadError => 'Could not load group statistics.';
+
+  @override
+  String get groupStatsTransactionCount => 'Transactions';
+
+  @override
+  String get groupStatsPendingCount => 'Pending';
+
+  @override
+  String get groupNotificationsTitle => 'Group notifications';
+
+  @override
+  String get groupNotificationsEmpty => 'No group notifications yet.';
+
+  @override
+  String get groupNotificationInvite => 'You have a group invite.';
+
+  @override
+  String get groupNotificationMemberJoined => 'A new member joined the group.';
+
+  @override
+  String get groupNotificationTransactionCreated =>
+      'A new group transaction was created.';
+
+  @override
+  String get groupNotificationOwnerTransferred =>
+      'Group ownership was transferred.';
+
+  @override
+  String get groupNotificationGeneric => 'There is a new group update.';
+
+  @override
+  String get groupActivitiesTitle => 'Group activity';
+
+  @override
+  String get groupActivitiesEmpty => 'No group activity yet.';
+
+  @override
+  String get groupActivitiesLoadError => 'Could not load group activity.';
+
+  @override
+  String groupActivityMemberJoined(String actor) {
+    return '$actor joined the group.';
+  }
+
+  @override
+  String groupActivityMemberLeft(String actor) {
+    return '$actor left the group.';
+  }
+
+  @override
+  String groupActivityTransactionCreated(String actor) {
+    return '$actor created a group transaction.';
+  }
+
+  @override
+  String groupActivityTransactionPosted(String actor) {
+    return '$actor posted a group transaction.';
+  }
+
+  @override
+  String groupActivityOwnerTransferred(String actor) {
+    return '$actor transferred group ownership.';
+  }
+
+  @override
+  String groupActivityGeneric(String actor) {
+    return '$actor updated the group.';
+  }
 
   @override
   String get groupLeaveWarningActivity =>

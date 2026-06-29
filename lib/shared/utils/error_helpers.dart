@@ -34,10 +34,25 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupLeaveBlocked;
       case 'GROUP_OWNER_TRANSFER_REQUIRED':
         return l10n.groupOwnerTransferRequired;
+      case 'GROUP_OWNER_REQUIRED':
+        return l10n.groupOwnerRequired;
+      case 'GROUP_OWNER_TRANSFER_TARGET_REQUIRED':
+        return l10n.groupOwnerTransferTargetRequired;
       case 'GROUP_COMMENT_REQUIRED':
         return l10n.groupCommentRequired;
+      case 'GROUP_COMMENT_OWNER_REQUIRED':
+        return l10n.groupActionFailed;
       case 'GROUP_CREATOR_ONLY':
         return l10n.groupTransactionCreatorOnly;
+      case 'GROUP_INVITE_INVALID':
+      case 'GROUP_INVITE_FORBIDDEN':
+        return l10n.groupInviteInvalid;
+      case 'GROUP_INVITE_EXPIRED':
+        return l10n.groupInviteExpired;
+      case 'GROUP_INVITE_ARCHIVED':
+        return l10n.groupInviteGroupArchived;
+      case 'GROUP_INVITE_NOT_PENDING':
+        return l10n.groupInviteAlreadyAccepted;
       case 'FRIEND_USER_NOT_FOUND':
         return l10n.friendUserNotFound;
       case 'FRIEND_CANNOT_ADD_SELF':

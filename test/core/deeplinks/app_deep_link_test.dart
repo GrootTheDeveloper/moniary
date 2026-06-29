@@ -28,9 +28,33 @@ void main() {
 
   test('ignore unrelated links', () {
     final deepLink = AppDeepLink.parse(
-      Uri.parse('moniary://groups/invite/abc'),
+      Uri.parse('moniary://groups/other/abc'),
     );
 
     expect(deepLink, isNull);
+  });
+
+  test('parse moniary group invite link', () {
+    final deepLink = AppDeepLink.parse(
+      Uri.parse('moniary://groups/invite/group-token'),
+    );
+
+    expect(deepLink, isA<GroupInviteDeepLink>());
+    expect(
+      (deepLink as GroupInviteDeepLink).routeLocation,
+      '/groups/invite/accept/group-token',
+    );
+  });
+
+  test('parse slash-style moniary group invite link', () {
+    final deepLink = AppDeepLink.parse(
+      Uri.parse('moniary:///groups/invite/group-token'),
+    );
+
+    expect(deepLink, isA<GroupInviteDeepLink>());
+    expect(
+      (deepLink as GroupInviteDeepLink).routeLocation,
+      '/groups/invite/accept/group-token',
+    );
   });
 }

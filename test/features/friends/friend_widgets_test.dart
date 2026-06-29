@@ -9,6 +9,7 @@ import 'package:moniary/features/friends/presentation/screens/add_friend_screen.
 import 'package:moniary/features/friends/presentation/screens/friend_invite_accept_screen.dart';
 import 'package:moniary/features/friends/presentation/screens/friends_screen.dart';
 import 'package:moniary/features/groups/data/repositories/group_repository_impl.dart';
+import 'package:moniary/features/groups/domain/entities/group_community.dart';
 import 'package:moniary/features/groups/domain/entities/group_enums.dart';
 import 'package:moniary/features/groups/domain/entities/group_settlement.dart';
 import 'package:moniary/features/groups/domain/entities/group_transaction.dart';
@@ -476,6 +477,21 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
+  Future<GroupInvitePreview> fetchInvitePreview(String token) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<GroupInviteAcceptResult> acceptInvite(String token) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> declineInvite(String token) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<String> createTransaction(GroupTransactionDraft draft) {
     throw UnimplementedError();
   }
@@ -533,6 +549,26 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
+  Future<GroupStatsOverview> fetchStats(String groupId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<GroupNotification>> fetchNotifications() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> markNotificationRead(String notificationId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<GroupActivity>> fetchActivities(String groupId) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<GroupTransactionDetail> fetchTransactionDetail(String transactionId) {
     throw UnimplementedError();
   }
@@ -561,7 +597,25 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
+  Future<void> disputeSettlement(String settlementId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> resetDisputedSettlement(String settlementId) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<void> leaveGroup(String groupId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) {
     throw UnimplementedError();
   }
 
@@ -569,6 +623,23 @@ class FakeGroupRepository implements GroupRepository {
   Future<void> addComment({
     required String transactionId,
     required String content,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> updateComment({
+    required String commentId,
+    required String transactionId,
+    required String content,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteComment({
+    required String commentId,
+    required String transactionId,
   }) {
     throw UnimplementedError();
   }

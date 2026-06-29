@@ -5,6 +5,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../shared/utils/app_logger.dart';
+import '../../domain/entities/group_community.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
@@ -165,6 +166,38 @@ class GroupRepositoryImpl implements GroupRepository {
       'create group invite link',
       () => _remote.createInviteLink(groupId),
     );
+  }
+
+  @override
+  Future<GroupInvitePreview> fetchInvitePreview(String token) {
+    if (_useMockData) {
+      return _mock.fetchInvitePreview(token);
+    }
+    return _guard('fetch group invite preview', () async {
+      return GroupModelMapper.invitePreview(
+        await _remote.fetchInvitePreview(token),
+      );
+    });
+  }
+
+  @override
+  Future<GroupInviteAcceptResult> acceptInvite(String token) {
+    if (_useMockData) {
+      return _mock.acceptInvite(token);
+    }
+    return _guard('accept group invite', () async {
+      return GroupModelMapper.inviteAcceptResult(
+        await _remote.acceptInvite(token),
+      );
+    });
+  }
+
+  @override
+  Future<void> declineInvite(String token) {
+    if (_useMockData) {
+      return _mock.declineInvite(token);
+    }
+    return _guard('decline group invite', () => _remote.declineInvite(token));
   }
 
   @override
@@ -363,6 +396,59 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<GroupStatsOverview> fetchStats(String groupId) {
+    if (_useMockData) {
+      return _mock.fetchStats(groupId);
+    }
+    return _guard('fetch group stats', () async {
+      final detail = await fetchGroupDetail(groupId);
+      final transactions = await fetchTransactions(groupId);
+      final settlement = await fetchSettlementOverview(groupId);
+      return _buildStats(
+        detail: detail,
+        transactions: transactions,
+        settlement: settlement,
+        currentUserId: currentUserId,
+      );
+    });
+  }
+
+  @override
+  Future<List<GroupNotification>> fetchNotifications() {
+    if (_useMockData) {
+      return _mock.fetchNotifications();
+    }
+    return _guard('fetch group notifications', () async {
+      return (await _remote.fetchNotifications())
+          .map(GroupModelMapper.notification)
+          .toList();
+    });
+  }
+
+  @override
+  Future<void> markNotificationRead(String notificationId) {
+    if (_useMockData) {
+      return _mock.markNotificationRead(notificationId);
+    }
+    return _guard(
+      'mark group notification read',
+      () => _remote.markNotificationRead(notificationId),
+    );
+  }
+
+  @override
+  Future<List<GroupActivity>> fetchActivities(String groupId) {
+    if (_useMockData) {
+      return _mock.fetchActivities(groupId);
+    }
+    return _guard('fetch group activities', () async {
+      return (await _remote.fetchActivities(
+        groupId,
+      )).map(GroupModelMapper.activity).toList();
+    });
+  }
+
+  @override
   Future<void> markSettlementPaid(String settlementId) {
     if (_useMockData) {
       return _mock.markSettlementPaid(settlementId);
@@ -385,11 +471,53 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<void> disputeSettlement(String settlementId) {
+    if (_useMockData) {
+      return _mock.disputeSettlement(settlementId);
+    }
+    return _guard(
+      'dispute group settlement',
+      () => _remote.disputeSettlement(settlementId),
+    );
+  }
+
+  @override
+  Future<void> resetDisputedSettlement(String settlementId) {
+    if (_useMockData) {
+      return _mock.resetDisputedSettlement(settlementId);
+    }
+    return _guard(
+      'reset disputed group settlement',
+      () => _remote.resetDisputedSettlement(settlementId),
+    );
+  }
+
+  @override
   Future<void> leaveGroup(String groupId) {
     if (_useMockData) {
       return _mock.leaveGroup(groupId);
     }
     return _guard('leave group', () => _remote.leaveGroup(groupId));
+  }
+
+  @override
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) {
+    if (_useMockData) {
+      return _mock.transferOwnership(
+        groupId: groupId,
+        newOwnerUserId: newOwnerUserId,
+      );
+    }
+    return _guard(
+      'transfer group ownership',
+      () => _remote.transferOwnership(
+        groupId: groupId,
+        newOwnerUserId: newOwnerUserId,
+      ),
+    );
   }
 
   @override
@@ -403,6 +531,42 @@ class GroupRepositoryImpl implements GroupRepository {
     return _guard(
       'add group transaction comment',
       () => _remote.addComment(transactionId: transactionId, content: content),
+    );
+  }
+
+  @override
+  Future<void> updateComment({
+    required String commentId,
+    required String transactionId,
+    required String content,
+  }) {
+    if (_useMockData) {
+      return _mock.updateComment(
+        commentId: commentId,
+        transactionId: transactionId,
+        content: content,
+      );
+    }
+    return _guard(
+      'update group transaction comment',
+      () => _remote.updateComment(commentId: commentId, content: content),
+    );
+  }
+
+  @override
+  Future<void> deleteComment({
+    required String commentId,
+    required String transactionId,
+  }) {
+    if (_useMockData) {
+      return _mock.deleteComment(
+        commentId: commentId,
+        transactionId: transactionId,
+      );
+    }
+    return _guard(
+      'delete group transaction comment',
+      () => _remote.deleteComment(commentId),
     );
   }
 
@@ -427,5 +591,38 @@ class GroupRepositoryImpl implements GroupRepository {
       AppLogger.error(operation, error, stackTrace);
       throw const AppException('errorConnection');
     }
+  }
+
+  static GroupStatsOverview _buildStats({
+    required SpendingGroupDetail detail,
+    required List<GroupTransaction> transactions,
+    required GroupSettlementOverview settlement,
+    required String currentUserId,
+  }) {
+    final posted = transactions.where(
+      (item) => item.splitStatus == GroupSplitStatus.posted,
+    );
+    final pendingTransactions = transactions.where(
+      (item) =>
+          item.splitStatus != GroupSplitStatus.posted &&
+          item.splitStatus != GroupSplitStatus.cancelled,
+    );
+    final pendingSettlements = settlement.suggestions.where(
+      (item) => item.status != GroupSettlementStatus.completed,
+    );
+    final ownBalance = settlement.balances
+        .where((item) => item.userId == currentUserId)
+        .fold<int>(0, (sum, item) => sum + item.balance);
+    return GroupStatsOverview(
+      totalSpent: posted.fold<int>(
+        0,
+        (sum, transaction) => sum + transaction.totalAmount,
+      ),
+      transactionCount: transactions.length,
+      pendingTransactionCount: pendingTransactions.length,
+      pendingSettlementCount: pendingSettlements.length,
+      memberCount: detail.activeMembers.length,
+      currentUserBalance: ownBalance,
+    );
   }
 }
