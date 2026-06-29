@@ -1495,6 +1495,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get legalCopyAllContacts => 'Copy tất cả liên hệ';
 
   @override
+  String legalCopyAllText(
+    String privacyEmail,
+    String supportEmail,
+    String legalEmail,
+  ) {
+    return 'Quyền riêng tư: $privacyEmail\nHỗ trợ: $supportEmail\nPháp lý: $legalEmail';
+  }
+
+  @override
   String get legalCopyContactSuccess => 'Đã copy thông tin liên hệ.';
 
   @override

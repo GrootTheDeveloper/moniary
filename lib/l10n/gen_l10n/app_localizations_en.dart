@@ -1495,6 +1495,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get legalCopyAllContacts => 'Copy all contacts';
 
   @override
+  String legalCopyAllText(
+    String privacyEmail,
+    String supportEmail,
+    String legalEmail,
+  ) {
+    return 'Privacy: $privacyEmail\nSupport: $supportEmail\nLegal: $legalEmail';
+  }
+
+  @override
   String get legalCopyContactSuccess => 'Copied contact info.';
 
   @override

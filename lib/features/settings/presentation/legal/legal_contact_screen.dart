@@ -53,8 +53,11 @@ class LegalContactScreen extends StatelessWidget {
   void _copyAll(BuildContext context) {
     Clipboard.setData(
       ClipboardData(
-        text:
-            '${context.l10n.legalContactPrivacy}: ${AppConstants.privacyEmail}\n${context.l10n.legalContactSupport}: ${AppConstants.supportEmail}\n${context.l10n.legalContactLegal}: ${AppConstants.legalEmail}',
+        text: context.l10n.legalCopyAllText(
+          AppConstants.privacyEmail,
+          AppConstants.supportEmail,
+          AppConstants.legalEmail,
+        ),
       ),
     );
     ScaffoldMessenger.of(context).showSnackBar(

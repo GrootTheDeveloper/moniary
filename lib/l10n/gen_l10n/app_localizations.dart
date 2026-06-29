@@ -2804,6 +2804,16 @@ abstract class AppLocalizations {
   /// **'Copy tất cả liên hệ'**
   String get legalCopyAllContacts;
 
+  /// No description provided for @legalCopyAllText.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền riêng tư: {privacyEmail}\nHỗ trợ: {supportEmail}\nPháp lý: {legalEmail}'**
+  String legalCopyAllText(
+    String privacyEmail,
+    String supportEmail,
+    String legalEmail,
+  );
+
   /// No description provided for @legalCopyContactSuccess.
   ///
   /// In vi, this message translates to:
