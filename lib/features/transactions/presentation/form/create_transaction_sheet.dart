@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../categories/domain/models/category.dart';
 import '../../../categories/application/categories_controller.dart';
@@ -196,6 +198,10 @@ class _CreateTransactionSheetState
                   labelText: context.l10n.transactionAmount,
                   hintText: '57000',
                   prefixIcon: const Icon(Icons.payments_outlined),
+                  suffixText: currencySymbolFor(
+                    currencyCode: ref.watch(preferredCurrencyProvider),
+                    locale: Localizations.localeOf(context).toString(),
+                  ),
                 ),
               ),
               const SizedBox(height: 14),

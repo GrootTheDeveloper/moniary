@@ -257,6 +257,10 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
               ),
               decoration: InputDecoration(
                 labelText: context.l10n.walletInitialBalance,
+                suffixText: currencySymbolFor(
+                  currencyCode: ref.watch(preferredCurrencyProvider),
+                  locale: Localizations.localeOf(context).toString(),
+                ),
               ),
             ),
             const SizedBox(height: 8),
