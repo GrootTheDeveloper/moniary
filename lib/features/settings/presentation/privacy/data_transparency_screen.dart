@@ -409,8 +409,9 @@ class _FreshnessCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('dd/MM/yyyy', 'vi_VN');
-    final dateTimeFormat = DateFormat('dd/MM/yyyy HH:mm', 'vi_VN');
+    final loc = Localizations.localeOf(context).toString();
+    final dateFormat = DateFormat('dd/MM/yyyy', loc);
+    final dateTimeFormat = DateFormat('dd/MM/yyyy HH:mm', loc);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -532,7 +533,7 @@ class _LocalFilesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateTimeFormat = DateFormat('dd/MM/yyyy HH:mm', 'vi_VN');
+    final dateTimeFormat = DateFormat('dd/MM/yyyy HH:mm', Localizations.localeOf(context).toString());
     final latestExport = summary.latestExportDate == null
         ? context.l10n.localFilesNoExport
         : context.l10n.localFilesLatest(
