@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/preferences/preferences_providers.dart';
 import '../../../shared/utils/currency_formatter.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/app_logger.dart';
@@ -115,7 +116,10 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
               labelText: context.l10n.transactionAmount,
-              suffixText: context.l10n.transactionAmountSuffix,
+              suffixText: currencySymbolFor(
+                currencyCode: ref.watch(preferredCurrencyProvider),
+                locale: Localizations.localeOf(context).toString(),
+              ),
               prefixIcon: const Icon(Icons.payments_outlined),
             ),
           ),
@@ -201,7 +205,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
                       ),
                 trailing: item.price == null
                     ? null
-                    : Text(formatVnd(item.price!, locale: Localizations.localeOf(context).toString())),
+                    : Text(formatCurrency(item.price!, currencyCode: ref.watch(preferredCurrencyProvider), locale: Localizations.localeOf(context).toString())),
               ),
             ),
           ],

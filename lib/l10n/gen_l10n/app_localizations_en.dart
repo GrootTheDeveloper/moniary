@@ -380,9 +380,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionAmount => 'Amount';
 
   @override
-  String get transactionAmountSuffix => 'đ';
-
-  @override
   String get transactionWallet => 'Wallet';
 
   @override

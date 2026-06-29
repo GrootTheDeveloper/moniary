@@ -160,7 +160,6 @@
   "transactionDeleteTitleQuestion": "Delete transaction?",
   "transactionDeleteUndone": "This action cannot be undone.",
   "transactionAmount": "Amount",
-  "transactionAmountSuffix": "đ",
   "transactionWallet": "Wallet",
   "transactionCategory": "Category",
   "transactionNote": "Note",

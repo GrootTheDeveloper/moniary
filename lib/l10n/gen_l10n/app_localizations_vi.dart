@@ -381,9 +381,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get transactionAmount => 'Số tiền';
 
   @override
-  String get transactionAmountSuffix => 'đ';
-
-  @override
   String get transactionWallet => 'Ví';
 
   @override

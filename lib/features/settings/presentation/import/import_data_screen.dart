@@ -10,6 +10,7 @@ import 'package:moniary/features/wallets/application/wallets_controller.dart';
 import 'package:moniary/features/wallets/domain/models/wallet.dart';
 import 'package:moniary/l10n/l10n_extension.dart';
 import 'package:moniary/shared/utils/app_logger.dart';
+import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/shared/utils/currency_formatter.dart';
 
 import '../../domain/import/import_history_entry.dart';
@@ -186,7 +187,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                   final row = state.parsedRows[index];
                   return _PreviewRowTile(
                     title:
-                        '${row.categoryName} - ${formatVnd(row.amount ?? 0, locale: Localizations.localeOf(context).toString())}',
+                        '${row.categoryName} - ${formatCurrency(row.amount ?? 0, currencyCode: ref.watch(preferredCurrencyProvider), locale: Localizations.localeOf(context).toString())}',
                     subtitle: row.isValid
                         ? DateFormat('dd/MM/yyyy').format(row.date!)
                         : _getErrorMessage(context, row.errorMessage ?? ''),

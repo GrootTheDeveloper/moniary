@@ -788,12 +788,6 @@ abstract class AppLocalizations {
   /// **'Số tiền'**
   String get transactionAmount;
 
-  /// No description provided for @transactionAmountSuffix.
-  ///
-  /// In vi, this message translates to:
-  /// **'đ'**
-  String get transactionAmountSuffix;
-
   /// No description provided for @transactionWallet.
   ///
   /// In vi, this message translates to:
