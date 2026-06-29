@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../domain/entities/spending_group.dart';
 
-class GroupCard extends StatelessWidget {
+class GroupCard extends ConsumerWidget {
   const GroupCard({required this.group, required this.onTap, super.key});
 
   final SpendingGroup group;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final balance = group.currentUserBalance;
     final localeName = Localizations.localeOf(context).toString();
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     final balanceText = balance == 0
         ? context.l10n.groupBalanceSettled
         : balance > 0
-        ? context.l10n.groupBalanceOwes(formatVnd(balance, locale: localeName))
-        : context.l10n.groupBalanceReceives(formatVnd(balance.abs(), locale: localeName));
+        ? context.l10n.groupBalanceOwes(formatCurrency(balance, currencyCode: currencyCode, locale: localeName))
+        : context.l10n.groupBalanceReceives(formatCurrency(balance.abs(), currencyCode: currencyCode, locale: localeName));
     final balanceColor = balance == 0
         ? AppTheme.success
         : balance > 0
@@ -65,7 +68,7 @@ class GroupCard extends StatelessWidget {
                     const SizedBox(height: 5),
                     Text(
                       '${context.l10n.groupMemberCount(group.memberCount)} • '
-                      '${context.l10n.groupTotalSpent(formatVnd(group.totalSpent, locale: Localizations.localeOf(context).toString()))}',
+                      '${context.l10n.groupTotalSpent(formatCurrency(group.totalSpent, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()))}',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 7),

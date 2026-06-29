@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/supabase_image.dart';
@@ -41,6 +42,7 @@ class GroupDetailScreen extends ConsumerWidget {
           final settlementsAsync = ref.watch(
             groupSettlementOverviewProvider(groupId),
           );
+          final currencyCode = ref.watch(preferredCurrencyProvider);
           return RefreshIndicator(
             onRefresh: () async {
               ref.invalidate(groupDetailProvider(groupId));
@@ -162,7 +164,7 @@ class GroupDetailScreen extends ConsumerWidget {
                                       context.l10n.groupUnknownMember,
                                 ),
                               ),
-                              trailing: Text(formatVnd(item.amount, locale: Localizations.localeOf(context).toString())),
+                              trailing: Text(formatCurrency(item.amount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())),
                             ),
                           )
                           .toList(),
@@ -318,21 +320,22 @@ class _GroupHeader extends StatelessWidget {
   }
 }
 
-class _OverviewCards extends StatelessWidget {
+class _OverviewCards extends ConsumerWidget {
   const _OverviewCards({required this.totalSpent, required this.memberCount});
 
   final int totalSpent;
   final int memberCount;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     return Row(
       children: [
         Expanded(
           child: _MetricCard(
             icon: Icons.payments_outlined,
             label: context.l10n.groupTransactionTotal,
-            value: formatVnd(totalSpent, locale: Localizations.localeOf(context).toString()),
+            value: formatCurrency(totalSpent, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
           ),
         ),
         const SizedBox(width: 10),
@@ -381,14 +384,15 @@ class _MetricCard extends StatelessWidget {
   }
 }
 
-class _TransactionCard extends StatelessWidget {
+class _TransactionCard extends ConsumerWidget {
   const _TransactionCard({required this.transaction, required this.onTap});
 
   final GroupTransaction transaction;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     final status = switch (transaction.splitStatus) {
       GroupSplitStatus.posted => context.l10n.groupTransactionPostedStatus,
       GroupSplitStatus.amountMismatch =>
@@ -416,7 +420,7 @@ class _TransactionCard extends StatelessWidget {
           '$status • ${DateFormat('dd/MM/yyyy HH:mm').format(transaction.transactionDate)}',
         ),
         trailing: Text(
-          formatVnd(transaction.totalAmount, locale: Localizations.localeOf(context).toString()),
+          formatCurrency(transaction.totalAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
           style: const TextStyle(fontWeight: FontWeight.w700),
         ),
       ),

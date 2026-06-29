@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
@@ -129,13 +130,14 @@ class DebtSettlementScreen extends ConsumerWidget {
   }
 }
 
-class _BalanceRow extends StatelessWidget {
+class _BalanceRow extends ConsumerWidget {
   const _BalanceRow({required this.balance});
 
   final GroupBalance balance;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     final color = balance.balance == 0
         ? AppTheme.success
         : balance.balance > 0
@@ -147,9 +149,9 @@ class _BalanceRow extends StatelessWidget {
         title: Text(balance.displayName ?? context.l10n.groupUnknownMember),
         subtitle: Text(
           context.l10n.groupSharePaidBalance(
-            formatVnd(balance.totalShareAmount, locale: Localizations.localeOf(context).toString()),
-            formatVnd(balance.totalPaidAmount, locale: Localizations.localeOf(context).toString()),
-            formatVnd(balance.balance, locale: Localizations.localeOf(context).toString()),
+            formatCurrency(balance.totalShareAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
+            formatCurrency(balance.totalPaidAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
+            formatCurrency(balance.balance, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
           ),
         ),
         trailing: Icon(Icons.circle_outlined, color: color),
@@ -158,7 +160,7 @@ class _BalanceRow extends StatelessWidget {
   }
 }
 
-class _SettlementCard extends StatelessWidget {
+class _SettlementCard extends ConsumerWidget {
   const _SettlementCard({
     required this.item,
     required this.isReceiverAction,
@@ -170,7 +172,8 @@ class _SettlementCard extends StatelessWidget {
   final VoidCallback onAction;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: Padding(
@@ -187,7 +190,7 @@ class _SettlementCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              formatVnd(item.amount, locale: Localizations.localeOf(context).toString()),
+              formatCurrency(item.amount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
               style: const TextStyle(
                 color: AppTheme.amber,
                 fontWeight: FontWeight.w700,
