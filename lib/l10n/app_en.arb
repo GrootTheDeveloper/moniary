@@ -801,6 +801,9 @@
   },
   "profileEditInfo": "Edit information",
   "profileChangeTimezone": "Change Timezone",
+  "profileLanguageLabel": "Language",
+  "profileLanguageVi": "Vietnamese",
+  "profileLanguageEn": "English",
   "profileAnonymousBadge": "Guest account",
   "profileVerifiedBadge": "Verified ({provider})",
   "@profileVerifiedBadge": {

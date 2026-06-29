@@ -801,6 +801,9 @@
   },
   "profileEditInfo": "Chỉnh sửa thông tin",
   "profileChangeTimezone": "Thay đổi múi giờ",
+  "profileLanguageLabel": "Ngôn ngữ",
+  "profileLanguageVi": "Tiếng Việt",
+  "profileLanguageEn": "Tiếng Anh",
   "profileAnonymousBadge": "Tài khoản khách",
   "profileVerifiedBadge": "Đã Xác thực ({provider})",
   "@profileVerifiedBadge": {
