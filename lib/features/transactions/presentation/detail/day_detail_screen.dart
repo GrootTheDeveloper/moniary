@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/currency_formatter.dart';
@@ -83,6 +84,7 @@ class _DayDetailBody extends ConsumerWidget {
         .where((transaction) => transaction.isExpense)
         .fold<double>(0, (sum, item) => sum + item.amount);
     final net = income - expense;
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     final colors = context.moniaryColors;
     final typography = context.moniaryTypography;
     final isToday = DateUtils.isSameDay(date, DateTime.now());
@@ -161,7 +163,7 @@ class _DayDetailBody extends ConsumerWidget {
                           const TextSpan(text: '   '),
                           TextSpan(
                             text:
-                                '${net >= 0 ? '+' : '-'}${formatVnd(net.abs(), locale: Localizations.localeOf(context).toString())}',
+                                '${net >= 0 ? '+' : '-'}${formatCurrency(net.abs(), currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}',
                             style: TextStyle(
                               color: net >= 0 ? colors.success : colors.danger,
                               letterSpacing: 0.45,
@@ -437,14 +439,15 @@ class _CategoryTile extends StatelessWidget {
   }
 }
 
-class _DayTransactionRow extends StatelessWidget {
+class _DayTransactionRow extends ConsumerWidget {
   const _DayTransactionRow({required this.transaction, required this.onTap});
 
   final TransactionEntry transaction;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     final colors = context.moniaryColors;
     final accent = AppColor.fromHex(
       transaction.categoryColor ?? transaction.walletColor,
@@ -502,7 +505,7 @@ class _DayTransactionRow extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount, locale: Localizations.localeOf(context).toString())}',
+                '${transaction.isIncome ? '+' : '-'}${formatCurrency(transaction.amount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}',
                 textAlign: TextAlign.right,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: transaction.isIncome
@@ -520,7 +523,7 @@ class _DayTransactionRow extends StatelessWidget {
   }
 }
 
-class TransactionGridTile extends StatelessWidget {
+class TransactionGridTile extends ConsumerWidget {
   const TransactionGridTile({
     super.key,
     required this.transaction,
@@ -531,7 +534,8 @@ class TransactionGridTile extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currencyCode = ref.watch(preferredCurrencyProvider);
     final accent = AppColor.fromHex(
       transaction.categoryColor ?? transaction.walletColor,
       fallback: transaction.isIncome ? AppTheme.success : AppTheme.amber,
@@ -607,7 +611,7 @@ class TransactionGridTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount, locale: Localizations.localeOf(context).toString())}',
+                        '${transaction.isIncome ? '+' : '-'}${formatCurrency(transaction.amount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
