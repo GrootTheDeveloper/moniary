@@ -61,9 +61,10 @@ class TransactionFormScreen extends ConsumerStatefulWidget {
 }
 
 class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
-  late final TextEditingController _amountController;
+  late TextEditingController _amountController;
   late final TextEditingController _noteController;
-  late final CurrencyTextInputFormatter _amountFormatter;
+  late CurrencyTextInputFormatter _amountFormatter;
+  bool _formatterInitialized = false;
   late TransactionType _type;
   late DateTime _selectedDate;
   String? _selectedWalletId;
@@ -78,19 +79,6 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
   void initState() {
     super.initState();
     final transaction = widget.initialTransaction;
-
-    _amountFormatter = CurrencyTextInputFormatter.currency(
-      locale: 'vi_VN',
-      symbol: '',
-      decimalDigits: 2,
-    );
-
-    final initialAmount = transaction?.amount ?? 0;
-    _amountController = TextEditingController(
-      text: initialAmount > 0
-          ? _amountFormatter.formatDouble(initialAmount)
-          : '',
-    );
     _noteController = TextEditingController(text: transaction?.note ?? '');
     _type = transaction?.type ?? TransactionType.expense;
     _selectedDate =
@@ -108,6 +96,23 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       if (!mounted) return;
       _setDefaultSelections();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_formatterInitialized) return;
+    _formatterInitialized = true;
+    final localeName = Localizations.localeOf(context).toString();
+    _amountFormatter = CurrencyTextInputFormatter.currency(
+      locale: localeName,
+      symbol: '',
+      decimalDigits: 2,
+    );
+    final initialAmount = widget.initialTransaction?.amount ?? 0;
+    _amountController = TextEditingController(
+      text: initialAmount > 0 ? _amountFormatter.formatDouble(initialAmount) : '',
+    );
   }
 
   void _setDefaultSelections() {
