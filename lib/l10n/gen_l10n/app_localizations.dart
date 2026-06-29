@@ -1700,6 +1700,12 @@ abstract class AppLocalizations {
   /// **'Hồ sơ'**
   String get profileTitle;
 
+  /// No description provided for @editProfileTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉnh sửa hồ sơ'**
+  String get editProfileTitle;
+
   /// No description provided for @profileUserDefault.
   ///
   /// In vi, this message translates to:

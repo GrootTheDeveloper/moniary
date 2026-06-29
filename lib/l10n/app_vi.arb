@@ -404,6 +404,7 @@
   "validationInvalidParticipants": "Danh sách người tham gia không hợp lệ.",
   "validationSplitCountMismatch": "Mỗi người tham gia cần đúng một phần chia.",
   "profileTitle": "Hồ sơ",
+  "editProfileTitle": "Chỉnh sửa hồ sơ",
   "profileUserDefault": "Người dùng Moniary",
   "profileAnonymous": "Tài khoản dùng thử ẩn danh",
   "profileMyData": "Dữ liệu của tôi",

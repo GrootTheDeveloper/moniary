@@ -404,6 +404,7 @@
   "validationInvalidParticipants": "Invalid list of participants.",
   "validationSplitCountMismatch": "Each participant needs exactly one split.",
   "profileTitle": "Profile",
+  "editProfileTitle": "Edit Profile",
   "profileUserDefault": "Moniary User",
   "profileAnonymous": "Anonymous trial account",
   "profileMyData": "My Data",

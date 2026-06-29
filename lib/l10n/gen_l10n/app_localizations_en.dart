@@ -876,6 +876,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileTitle => 'Profile';
 
   @override
+  String get editProfileTitle => 'Edit Profile';
+
+  @override
   String get profileUserDefault => 'Moniary User';
 
   @override

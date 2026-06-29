@@ -483,8 +483,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         children: [
                           _SettingsTile(
                             icon: Icons.person_outlined,
-                            title:
-                                '${context.l10n.commonEdit} ${context.l10n.profileTitle}',
+                            title: context.l10n.editProfileTitle,
                             subtitle: email,
                             onTap: () => _showEditProfileSheet(
                               name: name,
@@ -511,7 +510,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             onTap: () => _showLanguageSheet(locale.languageCode),
                           ),
                           _SettingsTile(
-                            icon: Icons.lock_outlined,
+                            icon: Icons.schedule_outlined,
                             title: context.l10n.profileChangeTimezone,
                             subtitle: profile.timezone,
                             onTap: () =>
@@ -763,9 +762,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   context.push('${ProfileSetupScreen.routePath}?mode=edit');
                 },
                 icon: const Icon(Icons.edit_outlined),
-                label: Text(
-                  '${context.l10n.commonEdit} ${context.l10n.profileTitle}',
-                ),
+                label: Text(context.l10n.editProfileTitle),
               ),
             ],
           ),
