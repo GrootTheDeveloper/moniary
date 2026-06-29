@@ -278,7 +278,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ObscurableAmountText(
-                              amountText: formatVnd(transaction.amount),
+                              amountText: formatVnd(transaction.amount, locale: Localizations.localeOf(context).toString()),
                               prefixText: transaction.isIncome ? '+' : '-',
                               style: TextStyle(
                                 fontSize: 28,

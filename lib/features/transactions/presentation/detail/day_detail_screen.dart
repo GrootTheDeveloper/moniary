@@ -119,7 +119,7 @@ class _DayDetailBody extends ConsumerWidget {
                     Expanded(
                       child: _SummaryCard(
                         label: context.l10n.transactionTotalIncome,
-                        value: '+${formatVnd(income)}',
+                        value: '+${formatVnd(income, locale: Localizations.localeOf(context).toString())}',
                         color: AppTheme.success,
                       ),
                     ),
@@ -127,7 +127,7 @@ class _DayDetailBody extends ConsumerWidget {
                     Expanded(
                       child: _SummaryCard(
                         label: context.l10n.transactionTotalExpense,
-                        value: '-${formatVnd(expense)}',
+                        value: '-${formatVnd(expense, locale: Localizations.localeOf(context).toString())}',
                         color: AppTheme.danger,
                       ),
                     ),
@@ -137,7 +137,7 @@ class _DayDetailBody extends ConsumerWidget {
                 _SummaryCard(
                   label: context.l10n.transactionNetTotal,
                   value:
-                      '${income - expense >= 0 ? '+' : '-'}${formatVnd((income - expense).abs())}',
+                      '${income - expense >= 0 ? '+' : '-'}${formatVnd((income - expense).abs(), locale: Localizations.localeOf(context).toString())}',
                   color: income - expense >= 0
                       ? AppTheme.success
                       : AppTheme.danger,
@@ -337,7 +337,7 @@ class TransactionGridTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
+                        '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount, locale: Localizations.localeOf(context).toString())}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
