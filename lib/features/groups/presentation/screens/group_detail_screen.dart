@@ -364,7 +364,10 @@ class _GroupHero extends StatelessWidget {
         ?.where((item) => item.splitStatus == GroupSplitStatus.posted)
         .fold<int>(0, (sum, item) => sum + item.totalAmount);
     final transactionCount = transactions?.length ?? group.transactionCount;
-    final totalText = formatVnd(total ?? group.totalSpent);
+    final totalText = formatVnd(
+      total ?? group.totalSpent,
+      locale: Localizations.localeOf(context).toString(),
+    );
 
     return Column(
       children: [
@@ -422,7 +425,10 @@ class _GroupHero extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      formatVnd(balance.abs()),
+                      formatVnd(
+                        balance.abs(),
+                        locale: Localizations.localeOf(context).toString(),
+                      ),
                       style: context.moniaryTypography.displaySmall.copyWith(
                         color: balanceColor,
                         fontSize: 24,
@@ -500,8 +506,11 @@ class _BalanceRow extends StatelessWidget {
         ? colors.danger
         : colors.success;
     final valueText = balance.balance == 0
-        ? formatVnd(0)
-        : '${balance.balance > 0 ? '-' : '+'}${formatVnd(balance.balance.abs())}';
+        ? formatVnd(
+            0,
+            locale: Localizations.localeOf(context).toString(),
+          )
+        : '${balance.balance > 0 ? '-' : '+'}${formatVnd(balance.balance.abs(), locale: Localizations.localeOf(context).toString())}';
 
     return Container(
       constraints: const BoxConstraints(minHeight: 62),
@@ -679,7 +688,10 @@ class _TransactionRow extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                formatVnd(transaction.totalAmount),
+                formatVnd(
+                  transaction.totalAmount,
+                  locale: Localizations.localeOf(context).toString(),
+                ),
                 style: context.moniaryTypography.metadataStrong.copyWith(
                   color: colors.textPrimary,
                   fontSize: 11,

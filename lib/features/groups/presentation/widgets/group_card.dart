@@ -20,8 +20,18 @@ class GroupCard extends StatelessWidget {
     final balanceText = balance == 0
         ? context.l10n.groupBalanceSettled
         : balance > 0
-        ? context.l10n.groupBalanceOwes(formatVnd(balance))
-        : context.l10n.groupBalanceReceives(formatVnd(balance.abs()));
+        ? context.l10n.groupBalanceOwes(
+            formatVnd(
+              balance,
+              locale: Localizations.localeOf(context).toString(),
+            ),
+          )
+        : context.l10n.groupBalanceReceives(
+            formatVnd(
+              balance.abs(),
+              locale: Localizations.localeOf(context).toString(),
+            ),
+          );
     final balanceColor = balance == 0
         ? colors.success
         : balance > 0
@@ -84,7 +94,7 @@ class GroupCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       '${context.l10n.groupMemberCount(group.memberCount)} · '
-                      '${context.l10n.groupTotalSpent(formatVnd(group.totalSpent))}',
+                      '${context.l10n.groupTotalSpent(formatVnd(group.totalSpent, locale: Localizations.localeOf(context).toString()))}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: typography.metadata.copyWith(

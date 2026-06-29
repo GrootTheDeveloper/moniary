@@ -344,7 +344,10 @@ class _SettlementCard extends StatelessWidget {
           ),
           const SizedBox(width: 15),
           Text(
-            formatVnd(item.amount),
+            formatVnd(
+              item.amount,
+              locale: Localizations.localeOf(context).toString(),
+            ),
             style: context.moniaryTypography.metadataStrong.copyWith(
               color: colors.textPrimary,
               fontSize: 11,
