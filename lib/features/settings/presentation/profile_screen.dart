@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../core/preferences/preferences_providers.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
@@ -370,6 +371,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final privacyState = ref.watch(privacyControllerProvider);
     final requestHistory = ref.watch(privacyRequestHistoryProvider);
     final isGuest = ref.watch(guestModeEnabledProvider);
+    final locale = ref.watch(preferredLocaleProvider);
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -499,6 +501,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             onTap: () => context.push(
                               NotificationSettingsScreen.routePath,
                             ),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.language_outlined,
+                            title: context.l10n.profileLanguageLabel,
+                            subtitle: locale.languageCode == 'en'
+                                ? context.l10n.profileLanguageEn
+                                : context.l10n.profileLanguageVi,
+                            onTap: () => _showLanguageSheet(locale.languageCode),
                           ),
                           _SettingsTile(
                             icon: Icons.lock_outlined,
@@ -747,6 +757,56 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 icon: const Icon(Icons.edit_outlined),
                 label: Text(
                   '${context.l10n.commonEdit} ${context.l10n.profileTitle}',
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showLanguageSheet(String currentCode) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                context.l10n.profileLanguageLabel,
+                style: Theme.of(context).textTheme.titleLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              RadioGroup<String>(
+                groupValue: currentCode,
+                onChanged: (v) {
+                  if (v == null) return;
+                  ref
+                      .read(preferredLocaleProvider.notifier)
+                      .setLocale(Locale(v));
+                  Navigator.pop(context);
+                },
+                child: Column(
+                  children: [
+                    RadioListTile<String>(
+                      value: 'vi',
+                      title: Text(context.l10n.profileLanguageVi),
+                    ),
+                    RadioListTile<String>(
+                      value: 'en',
+                      title: Text(context.l10n.profileLanguageEn),
+                    ),
+                  ],
                 ),
               ),
             ],

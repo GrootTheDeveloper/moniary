@@ -1405,6 +1405,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileChangeTimezone => 'Thay đổi múi giờ';
 
   @override
+  String get profileLanguageLabel => 'Ngôn ngữ';
+
+  @override
+  String get profileLanguageVi => 'Tiếng Việt';
+
+  @override
+  String get profileLanguageEn => 'English';
+
+  @override
   String get profileAnonymousBadge => 'Tài khoản Ẩn danh';
 
   @override

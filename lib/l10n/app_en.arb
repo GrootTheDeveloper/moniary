@@ -616,6 +616,9 @@
   },
   "profileEditInfo": "Edit information",
   "profileChangeTimezone": "Change Timezone",
+  "profileLanguageLabel": "Language",
+  "profileLanguageVi": "Vietnamese",
+  "profileLanguageEn": "English",
   "profileAnonymousBadge": "Anonymous account",
   "profileVerifiedBadge": "Verified ({provider})",
   "@profileVerifiedBadge": {

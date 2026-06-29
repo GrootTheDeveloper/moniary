@@ -1405,6 +1405,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileChangeTimezone => 'Change Timezone';
 
   @override
+  String get profileLanguageLabel => 'Language';
+
+  @override
+  String get profileLanguageVi => 'Vietnamese';
+
+  @override
+  String get profileLanguageEn => 'English';
+
+  @override
   String get profileAnonymousBadge => 'Anonymous account';
 
   @override

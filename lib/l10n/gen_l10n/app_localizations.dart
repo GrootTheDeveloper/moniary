@@ -2642,6 +2642,24 @@ abstract class AppLocalizations {
   /// **'Thay đổi múi giờ'**
   String get profileChangeTimezone;
 
+  /// No description provided for @profileLanguageLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngôn ngữ'**
+  String get profileLanguageLabel;
+
+  /// No description provided for @profileLanguageVi.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếng Việt'**
+  String get profileLanguageVi;
+
+  /// No description provided for @profileLanguageEn.
+  ///
+  /// In vi, this message translates to:
+  /// **'English'**
+  String get profileLanguageEn;
+
   /// No description provided for @profileAnonymousBadge.
   ///
   /// In vi, this message translates to:

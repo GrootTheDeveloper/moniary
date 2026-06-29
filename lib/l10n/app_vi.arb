@@ -616,6 +616,9 @@
   },
   "profileEditInfo": "Chỉnh sửa thông tin",
   "profileChangeTimezone": "Thay đổi múi giờ",
+  "profileLanguageLabel": "Ngôn ngữ",
+  "profileLanguageVi": "Tiếng Việt",
+  "profileLanguageEn": "English",
   "profileAnonymousBadge": "Tài khoản Ẩn danh",
   "profileVerifiedBadge": "Đã Xác thực ({provider})",
   "@profileVerifiedBadge": {
