@@ -23,6 +23,7 @@ import '../features/groups/presentation/screens/invite_member_screen.dart';
 import '../features/groups/presentation/screens/member_amount_input_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
+import '../features/profile/presentation/timezone_picker_screen.dart';
 import '../features/scanning/presentation/ocr_review_screen.dart';
 import '../features/scanning/presentation/scanning_screen.dart';
 import '../features/settings/domain/export/export_history_entry.dart';
@@ -165,6 +166,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => ProfileSetupScreen(
           isEditMode: state.uri.queryParameters['mode'] == 'edit',
         ),
+      ),
+      GoRoute(
+        path: TimezonePickerScreen.routePath,
+        builder: (context, state) => const TimezonePickerScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

@@ -1405,6 +1405,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileChangeTimezone => 'Change Timezone';
 
   @override
+  String get timezonePickerSearch => 'Search timezones...';
+
+  @override
+  String get timezonePickerUseDevice => 'Use device timezone';
+
+  @override
+  String get timezonePickerNoResults => 'No timezones found';
+
+  @override
   String get profileLanguageLabel => 'Language';
 
   @override

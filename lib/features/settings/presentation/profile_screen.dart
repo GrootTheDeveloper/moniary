@@ -15,6 +15,7 @@ import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../friends/presentation/screens/friends_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
+import '../../profile/presentation/timezone_picker_screen.dart';
 import '../application/account/account_actions_controller.dart';
 import '../application/privacy_controller.dart';
 import 'export/export_data_screen.dart';
@@ -514,7 +515,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             title: context.l10n.profileChangeTimezone,
                             subtitle: profile.timezone,
                             onTap: () =>
-                                context.push(ProfileSetupScreen.routePath),
+                                context.push(TimezonePickerScreen.routePath),
                           ),
                           if (accountMode.needsAccountProtectionCard)
                             _AccountModeBanner(

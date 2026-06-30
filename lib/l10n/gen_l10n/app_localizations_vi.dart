@@ -1405,6 +1405,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileChangeTimezone => 'Thay đổi múi giờ';
 
   @override
+  String get timezonePickerSearch => 'Tìm múi giờ...';
+
+  @override
+  String get timezonePickerUseDevice => 'Dùng múi giờ thiết bị';
+
+  @override
+  String get timezonePickerNoResults => 'Không tìm thấy múi giờ';
+
+  @override
   String get profileLanguageLabel => 'Ngôn ngữ';
 
   @override
