@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
-import '../../../core/deeplinks/pending_deep_link_controller.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/supabase_providers.dart';
@@ -16,6 +15,7 @@ import '../../profile/presentation/profile_setup_screen.dart';
 import '../application/auth_controller.dart';
 import '../application/account_status_controller.dart';
 import '../application/post_auth_decision_provider.dart';
+import '../../auth/data/auth_repository.dart';
 import '../../settings/domain/account/account_deletion_status.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -103,21 +103,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 GestureDetector(
                   onTap: authAction.isLoading
                       ? null
-                      : () => _enterApp(
-                          () => ref
-                              .read(authControllerProvider.notifier)
-                              .signInWithApple(),
-                        ),
-                  child: _AuthButton(
-                    icon: Icons.apple_outlined,
-                    label: context.l10n.loginApple,
-                    style: _AuthButtonStyle.light,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                GestureDetector(
-                  onTap: authAction.isLoading
-                      ? null
                       : () => _showEmailAuthSheet(context, ref),
                   child: _AuthButton(
                     icon: Icons.email_outlined,
@@ -142,18 +127,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ? context.l10n.loginConnecting
                         : context.l10n.loginAnonymous,
                   ),
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: authAction.isLoading
-                      ? null
-                      : () => _enterApp(
-                          () => ref
-                              .read(authControllerProvider.notifier)
-                              .startGuestSession(),
-                        ),
-                  icon: const Icon(Icons.verified_user_outlined),
-                  label: Text(context.l10n.loginTryWithoutAuth),
                 ),
                 const Spacer(),
                 Row(
@@ -230,23 +203,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _isResolvingPostAuth = true;
     late final PostAuthDecision decision;
     try {
-      decision = await ref.refresh(postAuthDecisionProvider.future);
+      AppLogger.info('Resolving post-auth decision...');
+      decision = await ref.read(postAuthDecisionProvider.future);
+      AppLogger.info('Decision resolved: ${decision.destination}');
+    } catch (e, st) {
+      AppLogger.error('Post-authentication decision failed in resolver', e, st);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, e))),
+        );
+      }
+      return;
     } finally {
-      _isResolvingPostAuth = false;
+      if (mounted) {
+        setState(() {
+          _isResolvingPostAuth = false;
+        });
+      }
     }
     if (!mounted) return;
 
     switch (decision.destination) {
       case PostAuthDestination.noSession:
+        AppLogger.info('No session found, staying on login.');
         return;
       case PostAuthDestination.profileSetup:
+        AppLogger.info('Navigating to Profile Setup');
         context.go(ProfileSetupScreen.routePath);
       case PostAuthDestination.home:
-        final pendingRoute = ref
-            .read(pendingDeepLinkProvider.notifier)
-            .consume();
-        context.go(pendingRoute ?? CalendarScreen.routePath);
+        AppLogger.info('Navigating to Home');
+        context.go(CalendarScreen.routePath);
       case PostAuthDestination.pendingDeletion:
+        AppLogger.info('Showing Recovery Sheet');
         await _showRecoverySheet(decision.deletionStatus!);
     }
   }
@@ -352,6 +340,7 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _isSignUp = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -363,19 +352,19 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
   Future<void> _submit(WidgetRef ref) async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
       if (_isSignUp) {
-        final signedIn = await ref
-            .read(authControllerProvider.notifier)
+        await ref
+            .read(authRepositoryProvider)
             .signUpWithEmail(
               email: _emailController.text.trim(),
               password: _passwordController.text,
             );
-        if (!mounted) return;
-        if (signedIn) {
-          await widget.onSuccess();
-        } else {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.loginEmailConfirmationSent)),
           );
@@ -392,9 +381,7 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(userFriendlyMessage(context, e))),
-        );
+        setState(() => _errorMessage = userFriendlyMessage(context, e));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -426,6 +413,27 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
+                if (_errorMessage != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.danger.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppTheme.danger.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Text(
+                      _errorMessage!,
+                      style: const TextStyle(
+                        color: AppTheme.danger,
+                        fontSize: 13,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -437,7 +445,7 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
                       ? context.l10n.loginEmailRequired
                       : null,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 TextFormField(
                   controller: _passwordController,
                   decoration: InputDecoration(
@@ -449,7 +457,7 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
                       ? context.l10n.loginPasswordMinLength
                       : null,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
                 FilledButton(
                   onPressed: _isLoading ? null : () => _submit(ref),
                   child: _isLoading

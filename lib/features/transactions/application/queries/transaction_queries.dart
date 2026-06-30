@@ -32,7 +32,5 @@ final starredTransactionsProvider = FutureProvider<List<TransactionEntry>>((
 
 final transactionSearchProvider =
     FutureProvider.family<List<TransactionEntry>, String>((ref, query) async {
-      return ref
-          .watch(transactionRepositoryProvider)
-          .searchTransactions(query);
+      return ref.watch(transactionRepositoryProvider).searchTransactions(query);
     });

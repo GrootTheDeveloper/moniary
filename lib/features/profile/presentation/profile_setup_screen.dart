@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../app/app_theme.dart';
-import '../../../core/deeplinks/pending_deep_link_controller.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../core/preferences/preferences_providers.dart';
@@ -12,6 +11,7 @@ import '../../../features/calendar/presentation/month/calendar_screen.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../../shared/widgets/supabase_image.dart';
 import '../../auth/presentation/login_screen.dart';
+import '../../auth/application/auth_controller.dart';
 import '../application/profile_setup_controller.dart';
 
 class ProfileSetupScreen extends ConsumerStatefulWidget {
@@ -82,201 +82,174 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     });
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       body: AuroraBackground(
         child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final bottomPadding =
-                  MediaQuery.of(context).viewInsets.bottom + 20;
-              final minHeight = constraints.maxHeight - 12 - bottomPadding;
-              const avatarSize = 128.0;
-
-              return SingleChildScrollView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: EdgeInsets.fromLTRB(24, 12, 24, bottomPadding),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: minHeight > 0 ? minHeight : 0,
-                  ),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            if (context.canPop()) {
-                              context.pop();
-                            } else {
-                              context.go(LoginScreen.routePath);
-                            }
-                          },
-                          icon: const Icon(Icons.arrow_back_ios_new_outlined),
-                        ),
-                        const SizedBox(height: 4),
-                        Center(
-                          child: Column(
-                            children: [
-                              Text(
-                                isEditMode
-                                    ? '${context.l10n.commonEdit} ${context.l10n.profileTitle}'
-                                    : context.l10n.profileSetupTitle,
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.headlineMedium,
-                              ),
-                              if (!isEditMode) ...[
-                                const SizedBox(height: 6),
-                                Text(
-                                  context.l10n.profileSetupSubtitle,
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                              const SizedBox(height: 22),
-                              GestureDetector(
-                                onTap: _pickAvatar,
-                                child: Stack(
-                                  alignment: Alignment.bottomRight,
-                                  children: [
-                                    Container(
-                                      width: avatarSize,
-                                      height: avatarSize,
-                                      decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [
-                                            AppTheme.mintTeal,
-                                            AppTheme.mint,
-                                          ],
-                                        ),
-                                      ),
-                                      child: _avatarPath?.isNotEmpty == true
-                                          ? SupabaseImage(
-                                              imagePath: _avatarPath,
-                                              width: avatarSize,
-                                              height: avatarSize,
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    avatarSize / 2,
-                                                  ),
-                                              fallbackIcon:
-                                                  Icons.face_outlined,
-                                            )
-                                          : const Icon(
-                                              Icons.face_outlined,
-                                              size: 76,
-                                              color: AppTheme.mintTealDark,
-                                            ),
-                                    ),
-                                    Container(
-                                      width: 46,
-                                      height: 46,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: AppTheme.mint,
-                                        border: Border.all(
-                                          color: AppTheme.background,
-                                          width: 4,
-                                        ),
-                                      ),
-                                      child: const Icon(
-                                        Icons.camera_alt_outlined,
-                                        size: 22,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                IconButton(
+                  onPressed: () async {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else if (!widget.isEditMode) {
+                      // If mandatory setup, sign out when going back
+                      await ref.read(authControllerProvider.notifier).signOut();
+                      if (context.mounted) context.go(LoginScreen.routePath);
+                    } else {
+                      context.go(LoginScreen.routePath);
+                    }
+                  },
+                  icon: const Icon(Icons.arrow_back_ios_new_outlined),
+                ),
+                const SizedBox(height: 8),
+                Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        isEditMode
+                            ? '${context.l10n.commonEdit} ${context.l10n.profileTitle}'
+                            : context.l10n.profileSetupTitle,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      if (!isEditMode) ...[
+                        const SizedBox(height: 8),
                         Text(
-                          context.l10n.profileSetupDisplayName,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: _nameController,
-                          decoration: InputDecoration(
-                            hintText: context.l10n.profileSetupDisplayNameHint,
-                            prefixIcon: const Icon(Icons.person_outlined),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          context.l10n.groupUsernameLabel,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: _usernameController,
-                          autocorrect: false,
-                          textCapitalization: TextCapitalization.none,
-                          decoration: InputDecoration(
-                            hintText: context.l10n.profileUsernameHint,
-                            prefixIcon: const Icon(
-                              Icons.alternate_email_outlined,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          context.l10n.loginEmail,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: _emailController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            hintText: context.l10n.loginEmail,
-                            prefixIcon: const Icon(Icons.email_outlined),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          context.l10n.profileSetupCurrency,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 10),
-                        DropdownButtonFormField<String>(
-                          initialValue: _currency,
-                          decoration: const InputDecoration(),
-                          items: _currencies
-                              .map(
-                                (currency) => DropdownMenuItem(
-                                  value: currency,
-                                  child: Text(currency),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            if (value == null) return;
-                            setState(() => _currency = value);
-                          },
-                        ),
-                        const Spacer(),
-                        const SizedBox(height: 20),
-                        FilledButton(
-                          onPressed: isLoading ? null : _submit,
-                          child: Text(
-                            isLoading
-                                ? context.l10n.commonSaving
-                                : (isEditMode
-                                      ? context.l10n.commonSave
-                                      : context.l10n.profileSetupStart),
-                          ),
+                          context.l10n.profileSetupSubtitle,
+                          style: Theme.of(context).textTheme.bodyLarge,
                         ),
                       ],
-                    ),
+                      const SizedBox(height: 28),
+                      GestureDetector(
+                        onTap: _pickAvatar,
+                        child: Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            Container(
+                              width: 140,
+                              height: 140,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [Color(0xFF68E5D8), AppTheme.mint],
+                                ),
+                              ),
+                              child: _avatarPath?.isNotEmpty == true
+                                  ? SupabaseImage(
+                                      imagePath: _avatarPath,
+                                      width: 140,
+                                      height: 140,
+                                      borderRadius: BorderRadius.circular(70),
+                                      fallbackIcon: Icons.face_outlined,
+                                    )
+                                  : const Icon(
+                                      Icons.face_outlined,
+                                      size: 84,
+                                      color: Color(0xFF10333B),
+                                    ),
+                            ),
+                            Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppTheme.mint,
+                                border: Border.all(
+                                  color: AppTheme.background,
+                                  width: 4,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt_outlined,
+                                size: 22,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-            },
+                const SizedBox(height: 32),
+                Text(
+                  context.l10n.profileSetupDisplayName,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    hintText: context.l10n.profileSetupDisplayNameHint,
+                    prefixIcon: const Icon(Icons.person_outlined),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  context.l10n.groupUsernameLabel,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _usernameController,
+                  autocorrect: false,
+                  textCapitalization: TextCapitalization.none,
+                  decoration: InputDecoration(
+                    hintText: context.l10n.profileUsernameHint,
+                    prefixIcon: const Icon(Icons.alternate_email_outlined),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  context.l10n.loginEmail,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _emailController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    hintText: context.l10n.loginEmail,
+                    prefixIcon: const Icon(Icons.email_outlined),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  context.l10n.profileSetupCurrency,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  initialValue: _currency,
+                  decoration: const InputDecoration(),
+                  items: _currencies
+                      .map(
+                        (currency) => DropdownMenuItem(
+                          value: currency,
+                          child: Text(currency),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) return;
+                    setState(() => _currency = value);
+                  },
+                ),
+                const Spacer(),
+                FilledButton(
+                  onPressed: isLoading ? null : _submit,
+                  child: Text(
+                    isLoading
+                        ? context.l10n.commonSaving
+                        : (isEditMode
+                              ? context.l10n.commonSave
+                              : context.l10n.profileSetupStart),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -314,10 +287,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       if (context.canPop()) {
         context.pop();
       } else {
-        final pendingRoute = widget.isEditMode
-            ? null
-            : ref.read(pendingDeepLinkProvider.notifier).consume();
-        context.go(pendingRoute ?? CalendarScreen.routePath);
+        context.go(CalendarScreen.routePath);
       }
     } catch (error) {
       messenger.showSnackBar(

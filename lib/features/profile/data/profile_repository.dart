@@ -120,15 +120,25 @@ class ProfileRepository {
         'username': username,
         'timezone': timezone,
       };
-      if (avatarUrl != null) {
-        values['avatar_url'] = avatarUrl;
-      }
+      if (avatarUrl != null) values['avatar_url'] = avatarUrl;
 
       final row = await _client
           .from('profiles')
           .upsert(values)
           .select()
           .single();
+
+      // Fix for Problem 3: Also update Supabase Auth metadata so login doesn't reset full_name
+      try {
+        final authMeta = <String, dynamic>{
+          'full_name': fullName,
+          'username': username,
+        };
+        if (avatarUrl != null) authMeta['avatar_url'] = avatarUrl;
+        await _client.auth.updateUser(UserAttributes(data: authMeta));
+      } catch (e, st) {
+        AppLogger.error('Failed to sync auth metadata (non-blocking)', e, st);
+      }
 
       return UserProfile.fromMap(row);
     } on PostgrestException catch (e, st) {
