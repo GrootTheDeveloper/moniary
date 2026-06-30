@@ -160,6 +160,7 @@
   "transactionDeleteTitleQuestion": "Xóa giao dịch?",
   "transactionDeleteUndone": "Hành động này không thể hoàn tác.",
   "transactionAmount": "Số tiền",
+  "transactionAmountHint": "0",
   "transactionWallet": "Ví",
   "transactionCategory": "Danh mục",
   "transactionNote": "Ghi chú",

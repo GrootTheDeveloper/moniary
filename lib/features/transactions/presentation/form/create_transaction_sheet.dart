@@ -196,7 +196,7 @@ class _CreateTransactionSheetState
                 ),
                 decoration: InputDecoration(
                   labelText: context.l10n.transactionAmount,
-                  hintText: '57000',
+                  hintText: context.l10n.transactionAmountHint,
                   prefixIcon: const Icon(Icons.payments_outlined),
                   suffixText: currencySymbolFor(
                     currencyCode: ref.watch(preferredCurrencyProvider),

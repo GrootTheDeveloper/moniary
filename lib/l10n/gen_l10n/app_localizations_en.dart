@@ -380,6 +380,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionAmount => 'Amount';
 
   @override
+  String get transactionAmountHint => '0';
+
+  @override
   String get transactionWallet => 'Wallet';
 
   @override
