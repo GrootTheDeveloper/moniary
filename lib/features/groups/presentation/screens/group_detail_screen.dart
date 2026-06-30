@@ -417,7 +417,7 @@ class _TransactionCard extends ConsumerWidget {
               : transaction.categoryName ?? context.l10n.groupNoCategory,
         ),
         subtitle: Text(
-          '$status • ${DateFormat('dd/MM/yyyy HH:mm').format(transaction.transactionDate)}',
+          '$status • ${DateFormat('dd/MM/yyyy HH:mm', Localizations.localeOf(context).toString()).format(transaction.transactionDate)}',
         ),
         trailing: Text(
           formatCurrency(transaction.totalAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),

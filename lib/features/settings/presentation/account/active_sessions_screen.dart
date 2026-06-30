@@ -139,8 +139,9 @@ class _SessionTile extends ConsumerWidget {
     final deviceName = _parseDeviceName(session.userAgent, context);
     final icon = _getDeviceIcon(session.userAgent);
 
-    final lastActive = DateFormat('dd/MM/yyyy HH:mm').format(session.updatedAt);
-    final createdAt = DateFormat('dd/MM/yyyy').format(session.createdAt);
+    final locale = Localizations.localeOf(context).toString();
+    final lastActive = DateFormat('dd/MM/yyyy HH:mm', locale).format(session.updatedAt);
+    final createdAt = DateFormat('dd/MM/yyyy', locale).format(session.createdAt);
 
     return ListTile(
       leading: CircleAvatar(

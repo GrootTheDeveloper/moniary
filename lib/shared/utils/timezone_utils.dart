@@ -1,9 +1,15 @@
 /// Returns a friendly display label for an IANA timezone ID.
-/// "Asia/Ho_Chi_Minh" → "Ho Chi Minh"
-/// "America/New_York" → "New York"
-/// "Etc/UTC" → "UTC"
+/// "Asia/Ho_Chi_Minh" → "Ho Chi Minh (Asia)"
+/// "America/New_York" → "New York (America)"
+/// "Etc/UTC"          → "UTC"
+/// "UTC"              → "UTC"
 String timezoneDisplayLabel(String ianaId) {
-  final slash = ianaId.lastIndexOf('/');
-  final city = slash >= 0 ? ianaId.substring(slash + 1) : ianaId;
-  return city.replaceAll('_', ' ');
+  final firstSlash = ianaId.indexOf('/');
+  if (firstSlash < 0) return ianaId;
+  final lastSlash = ianaId.lastIndexOf('/');
+  final city = ianaId.substring(lastSlash + 1).replaceAll('_', ' ');
+  final region = ianaId.substring(0, firstSlash);
+  // Etc/UTC, Etc/GMT±N — hide the Etc prefix
+  if (region == 'Etc') return city;
+  return '$city ($region)';
 }

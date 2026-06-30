@@ -64,7 +64,7 @@ class _HistoryTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final createdAt = DateFormat('dd/MM/yyyy HH:mm').format(entry.createdAt);
+    final createdAt = DateFormat('dd/MM/yyyy HH:mm', Localizations.localeOf(context).toString()).format(entry.createdAt);
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(

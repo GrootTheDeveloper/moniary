@@ -18,7 +18,7 @@ class ExportDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final createdAt = DateFormat('dd/MM/yyyy HH:mm').format(entry.createdAt);
+    final createdAt = DateFormat('dd/MM/yyyy HH:mm', Localizations.localeOf(context).toString()).format(entry.createdAt);
     final file = File(entry.path);
     final exists = file.existsSync();
 
