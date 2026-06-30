@@ -164,8 +164,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                                                   BorderRadius.circular(
                                                     avatarSize / 2,
                                                   ),
-                                              fallbackIcon:
-                                                  Icons.face_outlined,
+                                              fallbackIcon: Icons.face_outlined,
                                             )
                                           : const Icon(
                                               Icons.face_outlined,
@@ -306,8 +305,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       await ref.read(preferredCurrencyProvider.notifier).setCurrency(_currency);
       final String timezone;
       if (widget.isEditMode) {
-        timezone = ref.read(profileSetupControllerProvider).asData?.value?.timezone
-            ?? AppConstants.defaultTimezone;
+        timezone =
+            ref.read(profileSetupControllerProvider).asData?.value?.timezone ??
+            AppConstants.defaultTimezone;
       } else {
         String detected;
         try {

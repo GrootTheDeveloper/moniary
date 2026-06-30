@@ -237,7 +237,10 @@ class _TransactionDetailBody extends ConsumerWidget {
                                 Flexible(
                                   child: _TagPill(
                                     icon: Icons.category_outlined,
-                                    label: transaction.categoryName.trim().isEmpty ? context.l10n.categoryOther : transaction.categoryName,
+                                    label:
+                                        transaction.categoryName.trim().isEmpty
+                                        ? context.l10n.categoryOther
+                                        : transaction.categoryName,
                                     color: categoryColor,
                                   ),
                                 ),
@@ -245,7 +248,9 @@ class _TransactionDetailBody extends ConsumerWidget {
                                 Flexible(
                                   child: _TagPill(
                                     icon: Icons.account_balance_wallet_outlined,
-                                    label: transaction.walletName.trim().isEmpty ? context.l10n.walletUnknown : transaction.walletName,
+                                    label: transaction.walletName.trim().isEmpty
+                                        ? context.l10n.walletUnknown
+                                        : transaction.walletName,
                                     color: walletColor,
                                   ),
                                 ),
@@ -279,7 +284,15 @@ class _TransactionDetailBody extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ObscurableAmountText(
-                              amountText: formatCurrency(transaction.amount, currencyCode: ref.watch(preferredCurrencyProvider), locale: Localizations.localeOf(context).toString()),
+                              amountText: formatCurrency(
+                                transaction.amount,
+                                currencyCode: ref.watch(
+                                  preferredCurrencyProvider,
+                                ),
+                                locale: Localizations.localeOf(
+                                  context,
+                                ).toString(),
+                              ),
                               prefixText: transaction.isIncome ? '+' : '-',
                               style: TextStyle(
                                 fontSize: 28,

@@ -121,7 +121,8 @@ class _DayDetailBody extends ConsumerWidget {
                     Expanded(
                       child: _SummaryCard(
                         label: context.l10n.transactionTotalIncome,
-                        value: '+${formatCurrency(income, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}',
+                        value:
+                            '+${formatCurrency(income, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}',
                         color: AppTheme.success,
                       ),
                     ),
@@ -129,7 +130,8 @@ class _DayDetailBody extends ConsumerWidget {
                     Expanded(
                       child: _SummaryCard(
                         label: context.l10n.transactionTotalExpense,
-                        value: '-${formatCurrency(expense, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}',
+                        value:
+                            '-${formatCurrency(expense, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}',
                         color: AppTheme.danger,
                       ),
                     ),
@@ -313,9 +315,17 @@ class TransactionGridTile extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GridTag(label: transaction.categoryName.trim().isEmpty ? context.l10n.categoryOther : transaction.categoryName),
+                  GridTag(
+                    label: transaction.categoryName.trim().isEmpty
+                        ? context.l10n.categoryOther
+                        : transaction.categoryName,
+                  ),
                   const SizedBox(height: 4),
-                  GridTag(label: transaction.walletName.trim().isEmpty ? context.l10n.walletUnknown : transaction.walletName),
+                  GridTag(
+                    label: transaction.walletName.trim().isEmpty
+                        ? context.l10n.walletUnknown
+                        : transaction.walletName,
+                  ),
                 ],
               ),
             ),

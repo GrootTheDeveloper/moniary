@@ -205,7 +205,13 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
                       ),
                 trailing: item.price == null
                     ? null
-                    : Text(formatCurrency(item.price!, currencyCode: ref.watch(preferredCurrencyProvider), locale: Localizations.localeOf(context).toString())),
+                    : Text(
+                        formatCurrency(
+                          item.price!,
+                          currencyCode: ref.watch(preferredCurrencyProvider),
+                          locale: Localizations.localeOf(context).toString(),
+                        ),
+                      ),
               ),
             ),
           ],

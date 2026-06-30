@@ -65,7 +65,10 @@ class _HistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = DateFormat('dd/MM/yyyy HH:mm', Localizations.localeOf(context).toString()).format(entry.createdAt);
+    final dateStr = DateFormat(
+      'dd/MM/yyyy HH:mm',
+      Localizations.localeOf(context).toString(),
+    ).format(entry.createdAt);
 
     return InkWell(
       borderRadius: BorderRadius.circular(12),

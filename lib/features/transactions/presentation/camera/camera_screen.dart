@@ -39,9 +39,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
     if (!mounted) return;
     if (cameras.isEmpty) {
       // No cameras available on this device — signal failure immediately
-      ref.read(cameraFailureReasonProvider.notifier).setFailure(
-          CameraFailureReason.generic,
-        );
+      ref
+          .read(cameraFailureReasonProvider.notifier)
+          .setFailure(CameraFailureReason.generic);
       AppLogger.warning('No cameras available — signalling fallback');
       context.pop();
       return;
@@ -91,7 +91,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
             ? CameraFailureReason.permissionDenied
             : CameraFailureReason.generic;
         ref.read(cameraFailureReasonProvider.notifier).setFailure(reason);
-        AppLogger.error('Camera init failed ($reason) — signalling fallback', e);
+        AppLogger.error(
+          'Camera init failed ($reason) — signalling fallback',
+          e,
+        );
         context.pop();
       }
     }

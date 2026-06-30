@@ -509,7 +509,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             subtitle: locale.languageCode == 'en'
                                 ? context.l10n.profileLanguageEn
                                 : context.l10n.profileLanguageVi,
-                            onTap: () => _showLanguageSheet(locale.languageCode),
+                            onTap: () =>
+                                _showLanguageSheet(locale.languageCode),
                           ),
                           _SettingsTile(
                             icon: Icons.schedule_outlined,
@@ -789,8 +790,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             children: [
               Text(
                 context.l10n.profileLanguageLabel,
-                style: Theme.of(context).textTheme.titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),

@@ -22,8 +22,20 @@ class GroupCard extends ConsumerWidget {
     final balanceText = balance == 0
         ? context.l10n.groupBalanceSettled
         : balance > 0
-        ? context.l10n.groupBalanceOwes(formatCurrency(balance, currencyCode: currencyCode, locale: localeName))
-        : context.l10n.groupBalanceReceives(formatCurrency(balance.abs(), currencyCode: currencyCode, locale: localeName));
+        ? context.l10n.groupBalanceOwes(
+            formatCurrency(
+              balance,
+              currencyCode: currencyCode,
+              locale: localeName,
+            ),
+          )
+        : context.l10n.groupBalanceReceives(
+            formatCurrency(
+              balance.abs(),
+              currencyCode: currencyCode,
+              locale: localeName,
+            ),
+          );
     final balanceColor = balance == 0
         ? AppTheme.success
         : balance > 0

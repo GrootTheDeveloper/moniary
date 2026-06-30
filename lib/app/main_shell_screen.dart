@@ -58,8 +58,8 @@ class MainShellScreen extends ConsumerWidget {
                   ref.read(cameraFailureReasonProvider.notifier).clear();
 
                   // Primary path: open camera screen.
-                  final cameraResult =
-                      await context.push<TransactionMutationResult>('/camera');
+                  final cameraResult = await context
+                      .push<TransactionMutationResult>('/camera');
 
                   if (!context.mounted) return;
 
@@ -92,13 +92,15 @@ class MainShellScreen extends ConsumerWidget {
 
                   // Check if camera closed due to failure (not user pressing ×).
                   final failureReason = ref.read(cameraFailureReasonProvider);
-                  if (failureReason == null) return; // User cancelled — do nothing.
+                  if (failureReason == null) {
+                    return; // User cancelled — do nothing.
+                  }
 
                   // ⚠️ Camera failed — show user-friendly SnackBar then open manual sheet.
                   final errorMessage =
                       failureReason == CameraFailureReason.permissionDenied
-                          ? context.l10n.cameraFallbackPermissionDenied
-                          : context.l10n.cameraFallbackGenericError;
+                      ? context.l10n.cameraFallbackPermissionDenied
+                      : context.l10n.cameraFallbackGenericError;
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -108,11 +110,12 @@ class MainShellScreen extends ConsumerWidget {
                   );
 
                   // Fallback path: manual entry sheet opens immediately.
-                  final createdAt =
-                      await showCreateTransactionSheet(context, ref);
+                  final createdAt = await showCreateTransactionSheet(
+                    context,
+                    ref,
+                  );
                   if (createdAt != null && context.mounted) {
-                    final month =
-                        DateTime(createdAt.year, createdAt.month, 1);
+                    final month = DateTime(createdAt.year, createdAt.month, 1);
                     ref.invalidate(calendarMonthProvider(month));
                     ref
                         .read(calendarVisibleMonthProvider.notifier)

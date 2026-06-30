@@ -6,7 +6,10 @@ String currencySymbolFor({
 }) {
   final normalized = currencyCode.trim().toUpperCase();
   if (normalized.isEmpty || normalized == 'VND') return '₫';
-  return NumberFormat.simpleCurrency(locale: locale, name: normalized).currencySymbol;
+  return NumberFormat.simpleCurrency(
+    locale: locale,
+    name: normalized,
+  ).currencySymbol;
 }
 
 String formatCurrency(
@@ -22,5 +25,8 @@ String formatCurrency(
       decimalDigits: 0,
     ).format(amount);
   }
-  return NumberFormat.simpleCurrency(locale: locale, name: normalized).format(amount);
+  return NumberFormat.simpleCurrency(
+    locale: locale,
+    name: normalized,
+  ).format(amount);
 }

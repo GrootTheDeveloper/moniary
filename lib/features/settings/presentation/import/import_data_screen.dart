@@ -189,7 +189,10 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                     title:
                         '${row.categoryName} - ${formatCurrency(row.amount ?? 0, currencyCode: ref.watch(preferredCurrencyProvider), locale: Localizations.localeOf(context).toString())}',
                     subtitle: row.isValid
-                        ? DateFormat('dd/MM/yyyy', Localizations.localeOf(context).toString()).format(row.date!)
+                        ? DateFormat(
+                            'dd/MM/yyyy',
+                            Localizations.localeOf(context).toString(),
+                          ).format(row.date!)
                         : _getErrorMessage(context, row.errorMessage ?? ''),
                     isValid: row.isValid,
                   );
@@ -751,7 +754,12 @@ class _RecentImportTile extends StatelessWidget {
         entry.fileName,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      subtitle: Text(DateFormat('dd/MM/yyyy', Localizations.localeOf(context).toString()).format(entry.createdAt)),
+      subtitle: Text(
+        DateFormat(
+          'dd/MM/yyyy',
+          Localizations.localeOf(context).toString(),
+        ).format(entry.createdAt),
+      ),
       trailing: const Icon(Icons.chevron_right, color: AppTheme.textSubtle),
       onTap: () {
         context.push(ImportHistoryScreen.detailRoutePath, extra: entry);

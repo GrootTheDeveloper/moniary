@@ -80,7 +80,11 @@ class _GroupTransactionDetailScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                formatCurrency(transaction.totalAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
+                formatCurrency(
+                  transaction.totalAmount,
+                  currencyCode: currencyCode,
+                  locale: Localizations.localeOf(context).toString(),
+                ),
                 style: const TextStyle(
                   color: AppTheme.mintSoft,
                   fontSize: 24,
@@ -142,7 +146,13 @@ class _GroupTransactionDetailScreenState
                   title: Text(
                     payer.displayName ?? context.l10n.groupUnknownMember,
                   ),
-                  trailing: Text(formatCurrency(payer.paidAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())),
+                  trailing: Text(
+                    formatCurrency(
+                      payer.paidAmount,
+                      currencyCode: currencyCode,
+                      locale: Localizations.localeOf(context).toString(),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 18),
@@ -163,9 +173,21 @@ class _GroupTransactionDetailScreenState
                   ),
                   subtitle: Text(
                     context.l10n.groupSharePaidBalance(
-                      formatCurrency(share.shareAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
-                      formatCurrency(paid, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
-                      formatCurrency(share.shareAmount - paid, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
+                      formatCurrency(
+                        share.shareAmount,
+                        currencyCode: currencyCode,
+                        locale: Localizations.localeOf(context).toString(),
+                      ),
+                      formatCurrency(
+                        paid,
+                        currencyCode: currencyCode,
+                        locale: Localizations.localeOf(context).toString(),
+                      ),
+                      formatCurrency(
+                        share.shareAmount - paid,
+                        currencyCode: currencyCode,
+                        locale: Localizations.localeOf(context).toString(),
+                      ),
                     ),
                   ),
                 );

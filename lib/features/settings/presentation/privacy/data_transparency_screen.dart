@@ -533,7 +533,10 @@ class _LocalFilesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateTimeFormat = DateFormat('dd/MM/yyyy HH:mm', Localizations.localeOf(context).toString());
+    final dateTimeFormat = DateFormat(
+      'dd/MM/yyyy HH:mm',
+      Localizations.localeOf(context).toString(),
+    );
     final latestExport = summary.latestExportDate == null
         ? context.l10n.localFilesNoExport
         : context.l10n.localFilesLatest(

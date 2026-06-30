@@ -65,8 +65,11 @@ class WalletSection extends ConsumerWidget {
                             padding: const EdgeInsets.only(bottom: 12),
                             child: _WalletTile(
                               wallet: wallet,
-                              balanceLabel:
-                                  formatCurrency(wallet.initialBalance, currencyCode: currencyCode, locale: localeName),
+                              balanceLabel: formatCurrency(
+                                wallet.initialBalance,
+                                currencyCode: currencyCode,
+                                locale: localeName,
+                              ),
                               onEdit: () =>
                                   _showWalletForm(context, ref, wallet: wallet),
                             ),

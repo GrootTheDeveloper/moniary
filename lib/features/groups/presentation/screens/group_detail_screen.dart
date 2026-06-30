@@ -164,7 +164,15 @@ class GroupDetailScreen extends ConsumerWidget {
                                       context.l10n.groupUnknownMember,
                                 ),
                               ),
-                              trailing: Text(formatCurrency(item.amount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())),
+                              trailing: Text(
+                                formatCurrency(
+                                  item.amount,
+                                  currencyCode: currencyCode,
+                                  locale: Localizations.localeOf(
+                                    context,
+                                  ).toString(),
+                                ),
+                              ),
                             ),
                           )
                           .toList(),
@@ -335,7 +343,11 @@ class _OverviewCards extends ConsumerWidget {
           child: _MetricCard(
             icon: Icons.payments_outlined,
             label: context.l10n.groupTransactionTotal,
-            value: formatCurrency(totalSpent, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
+            value: formatCurrency(
+              totalSpent,
+              currencyCode: currencyCode,
+              locale: Localizations.localeOf(context).toString(),
+            ),
           ),
         ),
         const SizedBox(width: 10),
@@ -420,7 +432,11 @@ class _TransactionCard extends ConsumerWidget {
           '$status • ${DateFormat('dd/MM/yyyy HH:mm', Localizations.localeOf(context).toString()).format(transaction.transactionDate)}',
         ),
         trailing: Text(
-          formatCurrency(transaction.totalAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
+          formatCurrency(
+            transaction.totalAmount,
+            currencyCode: currencyCode,
+            locale: Localizations.localeOf(context).toString(),
+          ),
           style: const TextStyle(fontWeight: FontWeight.w700),
         ),
       ),

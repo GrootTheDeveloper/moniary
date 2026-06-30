@@ -418,7 +418,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     for (final tx in transactions) {
       categorySums[tx.categoryId] =
           (categorySums[tx.categoryId] ?? 0) + tx.amount;
-      categoryNames[tx.categoryId] = tx.categoryName.trim().isEmpty ? context.l10n.categoryOther : tx.categoryName;
+      categoryNames[tx.categoryId] = tx.categoryName.trim().isEmpty
+          ? context.l10n.categoryOther
+          : tx.categoryName;
       categoryColors[tx.categoryId] = tx.categoryColor ?? '';
     }
 
@@ -816,8 +818,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                                       tx.note?.trim().isNotEmpty == true
                                           ? tx.note!.trim()
                                           : tx.categoryName.trim().isEmpty
-                                              ? context.l10n.categoryOther
-                                              : tx.categoryName,
+                                          ? context.l10n.categoryOther
+                                          : tx.categoryName,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(

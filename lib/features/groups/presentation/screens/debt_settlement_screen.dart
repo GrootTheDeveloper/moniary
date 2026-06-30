@@ -149,9 +149,21 @@ class _BalanceRow extends ConsumerWidget {
         title: Text(balance.displayName ?? context.l10n.groupUnknownMember),
         subtitle: Text(
           context.l10n.groupSharePaidBalance(
-            formatCurrency(balance.totalShareAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
-            formatCurrency(balance.totalPaidAmount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
-            formatCurrency(balance.balance, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
+            formatCurrency(
+              balance.totalShareAmount,
+              currencyCode: currencyCode,
+              locale: Localizations.localeOf(context).toString(),
+            ),
+            formatCurrency(
+              balance.totalPaidAmount,
+              currencyCode: currencyCode,
+              locale: Localizations.localeOf(context).toString(),
+            ),
+            formatCurrency(
+              balance.balance,
+              currencyCode: currencyCode,
+              locale: Localizations.localeOf(context).toString(),
+            ),
           ),
         ),
         trailing: Icon(Icons.circle_outlined, color: color),
@@ -190,7 +202,11 @@ class _SettlementCard extends ConsumerWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              formatCurrency(item.amount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()),
+              formatCurrency(
+                item.amount,
+                currencyCode: currencyCode,
+                locale: Localizations.localeOf(context).toString(),
+              ),
               style: const TextStyle(
                 color: AppTheme.amber,
                 fontWeight: FontWeight.w700,

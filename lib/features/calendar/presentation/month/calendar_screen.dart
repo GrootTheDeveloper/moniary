@@ -45,7 +45,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   Widget build(BuildContext context) {
     final displayName =
         ref.watch(currentProfileProvider).value?.fullName?.trim() ??
-            context.l10n.profileUserDefault;
+        context.l10n.profileUserDefault;
     final visibleMonth = ref.watch(calendarVisibleMonthProvider);
     final monthAsync = ref.watch(calendarMonthProvider(visibleMonth));
     final walletsAsync = ref.watch(walletsControllerProvider);

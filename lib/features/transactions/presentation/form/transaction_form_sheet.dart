@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:go_router/go_router.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
@@ -111,7 +111,9 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     );
     final initialAmount = widget.initialTransaction?.amount ?? 0;
     _amountController = TextEditingController(
-      text: initialAmount > 0 ? _amountFormatter.formatDouble(initialAmount) : '',
+      text: initialAmount > 0
+          ? _amountFormatter.formatDouble(initialAmount)
+          : '',
     );
   }
 

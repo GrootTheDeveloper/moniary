@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/preferences/preferences_providers.dart';
@@ -160,8 +160,8 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
                       tx.note?.trim().isNotEmpty == true
                           ? tx.note!.trim()
                           : tx.categoryName.trim().isEmpty
-                              ? context.l10n.categoryOther
-                              : tx.categoryName,
+                          ? context.l10n.categoryOther
+                          : tx.categoryName,
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),

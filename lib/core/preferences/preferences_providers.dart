@@ -12,9 +12,10 @@ final onboardingSeenProvider = NotifierProvider<OnboardingSeenNotifier, bool>(
   OnboardingSeenNotifier.new,
 );
 
-final preferredLocaleProvider = NotifierProvider<PreferredLocaleNotifier, Locale>(
-  PreferredLocaleNotifier.new,
-);
+final preferredLocaleProvider =
+    NotifierProvider<PreferredLocaleNotifier, Locale>(
+      PreferredLocaleNotifier.new,
+    );
 
 final preferredCurrencyProvider =
     NotifierProvider<PreferredCurrencyNotifier, String>(
