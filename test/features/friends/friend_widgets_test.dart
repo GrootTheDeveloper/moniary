@@ -11,6 +11,7 @@ import 'package:moniary/features/friends/presentation/screens/friends_screen.dar
 import 'package:moniary/features/groups/data/repositories/group_repository_impl.dart';
 import 'package:moniary/features/groups/domain/entities/group_community.dart';
 import 'package:moniary/features/groups/domain/entities/group_enums.dart';
+import 'package:moniary/features/groups/domain/entities/group_roadmap.dart';
 import 'package:moniary/features/groups/domain/entities/group_settlement.dart';
 import 'package:moniary/features/groups/domain/entities/group_transaction.dart';
 import 'package:moniary/features/groups/domain/entities/spending_group.dart';
@@ -567,6 +568,109 @@ class FakeGroupRepository implements GroupRepository {
   Future<List<GroupActivity>> fetchActivities(String groupId) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  ) async {
+    return GroupNotificationPreference.defaults(groupId);
+  }
+
+  @override
+  Future<void> updateNotificationPreference(
+    GroupNotificationPreference preference,
+  ) async {}
+
+  @override
+  Future<List<GroupReactionSummary>> fetchReactionSummaries(
+    String transactionId,
+  ) async {
+    return const [];
+  }
+
+  @override
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) async {}
+
+  @override
+  Future<GroupMonthlyStats> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  }) async {
+    return GroupMonthlyStats(
+      groupId: groupId,
+      month: month,
+      totalSpent: 0,
+      transactionCount: 0,
+      topCategoryName: null,
+      topCategoryAmount: 0,
+      categoryBreakdown: const [],
+      memberBreakdown: const [],
+    );
+  }
+
+  @override
+  Future<GroupBudget> fetchBudget(String groupId) async {
+    return GroupBudget.defaults(groupId);
+  }
+
+  @override
+  Future<void> updateBudget(GroupBudget budget) async {}
+
+  @override
+  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
+    String groupId,
+  ) async {
+    return const [];
+  }
+
+  @override
+  Future<String> buildGroupReportCsv(String groupId) async {
+    return '';
+  }
+
+  @override
+  Future<List<GroupFeedItem>> fetchFeed(String groupId) async {
+    return const [];
+  }
+
+  @override
+  Future<List<GroupPhotoItem>> fetchPhotoAlbum(String groupId) async {
+    return const [];
+  }
+
+  @override
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  ) async {
+    return const [];
+  }
+
+  @override
+  Future<void> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) async {}
+
+  @override
+  Future<void> updateRecurringTransactionActive({
+    required String recurringTransactionId,
+    required bool isActive,
+  }) async {}
+
+  @override
+  Future<GroupPublicProfile> fetchPublicProfile(String groupId) async {
+    return GroupPublicProfile.defaults(groupId);
+  }
+
+  @override
+  Future<void> updatePublicProfile(GroupPublicProfile profile) async {}
 
   @override
   Future<GroupTransactionDetail> fetchTransactionDetail(String transactionId) {

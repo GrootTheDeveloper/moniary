@@ -137,6 +137,16 @@ class _NotificationTile extends StatelessWidget {
         return context.l10n.groupNotificationOwnerTransferred;
       case 'member_leave_blocked_warning':
         return context.l10n.groupLeaveWarningActivity;
+      case 'comment_mention':
+        return 'Bạn được nhắc trong bình luận nhóm.';
+      case 'recurring_created':
+        return 'Nhóm có giao dịch lặp lại mới.';
+      case 'recurring_due':
+        return 'Sắp đến hạn giao dịch lặp lại.';
+      case 'budget_updated':
+        return 'Ngân sách nhóm đã được cập nhật.';
+      case 'public_profile_updated':
+        return 'Hồ sơ công khai của nhóm đã thay đổi.';
       default:
         return context.l10n.groupNotificationGeneric;
     }

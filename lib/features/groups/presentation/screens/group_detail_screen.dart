@@ -16,6 +16,9 @@ import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
 import 'add_group_transaction_screen.dart';
 import 'debt_settlement_screen.dart';
+import 'group_activity_center_screen.dart';
+import 'group_social_screen.dart';
+import 'group_statistics_screen.dart';
 import 'group_transaction_detail_screen.dart';
 import 'invite_member_screen.dart';
 
@@ -99,6 +102,8 @@ class GroupDetailScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 12),
+                _RoadmapQuickActions(groupId: groupId),
                 const SizedBox(height: 28),
                 Text(
                   context.l10n.groupOverviewTitle,
@@ -358,6 +363,61 @@ class GroupDetailScreen extends ConsumerWidget {
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+}
+
+class _RoadmapQuickActions extends StatelessWidget {
+  const _RoadmapQuickActions({required this.groupId});
+
+  final String groupId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        _ActionChipButton(
+          icon: Icons.notifications_active_outlined,
+          label: 'Activity',
+          onTap: () =>
+              context.push(GroupActivityCenterScreen.routePath, extra: groupId),
+        ),
+        _ActionChipButton(
+          icon: Icons.query_stats_outlined,
+          label: 'Statistics',
+          onTap: () =>
+              context.push(GroupStatisticsScreen.routePath, extra: groupId),
+        ),
+        _ActionChipButton(
+          icon: Icons.dynamic_feed_outlined,
+          label: 'Social',
+          onTap: () =>
+              context.push(GroupSocialScreen.routePath, extra: groupId),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActionChipButton extends StatelessWidget {
+  const _ActionChipButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ActionChip(
+      avatar: Icon(icon, size: 18),
+      label: Text(label),
+      onPressed: onTap,
+    );
   }
 }
 
