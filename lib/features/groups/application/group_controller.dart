@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../data/repositories/group_repository_impl.dart';
 import '../domain/entities/group_community.dart';
+import '../domain/entities/group_roadmap.dart';
 import '../domain/entities/group_settlement.dart';
 import '../domain/entities/group_transaction.dart';
 import '../domain/entities/spending_group.dart';
@@ -55,6 +56,74 @@ final groupNotificationsProvider = FutureProvider<List<GroupNotification>>((
 ) {
   return ref.watch(groupRepositoryProvider).fetchNotifications();
 });
+
+final groupNotificationPreferenceProvider =
+    FutureProvider.family<GroupNotificationPreference, String>((ref, groupId) {
+      return ref
+          .watch(groupRepositoryProvider)
+          .fetchNotificationPreference(groupId);
+    });
+
+final groupTransactionReactionsProvider =
+    FutureProvider.family<List<GroupReactionSummary>, String>((
+      ref,
+      transactionId,
+    ) {
+      return ref
+          .watch(groupRepositoryProvider)
+          .fetchReactionSummaries(transactionId);
+    });
+
+typedef GroupMonthKey = ({String groupId, DateTime month});
+
+final groupMonthlyStatsProvider =
+    FutureProvider.family<GroupMonthlyStats, GroupMonthKey>((ref, key) {
+      return ref
+          .watch(groupRepositoryProvider)
+          .fetchMonthlyStats(groupId: key.groupId, month: key.month);
+    });
+
+final groupBudgetProvider = FutureProvider.family<GroupBudget, String>((
+  ref,
+  groupId,
+) {
+  return ref.watch(groupRepositoryProvider).fetchBudget(groupId);
+});
+
+final groupSettlementHistoryProvider =
+    FutureProvider.family<List<GroupSettlementHistoryEntry>, String>((
+      ref,
+      groupId,
+    ) {
+      return ref.watch(groupRepositoryProvider).fetchSettlementHistory(groupId);
+    });
+
+final groupFeedProvider = FutureProvider.family<List<GroupFeedItem>, String>((
+  ref,
+  groupId,
+) {
+  return ref.watch(groupRepositoryProvider).fetchFeed(groupId);
+});
+
+final groupPhotoAlbumProvider =
+    FutureProvider.family<List<GroupPhotoItem>, String>((ref, groupId) {
+      return ref.watch(groupRepositoryProvider).fetchPhotoAlbum(groupId);
+    });
+
+final groupRecurringTransactionsProvider =
+    FutureProvider.family<List<GroupRecurringTransaction>, String>((
+      ref,
+      groupId,
+    ) {
+      return ref
+          .watch(groupRepositoryProvider)
+          .fetchRecurringTransactions(groupId);
+    });
+
+final groupPublicProfileProvider =
+    FutureProvider.family<GroupPublicProfile, String>((ref, groupId) {
+      return ref.watch(groupRepositoryProvider).fetchPublicProfile(groupId);
+    });
 
 final groupInvitePreviewProvider = FutureProvider.autoDispose
     .family<GroupInvitePreview, String>((ref, token) {
@@ -326,6 +395,96 @@ class GroupActionController extends AsyncNotifier<void> {
     });
   }
 
+  Future<void> updateNotificationPreference(
+    GroupNotificationPreference preference,
+  ) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .updateNotificationPreference(preference);
+      ref.invalidate(groupNotificationPreferenceProvider(preference.groupId));
+      ref.invalidate(groupNotificationsProvider);
+    });
+  }
+
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String groupId,
+    required String emoji,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .toggleReaction(transactionId: transactionId, emoji: emoji);
+      ref.invalidate(groupTransactionReactionsProvider(transactionId));
+      ref.invalidate(groupFeedProvider(groupId));
+      ref.invalidate(groupActivitiesProvider(groupId));
+    });
+  }
+
+  Future<void> updateBudget(GroupBudget budget) {
+    return _run(() async {
+      await ref.read(groupRepositoryProvider).updateBudget(budget);
+      ref.invalidate(groupBudgetProvider(budget.groupId));
+      ref.invalidate(groupActivitiesProvider(budget.groupId));
+    });
+  }
+
+  Future<String> buildGroupReportCsv(String groupId) {
+    return _run(
+      () => ref.read(groupRepositoryProvider).buildGroupReportCsv(groupId),
+    );
+  }
+
+  Future<void> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .createRecurringTransaction(
+            groupId: groupId,
+            title: title,
+            amount: amount,
+            frequency: frequency,
+            nextRunAt: nextRunAt,
+            notifyDaysBefore: notifyDaysBefore,
+          );
+      ref.invalidate(groupRecurringTransactionsProvider(groupId));
+      ref.invalidate(groupActivitiesProvider(groupId));
+      ref.invalidate(groupNotificationsProvider);
+    });
+  }
+
+  Future<void> updateRecurringTransactionActive({
+    required String recurringTransactionId,
+    required String groupId,
+    required bool isActive,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .updateRecurringTransactionActive(
+            recurringTransactionId: recurringTransactionId,
+            isActive: isActive,
+          );
+      ref.invalidate(groupRecurringTransactionsProvider(groupId));
+    });
+  }
+
+  Future<void> updatePublicProfile(GroupPublicProfile profile) {
+    return _run(() async {
+      await ref.read(groupRepositoryProvider).updatePublicProfile(profile);
+      ref.invalidate(groupPublicProfileProvider(profile.groupId));
+      ref.invalidate(groupActivitiesProvider(profile.groupId));
+    });
+  }
+
   Future<T> _run<T>(Future<T> Function() action) async {
     state = const AsyncLoading();
     try {
@@ -346,5 +505,7 @@ class GroupActionController extends AsyncNotifier<void> {
     ref.invalidate(groupSettlementOverviewProvider(groupId));
     ref.invalidate(groupStatsProvider(groupId));
     ref.invalidate(groupActivitiesProvider(groupId));
+    ref.invalidate(groupFeedProvider(groupId));
+    ref.invalidate(groupPhotoAlbumProvider(groupId));
   }
 }

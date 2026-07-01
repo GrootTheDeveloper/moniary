@@ -1,4 +1,5 @@
 import '../entities/group_community.dart';
+import '../entities/group_roadmap.dart';
 import '../entities/group_settlement.dart';
 import '../entities/group_transaction.dart';
 import '../entities/spending_group.dart';
@@ -62,6 +63,64 @@ abstract interface class GroupRepository {
   Future<void> markNotificationRead(String notificationId);
 
   Future<List<GroupActivity>> fetchActivities(String groupId);
+
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  );
+
+  Future<void> updateNotificationPreference(
+    GroupNotificationPreference preference,
+  );
+
+  Future<List<GroupReactionSummary>> fetchReactionSummaries(
+    String transactionId,
+  );
+
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  });
+
+  Future<GroupMonthlyStats> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  });
+
+  Future<GroupBudget> fetchBudget(String groupId);
+
+  Future<void> updateBudget(GroupBudget budget);
+
+  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
+    String groupId,
+  );
+
+  Future<String> buildGroupReportCsv(String groupId);
+
+  Future<List<GroupFeedItem>> fetchFeed(String groupId);
+
+  Future<List<GroupPhotoItem>> fetchPhotoAlbum(String groupId);
+
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  );
+
+  Future<void> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  });
+
+  Future<void> updateRecurringTransactionActive({
+    required String recurringTransactionId,
+    required bool isActive,
+  });
+
+  Future<GroupPublicProfile> fetchPublicProfile(String groupId);
+
+  Future<void> updatePublicProfile(GroupPublicProfile profile);
 
   Future<void> markSettlementPaid(String settlementId);
 

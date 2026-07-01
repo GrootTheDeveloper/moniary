@@ -1,5 +1,6 @@
 import '../../domain/entities/group_community.dart';
 import '../../domain/entities/group_enums.dart';
+import '../../domain/entities/group_roadmap.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
@@ -204,7 +205,71 @@ class GroupModelMapper {
     );
   }
 
+  static GroupNotificationPreference notificationPreference(
+    Map<String, dynamic> row,
+  ) {
+    final groupId = row['group_id'] as String;
+    return GroupNotificationPreference(
+      groupId: groupId,
+      muteAll: row['mute_all'] as bool? ?? false,
+      transactionNotifications:
+          row['transaction_notifications'] as bool? ?? true,
+      debtNotifications: row['debt_notifications'] as bool? ?? true,
+      inviteNotifications: row['invite_notifications'] as bool? ?? true,
+      mentionNotifications: row['mention_notifications'] as bool? ?? true,
+      quietHoursStart: _nullableInt(row['quiet_hours_start']),
+      quietHoursEnd: _nullableInt(row['quiet_hours_end']),
+    );
+  }
+
+  static GroupReactionSummary reactionSummary(Map<String, dynamic> row) {
+    return GroupReactionSummary(
+      emoji: row['emoji'] as String,
+      count: _money(row['reaction_count']),
+      reactedByCurrentUser: row['reacted_by_current_user'] as bool? ?? false,
+    );
+  }
+
+  static GroupBudget budget(Map<String, dynamic> row) {
+    final groupId = row['group_id'] as String;
+    return GroupBudget(
+      groupId: groupId,
+      monthlyLimit: _money(row['monthly_limit']),
+      warningThresholdPercent:
+          (row['warning_threshold_percent'] as num?)?.toInt() ?? 80,
+    );
+  }
+
+  static GroupRecurringTransaction recurringTransaction(
+    Map<String, dynamic> row,
+  ) {
+    return GroupRecurringTransaction(
+      id: row['id'] as String,
+      groupId: row['group_id'] as String,
+      createdBy: row['created_by'] as String,
+      title: row['title'] as String,
+      amount: _money(row['amount']),
+      frequency: row['frequency'] as String? ?? 'monthly',
+      nextRunAt: _date(row['next_run_at']),
+      notifyDaysBefore: (row['notify_days_before'] as num?)?.toInt() ?? 1,
+      isActive: row['is_active'] as bool? ?? true,
+      createdAt: _date(row['created_at']),
+    );
+  }
+
+  static GroupPublicProfile publicProfile(Map<String, dynamic> row) {
+    final groupId = row['group_id'] as String;
+    return GroupPublicProfile(
+      groupId: groupId,
+      isEnabled: row['is_enabled'] as bool? ?? false,
+      showStats: row['show_stats'] as bool? ?? false,
+      slug: row['slug'] as String?,
+    );
+  }
+
   static int _money(dynamic value) => (value as num?)?.toInt() ?? 0;
+
+  static int? _nullableInt(dynamic value) => (value as num?)?.toInt();
 
   static DateTime _date(dynamic value) =>
       DateTime.parse(value as String).toLocal();

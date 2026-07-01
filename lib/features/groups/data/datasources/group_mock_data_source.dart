@@ -2,6 +2,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../domain/entities/group_community.dart';
 import '../../domain/entities/group_enums.dart';
+import '../../domain/entities/group_roadmap.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
@@ -23,6 +24,13 @@ class GroupMockDataSource {
   static final Map<String, _MockGroupInvite> _invites = {};
   static final Map<String, List<GroupNotification>> _notifications = {};
   static final Map<String, List<GroupActivity>> _activities = {};
+  static final Map<String, GroupNotificationPreference>
+  _notificationPreferences = {};
+  static final Map<String, Map<String, Set<String>>> _reactions = {};
+  static final Map<String, GroupBudget> _budgets = {};
+  static final Map<String, GroupPublicProfile> _publicProfiles = {};
+  static final Map<String, GroupRecurringTransaction> _recurringTransactions =
+      {};
   static var _sequence = 0;
 
   Future<List<SpendingGroup>> fetchGroups() async {
@@ -706,6 +714,191 @@ class GroupMockDataSource {
     return List.unmodifiable(result);
   }
 
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  ) async {
+    _requireActiveMember(groupId);
+    return _notificationPreferences[_preferenceKey(groupId, currentUserId)] ??
+        GroupNotificationPreference.defaults(groupId);
+  }
+
+  Future<void> updateNotificationPreference(
+    GroupNotificationPreference preference,
+  ) async {
+    _requireActiveMember(preference.groupId);
+    _notificationPreferences[_preferenceKey(
+          preference.groupId,
+          currentUserId,
+        )] =
+        preference;
+  }
+
+  Future<List<GroupReactionSummary>> fetchReactionSummaries(
+    String transactionId,
+  ) async {
+    final record = _requireTransaction(transactionId);
+    _requireActiveMember(record.transaction.groupId);
+    final reactions =
+        _reactions[transactionId] ?? const <String, Set<String>>{};
+    final result =
+        reactions.entries
+            .where((entry) => entry.value.isNotEmpty)
+            .map(
+              (entry) => GroupReactionSummary(
+                emoji: entry.key,
+                count: entry.value.length,
+                reactedByCurrentUser: entry.value.contains(currentUserId),
+              ),
+            )
+            .toList()
+          ..sort((left, right) => right.count.compareTo(left.count));
+    return List.unmodifiable(result);
+  }
+
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) async {
+    final record = _requireTransaction(transactionId);
+    _requireActiveMember(record.transaction.groupId);
+    final normalized = emoji.trim();
+    if (normalized.isEmpty) {
+      throw const AppException(
+        'Reaction required',
+        code: 'GROUP_REACTION_REQUIRED',
+      );
+    }
+    final byEmoji = _reactions.putIfAbsent(transactionId, () => {});
+    final users = byEmoji.putIfAbsent(normalized, () => <String>{});
+    if (!users.add(currentUserId)) {
+      users.remove(currentUserId);
+    }
+    _recordActivity(
+      record.transaction.groupId,
+      'transaction_reacted',
+      metadata: {'transactionId': transactionId, 'emoji': normalized},
+    );
+  }
+
+  Future<GroupBudget> fetchBudget(String groupId) async {
+    _requireActiveMember(groupId);
+    return _budgets[groupId] ?? GroupBudget.defaults(groupId);
+  }
+
+  Future<void> updateBudget(GroupBudget budget) async {
+    _requireAdmin(budget.groupId);
+    if (budget.monthlyLimit < 0) {
+      throw const AppException(
+        'Budget must be non-negative',
+        code: 'GROUP_BUDGET_INVALID',
+      );
+    }
+    _budgets[budget.groupId] = budget;
+    _recordActivity(
+      budget.groupId,
+      'budget_updated',
+      metadata: {'monthlyLimit': budget.monthlyLimit},
+    );
+  }
+
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  ) async {
+    _requireActiveMember(groupId);
+    final result =
+        _recurringTransactions.values
+            .where((item) => item.groupId == groupId)
+            .toList()
+          ..sort((left, right) => left.nextRunAt.compareTo(right.nextRunAt));
+    return List.unmodifiable(result);
+  }
+
+  Future<void> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) async {
+    _requireActiveMember(groupId);
+    if (title.trim().isEmpty || amount <= 0) {
+      throw const AppException(
+        'Recurring transaction invalid',
+        code: 'GROUP_RECURRING_INVALID',
+      );
+    }
+    final now = DateTime.now();
+    final id = _id('recurring');
+    _recurringTransactions[id] = GroupRecurringTransaction(
+      id: id,
+      groupId: groupId,
+      createdBy: currentUserId,
+      title: title.trim(),
+      amount: amount,
+      frequency: frequency,
+      nextRunAt: nextRunAt,
+      notifyDaysBefore: notifyDaysBefore,
+      isActive: true,
+      createdAt: now,
+    );
+    _recordActivity(
+      groupId,
+      'recurring_created',
+      metadata: {'recurringId': id},
+    );
+    _notifyActiveMembers(
+      groupId,
+      'recurring_created',
+      excludeCurrentUser: false,
+    );
+  }
+
+  Future<void> updateRecurringTransactionActive({
+    required String recurringTransactionId,
+    required bool isActive,
+  }) async {
+    final existing = _recurringTransactions[recurringTransactionId];
+    if (existing == null) {
+      throw const AppException('Not found', code: 'NOT_FOUND');
+    }
+    _requireActiveMember(existing.groupId);
+    _recurringTransactions[recurringTransactionId] = GroupRecurringTransaction(
+      id: existing.id,
+      groupId: existing.groupId,
+      createdBy: existing.createdBy,
+      title: existing.title,
+      amount: existing.amount,
+      frequency: existing.frequency,
+      nextRunAt: existing.nextRunAt,
+      notifyDaysBefore: existing.notifyDaysBefore,
+      isActive: isActive,
+      createdAt: existing.createdAt,
+    );
+  }
+
+  Future<GroupPublicProfile> fetchPublicProfile(String groupId) async {
+    _requireActiveMember(groupId);
+    return _publicProfiles[groupId] ??
+        GroupPublicProfile.defaults(
+          groupId,
+        ).copyWith(slug: _slug(_requireGroup(groupId).name));
+  }
+
+  Future<void> updatePublicProfile(GroupPublicProfile profile) async {
+    _requireAdmin(profile.groupId);
+    _publicProfiles[profile.groupId] = profile.copyWith(
+      slug: profile.slug?.trim().isNotEmpty == true
+          ? _slug(profile.slug!)
+          : _slug(_requireGroup(profile.groupId).name),
+    );
+    _recordActivity(
+      profile.groupId,
+      'public_profile_updated',
+      metadata: {'enabled': profile.isEnabled},
+    );
+  }
+
   Future<void> markSettlementPaid(String settlementId) async {
     final match = _findSettlement(settlementId);
     if (match.item.fromUserId != currentUserId ||
@@ -882,6 +1075,24 @@ class GroupMockDataSource {
         displayName: 'mock-user',
       ),
     );
+    _recordActivity(
+      record.transaction.groupId,
+      'comment_added',
+      metadata: {'transactionId': transactionId},
+    );
+    final mentionedUsers = _mentionedUserIds(
+      record.transaction.groupId,
+      trimmed,
+    );
+    for (final userId in mentionedUsers) {
+      if (userId == currentUserId) continue;
+      _notifyUser(
+        groupId: record.transaction.groupId,
+        userId: userId,
+        type: 'comment_mention',
+        transactionId: transactionId,
+      );
+    }
   }
 
   Future<void> updateComment({
@@ -1023,24 +1234,75 @@ class GroupMockDataSource {
     bool excludeCurrentUser = false,
     String? transactionId,
   }) {
-    final group = _groups[groupId];
-    if (group == null) return;
     for (final member in _activeMembers(groupId)) {
       if (excludeCurrentUser && member.userId == currentUserId) continue;
-      final notification = GroupNotification(
-        id: _id('notification'),
+      _notifyUser(
         groupId: groupId,
-        groupName: group.name,
-        groupTransactionId: transactionId,
+        userId: member.userId,
         type: type,
-        isRead: false,
-        createdAt: DateTime.now(),
+        transactionId: transactionId,
       );
-      _notifications[member.userId] = [
-        notification,
-        ...?_notifications[member.userId],
-      ];
     }
+  }
+
+  void _notifyUser({
+    required String groupId,
+    required String userId,
+    required String type,
+    String? transactionId,
+  }) {
+    final group = _groups[groupId];
+    if (group == null || !_notificationEnabled(groupId, userId, type)) return;
+    final notification = GroupNotification(
+      id: _id('notification'),
+      groupId: groupId,
+      groupName: group.name,
+      groupTransactionId: transactionId,
+      type: type,
+      isRead: false,
+      createdAt: DateTime.now(),
+    );
+    _notifications[userId] = [notification, ...?_notifications[userId]];
+  }
+
+  bool _notificationEnabled(String groupId, String userId, String type) {
+    final preference =
+        _notificationPreferences[_preferenceKey(groupId, userId)] ??
+        GroupNotificationPreference.defaults(groupId);
+    if (preference.muteAll) return false;
+    final hour = DateTime.now().hour;
+    final start = preference.quietHoursStart;
+    final end = preference.quietHoursEnd;
+    if (start != null && end != null) {
+      final inQuietHours = start <= end
+          ? hour >= start && hour < end
+          : hour >= start || hour < end;
+      if (inQuietHours) return false;
+    }
+    if (type.contains('invite')) return preference.inviteNotifications;
+    if (type.contains('mention')) return preference.mentionNotifications;
+    if (type.contains('settlement') || type.contains('debt')) {
+      return preference.debtNotifications;
+    }
+    if (type.contains('transaction') || type.contains('amount')) {
+      return preference.transactionNotifications;
+    }
+    return true;
+  }
+
+  Set<String> _mentionedUserIds(String groupId, String content) {
+    final usernames = RegExp(
+      r'@([a-zA-Z0-9_]{3,30})',
+    ).allMatches(content).map((match) => match.group(1)!.toLowerCase()).toSet();
+    if (usernames.isEmpty) return const {};
+    return _activeMembers(groupId)
+        .where(
+          (member) =>
+              member.username != null &&
+              usernames.contains(member.username!.toLowerCase()),
+        )
+        .map((member) => member.userId)
+        .toSet();
   }
 
   String? _displayName(String groupId, String userId) {
@@ -1049,6 +1311,16 @@ class GroupMockDataSource {
       if (member.userId == userId) return member.resolvedName;
     }
     return userId;
+  }
+
+  String _preferenceKey(String groupId, String userId) => '$groupId:$userId';
+
+  String _slug(String value) {
+    final normalized = value.toLowerCase().replaceAll(
+      RegExp(r'[^a-z0-9]+'),
+      '-',
+    );
+    return normalized.replaceAll(RegExp(r'^-+|-+$'), '');
   }
 
   Map<String, int> _groupBalances(String groupId) {

@@ -203,6 +203,11 @@ class _GroupTransactionDetailScreenState
                   ],
                 ),
               ],
+              const SizedBox(height: 24),
+              _ReactionBar(
+                groupId: transaction.groupId,
+                transactionId: transaction.id,
+              ),
               const SizedBox(height: 26),
               Text(
                 context.l10n.groupCommentsTitle,
@@ -218,6 +223,11 @@ class _GroupTransactionDetailScreenState
                   onEdit: _editComment,
                   onDelete: _deleteComment,
                 ),
+              const SizedBox(height: 10),
+              const Text(
+                'Dùng @username để nhắc thành viên trong nhóm.',
+                style: TextStyle(color: AppTheme.textSubtle),
+              ),
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -402,6 +412,57 @@ class _GroupTransactionDetailScreenState
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+}
+
+class _ReactionBar extends ConsumerWidget {
+  const _ReactionBar({required this.groupId, required this.transactionId});
+
+  static const _emojis = ['👍', '❤️', '😂', '🙌', '😮'];
+
+  final String groupId;
+  final String transactionId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reactionsAsync = ref.watch(
+      groupTransactionReactionsProvider(transactionId),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Reaction', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 10),
+        reactionsAsync.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (_, _) => const Text('Không tải được reaction.'),
+          data: (reactions) {
+            final byEmoji = {for (final item in reactions) item.emoji: item};
+            return Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _emojis.map((emoji) {
+                final summary = byEmoji[emoji];
+                final selected = summary?.reactedByCurrentUser ?? false;
+                final count = summary?.count ?? 0;
+                return FilterChip(
+                  selected: selected,
+                  showCheckmark: false,
+                  label: Text('$emoji $count'),
+                  onSelected: (_) => ref
+                      .read(groupActionControllerProvider.notifier)
+                      .toggleReaction(
+                        transactionId: transactionId,
+                        groupId: groupId,
+                        emoji: emoji,
+                      ),
+                );
+              }).toList(),
+            );
+          },
+        ),
+      ],
+    );
   }
 }
 
