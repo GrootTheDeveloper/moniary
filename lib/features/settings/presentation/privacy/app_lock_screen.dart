@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/deeplinks/pending_deep_link_controller.dart';
+import '../../../calendar/presentation/month/calendar_screen.dart';
 import '../../application/privacy_controller.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
@@ -29,9 +32,13 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
     if (_isAuthenticating) return;
     setState(() => _isAuthenticating = true);
     try {
-      await ref
+      final didAuthenticate = await ref
           .read(privacyControllerProvider.notifier)
           .authenticateUser(context.l10n.biometricReasonUnlock);
+      if (!mounted || !didAuthenticate) return;
+
+      final pendingRoute = ref.read(pendingDeepLinkProvider.notifier).consume();
+      context.go(pendingRoute ?? CalendarScreen.routePath);
     } catch (error, stackTrace) {
       AppLogger.error('Failed to unlock app', error, stackTrace);
       if (mounted) {

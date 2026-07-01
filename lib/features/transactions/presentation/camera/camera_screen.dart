@@ -128,23 +128,24 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
   Future<void> _takePicture({bool useOcr = false}) async {
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) return;
+    final router = GoRouter.of(context);
 
     try {
       final image = await controller.takePicture();
       if (!mounted) return;
 
       final result = useOcr
-          ? await context.push<TransactionMutationResult>(
+          ? await router.push<TransactionMutationResult>(
               ScanningScreen.routePath,
               extra: image.path,
             )
-          : await context.push<TransactionMutationResult>(
+          : await router.push<TransactionMutationResult>(
               '/transaction-form',
               extra: {'imagePath': image.path},
             );
 
       if (result != null && mounted) {
-        context.pop(result);
+        router.pop(result);
       }
     } catch (e, st) {
       AppLogger.error('Error taking picture', e, st);
@@ -152,16 +153,17 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
   }
 
   Future<void> _pickFromAlbum() async {
+    final router = GoRouter.of(context);
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null && mounted) {
-      final result = await context.push<TransactionMutationResult>(
+      final result = await router.push<TransactionMutationResult>(
         '/transaction-form',
         extra: {'imagePath': image.path},
       );
 
       if (result != null && mounted) {
-        context.pop(result);
+        router.pop(result);
       }
     }
   }
