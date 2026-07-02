@@ -26,6 +26,11 @@ final friendSearchProvider = FutureProvider.autoDispose
       return ref.watch(friendRepositoryProvider).searchUsers(query);
     });
 
+final friendInvitePreviewProvider = FutureProvider.autoDispose
+    .family<FriendInvitePreview, String>((ref, token) {
+      return ref.watch(friendRepositoryProvider).fetchInvitePreview(token);
+    });
+
 final friendActionControllerProvider =
     AsyncNotifierProvider<FriendActionController, void>(
       FriendActionController.new,
@@ -51,6 +56,30 @@ class FriendActionController extends AsyncNotifier<void> {
     return _run(() async {
       await ref.read(friendRepositoryProvider).sendRequest(username);
       _invalidateFriendState();
+    });
+  }
+
+  Future<FriendInviteLink> createInviteLink() {
+    return _run(() async {
+      return ref.read(friendRepositoryProvider).createInviteLink();
+    });
+  }
+
+  Future<FriendInviteAcceptResult> acceptInvite(String token) {
+    return _run(() async {
+      final result = await ref
+          .read(friendRepositoryProvider)
+          .acceptInvite(token);
+      _invalidateFriendState();
+      ref.invalidate(friendInvitePreviewProvider(token));
+      return result;
+    });
+  }
+
+  Future<void> revokeInviteLink(String token) {
+    return _run(() async {
+      await ref.read(friendRepositoryProvider).revokeInviteLink(token);
+      ref.invalidate(friendInvitePreviewProvider(token));
     });
   }
 

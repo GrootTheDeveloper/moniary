@@ -9,33 +9,39 @@ class AuroraBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFF0B1521), AppTheme.background, Color(0xFF071019)],
+          colors: [
+            colors.backgroundSoft,
+            colors.background,
+            Color.lerp(colors.background, Colors.black, 0.16)!,
+          ],
         ),
       ),
       child: Stack(
         children: [
-          const _GlowOrb(
+          _GlowOrb(
             alignment: Alignment.topCenter,
-            color: AppTheme.mint,
+            color: colors.primary,
             size: 220,
-            offset: Offset(0, -120),
+            offset: const Offset(0, -120),
           ),
-          const _GlowOrb(
+          _GlowOrb(
             alignment: Alignment.topRight,
-            color: AppTheme.pink,
+            color: colors.accentPink,
             size: 180,
-            offset: Offset(80, -30),
+            offset: const Offset(80, -30),
           ),
-          const _GlowOrb(
+          _GlowOrb(
             alignment: Alignment.bottomLeft,
-            color: AppTheme.amber,
+            color: colors.warning,
             size: 170,
-            offset: Offset(-70, 90),
+            offset: const Offset(-70, 90),
           ),
           child,
         ],

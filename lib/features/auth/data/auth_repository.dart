@@ -178,7 +178,7 @@ class AuthRepository {
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       AppLogger.error('Unexpected error during email sign-in', e, st);
-      throw AppException(e.toString(), code: 'AUTH_SIGN_IN_FAILED');
+      throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
     }
   }
 

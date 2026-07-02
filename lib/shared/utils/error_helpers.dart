@@ -50,6 +50,18 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.friendRequestNotFound;
       case 'FRIEND_NOT_FOUND':
         return l10n.friendNotFound;
+      case 'FRIEND_INVITE_INVALID':
+        return l10n.friendInviteInvalid;
+      case 'FRIEND_INVITE_EXPIRED':
+        return l10n.friendInviteExpired;
+      case 'FRIEND_INVITE_USED':
+        return l10n.friendInviteUsed;
+      case 'FRIEND_INVITE_REVOKED':
+        return l10n.friendInviteRevoked;
+      case 'FRIEND_INVITE_SELF':
+        return l10n.friendInviteSelf;
+      case 'FRIEND_INVITE_NOT_FOUND':
+        return l10n.friendInviteInvalid;
     }
 
     switch (error.message) {

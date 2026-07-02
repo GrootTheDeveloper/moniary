@@ -5,7 +5,7 @@
 ## Feature: Transactions
 - **Purpose**: Manage expenses and income.
 - **Main files**: `features/transactions/`
-- **UI screens**: `TransactionFormScreen`, `TransactionDetailScreen`, `CameraScreen`, `DayDetailScreen`.
+- **UI screens**: `TransactionFormScreen`, `TransactionDetailScreen`, `CameraScreen`, `DayDetailScreen`, `StarredTransactionsScreen`.
 - **Repository**: `TransactionRepository` (Supports Mock & Supabase modes).
 - **Navigation**: The main FAB opens `CameraScreen` for taking/picking photos (or OCR scanning), which then routes to `TransactionFormScreen`.
 
@@ -40,9 +40,10 @@
 - **Storage**: Group avatars and transaction images are private paths in `transaction-images`; display uses signed URLs.
 
 ## Feature: Friends
-- **Purpose**: Search users by username, send/accept/decline/cancel friend requests, remove friends, and invite friends into expense groups.
+- **Purpose**: Search users by username, send/accept/decline/cancel friend requests, create shareable friend invite links, accept friend invites from deep links, remove friends, and invite friends into expense groups.
 - **Main files**: `features/friends/`
-- **UI screens**: `FriendsScreen`, `AddFriendScreen`.
+- **UI screens**: `FriendsScreen`, `AddFriendScreen`, `FriendInviteAcceptScreen`.
+- **Deep links**: Android handles `moniary://friends/invite/<token>` via `app_links`; unauthenticated users keep a pending route and continue after login/profile setup.
 - **Data**: `FriendRepository` supports Supabase and mock mode. Supabase mutations use RPCs to avoid direct client-side writes to friend tables.
 - **Privacy**: User search returns minimal profile fields only and does not expose email addresses.
 
@@ -50,7 +51,7 @@
 - **Purpose**: Extract data from receipts using OCR.
 - **Main files**: `features/scanning/`
 - **UI screens**: `ScanningScreen`, `OcrReviewScreen`.
-- **Data flow**: `ScanningController` / `OcrExtractionController` -> `OcrRepository` -> `OcrService`.
+- **Data flow**: `ScanningController` -> `OcrRepository` -> `OcrService`.
 - **Services**: `FastApiOcrService` always calls `POST /extract`; there is no mock OCR fallback.
 - **Backend**: `backend/ocr/` contains the FastAPI + Ollama receipt extraction service.
 - **Configuration**: Android emulator defaults to `http://10.0.2.2:8000`. Override `OCR_API_URL` with `--dart-define` for a physical device or hosted backend.
@@ -58,7 +59,7 @@
 ## Feature: Settings, Privacy & Data Export
 - **Purpose**: App settings, legal agreements, privacy requests, data export (CSV/XLSX/PDF), data import (CSV), App Security, and Automated Reports.
 - **Main files**: `features/settings/`
-- **UI screens**: Massive feature with 30+ screens (ExportDataScreen, ImportDataScreen, NotificationSettingsScreen, PrivacyCenterScreen, AccountDeletionScreen, RestoreAccountScreen, ActiveSessionsScreen, AppLockScreen, etc.).
+- **UI screens**: Massive feature with 30+ screens (ExportDataScreen, ImportDataScreen, NotificationSettingsScreen, PrivacyCenterScreen, DeleteAccountScreen, ActiveSessionsScreen, AppLockScreen, etc.).
 - **Security Features**: Biometric App Lock (FaceID/TouchID) and Hide Balances mode.
 - **Automated Reports**: Uses Supabase Edge Functions + Resend API to send scheduled email reports (Daily/Weekly/Monthly/Yearly).
 - **Repository**: `AccountRepository` (handles exports, privacy requests, file actions), `ImportRepository` (handles CSV import and local import history), `PrivacyRepository` (handles Biometric state in SharedPreferences), `NotificationSettingsRepository` (handles email report frequency). Export history and import history are stored locally in JSON format.

@@ -86,7 +86,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginSubtitle => 'Personal expense manager';
 
   @override
-  String get loginAnonymous => 'Connect anonymously with Supabase';
+  String get loginAnonymous => 'Continue as guest';
 
   @override
   String get loginTerms =>
@@ -111,17 +111,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginOr => 'or';
 
   @override
-  String get loginConnecting => 'Connecting to Supabase...';
+  String get loginConnecting => 'Signing in...';
 
   @override
   String get loginTryWithoutAuth => 'Try without logging in';
 
   @override
   String get loginSessionReady =>
-      'Session ready. You can go straight to Calendar.';
+      'You\'re signed in. Opening your spending calendar...';
 
   @override
-  String get loginDataSecure => 'Your data is secure and synced with Supabase.';
+  String get loginDataSecure => 'Your data is protected and synced securely.';
 
   @override
   String get splashLoading => 'Loading app...';
@@ -272,11 +272,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calendarEmptyMessage =>
-      'No transactions this month. Add a transaction to start tracking.';
+      'No transactions this month yet. You can still pick a day or tap + to add one.';
+
+  @override
+  String get calendarTodayEmptyMessage =>
+      'No transactions today yet. Tap + to record a new income or expense.';
 
   @override
   String calendarStatsMessage(int count, int days) {
-    return '$count transactions in $days active days. Loaded from Supabase.';
+    return '$count transactions across $days active days. Calendar data is up to date.';
   }
 
   @override
@@ -873,7 +877,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileUserDefault => 'Moniary User';
 
   @override
-  String get profileAnonymous => 'Anonymous trial account';
+  String get profileAnonymous => 'Guest account';
 
   @override
   String get profileMyData => 'My Data';
@@ -890,6 +894,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileImportSubtitle => 'Import from CSV file';
+
+  @override
+  String get profileMoniarySetup => 'Moniary Setup';
+
+  @override
+  String get profileGeneralSection => 'General';
+
+  @override
+  String get profileSupportSection => 'Support';
+
+  @override
+  String get profilePrivacySafetySection => 'Privacy & Safety';
+
+  @override
+  String get profileDangerZoneSection => 'Danger Zone';
+
+  @override
+  String get profileHowMoniaryWorksTitle => 'How Moniary works';
+
+  @override
+  String get profileHowMoniaryWorksSubtitle =>
+      'Quick guide for recording and reviewing your finances.';
+
+  @override
+  String get profileSetupGuideWalletTitle => 'Set up wallets';
+
+  @override
+  String get profileSetupGuideWalletBody =>
+      'Create or review wallets so transactions have a clear money source.';
+
+  @override
+  String get profileSetupGuideTransactionTitle => 'Add transactions';
+
+  @override
+  String get profileSetupGuideTransactionBody =>
+      'Capture spending with photos or enter transactions manually.';
+
+  @override
+  String get profileSetupGuideReviewTitle => 'Review Calendar and Stats';
+
+  @override
+  String get profileSetupGuideReviewBody =>
+      'Use Calendar and Statistics to understand spending by day and month.';
+
+  @override
+  String get profileSetupGuideExportTitle => 'Export and protect data';
+
+  @override
+  String get profileSetupGuideExportBody =>
+      'Export your data and review privacy controls whenever needed.';
 
   @override
   String get profilePrivacyCenter => 'Privacy Center';
@@ -960,7 +1014,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyAboutSubtitle =>
-      'App purpose, MVP status, and release information.';
+      'App purpose, current version status, and release information.';
 
   @override
   String get profileAccount => 'Account';
@@ -1044,7 +1098,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteAccountConsequence3 =>
-      'Delete transaction photos in Storage by user ID.';
+      'Delete transaction photos linked to the current account.';
 
   @override
   String get deleteAccountUnderstand =>
@@ -1181,7 +1235,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalContactHero =>
-      'These contact channels help users, reviewers, or the release team know where to send appropriate requests.';
+      'Use these contact channels to send data, support, or legal requests to the right place.';
+
+  @override
+  String get legalContactPrivacyLabel => 'Privacy';
+
+  @override
+  String get legalContactSupportLabel => 'Support';
+
+  @override
+  String get legalContactLegalLabel => 'Legal';
 
   @override
   String get legalContactPrivacyDesc =>
@@ -1193,7 +1256,71 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalContactLegalDesc =>
-      'Terms issues, Store releases, or legal requests.';
+      'Terms issues, release questions, or legal requests.';
+
+  @override
+  String get thirdPartyServicesHero =>
+      'This notice helps you understand which services Moniary relies on for login, storage, and data operations.';
+
+  @override
+  String get thirdPartyServicesSyncTitle => 'Data sync and storage';
+
+  @override
+  String get thirdPartyServicesSyncDesc =>
+      'Used for login, data synchronization, transaction photo storage, and account deletion requests.';
+
+  @override
+  String get thirdPartyServicesAppPlatformTitle => 'App platform';
+
+  @override
+  String get thirdPartyServicesAppPlatformDesc =>
+      'Used to build the interface, navigation, state, camera, photo picking, and file handling in the app.';
+
+  @override
+  String get thirdPartyServicesDeviceStorageTitle => 'Device storage';
+
+  @override
+  String get thirdPartyServicesDeviceStorageDesc =>
+      'Export files, privacy requests, and export/request history are saved in the app documents folder on this device.';
+
+  @override
+  String get thirdPartyServicesNoAdsTitle => 'No advertising integration';
+
+  @override
+  String get thirdPartyServicesNoAdsDesc =>
+      'Moniary does not use ad SDKs, marketing tracking, contacts, SMS, personal email, or automatic bank connections.';
+
+  @override
+  String get userRightsHero =>
+      'You have the right to understand what data is stored, export your data, and send privacy requests when needed.';
+
+  @override
+  String get userRightsViewDataTitle => 'View stored data';
+
+  @override
+  String get userRightsViewDataDesc =>
+      'You can view data summaries, stored data groups, transaction photos, and files on this device.';
+
+  @override
+  String get userRightsExportTitle => 'Export data';
+
+  @override
+  String get userRightsExportDesc =>
+      'You can export data as CSV, Excel, or PDF before sharing it or leaving the app.';
+
+  @override
+  String get userRightsSupportTitle => 'Request correction or support';
+
+  @override
+  String get userRightsSupportDesc =>
+      'You can create a privacy request if data needs review, correction, or further explanation.';
+
+  @override
+  String get userRightsDeletionTitle => 'Request data deletion';
+
+  @override
+  String get userRightsDeletionDesc =>
+      'You can delete your account in the app or create a manual request if direct deletion fails.';
 
   @override
   String privacyDetailCreatedAt(String date) {
@@ -1288,7 +1415,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileAnonymousWarning =>
-      'You are logged in with a guest account. Please link your account to avoid data loss when switching devices.';
+      'You are using a guest account. Link Email or Google to keep your data when switching devices.';
 
   @override
   String get profileLinkNow => 'Link now';
@@ -1298,7 +1425,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileLinkAccountSubtitle =>
-      'Your account is currently anonymous. Link with Email or Google to store data permanently and sign in across devices.';
+      'Your account is currently a guest account. Link Email or Google to save your data and sign in across devices.';
 
   @override
   String get profileNewPassword => 'New password';
@@ -1340,7 +1467,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileChangeTimezone => 'Change Timezone';
 
   @override
-  String get profileAnonymousBadge => 'Anonymous account';
+  String get profileAnonymousBadge => 'Guest account';
 
   @override
   String profileVerifiedBadge(String provider) {
@@ -1400,7 +1527,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportTroubleshootingSupportDesc =>
-      'If the file cannot be created or opened, create a privacy/support request with an error description.';
+      'If the file cannot be created or opened, create a support request with an error description.';
 
   @override
   String get legalDataDeletionPolicy => 'Data deletion policy';
@@ -1523,7 +1650,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportCopySuccess => 'Copied support info.';
 
   @override
-  String get supportCopyDiagnostic => 'Copy diagnostic info';
+  String get supportCopyDiagnostic => 'Copy support info';
 
   @override
   String get supportRequestChecklist => 'Support checklist';
@@ -1969,7 +2096,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String privacyContactCopyGuide(String email) {
-    return 'Email: $email\nSubject: Moniary privacy request\nContent: Paste the copied request content from the app.';
+    return 'Email: $email\nSubject: Moniary support request\nContent: Paste the request content copied from the app.';
   }
 
   @override
@@ -1980,7 +2107,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyContactHeroDesc =>
-      'If not possible in-app, users can contact the team for data support requests.';
+      'If something cannot be handled in the app, contact Moniary support for help with your data.';
 
   @override
   String get privacyContactEmailTitle => 'Support Email';
@@ -1993,11 +2120,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyContactInfoTitle => 'Information to Send';
 
   @override
-  String get privacyContactInfoValue => 'User ID or login email';
+  String get privacyContactInfoValue => 'Account ID or login email';
 
   @override
   String get privacyContactInfoDesc =>
-      'Do not send passwords, access tokens, sensitive receipt photos, or detailed amounts via email.';
+      'Do not send passwords, access codes, sensitive receipt photos, or detailed amounts via email.';
 
   @override
   String get privacyContactTimeTitle => 'Response Time';
@@ -2007,7 +2134,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyContactTimeDesc =>
-      'The team will update actual times before production release.';
+      'Moniary will update actual response times before the public release.';
 
   @override
   String get privacyContactRecentRequests => 'Recent Requests';
@@ -2060,7 +2187,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportChecklistSubtitle =>
-      'Prepare bug description, related files, and diagnostic info before requesting.';
+      'Prepare a bug description, related files, and support info before sending a request.';
 
   @override
   String get helpHeroText =>
@@ -2085,7 +2212,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutMoniarySubtitle =>
-      'View app purpose, data direction, and MVP status before release.';
+      'View app purpose, data direction, and current version status.';
 
   @override
   String get privacyPolicySubtitle =>
@@ -2096,28 +2223,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get termsOfUseSubtitle =>
-      'View scope of use, user responsibilities, and MVP limitations.';
+      'View scope of use, user responsibilities, and current version limitations.';
 
   @override
   String get dataRetentionPolicyTitle => 'Data Retention Policy';
 
   @override
   String get dataRetentionPolicySubtitle =>
-      'See what is stored on cloud vs locally, and handling after account deletion.';
+      'See what is synced with your account, what stays on this device, and what happens after account deletion.';
 
   @override
   String get thirdPartyServicesTitle => 'Third-Party Services';
 
   @override
   String get thirdPartyServicesSubtitle =>
-      'See how the app uses Supabase, Flutter packages, and device storage.';
+      'See how the app uses sync, storage, and device services.';
 
   @override
   String get releaseChecklistTitle => 'Release Checklist';
 
   @override
   String get releaseChecklistSubtitle =>
-      'Review privacy, data export, account deletion, and contacts before Store release.';
+      'Review privacy, data export, account deletion, and contacts before release.';
 
   @override
   String get trustSafetyTitle => 'Trust & Safety';
@@ -2138,7 +2265,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get policyChangelogSubtitle =>
-      'View milestones for privacy, legal, and store readiness updates.';
+      'View milestones for privacy, legal, and release-readiness updates.';
 
   @override
   String get userDataRightsTitle => 'User Data Rights';
@@ -2159,14 +2286,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalContactSubtitle =>
-      'View and copy privacy, support, and legal emails for Store release.';
+      'View and copy privacy, support, and legal emails.';
 
   @override
   String get dataSafetyTitle => 'Data Safety';
 
   @override
   String get dataSafetySubtitle =>
-      'Summary of data groups collected or not collected in the MVP.';
+      'Summary of data groups collected or not collected in the current version.';
 
   @override
   String get myDataTitle => 'My Data';
@@ -2241,7 +2368,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noOverCollectionDesc =>
-      'MVP does not read contacts, SMS, emails, location, or auto-sync bank accounts.';
+      'Moniary does not read contacts, SMS, personal emails, location, or automatically connect bank accounts.';
 
   @override
   String get carefulFileSharingTitle => 'Careful File Sharing';
@@ -2378,7 +2505,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inventoryPhotoDesc =>
-      'Path in Storage private bucket, shown via signed URL.';
+      'Transaction photo paths are stored securely and shown only when needed in the app.';
 
   @override
   String get inventorySettingsTitle => 'Reminder Settings';
@@ -2459,7 +2586,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportChecklistHero =>
-      'Prepare enough information before submitting a request to help the team resolve it faster and avoid sharing sensitive data unnecessarily.';
+      'Prepare enough information before submitting a request so support can resolve it faster and avoid unnecessary sensitive data sharing.';
 
   @override
   String get supportChecklistActionTitle => 'Describe what you did';
@@ -2473,18 +2600,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportChecklistErrorDesc =>
-      'Copy the error message or describe the screen so the team can investigate.';
+      'Copy the error message or describe the screen so support can investigate.';
 
   @override
   String get supportChecklistFileTitle =>
-      'Attach request/export files when relevant';
+      'Attach request or export files when relevant';
 
   @override
   String get supportChecklistFileDesc =>
-      'If it is a privacy request or manual deletion, attach the generated JSON file.';
+      'For privacy requests or manual deletion requests, attach the file generated by the app.';
 
   @override
-  String get supportChecklistDiagnosticTitle => 'Copy diagnostic info';
+  String get supportChecklistDiagnosticTitle => 'Copy support info';
 
   @override
   String get supportChecklistDiagnosticDesc =>
@@ -2496,7 +2623,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportChecklistSensitiveDesc =>
-      'Do not send passwords, access tokens, or sensitive receipt photos unless absolutely necessary.';
+      'Do not send passwords, access codes, or sensitive receipt photos unless absolutely necessary.';
 
   @override
   String get dataSafetyPersonalInfoTitle => 'Personal info';
@@ -2507,7 +2634,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dataSafetyPersonalInfoDesc =>
-      'Display name, email, avatar, and user ID used for login and data synchronization.';
+      'Display name, email, avatar, and account ID used for login and data synchronization.';
 
   @override
   String get dataSafetyFinancialInfoTitle => 'Financial info';
@@ -2528,23 +2655,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dataSafetyPhotosDesc =>
-      'Transaction photos are stored in private storage and only accessible via signed URLs.';
+      'Transaction photos are stored securely and shown in the app only when needed.';
 
   @override
-  String get dataSafetyUserIdTitle => 'User ID';
+  String get dataSafetyUserIdTitle => 'Account ID';
 
   @override
   String get dataSafetyUserIdStatus => 'Yes';
 
   @override
   String get dataSafetyUserIdDesc =>
-      'Used to associate data with the correct account and apply RLS on Supabase.';
+      'Used to associate data with the correct account and limit data access.';
 
   @override
   String get dataSafetyLocationTitle => 'Location, Contacts, SMS';
 
   @override
-  String get dataSafetyLocationStatus => 'Not collected in MVP';
+  String get dataSafetyLocationStatus => 'Not collected in the current version';
 
   @override
   String get dataSafetyLocationDesc =>
@@ -2571,7 +2698,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutMoniaryLicenseDesc =>
-      'View licenses for Flutter and packages used in this app.';
+      'View licenses for libraries used in this app.';
 
   @override
   String get aboutMoniaryPurposeTitle => 'Purpose';
@@ -2588,11 +2715,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Financial data belongs to the user. The app provides tools to export data, delete accounts, and contact privacy support.';
 
   @override
-  String get aboutMoniaryMvpStatusTitle => 'MVP Status';
+  String get aboutMoniaryMvpStatusTitle => 'Version Status';
 
   @override
   String get aboutMoniaryMvpStatusDesc =>
-      'The current version focuses on expense tracking, data transparency, and requirements needed for Store release.';
+      'The current version focuses on expense tracking, data transparency, and requirements needed for public release.';
 
   @override
   String get permissionInternetTitle => 'Internet';
@@ -2602,7 +2729,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get permissionInternetDesc =>
-      'Used for login, Supabase Database synchronization, and downloading transaction photos from Storage.';
+      'Used for login, data synchronization, and loading transaction photos when needed.';
 
   @override
   String get permissionCameraTitle => 'Camera';
@@ -2632,13 +2759,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get permissionNotiDesc =>
-      'MVP does not require this permission if reminders are not deployed to production.';
+      'This permission is only needed when you enable reminders.';
 
   @override
   String get permissionLocationTitle => 'Location, Contacts, SMS not used';
 
   @override
-  String get permissionLocationStatus => 'Not declared in MVP';
+  String get permissionLocationStatus => 'Not used';
 
   @override
   String get permissionLocationDesc =>
@@ -2650,14 +2777,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyLeadDesc =>
-      'This content is used for the in-app screen and as a draft public Privacy Policy before submitting to Google Play.';
+      'This explains how Moniary handles data and may be updated before the public release.';
 
   @override
   String get privacyPolicyDataTitle => 'Data processed by Moniary';
 
   @override
   String get privacyPolicyDataItem1 =>
-      'Account information such as display name, email, avatar, and user ID upon login.';
+      'Account information such as display name, email, avatar, and account ID upon login.';
 
   @override
   String get privacyPolicyDataItem2 =>
@@ -2684,11 +2811,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyPurposeItem3 =>
-      'Store transaction photos in Supabase Storage private bucket and provide signed URLs for viewing.';
+      'Store transaction photos securely and show them in the app when needed.';
 
   @override
   String get privacyPolicyPurposeItem4 =>
-      'Protect accounts, control access with RLS, and support users upon request.';
+      'Protect accounts, limit data access, and support users upon request.';
 
   @override
   String get privacyPolicyShareTitle => 'Data sharing';
@@ -2699,11 +2826,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyShareItem2 =>
-      'Data is stored on Supabase to provide Auth, Database, and Storage for the app.';
+      'Data is stored on secure infrastructure to provide login, data sync, and photo storage for the app.';
 
   @override
   String get privacyPolicyShareItem3 =>
-      'MVP does not automatically read location, contacts, SMS, personal email, or bank data.';
+      'Moniary does not automatically read location, contacts, SMS, personal email, or bank data.';
 
   @override
   String get privacyPolicyDeleteTitle => 'Data deletion';
@@ -2718,10 +2845,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyDeleteItem3 =>
-      'When deleting an account, Moniary requests deletion of profiles, wallets, categories, transactions, and photos in Storage belonging to the current user ID.';
+      'When deleting an account, Moniary requests deletion of profiles, wallets, categories, transactions, and photos belonging to the current account.';
 
   @override
-  String get privacyPolicySafetyTitle => 'Google Play Data Safety Declaration';
+  String get privacyPolicySafetyTitle => 'Data Safety Declaration';
 
   @override
   String get privacyPolicySafetyItem1 =>
@@ -2737,11 +2864,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySafetyItem4 =>
-      'Location, Contacts, SMS: not collected in MVP.';
+      'Location, Contacts, SMS: not collected in the current version.';
 
   @override
   String get privacyPolicyContactDesc =>
-      'Before release, the team needs to publish this content on a public URL and update the official contact email in the Play Console.';
+      'Moniary will update the policy content and official contact email before release.';
 
   @override
   String get deletionPolicyStep1Title => 'Before deleting';
@@ -2755,25 +2882,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deletionPolicyStep2Desc =>
-      'Profiles, wallets, categories, transactions, reminder settings, and photos in Storage belonging to the current user ID.';
+      'Profiles, wallets, categories, transactions, reminder settings, and photos belonging to the current account.';
 
   @override
   String get deletionPolicyStep3Title => 'How to delete';
 
   @override
   String get deletionPolicyStep3Desc =>
-      'The app calls the delete-account Edge Function. The function verifies the session, deletes transaction photos, and then deletes the Auth user.';
+      'Moniary verifies the request, removes related data, and then closes the account.';
 
   @override
   String get deletionPolicyStep4Title => 'Data outside the app';
 
   @override
   String get deletionPolicyStep4Desc =>
-      'If backup data, logs, or external requests need to be deleted, users can contact the team via the privacy support channel.';
+      'For additional help with data outside the app, users can contact Moniary privacy support.';
 
   @override
   String get termsOfUseHeroDesc =>
-      'These terms summarize how users should use Moniary in the MVP version.';
+      'These terms summarize how users should use Moniary in the current version.';
 
   @override
   String get termsOfUseScopeTitle => '1. Scope of use';
@@ -2838,7 +2965,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportReportRecentTransactions => 'Recent transactions';
 
   @override
-  String get dataRetentionCloudTitle => 'Cloud data';
+  String get dataRetentionCloudTitle => 'Synced data';
 
   @override
   String get dataRetentionCloudDesc =>
@@ -2852,18 +2979,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Transaction photos are stored only when the user actively takes or selects an image. Photos are processed together with account data when deleting the account.';
 
   @override
-  String get dataRetentionLocalFilesTitle => 'Local files';
+  String get dataRetentionLocalFilesTitle => 'Files on this device';
 
   @override
   String get dataRetentionLocalFilesDesc =>
-      'Export files and request history are created on the device. Users can manage, share, or delete these files from local storage.';
+      'Export files and request history are created on the device. Users can manage, share, or delete these files from device storage.';
 
   @override
   String get dataRetentionDeleteTitle => 'After account deletion';
 
   @override
   String get dataRetentionDeleteDesc =>
-      'Moniary runs the account deletion flow to remove app data tied to the current user. If it fails, users can create a manual data deletion request.';
+      'Moniary runs the account deletion flow to remove app data tied to the current account. If it fails, users can create a manual data deletion request.';
 
   @override
   String get financialDisclaimerInvestmentTitle => 'Not investment advice';
@@ -2908,14 +3035,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Added privacy request types, templates, previews, request history, status, and response timeline.';
 
   @override
-  String get policyChangelogEntry3Title => 'Added Store Readiness & Trust';
+  String get policyChangelogEntry3Title => 'Added Release Readiness & Trust';
 
   @override
   String get policyChangelogEntry3Desc =>
       'Added About, Terms of Use, license entry, version/build info, release checklist, and legal contact flow.';
 
   @override
-  String get policyChangelogEntry4Title => 'Initialized MVP policies';
+  String get policyChangelogEntry4Title => 'Initialized first-version policies';
 
   @override
   String get policyChangelogEntry4Desc =>
@@ -3371,6 +3498,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendNotFound => 'Friend not found.';
 
   @override
+  String get friendShareInviteLink => 'Share friend link';
+
+  @override
+  String get friendInviteShareDescription =>
+      'Send a link so others can add you faster.';
+
+  @override
+  String friendInviteShareMessage(String link) {
+    return 'Add me on Moniary: $link';
+  }
+
+  @override
+  String get friendInviteAcceptTitle => 'Friend invite';
+
+  @override
+  String friendInviteAcceptSubtitle(String name) {
+    return '$name wants to add you on Moniary.';
+  }
+
+  @override
+  String get friendInviteAcceptButton => 'Add friend';
+
+  @override
+  String get friendInviteAccepted => 'Friend added.';
+
+  @override
+  String get friendInviteLoading => 'Loading invite...';
+
+  @override
+  String get friendInvitePreviewError => 'Could not load the friend invite.';
+
+  @override
+  String get friendInviteInvalid => 'This friend link is invalid.';
+
+  @override
+  String get friendInviteExpired => 'This friend link has expired.';
+
+  @override
+  String get friendInviteUsed => 'This friend link has already been used.';
+
+  @override
+  String get friendInviteRevoked => 'This friend link was revoked.';
+
+  @override
+  String get friendInviteSelf => 'You cannot use your own friend link.';
+
+  @override
+  String get friendInviteAlreadyFriends => 'You are already friends.';
+
+  @override
+  String get friendInviteOpenFriends => 'Open friends';
+
+  @override
   String get profileUsernameHint =>
       '3-30 characters: lowercase letters, numbers, or underscores';
 
@@ -3418,15 +3598,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'You will be signed out immediately. During the next 30 days, sign in with the same method to restore your account before its data is permanently deleted.';
 
   @override
-  String get deleteGuestDataTitle => 'Delete guest data';
+  String get deleteGuestDataTitle => 'Delete guest account data';
 
   @override
   String get deleteGuestDataBody =>
-      'Guest data is stored only on this device and will be deleted immediately. Language, currency, and onboarding preferences will be kept.';
+      'Guest account data is stored only on this device and will be deleted immediately. Language, currency, and first-run preferences will be kept.';
 
   @override
   String get deleteGuestDataUnderstand =>
-      'I understand that guest data on this device will be deleted immediately.';
+      'I understand that guest account data on this device will be deleted immediately.';
 
   @override
   String get deleteGuestDataAction => 'Delete guest data';
@@ -3555,4 +3735,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginNeedAccount => 'Need an account? Sign up';
+
+  @override
+  String get cameraFallbackPermissionDenied =>
+      'Camera permission denied. You can enter the transaction manually.';
+
+  @override
+  String get cameraFallbackGenericError =>
+      'Could not open camera. You can enter the transaction manually.';
 }

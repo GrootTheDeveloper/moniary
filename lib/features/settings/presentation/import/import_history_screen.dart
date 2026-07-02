@@ -136,7 +136,7 @@ class _HistoryCard extends StatelessWidget {
     return switch (status) {
       ImportHistoryStatus.pending => AppTheme.mint,
       ImportHistoryStatus.completed => Colors.white70,
-      ImportHistoryStatus.failed => Colors.red,
+      ImportHistoryStatus.failed => AppTheme.danger,
     };
   }
 }

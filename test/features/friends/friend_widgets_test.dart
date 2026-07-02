@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:moniary/features/friends/data/repositories/friend_repository_impl.dart';
 import 'package:moniary/features/friends/domain/entities/friend_profile.dart';
 import 'package:moniary/features/friends/domain/repositories/friend_repository.dart';
 import 'package:moniary/features/friends/presentation/screens/add_friend_screen.dart';
+import 'package:moniary/features/friends/presentation/screens/friend_invite_accept_screen.dart';
 import 'package:moniary/features/friends/presentation/screens/friends_screen.dart';
 import 'package:moniary/features/groups/data/repositories/group_repository_impl.dart';
+import 'package:moniary/features/groups/domain/entities/group_enums.dart';
 import 'package:moniary/features/groups/domain/entities/group_settlement.dart';
 import 'package:moniary/features/groups/domain/entities/group_transaction.dart';
 import 'package:moniary/features/groups/domain/entities/spending_group.dart';
@@ -31,6 +34,36 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: child,
+      ),
+    );
+  }
+
+  Widget routerApp({
+    required FakeFriendRepository friendRepository,
+    required String initialLocation,
+  }) {
+    final router = GoRouter(
+      initialLocation: initialLocation,
+      routes: [
+        GoRoute(
+          path: FriendInviteAcceptScreen.routePath,
+          builder: (context, state) => FriendInviteAcceptScreen(
+            token: state.pathParameters['token'] ?? '',
+          ),
+        ),
+        GoRoute(
+          path: FriendsScreen.routePath,
+          builder: (context, state) => const FriendsScreen(),
+        ),
+      ],
+    );
+    return ProviderScope(
+      overrides: [friendRepositoryProvider.overrideWithValue(friendRepository)],
+      child: MaterialApp.router(
+        locale: const Locale('vi'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router,
       ),
     );
   }
@@ -67,6 +100,52 @@ void main() {
     expect(find.text('Đã gửi lời mời kết bạn.'), findsOneWidget);
   });
 
+  testWidgets('AddFriendScreen chấp nhận lời mời đến từ kết quả tìm kiếm', (
+    tester,
+  ) async {
+    final repository = FakeFriendRepository(
+      incoming: [
+        FriendRequest(
+          id: 'request-1',
+          fromUserId: 'user-an',
+          toUserId: 'mock-user-id',
+          otherUserId: 'user-an',
+          status: FriendRequestStatus.pending,
+          createdAt: DateTime(2026),
+          isIncoming: true,
+          fullName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ],
+      searchResults: [
+        const FriendSearchResult(
+          profile: FriendProfile(
+            userId: 'user-an',
+            fullName: 'An Nguyen',
+            username: 'an_nguyen',
+          ),
+          relationStatus: FriendRelationStatus.incomingPending,
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      app(const AddFriendScreen(), friendRepository: repository),
+    );
+
+    await tester.enterText(find.byType(TextField), 'an');
+    await tester.tap(find.text('Tìm kiếm'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Người này đã gửi lời mời cho bạn'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Chấp nhận'));
+    await tester.pumpAndSettle();
+
+    expect(repository.acceptedRequestIds, ['request-1']);
+    expect(find.text('Đã chấp nhận lời mời kết bạn.'), findsOneWidget);
+  });
+
   testWidgets('FriendsScreen hiển thị empty state khi chưa có bạn', (
     tester,
   ) async {
@@ -79,6 +158,24 @@ void main() {
 
     expect(find.text('Bạn chưa có bạn bè nào.'), findsOneWidget);
     expect(find.text('Thêm bạn'), findsWidgets);
+    expect(find.byTooltip('Chia sẻ link kết bạn'), findsOneWidget);
+  });
+
+  testWidgets('AddFriendScreen hiển thị card chia sẻ link kết bạn', (
+    tester,
+  ) async {
+    final repository = FakeFriendRepository();
+
+    await tester.pumpWidget(
+      app(const AddFriendScreen(), friendRepository: repository),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Chia sẻ link kết bạn'), findsOneWidget);
+    expect(
+      find.text('Gửi link cho người khác để họ kết bạn với bạn nhanh hơn.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('FriendsScreen chấp nhận incoming request', (tester) async {
@@ -143,6 +240,85 @@ void main() {
     expect(groupRepository.invitedUserIds, ['user-an']);
     expect(find.text('Đã gửi lời mời.'), findsOneWidget);
   });
+
+  testWidgets('InviteMemberScreen disable bạn đã là thành viên nhóm', (
+    tester,
+  ) async {
+    final friendRepository = FakeFriendRepository(
+      friends: const [
+        FriendProfile(
+          userId: 'user-an',
+          fullName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ],
+    );
+    final groupRepository = FakeGroupRepository(
+      members: [
+        SpendingGroupMember(
+          id: 'member-an',
+          groupId: 'group-1',
+          userId: 'user-an',
+          role: GroupRole.member,
+          status: GroupMemberStatus.active,
+          joinedAt: DateTime(2026),
+          displayName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      app(
+        const InviteMemberScreen(groupId: 'group-1'),
+        friendRepository: friendRepository,
+        groupRepository: groupRepository,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('An Nguyen'), findsOneWidget);
+    expect(find.text('Đang tham gia'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Gửi lời mời'), findsOneWidget);
+    expect(groupRepository.invitedUserIds, isEmpty);
+  });
+
+  testWidgets('FriendInviteAcceptScreen preview và accept invite', (
+    tester,
+  ) async {
+    final repository = FakeFriendRepository(
+      invitePreview: const FriendInvitePreview(
+        status: FriendInviteStatus.active,
+        relationStatus: FriendRelationStatus.none,
+        inviter: FriendProfile(
+          userId: 'user-an',
+          fullName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(
+      routerApp(
+        friendRepository: repository,
+        initialLocation: '/friends/invite/token-1',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('An Nguyen'), findsOneWidget);
+    expect(
+      find.text('An Nguyen muốn kết bạn với bạn trên Moniary.'),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Kết bạn'));
+    await tester.pumpAndSettle();
+
+    expect(repository.acceptedInviteTokens, ['token-1']);
+    expect(find.text('Bạn bè'), findsWidgets);
+    expect(find.text('An Nguyen'), findsOneWidget);
+  });
 }
 
 class FakeFriendRepository implements FriendRepository {
@@ -151,20 +327,30 @@ class FakeFriendRepository implements FriendRepository {
     List<FriendRequest>? incoming,
     List<FriendRequest>? outgoing,
     List<FriendSearchResult>? searchResults,
+    FriendInvitePreview? invitePreview,
   }) : friends = friends ?? [],
        incoming = incoming ?? [],
        outgoing = outgoing ?? [],
-       searchResults = searchResults ?? [];
+       searchResults = searchResults ?? [],
+       invitePreview =
+           invitePreview ??
+           const FriendInvitePreview(
+             status: FriendInviteStatus.invalid,
+             relationStatus: FriendRelationStatus.none,
+           );
 
   final List<FriendProfile> friends;
   final List<FriendRequest> incoming;
   final List<FriendRequest> outgoing;
   final List<FriendSearchResult> searchResults;
+  FriendInvitePreview invitePreview;
   final List<String> sentUsernames = [];
   final List<String> acceptedRequestIds = [];
   final List<String> declinedRequestIds = [];
   final List<String> cancelledRequestIds = [];
   final List<String> removedFriendIds = [];
+  final List<String> acceptedInviteTokens = [];
+  final List<String> revokedInviteTokens = [];
 
   @override
   String get currentUserId => 'mock-user-id';
@@ -181,6 +367,41 @@ class FakeFriendRepository implements FriendRepository {
   @override
   Future<List<FriendSearchResult>> searchUsers(String usernameQuery) async {
     return searchResults;
+  }
+
+  @override
+  Future<FriendInviteLink> createInviteLink() async {
+    return FriendInviteLink(
+      token: 'token-1',
+      link: 'moniary://friends/invite/token-1',
+      expiresAt: DateTime(2026),
+    );
+  }
+
+  @override
+  Future<FriendInvitePreview> fetchInvitePreview(String token) async {
+    return invitePreview;
+  }
+
+  @override
+  Future<FriendInviteAcceptResult> acceptInvite(String token) async {
+    acceptedInviteTokens.add(token);
+    friends.add(invitePreview.inviter!);
+    invitePreview = FriendInvitePreview(
+      status: FriendInviteStatus.alreadyFriends,
+      relationStatus: FriendRelationStatus.friends,
+      inviter: invitePreview.inviter,
+      expiresAt: invitePreview.expiresAt,
+    );
+    return const FriendInviteAcceptResult(
+      status: FriendInviteAcceptStatus.accepted,
+      inviterUserId: 'user-an',
+    );
+  }
+
+  @override
+  Future<void> revokeInviteLink(String token) async {
+    revokedInviteTokens.add(token);
   }
 
   @override
@@ -214,6 +435,10 @@ class FakeFriendRepository implements FriendRepository {
 }
 
 class FakeGroupRepository implements GroupRepository {
+  FakeGroupRepository({List<SpendingGroupMember>? members})
+    : members = members ?? const [];
+
+  final List<SpendingGroupMember> members;
   final List<String> invitedUserIds = [];
 
   @override
@@ -274,8 +499,32 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
-  Future<SpendingGroupDetail> fetchGroupDetail(String groupId) {
-    throw UnimplementedError();
+  Future<SpendingGroupDetail> fetchGroupDetail(String groupId) async {
+    final now = DateTime(2026);
+    return SpendingGroupDetail(
+      group: SpendingGroup(
+        id: groupId,
+        name: 'Group',
+        createdBy: currentUserId,
+        status: GroupStatus.active,
+        createdAt: now,
+        updatedAt: now,
+      ),
+      members: [
+        SpendingGroupMember(
+          id: 'member-current',
+          groupId: groupId,
+          userId: currentUserId,
+          role: GroupRole.owner,
+          status: GroupMemberStatus.active,
+          joinedAt: now,
+          displayName: 'Mock User',
+          username: 'mock-user',
+        ),
+        ...members,
+      ],
+      currentUserRole: GroupRole.owner,
+    );
   }
 
   @override

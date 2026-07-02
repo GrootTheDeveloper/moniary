@@ -15,9 +15,7 @@ class PostAuthDecision {
   final AccountDeletionStatus? deletionStatus;
 }
 
-final postAuthDecisionProvider = FutureProvider<PostAuthDecision>((
-  ref,
-) async {
+final postAuthDecisionProvider = FutureProvider<PostAuthDecision>((ref) async {
   final session = ref.watch(currentSessionProvider);
   // Use ref.read for repositories to avoid race conditions during rebuilds
   final profileRepo = ref.read(profileRepositoryProvider);
@@ -27,7 +25,9 @@ final postAuthDecisionProvider = FutureProvider<PostAuthDecision>((
   }
 
   try {
-    final deletionStatus = await ref.read(accountStatusControllerProvider.future);
+    final deletionStatus = await ref.read(
+      accountStatusControllerProvider.future,
+    );
     if (deletionStatus.isPending) {
       return PostAuthDecision(
         PostAuthDestination.pendingDeletion,

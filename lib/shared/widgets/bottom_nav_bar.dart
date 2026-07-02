@@ -21,11 +21,13 @@ class MoniaryBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+
     return Container(
       height: 84,
-      decoration: const BoxDecoration(
-        color: Color(0xFF0D1622),
-        border: Border(top: BorderSide(color: AppTheme.outline)),
+      decoration: BoxDecoration(
+        color: colors.navBar,
+        border: Border(top: BorderSide(color: colors.outline)),
       ),
       child: Row(
         children: [
@@ -98,7 +100,8 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = active ? AppTheme.mint : const Color(0xFF74889A);
+    final colors = context.moniaryColors;
+    final color = active ? colors.primary : colors.navInactive;
     return Expanded(
       child: InkWell(
         onTap: onTap,

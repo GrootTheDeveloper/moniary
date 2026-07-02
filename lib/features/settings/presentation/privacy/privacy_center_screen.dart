@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../../application/privacy_controller.dart';
+import '../../domain/privacy_requests/privacy_request_history_entry.dart';
 import '../legal/data_deletion_policy_screen.dart';
 import '../legal/policy_changelog_screen.dart';
 import '../legal/terms_of_use_screen.dart';
@@ -64,6 +66,20 @@ class PrivacyCenterScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: [
+            _PrivacyGroupHero(
+              group: group,
+              appLockEnabled: privacyState.isAppLocked,
+              balancesHidden: privacyState.isBalancesHidden,
+              requestHistory: requestHistory,
+            ),
+            const SizedBox(height: 20),
+            if (group == PrivacyCenterGroup.helpRequests) ...[
+              _PrivacyRequestSummaryCard(
+                requestHistory: requestHistory,
+                onTap: () => context.push(PrivacyContactScreen.routePath),
+              ),
+              const SizedBox(height: 20),
+            ],
             if (group == PrivacyCenterGroup.dataSafety) ...[
               SettingsGroupCard(
                 title: context.l10n.privacyProtectionSettingsTitle,
@@ -218,13 +234,214 @@ class PrivacyCenterScreen extends ConsumerWidget {
           routePath: PrivacyContactScreen.routePath,
         ),
         _PrivacyLink(
-          icon: Icons.info_outline,
+          icon: Icons.info_outlined,
           title: context.l10n.aboutMoniaryTitle,
           subtitle: context.l10n.privacyAboutSubtitle,
           routePath: AboutMoniaryScreen.routePath,
         ),
       ],
     };
+  }
+}
+
+class _PrivacyGroupHero extends StatelessWidget {
+  const _PrivacyGroupHero({
+    required this.group,
+    required this.appLockEnabled,
+    required this.balancesHidden,
+    required this.requestHistory,
+  });
+
+  final PrivacyCenterGroup group;
+  final bool appLockEnabled;
+  final bool balancesHidden;
+  final AsyncValue<List<PrivacyRequestHistoryEntry>> requestHistory;
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = switch (group) {
+      PrivacyCenterGroup.privacyTerms => Icons.privacy_tip_outlined,
+      PrivacyCenterGroup.dataSafety => Icons.verified_user_outlined,
+      PrivacyCenterGroup.helpRequests => Icons.support_agent_outlined,
+    };
+    final color = switch (group) {
+      PrivacyCenterGroup.privacyTerms => AppTheme.mintSoft,
+      PrivacyCenterGroup.dataSafety => AppTheme.success,
+      PrivacyCenterGroup.helpRequests => AppTheme.amber,
+    };
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            color.withValues(alpha: 0.16),
+            AppTheme.surface.withValues(alpha: 0.94),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: color.withValues(alpha: 0.28)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x24000000),
+            blurRadius: 26,
+            offset: Offset(0, 14),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 28),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      group.title(context),
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      group.heroBody(context),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(spacing: 8, runSpacing: 8, children: _chips(context)),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _chips(BuildContext context) {
+    return switch (group) {
+      PrivacyCenterGroup.privacyTerms => [
+        SettingsStatusChip(
+          label: context.l10n.privacyPolicyTitle,
+          tone: SettingsStatusTone.info,
+        ),
+        SettingsStatusChip(
+          label: context.l10n.termsOfUseTitle,
+          tone: SettingsStatusTone.neutral,
+        ),
+      ],
+      PrivacyCenterGroup.dataSafety => [
+        SettingsStatusChip(
+          label: context.l10n.privacyCenterAppLockTitle,
+          tone: appLockEnabled
+              ? SettingsStatusTone.success
+              : SettingsStatusTone.warning,
+        ),
+        SettingsStatusChip(
+          label: context.l10n.privacyHideBalancesTitle,
+          tone: balancesHidden
+              ? SettingsStatusTone.success
+              : SettingsStatusTone.warning,
+        ),
+      ],
+      PrivacyCenterGroup.helpRequests => [
+        requestHistory.when(
+          data: (items) => SettingsStatusChip(
+            label: context.l10n.privacyRequestCount(items.length),
+            tone: items.isEmpty
+                ? SettingsStatusTone.neutral
+                : SettingsStatusTone.info,
+          ),
+          loading: () => SettingsStatusChip(
+            label: context.l10n.privacyStatusReview,
+            tone: SettingsStatusTone.neutral,
+          ),
+          error: (_, _) => SettingsStatusChip(
+            label: context.l10n.privacyStatusReview,
+            tone: SettingsStatusTone.warning,
+          ),
+        ),
+      ],
+    };
+  }
+}
+
+class _PrivacyRequestSummaryCard extends StatelessWidget {
+  const _PrivacyRequestSummaryCard({
+    required this.requestHistory,
+    required this.onTap,
+  });
+
+  final AsyncValue<List<PrivacyRequestHistoryEntry>> requestHistory;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final count = requestHistory.whenOrNull(data: (items) => items.length);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppTheme.surface.withValues(alpha: 0.94),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppTheme.outline),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppTheme.mint.withValues(alpha: 0.14),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.assignment_outlined,
+                color: AppTheme.mintSoft,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.privacyRequestsTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    count == null
+                        ? context.l10n.privacyGroupHelpRequestsSubtitle
+                        : context.l10n.privacyRequestCount(count),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Icon(Icons.arrow_forward_outlined, color: AppTheme.mint),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -250,6 +467,17 @@ extension on PrivacyCenterGroup {
       PrivacyCenterGroup.dataSafety => context.l10n.privacyGroupDataSafetyTitle,
       PrivacyCenterGroup.helpRequests =>
         context.l10n.privacyGroupHelpRequestsTitle,
+    };
+  }
+
+  String heroBody(BuildContext context) {
+    return switch (this) {
+      PrivacyCenterGroup.privacyTerms =>
+        context.l10n.privacyGroupPrivacyTermsSubtitle,
+      PrivacyCenterGroup.dataSafety =>
+        context.l10n.privacyGroupDataSafetySubtitle,
+      PrivacyCenterGroup.helpRequests =>
+        context.l10n.privacyGroupHelpRequestsSubtitle,
     };
   }
 }

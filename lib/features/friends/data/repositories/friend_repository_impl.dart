@@ -91,6 +91,43 @@ class FriendRepositoryImpl implements FriendRepository {
   }
 
   @override
+  Future<FriendInviteLink> createInviteLink() {
+    if (_useMockData) return _mock.createInviteLink();
+    return _guard('create friend invite link', () async {
+      return FriendModelMapper.inviteLink(await _remote.createInviteLink());
+    });
+  }
+
+  @override
+  Future<FriendInvitePreview> fetchInvitePreview(String token) {
+    if (_useMockData) return _mock.fetchInvitePreview(token);
+    return _guard('fetch friend invite preview', () async {
+      return FriendModelMapper.invitePreview(
+        await _remote.fetchInvitePreview(token.trim()),
+      );
+    });
+  }
+
+  @override
+  Future<FriendInviteAcceptResult> acceptInvite(String token) {
+    if (_useMockData) return _mock.acceptInvite(token);
+    return _guard('accept friend invite', () async {
+      return FriendModelMapper.inviteAcceptResult(
+        await _remote.acceptInvite(token.trim()),
+      );
+    });
+  }
+
+  @override
+  Future<void> revokeInviteLink(String token) {
+    if (_useMockData) return _mock.revokeInviteLink(token);
+    return _guard(
+      'revoke friend invite link',
+      () => _remote.revokeInviteLink(token.trim()),
+    );
+  }
+
+  @override
   Future<void> sendRequest(String username) {
     if (_useMockData) return _mock.sendRequest(username);
     return _guard(

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
@@ -35,14 +36,8 @@ class AuthController extends AsyncNotifier<void> {
       final session = await ref
           .read(authRepositoryProvider)
           .signInAnonymously();
-      
-      if (session != null) {
-        ref.read(mockSessionProvider.notifier).setSession(session);
-      }
-      
-      // Always invalidate profile when auth state changes
-      ref.invalidate(currentProfileProvider);
 
+      _applySignedInSession(session);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -120,7 +115,7 @@ class AuthController extends AsyncNotifier<void> {
       final usesMockProfile = await ref
           .read(authRepositoryProvider)
           .linkGoogleAccount();
-      
+
       // Always invalidate to catch the new login_provider value
       ref.invalidate(currentProfileProvider);
 
@@ -150,7 +145,7 @@ class AuthController extends AsyncNotifier<void> {
       final usesMockProfile = await ref
           .read(authRepositoryProvider)
           .linkAppleAccount();
-      
+
       ref.invalidate(currentProfileProvider);
 
       if (usesMockProfile) {
@@ -180,21 +175,14 @@ class AuthController extends AsyncNotifier<void> {
       await ref.read(authRepositoryProvider).signOut();
 
       final session = await ref.read(authRepositoryProvider).signInWithGoogle();
-      
-      if (session != null) {
-        ref.invalidate(currentProfileProvider);
-      }
 
-      // Reset _isProcessing after a delay because signInWithOAuth returns immediately 
-      // on mobile and the redirect happens in browser. 
-      // If we don't reset, and user cancels browser, button stays disabled.
-      Future.delayed(const Duration(seconds: 10), () {
-        _isProcessing = false;
-      });
+      _applySignedInSession(session);
+      state = const AsyncData(null);
     } catch (e, st) {
-      _isProcessing = false;
       state = AsyncError(e, st);
       rethrow;
+    } finally {
+      _isProcessing = false;
     }
   }
 
@@ -203,11 +191,14 @@ class AuthController extends AsyncNotifier<void> {
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      await ref.read(authRepositoryProvider).signInWithApple();
+      final session = await ref.read(authRepositoryProvider).signInWithApple();
+      _applySignedInSession(session);
+      state = const AsyncData(null);
     } catch (e, st) {
-      _isProcessing = false;
       state = AsyncError(e, st);
       rethrow;
+    } finally {
+      _isProcessing = false;
     }
   }
 
@@ -219,17 +210,11 @@ class AuthController extends AsyncNotifier<void> {
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      final session = await ref.read(authRepositoryProvider).signInWithEmail(
-            email: email,
-            password: password,
-          );
-      
-      // If we got a session, we should invalidate the current profile to ensure
-      // the next fetch gets the real data from Supabase
-      if (session != null) {
-        ref.invalidate(currentProfileProvider);
-      }
+      final session = await ref
+          .read(authRepositoryProvider)
+          .signInWithEmail(email: email, password: password);
 
+      _applySignedInSession(session);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -237,5 +222,14 @@ class AuthController extends AsyncNotifier<void> {
     } finally {
       _isProcessing = false;
     }
+  }
+
+  void _applySignedInSession(Session? session) {
+    if (session == null) return;
+
+    if (session.user.id == 'mock-user-id') {
+      ref.read(mockSessionProvider.notifier).setSession(session);
+    }
+    ref.invalidate(currentProfileProvider);
   }
 }

@@ -11,6 +11,7 @@ import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/friends/presentation/screens/add_friend_screen.dart';
+import '../features/friends/presentation/screens/friend_invite_accept_screen.dart';
 import '../features/friends/presentation/screens/friends_screen.dart';
 import '../features/groups/presentation/groups_screen.dart';
 import '../features/groups/presentation/screens/add_group_transaction_screen.dart';
@@ -307,6 +308,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: FriendInviteAcceptScreen.routePath,
+        pageBuilder: (context, state) {
+          final token = state.pathParameters['token'];
+          final child = token == null
+              ? const FriendsScreen()
+              : FriendInviteAcceptScreen(token: token);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
         path: PrivacyCenterScreen.routePath,
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
@@ -451,7 +462,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
-        path: '/active-sessions',
+        path: ActiveSessionsScreen.routePath,
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
           child: const ActiveSessionsScreen(),

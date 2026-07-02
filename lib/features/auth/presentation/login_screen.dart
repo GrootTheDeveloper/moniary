@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../core/deeplinks/pending_deep_link_controller.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/supabase_providers.dart';
@@ -170,7 +171,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       await signInAction();
       if (!mounted) return;
-      await _completeAuthentication();
+      if (ref.read(currentSessionProvider) == null) {
+        await _completeAuthentication();
+      }
     } catch (error, stackTrace) {
       AppLogger.error('Post-authentication decision failed', error, stackTrace);
       if (!mounted) return;
@@ -192,7 +195,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       builder: (context) => _EmailAuthSheet(
         onSuccess: () async {
           if (context.mounted) Navigator.of(context).pop();
-          await _completeAuthentication();
+          if (ref.read(currentSessionProvider) == null) {
+            await _completeAuthentication();
+          }
         },
       ),
     );
@@ -204,7 +209,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     late final PostAuthDecision decision;
     try {
       AppLogger.info('Resolving post-auth decision...');
-      decision = await ref.read(postAuthDecisionProvider.future);
+      decision = await ref.refresh(postAuthDecisionProvider.future);
       AppLogger.info('Decision resolved: ${decision.destination}');
     } catch (e, st) {
       AppLogger.error('Post-authentication decision failed in resolver', e, st);
@@ -232,7 +237,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         context.go(ProfileSetupScreen.routePath);
       case PostAuthDestination.home:
         AppLogger.info('Navigating to Home');
-        context.go(CalendarScreen.routePath);
+        final pendingRoute = ref
+            .read(pendingDeepLinkProvider.notifier)
+            .consume();
+        context.go(pendingRoute ?? CalendarScreen.routePath);
       case PostAuthDestination.pendingDeletion:
         AppLogger.info('Showing Recovery Sheet');
         await _showRecoverySheet(decision.deletionStatus!);
@@ -419,11 +427,16 @@ class _EmailAuthSheetState extends State<_EmailAuthSheet> {
                     decoration: BoxDecoration(
                       color: AppTheme.danger.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.danger.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: AppTheme.danger.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Text(
                       _errorMessage!,
-                      style: const TextStyle(color: AppTheme.danger, fontSize: 13),
+                      style: const TextStyle(
+                        color: AppTheme.danger,
+                        fontSize: 13,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),

@@ -6,12 +6,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
-import '../../../../core/supabase/supabase_providers.dart';
+import '../../../profile/application/profile_setup_controller.dart';
 import '../../../transactions/domain/models/transaction_entry.dart';
 import '../../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../../transactions/presentation/detail/day_detail_screen.dart';
 import '../../../transactions/presentation/detail/transaction_detail_screen.dart';
 import '../../../transactions/presentation/detail/transaction_route_args.dart';
+import '../../../friends/presentation/screens/friends_screen.dart';
 import '../../../wallets/domain/models/wallet.dart';
 import '../../../wallets/application/wallets_controller.dart';
 import '../../application/month/calendar_filter_provider.dart';
@@ -25,7 +26,6 @@ import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../settings/application/privacy_controller.dart';
-import '../../../profile/application/profile_setup_controller.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -41,9 +41,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final session = ref.watch(currentSessionProvider);
-    final profileAsync = ref.watch(currentProfileProvider);
-    final userId = session?.user.id ?? '';
+    final displayName =
+        ref.watch(currentProfileProvider).value?.fullName?.trim() ?? 'groot';
     final visibleMonth = ref.watch(calendarVisibleMonthProvider);
     final monthAsync = ref.watch(calendarMonthProvider(visibleMonth));
     final walletsAsync = ref.watch(walletsControllerProvider);
@@ -71,11 +70,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                         child: _SeamlessHeader(
-                          userName: profileAsync.value?.fullName ??
-                              session?.user.userMetadata?['name'] ??
-                              'User',
-                          avatarUrl: profileAsync.value?.avatarUrl,
+                          userName: displayName,
                           onProfileTap: () => _openManager(context),
+                          onFriendsTap: () => _openFriendsSheet(context),
                           onTransactionTap: _openTransactionDetail,
                           walletsAsync: walletsAsync,
                           monthAsync: monthAsync,
@@ -84,11 +81,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: _UnifiedFilterRow(
-                          userId: userId,
                           isTodaySelected: _isTodayGridMode,
                           onTodayTap: () {
                             setState(() {
-                              _isTodayGridMode = true;
+                              _isTodayGridMode = !_isTodayGridMode;
                             });
                           },
                           onResetTap: () {
@@ -116,17 +112,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: monthAsync.when(
                           data: (monthData) {
-                            if (monthData.isEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 24,
-                                ),
-                                child: PlaceholderCard(
-                                  title: context.l10n.calendarTitle,
-                                  body: context.l10n.calendarEmptyMessage,
-                                ),
-                              );
-                            }
                             if (_isTodayGridMode) {
                               return _TodayGrid(
                                 monthData: monthData,
@@ -186,6 +171,25 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 
+  Future<void> _openFriendsSheet(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      enableDrag: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.94,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            child: const FriendsScreen(),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _openDayDetail(DateTime date) async {
     final result = await context.push<TransactionMutationResult>(
       DayDetailScreen.routePath,
@@ -234,16 +238,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 class _SeamlessHeader extends ConsumerWidget {
   const _SeamlessHeader({
     required this.userName,
-    this.avatarUrl,
     required this.onProfileTap,
+    required this.onFriendsTap,
     required this.onTransactionTap,
     required this.walletsAsync,
     required this.monthAsync,
   });
 
   final String userName;
-  final String? avatarUrl;
   final VoidCallback onProfileTap;
+  final VoidCallback onFriendsTap;
   final Future<void> Function(TransactionEntry transaction) onTransactionTap;
   final AsyncValue<List<Wallet>> walletsAsync;
   final AsyncValue<CalendarMonthData> monthAsync;
@@ -301,34 +305,10 @@ class _SeamlessHeader extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: onProfileTap,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      color: AppTheme.mint,
-                      shape: BoxShape.circle,
-                    ),
-                    child: avatarUrl?.isNotEmpty == true
-                        ? SupabaseImage(
-                            imagePath: avatarUrl,
-                            width: 40,
-                            height: 40,
-                            borderRadius: BorderRadius.circular(20),
-                          )
-                        : Center(
-                            child: Text(
-                              userName.isNotEmpty
-                                  ? userName.substring(0, 1).toUpperCase()
-                                  : 'U',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                  ),
+                _HeaderCircleButton(
+                  tooltip: context.l10n.friendsTitle,
+                  icon: Icons.people_outline,
+                  onTap: onFriendsTap,
                 ),
                 const SizedBox(width: 8),
                 GestureDetector(
@@ -354,6 +334,23 @@ class _SeamlessHeader extends ConsumerWidget {
                     ),
                     child: const Icon(
                       Icons.search,
+                      color: Colors.white70,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: onProfileTap,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.account_balance_wallet_outlined,
                       color: Colors.white70,
                       size: 20,
                     ),
@@ -405,32 +402,60 @@ class _SeamlessHeader extends ConsumerWidget {
         // Row 3: Income & Expense (Pills)
         monthAsync.when(
           data: (monthData) {
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _IncomeExpensePill(
-                    label: context.l10n.calendarIncome,
-                    amount: monthData.totalIncome,
-                    color: AppTheme.mint,
-                    icon: Icons.arrow_downward_outlined,
-                  ),
-                  const SizedBox(width: 12),
-                  _IncomeExpensePill(
-                    label: context.l10n.calendarExpense,
-                    amount: monthData.totalExpense,
-                    color: Colors.redAccent,
-                    icon: Icons.arrow_upward_outlined,
-                  ),
-                ],
-              ),
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _IncomeExpensePill(
+                  label: context.l10n.calendarIncome,
+                  amount: monthData.totalIncome,
+                  color: AppTheme.mint,
+                  icon: Icons.arrow_downward_outlined,
+                ),
+                const SizedBox(width: 12),
+                _IncomeExpensePill(
+                  label: context.l10n.calendarExpense,
+                  amount: monthData.totalExpense,
+                  color: AppTheme.danger,
+                  icon: Icons.arrow_upward_outlined,
+                ),
+              ],
             );
           },
           loading: () => const SizedBox(height: 30),
           error: (_, _) => const SizedBox(height: 30),
         ),
       ],
+    );
+  }
+}
+
+class _HeaderCircleButton extends StatelessWidget {
+  const _HeaderCircleButton({
+    required this.tooltip,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: Colors.white70, size: 20),
+        ),
+      ),
     );
   }
 }
@@ -669,13 +694,11 @@ class _MonthPickerContentState extends State<_MonthPickerContent> {
 
 class _UnifiedFilterRow extends ConsumerWidget {
   const _UnifiedFilterRow({
-    required this.userId,
     required this.isTodaySelected,
     required this.onTodayTap,
     required this.onResetTap,
   });
 
-  final String userId;
   final bool isTodaySelected;
   final VoidCallback onTodayTap;
   final VoidCallback onResetTap;
@@ -743,8 +766,8 @@ class _UnifiedFilterRow extends ConsumerWidget {
                     onTap: () => ref
                         .read(calendarFilterProvider.notifier)
                         .toggleStarredOnly(),
-                    activeColor: Colors.amber.withValues(alpha: 0.2),
-                    activeTextColor: Colors.amber,
+                    activeColor: AppTheme.amber.withValues(alpha: 0.2),
+                    activeTextColor: AppTheme.amber,
                     inactiveColor: Colors.transparent,
                     inactiveBorderColor: Colors.white10,
                   ),
@@ -937,7 +960,7 @@ class _CalendarDayCell extends StatelessWidget {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: Colors.orange,
+                              color: AppTheme.amber,
                               width: 1.5,
                             ),
                           ),
@@ -954,7 +977,7 @@ class _CalendarDayCell extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.orange, width: 1.5),
+                        border: Border.all(color: AppTheme.amber, width: 1.5),
                       ),
                       child: SupabaseImage(
                         imagePath: images[0].imagePath,
@@ -975,7 +998,7 @@ class _CalendarDayCell extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.orange,
+                            color: AppTheme.amber,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                               color: AppTheme.surface,
@@ -1048,7 +1071,7 @@ class _CalendarDayCell extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.amber.withValues(alpha: 0.15),
+                        color: AppTheme.amber.withValues(alpha: 0.15),
                         blurRadius: 12,
                         spreadRadius: 2,
                       ),
@@ -1283,7 +1306,7 @@ class _TodayGrid extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: PlaceholderCard(
           title: context.l10n.calendarToday,
-          body: context.l10n.calendarEmptyMessage,
+          body: context.l10n.calendarTodayEmptyMessage,
         ),
       );
     }

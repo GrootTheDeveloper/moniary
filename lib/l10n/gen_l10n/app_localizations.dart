@@ -161,7 +161,7 @@ abstract class AppLocalizations {
   /// No description provided for @commonCopy.
   ///
   /// In vi, this message translates to:
-  /// **'Copy'**
+  /// **'Sao chép'**
   String get commonCopy;
 
   /// No description provided for @commonShare.
@@ -251,7 +251,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginAnonymous.
   ///
   /// In vi, this message translates to:
-  /// **'Kết nối ẩn danh với Supabase'**
+  /// **'Tiếp tục với tài khoản khách'**
   String get loginAnonymous;
 
   /// No description provided for @loginTerms.
@@ -299,7 +299,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginConnecting.
   ///
   /// In vi, this message translates to:
-  /// **'Đang kết nối Supabase...'**
+  /// **'Đang đăng nhập...'**
   String get loginConnecting;
 
   /// No description provided for @loginTryWithoutAuth.
@@ -311,13 +311,13 @@ abstract class AppLocalizations {
   /// No description provided for @loginSessionReady.
   ///
   /// In vi, this message translates to:
-  /// **'Phiên đăng nhập đã sẵn sàng. Bạn có thể vào thẳng Lịch.'**
+  /// **'Bạn đã đăng nhập. Đang mở lịch chi tiêu...'**
   String get loginSessionReady;
 
   /// No description provided for @loginDataSecure.
   ///
   /// In vi, this message translates to:
-  /// **'Dữ liệu của bạn được bảo mật và đồng bộ với Supabase.'**
+  /// **'Dữ liệu của bạn được bảo vệ và đồng bộ an toàn.'**
   String get loginDataSecure;
 
   /// No description provided for @splashLoading.
@@ -599,13 +599,19 @@ abstract class AppLocalizations {
   /// No description provided for @calendarEmptyMessage.
   ///
   /// In vi, this message translates to:
-  /// **'Chưa có giao dịch nào trong tháng này. Bước tiếp theo là thêm giao dịch để lịch hiện dữ liệu thật.'**
+  /// **'Chưa có giao dịch nào trong tháng này. Bạn vẫn có thể chọn ngày hoặc nhấn + để thêm giao dịch.'**
   String get calendarEmptyMessage;
+
+  /// No description provided for @calendarTodayEmptyMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hôm nay chưa có giao dịch nào. Nhấn + để ghi lại khoản thu chi mới.'**
+  String get calendarTodayEmptyMessage;
 
   /// No description provided for @calendarStatsMessage.
   ///
   /// In vi, this message translates to:
-  /// **'{count} giao dịch trong {days} ngày có hoạt động. Lịch đang đọc dữ liệu thật từ Supabase.'**
+  /// **'{count} giao dịch trong {days} ngày có hoạt động. Dữ liệu lịch đã được cập nhật.'**
   String calendarStatsMessage(int count, int days);
 
   /// No description provided for @calendarLoadError.
@@ -1697,7 +1703,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileAnonymous.
   ///
   /// In vi, this message translates to:
-  /// **'Tài khoản dùng thử ẩn danh'**
+  /// **'Tài khoản khách'**
   String get profileAnonymous;
 
   /// No description provided for @profileMyData.
@@ -1729,6 +1735,96 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Nhập từ file CSV'**
   String get profileImportSubtitle;
+
+  /// No description provided for @profileMoniarySetup.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết lập Moniary'**
+  String get profileMoniarySetup;
+
+  /// No description provided for @profileGeneralSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chung'**
+  String get profileGeneralSection;
+
+  /// No description provided for @profileSupportSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hỗ trợ'**
+  String get profileSupportSection;
+
+  /// No description provided for @profilePrivacySafetySection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền riêng tư & an toàn'**
+  String get profilePrivacySafetySection;
+
+  /// No description provided for @profileDangerZoneSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vùng nguy hiểm'**
+  String get profileDangerZoneSection;
+
+  /// No description provided for @profileHowMoniaryWorksTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cách Moniary hoạt động'**
+  String get profileHowMoniaryWorksTitle;
+
+  /// No description provided for @profileHowMoniaryWorksSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hướng dẫn nhanh để ghi nhận và xem lại tài chính cá nhân.'**
+  String get profileHowMoniaryWorksSubtitle;
+
+  /// No description provided for @profileSetupGuideWalletTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết lập ví'**
+  String get profileSetupGuideWalletTitle;
+
+  /// No description provided for @profileSetupGuideWalletBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo hoặc kiểm tra ví để mỗi giao dịch có nguồn tiền rõ ràng.'**
+  String get profileSetupGuideWalletBody;
+
+  /// No description provided for @profileSetupGuideTransactionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm giao dịch'**
+  String get profileSetupGuideTransactionTitle;
+
+  /// No description provided for @profileSetupGuideTransactionBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chụp chi tiêu bằng ảnh hoặc nhập giao dịch thủ công.'**
+  String get profileSetupGuideTransactionBody;
+
+  /// No description provided for @profileSetupGuideReviewTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem Calendar và Statistics'**
+  String get profileSetupGuideReviewTitle;
+
+  /// No description provided for @profileSetupGuideReviewBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng Calendar và Statistics để hiểu chi tiêu theo ngày và tháng.'**
+  String get profileSetupGuideReviewBody;
+
+  /// No description provided for @profileSetupGuideExportTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất và bảo vệ dữ liệu'**
+  String get profileSetupGuideExportTitle;
+
+  /// No description provided for @profileSetupGuideExportBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất dữ liệu và kiểm tra quyền riêng tư khi cần.'**
+  String get profileSetupGuideExportBody;
 
   /// No description provided for @profilePrivacyCenter.
   ///
@@ -1847,7 +1943,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyAboutSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Mục đích app, trạng thái MVP và thông tin phát hành.'**
+  /// **'Mục đích app, trạng thái phiên bản hiện tại và thông tin phát hành.'**
   String get privacyAboutSubtitle;
 
   /// No description provided for @profileAccount.
@@ -1997,7 +2093,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteAccountConsequence3.
   ///
   /// In vi, this message translates to:
-  /// **'Xóa ảnh giao dịch trong Storage theo user ID.'**
+  /// **'Xóa ảnh giao dịch gắn với tài khoản hiện tại.'**
   String get deleteAccountConsequence3;
 
   /// No description provided for @deleteAccountUnderstand.
@@ -2237,38 +2333,164 @@ abstract class AppLocalizations {
   /// No description provided for @deleteAccountHelpCreateRequest.
   ///
   /// In vi, this message translates to:
-  /// **'Tạo request xóa dữ liệu'**
+  /// **'Tạo yêu cầu xóa dữ liệu'**
   String get deleteAccountHelpCreateRequest;
 
   /// No description provided for @deleteAccountHelpContactPrivacy.
   ///
   /// In vi, this message translates to:
-  /// **'Liên hệ privacy'**
+  /// **'Liên hệ quyền riêng tư'**
   String get deleteAccountHelpContactPrivacy;
 
   /// No description provided for @legalContactHero.
   ///
   /// In vi, this message translates to:
-  /// **'Các kênh liên hệ này giúp người dùng, reviewer hoặc team phát hành biết nơi gửi yêu cầu phù hợp.'**
+  /// **'Các kênh liên hệ này giúp bạn gửi đúng yêu cầu về dữ liệu, hỗ trợ hoặc pháp lý.'**
   String get legalContactHero;
+
+  /// No description provided for @legalContactPrivacyLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền riêng tư'**
+  String get legalContactPrivacyLabel;
+
+  /// No description provided for @legalContactSupportLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hỗ trợ'**
+  String get legalContactSupportLabel;
+
+  /// No description provided for @legalContactLegalLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Pháp lý'**
+  String get legalContactLegalLabel;
 
   /// No description provided for @legalContactPrivacyDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Yêu cầu dữ liệu cá nhân, xóa dữ liệu hoặc câu hỏi privacy.'**
+  /// **'Yêu cầu dữ liệu cá nhân, xóa dữ liệu hoặc câu hỏi về quyền riêng tư.'**
   String get legalContactPrivacyDesc;
 
   /// No description provided for @legalContactSupportDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Hỗ trợ chung về app, file export hoặc thao tác người dùng.'**
+  /// **'Hỗ trợ chung về app, file xuất dữ liệu hoặc thao tác người dùng.'**
   String get legalContactSupportDesc;
 
   /// No description provided for @legalContactLegalDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Vấn đề điều khoản, phát hành Store hoặc yêu cầu pháp lý.'**
+  /// **'Vấn đề điều khoản, phát hành hoặc yêu cầu pháp lý.'**
   String get legalContactLegalDesc;
+
+  /// No description provided for @thirdPartyServicesHero.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo này giúp bạn hiểu Moniary dựa vào những dịch vụ nào để đăng nhập, lưu trữ và vận hành dữ liệu.'**
+  String get thirdPartyServicesHero;
+
+  /// No description provided for @thirdPartyServicesSyncTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng bộ và lưu trữ dữ liệu'**
+  String get thirdPartyServicesSyncTitle;
+
+  /// No description provided for @thirdPartyServicesSyncDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng cho đăng nhập, đồng bộ dữ liệu, lưu ảnh giao dịch và xử lý yêu cầu xóa tài khoản.'**
+  String get thirdPartyServicesSyncDesc;
+
+  /// No description provided for @thirdPartyServicesAppPlatformTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nền tảng ứng dụng'**
+  String get thirdPartyServicesAppPlatformTitle;
+
+  /// No description provided for @thirdPartyServicesAppPlatformDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng để xây dựng giao diện, điều hướng, trạng thái, camera, chọn ảnh và xử lý file trong app.'**
+  String get thirdPartyServicesAppPlatformDesc;
+
+  /// No description provided for @thirdPartyServicesDeviceStorageTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bộ nhớ thiết bị'**
+  String get thirdPartyServicesDeviceStorageTitle;
+
+  /// No description provided for @thirdPartyServicesDeviceStorageDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'File xuất dữ liệu, yêu cầu quyền riêng tư và lịch sử xuất/yêu cầu được ghi trong thư mục tài liệu của app trên thiết bị.'**
+  String get thirdPartyServicesDeviceStorageDesc;
+
+  /// No description provided for @thirdPartyServicesNoAdsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tích hợp quảng cáo'**
+  String get thirdPartyServicesNoAdsTitle;
+
+  /// No description provided for @thirdPartyServicesNoAdsDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Moniary không dùng SDK quảng cáo, theo dõi marketing, danh bạ, SMS, email cá nhân hoặc kết nối ngân hàng tự động.'**
+  String get thirdPartyServicesNoAdsDesc;
+
+  /// No description provided for @userRightsHero.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có quyền hiểu dữ liệu nào đang được lưu, xuất dữ liệu của mình và gửi yêu cầu quyền riêng tư khi cần.'**
+  String get userRightsHero;
+
+  /// No description provided for @userRightsViewDataTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem dữ liệu đang lưu'**
+  String get userRightsViewDataTitle;
+
+  /// No description provided for @userRightsViewDataDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có thể xem tổng quan dữ liệu, nhóm dữ liệu, ảnh giao dịch và file trên thiết bị.'**
+  String get userRightsViewDataDesc;
+
+  /// No description provided for @userRightsExportTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất dữ liệu'**
+  String get userRightsExportTitle;
+
+  /// No description provided for @userRightsExportDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có thể xuất dữ liệu ở định dạng CSV, Excel hoặc PDF trước khi chia sẻ hoặc rời app.'**
+  String get userRightsExportDesc;
+
+  /// No description provided for @userRightsSupportTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu sửa hoặc hỗ trợ'**
+  String get userRightsSupportTitle;
+
+  /// No description provided for @userRightsSupportDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có thể tạo yêu cầu quyền riêng tư nếu dữ liệu cần kiểm tra, sửa hoặc giải thích thêm.'**
+  String get userRightsSupportDesc;
+
+  /// No description provided for @userRightsDeletionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu xóa dữ liệu'**
+  String get userRightsDeletionTitle;
+
+  /// No description provided for @userRightsDeletionDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có thể xóa tài khoản trong app hoặc tạo yêu cầu thủ công khi luồng trực tiếp thất bại.'**
+  String get userRightsDeletionDesc;
 
   /// No description provided for @privacyDetailCreatedAt.
   ///
@@ -2435,7 +2657,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileAnonymousWarning.
   ///
   /// In vi, this message translates to:
-  /// **'Bạn đang đăng nhập bằng tài khoản khách. Hãy liên kết tài khoản để tránh mất mát dữ liệu khi đổi thiết bị.'**
+  /// **'Bạn đang dùng tài khoản khách. Hãy liên kết Email hoặc Google để giữ dữ liệu khi đổi thiết bị.'**
   String get profileAnonymousWarning;
 
   /// No description provided for @profileLinkNow.
@@ -2453,7 +2675,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileLinkAccountSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tài khoản của bạn hiện là ẩn danh. Liên kết với Email hoặc Google để lưu trữ dữ liệu vĩnh viễn và đăng nhập trên nhiều thiết bị.'**
+  /// **'Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email hoặc Google để lưu dữ liệu và đăng nhập trên nhiều thiết bị.'**
   String get profileLinkAccountSubtitle;
 
   /// No description provided for @profileNewPassword.
@@ -2525,7 +2747,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileAnonymousBadge.
   ///
   /// In vi, this message translates to:
-  /// **'Tài khoản Ẩn danh'**
+  /// **'Tài khoản khách'**
   String get profileAnonymousBadge;
 
   /// No description provided for @profileVerifiedBadge.
@@ -2621,13 +2843,13 @@ abstract class AppLocalizations {
   /// No description provided for @exportTroubleshootingSupportTitle.
   ///
   /// In vi, this message translates to:
-  /// **'4. Tạo request hỗ trợ'**
+  /// **'4. Tạo yêu cầu hỗ trợ'**
   String get exportTroubleshootingSupportTitle;
 
   /// No description provided for @exportTroubleshootingSupportDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Nếu file không tạo được hoặc không mở được, hãy tạo request privacy/support kèm mô tả lỗi.'**
+  /// **'Nếu file không tạo được hoặc không mở được, hãy tạo yêu cầu hỗ trợ kèm mô tả lỗi.'**
   String get exportTroubleshootingSupportDesc;
 
   /// No description provided for @legalDataDeletionPolicy.
@@ -2657,13 +2879,13 @@ abstract class AppLocalizations {
   /// No description provided for @legalCopyAllContacts.
   ///
   /// In vi, this message translates to:
-  /// **'Copy tất cả liên hệ'**
+  /// **'Sao chép tất cả liên hệ'**
   String get legalCopyAllContacts;
 
   /// No description provided for @legalCopyContactSuccess.
   ///
   /// In vi, this message translates to:
-  /// **'Đã copy thông tin liên hệ.'**
+  /// **'Đã sao chép thông tin liên hệ.'**
   String get legalCopyContactSuccess;
 
   /// No description provided for @legalPolicyAcceptance.
@@ -2735,7 +2957,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyLocalFiles.
   ///
   /// In vi, this message translates to:
-  /// **'File cục bộ'**
+  /// **'File trên thiết bị'**
   String get privacyLocalFiles;
 
   /// No description provided for @privacyTransactionPhotos.
@@ -2747,7 +2969,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyViewExportHistory.
   ///
   /// In vi, this message translates to:
-  /// **'Xem lịch sử export'**
+  /// **'Xem lịch sử xuất dữ liệu'**
   String get privacyViewExportHistory;
 
   /// No description provided for @privacyPermissionRationale.
@@ -2759,7 +2981,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyFaq.
   ///
   /// In vi, this message translates to:
-  /// **'FAQ privacy & tài khoản'**
+  /// **'FAQ quyền riêng tư & tài khoản'**
   String get privacyFaq;
 
   /// No description provided for @privacyCenter.
@@ -2783,7 +3005,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyCreateRequest.
   ///
   /// In vi, this message translates to:
-  /// **'Tạo yêu cầu privacy'**
+  /// **'Tạo yêu cầu quyền riêng tư'**
   String get privacyCreateRequest;
 
   /// No description provided for @privacyRequestCreated.
@@ -2795,13 +3017,13 @@ abstract class AppLocalizations {
   /// No description provided for @privacyCopyEmail.
   ///
   /// In vi, this message translates to:
-  /// **'Copy email'**
+  /// **'Sao chép email'**
   String get privacyCopyEmail;
 
   /// No description provided for @privacyCopyInstructions.
   ///
   /// In vi, this message translates to:
-  /// **'Copy hướng dẫn'**
+  /// **'Sao chép hướng dẫn'**
   String get privacyCopyInstructions;
 
   /// No description provided for @privacyPolicyTitle.
@@ -2819,25 +3041,25 @@ abstract class AppLocalizations {
   /// No description provided for @privacyCopyFilePath.
   ///
   /// In vi, this message translates to:
-  /// **'Copy file path'**
+  /// **'Sao chép đường dẫn file'**
   String get privacyCopyFilePath;
 
   /// No description provided for @privacyCopyFilePathSuccess.
   ///
   /// In vi, this message translates to:
-  /// **'Đã copy đường dẫn file'**
+  /// **'Đã sao chép đường dẫn file'**
   String get privacyCopyFilePathSuccess;
 
   /// No description provided for @privacyCopyRequest.
   ///
   /// In vi, this message translates to:
-  /// **'Copy request'**
+  /// **'Sao chép yêu cầu'**
   String get privacyCopyRequest;
 
   /// No description provided for @privacyCopyRequestSuccess.
   ///
   /// In vi, this message translates to:
-  /// **'Đã copy nội dung yêu cầu'**
+  /// **'Đã sao chép nội dung yêu cầu'**
   String get privacyCopyRequestSuccess;
 
   /// No description provided for @storeAboutMoniary.
@@ -2867,13 +3089,13 @@ abstract class AppLocalizations {
   /// No description provided for @supportCopySuccess.
   ///
   /// In vi, this message translates to:
-  /// **'Đã copy thông tin support.'**
+  /// **'Đã sao chép thông tin hỗ trợ.'**
   String get supportCopySuccess;
 
   /// No description provided for @supportCopyDiagnostic.
   ///
   /// In vi, this message translates to:
-  /// **'Copy diagnostic info'**
+  /// **'Sao chép thông tin hỗ trợ'**
   String get supportCopyDiagnostic;
 
   /// No description provided for @supportRequestChecklist.
@@ -3659,19 +3881,19 @@ abstract class AppLocalizations {
   /// No description provided for @privacyContactCopyEmailSuccess.
   ///
   /// In vi, this message translates to:
-  /// **'Đã copy email support.'**
+  /// **'Đã sao chép email hỗ trợ.'**
   String get privacyContactCopyEmailSuccess;
 
   /// No description provided for @privacyContactCopyGuide.
   ///
   /// In vi, this message translates to:
-  /// **'Email: {email}\nChủ đề: Moniary privacy request\nNội dung: Dán nội dung yêu cầu đã copy từ app.'**
+  /// **'Email: {email}\nChủ đề: Yêu cầu hỗ trợ Moniary\nNội dung: Dán nội dung yêu cầu đã sao chép từ app.'**
   String privacyContactCopyGuide(String email);
 
   /// No description provided for @privacyContactCopyGuideSuccess.
   ///
   /// In vi, this message translates to:
-  /// **'Đã copy hướng dẫn gửi request.'**
+  /// **'Đã sao chép hướng dẫn gửi yêu cầu.'**
   String get privacyContactCopyGuideSuccess;
 
   /// No description provided for @privacyContactHeroTitle.
@@ -3683,7 +3905,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyContactHeroDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Nếu không thể xử lý trực tiếp trong app, người dùng có thể liên hệ team để yêu cầu hỗ trợ về dữ liệu.'**
+  /// **'Nếu không thể xử lý trực tiếp trong app, bạn có thể liên hệ nhóm hỗ trợ Moniary để được hỗ trợ về dữ liệu.'**
   String get privacyContactHeroDesc;
 
   /// No description provided for @privacyContactEmailTitle.
@@ -3707,13 +3929,13 @@ abstract class AppLocalizations {
   /// No description provided for @privacyContactInfoValue.
   ///
   /// In vi, this message translates to:
-  /// **'User ID hoặc email đăng nhập'**
+  /// **'Mã tài khoản hoặc email đăng nhập'**
   String get privacyContactInfoValue;
 
   /// No description provided for @privacyContactInfoDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Không gửi mật khẩu, access token, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.'**
+  /// **'Không gửi mật khẩu, mã truy cập, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.'**
   String get privacyContactInfoDesc;
 
   /// No description provided for @privacyContactTimeTitle.
@@ -3731,7 +3953,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyContactTimeDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Team cần cập nhật thời gian thực tế trước khi phát hành production.'**
+  /// **'Moniary sẽ cập nhật thời gian phản hồi thực tế khi phát hành chính thức.'**
   String get privacyContactTimeDesc;
 
   /// No description provided for @privacyContactRecentRequests.
@@ -3761,13 +3983,13 @@ abstract class AppLocalizations {
   /// No description provided for @privacyAndAccountTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Privacy & tài khoản'**
+  /// **'Quyền riêng tư & tài khoản'**
   String get privacyAndAccountTitle;
 
   /// No description provided for @privacyAndAccountSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xem quyền dữ liệu, yêu cầu privacy và các lựa chọn liên quan tài khoản.'**
+  /// **'Xem quyền dữ liệu, yêu cầu hỗ trợ và các lựa chọn liên quan tài khoản.'**
   String get privacyAndAccountSubtitle;
 
   /// No description provided for @dataRightsTitle.
@@ -3779,37 +4001,37 @@ abstract class AppLocalizations {
   /// No description provided for @dataRightsSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tóm tắt quyền xem, xuất, sửa/xóa dữ liệu và liên hệ privacy.'**
+  /// **'Tóm tắt quyền xem, xuất, sửa/xóa dữ liệu và liên hệ quyền riêng tư.'**
   String get dataRightsSubtitle;
 
   /// No description provided for @exportDataSubTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xử lý khi export CSV, Excel hoặc PDF lỗi, trống hoặc không tìm thấy file.'**
+  /// **'Xử lý khi xuất CSV, Excel hoặc PDF lỗi, trống hoặc không tìm thấy file.'**
   String get exportDataSubTitle;
 
   /// No description provided for @createExportFileTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tạo file export'**
+  /// **'Tạo file xuất dữ liệu'**
   String get createExportFileTitle;
 
   /// No description provided for @createExportFileSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Mở luồng export khi cần tạo bản sao dữ liệu cá nhân.'**
+  /// **'Mở luồng xuất dữ liệu khi cần tạo bản sao dữ liệu cá nhân.'**
   String get createExportFileSubtitle;
 
   /// No description provided for @contactSupportSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tạo request privacy hoặc copy thông tin liên hệ để gửi cho team hỗ trợ.'**
+  /// **'Tạo yêu cầu quyền riêng tư hoặc sao chép thông tin liên hệ để gửi cho nhóm hỗ trợ.'**
   String get contactSupportSubtitle;
 
   /// No description provided for @deleteAccountSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Chuẩn bị trước khi xóa, hiểu dữ liệu bị ảnh hưởng và fallback khi có lỗi.'**
+  /// **'Chuẩn bị trước khi xóa, hiểu dữ liệu bị ảnh hưởng và phương án xử lý khi có lỗi.'**
   String get deleteAccountSubtitle;
 
   /// No description provided for @supportChecklistTitle.
@@ -3821,25 +4043,25 @@ abstract class AppLocalizations {
   /// No description provided for @supportChecklistSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Chuẩn bị mô tả lỗi, file liên quan và diagnostic info trước khi gửi request.'**
+  /// **'Chuẩn bị mô tả lỗi, file liên quan và thông tin hỗ trợ trước khi gửi yêu cầu.'**
   String get supportChecklistSubtitle;
 
   /// No description provided for @helpHeroText.
   ///
   /// In vi, this message translates to:
-  /// **'Tìm nhanh các hướng dẫn liên quan đến dữ liệu, quyền riêng tư, export và hỗ trợ tài khoản trong Moniary.'**
+  /// **'Tìm nhanh các hướng dẫn liên quan đến dữ liệu, quyền riêng tư, xuất dữ liệu và hỗ trợ tài khoản trong Moniary.'**
   String get helpHeroText;
 
   /// No description provided for @supportDiagnosticTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Thông tin gửi support'**
+  /// **'Thông tin gửi hỗ trợ'**
   String get supportDiagnosticTitle;
 
   /// No description provided for @supportDiagnosticSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Copy version, build và kênh liên hệ để gửi kèm khi báo lỗi.'**
+  /// **'Sao chép phiên bản, bản dựng và kênh liên hệ để gửi kèm khi báo lỗi.'**
   String get supportDiagnosticSubtitle;
 
   /// No description provided for @helpCenterTitle.
@@ -3851,7 +4073,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpCenterSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tìm hướng dẫn về privacy, tài khoản, export dữ liệu và cách liên hệ hỗ trợ.'**
+  /// **'Tìm hướng dẫn về quyền riêng tư, tài khoản, xuất dữ liệu và cách liên hệ hỗ trợ.'**
   String get helpCenterSubtitle;
 
   /// No description provided for @aboutMoniaryTitle.
@@ -3863,7 +4085,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutMoniarySubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xem mục đích app, định hướng dữ liệu và trạng thái MVP trước khi phát hành.'**
+  /// **'Xem mục đích app, định hướng dữ liệu và trạng thái phiên bản hiện tại.'**
   String get aboutMoniarySubtitle;
 
   /// No description provided for @privacyPolicySubtitle.
@@ -3881,7 +4103,7 @@ abstract class AppLocalizations {
   /// No description provided for @termsOfUseSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xem phạm vi sử dụng, trách nhiệm người dùng và giới hạn của phiên bản MVP.'**
+  /// **'Xem phạm vi sử dụng, trách nhiệm người dùng và giới hạn của phiên bản hiện tại.'**
   String get termsOfUseSubtitle;
 
   /// No description provided for @dataRetentionPolicyTitle.
@@ -3893,7 +4115,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataRetentionPolicySubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xem dữ liệu nào được lưu trên cloud, dữ liệu nào nằm cục bộ và cách xử lý sau khi xóa tài khoản.'**
+  /// **'Xem dữ liệu nào được đồng bộ theo tài khoản, dữ liệu nào nằm trên thiết bị và cách xử lý sau khi xóa tài khoản.'**
   String get dataRetentionPolicySubtitle;
 
   /// No description provided for @thirdPartyServicesTitle.
@@ -3905,7 +4127,7 @@ abstract class AppLocalizations {
   /// No description provided for @thirdPartyServicesSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xem app đang dùng Supabase, Flutter/package và bộ nhớ thiết bị như thế nào.'**
+  /// **'Xem app dùng dịch vụ đồng bộ, lưu trữ và bộ nhớ thiết bị như thế nào.'**
   String get thirdPartyServicesSubtitle;
 
   /// No description provided for @releaseChecklistTitle.
@@ -3917,7 +4139,7 @@ abstract class AppLocalizations {
   /// No description provided for @releaseChecklistSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Rà soát các mục privacy, data export, xóa tài khoản và contact trước khi lên Store.'**
+  /// **'Rà soát quyền riêng tư, xuất dữ liệu, xóa tài khoản và kênh liên hệ trước khi phát hành.'**
   String get releaseChecklistSubtitle;
 
   /// No description provided for @trustSafetyTitle.
@@ -3953,7 +4175,7 @@ abstract class AppLocalizations {
   /// No description provided for @policyChangelogSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xem các mốc cập nhật privacy, legal và store readiness trong app.'**
+  /// **'Xem các mốc cập nhật quyền riêng tư, pháp lý và chuẩn bị phát hành trong app.'**
   String get policyChangelogSubtitle;
 
   /// No description provided for @userDataRightsTitle.
@@ -3965,7 +4187,7 @@ abstract class AppLocalizations {
   /// No description provided for @userDataRightsSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tóm tắt quyền xem dữ liệu, xuất dữ liệu, yêu cầu sửa/xóa và liên hệ privacy.'**
+  /// **'Tóm tắt quyền xem dữ liệu, xuất dữ liệu, yêu cầu sửa/xóa và liên hệ quyền riêng tư.'**
   String get userDataRightsSubtitle;
 
   /// No description provided for @policyAcceptanceNoticeTitle.
@@ -3989,7 +4211,7 @@ abstract class AppLocalizations {
   /// No description provided for @legalContactSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xem và copy email privacy, support và legal dùng cho phát hành Store.'**
+  /// **'Xem và sao chép email quyền riêng tư, hỗ trợ và pháp lý.'**
   String get legalContactSubtitle;
 
   /// No description provided for @dataSafetyTitle.
@@ -4001,7 +4223,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataSafetySubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong MVP.'**
+  /// **'Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong phiên bản hiện tại.'**
   String get dataSafetySubtitle;
 
   /// No description provided for @myDataTitle.
@@ -4085,7 +4307,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyContactSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Kênh hỗ trợ cho yêu cầu dữ liệu, xóa dữ liệu hoặc câu hỏi privacy.'**
+  /// **'Kênh hỗ trợ cho yêu cầu dữ liệu, xóa dữ liệu hoặc câu hỏi về quyền riêng tư.'**
   String get privacyContactSubtitle;
 
   /// No description provided for @trustHeroText.
@@ -4127,7 +4349,7 @@ abstract class AppLocalizations {
   /// No description provided for @noOverCollectionDesc.
   ///
   /// In vi, this message translates to:
-  /// **'MVP không đọc danh bạ, SMS, email inbox, vị trí hoặc tài khoản ngân hàng tự động.'**
+  /// **'Moniary không đọc danh bạ, SMS, email cá nhân, vị trí hoặc tự động kết nối tài khoản ngân hàng.'**
   String get noOverCollectionDesc;
 
   /// No description provided for @carefulFileSharingTitle.
@@ -4163,7 +4385,7 @@ abstract class AppLocalizations {
   /// No description provided for @legalCopyContactValue.
   ///
   /// In vi, this message translates to:
-  /// **'Đã copy {value}'**
+  /// **'Đã sao chép {value}'**
   String legalCopyContactValue(String value);
 
   /// No description provided for @storeComplianceHero.
@@ -4181,7 +4403,7 @@ abstract class AppLocalizations {
   /// No description provided for @storeCompliancePrivacyDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Có màn privacy policy mô tả dữ liệu tài chính, ảnh giao dịch và cách xử lý dữ liệu.'**
+  /// **'Có màn chính sách quyền riêng tư mô tả dữ liệu tài chính, ảnh giao dịch và cách xử lý dữ liệu.'**
   String get storeCompliancePrivacyDesc;
 
   /// No description provided for @storeComplianceDeleteTitle.
@@ -4193,7 +4415,7 @@ abstract class AppLocalizations {
   /// No description provided for @storeComplianceDeleteDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Có luồng xóa tài khoản trong app và fallback tạo request thủ công.'**
+  /// **'Có luồng xóa tài khoản trong app và phương án gửi yêu cầu thủ công khi cần.'**
   String get storeComplianceDeleteDesc;
 
   /// No description provided for @storeComplianceExportTitle.
@@ -4205,13 +4427,13 @@ abstract class AppLocalizations {
   /// No description provided for @storeComplianceExportDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Người dùng có thể export dữ liệu CSV, Excel hoặc PDF trước khi rời app.'**
+  /// **'Người dùng có thể xuất dữ liệu CSV, Excel hoặc PDF trước khi rời app.'**
   String get storeComplianceExportDesc;
 
   /// No description provided for @storeComplianceDataSafetyTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Data Safety'**
+  /// **'An toàn dữ liệu'**
   String get storeComplianceDataSafetyTitle;
 
   /// No description provided for @storeComplianceDataSafetyDesc.
@@ -4223,13 +4445,13 @@ abstract class AppLocalizations {
   /// No description provided for @storeComplianceContactTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Liên hệ privacy'**
+  /// **'Liên hệ quyền riêng tư'**
   String get storeComplianceContactTitle;
 
   /// No description provided for @storeComplianceContactDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Có kênh hỗ trợ, request history và trạng thái xử lý yêu cầu privacy.'**
+  /// **'Có kênh hỗ trợ, lịch sử yêu cầu và trạng thái xử lý yêu cầu quyền riêng tư.'**
   String get storeComplianceContactDesc;
 
   /// No description provided for @storeComplianceTermsTitle.
@@ -4241,7 +4463,7 @@ abstract class AppLocalizations {
   /// No description provided for @storeComplianceTermsDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Có terms of use và ghi chú giới hạn trách nhiệm của app MVP.'**
+  /// **'Có điều khoản sử dụng và ghi chú giới hạn trách nhiệm của app.'**
   String get storeComplianceTermsDesc;
 
   /// No description provided for @privacyNoData.
@@ -4367,7 +4589,7 @@ abstract class AppLocalizations {
   /// No description provided for @inventoryPhotoDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Đường dẫn ảnh trong Storage private bucket, hiển thị qua signed URL.'**
+  /// **'Đường dẫn ảnh giao dịch được lưu an toàn và chỉ hiển thị khi cần trong app.'**
   String get inventoryPhotoDesc;
 
   /// No description provided for @inventorySettingsTitle.
@@ -4385,7 +4607,7 @@ abstract class AppLocalizations {
   /// No description provided for @sensitiveDataDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Dữ liệu tài chính có thể gồm số tiền, ghi chú, ảnh hóa đơn và file đã xuất. Chỉ chia sẻ file export với người bạn tin cậy và xóa file cục bộ khi không còn cần dùng.'**
+  /// **'Dữ liệu tài chính có thể gồm số tiền, ghi chú, ảnh hóa đơn và file đã xuất. Chỉ chia sẻ file xuất dữ liệu với người bạn tin cậy và xóa file trên thiết bị khi không còn cần dùng.'**
   String get sensitiveDataDesc;
 
   /// No description provided for @localFilesExportCount.
@@ -4403,13 +4625,13 @@ abstract class AppLocalizations {
   /// No description provided for @localFilesNoExport.
   ///
   /// In vi, this message translates to:
-  /// **'Chưa có file export'**
+  /// **'Chưa có file xuất dữ liệu'**
   String get localFilesNoExport;
 
   /// No description provided for @localFilesDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Các file CSV, Excel và PDF được tạo trên thiết bị này. Bạn có thể mở lại, chia sẻ hoặc tự xóa file trong bộ nhớ cục bộ.'**
+  /// **'Các file CSV, Excel và PDF được tạo trên thiết bị này. Bạn có thể mở lại, chia sẻ hoặc tự xóa file trong bộ nhớ thiết bị.'**
   String get localFilesDesc;
 
   /// No description provided for @reportSummaryDesc.
@@ -4493,7 +4715,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportChecklistHero.
   ///
   /// In vi, this message translates to:
-  /// **'Chuẩn bị đủ thông tin trước khi gửi yêu cầu giúp team hỗ trợ nhanh hơn và tránh chia sẻ dữ liệu nhạy cảm không cần thiết.'**
+  /// **'Chuẩn bị đủ thông tin trước khi gửi yêu cầu giúp nhóm hỗ trợ xử lý nhanh hơn và tránh chia sẻ dữ liệu nhạy cảm không cần thiết.'**
   String get supportChecklistHero;
 
   /// No description provided for @supportChecklistActionTitle.
@@ -4505,7 +4727,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportChecklistActionDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Ghi rõ bạn đang export, xóa tài khoản, tạo request hay mở file nào.'**
+  /// **'Ghi rõ bạn đang xuất dữ liệu, xóa tài khoản, tạo yêu cầu hay mở file nào.'**
   String get supportChecklistActionDesc;
 
   /// No description provided for @supportChecklistErrorTitle.
@@ -4517,31 +4739,31 @@ abstract class AppLocalizations {
   /// No description provided for @supportChecklistErrorDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Copy nội dung lỗi hoặc mô tả màn hình đang hiển thị để team dễ kiểm tra.'**
+  /// **'Sao chép nội dung lỗi hoặc mô tả màn hình đang hiển thị để nhóm hỗ trợ dễ kiểm tra.'**
   String get supportChecklistErrorDesc;
 
   /// No description provided for @supportChecklistFileTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Đính kèm file request/export khi phù hợp'**
+  /// **'Đính kèm file yêu cầu hoặc file xuất dữ liệu khi phù hợp'**
   String get supportChecklistFileTitle;
 
   /// No description provided for @supportChecklistFileDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Nếu là yêu cầu privacy hoặc xóa dữ liệu thủ công, gửi kèm file JSON đã tạo.'**
+  /// **'Nếu là yêu cầu quyền riêng tư hoặc xóa dữ liệu thủ công, gửi kèm file đã tạo.'**
   String get supportChecklistFileDesc;
 
   /// No description provided for @supportChecklistDiagnosticTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Copy diagnostic info'**
+  /// **'Sao chép thông tin hỗ trợ'**
   String get supportChecklistDiagnosticTitle;
 
   /// No description provided for @supportChecklistDiagnosticDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Gửi kèm version, build và kênh release từ Trung tâm trợ giúp.'**
+  /// **'Gửi kèm phiên bản, bản dựng và kênh phát hành từ Trung tâm trợ giúp.'**
   String get supportChecklistDiagnosticDesc;
 
   /// No description provided for @supportChecklistSensitiveTitle.
@@ -4553,13 +4775,13 @@ abstract class AppLocalizations {
   /// No description provided for @supportChecklistSensitiveDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Không gửi mật khẩu, access token hoặc ảnh hóa đơn nhạy cảm nếu không thật sự cần thiết.'**
+  /// **'Không gửi mật khẩu, mã truy cập hoặc ảnh hóa đơn nhạy cảm nếu không thật sự cần thiết.'**
   String get supportChecklistSensitiveDesc;
 
   /// No description provided for @dataSafetyPersonalInfoTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Personal info'**
+  /// **'Thông tin cá nhân'**
   String get dataSafetyPersonalInfoTitle;
 
   /// No description provided for @dataSafetyPersonalInfoStatus.
@@ -4571,13 +4793,13 @@ abstract class AppLocalizations {
   /// No description provided for @dataSafetyPersonalInfoDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Tên hiển thị, email, avatar và user ID dùng cho đăng nhập và đồng bộ dữ liệu.'**
+  /// **'Tên hiển thị, email, avatar và mã tài khoản dùng cho đăng nhập và đồng bộ dữ liệu.'**
   String get dataSafetyPersonalInfoDesc;
 
   /// No description provided for @dataSafetyFinancialInfoTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Financial info'**
+  /// **'Thông tin tài chính'**
   String get dataSafetyFinancialInfoTitle;
 
   /// No description provided for @dataSafetyFinancialInfoStatus.
@@ -4595,7 +4817,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataSafetyPhotosTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Photos'**
+  /// **'Ảnh'**
   String get dataSafetyPhotosTitle;
 
   /// No description provided for @dataSafetyPhotosStatus.
@@ -4607,13 +4829,13 @@ abstract class AppLocalizations {
   /// No description provided for @dataSafetyPhotosDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Ảnh giao dịch được lưu trong private storage và chỉ hiển thị qua signed URL.'**
+  /// **'Ảnh giao dịch được lưu an toàn và chỉ hiển thị trong app khi cần.'**
   String get dataSafetyPhotosDesc;
 
   /// No description provided for @dataSafetyUserIdTitle.
   ///
   /// In vi, this message translates to:
-  /// **'User ID'**
+  /// **'Mã tài khoản'**
   String get dataSafetyUserIdTitle;
 
   /// No description provided for @dataSafetyUserIdStatus.
@@ -4625,19 +4847,19 @@ abstract class AppLocalizations {
   /// No description provided for @dataSafetyUserIdDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Dùng để gắn dữ liệu với đúng tài khoản và áp dụng RLS trên Supabase.'**
+  /// **'Dùng để gắn dữ liệu với đúng tài khoản và giới hạn quyền truy cập dữ liệu.'**
   String get dataSafetyUserIdDesc;
 
   /// No description provided for @dataSafetyLocationTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Location, Contacts, SMS'**
+  /// **'Vị trí, danh bạ, SMS'**
   String get dataSafetyLocationTitle;
 
   /// No description provided for @dataSafetyLocationStatus.
   ///
   /// In vi, this message translates to:
-  /// **'Không thu thập trong MVP'**
+  /// **'Không thu thập trong phiên bản hiện tại'**
   String get dataSafetyLocationStatus;
 
   /// No description provided for @dataSafetyLocationDesc.
@@ -4685,7 +4907,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutMoniaryLicenseDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Xem license của Flutter và các package đang dùng trong app.'**
+  /// **'Xem giấy phép của các thư viện đang dùng trong app.'**
   String get aboutMoniaryLicenseDesc;
 
   /// No description provided for @aboutMoniaryPurposeTitle.
@@ -4709,19 +4931,19 @@ abstract class AppLocalizations {
   /// No description provided for @aboutMoniaryDataDirDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Dữ liệu tài chính thuộc về người dùng. App cung cấp công cụ xuất dữ liệu, xóa tài khoản và liên hệ privacy khi cần hỗ trợ.'**
+  /// **'Dữ liệu tài chính thuộc về người dùng. App cung cấp công cụ xuất dữ liệu, xóa tài khoản và liên hệ quyền riêng tư khi cần hỗ trợ.'**
   String get aboutMoniaryDataDirDesc;
 
   /// No description provided for @aboutMoniaryMvpStatusTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Trạng thái MVP'**
+  /// **'Trạng thái phiên bản'**
   String get aboutMoniaryMvpStatusTitle;
 
   /// No description provided for @aboutMoniaryMvpStatusDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Phiên bản hiện tại tập trung vào ghi chép chi tiêu, minh bạch dữ liệu và các yêu cầu cần thiết để chuẩn bị phát hành Store.'**
+  /// **'Phiên bản hiện tại tập trung vào ghi chép chi tiêu, minh bạch dữ liệu và các yêu cầu cần thiết để chuẩn bị phát hành chính thức.'**
   String get aboutMoniaryMvpStatusDesc;
 
   /// No description provided for @permissionInternetTitle.
@@ -4739,7 +4961,7 @@ abstract class AppLocalizations {
   /// No description provided for @permissionInternetDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Dùng để đăng nhập, đồng bộ Supabase Database và tải ảnh giao dịch từ Storage.'**
+  /// **'Dùng để đăng nhập, đồng bộ dữ liệu và tải ảnh giao dịch khi cần hiển thị.'**
   String get permissionInternetDesc;
 
   /// No description provided for @permissionCameraTitle.
@@ -4763,7 +4985,7 @@ abstract class AppLocalizations {
   /// No description provided for @permissionPhotoTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Photo Picker'**
+  /// **'Chọn ảnh'**
   String get permissionPhotoTitle;
 
   /// No description provided for @permissionPhotoStatus.
@@ -4781,7 +5003,7 @@ abstract class AppLocalizations {
   /// No description provided for @permissionNotiTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Notifications'**
+  /// **'Thông báo'**
   String get permissionNotiTitle;
 
   /// No description provided for @permissionNotiStatus.
@@ -4793,19 +5015,19 @@ abstract class AppLocalizations {
   /// No description provided for @permissionNotiDesc.
   ///
   /// In vi, this message translates to:
-  /// **'MVP hiện không bắt buộc quyền này nếu chưa triển khai reminder production.'**
+  /// **'Quyền này chỉ cần khi bạn bật nhắc nhở.'**
   String get permissionNotiDesc;
 
   /// No description provided for @permissionLocationTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Không dùng Location, Contacts, SMS'**
+  /// **'Không dùng vị trí, danh bạ, SMS'**
   String get permissionLocationTitle;
 
   /// No description provided for @permissionLocationStatus.
   ///
   /// In vi, this message translates to:
-  /// **'Không khai báo trong MVP'**
+  /// **'Không sử dụng'**
   String get permissionLocationStatus;
 
   /// No description provided for @permissionLocationDesc.
@@ -4823,7 +5045,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyLeadDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Nội dung này dùng cho màn hình trong app và làm bản nháp public Privacy Policy trước khi submit Google Play.'**
+  /// **'Nội dung này giải thích cách Moniary xử lý dữ liệu và có thể được cập nhật khi app phát hành chính thức.'**
   String get privacyPolicyLeadDesc;
 
   /// No description provided for @privacyPolicyDataTitle.
@@ -4835,7 +5057,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyDataItem1.
   ///
   /// In vi, this message translates to:
-  /// **'Thông tự tài khoản như tên hiển thị, email, avatar và user ID khi người dùng đăng nhập.'**
+  /// **'Thông tin tài khoản như tên hiển thị, email, avatar và mã tài khoản khi người dùng đăng nhập.'**
   String get privacyPolicyDataItem1;
 
   /// No description provided for @privacyPolicyDataItem2.
@@ -4877,13 +5099,13 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyPurposeItem3.
   ///
   /// In vi, this message translates to:
-  /// **'Lưu ảnh giao dịch trong Supabase Storage private bucket và cấp signed URL khi cần hiển thị.'**
+  /// **'Lưu ảnh giao dịch an toàn và chỉ hiển thị trong app khi cần.'**
   String get privacyPolicyPurposeItem3;
 
   /// No description provided for @privacyPolicyPurposeItem4.
   ///
   /// In vi, this message translates to:
-  /// **'Bảo vệ tài khoản, kiểm soát truy cập bằng RLS và hỗ trợ người dùng khi có yêu cầu.'**
+  /// **'Bảo vệ tài khoản, giới hạn quyền truy cập dữ liệu và hỗ trợ người dùng khi có yêu cầu.'**
   String get privacyPolicyPurposeItem4;
 
   /// No description provided for @privacyPolicyShareTitle.
@@ -4901,13 +5123,13 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyShareItem2.
   ///
   /// In vi, this message translates to:
-  /// **'Dữ liệu được lưu trên Supabase để cung cấp Auth, Database và Storage cho ứng dụng.'**
+  /// **'Dữ liệu được lưu trên hạ tầng bảo mật để cung cấp đăng nhập, đồng bộ dữ liệu và lưu trữ ảnh cho ứng dụng.'**
   String get privacyPolicyShareItem2;
 
   /// No description provided for @privacyPolicyShareItem3.
   ///
   /// In vi, this message translates to:
-  /// **'MVP không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.'**
+  /// **'Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.'**
   String get privacyPolicyShareItem3;
 
   /// No description provided for @privacyPolicyDeleteTitle.
@@ -4931,43 +5153,43 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyDeleteItem3.
   ///
   /// In vi, this message translates to:
-  /// **'Khi xóa tài khoản, Moniary yêu cầu xóa hồ sơ, ví, danh mục, giao dịch và ảnh trong Storage thuộc user ID hiện tại.'**
+  /// **'Khi xóa tài khoản, Moniary yêu cầu xóa hồ sơ, ví, danh mục, giao dịch và ảnh thuộc tài khoản hiện tại.'**
   String get privacyPolicyDeleteItem3;
 
   /// No description provided for @privacyPolicySafetyTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Khai báo Google Play Data Safety'**
+  /// **'Khai báo an toàn dữ liệu'**
   String get privacyPolicySafetyTitle;
 
   /// No description provided for @privacyPolicySafetyItem1.
   ///
   /// In vi, this message translates to:
-  /// **'Personal info: chỉ thu thập khi người dùng đăng nhập bằng email hoặc Google.'**
+  /// **'Thông tin cá nhân: chỉ thu thập khi người dùng đăng nhập bằng email hoặc Google.'**
   String get privacyPolicySafetyItem1;
 
   /// No description provided for @privacyPolicySafetyItem2.
   ///
   /// In vi, this message translates to:
-  /// **'Financial info: thu thập để lưu và hiển thị thu chi cá nhân.'**
+  /// **'Thông tin tài chính: thu thập để lưu và hiển thị thu chi cá nhân.'**
   String get privacyPolicySafetyItem2;
 
   /// No description provided for @privacyPolicySafetyItem3.
   ///
   /// In vi, this message translates to:
-  /// **'Photos: chỉ thu thập ảnh người dùng chủ động chụp hoặc chọn.'**
+  /// **'Ảnh: chỉ thu thập ảnh người dùng chủ động chụp hoặc chọn.'**
   String get privacyPolicySafetyItem3;
 
   /// No description provided for @privacyPolicySafetyItem4.
   ///
   /// In vi, this message translates to:
-  /// **'Location, Contacts, SMS: không thu thập trong MVP.'**
+  /// **'Vị trí, danh bạ, SMS: không thu thập trong phiên bản hiện tại.'**
   String get privacyPolicySafetyItem4;
 
   /// No description provided for @privacyPolicyContactDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Trước khi phát hành, team cần đưa nội dung này lên một URL public và cập nhật email liên hệ chính thức trong Play Console.'**
+  /// **'Moniary sẽ cập nhật nội dung chính sách và email liên hệ chính thức khi phát hành.'**
   String get privacyPolicyContactDesc;
 
   /// No description provided for @deletionPolicyStep1Title.
@@ -4991,7 +5213,7 @@ abstract class AppLocalizations {
   /// No description provided for @deletionPolicyStep2Desc.
   ///
   /// In vi, this message translates to:
-  /// **'Hồ sơ, ví, danh mục, giao dịch, thiết lập nhắc nhở và ảnh trong Storage thuộc user ID hiện tại.'**
+  /// **'Hồ sơ, ví, danh mục, giao dịch, thiết lập nhắc nhở và ảnh thuộc tài khoản hiện tại.'**
   String get deletionPolicyStep2Desc;
 
   /// No description provided for @deletionPolicyStep3Title.
@@ -5003,7 +5225,7 @@ abstract class AppLocalizations {
   /// No description provided for @deletionPolicyStep3Desc.
   ///
   /// In vi, this message translates to:
-  /// **'App gọi Edge Function delete-account. Function xác thực session, xóa ảnh giao dịch rồi xóa Auth user.'**
+  /// **'Moniary xác thực yêu cầu, xóa dữ liệu liên quan rồi đóng tài khoản.'**
   String get deletionPolicyStep3Desc;
 
   /// No description provided for @deletionPolicyStep4Title.
@@ -5015,13 +5237,13 @@ abstract class AppLocalizations {
   /// No description provided for @deletionPolicyStep4Desc.
   ///
   /// In vi, this message translates to:
-  /// **'Nếu cần xóa dữ liệu backup, log hoặc yêu cầu ngoài app, người dùng có thể liên hệ qua kênh privacy support của team.'**
+  /// **'Nếu cần hỗ trợ thêm về dữ liệu ngoài app, người dùng có thể liên hệ kênh hỗ trợ quyền riêng tư của Moniary.'**
   String get deletionPolicyStep4Desc;
 
   /// No description provided for @termsOfUseHeroDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Các điều khoản này tóm tắt cách người dùng nên sử dụng Moniary trong phiên bản MVP.'**
+  /// **'Các điều khoản này tóm tắt cách người dùng nên sử dụng Moniary trong phiên bản hiện tại.'**
   String get termsOfUseHeroDesc;
 
   /// No description provided for @termsOfUseScopeTitle.
@@ -5045,7 +5267,7 @@ abstract class AppLocalizations {
   /// No description provided for @termsOfUseAccountDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Người dùng có thể xuất dữ liệu, gửi yêu cầu privacy và xóa tài khoản theo các công cụ được cung cấp trong app.'**
+  /// **'Người dùng có thể xuất dữ liệu, gửi yêu cầu quyền riêng tư và xóa tài khoản theo các công cụ được cung cấp trong app.'**
   String get termsOfUseAccountDesc;
 
   /// No description provided for @termsOfUseContentTitle.
@@ -5141,7 +5363,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataRetentionCloudTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Dữ liệu trên cloud'**
+  /// **'Dữ liệu được đồng bộ'**
   String get dataRetentionCloudTitle;
 
   /// No description provided for @dataRetentionCloudDesc.
@@ -5165,13 +5387,13 @@ abstract class AppLocalizations {
   /// No description provided for @dataRetentionLocalFilesTitle.
   ///
   /// In vi, this message translates to:
-  /// **'File cục bộ'**
+  /// **'File trên thiết bị'**
   String get dataRetentionLocalFilesTitle;
 
   /// No description provided for @dataRetentionLocalFilesDesc.
   ///
   /// In vi, this message translates to:
-  /// **'File export và lịch sử request được tạo trên thiết bị. Người dùng có thể tự quản lý, chia sẻ hoặc xóa các file này khỏi bộ nhớ cục bộ.'**
+  /// **'File xuất dữ liệu và lịch sử yêu cầu được tạo trên thiết bị. Người dùng có thể tự quản lý, chia sẻ hoặc xóa các file này khỏi bộ nhớ thiết bị.'**
   String get dataRetentionLocalFilesDesc;
 
   /// No description provided for @dataRetentionDeleteTitle.
@@ -5183,7 +5405,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataRetentionDeleteDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Moniary gọi luồng xóa tài khoản để gỡ dữ liệu app gắn với user hiện tại. Nếu thao tác thất bại, người dùng có thể tạo request xóa dữ liệu thủ công.'**
+  /// **'Moniary dùng luồng xóa tài khoản để gỡ dữ liệu app gắn với tài khoản hiện tại. Nếu thao tác thất bại, người dùng có thể tạo yêu cầu xóa dữ liệu thủ công.'**
   String get dataRetentionDeleteDesc;
 
   /// No description provided for @financialDisclaimerInvestmentTitle.
@@ -5219,7 +5441,7 @@ abstract class AppLocalizations {
   /// No description provided for @financialDisclaimerReferenceDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Tổng thu, tổng chi và các file export phụ thuộc vào dữ liệu người dùng nhập, có thể sai nếu nhập thiếu hoặc nhập nhầm.'**
+  /// **'Tổng thu, tổng chi và các file xuất dữ liệu phụ thuộc vào dữ liệu người dùng nhập, có thể sai nếu nhập thiếu hoặc nhập nhầm.'**
   String get financialDisclaimerReferenceDesc;
 
   /// No description provided for @financialDisclaimerExpertTitle.
@@ -5237,7 +5459,7 @@ abstract class AppLocalizations {
   /// No description provided for @policyChangelogEntry1Title.
   ///
   /// In vi, this message translates to:
-  /// **'Bổ sung Legal & Policy Center'**
+  /// **'Bổ sung trung tâm pháp lý & chính sách'**
   String get policyChangelogEntry1Title;
 
   /// No description provided for @policyChangelogEntry1Desc.
@@ -5249,37 +5471,37 @@ abstract class AppLocalizations {
   /// No description provided for @policyChangelogEntry2Title.
   ///
   /// In vi, this message translates to:
-  /// **'Bổ sung Privacy Requests & Support'**
+  /// **'Bổ sung yêu cầu quyền riêng tư & hỗ trợ'**
   String get policyChangelogEntry2Title;
 
   /// No description provided for @policyChangelogEntry2Desc.
   ///
   /// In vi, this message translates to:
-  /// **'Thêm loại yêu cầu privacy, mẫu nội dung, preview, lịch sử request, trạng thái và timeline phản hồi.'**
+  /// **'Thêm loại yêu cầu quyền riêng tư, mẫu nội dung, xem trước, lịch sử yêu cầu, trạng thái và tiến trình phản hồi.'**
   String get policyChangelogEntry2Desc;
 
   /// No description provided for @policyChangelogEntry3Title.
   ///
   /// In vi, this message translates to:
-  /// **'Bổ sung Store Readiness & Trust'**
+  /// **'Bổ sung tin cậy & chuẩn bị phát hành'**
   String get policyChangelogEntry3Title;
 
   /// No description provided for @policyChangelogEntry3Desc.
   ///
   /// In vi, this message translates to:
-  /// **'Thêm About, Terms of Use, license entry, version/build info, checklist phát hành và liên hệ pháp lý.'**
+  /// **'Thêm giới thiệu, điều khoản sử dụng, giấy phép, thông tin phiên bản/bản dựng, checklist phát hành và liên hệ pháp lý.'**
   String get policyChangelogEntry3Desc;
 
   /// No description provided for @policyChangelogEntry4Title.
   ///
   /// In vi, this message translates to:
-  /// **'Khởi tạo chính sách MVP'**
+  /// **'Khởi tạo chính sách phiên bản đầu'**
   String get policyChangelogEntry4Title;
 
   /// No description provided for @policyChangelogEntry4Desc.
   ///
   /// In vi, this message translates to:
-  /// **'Thêm privacy policy, data safety, data deletion policy, export dữ liệu và xóa tài khoản.'**
+  /// **'Thêm chính sách quyền riêng tư, an toàn dữ liệu, chính sách xóa dữ liệu, xuất dữ liệu và xóa tài khoản.'**
   String get policyChangelogEntry4Desc;
 
   /// No description provided for @groupCreateNew.
@@ -6116,6 +6338,102 @@ abstract class AppLocalizations {
   /// **'Không tìm thấy bạn bè này.'**
   String get friendNotFound;
 
+  /// No description provided for @friendShareInviteLink.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ link kết bạn'**
+  String get friendShareInviteLink;
+
+  /// No description provided for @friendInviteShareDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi link cho người khác để họ kết bạn với bạn nhanh hơn.'**
+  String get friendInviteShareDescription;
+
+  /// No description provided for @friendInviteShareMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết bạn với mình trên Moniary nhé: {link}'**
+  String friendInviteShareMessage(String link);
+
+  /// No description provided for @friendInviteAcceptTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời kết bạn'**
+  String get friendInviteAcceptTitle;
+
+  /// No description provided for @friendInviteAcceptSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} muốn kết bạn với bạn trên Moniary.'**
+  String friendInviteAcceptSubtitle(String name);
+
+  /// No description provided for @friendInviteAcceptButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết bạn'**
+  String get friendInviteAcceptButton;
+
+  /// No description provided for @friendInviteAccepted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã kết bạn thành công.'**
+  String get friendInviteAccepted;
+
+  /// No description provided for @friendInviteLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải lời mời...'**
+  String get friendInviteLoading;
+
+  /// No description provided for @friendInvitePreviewError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được lời mời kết bạn.'**
+  String get friendInvitePreviewError;
+
+  /// No description provided for @friendInviteInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link kết bạn không hợp lệ.'**
+  String get friendInviteInvalid;
+
+  /// No description provided for @friendInviteExpired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link kết bạn đã hết hạn.'**
+  String get friendInviteExpired;
+
+  /// No description provided for @friendInviteUsed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link kết bạn đã được sử dụng.'**
+  String get friendInviteUsed;
+
+  /// No description provided for @friendInviteRevoked.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link kết bạn đã bị hủy.'**
+  String get friendInviteRevoked;
+
+  /// No description provided for @friendInviteSelf.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không thể dùng link kết bạn của chính mình.'**
+  String get friendInviteSelf;
+
+  /// No description provided for @friendInviteAlreadyFriends.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hai bạn đã là bạn bè.'**
+  String get friendInviteAlreadyFriends;
+
+  /// No description provided for @friendInviteOpenFriends.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem danh sách bạn bè'**
+  String get friendInviteOpenFriends;
+
   /// No description provided for @profileUsernameHint.
   ///
   /// In vi, this message translates to:
@@ -6197,25 +6515,25 @@ abstract class AppLocalizations {
   /// No description provided for @deleteGuestDataTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xóa dữ liệu Guest'**
+  /// **'Xóa dữ liệu tài khoản khách'**
   String get deleteGuestDataTitle;
 
   /// No description provided for @deleteGuestDataBody.
   ///
   /// In vi, this message translates to:
-  /// **'Dữ liệu Guest chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và trạng thái onboarding vẫn được giữ lại.'**
+  /// **'Dữ liệu tài khoản khách chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và hướng dẫn ban đầu vẫn được giữ lại.'**
   String get deleteGuestDataBody;
 
   /// No description provided for @deleteGuestDataUnderstand.
   ///
   /// In vi, this message translates to:
-  /// **'Tôi hiểu dữ liệu Guest trên thiết bị sẽ bị xóa ngay.'**
+  /// **'Tôi hiểu dữ liệu tài khoản khách trên thiết bị sẽ bị xóa ngay.'**
   String get deleteGuestDataUnderstand;
 
   /// No description provided for @deleteGuestDataAction.
   ///
   /// In vi, this message translates to:
-  /// **'Xóa dữ liệu Guest'**
+  /// **'Xóa dữ liệu khách'**
   String get deleteGuestDataAction;
 
   /// No description provided for @deleteAccountExportTitle.
@@ -6433,6 +6751,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa có tài khoản? Đăng ký'**
   String get loginNeedAccount;
+
+  /// No description provided for @cameraFallbackPermissionDenied.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có quyền truy cập camera. Bạn có thể nhập giao dịch thủ công.'**
+  String get cameraFallbackPermissionDenied;
+
+  /// No description provided for @cameraFallbackGenericError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể mở camera. Bạn có thể nhập giao dịch thủ công.'**
+  String get cameraFallbackGenericError;
 }
 
 class _AppLocalizationsDelegate
