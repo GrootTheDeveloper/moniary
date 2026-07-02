@@ -18,8 +18,28 @@ void main() {
     expect(results.first.relationStatus, FriendRelationStatus.none);
   });
 
+  test('search chấp nhận username có ký tự @ ở đầu', () async {
+    final results = await source('mock-user-id').searchUsers('@an');
+
+    expect(results, hasLength(1));
+    expect(results.first.profile.username, 'an_nguyen');
+  });
+
+  test(
+    'search chấp nhận email nhưng không expose email trong profile',
+    () async {
+      final results = await source(
+        'mock-user-id',
+      ).searchUsers('an@example.com');
+
+      expect(results, hasLength(1));
+      expect(results.first.profile.userId, 'mock-friend-1');
+      expect(results.first.profile.username, 'an_nguyen');
+    },
+  );
+
   test('không cho tự kết bạn với chính mình', () async {
-    final action = source('mock-user-id').sendRequest('mock-user');
+    final action = source('mock-user-id').sendRequestToUser('mock-user-id');
 
     await expectLater(
       action,
@@ -37,7 +57,7 @@ void main() {
     final sender = source('mock-user-id');
     final receiver = source('mock-friend-1');
 
-    await sender.sendRequest('an_nguyen');
+    await sender.sendRequestToUser('mock-friend-1');
 
     final outgoing = await sender.fetchOutgoingRequests();
     final incoming = await receiver.fetchIncomingRequests();
@@ -51,10 +71,10 @@ void main() {
 
   test('chặn duplicate pending request theo cả hai chiều', () async {
     final sender = source('mock-user-id');
-    await sender.sendRequest('an_nguyen');
+    await sender.sendRequestToUser('mock-friend-1');
 
     await expectLater(
-      sender.sendRequest('an_nguyen'),
+      sender.sendRequestToUser('mock-friend-1'),
       throwsA(
         isA<AppException>().having(
           (error) => error.code,
@@ -65,7 +85,7 @@ void main() {
     );
 
     await expectLater(
-      source('mock-friend-1').sendRequest('mock-user'),
+      source('mock-friend-1').sendRequestToUser('mock-user-id'),
       throwsA(
         isA<AppException>().having(
           (error) => error.code,
@@ -79,7 +99,7 @@ void main() {
   test('accept request tạo friendship hai chiều', () async {
     final sender = source('mock-user-id');
     final receiver = source('mock-friend-1');
-    await sender.sendRequest('an_nguyen');
+    await sender.sendRequestToUser('mock-friend-1');
     final request = (await receiver.fetchIncomingRequests()).single;
 
     await receiver.acceptRequest(request.id);
@@ -100,7 +120,7 @@ void main() {
   test('decline request không tạo friendship', () async {
     final sender = source('mock-user-id');
     final receiver = source('mock-friend-1');
-    await sender.sendRequest('an_nguyen');
+    await sender.sendRequestToUser('mock-friend-1');
     final request = (await receiver.fetchIncomingRequests()).single;
 
     await receiver.declineRequest(request.id);
@@ -113,7 +133,7 @@ void main() {
   test('cancel outgoing request xóa trạng thái pending', () async {
     final sender = source('mock-user-id');
     final receiver = source('mock-friend-1');
-    await sender.sendRequest('an_nguyen');
+    await sender.sendRequestToUser('mock-friend-1');
     final request = (await sender.fetchOutgoingRequests()).single;
 
     await sender.cancelRequest(request.id);
@@ -125,7 +145,7 @@ void main() {
   test('remove friend xóa friendship hai chiều', () async {
     final sender = source('mock-user-id');
     final receiver = source('mock-friend-1');
-    await sender.sendRequest('an_nguyen');
+    await sender.sendRequestToUser('mock-friend-1');
     final request = (await receiver.fetchIncomingRequests()).single;
     await receiver.acceptRequest(request.id);
 

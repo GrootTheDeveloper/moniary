@@ -52,9 +52,9 @@ class FriendActionController extends AsyncNotifier<void> {
   @override
   Future<void> build() async {}
 
-  Future<void> sendRequest(String username) {
+  Future<void> sendRequestToUser(String targetUserId) {
     return _run(() async {
-      await ref.read(friendRepositoryProvider).sendRequest(username);
+      await ref.read(friendRepositoryProvider).sendRequestToUser(targetUserId);
       _invalidateFriendState();
     });
   }

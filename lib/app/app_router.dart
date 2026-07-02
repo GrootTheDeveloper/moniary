@@ -17,7 +17,12 @@ import '../features/groups/presentation/groups_screen.dart';
 import '../features/groups/presentation/screens/add_group_transaction_screen.dart';
 import '../features/groups/presentation/screens/create_group_screen.dart';
 import '../features/groups/presentation/screens/debt_settlement_screen.dart';
+import '../features/groups/presentation/screens/group_activity_center_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
+import '../features/groups/presentation/screens/group_invite_accept_screen.dart';
+import '../features/groups/presentation/screens/group_notifications_screen.dart';
+import '../features/groups/presentation/screens/group_social_screen.dart';
+import '../features/groups/presentation/screens/group_statistics_screen.dart';
 import '../features/groups/presentation/screens/group_transaction_detail_screen.dart';
 import '../features/groups/presentation/screens/invite_member_screen.dart';
 import '../features/groups/presentation/screens/member_amount_input_screen.dart';
@@ -284,6 +289,36 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: GroupActivityCenterScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupActivityCenterScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupStatisticsScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupStatisticsScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupSocialScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupSocialScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
         path: GroupTransactionDetailScreen.routePath,
         pageBuilder: (context, state) {
           final transactionId = state.extra as String?;
@@ -316,6 +351,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               : FriendInviteAcceptScreen(token: token);
           return buildSlideTransitionPage(state: state, child: child);
         },
+      ),
+      GoRoute(
+        path: GroupInviteAcceptScreen.routePath,
+        pageBuilder: (context, state) {
+          final token = state.pathParameters['token'];
+          final child = token == null
+              ? const GroupsScreen()
+              : GroupInviteAcceptScreen(token: token);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupNotificationsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const GroupNotificationsScreen(),
+        ),
       ),
       GoRoute(
         path: PrivacyCenterScreen.routePath,

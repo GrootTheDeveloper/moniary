@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../friends/application/friend_controller.dart';
@@ -73,10 +75,25 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
           if (_inviteLink != null) ...[
             const SizedBox(height: 12),
             SelectableText(_inviteLink!),
-            const SizedBox(height: 6),
-            Text(
-              context.l10n.groupInviteLinkPlaceholder,
-              style: Theme.of(context).textTheme.bodyMedium,
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _copyLink,
+                    icon: const Icon(Icons.copy_outlined),
+                    label: Text(context.l10n.groupCopyInviteLink),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: _shareLink,
+                    icon: const Icon(Icons.ios_share_outlined),
+                    label: Text(context.l10n.groupShareInviteLink),
+                  ),
+                ),
+              ],
             ),
           ],
           const SizedBox(height: 28),
@@ -215,6 +232,22 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+
+  Future<void> _copyLink() async {
+    final link = _inviteLink;
+    if (link == null) return;
+    await Clipboard.setData(ClipboardData(text: link));
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(context.l10n.groupInviteLinkCopied)));
+  }
+
+  Future<void> _shareLink() async {
+    final link = _inviteLink;
+    if (link == null) return;
+    await Share.share(context.l10n.groupInviteShareMessage(link));
   }
 }
 

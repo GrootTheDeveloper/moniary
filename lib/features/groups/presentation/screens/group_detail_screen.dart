@@ -9,10 +9,16 @@ import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
+import '../../domain/entities/group_community.dart';
 import '../../domain/entities/group_enums.dart';
+import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
+import '../../domain/entities/spending_group.dart';
 import 'add_group_transaction_screen.dart';
 import 'debt_settlement_screen.dart';
+import 'group_activity_center_screen.dart';
+import 'group_social_screen.dart';
+import 'group_statistics_screen.dart';
 import 'group_transaction_detail_screen.dart';
 import 'invite_member_screen.dart';
 
@@ -35,17 +41,26 @@ class GroupDetailScreen extends ConsumerWidget {
           onRetry: () => ref.invalidate(groupDetailProvider(groupId)),
         ),
         data: (detail) {
+          final currentUserId = ref.watch(currentGroupUserIdProvider);
           final transactionsAsync = ref.watch(
             groupTransactionsProvider(groupId),
           );
           final settlementsAsync = ref.watch(
             groupSettlementOverviewProvider(groupId),
           );
+          final canLeaveGroup = _canLeaveGroup(
+            settlementsAsync.asData?.value,
+            currentUserId,
+          );
+          final statsAsync = ref.watch(groupStatsProvider(groupId));
+          final activitiesAsync = ref.watch(groupActivitiesProvider(groupId));
           return RefreshIndicator(
             onRefresh: () async {
               ref.invalidate(groupDetailProvider(groupId));
               ref.invalidate(groupTransactionsProvider(groupId));
               ref.invalidate(groupSettlementOverviewProvider(groupId));
+              ref.invalidate(groupStatsProvider(groupId));
+              ref.invalidate(groupActivitiesProvider(groupId));
             },
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
@@ -87,28 +102,18 @@ class GroupDetailScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 12),
+                _RoadmapQuickActions(groupId: groupId),
                 const SizedBox(height: 28),
                 Text(
                   context.l10n.groupOverviewTitle,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 12),
-                transactionsAsync.when(
+                statsAsync.when(
                   loading: () => const LinearProgressIndicator(),
-                  error: (_, _) => Text(context.l10n.groupTransactionLoadError),
-                  data: (transactions) => _OverviewCards(
-                    totalSpent: transactions
-                        .where(
-                          (transaction) =>
-                              transaction.splitStatus ==
-                              GroupSplitStatus.posted,
-                        )
-                        .fold<int>(
-                          0,
-                          (sum, transaction) => sum + transaction.totalAmount,
-                        ),
-                    memberCount: detail.activeMembers.length,
-                  ),
+                  error: (_, _) => Text(context.l10n.groupStatsLoadError),
+                  data: (stats) => _OverviewCards(stats: stats),
                 ),
                 const SizedBox(height: 26),
                 Row(
@@ -220,14 +225,48 @@ class GroupDetailScreen extends ConsumerWidget {
                           ? context.l10n.groupMemberActive
                           : context.l10n.groupMemberInvited,
                     ),
-                    trailing: Text(member.role.value),
+                    trailing: _MemberTrailing(
+                      member: member,
+                      canTransferOwnership:
+                          detail.currentUserRole == GroupRole.owner &&
+                          member.isActive &&
+                          member.userId != currentUserId,
+                      onTransferOwnership: () =>
+                          _transferOwnership(context, ref, member),
+                    ),
                   ),
                 ),
+                const SizedBox(height: 26),
+                Text(
+                  context.l10n.groupActivitiesTitle,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 10),
+                activitiesAsync.when(
+                  loading: () => const LinearProgressIndicator(),
+                  error: (_, _) => Text(context.l10n.groupActivitiesLoadError),
+                  data: (activities) => _ActivityList(activities: activities),
+                ),
                 const SizedBox(height: 18),
-                OutlinedButton.icon(
-                  onPressed: () => _leaveGroup(context, ref),
-                  icon: const Icon(Icons.logout_outlined),
-                  label: Text(context.l10n.groupLeave),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: canLeaveGroup
+                          ? () => _leaveGroup(context, ref)
+                          : null,
+                      icon: const Icon(Icons.logout_outlined),
+                      label: Text(context.l10n.groupLeave),
+                    ),
+                    if (!canLeaveGroup)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: Text(
+                          'Bạn còn khoản nợ chưa xử lý. Vui lòng thanh toán trước khi rời nhóm.',
+                          style: TextStyle(color: AppTheme.amber),
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),
@@ -268,6 +307,162 @@ class GroupDetailScreen extends ConsumerWidget {
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+
+  bool _canLeaveGroup(GroupSettlementOverview? overview, String currentUserId) {
+    if (overview == null) return true;
+    final userBalance = overview.balances
+        .where((balance) => balance.userId == currentUserId)
+        .fold<int>(0, (sum, balance) => sum + balance.balance);
+    final hasUnresolvedSettlements = overview.suggestions.any(
+      (settlement) =>
+          (settlement.fromUserId == currentUserId ||
+              settlement.toUserId == currentUserId) &&
+          (settlement.status == GroupSettlementStatus.pending ||
+              settlement.status == GroupSettlementStatus.payerMarkedPaid),
+    );
+    return userBalance == 0 && !hasUnresolvedSettlements;
+  }
+
+  Future<void> _transferOwnership(
+    BuildContext context,
+    WidgetRef ref,
+    SpendingGroupMember member,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.groupTransferOwnership),
+        content: Text(
+          context.l10n.groupTransferOwnershipConfirm(member.resolvedName),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.groupTransferOwnership),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .transferOwnership(groupId: groupId, newOwnerUserId: member.userId);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.groupTransferOwnershipDone)),
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
+  }
+}
+
+class _RoadmapQuickActions extends StatelessWidget {
+  const _RoadmapQuickActions({required this.groupId});
+
+  final String groupId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        _ActionChipButton(
+          icon: Icons.notifications_active_outlined,
+          label: 'Activity',
+          onTap: () =>
+              context.push(GroupActivityCenterScreen.routePath, extra: groupId),
+        ),
+        _ActionChipButton(
+          icon: Icons.query_stats_outlined,
+          label: 'Statistics',
+          onTap: () =>
+              context.push(GroupStatisticsScreen.routePath, extra: groupId),
+        ),
+        _ActionChipButton(
+          icon: Icons.dynamic_feed_outlined,
+          label: 'Social',
+          onTap: () =>
+              context.push(GroupSocialScreen.routePath, extra: groupId),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActionChipButton extends StatelessWidget {
+  const _ActionChipButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ActionChip(
+      avatar: Icon(icon, size: 18),
+      label: Text(label),
+      onPressed: onTap,
+    );
+  }
+}
+
+class _MemberTrailing extends StatelessWidget {
+  const _MemberTrailing({
+    required this.member,
+    required this.canTransferOwnership,
+    required this.onTransferOwnership,
+  });
+
+  final SpendingGroupMember member;
+  final bool canTransferOwnership;
+  final VoidCallback onTransferOwnership;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!canTransferOwnership) {
+      return Text(member.role.value);
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(member.role.value),
+        PopupMenuButton<String>(
+          icon: const Icon(Icons.more_horiz),
+          onSelected: (value) {
+            if (value == 'transfer_owner') {
+              onTransferOwnership();
+            }
+          },
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              value: 'transfer_owner',
+              child: Row(
+                children: [
+                  const Icon(Icons.workspace_premium_outlined),
+                  const SizedBox(width: 10),
+                  Text(context.l10n.groupTransferOwnership),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
 
@@ -319,28 +514,47 @@ class _GroupHeader extends StatelessWidget {
 }
 
 class _OverviewCards extends StatelessWidget {
-  const _OverviewCards({required this.totalSpent, required this.memberCount});
+  const _OverviewCards({required this.stats});
 
-  final int totalSpent;
-  final int memberCount;
+  final GroupStatsOverview stats;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
       children: [
-        Expanded(
+        SizedBox(
+          width: (MediaQuery.sizeOf(context).width - 50) / 2,
           child: _MetricCard(
             icon: Icons.payments_outlined,
             label: context.l10n.groupTransactionTotal,
-            value: formatVnd(totalSpent),
+            value: formatVnd(stats.totalSpent),
           ),
         ),
-        const SizedBox(width: 10),
-        Expanded(
+        SizedBox(
+          width: (MediaQuery.sizeOf(context).width - 50) / 2,
           child: _MetricCard(
             icon: Icons.people_outline,
             label: context.l10n.groupMembersHeader,
-            value: memberCount.toString(),
+            value: stats.memberCount.toString(),
+          ),
+        ),
+        SizedBox(
+          width: (MediaQuery.sizeOf(context).width - 50) / 2,
+          child: _MetricCard(
+            icon: Icons.receipt_long_outlined,
+            label: context.l10n.groupStatsTransactionCount,
+            value: stats.transactionCount.toString(),
+          ),
+        ),
+        SizedBox(
+          width: (MediaQuery.sizeOf(context).width - 50) / 2,
+          child: _MetricCard(
+            icon: Icons.pending_actions_outlined,
+            label: context.l10n.groupStatsPendingCount,
+            value:
+                '${stats.pendingTransactionCount + stats.pendingSettlementCount}',
           ),
         ),
       ],
@@ -440,6 +654,60 @@ class _Notice extends StatelessWidget {
       ),
       child: Text(text, style: TextStyle(color: color)),
     );
+  }
+}
+
+class _ActivityList extends StatelessWidget {
+  const _ActivityList({required this.activities});
+
+  final List<GroupActivity> activities;
+
+  @override
+  Widget build(BuildContext context) {
+    if (activities.isEmpty) {
+      return _Notice(
+        text: context.l10n.groupActivitiesEmpty,
+        color: AppTheme.mintSoft,
+      );
+    }
+    return Column(
+      children: activities
+          .take(5)
+          .map(
+            (activity) => ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(
+                Icons.history_outlined,
+                color: AppTheme.mintSoft,
+              ),
+              title: Text(_activityText(context, activity)),
+              subtitle: Text(
+                DateFormat('dd/MM/yyyy HH:mm').format(activity.createdAt),
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  String _activityText(BuildContext context, GroupActivity activity) {
+    final actor = activity.actorName ?? context.l10n.groupUnknownMember;
+    switch (activity.type) {
+      case 'member_joined':
+        return context.l10n.groupActivityMemberJoined(actor);
+      case 'member_left':
+        return context.l10n.groupActivityMemberLeft(actor);
+      case 'leave_blocked_unresolved':
+        return context.l10n.groupLeaveWarningActivity;
+      case 'transaction_created':
+        return context.l10n.groupActivityTransactionCreated(actor);
+      case 'transaction_posted':
+        return context.l10n.groupActivityTransactionPosted(actor);
+      case 'owner_transferred':
+        return context.l10n.groupActivityOwnerTransferred(actor);
+      default:
+        return context.l10n.groupActivityGeneric(actor);
+    }
   }
 }
 

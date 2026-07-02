@@ -5,20 +5,20 @@ import json
 import sys
 from pathlib import Path
 
-from src.extractor import extract_receipt
+from src.extractor import extract_receipt_with_metadata
 from src.models import ReceiptResponse
 from src.validator import validate
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Extract receipt data using Tesseract and regex rules."
+        description="Extract receipt data using the configured OCR engine."
     )
     parser.add_argument("image", help="Path to a receipt image")
     parser.add_argument(
         "--debug",
         action="store_true",
-        help="Include raw Tesseract text in the JSON response",
+        help="Include raw OCR text and line layout in the JSON response",
     )
     parser.add_argument("--output", help="Optional JSON output path")
     return parser
@@ -27,12 +27,14 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_parser().parse_args()
     try:
-        data, raw_text = extract_receipt(args.image)
-        validated, issues, confidence = validate(data)
+        extracted = extract_receipt_with_metadata(args.image)
+        validated, issues, confidence = validate(extracted.data)
         response = ReceiptResponse(
             success=True,
             data=validated,
-            raw_text=raw_text if args.debug else None,
+            raw_text=extracted.raw_text if args.debug else None,
+            ocr_engine=extracted.ocr_engine,
+            ocr_lines=extracted.ocr_lines if args.debug else None,
             validation_issues=issues,
             confidence=confidence,
         )
@@ -56,4 +58,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

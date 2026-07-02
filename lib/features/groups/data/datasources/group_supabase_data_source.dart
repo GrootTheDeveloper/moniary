@@ -5,7 +5,9 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/supabase/app_exception.dart';
 import '../../domain/entities/group_enums.dart';
+import '../../domain/entities/group_roadmap.dart';
 import '../../domain/entities/group_transaction.dart';
 
 class GroupSupabaseDataSource {
@@ -112,6 +114,150 @@ class GroupSupabaseDataSource {
     return _rows(rows);
   }
 
+  Future<List<Map<String, dynamic>>> fetchNotifications() async {
+    final rows = await client.rpc('list_group_notifications');
+    return _rows(rows);
+  }
+
+  Future<void> markNotificationRead(String notificationId) {
+    return client.rpc(
+      'mark_group_notification_read',
+      params: {'p_notification_id': notificationId},
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> fetchActivities(String groupId) async {
+    final rows = await client.rpc(
+      'list_group_activities',
+      params: {'p_group_id': groupId},
+    );
+    return _rows(rows);
+  }
+
+  Future<Map<String, dynamic>> fetchNotificationPreference(
+    String groupId,
+  ) async {
+    final userId = _currentUserId();
+    final row = await client
+        .from('group_notification_preferences')
+        .select()
+        .eq('group_id', groupId)
+        .eq('user_id', userId)
+        .maybeSingle();
+    return row ?? {'group_id': groupId};
+  }
+
+  Future<void> updateNotificationPreference(
+    GroupNotificationPreference preference,
+  ) {
+    return client.from('group_notification_preferences').upsert({
+      'group_id': preference.groupId,
+      'user_id': _currentUserId(),
+      'mute_all': preference.muteAll,
+      'transaction_notifications': preference.transactionNotifications,
+      'debt_notifications': preference.debtNotifications,
+      'invite_notifications': preference.inviteNotifications,
+      'mention_notifications': preference.mentionNotifications,
+      'quiet_hours_start': preference.quietHoursStart,
+      'quiet_hours_end': preference.quietHoursEnd,
+    }, onConflict: 'group_id,user_id');
+  }
+
+  Future<List<Map<String, dynamic>>> fetchReactionSummaries(
+    String transactionId,
+  ) async {
+    final rows = await client.rpc(
+      'list_group_transaction_reactions',
+      params: {'p_transaction_id': transactionId},
+    );
+    return _rows(rows);
+  }
+
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) {
+    return client.rpc(
+      'toggle_group_transaction_reaction',
+      params: {'p_transaction_id': transactionId, 'p_emoji': emoji},
+    );
+  }
+
+  Future<Map<String, dynamic>> fetchBudget(String groupId) async {
+    final row = await client
+        .from('group_budgets')
+        .select()
+        .eq('group_id', groupId)
+        .maybeSingle();
+    return row ?? {'group_id': groupId};
+  }
+
+  Future<void> updateBudget(GroupBudget budget) {
+    return client.from('group_budgets').upsert({
+      'group_id': budget.groupId,
+      'monthly_limit': budget.monthlyLimit,
+      'warning_threshold_percent': budget.warningThresholdPercent,
+    }, onConflict: 'group_id');
+  }
+
+  Future<List<Map<String, dynamic>>> fetchRecurringTransactions(
+    String groupId,
+  ) async {
+    final rows = await client
+        .from('group_recurring_transactions')
+        .select()
+        .eq('group_id', groupId)
+        .order('next_run_at');
+    return _rows(rows);
+  }
+
+  Future<void> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) {
+    return client.from('group_recurring_transactions').insert({
+      'group_id': groupId,
+      'created_by': _currentUserId(),
+      'title': title.trim(),
+      'amount': amount,
+      'frequency': frequency,
+      'next_run_at': nextRunAt.toUtc().toIso8601String(),
+      'notify_days_before': notifyDaysBefore,
+    });
+  }
+
+  Future<void> updateRecurringTransactionActive({
+    required String recurringTransactionId,
+    required bool isActive,
+  }) {
+    return client
+        .from('group_recurring_transactions')
+        .update({'is_active': isActive})
+        .eq('id', recurringTransactionId);
+  }
+
+  Future<Map<String, dynamic>> fetchPublicProfile(String groupId) async {
+    final row = await client
+        .from('group_public_profiles')
+        .select()
+        .eq('group_id', groupId)
+        .maybeSingle();
+    return row ?? {'group_id': groupId};
+  }
+
+  Future<void> updatePublicProfile(GroupPublicProfile profile) {
+    return client.from('group_public_profiles').upsert({
+      'group_id': profile.groupId,
+      'is_enabled': profile.isEnabled,
+      'show_stats': profile.showStats,
+      'slug': profile.slug,
+    }, onConflict: 'group_id');
+  }
+
   Future<String> createGroup({
     required String name,
     String? description,
@@ -130,6 +276,26 @@ class GroupSupabaseDataSource {
       params: {'p_group_id': groupId},
     );
     return result as String;
+  }
+
+  Future<Map<String, dynamic>> fetchInvitePreview(String token) async {
+    final rows = await client.rpc(
+      'get_group_invite_preview',
+      params: {'p_token': token},
+    );
+    return _singleRow(rows);
+  }
+
+  Future<Map<String, dynamic>> acceptInvite(String token) async {
+    final rows = await client.rpc(
+      'accept_group_invite',
+      params: {'p_token': token},
+    );
+    return _singleRow(rows);
+  }
+
+  Future<void> declineInvite(String token) {
+    return client.rpc('decline_group_invite', params: {'p_token': token});
   }
 
   Future<void> inviteByUsername({
@@ -224,6 +390,20 @@ class GroupSupabaseDataSource {
     );
   }
 
+  Future<void> disputeSettlement(String settlementId) {
+    return client.rpc(
+      'dispute_settlement',
+      params: {'p_settlement_id': settlementId},
+    );
+  }
+
+  Future<void> resetDisputedSettlement(String settlementId) {
+    return client.rpc(
+      'reset_disputed_settlement',
+      params: {'p_settlement_id': settlementId},
+    );
+  }
+
   Future<void> leaveGroup(String groupId) {
     return client
         .rpc('leave_expense_group', params: {'p_group_id': groupId})
@@ -243,19 +423,41 @@ class GroupSupabaseDataSource {
         });
   }
 
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) {
+    return client.rpc(
+      'transfer_group_ownership',
+      params: {'p_group_id': groupId, 'p_new_owner_user_id': newOwnerUserId},
+    );
+  }
+
   Future<void> addComment({
     required String transactionId,
     required String content,
   }) {
-    final userId = client.auth.currentUser?.id;
-    if (userId == null) {
-      throw const AuthException('AUTH_REQUIRED');
-    }
-    return client.from('group_transaction_comments').insert({
-      'group_transaction_id': transactionId,
-      'user_id': userId,
-      'content': content,
-    });
+    return client.rpc(
+      'add_group_transaction_comment',
+      params: {'p_transaction_id': transactionId, 'p_content': content},
+    );
+  }
+
+  Future<void> updateComment({
+    required String commentId,
+    required String content,
+  }) {
+    return client
+        .from('group_transaction_comments')
+        .update({'content': content})
+        .eq('id', commentId);
+  }
+
+  Future<void> deleteComment(String commentId) {
+    return client
+        .from('group_transaction_comments')
+        .delete()
+        .eq('id', commentId);
   }
 
   Future<String> uploadGroupAvatar({
@@ -319,4 +521,19 @@ class GroupSupabaseDataSource {
 
   List<Map<String, dynamic>> _rows(dynamic rows) =>
       (rows as List<dynamic>).cast<Map<String, dynamic>>();
+
+  String _currentUserId() {
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) {
+      throw const AppException('AUTH_REQUIRED', code: 'AUTH_REQUIRED');
+    }
+    return userId;
+  }
+
+  Map<String, dynamic> _singleRow(dynamic rows) {
+    if (rows is Map<String, dynamic>) return rows;
+    final list = _rows(rows);
+    if (list.isEmpty) return const {};
+    return list.first;
+  }
 }

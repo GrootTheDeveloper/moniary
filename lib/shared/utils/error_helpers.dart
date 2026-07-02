@@ -16,6 +16,15 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.errorLocalAuthFailed;
       case 'NOT_FOUND':
         return l10n.errorNotFound;
+      case 'AUTH_NETWORK_ERROR':
+        return l10n.errorConnection;
+      case 'AUTH_SIGN_IN_FAILED':
+      case 'AUTH_SIGN_UP_FAILED':
+      case 'AUTH_SIGN_OUT_FAILED':
+      case 'AUTH_LINK_EMAIL_FAILED':
+      case 'AUTH_LINK_GOOGLE_FAILED':
+      case 'AUTH_LINK_APPLE_FAILED':
+        return l10n.errorGeneric;
       case 'GROUP_NAME_REQUIRED':
         return l10n.groupNameRequired;
       case 'GROUP_USER_NOT_FOUND':
@@ -34,10 +43,25 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupLeaveBlocked;
       case 'GROUP_OWNER_TRANSFER_REQUIRED':
         return l10n.groupOwnerTransferRequired;
+      case 'GROUP_OWNER_REQUIRED':
+        return l10n.groupOwnerRequired;
+      case 'GROUP_OWNER_TRANSFER_TARGET_REQUIRED':
+        return l10n.groupOwnerTransferTargetRequired;
       case 'GROUP_COMMENT_REQUIRED':
         return l10n.groupCommentRequired;
+      case 'GROUP_COMMENT_OWNER_REQUIRED':
+        return l10n.groupActionFailed;
       case 'GROUP_CREATOR_ONLY':
         return l10n.groupTransactionCreatorOnly;
+      case 'GROUP_INVITE_INVALID':
+      case 'GROUP_INVITE_FORBIDDEN':
+        return l10n.groupInviteInvalid;
+      case 'GROUP_INVITE_EXPIRED':
+        return l10n.groupInviteExpired;
+      case 'GROUP_INVITE_ARCHIVED':
+        return l10n.groupInviteGroupArchived;
+      case 'GROUP_INVITE_NOT_PENDING':
+        return l10n.groupInviteAlreadyAccepted;
       case 'FRIEND_USER_NOT_FOUND':
         return l10n.friendUserNotFound;
       case 'FRIEND_CANNOT_ADD_SELF':
@@ -71,9 +95,21 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.errorGeneric;
     }
 
-    // Return the actual message if it's not a generic key, 
-    // helpful for debugging Supabase specific errors
     return error.message.isNotEmpty ? error.message : l10n.errorGeneric;
   }
+  if (_looksLikeNetworkError(error)) {
+    return l10n.errorConnection;
+  }
   return error.toString();
+}
+
+bool _looksLikeNetworkError(Object error) {
+  final message = error.toString().toLowerCase();
+  return message.contains('socketexception') ||
+      message.contains('clientexception') ||
+      message.contains('failed host lookup') ||
+      message.contains('connection refused') ||
+      message.contains('connection reset') ||
+      message.contains('network is unreachable') ||
+      message.contains('connection timed out');
 }

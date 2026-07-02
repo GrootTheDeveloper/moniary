@@ -1,5 +1,8 @@
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
+import '../../domain/entities/group_community.dart';
 import '../../domain/entities/group_enums.dart';
+import '../../domain/entities/group_roadmap.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
@@ -18,6 +21,16 @@ class GroupMockDataSource {
   static final Map<String, List<SpendingGroupMember>> _members = {};
   static final Map<String, _MockTransactionRecord> _transactions = {};
   static final Map<String, List<GroupSettlementSuggestion>> _settlements = {};
+  static final Map<String, _MockGroupInvite> _invites = {};
+  static final Map<String, List<GroupNotification>> _notifications = {};
+  static final Map<String, List<GroupActivity>> _activities = {};
+  static final Map<String, GroupNotificationPreference>
+  _notificationPreferences = {};
+  static final Map<String, Map<String, Set<String>>> _reactions = {};
+  static final Map<String, GroupBudget> _budgets = {};
+  static final Map<String, GroupPublicProfile> _publicProfiles = {};
+  static final Map<String, GroupRecurringTransaction> _recurringTransactions =
+      {};
   static var _sequence = 0;
 
   Future<List<SpendingGroup>> fetchGroups() async {
@@ -124,7 +137,162 @@ class GroupMockDataSource {
 
   Future<String> createInviteLink(String groupId) async {
     _requireAdmin(groupId);
-    return 'moniary://groups/invite/${_id('invite')}';
+    final token = _id('invite');
+    _invites[token] = _MockGroupInvite(
+      token: token,
+      groupId: groupId,
+      invitedBy: currentUserId,
+      status: GroupInviteStatus.pending,
+      expiresAt: DateTime.now().add(const Duration(days: 7)),
+    );
+    return AppConstants.groupInviteLink(token);
+  }
+
+  Future<GroupInvitePreview> fetchInvitePreview(String token) async {
+    final invite = _invites[token.trim()];
+    if (invite == null) {
+      return const GroupInvitePreview(
+        status: GroupInviteStatus.invalid,
+        memberCount: 0,
+      );
+    }
+    final group = _groups[invite.groupId];
+    if (group == null || group.status == GroupStatus.archived) {
+      return GroupInvitePreview(
+        status: group == null
+            ? GroupInviteStatus.invalid
+            : GroupInviteStatus.groupArchived,
+        memberCount: 0,
+        expiresAt: invite.expiresAt,
+      );
+    }
+    final isActiveMember =
+        _members[invite.groupId]?.any(
+          (member) =>
+              member.userId == currentUserId &&
+              member.status == GroupMemberStatus.active,
+        ) ??
+        false;
+    final status = isActiveMember
+        ? GroupInviteStatus.alreadyMember
+        : invite.expiresAt.isBefore(DateTime.now())
+        ? GroupInviteStatus.expired
+        : invite.status;
+    return GroupInvitePreview(
+      status: status,
+      groupId: group.id,
+      groupName: group.name,
+      avatarPath: group.avatarPath,
+      description: group.description,
+      type: group.type,
+      invitedBy: invite.invitedBy,
+      inviterName: _displayName(invite.groupId, invite.invitedBy),
+      memberCount: _activeMembers(invite.groupId).length,
+      expiresAt: invite.expiresAt,
+    );
+  }
+
+  Future<GroupInviteAcceptResult> acceptInvite(String token) async {
+    final invite = _invites[token.trim()];
+    if (invite == null) {
+      throw const AppException(
+        'Invalid group invite',
+        code: 'GROUP_INVITE_INVALID',
+      );
+    }
+    if (invite.invitedUserId != null && invite.invitedUserId != currentUserId) {
+      throw const AppException(
+        'Group invite forbidden',
+        code: 'GROUP_INVITE_FORBIDDEN',
+      );
+    }
+    final group = _groups[invite.groupId];
+    if (group == null) {
+      throw const AppException(
+        'Invalid group invite',
+        code: 'GROUP_INVITE_INVALID',
+      );
+    }
+    if (invite.status != GroupInviteStatus.pending) {
+      throw const AppException(
+        'Group invite is not pending',
+        code: 'GROUP_INVITE_NOT_PENDING',
+      );
+    }
+    if (invite.expiresAt.isBefore(DateTime.now())) {
+      invite.status = GroupInviteStatus.expired;
+      throw const AppException(
+        'Group invite expired',
+        code: 'GROUP_INVITE_EXPIRED',
+      );
+    }
+    final members = _members[invite.groupId] ?? [];
+    final existingIndex = members.indexWhere(
+      (member) => member.userId == currentUserId,
+    );
+    if (existingIndex != -1 &&
+        members[existingIndex].status == GroupMemberStatus.active) {
+      return GroupInviteAcceptResult(
+        status: GroupInviteAcceptStatus.alreadyMember,
+        groupId: invite.groupId,
+      );
+    }
+    final now = DateTime.now();
+    if (existingIndex == -1) {
+      members.add(
+        SpendingGroupMember(
+          id: _id('member'),
+          groupId: invite.groupId,
+          userId: currentUserId,
+          role: GroupRole.member,
+          status: GroupMemberStatus.active,
+          joinedAt: now,
+          displayName: 'mock-user',
+          username: 'mock-user',
+        ),
+      );
+      _members[invite.groupId] = members;
+    } else {
+      final member = members[existingIndex];
+      members[existingIndex] = SpendingGroupMember(
+        id: member.id,
+        groupId: member.groupId,
+        userId: member.userId,
+        role: member.role == GroupRole.owner
+            ? GroupRole.owner
+            : GroupRole.member,
+        status: GroupMemberStatus.active,
+        joinedAt: member.joinedAt,
+        leftAt: null,
+        displayName: member.displayName,
+        username: member.username,
+        avatarPath: member.avatarPath,
+      );
+    }
+    invite.status = GroupInviteStatus.accepted;
+    _recordActivity(invite.groupId, 'member_joined');
+    _notifyActiveMembers(
+      invite.groupId,
+      'member_joined',
+      excludeCurrentUser: true,
+    );
+    return GroupInviteAcceptResult(
+      status: GroupInviteAcceptStatus.accepted,
+      groupId: invite.groupId,
+    );
+  }
+
+  Future<void> declineInvite(String token) async {
+    final invite = _invites[token.trim()];
+    if (invite == null) {
+      throw const AppException(
+        'Invalid group invite',
+        code: 'GROUP_INVITE_INVALID',
+      );
+    }
+    if (invite.status == GroupInviteStatus.pending) {
+      invite.status = GroupInviteStatus.declined;
+    }
   }
 
   Future<void> inviteByUsername({
@@ -140,6 +308,7 @@ class GroupMockDataSource {
     required String userId,
   }) async {
     _requireAdmin(groupId);
+    final group = _requireGroup(groupId);
     final members = _members[groupId] ?? [];
     if (members.any(
       (member) =>
@@ -165,6 +334,25 @@ class GroupMockDataSource {
         username: userId,
       ),
     ];
+    final token = _id('invite');
+    _invites[token] = _MockGroupInvite(
+      token: token,
+      groupId: groupId,
+      invitedBy: currentUserId,
+      status: GroupInviteStatus.pending,
+      expiresAt: DateTime.now().add(const Duration(days: 7)),
+      invitedUserId: userId,
+    );
+    final notification = GroupNotification(
+      id: _id('notification'),
+      groupId: groupId,
+      groupName: group.name,
+      type: 'group_invite',
+      isRead: false,
+      createdAt: DateTime.now(),
+      inviteToken: token,
+    );
+    _notifications[userId] = [notification, ...?_notifications[userId]];
   }
 
   Future<List<GroupTransaction>> fetchTransactions(String groupId) async {
@@ -249,6 +437,19 @@ class GroupMockDataSource {
             : {},
       ),
       comments: [],
+    );
+    _recordActivity(
+      draft.groupId,
+      'transaction_created',
+      metadata: {'transactionId': id},
+    );
+    _notifyActiveMembers(
+      draft.groupId,
+      splitStatus == GroupSplitStatus.pendingMemberAmountInput
+          ? 'member_amount_required'
+          : 'transaction_created',
+      excludeCurrentUser: false,
+      transactionId: id,
     );
     if (splitStatus == GroupSplitStatus.posted) {
       _refreshSettlements(draft.groupId);
@@ -397,6 +598,17 @@ class GroupMockDataSource {
     record.transaction = _copyTransaction(record.transaction, status: status);
     if (status == GroupSplitStatus.posted) {
       _refreshSettlements(record.transaction.groupId);
+      _recordActivity(
+        record.transaction.groupId,
+        'transaction_posted',
+        metadata: {'transactionId': transactionId},
+      );
+      _notifyActiveMembers(
+        record.transaction.groupId,
+        'transaction_posted',
+        excludeCurrentUser: false,
+        transactionId: transactionId,
+      );
     }
   }
 
@@ -446,6 +658,247 @@ class GroupMockDataSource {
     );
   }
 
+  Future<GroupStatsOverview> fetchStats(String groupId) async {
+    final detail = await fetchGroupDetail(groupId);
+    final transactions = await fetchTransactions(groupId);
+    final settlements = await fetchSettlementOverview(groupId);
+    return GroupStatsOverview(
+      totalSpent: transactions
+          .where(
+            (transaction) => transaction.splitStatus == GroupSplitStatus.posted,
+          )
+          .fold<int>(0, (sum, transaction) => sum + transaction.totalAmount),
+      transactionCount: transactions.length,
+      pendingTransactionCount: transactions
+          .where(
+            (transaction) =>
+                transaction.splitStatus != GroupSplitStatus.posted &&
+                transaction.splitStatus != GroupSplitStatus.cancelled,
+          )
+          .length,
+      pendingSettlementCount: settlements.suggestions
+          .where((item) => item.status != GroupSettlementStatus.completed)
+          .length,
+      memberCount: detail.activeMembers.length,
+      currentUserBalance: settlements.balances
+          .where((item) => item.userId == currentUserId)
+          .fold<int>(0, (sum, item) => sum + item.balance),
+    );
+  }
+
+  Future<List<GroupNotification>> fetchNotifications() async {
+    return List.unmodifiable(_notifications[currentUserId] ?? const []);
+  }
+
+  Future<void> markNotificationRead(String notificationId) async {
+    final notifications = _notifications[currentUserId] ?? [];
+    final index = notifications.indexWhere((item) => item.id == notificationId);
+    if (index == -1) return;
+    final item = notifications[index];
+    notifications[index] = GroupNotification(
+      id: item.id,
+      groupId: item.groupId,
+      groupName: item.groupName,
+      type: item.type,
+      isRead: true,
+      createdAt: item.createdAt,
+      groupTransactionId: item.groupTransactionId,
+      inviteToken: item.inviteToken,
+    );
+  }
+
+  Future<List<GroupActivity>> fetchActivities(String groupId) async {
+    _requireGroup(groupId);
+    final result = List<GroupActivity>.from(_activities[groupId] ?? const []);
+    result.sort((left, right) => right.createdAt.compareTo(left.createdAt));
+    return List.unmodifiable(result);
+  }
+
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  ) async {
+    _requireActiveMember(groupId);
+    return _notificationPreferences[_preferenceKey(groupId, currentUserId)] ??
+        GroupNotificationPreference.defaults(groupId);
+  }
+
+  Future<void> updateNotificationPreference(
+    GroupNotificationPreference preference,
+  ) async {
+    _requireActiveMember(preference.groupId);
+    _notificationPreferences[_preferenceKey(
+          preference.groupId,
+          currentUserId,
+        )] =
+        preference;
+  }
+
+  Future<List<GroupReactionSummary>> fetchReactionSummaries(
+    String transactionId,
+  ) async {
+    final record = _requireTransaction(transactionId);
+    _requireActiveMember(record.transaction.groupId);
+    final reactions =
+        _reactions[transactionId] ?? const <String, Set<String>>{};
+    final result =
+        reactions.entries
+            .where((entry) => entry.value.isNotEmpty)
+            .map(
+              (entry) => GroupReactionSummary(
+                emoji: entry.key,
+                count: entry.value.length,
+                reactedByCurrentUser: entry.value.contains(currentUserId),
+              ),
+            )
+            .toList()
+          ..sort((left, right) => right.count.compareTo(left.count));
+    return List.unmodifiable(result);
+  }
+
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) async {
+    final record = _requireTransaction(transactionId);
+    _requireActiveMember(record.transaction.groupId);
+    final normalized = emoji.trim();
+    if (normalized.isEmpty) {
+      throw const AppException(
+        'Reaction required',
+        code: 'GROUP_REACTION_REQUIRED',
+      );
+    }
+    final byEmoji = _reactions.putIfAbsent(transactionId, () => {});
+    final users = byEmoji.putIfAbsent(normalized, () => <String>{});
+    if (!users.add(currentUserId)) {
+      users.remove(currentUserId);
+    }
+    _recordActivity(
+      record.transaction.groupId,
+      'transaction_reacted',
+      metadata: {'transactionId': transactionId, 'emoji': normalized},
+    );
+  }
+
+  Future<GroupBudget> fetchBudget(String groupId) async {
+    _requireActiveMember(groupId);
+    return _budgets[groupId] ?? GroupBudget.defaults(groupId);
+  }
+
+  Future<void> updateBudget(GroupBudget budget) async {
+    _requireAdmin(budget.groupId);
+    if (budget.monthlyLimit < 0) {
+      throw const AppException(
+        'Budget must be non-negative',
+        code: 'GROUP_BUDGET_INVALID',
+      );
+    }
+    _budgets[budget.groupId] = budget;
+    _recordActivity(
+      budget.groupId,
+      'budget_updated',
+      metadata: {'monthlyLimit': budget.monthlyLimit},
+    );
+  }
+
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  ) async {
+    _requireActiveMember(groupId);
+    final result =
+        _recurringTransactions.values
+            .where((item) => item.groupId == groupId)
+            .toList()
+          ..sort((left, right) => left.nextRunAt.compareTo(right.nextRunAt));
+    return List.unmodifiable(result);
+  }
+
+  Future<void> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) async {
+    _requireActiveMember(groupId);
+    if (title.trim().isEmpty || amount <= 0) {
+      throw const AppException(
+        'Recurring transaction invalid',
+        code: 'GROUP_RECURRING_INVALID',
+      );
+    }
+    final now = DateTime.now();
+    final id = _id('recurring');
+    _recurringTransactions[id] = GroupRecurringTransaction(
+      id: id,
+      groupId: groupId,
+      createdBy: currentUserId,
+      title: title.trim(),
+      amount: amount,
+      frequency: frequency,
+      nextRunAt: nextRunAt,
+      notifyDaysBefore: notifyDaysBefore,
+      isActive: true,
+      createdAt: now,
+    );
+    _recordActivity(
+      groupId,
+      'recurring_created',
+      metadata: {'recurringId': id},
+    );
+    _notifyActiveMembers(
+      groupId,
+      'recurring_created',
+      excludeCurrentUser: false,
+    );
+  }
+
+  Future<void> updateRecurringTransactionActive({
+    required String recurringTransactionId,
+    required bool isActive,
+  }) async {
+    final existing = _recurringTransactions[recurringTransactionId];
+    if (existing == null) {
+      throw const AppException('Not found', code: 'NOT_FOUND');
+    }
+    _requireActiveMember(existing.groupId);
+    _recurringTransactions[recurringTransactionId] = GroupRecurringTransaction(
+      id: existing.id,
+      groupId: existing.groupId,
+      createdBy: existing.createdBy,
+      title: existing.title,
+      amount: existing.amount,
+      frequency: existing.frequency,
+      nextRunAt: existing.nextRunAt,
+      notifyDaysBefore: existing.notifyDaysBefore,
+      isActive: isActive,
+      createdAt: existing.createdAt,
+    );
+  }
+
+  Future<GroupPublicProfile> fetchPublicProfile(String groupId) async {
+    _requireActiveMember(groupId);
+    return _publicProfiles[groupId] ??
+        GroupPublicProfile.defaults(
+          groupId,
+        ).copyWith(slug: _slug(_requireGroup(groupId).name));
+  }
+
+  Future<void> updatePublicProfile(GroupPublicProfile profile) async {
+    _requireAdmin(profile.groupId);
+    _publicProfiles[profile.groupId] = profile.copyWith(
+      slug: profile.slug?.trim().isNotEmpty == true
+          ? _slug(profile.slug!)
+          : _slug(_requireGroup(profile.groupId).name),
+    );
+    _recordActivity(
+      profile.groupId,
+      'public_profile_updated',
+      metadata: {'enabled': profile.isEnabled},
+    );
+  }
+
   Future<void> markSettlementPaid(String settlementId) async {
     final match = _findSettlement(settlementId);
     if (match.item.fromUserId != currentUserId ||
@@ -473,6 +926,30 @@ class GroupMockDataSource {
     _refreshSettlements(match.item.groupId);
   }
 
+  Future<void> disputeSettlement(String settlementId) async {
+    final match = _findSettlement(settlementId);
+    if (match.item.toUserId != currentUserId ||
+        match.item.status != GroupSettlementStatus.payerMarkedPaid) {
+      throw const AppException('Forbidden', code: 'GROUP_SETTLEMENT_FORBIDDEN');
+    }
+    match.list[match.index] = _copySettlement(
+      match.item,
+      status: GroupSettlementStatus.disputed,
+    );
+  }
+
+  Future<void> resetDisputedSettlement(String settlementId) async {
+    final match = _findSettlement(settlementId);
+    _requireAdmin(match.item.groupId);
+    if (match.item.status != GroupSettlementStatus.disputed) {
+      throw const AppException('Forbidden', code: 'GROUP_SETTLEMENT_FORBIDDEN');
+    }
+    match.list[match.index] = _copySettlement(
+      match.item,
+      status: GroupSettlementStatus.pending,
+    );
+  }
+
   Future<void> leaveGroup(String groupId) async {
     final detail = await fetchGroupDetail(groupId);
     final balance = _groupBalances(groupId)[currentUserId] ?? 0;
@@ -485,6 +962,12 @@ class GroupMockDataSource {
         ) ??
         false;
     if (balance != 0 || unresolved) {
+      _recordActivity(groupId, 'leave_blocked_unresolved');
+      _notifyActiveMembers(
+        groupId,
+        'member_leave_blocked_warning',
+        excludeCurrentUser: true,
+      );
       throw const AppException(
         'Unresolved group balance',
         code: 'GROUP_LEAVE_UNRESOLVED',
@@ -519,6 +1002,52 @@ class GroupMockDataSource {
       username: member.username,
       avatarPath: member.avatarPath,
     );
+    _recordActivity(groupId, 'member_left');
+  }
+
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) async {
+    final detail = await fetchGroupDetail(groupId);
+    if (detail.currentUserRole != GroupRole.owner) {
+      throw const AppException('Owner required', code: 'GROUP_OWNER_REQUIRED');
+    }
+    if (newOwnerUserId == currentUserId) {
+      throw const AppException(
+        'New owner required',
+        code: 'GROUP_OWNER_TRANSFER_TARGET_REQUIRED',
+      );
+    }
+    final members = _members[groupId]!;
+    final currentIndex = members.indexWhere(
+      (member) =>
+          member.userId == currentUserId &&
+          member.status == GroupMemberStatus.active,
+    );
+    final targetIndex = members.indexWhere(
+      (member) =>
+          member.userId == newOwnerUserId &&
+          member.status == GroupMemberStatus.active,
+    );
+    if (currentIndex == -1 || targetIndex == -1) {
+      throw const AppException('Group member required', code: 'NOT_FOUND');
+    }
+    members[currentIndex] = _copyMember(
+      members[currentIndex],
+      GroupRole.member,
+    );
+    members[targetIndex] = _copyMember(members[targetIndex], GroupRole.owner);
+    _recordActivity(
+      groupId,
+      'owner_transferred',
+      metadata: {'new_owner_user_id': newOwnerUserId},
+    );
+    _notifyActiveMembers(
+      groupId,
+      'owner_transferred',
+      excludeCurrentUser: true,
+    );
   }
 
   Future<void> addComment({
@@ -546,6 +1075,78 @@ class GroupMockDataSource {
         displayName: 'mock-user',
       ),
     );
+    _recordActivity(
+      record.transaction.groupId,
+      'comment_added',
+      metadata: {'transactionId': transactionId},
+    );
+    final mentionedUsers = _mentionedUserIds(
+      record.transaction.groupId,
+      trimmed,
+    );
+    for (final userId in mentionedUsers) {
+      if (userId == currentUserId) continue;
+      _notifyUser(
+        groupId: record.transaction.groupId,
+        userId: userId,
+        type: 'comment_mention',
+        transactionId: transactionId,
+      );
+    }
+  }
+
+  Future<void> updateComment({
+    required String commentId,
+    required String transactionId,
+    required String content,
+  }) async {
+    final record = _requireTransaction(transactionId);
+    final index = record.comments.indexWhere((item) => item.id == commentId);
+    if (index == -1) {
+      throw const AppException('Comment not found', code: 'NOT_FOUND');
+    }
+    final existing = record.comments[index];
+    if (existing.userId != currentUserId) {
+      throw const AppException(
+        'Comment owner required',
+        code: 'GROUP_COMMENT_OWNER_REQUIRED',
+      );
+    }
+    final trimmed = content.trim();
+    if (trimmed.isEmpty) {
+      throw const AppException(
+        'Comment required',
+        code: 'GROUP_COMMENT_REQUIRED',
+      );
+    }
+    record.comments[index] = GroupTransactionComment(
+      id: existing.id,
+      groupTransactionId: existing.groupTransactionId,
+      userId: existing.userId,
+      content: trimmed,
+      createdAt: existing.createdAt,
+      updatedAt: DateTime.now(),
+      displayName: existing.displayName,
+      avatarPath: existing.avatarPath,
+    );
+  }
+
+  Future<void> deleteComment({
+    required String commentId,
+    required String transactionId,
+  }) async {
+    final record = _requireTransaction(transactionId);
+    final index = record.comments.indexWhere((item) => item.id == commentId);
+    if (index == -1) {
+      throw const AppException('Comment not found', code: 'NOT_FOUND');
+    }
+    if (record.comments[index].userId != currentUserId) {
+      throw const AppException(
+        'Comment owner required',
+        code: 'GROUP_COMMENT_OWNER_REQUIRED',
+      );
+    }
+    record.comments.removeAt(index);
   }
 
   void _validatePayerDraft(
@@ -570,7 +1171,8 @@ class GroupMockDataSource {
             ?.where(
               (item) =>
                   item.status == GroupSettlementStatus.completed ||
-                  item.status == GroupSettlementStatus.payerMarkedPaid,
+                  item.status == GroupSettlementStatus.payerMarkedPaid ||
+                  item.status == GroupSettlementStatus.disputed,
             )
             .toList() ??
         [];
@@ -606,6 +1208,119 @@ class GroupMockDataSource {
           ),
     );
     _settlements[groupId] = retained;
+  }
+
+  void _recordActivity(
+    String groupId,
+    String type, {
+    Map<String, dynamic> metadata = const {},
+  }) {
+    final now = DateTime.now();
+    final activity = GroupActivity(
+      id: _id('activity'),
+      groupId: groupId,
+      actorUserId: currentUserId,
+      actorName: _displayName(groupId, currentUserId),
+      type: type,
+      metadata: metadata,
+      createdAt: now,
+    );
+    _activities[groupId] = [activity, ...?_activities[groupId]];
+  }
+
+  void _notifyActiveMembers(
+    String groupId,
+    String type, {
+    bool excludeCurrentUser = false,
+    String? transactionId,
+  }) {
+    for (final member in _activeMembers(groupId)) {
+      if (excludeCurrentUser && member.userId == currentUserId) continue;
+      _notifyUser(
+        groupId: groupId,
+        userId: member.userId,
+        type: type,
+        transactionId: transactionId,
+      );
+    }
+  }
+
+  void _notifyUser({
+    required String groupId,
+    required String userId,
+    required String type,
+    String? transactionId,
+  }) {
+    final group = _groups[groupId];
+    if (group == null || !_notificationEnabled(groupId, userId, type)) return;
+    final notification = GroupNotification(
+      id: _id('notification'),
+      groupId: groupId,
+      groupName: group.name,
+      groupTransactionId: transactionId,
+      type: type,
+      isRead: false,
+      createdAt: DateTime.now(),
+    );
+    _notifications[userId] = [notification, ...?_notifications[userId]];
+  }
+
+  bool _notificationEnabled(String groupId, String userId, String type) {
+    final preference =
+        _notificationPreferences[_preferenceKey(groupId, userId)] ??
+        GroupNotificationPreference.defaults(groupId);
+    if (preference.muteAll) return false;
+    final hour = DateTime.now().hour;
+    final start = preference.quietHoursStart;
+    final end = preference.quietHoursEnd;
+    if (start != null && end != null) {
+      final inQuietHours = start <= end
+          ? hour >= start && hour < end
+          : hour >= start || hour < end;
+      if (inQuietHours) return false;
+    }
+    if (type.contains('invite')) return preference.inviteNotifications;
+    if (type.contains('mention')) return preference.mentionNotifications;
+    if (type.contains('settlement') || type.contains('debt')) {
+      return preference.debtNotifications;
+    }
+    if (type.contains('transaction') || type.contains('amount')) {
+      return preference.transactionNotifications;
+    }
+    return true;
+  }
+
+  Set<String> _mentionedUserIds(String groupId, String content) {
+    final usernames = RegExp(
+      r'@([a-zA-Z0-9_]{3,30})',
+    ).allMatches(content).map((match) => match.group(1)!.toLowerCase()).toSet();
+    if (usernames.isEmpty) return const {};
+    return _activeMembers(groupId)
+        .where(
+          (member) =>
+              member.username != null &&
+              usernames.contains(member.username!.toLowerCase()),
+        )
+        .map((member) => member.userId)
+        .toSet();
+  }
+
+  String? _displayName(String groupId, String userId) {
+    final members = _members[groupId] ?? const <SpendingGroupMember>[];
+    for (final member in members) {
+      if (member.userId == userId) return member.resolvedName;
+    }
+    return userId;
+  }
+
+  String _preferenceKey(String groupId, String userId) => '$groupId:$userId';
+
+  String _slug(String value) {
+    final normalized = value.toLowerCase().replaceAll(
+      RegExp(r'[^a-z0-9]+'),
+      '-',
+    );
+    return normalized.replaceAll(RegExp(r'^-+|-+$'), '');
   }
 
   Map<String, int> _groupBalances(String groupId) {
@@ -733,6 +1448,21 @@ class GroupMockDataSource {
       .where((record) => record.transaction.groupId == groupId)
       .toList();
 
+  SpendingGroupMember _copyMember(SpendingGroupMember value, GroupRole role) {
+    return SpendingGroupMember(
+      id: value.id,
+      groupId: value.groupId,
+      userId: value.userId,
+      role: role,
+      status: value.status,
+      joinedAt: value.joinedAt,
+      leftAt: value.leftAt,
+      displayName: value.displayName,
+      username: value.username,
+      avatarPath: value.avatarPath,
+    );
+  }
+
   _SettlementMatch _findSettlement(String settlementId) {
     for (final list in _settlements.values) {
       final index = list.indexWhere((item) => item.id == settlementId);
@@ -825,4 +1555,22 @@ class _SettlementMatch {
   final List<GroupSettlementSuggestion> list;
   final int index;
   final GroupSettlementSuggestion item;
+}
+
+class _MockGroupInvite {
+  _MockGroupInvite({
+    required this.token,
+    required this.groupId,
+    required this.invitedBy,
+    required this.status,
+    required this.expiresAt,
+    this.invitedUserId,
+  });
+
+  final String token;
+  final String groupId;
+  final String invitedBy;
+  final String? invitedUserId;
+  GroupInviteStatus status;
+  final DateTime expiresAt;
 }
