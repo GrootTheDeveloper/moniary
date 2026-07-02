@@ -128,11 +128,18 @@ class FriendRepositoryImpl implements FriendRepository {
   }
 
   @override
-  Future<void> sendRequest(String username) {
-    if (_useMockData) return _mock.sendRequest(username);
+  Future<void> sendRequestToUser(String targetUserId) {
+    final userId = targetUserId.trim();
+    if (userId.isEmpty) {
+      throw const AppException(
+        'Friend user not found',
+        code: 'FRIEND_USER_NOT_FOUND',
+      );
+    }
+    if (_useMockData) return _mock.sendRequestToUser(userId);
     return _guard(
       'send friend request',
-      () => _remote.sendRequest(_normalizeSearchQuery(username)),
+      () => _remote.sendRequestToUser(userId),
     );
   }
 

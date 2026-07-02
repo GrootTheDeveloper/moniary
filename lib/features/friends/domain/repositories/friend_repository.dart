@@ -19,7 +19,7 @@ abstract interface class FriendRepository {
 
   Future<void> revokeInviteLink(String token);
 
-  Future<void> sendRequest(String username);
+  Future<void> sendRequestToUser(String targetUserId);
 
   Future<void> acceptRequest(String requestId);
 

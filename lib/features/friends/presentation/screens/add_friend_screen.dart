@@ -148,7 +148,7 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
     try {
       await ref
           .read(friendActionControllerProvider.notifier)
-          .sendRequest(result.profile.username ?? '');
+          .sendRequestToUser(result.profile.userId);
       ref.invalidate(friendSearchProvider(_query));
       if (!mounted) return;
       ScaffoldMessenger.of(

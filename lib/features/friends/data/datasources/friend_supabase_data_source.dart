@@ -59,8 +59,11 @@ class FriendSupabaseDataSource {
     return client.rpc('revoke_friend_invite_link', params: {'p_token': token});
   }
 
-  Future<void> sendRequest(String username) {
-    return client.rpc('send_friend_request', params: {'p_username': username});
+  Future<void> sendRequestToUser(String targetUserId) {
+    return client.rpc(
+      'send_friend_request_by_user_id',
+      params: {'p_target_user_id': targetUserId},
+    );
   }
 
   Future<void> acceptRequest(String requestId) {

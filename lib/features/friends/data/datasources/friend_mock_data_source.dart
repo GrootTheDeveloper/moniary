@@ -24,6 +24,11 @@ class FriendMockDataSource {
       username: 'binh_tran',
     ),
   };
+  static const Map<String, String> _emailsByUserId = {
+    'mock-user-id': 'mock-user@example.com',
+    'mock-friend-1': 'an@example.com',
+    'mock-friend-2': 'binh@example.com',
+  };
 
   static final Map<String, Set<String>> _friendships = {};
   static final Map<String, _MockFriendRequest> _requests = {};
@@ -76,7 +81,8 @@ class FriendMockDataSource {
         .where(
           (profile) =>
               profile.userId != currentUserId &&
-              (profile.username?.toLowerCase().startsWith(query) ?? false),
+              ((profile.username?.toLowerCase().startsWith(query) ?? false) ||
+                  (_emailsByUserId[profile.userId]?.toLowerCase() == rawQuery)),
         )
         .map(
           (profile) => FriendSearchResult(
@@ -199,21 +205,14 @@ class FriendMockDataSource {
     invite.status = FriendInviteStatus.revoked;
   }
 
-  Future<void> sendRequest(String username) async {
-    final rawUsername = username.trim().toLowerCase();
-    final normalized = rawUsername.startsWith('@')
-        ? rawUsername.substring(1)
-        : rawUsername;
-    final target = _directory.values.where(
-      (profile) => profile.username?.toLowerCase() == normalized,
-    );
-    if (target.isEmpty) {
+  Future<void> sendRequestToUser(String targetUserId) async {
+    final targetId = targetUserId.trim();
+    if (!_directory.containsKey(targetId)) {
       throw const AppException(
         'Friend user not found',
         code: 'FRIEND_USER_NOT_FOUND',
       );
     }
-    final targetId = target.first.userId;
     if (targetId == currentUserId) {
       throw const AppException(
         'Cannot add yourself',
