@@ -77,6 +77,7 @@ class TestProfileSetupController extends ProfileSetupController {
 Widget _routerApp({
   required ProviderContainer container,
   required String initialLocation,
+  double keyboardInset = 0,
 }) {
   final router = GoRouter(
     initialLocation: initialLocation,
@@ -109,6 +110,12 @@ Widget _routerApp({
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: router,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(
+          context,
+        ).copyWith(viewInsets: EdgeInsets.only(bottom: keyboardInset)),
+        child: child!,
+      ),
     ),
   );
 }
@@ -195,5 +202,43 @@ void main() {
 
     expect(find.text('invite token-2'), findsOneWidget);
     expect(container.read(pendingDeepLinkProvider), isNull);
+  });
+
+  testWidgets('profile setup scrolls on a compact screen without overflow', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 568));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.binding.platformDispatcher.textScaleFactorTestValue = 1.3;
+
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        profileSetupControllerProvider.overrideWith(
+          TestProfileSetupController.new,
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      _routerApp(
+        container: container,
+        initialLocation: ProfileSetupScreen.routePath,
+        keyboardInset: 220,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+
+    final submitButton = find.byType(FilledButton);
+    await tester.ensureVisible(submitButton);
+    await tester.pumpAndSettle();
+
+    expect(submitButton, findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

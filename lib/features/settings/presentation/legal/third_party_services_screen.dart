@@ -15,32 +15,28 @@ class ThirdPartyServicesScreen extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          children: const [
-            _ThirdPartyHero(),
-            SizedBox(height: 16),
+          children: [
+            const _ThirdPartyHero(),
+            const SizedBox(height: 16),
             _ServiceItem(
               icon: Icons.cloud_queue_outlined,
-              title: 'Supabase',
-              description:
-                  'Được dùng cho đăng nhập, cơ sở dữ liệu, storage ảnh giao dịch và edge function xóa tài khoản.',
+              title: context.l10n.thirdPartyServicesSyncTitle,
+              description: context.l10n.thirdPartyServicesSyncDesc,
             ),
             _ServiceItem(
               icon: Icons.flutter_dash_outlined,
-              title: 'Flutter',
-              description:
-                  'Framework giao diện chính của app, kèm các package hỗ trợ điều hướng, trạng thái, camera, chọn ảnh và xử lý file.',
+              title: context.l10n.thirdPartyServicesAppPlatformTitle,
+              description: context.l10n.thirdPartyServicesAppPlatformDesc,
             ),
             _ServiceItem(
               icon: Icons.folder_special_outlined,
-              title: 'Bộ nhớ thiết bị',
-              description:
-                  'File export, request privacy và lịch sử export/request được ghi trong thư mục tài liệu của app trên thiết bị.',
+              title: context.l10n.thirdPartyServicesDeviceStorageTitle,
+              description: context.l10n.thirdPartyServicesDeviceStorageDesc,
             ),
             _ServiceItem(
               icon: Icons.no_accounts_outlined,
-              title: 'Không tích hợp quảng cáo',
-              description:
-                  'MVP không dùng SDK quảng cáo, tracking marketing, danh bạ, SMS, email inbox hoặc kết nối ngân hàng tự động.',
+              title: context.l10n.thirdPartyServicesNoAdsTitle,
+              description: context.l10n.thirdPartyServicesNoAdsDesc,
             ),
           ],
         ),
@@ -62,7 +58,7 @@ class _ThirdPartyHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        'Thông báo này giúp người dùng hiểu app dựa vào dịch vụ nào để đăng nhập, lưu trữ và vận hành dữ liệu.',
+        context.l10n.thirdPartyServicesHero,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );

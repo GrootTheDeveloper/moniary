@@ -84,7 +84,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           isTodaySelected: _isTodayGridMode,
                           onTodayTap: () {
                             setState(() {
-                              _isTodayGridMode = true;
+                              _isTodayGridMode = !_isTodayGridMode;
                             });
                           },
                           onResetTap: () {
@@ -112,17 +112,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: monthAsync.when(
                           data: (monthData) {
-                            if (monthData.isEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 24,
-                                ),
-                                child: PlaceholderCard(
-                                  title: context.l10n.calendarTitle,
-                                  body: context.l10n.calendarEmptyMessage,
-                                ),
-                              );
-                            }
                             if (_isTodayGridMode) {
                               return _TodayGrid(
                                 monthData: monthData,
@@ -1317,7 +1306,7 @@ class _TodayGrid extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: PlaceholderCard(
           title: context.l10n.calendarToday,
-          body: context.l10n.calendarEmptyMessage,
+          body: context.l10n.calendarTodayEmptyMessage,
         ),
       );
     }
