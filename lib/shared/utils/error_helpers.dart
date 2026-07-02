@@ -86,7 +86,7 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.errorGeneric;
     }
 
-    return l10n.errorGeneric;
+    return error.message.isNotEmpty ? error.message : l10n.errorGeneric;
   }
-  return l10n.errorGeneric;
+  return error.toString();
 }
