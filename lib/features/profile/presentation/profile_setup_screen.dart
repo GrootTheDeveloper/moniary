@@ -359,7 +359,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(userFriendlyMessage(context, error))),
-      );
+      ) ;
     }
   }
 }
