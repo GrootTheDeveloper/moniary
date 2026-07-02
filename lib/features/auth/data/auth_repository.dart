@@ -188,7 +188,11 @@ class AuthRepository {
   }) async {
     if (_useMockData) return;
     try {
-      await _requiredClient.auth.signUp(email: email, password: password);
+      await _requiredClient.auth.signUp(
+        email: email,
+        password: password,
+        emailRedirectTo: 'io.supabase.moniary://login-callback',
+      );
     } on AuthException catch (e, st) {
       AppLogger.error('Email sign-up failed', e, st);
       throw AppException(e.message, code: e.code);

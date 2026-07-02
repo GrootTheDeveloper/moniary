@@ -149,8 +149,6 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           _buildSummaryCards(income, expense, net, prevIncome, prevExpense),
           const SizedBox(height: 16),
           _buildInsightsSection(transactions, prevTransactions),
-          const SizedBox(height: 16),
-          _buildImportantSpendingCard(transactions),
           const SizedBox(height: 24),
           _buildTypeToggle(),
           const SizedBox(height: 20),
@@ -264,105 +262,6 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildImportantSpendingCard(List<TransactionEntry> transactions) {
-    final importantTransactions = transactions
-        .where((t) => t.isImportant)
-        .toList();
-    if (importantTransactions.isEmpty) return const SizedBox.shrink();
-
-    final importantIncome = importantTransactions
-        .where((t) => t.isIncome)
-        .fold<double>(0, (sum, t) => sum + t.amount);
-    final importantExpense = importantTransactions
-        .where((t) => t.isExpense)
-        .fold<double>(0, (sum, t) => sum + t.amount);
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppTheme.amber.withValues(alpha: 0.1), AppTheme.surface],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.amber.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.stars, color: AppTheme.amber, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                context.l10n.starredTransactionsTitle,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.calendarIncome,
-                      style: const TextStyle(
-                        color: Colors.white54,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    ObscurableAmountText(
-                      amountText: _money(context, importantIncome),
-                      style: const TextStyle(
-                        color: AppTheme.success,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(width: 1, height: 30, color: Colors.white10),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.calendarExpense,
-                      style: const TextStyle(
-                        color: Colors.white54,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    ObscurableAmountText(
-                      amountText: _money(context, importantExpense),
-                      style: const TextStyle(
-                        color: AppTheme.danger,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 
@@ -931,53 +830,42 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
-        SizedBox(
-          height: 100,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: insights.length,
-            itemBuilder: (context, index) {
-              final insight = insights[index];
-              final color = insight.type == InsightType.warning 
-                ? AppTheme.danger 
-                : insight.type == InsightType.success 
-                  ? AppTheme.success 
+        ...insights.map((insight) {
+          final color = insight.type == InsightType.warning
+              ? AppTheme.danger
+              : insight.type == InsightType.success
+                  ? AppTheme.success
                   : AppTheme.mint;
 
-              return Container(
-                width: 260,
-                margin: const EdgeInsets.only(right: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppTheme.surface,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: color.withValues(alpha: 0.3)),
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: color.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(insight.icon, color: color, size: 20),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(insight.icon, color: color, size: 20),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        insight.message,
-                        style: const TextStyle(fontSize: 13, height: 1.3),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    insight.message,
+                    style: const TextStyle(fontSize: 13, height: 1.3),
+                  ),
                 ),
-              );
-            },
-          ),
-        ),
+              ],
+            ),
+          );
+        }).toList(),
       ],
     );
   }
@@ -1025,15 +913,19 @@ class _MetricCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      label,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.white54,
-                        fontWeight: FontWeight.w500,
+                    Flexible(
+                      child: Text(
+                        label,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white54,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                    if (trend != null)
+                    if (trend != null) ...[
+                      const SizedBox(width: 4),
                       Text(
                         trend!,
                         style: TextStyle(
@@ -1042,6 +934,7 @@ class _MetricCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                    ],
                   ],
                 ),
                 const SizedBox(height: 4),
