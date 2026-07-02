@@ -69,7 +69,8 @@ class FriendMockDataSource {
   }
 
   Future<List<FriendSearchResult>> searchUsers(String usernameQuery) async {
-    final query = usernameQuery.trim().toLowerCase();
+    final rawQuery = usernameQuery.trim().toLowerCase();
+    final query = rawQuery.startsWith('@') ? rawQuery.substring(1) : rawQuery;
     if (query.isEmpty) return const [];
     return _directory.values
         .where(
@@ -199,7 +200,10 @@ class FriendMockDataSource {
   }
 
   Future<void> sendRequest(String username) async {
-    final normalized = username.trim().toLowerCase();
+    final rawUsername = username.trim().toLowerCase();
+    final normalized = rawUsername.startsWith('@')
+        ? rawUsername.substring(1)
+        : rawUsername;
     final target = _directory.values.where(
       (profile) => profile.username?.toLowerCase() == normalized,
     );

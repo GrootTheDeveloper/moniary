@@ -3486,16 +3486,17 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendAdd => 'Thêm bạn';
 
   @override
-  String get friendSearchUsername => 'Tìm bằng username';
+  String get friendSearchUsername => 'Tìm bằng username hoặc email';
 
   @override
-  String get friendSearchHint => 'Ví dụ: an_nguyen';
+  String get friendSearchHint => 'Ví dụ: an_nguyen hoặc name@example.com';
 
   @override
   String get friendSearch => 'Tìm kiếm';
 
   @override
-  String get friendSearchPrompt => 'Nhập username để tìm người dùng Moniary.';
+  String get friendSearchPrompt =>
+      'Nhập username hoặc email để tìm người dùng Moniary.';
 
   @override
   String friendSearchEmpty(String query) {

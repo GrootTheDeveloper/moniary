@@ -80,7 +80,7 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<List<FriendSearchResult>> searchUsers(String usernameQuery) {
-    final query = usernameQuery.trim();
+    final query = _normalizeSearchQuery(usernameQuery);
     if (query.isEmpty) return Future.value(const []);
     if (_useMockData) return _mock.searchUsers(query);
     return _guard('search friend profiles', () async {
@@ -132,7 +132,7 @@ class FriendRepositoryImpl implements FriendRepository {
     if (_useMockData) return _mock.sendRequest(username);
     return _guard(
       'send friend request',
-      () => _remote.sendRequest(username.trim().toLowerCase()),
+      () => _remote.sendRequest(_normalizeSearchQuery(username)),
     );
   }
 
@@ -184,5 +184,10 @@ class FriendRepositoryImpl implements FriendRepository {
       AppLogger.error(operation, error, stackTrace);
       throw const AppException('errorConnection');
     }
+  }
+
+  String _normalizeSearchQuery(String value) {
+    final query = value.trim().toLowerCase();
+    return query.startsWith('@') ? query.substring(1).trim() : query;
   }
 }

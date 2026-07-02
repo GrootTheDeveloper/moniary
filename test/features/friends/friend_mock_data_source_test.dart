@@ -18,6 +18,13 @@ void main() {
     expect(results.first.relationStatus, FriendRelationStatus.none);
   });
 
+  test('search chấp nhận username có ký tự @ ở đầu', () async {
+    final results = await source('mock-user-id').searchUsers('@an');
+
+    expect(results, hasLength(1));
+    expect(results.first.profile.username, 'an_nguyen');
+  });
+
   test('không cho tự kết bạn với chính mình', () async {
     final action = source('mock-user-id').sendRequest('mock-user');
 

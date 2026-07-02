@@ -3487,16 +3487,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendAdd => 'Add friend';
 
   @override
-  String get friendSearchUsername => 'Search by username';
+  String get friendSearchUsername => 'Search by username or email';
 
   @override
-  String get friendSearchHint => 'For example: an_nguyen';
+  String get friendSearchHint => 'For example: an_nguyen or name@example.com';
 
   @override
   String get friendSearch => 'Search';
 
   @override
-  String get friendSearchPrompt => 'Enter a username to find a Moniary user.';
+  String get friendSearchPrompt =>
+      'Enter a username or email to find a Moniary user.';
 
   @override
   String friendSearchEmpty(String query) {
