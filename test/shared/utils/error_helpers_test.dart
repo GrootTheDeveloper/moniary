@@ -64,4 +64,32 @@ void main() {
 
     expect(message, 'Lỗi kết nối. Vui lòng thử lại.');
   });
+
+  testWidgets('maps raw socket client errors to localized connection error', (
+    tester,
+  ) async {
+    final message = await messageFor(
+      tester,
+      Exception(
+        'ClientException with SocketException: Failed host lookup: '
+        'iegjdbcmngtpjoldbixs.supabase.co',
+      ),
+    );
+
+    expect(message, 'Lỗi kết nối. Vui lòng thử lại.');
+  });
+
+  testWidgets('keeps Supabase auth messages for user-actionable errors', (
+    tester,
+  ) async {
+    final message = await messageFor(
+      tester,
+      const AppException(
+        'Invalid login credentials',
+        code: 'invalid_credentials',
+      ),
+    );
+
+    expect(message, 'Invalid login credentials');
+  });
 }
