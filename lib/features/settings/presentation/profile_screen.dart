@@ -656,54 +656,85 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   void _showMoniarySetupSheet() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: AppTheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                context.l10n.profileHowMoniaryWorksTitle,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
+        return DraggableScrollableSheet(
+          initialChildSize: 0.65,
+          minChildSize: 0.4,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return SingleChildScrollView(
+              controller: scrollController,
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    context.l10n.profileHowMoniaryWorksTitle,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  _SetupStep(
+                    icon: Icons.account_balance_wallet_outlined,
+                    title: context.l10n.profileSetupGuideWalletTitle,
+                    body: context.l10n.profileSetupGuideWalletBody,
+                  ),
+                  _SetupStep(
+                    icon: Icons.camera_alt_outlined,
+                    title: context.l10n.profileSetupGuideTransactionTitle,
+                    body: context.l10n.profileSetupGuideTransactionBody,
+                  ),
+                  _SetupStep(
+                    icon: Icons.calendar_month_outlined,
+                    title: context.l10n.profileSetupGuideReviewTitle,
+                    body: context.l10n.profileSetupGuideReviewBody,
+                  ),
+                  _SetupStep(
+                    icon: Icons.ios_share_outlined,
+                    title: context.l10n.profileSetupGuideExportTitle,
+                    body: context.l10n.profileSetupGuideExportBody,
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      context.go(CalendarScreen.routePath);
+                    },
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(
+                      context.l10n.calendarTitle,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 18),
-              _SetupStep(
-                icon: Icons.account_balance_wallet_outlined,
-                title: context.l10n.profileSetupGuideWalletTitle,
-                body: context.l10n.profileSetupGuideWalletBody,
-              ),
-              _SetupStep(
-                icon: Icons.camera_alt_outlined,
-                title: context.l10n.profileSetupGuideTransactionTitle,
-                body: context.l10n.profileSetupGuideTransactionBody,
-              ),
-              _SetupStep(
-                icon: Icons.calendar_month_outlined,
-                title: context.l10n.profileSetupGuideReviewTitle,
-                body: context.l10n.profileSetupGuideReviewBody,
-              ),
-              _SetupStep(
-                icon: Icons.ios_share_outlined,
-                title: context.l10n.profileSetupGuideExportTitle,
-                body: context.l10n.profileSetupGuideExportBody,
-              ),
-              const SizedBox(height: 18),
-              FilledButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  context.go(CalendarScreen.routePath);
-                },
-                child: Text(context.l10n.calendarTitle),
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );

@@ -258,15 +258,26 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                           setState(() => _currency = value);
                         },
                       ),
+                      const SizedBox(height: 32),
                       const Spacer(),
                       FilledButton(
                         onPressed: isLoading ? null : _submit,
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
                         child: Text(
                           isLoading
                               ? context.l10n.commonSaving
                               : (isEditMode
                                     ? context.l10n.commonSave
                                     : context.l10n.profileSetupStart),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
