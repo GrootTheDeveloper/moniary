@@ -6299,13 +6299,13 @@ abstract class AppLocalizations {
   /// No description provided for @friendSearchUsername.
   ///
   /// In vi, this message translates to:
-  /// **'Tìm bằng username'**
+  /// **'Tìm bằng username hoặc email'**
   String get friendSearchUsername;
 
   /// No description provided for @friendSearchHint.
   ///
   /// In vi, this message translates to:
-  /// **'Ví dụ: an_nguyen'**
+  /// **'Ví dụ: an_nguyen hoặc name@example.com'**
   String get friendSearchHint;
 
   /// No description provided for @friendSearch.
@@ -6317,7 +6317,7 @@ abstract class AppLocalizations {
   /// No description provided for @friendSearchPrompt.
   ///
   /// In vi, this message translates to:
-  /// **'Nhập username để tìm người dùng Moniary.'**
+  /// **'Nhập username hoặc email để tìm người dùng Moniary.'**
   String get friendSearchPrompt;
 
   /// No description provided for @friendSearchEmpty.
