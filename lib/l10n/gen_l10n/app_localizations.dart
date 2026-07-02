@@ -2648,6 +2648,36 @@ abstract class AppLocalizations {
   /// **'Ngày {day}\n{amount}'**
   String statsDayTooltip(int day, String amount);
 
+  /// No description provided for @statsInsightTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý thông minh'**
+  String get statsInsightTitle;
+
+  /// No description provided for @statsInsightSavings.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã tiết kiệm được {percent}% thu nhập trong tháng này.'**
+  String statsInsightSavings(String percent);
+
+  /// No description provided for @statsInsightWeekend.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chi tiêu {percent}% ngân sách vào cuối tuần. Hãy cẩn thận!'**
+  String statsInsightWeekend(String percent);
+
+  /// No description provided for @statsInsightCategorySurge.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu {category} tăng {percent}% so với tháng trước.'**
+  String statsInsightCategorySurge(String category, String percent);
+
+  /// No description provided for @statsInsightPositive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đang quản lý chi tiêu rất tốt! Hãy tiếp tục duy trì nhé.'**
+  String get statsInsightPositive;
+
   /// No description provided for @profileProtectAccount.
   ///
   /// In vi, this message translates to:

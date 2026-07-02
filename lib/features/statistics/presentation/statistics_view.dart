@@ -826,7 +826,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
-            'Gợi ý thông minh', // TODO: l10n
+            context.l10n.statsInsightTitle,
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),

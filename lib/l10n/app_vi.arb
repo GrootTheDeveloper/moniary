@@ -603,6 +603,35 @@
       }
     }
   },
+  "statsInsightTitle": "Gợi ý thông minh",
+  "statsInsightSavings": "Bạn đã tiết kiệm được {percent}% thu nhập trong tháng này.",
+  "@statsInsightSavings": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsInsightWeekend": "Bạn chi tiêu {percent}% ngân sách vào cuối tuần. Hãy cẩn thận!",
+  "@statsInsightWeekend": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsInsightCategorySurge": "Chi tiêu {category} tăng {percent}% so với tháng trước.",
+  "@statsInsightCategorySurge": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsInsightPositive": "Bạn đang quản lý chi tiêu rất tốt! Hãy tiếp tục duy trì nhé.",
   "profileProtectAccount": "Bảo vệ tài khoản của bạn",
   "profileAnonymousWarning": "Bạn đang dùng tài khoản khách. Hãy liên kết Email hoặc Google để giữ dữ liệu khi đổi thiết bị.",
   "profileLinkNow": "Liên kết ngay",
