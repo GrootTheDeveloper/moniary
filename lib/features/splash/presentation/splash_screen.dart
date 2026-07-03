@@ -12,6 +12,7 @@ import '../../auth/application/post_auth_decision_provider.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../onboarding/presentation/onboarding_screen.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
+import '../../profile/presentation/profile_survey_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -44,6 +45,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           case PostAuthDestination.profileSetup:
             _isNavigated = true;
             context.go(ProfileSetupScreen.routePath);
+          case PostAuthDestination.profileSurvey:
+            _isNavigated = true;
+            context.go(ProfileSurveyScreen.routePath);
           case PostAuthDestination.home:
             _isNavigated = true;
             context.go(CalendarScreen.routePath);

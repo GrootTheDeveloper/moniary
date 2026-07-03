@@ -9,6 +9,24 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get budgetEditLimit => 'Edit limit';
+
+  @override
+  String get budgetQuickPresets => 'Quick presets';
+
+  @override
+  String get budgetWarningThreshold => 'Warn at';
+
+  @override
+  String get budgetCategoryDetailTitle => 'Budget detail';
+
+  @override
+  String get budgetTransactionsInLimit => 'Transactions in this limit';
+
+  @override
+  String get budgetNoTransactions => 'No transactions in this category yet.';
+
+  @override
   String get appName => 'Moniary';
 
   @override
@@ -105,6 +123,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginApple => 'Sign in with Apple';
 
   @override
+  String get loginFacebook => 'Sign in with Facebook';
+
+  @override
   String get loginEmail => 'Sign in with Email';
 
   @override
@@ -122,6 +143,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginDataSecure => 'Your data is protected and synced securely.';
+
+  @override
+  String get loginForgotPassword => 'Forgot password?';
+
+  @override
+  String get loginNoAccount => 'No account yet?';
+
+  @override
+  String get loginRegisterNow => 'Register now';
+
+  @override
+  String get loginHaveAccount => 'Already have an account?';
+
+  @override
+  String get loginSocialDivider => 'Or sign in with';
+
+  @override
+  String get loginGuestCta => 'Try it now — no account needed →';
+
+  @override
+  String get loginPasswordResetSent =>
+      'Password reset instructions were sent by email.';
 
   @override
   String get splashLoading => 'Loading app...';
@@ -176,45 +219,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingPillStats => 'Stats';
 
   @override
-  String get onboardingPage1Title1 => 'Track expenses';
+  String get onboardingPage1Title1 => 'Scan a receipt,';
 
   @override
-  String get onboardingPage1Title2 => 'with photos';
+  String get onboardingPage1Title2 => 'save it in one tap';
 
   @override
-  String get onboardingPage1Subtitle => 'Fast  •  Memorable  •  Never miss';
+  String get onboardingPage1Subtitle => 'Reading your receipt';
 
   @override
   String get onboardingPage1Caption =>
-      'Save spending moments like a mini diary.';
+      'Scan a receipt and fill the amount, date, wallet and category automatically.';
 
   @override
-  String get onboardingPage2Title1 => 'View calendar';
+  String get onboardingPage2Title1 => 'Every day becomes';
 
   @override
-  String get onboardingPage2Title2 => 'intuitively';
+  String get onboardingPage2Title2 => 'a small photograph';
 
   @override
   String get onboardingPage2Subtitle =>
-      'Photos, totals, filters and alerts in one screen';
+      'Look back at the month like an album, not a spreadsheet.';
 
   @override
   String get onboardingPage2Caption =>
-      'Each day is a cell, each transaction is a memory.';
+      'Every transaction becomes a small piece of your diary.';
 
   @override
-  String get onboardingPage3Title1 => 'Analytics';
+  String get onboardingPage3Title1 => 'A clear budget,';
 
   @override
-  String get onboardingPage3Title2 => 'made simple';
+  String get onboardingPage3Title2 => 'understood in seconds';
 
   @override
   String get onboardingPage3Subtitle =>
-      'Track income/expenses without complex charts';
+      'Track each category and get a warning before you cross its limit.';
 
   @override
   String get onboardingPage3Caption =>
-      'Moniary helps you view money in real context.';
+      'Keep an eye on limits without reading complicated tables.';
+
+  @override
+  String get onboardingReceiptCategory => 'Food & dining';
+
+  @override
+  String get onboardingReceiptDate => '15 Jun';
+
+  @override
+  String get onboardingReceiptAmount => '385,000';
+
+  @override
+  String get onboardingPhotoAmount => '−145,000 ₫';
+
+  @override
+  String get onboardingBudgetPercent => '70%';
+
+  @override
+  String get onboardingBudgetLabel => 'Monthly budget';
 
   @override
   String get profileSetupTitle => 'Profile Setup';
@@ -233,6 +294,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSetupStart => 'Start';
+
+  @override
+  String profileSurveyWelcomeTitle(String name) {
+    return 'It is lovely to meet you, $name!';
+  }
+
+  @override
+  String get profileSurveyWelcomeBody =>
+      'A few quick choices will help Moniary prepare an experience that fits you.';
+
+  @override
+  String get profileSurveyFallbackName => 'friend';
+
+  @override
+  String get profileSurveyOccupationTitle => 'What do you currently do?';
+
+  @override
+  String get profileSurveyOccupationBody =>
+      'Moniary will use this to suggest categories and a tracking style that fits you.';
+
+  @override
+  String get profileSurveyOccupationStudent => 'Student';
+
+  @override
+  String get profileSurveyOccupationOffice => 'Office worker';
+
+  @override
+  String get profileSurveyOccupationFreelancer => 'Freelancer';
+
+  @override
+  String get profileSurveyOccupationBusiness => 'Business owner';
+
+  @override
+  String get profileSurveyOccupationOther => 'Other';
+
+  @override
+  String get profileSurveyCurrencyTitle => 'Choose the currency you use';
+
+  @override
+  String get profileSurveyCurrencyBody =>
+      'Moniary will use it for balances and reports.';
+
+  @override
+  String get profileSurveyCurrencyVnd => 'Vietnamese Dong';
+
+  @override
+  String get profileSurveyCurrencyVgo => 'Vietnamese Gold (SJC)';
+
+  @override
+  String get profileSurveyCurrencyUsd => 'United States Dollar';
+
+  @override
+  String get profileSurveyWalletTitle => 'Create your first Wallet';
+
+  @override
+  String get profileSurveyWalletBody =>
+      'How much money is currently in this Wallet?';
+
+  @override
+  String get profileSurveyWalletName => 'Wallet name';
+
+  @override
+  String get profileSurveyWalletDefaultName => 'My Wallet';
+
+  @override
+  String get profileSurveyAmountLabel => 'Amount';
+
+  @override
+  String get profileSurveyAmountHint => '0';
+
+  @override
+  String get profileSurveyNext => 'Continue';
+
+  @override
+  String get profileSurveyFinish => 'Create wallet and start';
 
   @override
   String get profileSetupNameRequired => 'Please enter a display name.';
@@ -290,6 +426,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calendarStatsTab => 'Stats';
+
+  @override
+  String get navStatsLabel => 'Stats';
+
+  @override
+  String get navGroupsLabel => 'Groups';
+
+  @override
+  String get navProfileLabel => 'Me';
 
   @override
   String get calendarLoading => 'Syncing calendar...';
@@ -418,6 +563,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionEditTitle => 'Edit transaction';
 
   @override
+  String get transactionDetailTitle => 'Transaction';
+
+  @override
   String get transactionDeleteConfirm => 'Delete this transaction?';
 
   @override
@@ -453,6 +601,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactionWalletAccount => 'Wallet / Account';
+
+  @override
+  String get transactionSource => 'Source';
+
+  @override
+  String get transactionSourceManual => 'Manual entry';
+
+  @override
+  String get transactionSourceReceiptImage => 'Receipt photo';
 
   @override
   String get transactionExpenseCategory => 'Expense category';
@@ -1759,6 +1916,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsAccountSection => 'Account';
+
+  @override
+  String get settingsDataSection => 'Data';
+
+  @override
+  String get settingsLegalSupportSection => 'Legal & Help';
 
   @override
   String importPreviewTitle(int count) {
@@ -3499,6 +3665,378 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get friendShareInviteLink => 'Share friend link';
+
+  @override
+  String get friendInviteOr => 'Or';
+
+  @override
+  String get budgetTitle => 'Budget';
+
+  @override
+  String get budgetUsed => 'Used';
+
+  @override
+  String get budgetCategoryLimits => 'Category limits';
+
+  @override
+  String budgetSpentOfLimit(String spent, String limit) {
+    return '$spent / $limit this month';
+  }
+
+  @override
+  String get budgetAddCategory => 'Set a limit for another category';
+
+  @override
+  String get budgetChooseCategory => 'Choose a category';
+
+  @override
+  String get budgetMonthlyLimit => 'Monthly limit';
+
+  @override
+  String get budgetLimitHelper =>
+      'Enter the maximum amount you want to spend in this category this month.';
+
+  @override
+  String get budgetRemoveLimit => 'Remove limit';
+
+  @override
+  String get budgetNearLimit => 'Near the limit';
+
+  @override
+  String get budgetOverLimit => 'Over the limit';
+
+  @override
+  String get budgetEmptyTitle => 'No limits yet';
+
+  @override
+  String get budgetEmptyBody =>
+      'Choose a category to start tracking your monthly budget.';
+
+  @override
+  String get cameraFrameHint => 'Place the receipt inside the frame';
+
+  @override
+  String get assistantTitle => 'Financial assistant';
+
+  @override
+  String get assistantNavLabel => 'AI';
+
+  @override
+  String get assistantIntroSkip => 'Skip';
+
+  @override
+  String get assistantIntroNext => 'Continue';
+
+  @override
+  String get assistantIntroStart => 'Get started';
+
+  @override
+  String get assistantIntroTitle1 => 'Ask anything about your spending';
+
+  @override
+  String get assistantIntroBody1 =>
+      'Get answers from the information you already record in Moniary.';
+
+  @override
+  String get assistantIntroTitle2 => 'Spot unusual spending early';
+
+  @override
+  String get assistantIntroBody2 =>
+      'Find sharp increases or repeated charges before they get out of hand.';
+
+  @override
+  String get assistantIntroTitle3 => 'Get practical next steps';
+
+  @override
+  String get assistantIntroBody3 =>
+      'See how much to reduce and in which category, without vague advice.';
+
+  @override
+  String get assistantPermissionTitle =>
+      'Let the assistant understand your finances';
+
+  @override
+  String get assistantPermissionBody =>
+      'You control what data can be read and can change it at any time.';
+
+  @override
+  String get assistantPermissionDateRange =>
+      'AI only reads data from 01/01/2025 to today';
+
+  @override
+  String get assistantAnalyzeAll => 'Analyze all data';
+
+  @override
+  String get assistantTransactionsAccess => 'Income and expense records';
+
+  @override
+  String get assistantTransactionsAccessBody =>
+      'Use transactions to analyze cash flow and spending habits.';
+
+  @override
+  String get assistantWalletsAccess => 'Wallets and balances';
+
+  @override
+  String get assistantWalletsAccessBody =>
+      'Use balances to put spending figures in context.';
+
+  @override
+  String get assistantBudgetsAccess => 'Spending limits';
+
+  @override
+  String get assistantBudgetsAccessBody =>
+      'Track usage and warn when a limit is close.';
+
+  @override
+  String get assistantSavingsAccess => 'Savings and goals';
+
+  @override
+  String get assistantSavingsAccessBody =>
+      'Track savings goals and suggest a practical plan.';
+
+  @override
+  String get assistantUpcomingBadge => 'Coming soon';
+
+  @override
+  String get assistantPermissionConfirm => 'Confirm';
+
+  @override
+  String get assistantPrivacyNote =>
+      'Analysis uses your Moniary data and does not automatically send it to a third party.';
+
+  @override
+  String assistantGreeting(String name) {
+    return 'Hello $name';
+  }
+
+  @override
+  String get assistantHomePrompt => 'What can I help you with today?';
+
+  @override
+  String get assistantInputHint => 'Type your question';
+
+  @override
+  String get assistantSuggestionsTitle => 'Suggestions for you';
+
+  @override
+  String get assistantQuestionsTitle => 'Quick questions';
+
+  @override
+  String get assistantOpenLibrary => 'Browse question library';
+
+  @override
+  String get assistantQuestionLibraryTitle => 'Suggested questions';
+
+  @override
+  String get assistantFilterAll => 'All';
+
+  @override
+  String get assistantFilterUnderstand => 'Understand spending';
+
+  @override
+  String get assistantFilterAlerts => 'Unusual activity';
+
+  @override
+  String get assistantFilterActions => 'Actions';
+
+  @override
+  String get assistantQuestionMonthly => 'How much have I spent this month?';
+
+  @override
+  String get assistantQuestionWeekly =>
+      'How does this week\'s spending compare with last week?';
+
+  @override
+  String get assistantQuestionDaily =>
+      'How much do I spend per day on average?';
+
+  @override
+  String get assistantQuestionTopCategory =>
+      'Which category costs me the most this month?';
+
+  @override
+  String get assistantQuestionRecurring =>
+      'Are there repeated expenses I may not have noticed?';
+
+  @override
+  String get assistantQuestionSaving => 'Where can I cut back to save more?';
+
+  @override
+  String assistantMonthlyAnswer(String amount) {
+    return 'You have spent $amount this month.';
+  }
+
+  @override
+  String assistantMonthlyCompare(String direction, String percent) {
+    return '$direction by $percent% compared with last month.';
+  }
+
+  @override
+  String get assistantDirectionMore => 'More';
+
+  @override
+  String get assistantDirectionLess => 'Less';
+
+  @override
+  String assistantWeeklyAnswer(
+    String current,
+    String direction,
+    String percent,
+  ) {
+    return 'You spent $current this week, $direction by $percent% from last week.';
+  }
+
+  @override
+  String assistantDailyAnswer(String amount) {
+    return 'You spend an average of $amount per day this month.';
+  }
+
+  @override
+  String assistantTopCategoryAnswer(
+    String category,
+    String amount,
+    String percent,
+  ) {
+    return '$category ranks first at $amount, or $percent% of total spending.';
+  }
+
+  @override
+  String assistantRecurringAnswer(String label, int count, String amount) {
+    return '“$label” appears $count times for a total of $amount.';
+  }
+
+  @override
+  String assistantSavingAnswer(String category, String amount) {
+    return 'Reducing $category by about 15% could save roughly $amount this month.';
+  }
+
+  @override
+  String get assistantNoData =>
+      'There is not enough data to answer yet. Record a few more transactions and try again.';
+
+  @override
+  String get assistantAnalysisError =>
+      'Analysis is unavailable right now. Please try again later.';
+
+  @override
+  String get journalRecapTitle => 'Monthly recap';
+
+  @override
+  String journalRecapMonth(String month) {
+    return '$month recap';
+  }
+
+  @override
+  String journalRecordedCount(int count) {
+    return 'You recorded $count expenses';
+  }
+
+  @override
+  String journalRecapSummary(String amount, String category) {
+    return 'A total of $amount. Your largest category was $category.';
+  }
+
+  @override
+  String get journalHighestDay => 'Highest-spend day';
+
+  @override
+  String journalHighestDayValue(String date, String amount) {
+    return '$date — $amount in one day';
+  }
+
+  @override
+  String get journalComparedPrevious => 'Compared with last month';
+
+  @override
+  String get journalSpentMore => 'Spent more';
+
+  @override
+  String get journalSpentLess => 'Spent less';
+
+  @override
+  String get journalTopCategories => 'Top categories';
+
+  @override
+  String get journalShareRecap => 'Share recap';
+
+  @override
+  String get journalExportTitle => 'Export journal';
+
+  @override
+  String get journalExportPost => 'Post';
+
+  @override
+  String get journalExportSave => 'Save image';
+
+  @override
+  String get journalExportBrand => 'Moniary · Spending journal';
+
+  @override
+  String get journalExportSaved => 'Your journal image is ready to share.';
+
+  @override
+  String get journalExportWholeMonth => 'Whole month';
+
+  @override
+  String get journalExportToday => 'Today';
+
+  @override
+  String get journalExportCustomRange => 'Custom range';
+
+  @override
+  String get journalCollectionsTitle => 'Collections';
+
+  @override
+  String get journalCreateCollection => 'Create a new collection';
+
+  @override
+  String get journalCollectionName => 'Collection name';
+
+  @override
+  String get journalCollectionNameHint => 'For example: Da Lat in June';
+
+  @override
+  String get journalCollectionEmptyTitle => 'No collections yet';
+
+  @override
+  String get journalCollectionEmptyBody =>
+      'Gather expenses from a trip or special occasion so you can revisit them later.';
+
+  @override
+  String journalCollectionMeta(int count, String amount) {
+    return '$count entries · $amount';
+  }
+
+  @override
+  String get journalAddTransaction => 'Add an entry to this collection';
+
+  @override
+  String get journalChooseTransaction => 'Choose a transaction';
+
+  @override
+  String get journalCollectionNoTransactions =>
+      'This collection has no transactions yet.';
+
+  @override
+  String get journalStreakTitle => 'Recording streak';
+
+  @override
+  String journalStreakDays(int count) {
+    return '$count days in a row';
+  }
+
+  @override
+  String journalStreakBody(int count) {
+    return 'You have recorded spending every day for the past $count days.';
+  }
+
+  @override
+  String get journalStreakRecord => 'Your record';
+
+  @override
+  String journalStreakRecordDays(int count) {
+    return '$count days';
+  }
 
   @override
   String get friendInviteShareDescription =>

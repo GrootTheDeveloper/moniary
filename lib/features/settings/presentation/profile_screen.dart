@@ -12,6 +12,9 @@ import '../../auth/application/auth_controller.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../friends/presentation/screens/friends_screen.dart';
+import '../../journal/presentation/journal_collections_screen.dart';
+import '../../journal/presentation/monthly_recap_screen.dart';
+import '../../journal/presentation/recording_streak_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../application/account/account_actions_controller.dart';
@@ -21,6 +24,7 @@ import 'import/import_data_screen.dart';
 import 'notifications/notification_settings_screen.dart';
 import 'privacy/privacy_center_screen.dart';
 import 'privacy/privacy_contact_screen.dart';
+import 'settings_home_screen.dart';
 import 'account/delete_account_screen.dart';
 import 'support/help_center_screen.dart';
 import 'widgets/settings_action_tile.dart';
@@ -384,23 +388,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final colors = context.moniaryColors;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.profileTitle),
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        elevation: 0,
-      ),
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              colors.backgroundSoft,
-              colors.background,
-              Color.lerp(colors.background, Colors.black, 0.12)!,
-            ],
-          ),
-        ),
+      appBar: AppBar(title: Text(context.l10n.profileTitle)),
+      body: ColoredBox(
+        color: colors.background,
         child: SafeArea(
           child: Stack(
             children: [
@@ -424,7 +414,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       : context.l10n.profileAnonymous;
 
                   return ListView(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 36),
                     children: [
                       _ProfileHeader(
                         title: name,
@@ -441,6 +431,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         onFriends: () => context.push(FriendsScreen.routePath),
                         onExport: () =>
                             context.push(ExportDataScreen.routePath),
+                        onSettings: () =>
+                            context.push(SettingsHomeScreen.routePath),
                       ),
                       const SizedBox(height: 28),
                       _SettingsGroup(
@@ -465,6 +457,33 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             title: context.l10n.starredTransactionsTitle,
                             subtitle: '',
                             onTap: () => context.push('/starred-transactions'),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.auto_stories_outlined,
+                            title: context.l10n.journalRecapTitle,
+                            subtitle: '',
+                            onTap: () {
+                              final now = DateTime.now();
+                              context.push(
+                                MonthlyRecapScreen.routePath,
+                                extra: DateTime(now.year, now.month),
+                              );
+                            },
+                          ),
+                          _SettingsTile(
+                            icon: Icons.collections_bookmark_outlined,
+                            title: context.l10n.journalCollectionsTitle,
+                            subtitle: '',
+                            onTap: () => context.push(
+                              JournalCollectionsScreen.routePath,
+                            ),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.local_fire_department_outlined,
+                            title: context.l10n.journalStreakTitle,
+                            subtitle: '',
+                            onTap: () =>
+                                context.push(RecordingStreakScreen.routePath),
                           ),
                           _SettingsTile(
                             icon: Icons.auto_awesome_outlined,
@@ -820,97 +839,96 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(32),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Column(
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: colors.textPrimary.withValues(alpha: 0.12),
+            ),
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 92,
-              height: 92,
-              padding: const EdgeInsets.all(4),
+              width: 76,
+              height: 76,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: AppTheme.mint, width: 2),
-                gradient: const LinearGradient(
-                  colors: [AppTheme.mint, AppTheme.mintTeal],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                color: colors.primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: colors.primary.withValues(alpha: 0.35),
                 ),
               ),
               child: avatarUrl?.isNotEmpty == true
                   ? SupabaseImage(
                       imagePath: avatarUrl,
-                      width: 84,
-                      height: 84,
-                      borderRadius: BorderRadius.circular(42),
+                      width: 76,
+                      height: 76,
+                      borderRadius: BorderRadius.circular(23),
                     )
                   : Center(
                       child: Text(
                         title.isNotEmpty
                             ? title.substring(0, 1).toUpperCase()
-                            : 'U',
-                        style: const TextStyle(
-                          fontSize: 34,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                            : '',
+                        style: context.moniaryTypography.displayMedium.copyWith(
+                          color: colors.primary,
                         ),
                       ),
                     ),
             ),
-            const SizedBox(height: 14),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: isAnonymous
-                    ? AppTheme.danger.withValues(alpha: 0.12)
-                    : AppTheme.success.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(
-                  color: isAnonymous ? AppTheme.danger : AppTheme.success,
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    isAnonymous
-                        ? Icons.lock_open_outlined
-                        : Icons.verified_user_outlined,
-                    size: 14,
-                    color: isAnonymous ? AppTheme.danger : AppTheme.success,
-                  ),
-                  const SizedBox(width: 4),
+                  Text(title, style: context.moniaryTypography.displayMedium),
+                  const SizedBox(height: 5),
                   Text(
-                    isAnonymous
-                        ? context.l10n.profileAnonymousBadge
-                        : context.l10n.profileVerifiedBadge(provider),
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: isAnonymous ? AppTheme.danger : AppTheme.success,
-                    ),
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.moniaryTypography.metadata,
+                  ),
+                  const SizedBox(height: 9),
+                  Row(
+                    children: [
+                      Icon(
+                        isAnonymous
+                            ? Icons.lock_open_outlined
+                            : Icons.verified_user_outlined,
+                        size: 15,
+                        color: isAnonymous ? colors.danger : colors.success,
+                      ),
+                      const SizedBox(width: 5),
+                      Flexible(
+                        child: Text(
+                          (isAnonymous
+                                  ? context.l10n.profileAnonymousBadge
+                                  : context.l10n.profileVerifiedBadge(provider))
+                              .toUpperCase(),
+                          overflow: TextOverflow.ellipsis,
+                          style: context.moniaryTypography.metadataStrong
+                              .copyWith(
+                                color: isAnonymous
+                                    ? colors.danger
+                                    : colors.success,
+                              ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
+            const SizedBox(width: 8),
+            Icon(Icons.edit_outlined, size: 19, color: colors.textDim),
           ],
         ),
       ),
@@ -919,10 +937,15 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _ProfileQuickActions extends StatelessWidget {
-  const _ProfileQuickActions({required this.onFriends, required this.onExport});
+  const _ProfileQuickActions({
+    required this.onFriends,
+    required this.onExport,
+    required this.onSettings,
+  });
 
   final VoidCallback onFriends;
   final VoidCallback onExport;
+  final VoidCallback onSettings;
 
   @override
   Widget build(BuildContext context) {
@@ -943,6 +966,14 @@ class _ProfileQuickActions extends StatelessWidget {
             onTap: onExport,
           ),
         ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _QuickActionButton(
+            icon: Icons.settings_outlined,
+            label: context.l10n.settingsTitle,
+            onTap: onSettings,
+          ),
+        ),
       ],
     );
   }
@@ -961,28 +992,28 @@ class _QuickActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(22),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+        constraints: const BoxConstraints(minHeight: 64),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: AppTheme.surfaceRaised.withValues(alpha: 0.95),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppTheme.outline),
+          color: colors.surface.withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colors.outline),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: AppTheme.mint, size: 22),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+            Icon(icon, color: colors.primary, size: 20),
+            const SizedBox(height: 8),
+            Text(
+              label.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.moniaryTypography.metadataStrong,
             ),
           ],
         ),

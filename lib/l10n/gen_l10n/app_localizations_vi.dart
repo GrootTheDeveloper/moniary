@@ -9,6 +9,25 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get budgetEditLimit => 'Chỉnh sửa hạn mức';
+
+  @override
+  String get budgetQuickPresets => 'Gợi ý nhanh';
+
+  @override
+  String get budgetWarningThreshold => 'Cảnh báo khi chạm';
+
+  @override
+  String get budgetCategoryDetailTitle => 'Chi tiết ngân sách';
+
+  @override
+  String get budgetTransactionsInLimit => 'Giao dịch tính vào hạn mức';
+
+  @override
+  String get budgetNoTransactions =>
+      'Chưa có giao dịch nào trong danh mục này.';
+
+  @override
   String get appName => 'Moniary';
 
   @override
@@ -105,6 +124,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginApple => 'Đăng nhập với Apple';
 
   @override
+  String get loginFacebook => 'Đăng nhập với Facebook';
+
+  @override
   String get loginEmail => 'Đăng nhập với Email';
 
   @override
@@ -122,6 +144,28 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get loginDataSecure =>
       'Dữ liệu của bạn được bảo vệ và đồng bộ an toàn.';
+
+  @override
+  String get loginForgotPassword => 'Quên mật khẩu?';
+
+  @override
+  String get loginNoAccount => 'Chưa có tài khoản?';
+
+  @override
+  String get loginRegisterNow => 'Đăng ký ngay';
+
+  @override
+  String get loginHaveAccount => 'Đã có tài khoản?';
+
+  @override
+  String get loginSocialDivider => 'Hoặc đăng nhập bằng';
+
+  @override
+  String get loginGuestCta => 'Dùng thử ngay — không cần tài khoản →';
+
+  @override
+  String get loginPasswordResetSent =>
+      'Đã gửi hướng dẫn đặt lại mật khẩu qua email.';
 
   @override
   String get splashLoading => 'Đang tải ứng dụng...';
@@ -176,45 +220,63 @@ class AppLocalizationsVi extends AppLocalizations {
   String get onboardingPillStats => 'Thống kê';
 
   @override
-  String get onboardingPage1Title1 => 'Ghi chi tiêu';
+  String get onboardingPage1Title1 => 'Quét hoá đơn,';
 
   @override
-  String get onboardingPage1Title2 => 'bằng ảnh';
+  String get onboardingPage1Title2 => 'ghi chép trong 1 chạm';
 
   @override
-  String get onboardingPage1Subtitle => 'Nhanh gọn  •  Dễ nhớ  •  Không bỏ sót';
+  String get onboardingPage1Subtitle => 'Đang nhận diện hoá đơn';
 
   @override
   String get onboardingPage1Caption =>
-      'Lưu khoảnh khắc chi tiêu như một cuốn nhật ký mini.';
+      'Quét hoá đơn và tự động điền số tiền, ngày, ví và danh mục.';
 
   @override
-  String get onboardingPage2Title1 => 'Xem lịch tháng';
+  String get onboardingPage2Title1 => 'Mỗi ngày là';
 
   @override
-  String get onboardingPage2Title2 => 'trực quan';
+  String get onboardingPage2Title2 => 'một tấm ảnh nhỏ';
 
   @override
   String get onboardingPage2Subtitle =>
-      'Ảnh, tổng chi, bộ lọc và nhắc nhở trong một màn hình';
+      'Cuối tháng nhìn lại như một cuốn album, không phải một bảng số.';
 
   @override
   String get onboardingPage2Caption =>
-      'Mỗi ngày là một ô nhỏ, mỗi giao dịch là một kỷ niệm.';
+      'Mỗi giao dịch là một mảnh nhỏ trong nhật ký của bạn.';
 
   @override
-  String get onboardingPage3Title1 => 'Thống kê';
+  String get onboardingPage3Title1 => 'Ngân sách rõ ràng,';
 
   @override
-  String get onboardingPage3Title2 => 'dễ hiểu';
+  String get onboardingPage3Title2 => 'nhìn 3 giây là hiểu';
 
   @override
   String get onboardingPage3Subtitle =>
-      'Theo dõi thu chi và thói quen tiêu dùng không cần bảng biểu khó';
+      'Vòng tiến độ theo từng danh mục, báo trước khi bạn sắp vượt hạn mức.';
 
   @override
   String get onboardingPage3Caption =>
-      'Moniary giúp bạn nhìn tiền theo ngữ cảnh sống thật.';
+      'Theo dõi hạn mức mà không cần đọc những bảng số phức tạp.';
+
+  @override
+  String get onboardingReceiptCategory => 'Ăn uống';
+
+  @override
+  String get onboardingReceiptDate => '15/6';
+
+  @override
+  String get onboardingReceiptAmount => '385.000';
+
+  @override
+  String get onboardingPhotoAmount => '−145.000 ₫';
+
+  @override
+  String get onboardingBudgetPercent => '70%';
+
+  @override
+  String get onboardingBudgetLabel => 'Ngân sách tháng';
 
   @override
   String get profileSetupTitle => 'Thiết lập hồ sơ';
@@ -233,6 +295,80 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profileSetupStart => 'Bắt đầu';
+
+  @override
+  String profileSurveyWelcomeTitle(String name) {
+    return 'Rất vui được chào đón bạn, $name!';
+  }
+
+  @override
+  String get profileSurveyWelcomeBody =>
+      'Một vài lựa chọn ngắn sẽ giúp Moniary chuẩn bị trải nghiệm phù hợp với bạn.';
+
+  @override
+  String get profileSurveyFallbackName => 'bạn';
+
+  @override
+  String get profileSurveyOccupationTitle => 'Hiện tại bạn đang làm nghề gì?';
+
+  @override
+  String get profileSurveyOccupationBody =>
+      'Để Moniary gợi ý danh mục và cách ghi chép phù hợp với bạn.';
+
+  @override
+  String get profileSurveyOccupationStudent => 'Sinh viên';
+
+  @override
+  String get profileSurveyOccupationOffice => 'Nhân viên văn phòng';
+
+  @override
+  String get profileSurveyOccupationFreelancer => 'Làm việc tự do';
+
+  @override
+  String get profileSurveyOccupationBusiness => 'Kinh doanh';
+
+  @override
+  String get profileSurveyOccupationOther => 'Khác';
+
+  @override
+  String get profileSurveyCurrencyTitle => 'Chọn loại tiền tệ bạn đang dùng';
+
+  @override
+  String get profileSurveyCurrencyBody =>
+      'Moniary sẽ dùng đơn vị này khi hiển thị số dư và báo cáo.';
+
+  @override
+  String get profileSurveyCurrencyVnd => 'Vietnamese Dong';
+
+  @override
+  String get profileSurveyCurrencyVgo => 'Vietnamese Gold (SJC)';
+
+  @override
+  String get profileSurveyCurrencyUsd => 'United States Dollar';
+
+  @override
+  String get profileSurveyWalletTitle => 'Hãy tạo cho mình một chiếc Ví';
+
+  @override
+  String get profileSurveyWalletBody => 'Bạn đang có bao nhiêu tiền trong Ví?';
+
+  @override
+  String get profileSurveyWalletName => 'Tên ví';
+
+  @override
+  String get profileSurveyWalletDefaultName => 'Ví của tôi';
+
+  @override
+  String get profileSurveyAmountLabel => 'Số tiền';
+
+  @override
+  String get profileSurveyAmountHint => '0';
+
+  @override
+  String get profileSurveyNext => 'Tiếp tục';
+
+  @override
+  String get profileSurveyFinish => 'Tạo ví và bắt đầu';
 
   @override
   String get profileSetupNameRequired => 'Nhập tên hiển thị trước.';
@@ -290,6 +426,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get calendarStatsTab => 'Thống kê';
+
+  @override
+  String get navStatsLabel => 'Số liệu';
+
+  @override
+  String get navGroupsLabel => 'Nhóm';
+
+  @override
+  String get navProfileLabel => 'Tôi';
 
   @override
   String get calendarLoading => 'Đang đồng bộ lịch...';
@@ -418,6 +563,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get transactionEditTitle => 'Sửa giao dịch';
 
   @override
+  String get transactionDetailTitle => 'Giao dịch';
+
+  @override
   String get transactionDeleteConfirm => 'Xác nhận xóa giao dịch này?';
 
   @override
@@ -453,6 +601,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get transactionWalletAccount => 'Ví / Tài khoản';
+
+  @override
+  String get transactionSource => 'Nguồn';
+
+  @override
+  String get transactionSourceManual => 'Nhập thủ công';
+
+  @override
+  String get transactionSourceReceiptImage => 'Ảnh hóa đơn';
 
   @override
   String get transactionExpenseCategory => 'Danh mục chi';
@@ -1757,6 +1914,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get settingsTitle => 'Cài đặt';
+
+  @override
+  String get settingsAccountSection => 'Tài khoản';
+
+  @override
+  String get settingsDataSection => 'Dữ liệu';
+
+  @override
+  String get settingsLegalSupportSection => 'Pháp lý & trợ giúp';
 
   @override
   String importPreviewTitle(int count) {
@@ -3503,6 +3669,378 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get friendShareInviteLink => 'Chia sẻ link kết bạn';
+
+  @override
+  String get friendInviteOr => 'Hoặc';
+
+  @override
+  String get budgetTitle => 'Ngân sách';
+
+  @override
+  String get budgetUsed => 'Đã dùng';
+
+  @override
+  String get budgetCategoryLimits => 'Hạn mức danh mục';
+
+  @override
+  String budgetSpentOfLimit(String spent, String limit) {
+    return '$spent / $limit tháng này';
+  }
+
+  @override
+  String get budgetAddCategory => 'Đặt hạn mức cho danh mục khác';
+
+  @override
+  String get budgetChooseCategory => 'Chọn danh mục';
+
+  @override
+  String get budgetMonthlyLimit => 'Hạn mức tháng';
+
+  @override
+  String get budgetLimitHelper =>
+      'Nhập số tiền tối đa bạn muốn chi cho danh mục này trong tháng.';
+
+  @override
+  String get budgetRemoveLimit => 'Bỏ hạn mức';
+
+  @override
+  String get budgetNearLimit => 'Sắp vượt hạn mức';
+
+  @override
+  String get budgetOverLimit => 'Đã vượt hạn mức';
+
+  @override
+  String get budgetEmptyTitle => 'Chưa đặt hạn mức';
+
+  @override
+  String get budgetEmptyBody =>
+      'Chọn một danh mục để bắt đầu theo dõi ngân sách tháng.';
+
+  @override
+  String get cameraFrameHint => 'Đưa hóa đơn vào khung';
+
+  @override
+  String get assistantTitle => 'Trợ lý tài chính';
+
+  @override
+  String get assistantNavLabel => 'AI';
+
+  @override
+  String get assistantIntroSkip => 'Bỏ qua';
+
+  @override
+  String get assistantIntroNext => 'Tiếp tục';
+
+  @override
+  String get assistantIntroStart => 'Bắt đầu';
+
+  @override
+  String get assistantIntroTitle1 => 'Hỏi bất cứ điều gì về chi tiêu của bạn';
+
+  @override
+  String get assistantIntroBody1 =>
+      'Nhận câu trả lời ngay từ chính dữ liệu bạn đã ghi trong Moniary.';
+
+  @override
+  String get assistantIntroTitle2 => 'Nhận diện chi tiêu bất thường sớm';
+
+  @override
+  String get assistantIntroBody2 =>
+      'Phát hiện khoản tăng vọt hoặc lặp lại nhiều lần trước khi bạn mất kiểm soát.';
+
+  @override
+  String get assistantIntroTitle3 => 'Gợi ý hành động thực tế';
+
+  @override
+  String get assistantIntroBody3 =>
+      'Chỉ rõ cần giảm bao nhiêu và ở danh mục nào, không dùng lời khuyên mơ hồ.';
+
+  @override
+  String get assistantPermissionTitle =>
+      'Cho phép trợ lý hiểu tài chính của bạn';
+
+  @override
+  String get assistantPermissionBody =>
+      'Bạn quyết định phạm vi dữ liệu được đọc. Có thể thay đổi bất cứ lúc nào.';
+
+  @override
+  String get assistantPermissionDateRange =>
+      'AI chỉ đọc dữ liệu từ 01/01/2025 đến hiện tại';
+
+  @override
+  String get assistantAnalyzeAll => 'Phân tích tất cả dữ liệu';
+
+  @override
+  String get assistantTransactionsAccess => 'Ghi chép thu chi';
+
+  @override
+  String get assistantTransactionsAccessBody =>
+      'Dùng giao dịch để phân tích dòng tiền và thói quen chi tiêu.';
+
+  @override
+  String get assistantWalletsAccess => 'Ví và số dư';
+
+  @override
+  String get assistantWalletsAccessBody =>
+      'Dùng số dư để đặt các con số chi tiêu vào đúng bối cảnh.';
+
+  @override
+  String get assistantBudgetsAccess => 'Hạn mức chi';
+
+  @override
+  String get assistantBudgetsAccessBody =>
+      'Kiểm tra mức sử dụng và cảnh báo khi gần chạm hạn mức.';
+
+  @override
+  String get assistantSavingsAccess => 'Tiết kiệm và tích luỹ';
+
+  @override
+  String get assistantSavingsAccessBody =>
+      'Theo dõi mục tiêu tiết kiệm và gợi ý kế hoạch phù hợp.';
+
+  @override
+  String get assistantUpcomingBadge => 'Sắp ra mắt';
+
+  @override
+  String get assistantPermissionConfirm => 'Xác nhận';
+
+  @override
+  String get assistantPrivacyNote =>
+      'Phân tích diễn ra từ dữ liệu Moniary của bạn và không tự gửi dữ liệu cho bên thứ ba.';
+
+  @override
+  String assistantGreeting(String name) {
+    return 'Chào $name';
+  }
+
+  @override
+  String get assistantHomePrompt => 'Hôm nay mình có thể giúp gì cho bạn?';
+
+  @override
+  String get assistantInputHint => 'Nhập câu hỏi của bạn';
+
+  @override
+  String get assistantSuggestionsTitle => 'Gợi ý cho bạn';
+
+  @override
+  String get assistantQuestionsTitle => 'Câu hỏi nhanh';
+
+  @override
+  String get assistantOpenLibrary => 'Xem thư viện câu hỏi';
+
+  @override
+  String get assistantQuestionLibraryTitle => 'Câu hỏi gợi ý';
+
+  @override
+  String get assistantFilterAll => 'Tất cả';
+
+  @override
+  String get assistantFilterUnderstand => 'Thấu hiểu chi tiêu';
+
+  @override
+  String get assistantFilterAlerts => 'Cảnh báo bất thường';
+
+  @override
+  String get assistantFilterActions => 'Hành động';
+
+  @override
+  String get assistantQuestionMonthly =>
+      'Tháng này tôi đã tiêu hết bao nhiêu tiền rồi?';
+
+  @override
+  String get assistantQuestionWeekly => 'Chi tiêu tuần này so với tuần trước?';
+
+  @override
+  String get assistantQuestionDaily =>
+      'Trung bình mỗi ngày tôi tiêu bao nhiêu?';
+
+  @override
+  String get assistantQuestionTopCategory =>
+      'Hạng mục nào tôi chi nhiều tiền nhất tháng này?';
+
+  @override
+  String get assistantQuestionRecurring =>
+      'Có khoản chi nào lặp lại nhiều lần mà tôi không chú ý không?';
+
+  @override
+  String get assistantQuestionSaving => 'Cắt giảm ở đâu để tiết kiệm thêm?';
+
+  @override
+  String assistantMonthlyAnswer(String amount) {
+    return 'Bạn đã chi $amount trong tháng này.';
+  }
+
+  @override
+  String assistantMonthlyCompare(String direction, String percent) {
+    return '$direction $percent% so với tháng trước.';
+  }
+
+  @override
+  String get assistantDirectionMore => 'Nhiều hơn';
+
+  @override
+  String get assistantDirectionLess => 'Ít hơn';
+
+  @override
+  String assistantWeeklyAnswer(
+    String current,
+    String direction,
+    String percent,
+  ) {
+    return 'Tuần này bạn đã chi $current, $direction $percent% so với tuần trước.';
+  }
+
+  @override
+  String assistantDailyAnswer(String amount) {
+    return 'Trung bình bạn chi $amount mỗi ngày trong tháng này.';
+  }
+
+  @override
+  String assistantTopCategoryAnswer(
+    String category,
+    String amount,
+    String percent,
+  ) {
+    return '$category đang đứng đầu với $amount, chiếm $percent% tổng chi.';
+  }
+
+  @override
+  String assistantRecurringAnswer(String label, int count, String amount) {
+    return 'Khoản “$label” xuất hiện $count lần, tổng cộng $amount.';
+  }
+
+  @override
+  String assistantSavingAnswer(String category, String amount) {
+    return 'Nếu giảm khoảng 15% ở $category, bạn có thể tiết kiệm gần $amount trong tháng.';
+  }
+
+  @override
+  String get assistantNoData =>
+      'Chưa có đủ dữ liệu để trả lời câu này. Hãy ghi thêm vài giao dịch rồi thử lại.';
+
+  @override
+  String get assistantAnalysisError =>
+      'Không thể phân tích lúc này. Hãy thử lại sau.';
+
+  @override
+  String get journalRecapTitle => 'Tổng kết tháng';
+
+  @override
+  String journalRecapMonth(String month) {
+    return 'Tổng kết $month';
+  }
+
+  @override
+  String journalRecordedCount(int count) {
+    return 'Bạn đã ghi lại $count khoản chi';
+  }
+
+  @override
+  String journalRecapSummary(String amount, String category) {
+    return 'Tổng cộng $amount. Danh mục lớn nhất là $category.';
+  }
+
+  @override
+  String get journalHighestDay => 'Ngày chi nhiều nhất';
+
+  @override
+  String journalHighestDayValue(String date, String amount) {
+    return '$date — $amount trong một ngày';
+  }
+
+  @override
+  String get journalComparedPrevious => 'So với tháng trước';
+
+  @override
+  String get journalSpentMore => 'Chi nhiều hơn';
+
+  @override
+  String get journalSpentLess => 'Chi ít hơn';
+
+  @override
+  String get journalTopCategories => 'Top danh mục';
+
+  @override
+  String get journalShareRecap => 'Chia sẻ tổng kết';
+
+  @override
+  String get journalExportTitle => 'Xuất nhật ký';
+
+  @override
+  String get journalExportPost => 'Đăng';
+
+  @override
+  String get journalExportSave => 'Lưu ảnh về máy';
+
+  @override
+  String get journalExportBrand => 'Moniary · Nhật ký chi tiêu';
+
+  @override
+  String get journalExportSaved => 'Đã tạo ảnh nhật ký để bạn chia sẻ.';
+
+  @override
+  String get journalExportWholeMonth => 'Cả tháng';
+
+  @override
+  String get journalExportToday => 'Hôm nay';
+
+  @override
+  String get journalExportCustomRange => 'Tùy chọn ngày';
+
+  @override
+  String get journalCollectionsTitle => 'Bộ sưu tập';
+
+  @override
+  String get journalCreateCollection => 'Tạo bộ sưu tập mới';
+
+  @override
+  String get journalCollectionName => 'Tên bộ sưu tập';
+
+  @override
+  String get journalCollectionNameHint => 'Ví dụ: Đà Lạt tháng 6';
+
+  @override
+  String get journalCollectionEmptyTitle => 'Chưa có bộ sưu tập';
+
+  @override
+  String get journalCollectionEmptyBody =>
+      'Gom những khoản chi của một chuyến đi hoặc dịp đặc biệt để xem lại sau.';
+
+  @override
+  String journalCollectionMeta(int count, String amount) {
+    return '$count khoản · $amount';
+  }
+
+  @override
+  String get journalAddTransaction => 'Thêm khoản vào bộ sưu tập';
+
+  @override
+  String get journalChooseTransaction => 'Chọn giao dịch';
+
+  @override
+  String get journalCollectionNoTransactions =>
+      'Bộ sưu tập này chưa có giao dịch.';
+
+  @override
+  String get journalStreakTitle => 'Chuỗi ghi chép';
+
+  @override
+  String journalStreakDays(int count) {
+    return '$count ngày liên tiếp';
+  }
+
+  @override
+  String journalStreakBody(int count) {
+    return 'Bạn đã ghi lại chi tiêu mỗi ngày trong $count ngày gần đây.';
+  }
+
+  @override
+  String get journalStreakRecord => 'Kỷ lục của bạn';
+
+  @override
+  String journalStreakRecordDays(int count) {
+    return '$count ngày';
+  }
 
   @override
   String get friendInviteShareDescription =>

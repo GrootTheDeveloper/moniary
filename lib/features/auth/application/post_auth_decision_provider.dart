@@ -6,7 +6,13 @@ import '../../profile/data/profile_repository.dart';
 import '../../settings/domain/account/account_deletion_status.dart';
 import 'account_status_controller.dart';
 
-enum PostAuthDestination { noSession, profileSetup, home, pendingDeletion }
+enum PostAuthDestination {
+  noSession,
+  profileSetup,
+  profileSurvey,
+  home,
+  pendingDeletion,
+}
 
 class PostAuthDecision {
   const PostAuthDecision(this.destination, {this.deletionStatus});
@@ -36,11 +42,13 @@ final postAuthDecisionProvider = FutureProvider<PostAuthDecision>((ref) async {
     }
 
     final profile = await profileRepo.fetchCurrentProfile();
-    return PostAuthDecision(
-      profile == null || profile.needsSetup
-          ? PostAuthDestination.profileSetup
-          : PostAuthDestination.home,
-    );
+    if (profile == null || profile.needsSetup) {
+      return const PostAuthDecision(PostAuthDestination.profileSetup);
+    }
+    if (profile.needsSurvey) {
+      return const PostAuthDecision(PostAuthDestination.profileSurvey);
+    }
+    return const PostAuthDecision(PostAuthDestination.home);
   } catch (e, st) {
     AppLogger.error('Post-auth decision calculation failed', e, st);
     rethrow;

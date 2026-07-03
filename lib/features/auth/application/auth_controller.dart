@@ -202,6 +202,24 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
+  Future<void> signInWithFacebook() async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      final session = await ref
+          .read(authRepositoryProvider)
+          .signInWithFacebook();
+      _applySignedInSession(session);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
   Future<void> signInWithEmail({
     required String email,
     required String password,
@@ -215,6 +233,41 @@ class AuthController extends AsyncNotifier<void> {
           .signInWithEmail(email: email, password: password);
 
       _applySignedInSession(session);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> signUpWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      await ref
+          .read(authRepositoryProvider)
+          .signUpWithEmail(email: email, password: password);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> requestPasswordReset(String email) async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      await ref.read(authRepositoryProvider).requestPasswordReset(email);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);

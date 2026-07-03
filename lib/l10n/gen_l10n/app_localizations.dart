@@ -98,6 +98,42 @@ abstract class AppLocalizations {
     Locale('vi'),
   ];
 
+  /// No description provided for @budgetEditLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉnh sửa hạn mức'**
+  String get budgetEditLimit;
+
+  /// No description provided for @budgetQuickPresets.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý nhanh'**
+  String get budgetQuickPresets;
+
+  /// No description provided for @budgetWarningThreshold.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cảnh báo khi chạm'**
+  String get budgetWarningThreshold;
+
+  /// No description provided for @budgetCategoryDetailTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiết ngân sách'**
+  String get budgetCategoryDetailTitle;
+
+  /// No description provided for @budgetTransactionsInLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch tính vào hạn mức'**
+  String get budgetTransactionsInLimit;
+
+  /// No description provided for @budgetNoTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có giao dịch nào trong danh mục này.'**
+  String get budgetNoTransactions;
+
   /// No description provided for @appName.
   ///
   /// In vi, this message translates to:
@@ -284,6 +320,12 @@ abstract class AppLocalizations {
   /// **'Đăng nhập với Apple'**
   String get loginApple;
 
+  /// No description provided for @loginFacebook.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng nhập với Facebook'**
+  String get loginFacebook;
+
   /// No description provided for @loginEmail.
   ///
   /// In vi, this message translates to:
@@ -319,6 +361,48 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Dữ liệu của bạn được bảo vệ và đồng bộ an toàn.'**
   String get loginDataSecure;
+
+  /// No description provided for @loginForgotPassword.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quên mật khẩu?'**
+  String get loginForgotPassword;
+
+  /// No description provided for @loginNoAccount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có tài khoản?'**
+  String get loginNoAccount;
+
+  /// No description provided for @loginRegisterNow.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ký ngay'**
+  String get loginRegisterNow;
+
+  /// No description provided for @loginHaveAccount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã có tài khoản?'**
+  String get loginHaveAccount;
+
+  /// No description provided for @loginSocialDivider.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoặc đăng nhập bằng'**
+  String get loginSocialDivider;
+
+  /// No description provided for @loginGuestCta.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng thử ngay — không cần tài khoản →'**
+  String get loginGuestCta;
+
+  /// No description provided for @loginPasswordResetSent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi hướng dẫn đặt lại mật khẩu qua email.'**
+  String get loginPasswordResetSent;
 
   /// No description provided for @splashLoading.
   ///
@@ -419,74 +503,110 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingPage1Title1.
   ///
   /// In vi, this message translates to:
-  /// **'Ghi chi tiêu'**
+  /// **'Quét hoá đơn,'**
   String get onboardingPage1Title1;
 
   /// No description provided for @onboardingPage1Title2.
   ///
   /// In vi, this message translates to:
-  /// **'bằng ảnh'**
+  /// **'ghi chép trong 1 chạm'**
   String get onboardingPage1Title2;
 
   /// No description provided for @onboardingPage1Subtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Nhanh gọn  •  Dễ nhớ  •  Không bỏ sót'**
+  /// **'Đang nhận diện hoá đơn'**
   String get onboardingPage1Subtitle;
 
   /// No description provided for @onboardingPage1Caption.
   ///
   /// In vi, this message translates to:
-  /// **'Lưu khoảnh khắc chi tiêu như một cuốn nhật ký mini.'**
+  /// **'Quét hoá đơn và tự động điền số tiền, ngày, ví và danh mục.'**
   String get onboardingPage1Caption;
 
   /// No description provided for @onboardingPage2Title1.
   ///
   /// In vi, this message translates to:
-  /// **'Xem lịch tháng'**
+  /// **'Mỗi ngày là'**
   String get onboardingPage2Title1;
 
   /// No description provided for @onboardingPage2Title2.
   ///
   /// In vi, this message translates to:
-  /// **'trực quan'**
+  /// **'một tấm ảnh nhỏ'**
   String get onboardingPage2Title2;
 
   /// No description provided for @onboardingPage2Subtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Ảnh, tổng chi, bộ lọc và nhắc nhở trong một màn hình'**
+  /// **'Cuối tháng nhìn lại như một cuốn album, không phải một bảng số.'**
   String get onboardingPage2Subtitle;
 
   /// No description provided for @onboardingPage2Caption.
   ///
   /// In vi, this message translates to:
-  /// **'Mỗi ngày là một ô nhỏ, mỗi giao dịch là một kỷ niệm.'**
+  /// **'Mỗi giao dịch là một mảnh nhỏ trong nhật ký của bạn.'**
   String get onboardingPage2Caption;
 
   /// No description provided for @onboardingPage3Title1.
   ///
   /// In vi, this message translates to:
-  /// **'Thống kê'**
+  /// **'Ngân sách rõ ràng,'**
   String get onboardingPage3Title1;
 
   /// No description provided for @onboardingPage3Title2.
   ///
   /// In vi, this message translates to:
-  /// **'dễ hiểu'**
+  /// **'nhìn 3 giây là hiểu'**
   String get onboardingPage3Title2;
 
   /// No description provided for @onboardingPage3Subtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Theo dõi thu chi và thói quen tiêu dùng không cần bảng biểu khó'**
+  /// **'Vòng tiến độ theo từng danh mục, báo trước khi bạn sắp vượt hạn mức.'**
   String get onboardingPage3Subtitle;
 
   /// No description provided for @onboardingPage3Caption.
   ///
   /// In vi, this message translates to:
-  /// **'Moniary giúp bạn nhìn tiền theo ngữ cảnh sống thật.'**
+  /// **'Theo dõi hạn mức mà không cần đọc những bảng số phức tạp.'**
   String get onboardingPage3Caption;
+
+  /// No description provided for @onboardingReceiptCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ăn uống'**
+  String get onboardingReceiptCategory;
+
+  /// No description provided for @onboardingReceiptDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'15/6'**
+  String get onboardingReceiptDate;
+
+  /// No description provided for @onboardingReceiptAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'385.000'**
+  String get onboardingReceiptAmount;
+
+  /// No description provided for @onboardingPhotoAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'−145.000 ₫'**
+  String get onboardingPhotoAmount;
+
+  /// No description provided for @onboardingBudgetPercent.
+  ///
+  /// In vi, this message translates to:
+  /// **'70%'**
+  String get onboardingBudgetPercent;
+
+  /// No description provided for @onboardingBudgetLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngân sách tháng'**
+  String get onboardingBudgetLabel;
 
   /// No description provided for @profileSetupTitle.
   ///
@@ -523,6 +643,144 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bắt đầu'**
   String get profileSetupStart;
+
+  /// No description provided for @profileSurveyWelcomeTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Rất vui được chào đón bạn, {name}!'**
+  String profileSurveyWelcomeTitle(String name);
+
+  /// No description provided for @profileSurveyWelcomeBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Một vài lựa chọn ngắn sẽ giúp Moniary chuẩn bị trải nghiệm phù hợp với bạn.'**
+  String get profileSurveyWelcomeBody;
+
+  /// No description provided for @profileSurveyFallbackName.
+  ///
+  /// In vi, this message translates to:
+  /// **'bạn'**
+  String get profileSurveyFallbackName;
+
+  /// No description provided for @profileSurveyOccupationTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiện tại bạn đang làm nghề gì?'**
+  String get profileSurveyOccupationTitle;
+
+  /// No description provided for @profileSurveyOccupationBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Để Moniary gợi ý danh mục và cách ghi chép phù hợp với bạn.'**
+  String get profileSurveyOccupationBody;
+
+  /// No description provided for @profileSurveyOccupationStudent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sinh viên'**
+  String get profileSurveyOccupationStudent;
+
+  /// No description provided for @profileSurveyOccupationOffice.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhân viên văn phòng'**
+  String get profileSurveyOccupationOffice;
+
+  /// No description provided for @profileSurveyOccupationFreelancer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Làm việc tự do'**
+  String get profileSurveyOccupationFreelancer;
+
+  /// No description provided for @profileSurveyOccupationBusiness.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kinh doanh'**
+  String get profileSurveyOccupationBusiness;
+
+  /// No description provided for @profileSurveyOccupationOther.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khác'**
+  String get profileSurveyOccupationOther;
+
+  /// No description provided for @profileSurveyCurrencyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn loại tiền tệ bạn đang dùng'**
+  String get profileSurveyCurrencyTitle;
+
+  /// No description provided for @profileSurveyCurrencyBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Moniary sẽ dùng đơn vị này khi hiển thị số dư và báo cáo.'**
+  String get profileSurveyCurrencyBody;
+
+  /// No description provided for @profileSurveyCurrencyVnd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vietnamese Dong'**
+  String get profileSurveyCurrencyVnd;
+
+  /// No description provided for @profileSurveyCurrencyVgo.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vietnamese Gold (SJC)'**
+  String get profileSurveyCurrencyVgo;
+
+  /// No description provided for @profileSurveyCurrencyUsd.
+  ///
+  /// In vi, this message translates to:
+  /// **'United States Dollar'**
+  String get profileSurveyCurrencyUsd;
+
+  /// No description provided for @profileSurveyWalletTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy tạo cho mình một chiếc Ví'**
+  String get profileSurveyWalletTitle;
+
+  /// No description provided for @profileSurveyWalletBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đang có bao nhiêu tiền trong Ví?'**
+  String get profileSurveyWalletBody;
+
+  /// No description provided for @profileSurveyWalletName.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên ví'**
+  String get profileSurveyWalletName;
+
+  /// No description provided for @profileSurveyWalletDefaultName.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví của tôi'**
+  String get profileSurveyWalletDefaultName;
+
+  /// No description provided for @profileSurveyAmountLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền'**
+  String get profileSurveyAmountLabel;
+
+  /// No description provided for @profileSurveyAmountHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'0'**
+  String get profileSurveyAmountHint;
+
+  /// No description provided for @profileSurveyNext.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếp tục'**
+  String get profileSurveyNext;
+
+  /// No description provided for @profileSurveyFinish.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo ví và bắt đầu'**
+  String get profileSurveyFinish;
 
   /// No description provided for @profileSetupNameRequired.
   ///
@@ -625,6 +883,24 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thống kê'**
   String get calendarStatsTab;
+
+  /// No description provided for @navStatsLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số liệu'**
+  String get navStatsLabel;
+
+  /// No description provided for @navGroupsLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhóm'**
+  String get navGroupsLabel;
+
+  /// No description provided for @navProfileLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tôi'**
+  String get navProfileLabel;
 
   /// No description provided for @calendarLoading.
   ///
@@ -860,6 +1136,12 @@ abstract class AppLocalizations {
   /// **'Sửa giao dịch'**
   String get transactionEditTitle;
 
+  /// No description provided for @transactionDetailTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch'**
+  String get transactionDetailTitle;
+
   /// No description provided for @transactionDeleteConfirm.
   ///
   /// In vi, this message translates to:
@@ -925,6 +1207,24 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Ví / Tài khoản'**
   String get transactionWalletAccount;
+
+  /// No description provided for @transactionSource.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nguồn'**
+  String get transactionSource;
+
+  /// No description provided for @transactionSourceManual.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập thủ công'**
+  String get transactionSourceManual;
+
+  /// No description provided for @transactionSourceReceiptImage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh hóa đơn'**
+  String get transactionSourceReceiptImage;
 
   /// No description provided for @transactionExpenseCategory.
   ///
@@ -3307,6 +3607,24 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Cài đặt'**
   String get settingsTitle;
+
+  /// No description provided for @settingsAccountSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tài khoản'**
+  String get settingsAccountSection;
+
+  /// No description provided for @settingsDataSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu'**
+  String get settingsDataSection;
+
+  /// No description provided for @settingsLegalSupportSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Pháp lý & trợ giúp'**
+  String get settingsLegalSupportSection;
 
   /// No description provided for @importPreviewTitle.
   ///
@@ -6343,6 +6661,632 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chia sẻ link kết bạn'**
   String get friendShareInviteLink;
+
+  /// No description provided for @friendInviteOr.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoặc'**
+  String get friendInviteOr;
+
+  /// No description provided for @budgetTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngân sách'**
+  String get budgetTitle;
+
+  /// No description provided for @budgetUsed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã dùng'**
+  String get budgetUsed;
+
+  /// No description provided for @budgetCategoryLimits.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hạn mức danh mục'**
+  String get budgetCategoryLimits;
+
+  /// No description provided for @budgetSpentOfLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'{spent} / {limit} tháng này'**
+  String budgetSpentOfLimit(String spent, String limit);
+
+  /// No description provided for @budgetAddCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt hạn mức cho danh mục khác'**
+  String get budgetAddCategory;
+
+  /// No description provided for @budgetChooseCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn danh mục'**
+  String get budgetChooseCategory;
+
+  /// No description provided for @budgetMonthlyLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hạn mức tháng'**
+  String get budgetMonthlyLimit;
+
+  /// No description provided for @budgetLimitHelper.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập số tiền tối đa bạn muốn chi cho danh mục này trong tháng.'**
+  String get budgetLimitHelper;
+
+  /// No description provided for @budgetRemoveLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bỏ hạn mức'**
+  String get budgetRemoveLimit;
+
+  /// No description provided for @budgetNearLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sắp vượt hạn mức'**
+  String get budgetNearLimit;
+
+  /// No description provided for @budgetOverLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã vượt hạn mức'**
+  String get budgetOverLimit;
+
+  /// No description provided for @budgetEmptyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa đặt hạn mức'**
+  String get budgetEmptyTitle;
+
+  /// No description provided for @budgetEmptyBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn một danh mục để bắt đầu theo dõi ngân sách tháng.'**
+  String get budgetEmptyBody;
+
+  /// No description provided for @cameraFrameHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đưa hóa đơn vào khung'**
+  String get cameraFrameHint;
+
+  /// No description provided for @assistantTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trợ lý tài chính'**
+  String get assistantTitle;
+
+  /// No description provided for @assistantNavLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'AI'**
+  String get assistantNavLabel;
+
+  /// No description provided for @assistantIntroSkip.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bỏ qua'**
+  String get assistantIntroSkip;
+
+  /// No description provided for @assistantIntroNext.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếp tục'**
+  String get assistantIntroNext;
+
+  /// No description provided for @assistantIntroStart.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bắt đầu'**
+  String get assistantIntroStart;
+
+  /// No description provided for @assistantIntroTitle1.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hỏi bất cứ điều gì về chi tiêu của bạn'**
+  String get assistantIntroTitle1;
+
+  /// No description provided for @assistantIntroBody1.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhận câu trả lời ngay từ chính dữ liệu bạn đã ghi trong Moniary.'**
+  String get assistantIntroBody1;
+
+  /// No description provided for @assistantIntroTitle2.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhận diện chi tiêu bất thường sớm'**
+  String get assistantIntroTitle2;
+
+  /// No description provided for @assistantIntroBody2.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phát hiện khoản tăng vọt hoặc lặp lại nhiều lần trước khi bạn mất kiểm soát.'**
+  String get assistantIntroBody2;
+
+  /// No description provided for @assistantIntroTitle3.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý hành động thực tế'**
+  String get assistantIntroTitle3;
+
+  /// No description provided for @assistantIntroBody3.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ rõ cần giảm bao nhiêu và ở danh mục nào, không dùng lời khuyên mơ hồ.'**
+  String get assistantIntroBody3;
+
+  /// No description provided for @assistantPermissionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cho phép trợ lý hiểu tài chính của bạn'**
+  String get assistantPermissionTitle;
+
+  /// No description provided for @assistantPermissionBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn quyết định phạm vi dữ liệu được đọc. Có thể thay đổi bất cứ lúc nào.'**
+  String get assistantPermissionBody;
+
+  /// No description provided for @assistantPermissionDateRange.
+  ///
+  /// In vi, this message translates to:
+  /// **'AI chỉ đọc dữ liệu từ 01/01/2025 đến hiện tại'**
+  String get assistantPermissionDateRange;
+
+  /// No description provided for @assistantAnalyzeAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phân tích tất cả dữ liệu'**
+  String get assistantAnalyzeAll;
+
+  /// No description provided for @assistantTransactionsAccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi chép thu chi'**
+  String get assistantTransactionsAccess;
+
+  /// No description provided for @assistantTransactionsAccessBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng giao dịch để phân tích dòng tiền và thói quen chi tiêu.'**
+  String get assistantTransactionsAccessBody;
+
+  /// No description provided for @assistantWalletsAccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví và số dư'**
+  String get assistantWalletsAccess;
+
+  /// No description provided for @assistantWalletsAccessBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng số dư để đặt các con số chi tiêu vào đúng bối cảnh.'**
+  String get assistantWalletsAccessBody;
+
+  /// No description provided for @assistantBudgetsAccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hạn mức chi'**
+  String get assistantBudgetsAccess;
+
+  /// No description provided for @assistantBudgetsAccessBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kiểm tra mức sử dụng và cảnh báo khi gần chạm hạn mức.'**
+  String get assistantBudgetsAccessBody;
+
+  /// No description provided for @assistantSavingsAccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiết kiệm và tích luỹ'**
+  String get assistantSavingsAccess;
+
+  /// No description provided for @assistantSavingsAccessBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Theo dõi mục tiêu tiết kiệm và gợi ý kế hoạch phù hợp.'**
+  String get assistantSavingsAccessBody;
+
+  /// No description provided for @assistantUpcomingBadge.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sắp ra mắt'**
+  String get assistantUpcomingBadge;
+
+  /// No description provided for @assistantPermissionConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận'**
+  String get assistantPermissionConfirm;
+
+  /// No description provided for @assistantPrivacyNote.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phân tích diễn ra từ dữ liệu Moniary của bạn và không tự gửi dữ liệu cho bên thứ ba.'**
+  String get assistantPrivacyNote;
+
+  /// No description provided for @assistantGreeting.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chào {name}'**
+  String assistantGreeting(String name);
+
+  /// No description provided for @assistantHomePrompt.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hôm nay mình có thể giúp gì cho bạn?'**
+  String get assistantHomePrompt;
+
+  /// No description provided for @assistantInputHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập câu hỏi của bạn'**
+  String get assistantInputHint;
+
+  /// No description provided for @assistantSuggestionsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý cho bạn'**
+  String get assistantSuggestionsTitle;
+
+  /// No description provided for @assistantQuestionsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Câu hỏi nhanh'**
+  String get assistantQuestionsTitle;
+
+  /// No description provided for @assistantOpenLibrary.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem thư viện câu hỏi'**
+  String get assistantOpenLibrary;
+
+  /// No description provided for @assistantQuestionLibraryTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Câu hỏi gợi ý'**
+  String get assistantQuestionLibraryTitle;
+
+  /// No description provided for @assistantFilterAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả'**
+  String get assistantFilterAll;
+
+  /// No description provided for @assistantFilterUnderstand.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thấu hiểu chi tiêu'**
+  String get assistantFilterUnderstand;
+
+  /// No description provided for @assistantFilterAlerts.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cảnh báo bất thường'**
+  String get assistantFilterAlerts;
+
+  /// No description provided for @assistantFilterActions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hành động'**
+  String get assistantFilterActions;
+
+  /// No description provided for @assistantQuestionMonthly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng này tôi đã tiêu hết bao nhiêu tiền rồi?'**
+  String get assistantQuestionMonthly;
+
+  /// No description provided for @assistantQuestionWeekly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu tuần này so với tuần trước?'**
+  String get assistantQuestionWeekly;
+
+  /// No description provided for @assistantQuestionDaily.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trung bình mỗi ngày tôi tiêu bao nhiêu?'**
+  String get assistantQuestionDaily;
+
+  /// No description provided for @assistantQuestionTopCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hạng mục nào tôi chi nhiều tiền nhất tháng này?'**
+  String get assistantQuestionTopCategory;
+
+  /// No description provided for @assistantQuestionRecurring.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có khoản chi nào lặp lại nhiều lần mà tôi không chú ý không?'**
+  String get assistantQuestionRecurring;
+
+  /// No description provided for @assistantQuestionSaving.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cắt giảm ở đâu để tiết kiệm thêm?'**
+  String get assistantQuestionSaving;
+
+  /// No description provided for @assistantMonthlyAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã chi {amount} trong tháng này.'**
+  String assistantMonthlyAnswer(String amount);
+
+  /// No description provided for @assistantMonthlyCompare.
+  ///
+  /// In vi, this message translates to:
+  /// **'{direction} {percent}% so với tháng trước.'**
+  String assistantMonthlyCompare(String direction, String percent);
+
+  /// No description provided for @assistantDirectionMore.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhiều hơn'**
+  String get assistantDirectionMore;
+
+  /// No description provided for @assistantDirectionLess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ít hơn'**
+  String get assistantDirectionLess;
+
+  /// No description provided for @assistantWeeklyAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tuần này bạn đã chi {current}, {direction} {percent}% so với tuần trước.'**
+  String assistantWeeklyAnswer(
+    String current,
+    String direction,
+    String percent,
+  );
+
+  /// No description provided for @assistantDailyAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trung bình bạn chi {amount} mỗi ngày trong tháng này.'**
+  String assistantDailyAnswer(String amount);
+
+  /// No description provided for @assistantTopCategoryAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'{category} đang đứng đầu với {amount}, chiếm {percent}% tổng chi.'**
+  String assistantTopCategoryAnswer(
+    String category,
+    String amount,
+    String percent,
+  );
+
+  /// No description provided for @assistantRecurringAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khoản “{label}” xuất hiện {count} lần, tổng cộng {amount}.'**
+  String assistantRecurringAnswer(String label, int count, String amount);
+
+  /// No description provided for @assistantSavingAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nếu giảm khoảng 15% ở {category}, bạn có thể tiết kiệm gần {amount} trong tháng.'**
+  String assistantSavingAnswer(String category, String amount);
+
+  /// No description provided for @assistantNoData.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có đủ dữ liệu để trả lời câu này. Hãy ghi thêm vài giao dịch rồi thử lại.'**
+  String get assistantNoData;
+
+  /// No description provided for @assistantAnalysisError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể phân tích lúc này. Hãy thử lại sau.'**
+  String get assistantAnalysisError;
+
+  /// No description provided for @journalRecapTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng kết tháng'**
+  String get journalRecapTitle;
+
+  /// No description provided for @journalRecapMonth.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng kết {month}'**
+  String journalRecapMonth(String month);
+
+  /// No description provided for @journalRecordedCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã ghi lại {count} khoản chi'**
+  String journalRecordedCount(int count);
+
+  /// No description provided for @journalRecapSummary.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng cộng {amount}. Danh mục lớn nhất là {category}.'**
+  String journalRecapSummary(String amount, String category);
+
+  /// No description provided for @journalHighestDay.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày chi nhiều nhất'**
+  String get journalHighestDay;
+
+  /// No description provided for @journalHighestDayValue.
+  ///
+  /// In vi, this message translates to:
+  /// **'{date} — {amount} trong một ngày'**
+  String journalHighestDayValue(String date, String amount);
+
+  /// No description provided for @journalComparedPrevious.
+  ///
+  /// In vi, this message translates to:
+  /// **'So với tháng trước'**
+  String get journalComparedPrevious;
+
+  /// No description provided for @journalSpentMore.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi nhiều hơn'**
+  String get journalSpentMore;
+
+  /// No description provided for @journalSpentLess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi ít hơn'**
+  String get journalSpentLess;
+
+  /// No description provided for @journalTopCategories.
+  ///
+  /// In vi, this message translates to:
+  /// **'Top danh mục'**
+  String get journalTopCategories;
+
+  /// No description provided for @journalShareRecap.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ tổng kết'**
+  String get journalShareRecap;
+
+  /// No description provided for @journalExportTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất nhật ký'**
+  String get journalExportTitle;
+
+  /// No description provided for @journalExportPost.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng'**
+  String get journalExportPost;
+
+  /// No description provided for @journalExportSave.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu ảnh về máy'**
+  String get journalExportSave;
+
+  /// No description provided for @journalExportBrand.
+  ///
+  /// In vi, this message translates to:
+  /// **'Moniary · Nhật ký chi tiêu'**
+  String get journalExportBrand;
+
+  /// No description provided for @journalExportSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tạo ảnh nhật ký để bạn chia sẻ.'**
+  String get journalExportSaved;
+
+  /// No description provided for @journalExportWholeMonth.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cả tháng'**
+  String get journalExportWholeMonth;
+
+  /// No description provided for @journalExportToday.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hôm nay'**
+  String get journalExportToday;
+
+  /// No description provided for @journalExportCustomRange.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tùy chọn ngày'**
+  String get journalExportCustomRange;
+
+  /// No description provided for @journalCollectionsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bộ sưu tập'**
+  String get journalCollectionsTitle;
+
+  /// No description provided for @journalCreateCollection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo bộ sưu tập mới'**
+  String get journalCreateCollection;
+
+  /// No description provided for @journalCollectionName.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên bộ sưu tập'**
+  String get journalCollectionName;
+
+  /// No description provided for @journalCollectionNameHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví dụ: Đà Lạt tháng 6'**
+  String get journalCollectionNameHint;
+
+  /// No description provided for @journalCollectionEmptyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có bộ sưu tập'**
+  String get journalCollectionEmptyTitle;
+
+  /// No description provided for @journalCollectionEmptyBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gom những khoản chi của một chuyến đi hoặc dịp đặc biệt để xem lại sau.'**
+  String get journalCollectionEmptyBody;
+
+  /// No description provided for @journalCollectionMeta.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} khoản · {amount}'**
+  String journalCollectionMeta(int count, String amount);
+
+  /// No description provided for @journalAddTransaction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm khoản vào bộ sưu tập'**
+  String get journalAddTransaction;
+
+  /// No description provided for @journalChooseTransaction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn giao dịch'**
+  String get journalChooseTransaction;
+
+  /// No description provided for @journalCollectionNoTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bộ sưu tập này chưa có giao dịch.'**
+  String get journalCollectionNoTransactions;
+
+  /// No description provided for @journalStreakTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuỗi ghi chép'**
+  String get journalStreakTitle;
+
+  /// No description provided for @journalStreakDays.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ngày liên tiếp'**
+  String journalStreakDays(int count);
+
+  /// No description provided for @journalStreakBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã ghi lại chi tiêu mỗi ngày trong {count} ngày gần đây.'**
+  String journalStreakBody(int count);
+
+  /// No description provided for @journalStreakRecord.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kỷ lục của bạn'**
+  String get journalStreakRecord;
+
+  /// No description provided for @journalStreakRecordDays.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ngày'**
+  String journalStreakRecordDays(int count);
 
   /// No description provided for @friendInviteShareDescription.
   ///

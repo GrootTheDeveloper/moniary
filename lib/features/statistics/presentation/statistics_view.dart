@@ -10,6 +10,7 @@ import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../categories/domain/models/category.dart';
+import '../../budgets/presentation/budget_screen.dart';
 import '../../calendar/application/month/calendar_month_provider.dart';
 import '../../transactions/data/repositories/transaction_repository.dart';
 import '../../transactions/domain/models/transaction_entry.dart';
@@ -75,18 +76,10 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   @override
   Widget build(BuildContext context) {
     final statsAsync = ref.watch(statisticsMonthProvider(_selectedMonth));
+    final colors = context.moniaryColors;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          context.l10n.statsTitle,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
+      backgroundColor: colors.background,
       body: statsAsync.when(
         data: (transactions) => _buildBody(context, transactions),
         loading: () => const Center(
@@ -108,6 +101,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         .where((t) => t.isExpense)
         .fold<double>(0, (sum, t) => sum + t.amount);
     final net = income - expense;
+    final progressValue = income <= 0
+        ? 0.0
+        : (expense / income).clamp(0.0, 1.0);
 
     // Filter transactions by type for chart calculations
     final filteredByType = transactions
@@ -125,10 +121,14 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         ref.invalidate(statisticsMonthProvider(_selectedMonth));
       },
       child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.fromLTRB(20, 14, 20, 112),
         children: [
+          _buildEditorialHeader(context),
+          const SizedBox(height: 18),
           _buildMonthSelector(context),
           const SizedBox(height: 16),
+          _buildHeroExpenseCard(expense, progressValue),
+          const SizedBox(height: 12),
           _buildSummaryCards(income, expense, net),
           const SizedBox(height: 16),
           _buildImportantSpendingCard(transactions),
@@ -144,7 +144,110 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
             const SizedBox(height: 24),
             _buildTopSpendingList(filteredBySelection),
           ],
-          const SizedBox(height: 100), // Spacing for floating action button
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEditorialHeader(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.appName.toUpperCase(),
+                style: context.moniaryTypography.metadataStrong.copyWith(
+                  color: colors.textDim,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                context.l10n.statsTitle,
+                style: context.moniaryTypography.displayMedium,
+              ),
+            ],
+          ),
+        ),
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: colors.surface.withValues(alpha: 0.78),
+            shape: BoxShape.circle,
+            border: Border.all(color: colors.outline),
+          ),
+          child: Icon(Icons.bar_chart_outlined, color: colors.primary),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeroExpenseCard(double expense, double progressValue) {
+    final colors = context.moniaryColors;
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: colors.surface.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: colors.outline),
+        boxShadow: [
+          BoxShadow(
+            color: colors.textPrimary.withValues(alpha: 0.045),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.statsTotalExpense.toUpperCase(),
+            style: context.moniaryTypography.metadataStrong.copyWith(
+              color: colors.textDim,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ObscurableAmountText(
+            amountText: _money(context, expense),
+            style: context.moniaryTypography.displayLarge.copyWith(
+              fontSize: 42,
+              color: colors.primary,
+            ),
+          ),
+          const SizedBox(height: 18),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(
+              minHeight: 8,
+              value: progressValue,
+              backgroundColor: colors.textPrimary.withValues(alpha: 0.08),
+              color: colors.primary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  context.l10n.statsNetBalance,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colors.textDim,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => context.push(BudgetScreen.routePath),
+                iconAlignment: IconAlignment.end,
+                icon: const Icon(Icons.arrow_forward, size: 17),
+                label: Text(context.l10n.budgetTitle),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -156,13 +259,14 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     ).format(_selectedMonth);
     final title =
         '${label[0].toUpperCase()}${label.substring(1)} ${_selectedMonth.year}';
+    final colors = context.moniaryColors;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.outline),
+        color: colors.surface.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: colors.outline),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -173,10 +277,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           ),
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+            style: context.moniaryTypography.displaySmall.copyWith(
+              fontSize: 22,
+              color: colors.textPrimary,
             ),
           ),
           IconButton(
@@ -189,6 +292,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   }
 
   Widget _buildSummaryCards(double income, double expense, double net) {
+    final colors = context.moniaryColors;
     return Column(
       children: [
         Row(
@@ -216,17 +320,17 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: AppTheme.surface,
+            color: colors.surface.withValues(alpha: 0.78),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppTheme.outline),
+            border: Border.all(color: colors.outline),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 context.l10n.statsNetBalance,
-                style: const TextStyle(
-                  color: Colors.white54,
+                style: TextStyle(
+                  color: colors.textDim,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -247,6 +351,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   }
 
   Widget _buildImportantSpendingCard(List<TransactionEntry> transactions) {
+    final colors = context.moniaryColors;
     final importantTransactions = transactions
         .where((t) => t.isImportant)
         .toList();
@@ -263,24 +368,27 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppTheme.amber.withValues(alpha: 0.1), AppTheme.surface],
+          colors: [
+            colors.warning.withValues(alpha: 0.13),
+            colors.surface.withValues(alpha: 0.82),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.amber.withValues(alpha: 0.3)),
+        border: Border.all(color: colors.warning.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.stars, color: AppTheme.amber, size: 20),
+              Icon(Icons.stars, color: colors.warning, size: 20),
               const SizedBox(width: 8),
               Text(
                 context.l10n.starredTransactionsTitle,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: colors.textPrimary,
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
@@ -296,10 +404,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                   children: [
                     Text(
                       context.l10n.calendarIncome,
-                      style: const TextStyle(
-                        color: Colors.white54,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: colors.textDim, fontSize: 12),
                     ),
                     const SizedBox(height: 4),
                     ObscurableAmountText(
@@ -313,7 +418,11 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                   ],
                 ),
               ),
-              Container(width: 1, height: 30, color: Colors.white10),
+              Container(
+                width: 1,
+                height: 30,
+                color: colors.textPrimary.withValues(alpha: 0.1),
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -321,10 +430,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                   children: [
                     Text(
                       context.l10n.calendarExpense,
-                      style: const TextStyle(
-                        color: Colors.white54,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: colors.textDim, fontSize: 12),
                     ),
                     const SizedBox(height: 4),
                     ObscurableAmountText(
@@ -346,12 +452,13 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   }
 
   Widget _buildTypeToggle() {
+    final colors = context.moniaryColors;
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: colors.surface.withValues(alpha: 0.72),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.outline),
+        border: Border.all(color: colors.outline),
       ),
       child: Row(
         children: [
@@ -377,29 +484,30 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   }
 
   Widget _buildEmptyState() {
+    final colors = context.moniaryColors;
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: colors.surface.withValues(alpha: 0.78),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.outline),
+        border: Border.all(color: colors.outline),
       ),
       child: Column(
         children: [
-          const Icon(Icons.bar_chart_outlined, size: 64, color: Colors.white54),
+          Icon(Icons.bar_chart_outlined, size: 64, color: colors.textDim),
           const SizedBox(height: 12),
           Text(
             context.l10n.statsEmptyTitle,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: colors.textPrimary,
               fontSize: 16,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             context.l10n.statsEmptySubtitle,
-            style: const TextStyle(color: Colors.white54, fontSize: 13),
+            style: TextStyle(color: colors.textDim, fontSize: 13),
             textAlign: TextAlign.center,
           ),
         ],
@@ -408,6 +516,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   }
 
   Widget _buildPieChartSection(List<TransactionEntry> transactions) {
+    final colors = context.moniaryColors;
     // 1. Group sums
     final categorySums = <String, double>{};
     final categoryNames = <String, String>{};
@@ -458,9 +567,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: colors.surface.withValues(alpha: 0.82),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.outline),
+        border: Border.all(color: colors.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -537,7 +646,10 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                                 color: color,
                                 shape: BoxShape.circle,
                                 border: isTouched
-                                    ? Border.all(color: Colors.white, width: 2)
+                                    ? Border.all(
+                                        color: colors.textPrimary,
+                                        width: 2,
+                                      )
                                     : null,
                               ),
                             ),
@@ -549,8 +661,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: isTouched
-                                      ? Colors.white
-                                      : Colors.white54,
+                                      ? colors.textPrimary
+                                      : colors.textSecondary,
                                   fontWeight: isTouched
                                       ? FontWeight.bold
                                       : null,
@@ -562,8 +674,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                               style: TextStyle(
                                 fontSize: 13,
                                 color: isTouched
-                                    ? Colors.white
-                                    : Colors.white24,
+                                    ? colors.textPrimary
+                                    : colors.textDim,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -582,6 +694,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   }
 
   Widget _buildTrendChartSection(List<TransactionEntry> transactions) {
+    final colors = context.moniaryColors;
     final daysInMonth = DateUtils.getDaysInMonth(
       _selectedMonth.year,
       _selectedMonth.month,
@@ -618,7 +731,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
             backDrawRodData: BackgroundBarChartRodData(
               show: true,
               toY: maxY,
-              color: Colors.white.withValues(alpha: 0.05),
+              color: colors.textPrimary.withValues(alpha: 0.05),
             ),
           ),
         ],
@@ -628,9 +741,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: colors.surface.withValues(alpha: 0.82),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.outline),
+        border: Border.all(color: colors.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -660,8 +773,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                             group.x.toInt(),
                             _money(context, rod.toY),
                           ),
-                          const TextStyle(
-                            color: Colors.white,
+                          TextStyle(
+                            color: colors.textPrimary,
                             fontWeight: FontWeight.bold,
                             fontSize: 11,
                           ),
@@ -681,8 +794,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                               padding: const EdgeInsets.only(top: 6),
                               child: Text(
                                 '$day',
-                                style: const TextStyle(
-                                  color: Colors.white54,
+                                style: TextStyle(
+                                  color: colors.textDim,
                                   fontSize: 10,
                                 ),
                               ),
@@ -715,6 +828,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   }
 
   Widget _buildTopSpendingList(List<TransactionEntry> transactions) {
+    final colors = context.moniaryColors;
     // Sort descending by amount
     final sortedTxs = List<TransactionEntry>.from(transactions)
       ..sort((a, b) => b.amount.compareTo(a.amount));
@@ -726,9 +840,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: colors.surface.withValues(alpha: 0.82),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.outline),
+        border: Border.all(color: colors.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -745,11 +859,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               if (!isFiltered && sortedTxs.length > 5)
-                const Icon(
-                  Icons.arrow_downward,
-                  size: 14,
-                  color: Colors.white24,
-                ),
+                Icon(Icons.arrow_downward, size: 14, color: colors.textDim),
             ],
           ),
           const SizedBox(height: 12),
@@ -784,8 +894,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppTheme.surfaceRaised,
+                      color: colors.surfaceRaised.withValues(alpha: 0.78),
                       borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: colors.outline),
                     ),
                     child: Row(
                       children: [
@@ -816,17 +927,17 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                                           : tx.categoryName,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w600,
-                                        color: Colors.white,
+                                        color: colors.textPrimary,
                                       ),
                                     ),
                                   ),
                                   if (tx.isImportant) ...[
                                     const SizedBox(width: 6),
-                                    const Icon(
+                                    Icon(
                                       Icons.star,
-                                      color: AppTheme.amber,
+                                      color: colors.warning,
                                       size: 16,
                                     ),
                                   ],
@@ -835,9 +946,9 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                               const SizedBox(height: 4),
                               Text(
                                 '${MaterialLocalizations.of(context).formatShortDate(tx.transactionDate)} ${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(tx.transactionDate), alwaysUse24HourFormat: true)}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
-                                  color: Colors.white54,
+                                  color: colors.textDim,
                                 ),
                               ),
                             ],
@@ -904,12 +1015,13 @@ class _MetricCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: colors.surface.withValues(alpha: 0.78),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.outline),
+        border: Border.all(color: colors.outline),
       ),
       child: Row(
         children: [
@@ -928,9 +1040,9 @@ class _MetricCard extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white54,
+                    color: colors.textDim,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -970,6 +1082,7 @@ class _ToggleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -984,7 +1097,7 @@ class _ToggleButton extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? color : AppTheme.textSubtle,
+            color: selected ? color : colors.textSecondary,
             fontWeight: FontWeight.bold,
           ),
         ),

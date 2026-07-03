@@ -257,6 +257,28 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                       ),
                     ),
                   ),
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(painter: const _ReceiptFramePainter()),
+                    ),
+                  ),
+                  Positioned(
+                    top: 18,
+                    left: 24,
+                    right: 24,
+                    child: Text(
+                      context.l10n.cameraFrameHint.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'JetBrains Mono',
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.2,
+                        shadows: [Shadow(color: Colors.black87, blurRadius: 8)],
+                      ),
+                    ),
+                  ),
                   // In-frame Controls
                   Positioned(
                     bottom: 12,
@@ -387,4 +409,37 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
       ),
     );
   }
+}
+
+class _ReceiptFramePainter extends CustomPainter {
+  const _ReceiptFramePainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const inset = 18.0;
+    const arm = 42.0;
+    final paint = Paint()
+      ..color = AppTheme.terracottaBright
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    final path = Path()
+      ..moveTo(inset, inset + arm)
+      ..lineTo(inset, inset)
+      ..lineTo(inset + arm, inset)
+      ..moveTo(size.width - inset - arm, inset)
+      ..lineTo(size.width - inset, inset)
+      ..lineTo(size.width - inset, inset + arm)
+      ..moveTo(size.width - inset, size.height - inset - arm)
+      ..lineTo(size.width - inset, size.height - inset)
+      ..lineTo(size.width - inset - arm, size.height - inset)
+      ..moveTo(inset + arm, size.height - inset)
+      ..lineTo(inset, size.height - inset)
+      ..lineTo(inset, size.height - inset - arm);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

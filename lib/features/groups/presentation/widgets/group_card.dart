@@ -14,6 +14,8 @@ class GroupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final typography = context.moniaryTypography;
     final balance = group.currentUserBalance;
     final balanceText = balance == 0
         ? context.l10n.groupBalanceSettled
@@ -21,27 +23,39 @@ class GroupCard extends StatelessWidget {
         ? context.l10n.groupBalanceOwes(formatVnd(balance))
         : context.l10n.groupBalanceReceives(formatVnd(balance.abs()));
     final balanceColor = balance == 0
-        ? AppTheme.success
+        ? colors.success
         : balance > 0
-        ? AppTheme.danger
-        : AppTheme.mintSoft;
+        ? colors.danger
+        : colors.success;
 
-    return Card(
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: colors.outline),
+        boxShadow: [
+          BoxShadow(
+            color: colors.textPrimary.withValues(alpha: 0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(24),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(14),
           child: Row(
             children: [
               SupabaseImage(
                 imagePath: group.avatarPath,
                 width: 64,
                 height: 64,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(18),
                 fallbackIcon: Icons.groups_2_outlined,
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,35 +65,46 @@ class GroupCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             group.name,
-                            style: Theme.of(context).textTheme.titleMedium,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: colors.textPrimary,
+                                  fontWeight: FontWeight.w900,
+                                ),
                           ),
                         ),
                         if (group.hasUnresolvedSettlements)
                           _Badge(
                             text: context.l10n.groupUnresolvedBadge,
-                            color: AppTheme.amber,
+                            color: colors.warning,
                           ),
                       ],
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 6),
                     Text(
-                      '${context.l10n.groupMemberCount(group.memberCount)} • '
+                      '${context.l10n.groupMemberCount(group.memberCount)} · '
                       '${context.l10n.groupTotalSpent(formatVnd(group.totalSpent))}',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: typography.metadata.copyWith(
+                        color: colors.textDim,
+                      ),
                     ),
-                    const SizedBox(height: 7),
+                    const SizedBox(height: 8),
                     Text(
                       balanceText,
-                      style: TextStyle(
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: typography.metadataStrong.copyWith(
                         color: balanceColor,
-                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 8),
-              const Icon(Icons.chevron_right_outlined),
+              Icon(Icons.chevron_right_outlined, color: colors.textDim),
             ],
           ),
         ),
@@ -99,13 +124,13 @@ class _Badge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.14),
+        color: color.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         text,
         style: TextStyle(
-          color: color,
+          color: context.moniaryColors.textPrimary,
           fontSize: 11,
           fontWeight: FontWeight.w700,
         ),

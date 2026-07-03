@@ -8,7 +8,7 @@
 
 ## Key Behaviors
 - **Auth Redirect**: Global redirect logic checks if the user has completed onboarding and if they are logged in. Soft-deleted accounts (`accountStatus.isPending == true`) are redirected to `/login`.
-- **Main Shell**: Uses `StatefulShellRoute.indexedStack` to manage bottom navigation tabs (Calendar, Statistics, Groups, Profile).
+- **Main Shell**: Uses `StatefulShellRoute.indexedStack` to manage bottom navigation tabs (Calendar, Statistics, AI Assistant, Groups, Profile).
 - **Transitions**: Custom transitions (`buildSlideTransitionPage`, `buildSlideUpTransitionPage`, `buildFadeTransitionPage`) are used for almost all routes to provide smooth, controlled animations.
 
 ## Route Table
@@ -23,8 +23,9 @@
 | **Shell (Bottom Nav Tabs)** | | |
 | `/calendar` | `CalendarScreen` | Tab 0 |
 | `/statistics` | `StatisticsView` | Tab 1 |
-| `/groups` | `GroupsScreen` | Tab 2 (alias for `GroupListScreen`) |
-| `/profile` | `ProfileScreen` | Tab 3 |
+| `/assistant` | `AssistantHomeScreen` | Tab 2 |
+| `/groups` | `GroupsScreen` | Tab 3 (alias for `GroupListScreen`) |
+| `/profile` | `ProfileScreen` | Tab 4 |
 | **Global** | | |
 | `/app-lock` | `AppLockScreen` | Biometric auth gate; no slide transition |
 | **Transactions & Calendar** | | |
@@ -35,6 +36,11 @@
 | `/day-detail` | `DayDetailScreen` | `DateTime` via `state.extra`; falls back to today |
 | `/transaction-detail` | `TransactionDetailScreen` | `TransactionDetailRouteArgs` via `state.extra`; fade transition |
 | `/starred-transactions` | `StarredTransactionsScreen` | Starred transactions list |
+| **AI Assistant** | | |
+| `/assistant/intro` | `AssistantIntroScreen` | Slides in; first-run assistant onboarding |
+| `/assistant/permissions` | `AssistantPermissionScreen` | Slides in; assistant data access consent |
+| `/assistant/conversation` | `AssistantConversationScreen` | Slides in; launched from Assistant Home or question library |
+| `/assistant/questions` | `AssistantQuestionLibraryScreen` | Suggested question catalog |
 | **Groups** | | |
 | `/group-detail` | `GroupDetailScreen` | `String` groupId via `state.extra` |
 | `/groups/create` | `CreateGroupScreen` | |

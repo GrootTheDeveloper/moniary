@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:go_router/go_router.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
@@ -225,6 +225,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     final walletsAsync = ref.watch(walletsControllerProvider);
     final categoriesAsync = ref.watch(categoriesControllerProvider);
     final composerState = ref.watch(transactionComposerProvider);
@@ -265,7 +266,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     );
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: colors.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, size: 32),
@@ -281,7 +282,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
           IconButton(
             icon: Icon(
               Icons.check_circle_outline,
-              color: canSubmit ? AppTheme.mint : AppTheme.textDim,
+              color: canSubmit ? colors.primary : colors.textDim,
               size: 32,
             ),
             onPressed: canSubmit ? _submit : null,
@@ -290,7 +291,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
         child: Column(
           children: [
             const SizedBox(height: 12),
@@ -341,11 +342,8 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                         height: 40,
                         child: OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white54,
-                            side: const BorderSide(
-                              color: Colors.white54,
-                              width: 1.0,
-                            ),
+                            foregroundColor: colors.textPrimary,
+                            side: BorderSide(color: colors.outline),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(100),
                             ),
@@ -362,11 +360,8 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                         height: 40,
                         child: OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: AppTheme.mint,
-                            side: const BorderSide(
-                              color: AppTheme.mint,
-                              width: 1.5,
-                            ),
+                            foregroundColor: colors.primary,
+                            side: BorderSide(color: colors.primary, width: 1.5),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(100),
                             ),
@@ -395,8 +390,8 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                 height: 40,
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white54,
-                    side: const BorderSide(color: Colors.white54, width: 1.0),
+                    foregroundColor: colors.textPrimary,
+                    side: BorderSide(color: colors.outline),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(100),
                     ),
@@ -487,27 +482,26 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
-                color: AppTheme.surface,
+                color: colors.surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.outline),
+                border: Border.all(color: colors.outline),
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.star_outline,
-                    color: Colors.white54,
-                    size: 24,
-                  ),
+                  Icon(Icons.star_outline, color: colors.warning, size: 24),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       context.l10n.transactionIsImportant,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        color: colors.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                   Switch(
                     value: _isImportant,
-                    activeThumbColor: AppTheme.mint,
+                    activeThumbColor: colors.primary,
                     onChanged: (value) {
                       setState(() {
                         _isImportant = value;
@@ -519,8 +513,11 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
             ),
             const SizedBox(height: 40),
             if (composerState.isLoading)
-              const Center(
-                child: CircularProgressIndicator(color: AppTheme.mint),
+              Center(child: CircularProgressIndicator(color: colors.primary))
+            else
+              FilledButton(
+                onPressed: canSubmit ? _submit : null,
+                child: Text(context.l10n.transactionSaveTransaction),
               ),
           ],
         ),
@@ -725,6 +722,7 @@ class _ImagePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return Column(
       children: [
         AspectRatio(
@@ -732,8 +730,16 @@ class _ImagePreview extends StatelessWidget {
           child: Container(
             width: double.infinity,
             decoration: BoxDecoration(
-              color: AppTheme.surfaceRaised,
+              color: colors.surfaceRaised,
               borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: colors.outline),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.textPrimary.withValues(alpha: 0.12),
+                  blurRadius: 24,
+                  offset: const Offset(0, 14),
+                ),
+              ],
             ),
             child: Stack(
               children: [
@@ -758,11 +764,11 @@ class _ImagePreview extends StatelessWidget {
                     ),
                   )
                 else
-                  const Center(
+                  Center(
                     child: Icon(
                       Icons.image_outlined,
                       size: 64,
-                      color: Colors.white54,
+                      color: colors.textDim,
                     ),
                   ),
                 // Gradient Overlay + Inputs
@@ -918,15 +924,16 @@ class _GridFormTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: colors.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.outline),
+          border: Border.all(color: colors.outline),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -934,19 +941,21 @@ class _GridFormTile extends StatelessWidget {
             if (iconWidget != null)
               iconWidget!
             else
-              Icon(defaultIcon, color: iconColor ?? Colors.white54, size: 28),
+              Icon(defaultIcon, color: iconColor ?? colors.textDim, size: 28),
             const SizedBox(height: 8),
             Text(
               label,
-              style: const TextStyle(color: Colors.white54, fontSize: 12),
+              style: context.moniaryTypography.metadata.copyWith(
+                color: colors.textDim,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
             Text(
               value,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: colors.textPrimary,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),

@@ -4,14 +4,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moniary/core/deeplinks/pending_deep_link_controller.dart';
 import 'package:moniary/core/preferences/preferences_providers.dart';
+import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/features/auth/application/post_auth_decision_provider.dart';
 import 'package:moniary/features/auth/data/auth_repository.dart';
 import 'package:moniary/features/auth/presentation/login_screen.dart';
 import 'package:moniary/features/calendar/presentation/month/calendar_screen.dart';
 import 'package:moniary/features/friends/presentation/screens/friend_invite_accept_screen.dart';
 import 'package:moniary/features/profile/application/profile_setup_controller.dart';
+import 'package:moniary/features/profile/data/profile_repository.dart';
 import 'package:moniary/features/profile/domain/user_profile.dart';
 import 'package:moniary/features/profile/presentation/profile_setup_screen.dart';
+import 'package:moniary/features/profile/presentation/profile_survey_screen.dart';
+import 'package:moniary/features/wallets/data/repositories/wallet_repository.dart';
+import 'package:moniary/features/wallets/domain/models/wallet.dart';
 import 'package:moniary/l10n/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -74,6 +79,141 @@ class TestProfileSetupController extends ProfileSetupController {
   }
 }
 
+class FakeProfileRepository implements ProfileRepository {
+  UserProfile _profile = const UserProfile(
+    id: 'mock-user-id',
+    fullName: 'Bee Nguyen',
+    email: 'guest@moniary.app',
+    avatarUrl: null,
+    loginProvider: 'anonymous',
+    timezone: 'Asia/Ho_Chi_Minh',
+    username: 'bee_nguyen',
+    surveyCompleted: false,
+  );
+
+  @override
+  Future<UserProfile?> fetchCurrentProfile() async => _profile;
+
+  @override
+  Future<UserProfile> upsertProfile({
+    required String fullName,
+    required String username,
+    required String timezone,
+    String? avatarImagePath,
+  }) async {
+    _profile = UserProfile(
+      id: _profile.id,
+      fullName: fullName,
+      email: _profile.email,
+      avatarUrl: avatarImagePath ?? _profile.avatarUrl,
+      loginProvider: _profile.loginProvider,
+      timezone: timezone,
+      username: username,
+      surveyCompleted: _profile.surveyCompleted,
+    );
+    return _profile;
+  }
+
+  @override
+  Future<UserProfile> completeSurvey({
+    required String occupation,
+    required String preferredCurrency,
+  }) async {
+    _profile = UserProfile(
+      id: _profile.id,
+      fullName: _profile.fullName,
+      email: _profile.email,
+      avatarUrl: _profile.avatarUrl,
+      loginProvider: _profile.loginProvider,
+      timezone: _profile.timezone,
+      username: _profile.username,
+      occupation: occupation,
+      preferredCurrency: preferredCurrency,
+      surveyCompleted: true,
+    );
+    return _profile;
+  }
+
+  @override
+  void resetMockProfile() {}
+
+  @override
+  void setMockEmailAndProvider({
+    required String email,
+    required String loginProvider,
+  }) {}
+}
+
+class FakeWalletRepository implements WalletRepository {
+  final List<Wallet> _wallets = [
+    Wallet(
+      id: 'wallet-1',
+      name: 'Cash',
+      type: WalletType.cash,
+      icon: 'wallet',
+      color: '#B85C38',
+      initialBalance: 0,
+      isDefault: true,
+      isActive: true,
+      createdAt: DateTime(2026),
+    ),
+  ];
+
+  @override
+  Future<List<Wallet>> fetchWallets() async => _wallets;
+
+  @override
+  Future<void> createWallet({
+    required String name,
+    required WalletType type,
+    required double initialBalance,
+    bool isDefault = false,
+  }) async {
+    _wallets.add(
+      Wallet(
+        id: 'wallet-${_wallets.length + 1}',
+        name: name,
+        type: type,
+        icon: 'wallet',
+        color: '#B85C38',
+        initialBalance: initialBalance,
+        isDefault: isDefault,
+        isActive: true,
+        createdAt: DateTime(2026),
+      ),
+    );
+  }
+
+  @override
+  Future<void> updateWallet({
+    required String walletId,
+    required String name,
+    required WalletType type,
+    required double initialBalance,
+    required bool isDefault,
+    required bool isActive,
+  }) async {
+    final index = _wallets.indexWhere((wallet) => wallet.id == walletId);
+    if (index == -1) return;
+    _wallets[index] = Wallet(
+      id: walletId,
+      name: name,
+      type: type,
+      icon: _wallets[index].icon,
+      color: _wallets[index].color,
+      initialBalance: initialBalance,
+      isDefault: isDefault,
+      isActive: isActive,
+      createdAt: _wallets[index].createdAt,
+    );
+  }
+
+  @override
+  void clearMockUserData() {
+    _wallets.clear();
+  }
+}
+
 Widget _routerApp({
   required ProviderContainer container,
   required String initialLocation,
@@ -91,6 +231,10 @@ Widget _routerApp({
         builder: (context, state) => const ProfileSetupScreen(),
       ),
       GoRoute(
+        path: ProfileSurveyScreen.routePath,
+        builder: (context, state) => const ProfileSurveyScreen(),
+      ),
+      GoRoute(
         path: CalendarScreen.routePath,
         builder: (context, state) =>
             const Scaffold(body: Text('calendar target')),
@@ -106,7 +250,7 @@ Widget _routerApp({
   return UncontrolledProviderScope(
     container: container,
     child: MaterialApp.router(
-      locale: const Locale('vi'),
+      locale: const Locale('en'),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: router,
@@ -158,14 +302,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(FilledButton));
+    await tester.tap(find.byKey(const ValueKey('login_guest_button')));
     await tester.pumpAndSettle();
 
     expect(find.text('invite token-1'), findsOneWidget);
     expect(container.read(pendingDeepLinkProvider), isNull);
   });
 
-  testWidgets('profile setup keeps pending invite until save succeeds', (
+  testWidgets('profile setup keeps pending invite until survey succeeds', (
     tester,
   ) async {
     await useLargeTestViewport(tester);
@@ -174,6 +318,9 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
+        useMockDataModeProvider.overrideWithValue(true),
+        profileRepositoryProvider.overrideWithValue(FakeProfileRepository()),
+        walletRepositoryProvider.overrideWithValue(FakeWalletRepository()),
         profileSetupControllerProvider.overrideWith(
           TestProfileSetupController.new,
         ),
@@ -200,6 +347,20 @@ void main() {
     await tester.tap(find.byType(FilledButton));
     await tester.pumpAndSettle();
 
+    expect(find.byType(ProfileSurveyScreen), findsOneWidget);
+    expect(container.read(pendingDeepLinkProvider), '/friends/invite/token-2');
+
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Student'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+
     expect(find.text('invite token-2'), findsOneWidget);
     expect(container.read(pendingDeepLinkProvider), isNull);
   });
@@ -216,6 +377,7 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
+        useMockDataModeProvider.overrideWithValue(true),
         profileSetupControllerProvider.overrideWith(
           TestProfileSetupController.new,
         ),

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../app/app_theme.dart';
-import '../../../core/deeplinks/pending_deep_link_controller.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../core/preferences/preferences_providers.dart';
@@ -14,6 +13,7 @@ import '../../../shared/widgets/supabase_image.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../auth/application/auth_controller.dart';
 import '../application/profile_setup_controller.dart';
+import 'profile_survey_screen.dart';
 
 class ProfileSetupScreen extends ConsumerStatefulWidget {
   const ProfileSetupScreen({this.isEditMode = false, super.key});
@@ -311,10 +311,11 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       if (context.canPop()) {
         context.pop();
       } else {
-        final pendingRoute = widget.isEditMode
-            ? null
-            : ref.read(pendingDeepLinkProvider.notifier).consume();
-        context.go(pendingRoute ?? CalendarScreen.routePath);
+        context.go(
+          widget.isEditMode
+              ? CalendarScreen.routePath
+              : ProfileSurveyScreen.routePath,
+        );
       }
     } catch (error) {
       messenger.showSnackBar(

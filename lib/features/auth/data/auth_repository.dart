@@ -157,6 +157,22 @@ class AuthRepository {
     }
   }
 
+  Future<Session?> signInWithFacebook() async {
+    if (_useMockData) {
+      return _mockSession();
+    }
+    try {
+      await _requiredClient.auth.signInWithOAuth(
+        OAuthProvider.facebook,
+        redirectTo: kIsWeb ? null : 'io.supabase.moniary://login-callback',
+      );
+      return null;
+    } catch (e, st) {
+      AppLogger.error('Facebook sign-in failed', e, st);
+      throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
+    }
+  }
+
   Future<Session?> signInWithEmail({
     required String email,
     required String password,
@@ -195,6 +211,25 @@ class AuthRepository {
     } catch (e, st) {
       AppLogger.error('Email sign-up failed (unexpected)', e, st);
       throw const AppException('errorGeneric', code: 'AUTH_SIGN_UP_FAILED');
+    }
+  }
+
+  Future<void> requestPasswordReset(String email) async {
+    if (_useMockData) return;
+    try {
+      await _requiredClient.auth.resetPasswordForEmail(
+        email,
+        redirectTo: kIsWeb ? null : 'io.supabase.moniary://reset-password',
+      );
+    } on AuthException catch (e, st) {
+      AppLogger.error('Password reset request failed', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      AppLogger.error('Password reset request failed (unexpected)', e, st);
+      throw const AppException(
+        'errorGeneric',
+        code: 'AUTH_PASSWORD_RESET_FAILED',
+      );
     }
   }
 
