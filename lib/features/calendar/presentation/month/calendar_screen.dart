@@ -25,6 +25,7 @@ import '../../application/month/calendar_visible_month_provider.dart';
 import '../../domain/month/calendar_month_data.dart';
 import 'manage_data_sheet.dart';
 import 'transaction_search_delegate.dart';
+import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
 import '../../../../shared/utils/error_helpers.dart';
@@ -58,109 +59,106 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final colors = context.moniaryColors;
 
     return Scaffold(
-      backgroundColor: colors.background,
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              colors.backgroundSoft,
-              colors.background,
-              colors.background,
-            ],
-          ),
-        ),
+      backgroundColor: colors.backgroundSoft,
+      body: ColoredBox(
+        color: colors.backgroundSoft,
         child: SafeArea(
           child: Column(
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                        child: _SeamlessHeader(
-                          userName: displayName,
-                          onProfileTap: () => _openManager(context),
-                          onFriendsTap: () => _openFriendsSheet(context),
-                          onTransactionTap: _openTransactionDetail,
-                          walletsAsync: walletsAsync,
-                          monthAsync: monthAsync,
-                        ),
-                      ),
-                      _CalendarHeader(
-                        month: visibleMonth,
-                        onPreviousMonth: () => _changeMonth(-1),
-                        onNextMonth: () => _changeMonth(1),
-                        onMonthSelect: (date) {
-                          ref
-                              .read(calendarVisibleMonthProvider.notifier)
-                              .setMonth(date);
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _UnifiedFilterRow(
-                          isTodaySelected: _isTodayGridMode,
-                          onTodayTap: () {
-                            setState(() {
-                              _isTodayGridMode = !_isTodayGridMode;
-                            });
-                          },
-                          onResetTap: () {
-                            setState(() {
-                              _isTodayGridMode = false;
-                            });
-                          },
-                          onRecapTap: () => context.push(
-                            MonthlyRecapScreen.routePath,
-                            extra: visibleMonth,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 393),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(22, 9, 22, 17),
+                            child: _SeamlessHeader(
+                              userName: displayName,
+                              onProfileTap: () => _openManager(context),
+                              onFriendsTap: () => _openFriendsSheet(context),
+                              onRecapTap: () => context.push(
+                                MonthlyRecapScreen.routePath,
+                                extra: visibleMonth,
+                              ),
+                              onTransactionTap: _openTransactionDetail,
+                              walletsAsync: walletsAsync,
+                              monthAsync: monthAsync,
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: monthAsync.when(
-                          data: (monthData) {
-                            if (_isTodayGridMode) {
-                              return _TodayGrid(
-                                monthData: monthData,
-                                onTransactionTap: _openDayDetail,
-                              );
-                            }
-                            return _MonthCalendarCard(
-                              monthData: monthData,
-                              onDayTap: _openDayDetail,
-                            );
-                          },
-                          loading: () => const SizedBox(height: 200),
-                          error: (error, stackTrace) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      userFriendlyMessage(context, error),
-                                    ),
-                                    behavior: SnackBarBehavior.floating,
+                          _CalendarHeader(
+                            month: visibleMonth,
+                            onPreviousMonth: () => _changeMonth(-1),
+                            onNextMonth: () => _changeMonth(1),
+                            onMonthSelect: (date) {
+                              ref
+                                  .read(calendarVisibleMonthProvider.notifier)
+                                  .setMonth(date);
+                            },
+                          ),
+                          const SizedBox(height: 13),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 22),
+                            child: _UnifiedFilterRow(
+                              isTodaySelected: _isTodayGridMode,
+                              onTodayTap: () {
+                                setState(() {
+                                  _isTodayGridMode = !_isTodayGridMode;
+                                });
+                              },
+                              onResetTap: () {
+                                setState(() {
+                                  _isTodayGridMode = false;
+                                });
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 13),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 28),
+                            child: monthAsync.when(
+                              data: (monthData) {
+                                if (_isTodayGridMode) {
+                                  return _TodayGrid(
+                                    monthData: monthData,
+                                    onTransactionTap: _openDayDetail,
+                                  );
+                                }
+                                return _MonthCalendarCard(
+                                  monthData: monthData,
+                                  onDayTap: _openDayDetail,
+                                );
+                              },
+                              loading: () => const SizedBox(height: 200),
+                              error: (error, stackTrace) {
+                                WidgetsBinding.instance.addPostFrameCallback((
+                                  _,
+                                ) {
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          userFriendlyMessage(context, error),
+                                        ),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                });
+                                return Center(
+                                  child: PlaceholderCard(
+                                    title: context.l10n.errorGeneric,
+                                    body: userFriendlyMessage(context, error),
                                   ),
                                 );
-                              }
-                            });
-                            return Center(
-                              child: PlaceholderCard(
-                                title: context.l10n.errorGeneric,
-                                body: userFriendlyMessage(context, error),
-                              ),
-                            );
-                          },
-                        ),
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 120),
+                        ],
                       ),
-                      const SizedBox(height: 120),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -253,6 +251,7 @@ class _SeamlessHeader extends ConsumerWidget {
     required this.userName,
     required this.onProfileTap,
     required this.onFriendsTap,
+    required this.onRecapTap,
     required this.onTransactionTap,
     required this.walletsAsync,
     required this.monthAsync,
@@ -261,6 +260,7 @@ class _SeamlessHeader extends ConsumerWidget {
   final String userName;
   final VoidCallback onProfileTap;
   final VoidCallback onFriendsTap;
+  final VoidCallback onRecapTap;
   final Future<void> Function(TransactionEntry transaction) onTransactionTap;
   final AsyncValue<List<Wallet>> walletsAsync;
   final AsyncValue<CalendarMonthData> monthAsync;
@@ -285,7 +285,9 @@ class _SeamlessHeader extends ConsumerWidget {
                     Text(
                       context.l10n.appName.toUpperCase(),
                       style: context.moniaryTypography.metadataStrong.copyWith(
-                        color: colors.textDim,
+                        color: AppTheme.terracotta,
+                        fontSize: 8.5,
+                        letterSpacing: 2.1,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -301,46 +303,20 @@ class _SeamlessHeader extends ConsumerWidget {
                                 .copyWith(color: colors.textPrimary),
                           ),
                         ),
-                        if (streak != null && streak.currentDays > 0) ...[
+                        if (streak != null) ...[
                           const SizedBox(width: 8),
-                          InkWell(
+                          _StreakBadge(
+                            count: streak.currentDays,
                             onTap: () =>
                                 context.push(RecordingStreakScreen.routePath),
-                            borderRadius: BorderRadius.circular(999),
-                            child: Container(
-                              constraints: const BoxConstraints(
-                                minWidth: 44,
-                                minHeight: 44,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 9,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppTheme.terracotta.withValues(
-                                  alpha: 0.1,
-                                ),
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.local_fire_department_outlined,
-                                    size: 17,
-                                    color: AppTheme.terracotta,
-                                  ),
-                                  const SizedBox(width: 3),
-                                  Text(
-                                    '${streak.currentDays}',
-                                    style: context
-                                        .moniaryTypography
-                                        .metadataStrong
-                                        .copyWith(color: AppTheme.terracotta),
-                                  ),
-                                ],
-                              ),
-                            ),
                           ),
                         ],
+                        const SizedBox(width: 6),
+                        _MiniHeaderAction(
+                          icon: Icons.auto_stories_outlined,
+                          tooltip: context.l10n.journalRecapTitle,
+                          onTap: onRecapTap,
+                        ),
                       ],
                     ),
                   ],
@@ -386,7 +362,7 @@ class _SeamlessHeader extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 28),
           walletsAsync.when(
             data: (wallets) {
               final totalBalance = wallets.fold(
@@ -396,32 +372,17 @@ class _SeamlessHeader extends ConsumerWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    context.l10n.calendarBalance.toUpperCase(),
-                    style: context.moniaryTypography.metadata.copyWith(
-                      color: colors.textDim,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Flexible(
-                        child: ObscurableAmountText(
-                          amountText: _formatMoney(
-                            context,
-                            totalBalance,
-                            isNegative: totalBalance < 0,
-                          ),
-                          style: context.moniaryTypography.displayLarge
-                              .copyWith(
-                                fontSize: 40,
-                                color: colors.textPrimary,
-                              ),
+                      Text(
+                        context.l10n.calendarBalance.toUpperCase(),
+                        style: context.moniaryTypography.metadata.copyWith(
+                          color: colors.textDim,
+                          letterSpacing: 1.2,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 5),
                       _BalanceVisibilityButton(
                         isHidden: isHidden,
                         onTap: () {
@@ -432,13 +393,25 @@ class _SeamlessHeader extends ConsumerWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 6),
+                  ObscurableAmountText(
+                    amountText: _formatMoney(
+                      context,
+                      totalBalance,
+                      isNegative: totalBalance < 0,
+                    ),
+                    style: context.moniaryTypography.displayLarge.copyWith(
+                      fontSize: 42,
+                      color: colors.textPrimary,
+                    ),
+                  ),
                 ],
               );
             },
             loading: () => const SizedBox(height: 64),
             error: (_, _) => const SizedBox(height: 64),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 18),
           monthAsync.when(
             data: (monthData) {
               return Row(
@@ -485,20 +458,108 @@ class _BalanceVisibilityButton extends StatelessWidget {
       child: Material(
         color: AppTheme.terracotta.withValues(alpha: 0.1),
         shape: CircleBorder(
-          side: BorderSide(color: AppTheme.terracotta.withValues(alpha: 0.24)),
+          side: BorderSide(color: AppTheme.terracotta.withValues(alpha: 0.22)),
         ),
         child: InkWell(
           onTap: onTap,
           customBorder: const CircleBorder(),
           child: SizedBox(
-            width: 36,
-            height: 36,
+            width: 25,
+            height: 25,
             child: Icon(
               isHidden
                   ? Icons.visibility_off_outlined
                   : Icons.visibility_outlined,
               color: colors.primary,
-              size: 18,
+              size: 14,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StreakBadge extends StatelessWidget {
+  const _StreakBadge({required this.count, required this.onTap});
+
+  final int count;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Tooltip(
+      message: context.l10n.journalStreakTitle,
+      child: Material(
+        color: AppTheme.terracotta.withValues(alpha: 0.09),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: AppTheme.terracotta.withValues(alpha: 0.18)),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.local_fire_department_outlined,
+                  size: 14,
+                  color: AppTheme.terracotta,
+                ),
+                const SizedBox(width: 3),
+                Text(
+                  '$count',
+                  style: context.moniaryTypography.metadataStrong.copyWith(
+                    color: colors.primary,
+                    fontSize: 9,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MiniHeaderAction extends StatelessWidget {
+  const _MiniHeaderAction({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: AppTheme.terracotta.withValues(alpha: 0.08),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: AppTheme.terracotta.withValues(alpha: 0.18)),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: SizedBox(
+            width: 30,
+            height: 28,
+            child: Icon(
+              icon,
+              color: colors.primary.withValues(alpha: 0.9),
+              size: 15,
             ),
           ),
         ),
@@ -523,6 +584,8 @@ class _HeaderCircleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
+    final fill = _controlFill(colors);
+    final border = _controlBorder(colors);
     return Tooltip(
       message: tooltip,
       child: SizedBox(
@@ -531,18 +594,22 @@ class _HeaderCircleButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Material(
-              color: colors.surfaceRaised.withValues(alpha: 0.68),
+              color: fill,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-                side: BorderSide(color: colors.outline),
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: border, width: 1.15),
               ),
               child: InkWell(
                 onTap: onTap,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(12),
                 child: SizedBox(
                   width: 38,
                   height: 38,
-                  child: Icon(icon, color: colors.textSecondary, size: 18),
+                  child: Icon(
+                    icon,
+                    color: colors.textPrimary.withValues(alpha: 0.66),
+                    size: 18,
+                  ),
                 ),
               ),
             ),
@@ -578,18 +645,24 @@ class _IconPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
+    final fill = _controlFill(colors);
+    final border = _controlBorder(colors);
     return Tooltip(
       message: tooltip,
       child: Material(
-        color: colors.surfaceRaised.withValues(alpha: 0.68),
-        shape: CircleBorder(side: BorderSide(color: colors.outline)),
+        color: fill,
+        shape: CircleBorder(side: BorderSide(color: border, width: 1.15)),
         child: InkWell(
           onTap: onTap,
           customBorder: const CircleBorder(),
           child: SizedBox(
             width: 32,
             height: 32,
-            child: Icon(icon, color: colors.textSecondary, size: 16),
+            child: Icon(
+              icon,
+              color: colors.textPrimary.withValues(alpha: 0.58),
+              size: 16,
+            ),
           ),
         ),
       ),
@@ -613,10 +686,10 @@ class _IncomeExpensePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.09),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(11),
         border: Border.all(color: color.withValues(alpha: 0.18)),
       ),
       child: Row(
@@ -661,52 +734,58 @@ class _CalendarHeader extends StatelessWidget {
     final title = _monthTitle(context, month);
     final colors = context.moniaryColors;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _IconPill(
-          icon: Icons.arrow_back_ios_new_outlined,
-          tooltip: MaterialLocalizations.of(context).previousPageTooltip,
-          onTap: onPreviousMonth,
-        ),
-        const SizedBox(width: 12),
-        InkWell(
-          onTap: () => _showMonthPicker(context),
-          borderRadius: BorderRadius.circular(999),
-          child: Ink(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-            decoration: BoxDecoration(
-              color: colors.backgroundSoft.withValues(alpha: 0.62),
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: colors.outline),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  title,
-                  style: context.moniaryTypography.displaySmall.copyWith(
-                    fontSize: 22,
-                    color: colors.textPrimary,
+    return SizedBox(
+      height: 39,
+      child: Center(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _IconPill(
+                icon: Icons.arrow_back_ios_new_outlined,
+                tooltip: MaterialLocalizations.of(context).previousPageTooltip,
+                onTap: onPreviousMonth,
+              ),
+              const SizedBox(width: 12),
+              InkWell(
+                onTap: () => _showMonthPicker(context),
+                borderRadius: BorderRadius.circular(10),
+                child: Ink(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 7,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        title,
+                        style: context.moniaryTypography.displaySmall.copyWith(
+                          fontSize: 22,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.keyboard_arrow_down_outlined,
+                        color: colors.textDim,
+                        size: 24,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.keyboard_arrow_down_outlined,
-                  color: colors.textDim,
-                  size: 24,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 12),
+              _IconPill(
+                icon: Icons.arrow_forward_ios_outlined,
+                tooltip: MaterialLocalizations.of(context).nextPageTooltip,
+                onTap: onNextMonth,
+              ),
+            ],
           ),
         ),
-        const SizedBox(width: 12),
-        _IconPill(
-          icon: Icons.arrow_forward_ios_outlined,
-          tooltip: MaterialLocalizations.of(context).nextPageTooltip,
-          onTap: onNextMonth,
-        ),
-      ],
+      ),
     );
   }
 
@@ -845,13 +924,11 @@ class _UnifiedFilterRow extends ConsumerWidget {
     required this.isTodaySelected,
     required this.onTodayTap,
     required this.onResetTap,
-    required this.onRecapTap,
   });
 
   final bool isTodaySelected;
   final VoidCallback onTodayTap;
   final VoidCallback onResetTap;
-  final VoidCallback onRecapTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -863,9 +940,11 @@ class _UnifiedFilterRow extends ConsumerWidget {
     );
     final isAll = filters.walletId == null && filters.categoryId == null;
     final colors = context.moniaryColors;
+    final inactiveFill = _controlFill(colors);
+    final inactiveBorder = _controlBorder(colors);
 
     return SizedBox(
-      height: 44,
+      height: 36,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -880,11 +959,11 @@ class _UnifiedFilterRow extends ConsumerWidget {
                     onTap: () =>
                         ref.read(calendarFilterProvider.notifier).reset(),
                     activeColor: colors.textPrimary,
-                    activeTextColor: colors.background,
-                    inactiveColor: colors.surface.withValues(alpha: 0.58),
-                    inactiveBorderColor: colors.outline,
+                    activeTextColor: colors.backgroundSoft,
+                    inactiveColor: inactiveFill,
+                    inactiveBorderColor: inactiveBorder,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 7),
                   _PillButton(
                     label: selectedWallet != null
                         ? selectedWallet.name
@@ -896,21 +975,21 @@ class _UnifiedFilterRow extends ConsumerWidget {
                       walletsAsync.value ?? [],
                     ),
                     activeColor: colors.textPrimary,
-                    activeTextColor: colors.background,
-                    inactiveColor: colors.surface.withValues(alpha: 0.58),
-                    inactiveBorderColor: colors.outline,
+                    activeTextColor: colors.backgroundSoft,
+                    inactiveColor: inactiveFill,
+                    inactiveBorderColor: inactiveBorder,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 7),
                   _PillButton(
                     label: context.l10n.calendarToday,
                     selected: isTodaySelected,
                     onTap: onTodayTap,
                     activeColor: colors.primary,
-                    activeTextColor: colors.background,
-                    inactiveColor: colors.surface.withValues(alpha: 0.58),
-                    inactiveBorderColor: colors.outline,
+                    activeTextColor: colors.backgroundSoft,
+                    inactiveColor: inactiveFill,
+                    inactiveBorderColor: inactiveBorder,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 7),
                   _PillButton(
                     label: context.l10n.calendarSaved,
                     selected: filters.isStarredOnly,
@@ -919,20 +998,14 @@ class _UnifiedFilterRow extends ConsumerWidget {
                         .toggleStarredOnly(),
                     activeColor: colors.warning,
                     activeTextColor: colors.textPrimary,
-                    inactiveColor: colors.surface.withValues(alpha: 0.58),
-                    inactiveBorderColor: colors.outline,
+                    inactiveColor: inactiveFill,
+                    inactiveBorderColor: inactiveBorder,
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(width: 8),
-          _RoundIconButton(
-            icon: Icons.auto_stories_outlined,
-            tooltip: context.l10n.journalRecapTitle,
-            onTap: onRecapTap,
-          ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 7),
           _RoundIconButton(
             icon: Icons.refresh_outlined,
             tooltip: MaterialLocalizations.of(
@@ -1030,10 +1103,10 @@ class _MonthCalendarCard extends ConsumerWidget {
                 )
                 .toList(),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 9),
           ...monthData.weeks.map(
             (week) => Padding(
-              padding: const EdgeInsets.only(bottom: 7),
+              padding: const EdgeInsets.only(bottom: 0),
               child: Row(
                 children: week
                     .map(
@@ -1064,45 +1137,56 @@ class _CalendarDayCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
     final dominant = _DominantDayCategory.from(day.transactions, colors);
+    final images = day.transactions
+        .where((t) => t.imagePath != null && t.imagePath!.isNotEmpty)
+        .toList()
+        .reversed
+        .toList();
     final transactionCount = day.transactions.length;
     final hasTransactions = transactionCount > 0;
+    final hasImages = images.isNotEmpty;
     final foreground = hasTransactions
         ? _readableTextColor(dominant.color)
         : colors.textPrimary;
-    final blockWidth = hasTransactions
-        ? 36.0 + transactionCount.clamp(0, 3) * 3
-        : 0.0;
-    final blockHeight = hasTransactions
-        ? 34.0 + transactionCount.clamp(0, 3) * 4
-        : 0.0;
+    final blockSize = hasTransactions ? 42.0 : 0.0;
 
     return InkWell(
-      borderRadius: BorderRadius.circular(15),
+      borderRadius: BorderRadius.circular(10),
       onTap: day.isCurrentMonth ? onTap : null,
       child: SizedBox(
-        height: 61,
+        height: 46,
         child: Stack(
           alignment: Alignment.center,
           clipBehavior: Clip.none,
           children: [
-            if (hasTransactions)
+            if (hasImages)
               Positioned(
-                top: 3,
+                top: 0,
+                child: _CalendarPhotoBlock(
+                  day: day,
+                  images: images,
+                  transactionCount: transactionCount,
+                  accentColor: dominant.color,
+                ),
+              )
+            else if (hasTransactions)
+              Positioned(
+                top: 0,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 180),
                       curve: Curves.easeOutCubic,
-                      width: blockWidth,
-                      height: blockHeight,
+                      width: blockSize,
+                      height: blockSize,
                       decoration: BoxDecoration(
                         color: Color.lerp(
                           dominant.color,
                           colors.background,
                           0.16,
                         ),
-                        borderRadius: BorderRadius.circular(9),
+                        borderRadius: BorderRadius.circular(7),
                         border: day.isToday
                             ? Border.all(color: colors.primary, width: 1.4)
                             : null,
@@ -1143,14 +1227,14 @@ class _CalendarDayCell extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      top: -5,
-                      right: -5,
+                      top: 4,
+                      right: 4,
                       child: Container(
                         constraints: const BoxConstraints(
-                          minWidth: 17,
-                          minHeight: 17,
+                          minWidth: 15,
+                          minHeight: 15,
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 3),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: Color.lerp(
@@ -1160,8 +1244,10 @@ class _CalendarDayCell extends StatelessWidget {
                           ),
                           borderRadius: BorderRadius.circular(999),
                           border: Border.all(
-                            color: colors.background.withValues(alpha: 0.95),
-                            width: 1.3,
+                            color: colors.backgroundSoft.withValues(
+                              alpha: 0.76,
+                            ),
+                            width: 1,
                           ),
                         ),
                         child: Text(
@@ -1169,7 +1255,7 @@ class _CalendarDayCell extends StatelessWidget {
                           style: context.moniaryTypography.metadataStrong
                               .copyWith(
                                 color: _readableTextColor(dominant.color),
-                                fontSize: 8,
+                                fontSize: 7.5,
                                 letterSpacing: 0,
                               ),
                         ),
@@ -1182,7 +1268,7 @@ class _CalendarDayCell extends StatelessWidget {
               Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 11),
+                  padding: const EdgeInsets.only(top: 3),
                   child: DecoratedBox(
                     decoration: day.isToday
                         ? BoxDecoration(
@@ -1190,18 +1276,18 @@ class _CalendarDayCell extends StatelessWidget {
                               color: colors.primary.withValues(alpha: 0.8),
                               width: 1.2,
                             ),
-                            borderRadius: BorderRadius.circular(9),
+                            borderRadius: BorderRadius.circular(7),
                           )
                         : const BoxDecoration(),
                     child: SizedBox(
-                      width: 32,
-                      height: 30,
+                      width: 30,
+                      height: 26,
                       child: Center(
                         child: Text(
                           '${day.date.day}',
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
-                                fontSize: 12,
+                                fontSize: 11.5,
                                 color: day.isCurrentMonth
                                     ? (day.isToday
                                           ? colors.primary
@@ -1221,6 +1307,176 @@ class _CalendarDayCell extends StatelessWidget {
                   ),
                 ),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CalendarPhotoBlock extends StatelessWidget {
+  const _CalendarPhotoBlock({
+    required this.day,
+    required this.images,
+    required this.transactionCount,
+    required this.accentColor,
+  });
+
+  final CalendarDayData day;
+  final List<TransactionEntry> images;
+  final int transactionCount;
+  final Color accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    const size = 42.0;
+    final radius = BorderRadius.circular(7);
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        if (images.length > 1)
+          Positioned(
+            top: 4,
+            left: -4,
+            child: _PhotoFrame(
+              imagePath: images[1].imagePath,
+              size: size - 2,
+              radius: radius,
+              borderColor: accentColor.withValues(alpha: 0.52),
+            ),
+          ),
+        _PhotoFrame(
+          imagePath: images.first.imagePath,
+          size: size,
+          radius: radius,
+          borderColor: day.isToday ? colors.primary : accentColor,
+          borderWidth: day.isToday ? 1.6 : 1.2,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: radius,
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        colors.textPrimary.withValues(alpha: 0.56),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 7,
+                bottom: 5,
+                child: Text(
+                  '${day.date.day}',
+                  style: context.moniaryTypography.metadataStrong.copyWith(
+                    color: AppTheme.surfaceRaised,
+                    fontSize: 10,
+                    letterSpacing: 0,
+                    shadows: [
+                      Shadow(
+                        color: colors.textPrimary.withValues(alpha: 0.5),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (day.hasImportant)
+                Positioned(
+                  right: 6,
+                  bottom: 5,
+                  child: Icon(
+                    Icons.star_rounded,
+                    color: AppTheme.surfaceRaised.withValues(alpha: 0.92),
+                    size: 10,
+                  ),
+                ),
+            ],
+          ),
+        ),
+        Positioned(
+          top: 4,
+          right: 4,
+          child: Container(
+            constraints: const BoxConstraints(minWidth: 15, minHeight: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 3),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Color.lerp(accentColor, colors.textPrimary, 0.25),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(
+                color: colors.backgroundSoft.withValues(alpha: 0.76),
+                width: 1,
+              ),
+            ),
+            child: Text(
+              '$transactionCount',
+              style: context.moniaryTypography.metadataStrong.copyWith(
+                color: _readableTextColor(accentColor),
+                fontSize: 7.5,
+                letterSpacing: 0,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PhotoFrame extends StatelessWidget {
+  const _PhotoFrame({
+    required this.imagePath,
+    required this.size,
+    required this.radius,
+    required this.borderColor,
+    this.borderWidth = 1.2,
+    this.child,
+  });
+
+  final String? imagePath;
+  final double size;
+  final BorderRadius radius;
+  final Color borderColor;
+  final double borderWidth;
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        borderRadius: radius,
+        border: Border.all(color: borderColor, width: borderWidth),
+        boxShadow: [
+          BoxShadow(
+            color: borderColor.withValues(alpha: 0.18),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: radius,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            SupabaseImage(
+              imagePath: imagePath,
+              width: size,
+              height: size,
+              borderRadius: radius,
+              fallbackIcon: Icons.receipt_long_outlined,
+            ),
+            ?child,
           ],
         ),
       ),
@@ -1285,6 +1541,14 @@ Color _readableTextColor(Color color) {
       : AppTheme.surfaceRaised;
 }
 
+Color _controlFill(MoniaryColors colors) {
+  return Color.lerp(colors.backgroundSoft, colors.textPrimary, 0.025)!;
+}
+
+Color _controlBorder(MoniaryColors colors) {
+  return Color.lerp(colors.outline, colors.textPrimary, 0.08)!;
+}
+
 class _PillButton extends StatelessWidget {
   const _PillButton({
     required this.label,
@@ -1309,16 +1573,20 @@ class _PillButton extends StatelessWidget {
     final colors = context.moniaryColors;
     return Material(
       color: selected ? activeColor : inactiveColor,
-      shape: StadiumBorder(
-        side: BorderSide(color: selected ? activeColor : inactiveBorderColor),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: selected ? activeColor : inactiveBorderColor,
+          width: 1.15,
+        ),
       ),
       child: InkWell(
         onTap: onTap,
-        customBorder: const StadiumBorder(),
+        borderRadius: BorderRadius.circular(12),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 44),
+          constraints: const BoxConstraints(minHeight: 34),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1328,7 +1596,7 @@ class _PillButton extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: selected ? activeTextColor : colors.textSecondary,
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: selected ? FontWeight.bold : FontWeight.w600,
                   ),
                 ),
@@ -1355,20 +1623,28 @@ class _RoundIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
+    final fill = _controlFill(colors);
+    final border = _controlBorder(colors);
     return Tooltip(
       message: tooltip,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Ink(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: colors.surfaceRaised.withValues(alpha: 0.78),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.outline),
+      child: Material(
+        color: fill,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: border, width: 1.15),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: SizedBox(
+            width: 36,
+            height: 36,
+            child: Icon(
+              icon,
+              size: 19,
+              color: colors.textPrimary.withValues(alpha: 0.62),
+            ),
           ),
-          child: Icon(icon, size: 20, color: colors.textSecondary),
         ),
       ),
     );
