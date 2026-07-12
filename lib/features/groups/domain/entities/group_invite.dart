@@ -53,3 +53,56 @@ class GroupInviteAcceptResult {
   final GroupInviteStatus status;
   final String groupId;
 }
+
+enum GroupDirectInviteStatus {
+  pending,
+  accepted,
+  declined,
+  expired,
+  revoked,
+  invalid,
+  alreadyMember,
+}
+
+extension GroupDirectInviteStatusValue on GroupDirectInviteStatus {
+  String get value => switch (this) {
+    GroupDirectInviteStatus.pending => 'pending',
+    GroupDirectInviteStatus.accepted => 'accepted',
+    GroupDirectInviteStatus.declined => 'declined',
+    GroupDirectInviteStatus.expired => 'expired',
+    GroupDirectInviteStatus.revoked => 'revoked',
+    GroupDirectInviteStatus.invalid => 'invalid',
+    GroupDirectInviteStatus.alreadyMember => 'already_member',
+  };
+
+  static GroupDirectInviteStatus fromValue(String? value) {
+    return GroupDirectInviteStatus.values.firstWhere(
+      (status) => status.value == value,
+      orElse: () => GroupDirectInviteStatus.invalid,
+    );
+  }
+}
+
+class GroupDirectInvite {
+  const GroupDirectInvite({
+    required this.id,
+    required this.groupId,
+    required this.groupName,
+    required this.inviterName,
+    required this.status,
+    required this.createdAt,
+    required this.expiresAt,
+    this.groupAvatarPath,
+  });
+
+  final String id;
+  final String groupId;
+  final String groupName;
+  final String inviterName;
+  final String? groupAvatarPath;
+  final GroupDirectInviteStatus status;
+  final DateTime createdAt;
+  final DateTime expiresAt;
+
+  bool get canRespond => status == GroupDirectInviteStatus.pending;
+}

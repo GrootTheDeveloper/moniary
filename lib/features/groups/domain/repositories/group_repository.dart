@@ -25,6 +25,12 @@ abstract interface class GroupRepository {
 
   Future<void> revokeInviteLink(String token);
 
+  Future<List<GroupDirectInvite>> fetchDirectInvites();
+
+  Future<GroupInviteAcceptResult> acceptDirectInvite(String inviteId);
+
+  Future<void> declineDirectInvite(String inviteId);
+
   Future<void> inviteByUsername({
     required String groupId,
     required String username,

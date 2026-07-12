@@ -43,6 +43,22 @@ final groupInvitePreviewProvider = FutureProvider.autoDispose
       return ref.watch(groupRepositoryProvider).fetchInvitePreview(token);
     });
 
+final groupDirectInvitesProvider = FutureProvider<List<GroupDirectInvite>>((
+  ref,
+) {
+  return ref.watch(groupRepositoryProvider).fetchDirectInvites();
+});
+
+final pendingGroupInviteCountProvider = Provider<int>((ref) {
+  return ref
+      .watch(groupDirectInvitesProvider)
+      .when(
+        data: (invites) => invites.where((invite) => invite.canRespond).length,
+        loading: () => 0,
+        error: (_, _) => 0,
+      );
+});
+
 final currentGroupUserIdProvider = Provider<String>((ref) {
   return ref.watch(groupRepositoryProvider).currentUserId;
 });
@@ -109,6 +125,24 @@ class GroupActionController extends AsyncNotifier<void> {
     return _run(() async {
       await ref.read(groupRepositoryProvider).revokeInviteLink(token);
       ref.invalidate(groupInvitePreviewProvider(token));
+    });
+  }
+
+  Future<GroupInviteAcceptResult> acceptDirectInvite(String inviteId) {
+    return _run(() async {
+      final result = await ref
+          .read(groupRepositoryProvider)
+          .acceptDirectInvite(inviteId);
+      ref.invalidate(groupsControllerProvider);
+      ref.invalidate(groupDirectInvitesProvider);
+      return result;
+    });
+  }
+
+  Future<void> declineDirectInvite(String inviteId) {
+    return _run(() async {
+      await ref.read(groupRepositoryProvider).declineDirectInvite(inviteId);
+      ref.invalidate(groupDirectInvitesProvider);
     });
   }
 

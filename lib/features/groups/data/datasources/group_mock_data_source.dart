@@ -20,6 +20,7 @@ class GroupMockDataSource {
   static final Map<String, _MockTransactionRecord> _transactions = {};
   static final Map<String, List<GroupSettlementSuggestion>> _settlements = {};
   static final Map<String, _MockGroupInviteLink> _inviteLinks = {};
+  static final Map<String, _MockDirectGroupInvite> _directInvites = {};
   static var _sequence = 0;
 
   static void resetForTesting() {
@@ -28,6 +29,7 @@ class GroupMockDataSource {
     _transactions.clear();
     _settlements.clear();
     _inviteLinks.clear();
+    _directInvites.clear();
     _sequence = 0;
   }
 
@@ -243,6 +245,107 @@ class GroupMockDataSource {
     }
   }
 
+  Future<List<GroupDirectInvite>> fetchDirectInvites() async {
+    for (final invite in _directInvites.values) {
+      _expireDirectInviteIfNeeded(invite);
+      if (invite.status == GroupDirectInviteStatus.pending &&
+          _isActiveMember(invite.groupId, invite.invitedUserId)) {
+        invite.status = GroupDirectInviteStatus.accepted;
+      }
+    }
+    final invites =
+        _directInvites.values
+            .where((invite) => invite.invitedUserId == currentUserId)
+            .map((invite) {
+              final group = _groups[invite.groupId];
+              if (group == null) return null;
+              return GroupDirectInvite(
+                id: invite.id,
+                groupId: group.id,
+                groupName: group.name,
+                groupAvatarPath: group.avatarPath,
+                inviterName: invite.invitedBy,
+                status: invite.status,
+                createdAt: invite.createdAt,
+                expiresAt: invite.expiresAt,
+              );
+            })
+            .whereType<GroupDirectInvite>()
+            .toList()
+          ..sort((left, right) => right.createdAt.compareTo(left.createdAt));
+    return List.unmodifiable(invites);
+  }
+
+  Future<GroupInviteAcceptResult> acceptDirectInvite(String inviteId) async {
+    final invite = _directInvites[inviteId];
+    if (invite == null || invite.invitedUserId != currentUserId) {
+      throw const AppException(
+        'Invite not found',
+        code: 'GROUP_DIRECT_INVITE_INVALID',
+      );
+    }
+    _expireDirectInviteIfNeeded(invite);
+    final group = _groups[invite.groupId];
+    if (group == null || group.status != GroupStatus.active) {
+      throw const AppException(
+        'Invite cannot be accepted',
+        code: 'GROUP_DIRECT_INVITE_INVALID',
+      );
+    }
+    if (_isActiveMember(invite.groupId, currentUserId)) {
+      if (invite.status == GroupDirectInviteStatus.pending) {
+        invite.status = GroupDirectInviteStatus.accepted;
+      }
+      return GroupInviteAcceptResult(
+        status: GroupInviteStatus.alreadyMember,
+        groupId: invite.groupId,
+      );
+    }
+    if (invite.status != GroupDirectInviteStatus.pending) {
+      throw AppException(
+        'Invite cannot be accepted',
+        code: _directInviteErrorCode(invite.status),
+      );
+    }
+    invite.status = GroupDirectInviteStatus.accepted;
+    _setMemberStatus(
+      groupId: invite.groupId,
+      userId: currentUserId,
+      status: GroupMemberStatus.active,
+    );
+    return GroupInviteAcceptResult(
+      status: GroupInviteStatus.accepted,
+      groupId: invite.groupId,
+    );
+  }
+
+  Future<void> declineDirectInvite(String inviteId) async {
+    final invite = _directInvites[inviteId];
+    if (invite == null || invite.invitedUserId != currentUserId) {
+      throw const AppException(
+        'Invite not found',
+        code: 'GROUP_DIRECT_INVITE_INVALID',
+      );
+    }
+    _expireDirectInviteIfNeeded(invite);
+    if (invite.status == GroupDirectInviteStatus.declined ||
+        invite.status == GroupDirectInviteStatus.accepted) {
+      return;
+    }
+    if (invite.status != GroupDirectInviteStatus.pending) {
+      throw AppException(
+        'Invite cannot be declined',
+        code: _directInviteErrorCode(invite.status),
+      );
+    }
+    invite.status = GroupDirectInviteStatus.declined;
+    _setMemberStatus(
+      groupId: invite.groupId,
+      userId: currentUserId,
+      status: GroupMemberStatus.declined,
+    );
+  }
+
   Future<void> inviteByUsername({
     required String groupId,
     required String username,
@@ -268,19 +371,21 @@ class GroupMockDataSource {
         code: 'GROUP_MEMBER_ALREADY_INVITED',
       );
     }
-    _members[groupId] = [
-      ...members,
-      SpendingGroupMember(
-        id: _id('member'),
-        groupId: groupId,
-        userId: userId,
-        role: GroupRole.member,
-        status: GroupMemberStatus.invited,
-        joinedAt: DateTime.now(),
-        displayName: userId,
-        username: userId,
-      ),
-    ];
+    _setMemberStatus(
+      groupId: groupId,
+      userId: userId,
+      status: GroupMemberStatus.invited,
+    );
+    final now = DateTime.now();
+    final inviteId = _id('direct-invite');
+    _directInvites[inviteId] = _MockDirectGroupInvite(
+      id: inviteId,
+      groupId: groupId,
+      invitedUserId: userId,
+      invitedBy: currentUserId,
+      createdAt: now,
+      expiresAt: now.add(const Duration(days: 7)),
+    );
   }
 
   Future<List<GroupTransaction>> fetchTransactions(String groupId) async {
@@ -844,6 +949,65 @@ class GroupMockDataSource {
           .where((member) => member.status == GroupMemberStatus.active)
           .toList();
 
+  bool _isActiveMember(String groupId, String userId) =>
+      (_members[groupId] ?? const []).any(
+        (member) =>
+            member.userId == userId &&
+            member.status == GroupMemberStatus.active,
+      );
+
+  void _setMemberStatus({
+    required String groupId,
+    required String userId,
+    required GroupMemberStatus status,
+  }) {
+    final members = _members[groupId] ?? <SpendingGroupMember>[];
+    final index = members.indexWhere((member) => member.userId == userId);
+    final now = DateTime.now();
+    final member = index == -1
+        ? SpendingGroupMember(
+            id: _id('member'),
+            groupId: groupId,
+            userId: userId,
+            role: GroupRole.member,
+            status: status,
+            joinedAt: now,
+            leftAt: status == GroupMemberStatus.left ? now : null,
+            displayName: userId,
+            username: userId,
+          )
+        : SpendingGroupMember(
+            id: members[index].id,
+            groupId: groupId,
+            userId: userId,
+            role: members[index].role,
+            status: status,
+            joinedAt: now,
+            leftAt: status == GroupMemberStatus.left ? now : null,
+            displayName: members[index].displayName,
+            username: members[index].username,
+            avatarPath: members[index].avatarPath,
+          );
+    _members[groupId] = [
+      for (var position = 0; position < members.length; position++)
+        if (position == index) member else members[position],
+      if (index == -1) member,
+    ];
+  }
+
+  void _expireDirectInviteIfNeeded(_MockDirectGroupInvite invite) {
+    if (invite.status != GroupDirectInviteStatus.pending ||
+        invite.expiresAt.isAfter(DateTime.now())) {
+      return;
+    }
+    invite.status = GroupDirectInviteStatus.expired;
+    _setMemberStatus(
+      groupId: invite.groupId,
+      userId: invite.invitedUserId,
+      status: GroupMemberStatus.declined,
+    );
+  }
+
   List<_MockTransactionRecord> _recordsForGroup(String groupId) => _transactions
       .values
       .where((record) => record.transaction.groupId == groupId)
@@ -920,6 +1084,17 @@ class GroupMockDataSource {
     GroupInviteStatus.accepted => 'GROUP_INVITE_INVALID',
   };
 
+  static String _directInviteErrorCode(GroupDirectInviteStatus status) =>
+      switch (status) {
+        GroupDirectInviteStatus.expired => 'GROUP_DIRECT_INVITE_EXPIRED',
+        GroupDirectInviteStatus.declined => 'GROUP_DIRECT_INVITE_DECLINED',
+        GroupDirectInviteStatus.revoked => 'GROUP_DIRECT_INVITE_REVOKED',
+        GroupDirectInviteStatus.invalid ||
+        GroupDirectInviteStatus.pending ||
+        GroupDirectInviteStatus.accepted ||
+        GroupDirectInviteStatus.alreadyMember => 'GROUP_DIRECT_INVITE_INVALID',
+      };
+
   static String _id(String prefix) =>
       '$prefix-${DateTime.now().microsecondsSinceEpoch}-${_sequence++}';
 }
@@ -958,6 +1133,25 @@ class _MockGroupInviteLink {
   final String invitedBy;
   final DateTime expiresAt;
   GroupInviteStatus status = GroupInviteStatus.active;
+}
+
+class _MockDirectGroupInvite {
+  _MockDirectGroupInvite({
+    required this.id,
+    required this.groupId,
+    required this.invitedUserId,
+    required this.invitedBy,
+    required this.createdAt,
+    required this.expiresAt,
+  });
+
+  final String id;
+  final String groupId;
+  final String invitedUserId;
+  final String invitedBy;
+  final DateTime createdAt;
+  final DateTime expiresAt;
+  GroupDirectInviteStatus status = GroupDirectInviteStatus.pending;
 }
 
 class _SettlementMatch {

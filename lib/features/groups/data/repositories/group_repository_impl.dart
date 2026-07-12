@@ -208,6 +208,48 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<List<GroupDirectInvite>> fetchDirectInvites() {
+    if (_useMockData) return _mock.fetchDirectInvites();
+    return _guard('fetch direct group invites', () async {
+      return (await _remote.fetchDirectInvites()).map((row) {
+        return GroupDirectInvite(
+          id: row['id'] as String,
+          groupId: row['group_id'] as String,
+          groupName: row['group_name'] as String? ?? '',
+          groupAvatarPath: row['group_avatar_path'] as String?,
+          inviterName: row['inviter_name'] as String? ?? '',
+          status: GroupDirectInviteStatusValue.fromValue(
+            row['status'] as String?,
+          ),
+          createdAt: DateTime.parse(row['created_at'] as String),
+          expiresAt: DateTime.parse(row['expires_at'] as String),
+        );
+      }).toList();
+    });
+  }
+
+  @override
+  Future<GroupInviteAcceptResult> acceptDirectInvite(String inviteId) {
+    if (_useMockData) return _mock.acceptDirectInvite(inviteId);
+    return _guard('accept direct group invite', () async {
+      final row = await _remote.acceptDirectInvite(inviteId);
+      return GroupInviteAcceptResult(
+        status: GroupInviteStatusValue.fromValue(row['status'] as String?),
+        groupId: row['group_id'] as String,
+      );
+    });
+  }
+
+  @override
+  Future<void> declineDirectInvite(String inviteId) {
+    if (_useMockData) return _mock.declineDirectInvite(inviteId);
+    return _guard(
+      'decline direct group invite',
+      () => _remote.declineDirectInvite(inviteId),
+    );
+  }
+
+  @override
   Future<void> inviteByUsername({
     required String groupId,
     required String username,
