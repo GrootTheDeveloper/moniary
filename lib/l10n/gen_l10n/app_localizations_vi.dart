@@ -3307,6 +3307,60 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupInviteLinkCreated => 'Đã tạo link mời nhóm.';
 
   @override
+  String get groupInviteLinkActiveNote =>
+      'Link có thể được nhiều người dùng trong 7 ngày.';
+
+  @override
+  String get groupInviteCopyLink => 'Sao chép link';
+
+  @override
+  String get groupInviteLinkCopied => 'Đã sao chép link mời.';
+
+  @override
+  String get groupInviteRevokeLink => 'Thu hồi link';
+
+  @override
+  String get groupInviteLinkRevoked => 'Đã thu hồi link mời nhóm.';
+
+  @override
+  String get groupInviteAcceptTitle => 'Lời mời vào nhóm';
+
+  @override
+  String groupInviteAcceptSubtitle(String name, String group) {
+    return '$name mời bạn tham gia nhóm $group.';
+  }
+
+  @override
+  String get groupInviteAcceptButton => 'Tham gia nhóm';
+
+  @override
+  String get groupInviteAccepted => 'Bạn đã tham gia nhóm.';
+
+  @override
+  String get groupInviteAlreadyMember => 'Bạn đã tham gia nhóm này.';
+
+  @override
+  String get groupInviteLoading => 'Đang tải lời mời...';
+
+  @override
+  String get groupInvitePreviewError => 'Không thể tải lời mời vào nhóm.';
+
+  @override
+  String get groupInviteInvalid => 'Link mời nhóm không hợp lệ.';
+
+  @override
+  String get groupInviteExpired => 'Link mời nhóm đã hết hạn.';
+
+  @override
+  String get groupInviteUsed => 'Link mời nhóm này đã được sử dụng.';
+
+  @override
+  String get groupInviteRevoked => 'Link mời nhóm đã bị thu hồi.';
+
+  @override
+  String get groupInviteOpenGroups => 'Mở nhóm';
+
+  @override
   String get groupInviteSent => 'Đã gửi lời mời.';
 
   @override
@@ -3540,7 +3594,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupInviteLinkPlaceholder =>
-      'Deep link đã được tạo. Màn hình chấp nhận lời mời sẽ được kết nối ở phase deep linking.';
+      'Tạo link để mời nhiều người vào nhóm trong thời hạn 7 ngày.';
 
   @override
   String get groupStatsPlaceholder =>

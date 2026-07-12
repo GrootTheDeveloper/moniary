@@ -5984,6 +5984,108 @@ abstract class AppLocalizations {
   /// **'Đã tạo link mời nhóm.'**
   String get groupInviteLinkCreated;
 
+  /// No description provided for @groupInviteLinkActiveNote.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link có thể được nhiều người dùng trong 7 ngày.'**
+  String get groupInviteLinkActiveNote;
+
+  /// No description provided for @groupInviteCopyLink.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sao chép link'**
+  String get groupInviteCopyLink;
+
+  /// No description provided for @groupInviteLinkCopied.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã sao chép link mời.'**
+  String get groupInviteLinkCopied;
+
+  /// No description provided for @groupInviteRevokeLink.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thu hồi link'**
+  String get groupInviteRevokeLink;
+
+  /// No description provided for @groupInviteLinkRevoked.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thu hồi link mời nhóm.'**
+  String get groupInviteLinkRevoked;
+
+  /// No description provided for @groupInviteAcceptTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời vào nhóm'**
+  String get groupInviteAcceptTitle;
+
+  /// No description provided for @groupInviteAcceptSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} mời bạn tham gia nhóm {group}.'**
+  String groupInviteAcceptSubtitle(String name, String group);
+
+  /// No description provided for @groupInviteAcceptButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tham gia nhóm'**
+  String get groupInviteAcceptButton;
+
+  /// No description provided for @groupInviteAccepted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã tham gia nhóm.'**
+  String get groupInviteAccepted;
+
+  /// No description provided for @groupInviteAlreadyMember.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã tham gia nhóm này.'**
+  String get groupInviteAlreadyMember;
+
+  /// No description provided for @groupInviteLoading.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải lời mời...'**
+  String get groupInviteLoading;
+
+  /// No description provided for @groupInvitePreviewError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tải lời mời vào nhóm.'**
+  String get groupInvitePreviewError;
+
+  /// No description provided for @groupInviteInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link mời nhóm không hợp lệ.'**
+  String get groupInviteInvalid;
+
+  /// No description provided for @groupInviteExpired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link mời nhóm đã hết hạn.'**
+  String get groupInviteExpired;
+
+  /// No description provided for @groupInviteUsed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link mời nhóm này đã được sử dụng.'**
+  String get groupInviteUsed;
+
+  /// No description provided for @groupInviteRevoked.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link mời nhóm đã bị thu hồi.'**
+  String get groupInviteRevoked;
+
+  /// No description provided for @groupInviteOpenGroups.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở nhóm'**
+  String get groupInviteOpenGroups;
+
   /// No description provided for @groupInviteSent.
   ///
   /// In vi, this message translates to:
@@ -6419,7 +6521,7 @@ abstract class AppLocalizations {
   /// No description provided for @groupInviteLinkPlaceholder.
   ///
   /// In vi, this message translates to:
-  /// **'Deep link đã được tạo. Màn hình chấp nhận lời mời sẽ được kết nối ở phase deep linking.'**
+  /// **'Tạo link để mời nhiều người vào nhóm trong thời hạn 7 ngày.'**
   String get groupInviteLinkPlaceholder;
 
   /// No description provided for @groupStatsPlaceholder.

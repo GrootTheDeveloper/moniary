@@ -3305,6 +3305,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupInviteLinkCreated => 'Group invite link created.';
 
   @override
+  String get groupInviteLinkActiveNote =>
+      'This link can be used by multiple people for 7 days.';
+
+  @override
+  String get groupInviteCopyLink => 'Copy link';
+
+  @override
+  String get groupInviteLinkCopied => 'Invite link copied.';
+
+  @override
+  String get groupInviteRevokeLink => 'Revoke link';
+
+  @override
+  String get groupInviteLinkRevoked => 'Group invite link revoked.';
+
+  @override
+  String get groupInviteAcceptTitle => 'Group invite';
+
+  @override
+  String groupInviteAcceptSubtitle(String name, String group) {
+    return '$name invited you to join $group.';
+  }
+
+  @override
+  String get groupInviteAcceptButton => 'Join group';
+
+  @override
+  String get groupInviteAccepted => 'You joined the group.';
+
+  @override
+  String get groupInviteAlreadyMember =>
+      'You are already a member of this group.';
+
+  @override
+  String get groupInviteLoading => 'Loading invite...';
+
+  @override
+  String get groupInvitePreviewError => 'Could not load the group invite.';
+
+  @override
+  String get groupInviteInvalid => 'This group invite link is invalid.';
+
+  @override
+  String get groupInviteExpired => 'This group invite link has expired.';
+
+  @override
+  String get groupInviteUsed => 'This group invite link has already been used.';
+
+  @override
+  String get groupInviteRevoked => 'This group invite link was revoked.';
+
+  @override
+  String get groupInviteOpenGroups => 'Open groups';
+
+  @override
   String get groupInviteSent => 'Invite sent.';
 
   @override
@@ -3536,7 +3591,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupInviteLinkPlaceholder =>
-      'The deep link is created. Invite acceptance will be connected in the deep-linking phase.';
+      'Create a link to invite multiple people to this group for 7 days.';
 
   @override
   String get groupStatsPlaceholder =>

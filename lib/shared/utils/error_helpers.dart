@@ -22,6 +22,15 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupUserNotFound;
       case 'GROUP_MEMBER_ALREADY_INVITED':
         return l10n.groupMemberAlreadyInvited;
+      case 'GROUP_INVITE_INVALID':
+      case 'GROUP_INVITE_NOT_FOUND':
+        return l10n.groupInviteInvalid;
+      case 'GROUP_INVITE_EXPIRED':
+        return l10n.groupInviteExpired;
+      case 'GROUP_INVITE_USED':
+        return l10n.groupInviteUsed;
+      case 'GROUP_INVITE_REVOKED':
+        return l10n.groupInviteRevoked;
       case 'GROUP_PAYER_REQUIRED':
         return l10n.groupSelectPayer;
       case 'GROUP_MULTIPLE_PAYERS_REQUIRED':
