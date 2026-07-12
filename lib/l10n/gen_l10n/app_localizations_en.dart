@@ -890,6 +890,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupDeletedMember => 'Deleted member';
 
   @override
+  String get groupInvitationsTitle => 'Group invitations';
+
+  @override
+  String get groupInvitationsEmpty => 'You do not have any group invitations.';
+
+  @override
+  String get groupInvitationsEmptySubtitle =>
+      'Invitations sent through username or friends will appear here.';
+
+  @override
+  String get groupInvitationsLoadError => 'Could not load group invitations.';
+
+  @override
+  String groupInvitationInvitedBy(String name) {
+    return '$name invited you to join.';
+  }
+
+  @override
+  String groupInvitationExpiresAt(String date) {
+    return 'Expires on $date';
+  }
+
+  @override
+  String get groupInvitationAccept => 'Accept';
+
+  @override
+  String get groupInvitationDecline => 'Decline';
+
+  @override
+  String get groupInvitationDeclinedSuccess => 'Group invitation declined.';
+
+  @override
+  String get groupInvitationPending => 'Pending';
+
+  @override
+  String get groupInvitationAccepted => 'Joined';
+
+  @override
+  String get groupInvitationDeclined => 'Declined';
+
+  @override
+  String get groupInvitationExpired => 'Expired';
+
+  @override
+  String get groupInvitationRevoked => 'Revoked';
+
+  @override
+  String get groupInvitationInvalid => 'This invitation is no longer valid.';
+
+  @override
   String get groupMemberEmailHint => 'Email (optional)';
 
   @override

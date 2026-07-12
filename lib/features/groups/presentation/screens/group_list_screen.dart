@@ -11,6 +11,7 @@ import '../../application/group_controller.dart';
 import '../widgets/group_card.dart';
 import 'create_group_screen.dart';
 import 'group_detail_screen.dart';
+import 'group_invitations_screen.dart';
 
 class GroupListScreen extends ConsumerWidget {
   const GroupListScreen({super.key});
@@ -20,10 +21,12 @@ class GroupListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final groupsAsync = ref.watch(groupsControllerProvider);
+    final pendingInviteCount = ref.watch(pendingGroupInviteCountProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.groupTitle),
         actions: [
+          _InviteInboxButton(count: pendingInviteCount),
           IconButton(
             onPressed: () => _openCreateGroup(context, ref),
             tooltip: context.l10n.groupCreateNew,
@@ -81,6 +84,47 @@ class GroupListScreen extends ConsumerWidget {
     ref.invalidate(groupsControllerProvider);
     if (groupId == null || !context.mounted) return;
     await context.push(GroupDetailScreen.routePath, extra: groupId);
+  }
+}
+
+class _InviteInboxButton extends StatelessWidget {
+  const _InviteInboxButton({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () => context.push(GroupInvitationsScreen.routePath),
+      tooltip: context.l10n.groupInvitationsTitle,
+      icon: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          const Icon(Icons.mark_email_unread_outlined),
+          if (count > 0)
+            Positioned(
+              top: -7,
+              right: -10,
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  color: context.moniaryColors.danger,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  count > 99 ? '99+' : '$count',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: context.moniaryColors.surface,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }
 

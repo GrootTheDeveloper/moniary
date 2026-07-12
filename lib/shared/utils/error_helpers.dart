@@ -31,6 +31,16 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupInviteUsed;
       case 'GROUP_INVITE_REVOKED':
         return l10n.groupInviteRevoked;
+      case 'GROUP_DIRECT_INVITE_INVALID':
+        return l10n.groupInvitationInvalid;
+      case 'GROUP_DIRECT_INVITE_EXPIRED':
+        return l10n.groupInvitationExpired;
+      case 'GROUP_DIRECT_INVITE_DECLINED':
+        return l10n.groupInvitationDeclined;
+      case 'GROUP_DIRECT_INVITE_REVOKED':
+        return l10n.groupInvitationRevoked;
+      case 'GROUP_INVITE_DECLINED':
+        return l10n.groupInvitationDeclined;
       case 'GROUP_PAYER_REQUIRED':
         return l10n.groupSelectPayer;
       case 'GROUP_MULTIPLE_PAYERS_REQUIRED':

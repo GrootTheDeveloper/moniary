@@ -889,6 +889,56 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupDeletedMember => 'Thành viên đã xóa';
 
   @override
+  String get groupInvitationsTitle => 'Lời mời nhóm';
+
+  @override
+  String get groupInvitationsEmpty => 'Bạn chưa có lời mời nhóm nào.';
+
+  @override
+  String get groupInvitationsEmptySubtitle =>
+      'Các lời mời qua username hoặc bạn bè sẽ xuất hiện tại đây.';
+
+  @override
+  String get groupInvitationsLoadError => 'Không thể tải lời mời nhóm.';
+
+  @override
+  String groupInvitationInvitedBy(String name) {
+    return '$name đã mời bạn tham gia.';
+  }
+
+  @override
+  String groupInvitationExpiresAt(String date) {
+    return 'Hết hạn ngày $date';
+  }
+
+  @override
+  String get groupInvitationAccept => 'Chấp nhận';
+
+  @override
+  String get groupInvitationDecline => 'Từ chối';
+
+  @override
+  String get groupInvitationDeclinedSuccess => 'Đã từ chối lời mời nhóm.';
+
+  @override
+  String get groupInvitationPending => 'Đang chờ';
+
+  @override
+  String get groupInvitationAccepted => 'Đã tham gia';
+
+  @override
+  String get groupInvitationDeclined => 'Đã từ chối';
+
+  @override
+  String get groupInvitationExpired => 'Đã hết hạn';
+
+  @override
+  String get groupInvitationRevoked => 'Đã thu hồi';
+
+  @override
+  String get groupInvitationInvalid => 'Lời mời không còn hợp lệ.';
+
+  @override
   String get groupMemberEmailHint => 'Email (không bắt buộc)';
 
   @override

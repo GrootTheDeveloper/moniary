@@ -1742,6 +1742,96 @@ abstract class AppLocalizations {
   /// **'Thành viên đã xóa'**
   String get groupDeletedMember;
 
+  /// No description provided for @groupInvitationsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời nhóm'**
+  String get groupInvitationsTitle;
+
+  /// No description provided for @groupInvitationsEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chưa có lời mời nhóm nào.'**
+  String get groupInvitationsEmpty;
+
+  /// No description provided for @groupInvitationsEmptySubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Các lời mời qua username hoặc bạn bè sẽ xuất hiện tại đây.'**
+  String get groupInvitationsEmptySubtitle;
+
+  /// No description provided for @groupInvitationsLoadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tải lời mời nhóm.'**
+  String get groupInvitationsLoadError;
+
+  /// No description provided for @groupInvitationInvitedBy.
+  ///
+  /// In vi, this message translates to:
+  /// **'{name} đã mời bạn tham gia.'**
+  String groupInvitationInvitedBy(String name);
+
+  /// No description provided for @groupInvitationExpiresAt.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hết hạn ngày {date}'**
+  String groupInvitationExpiresAt(String date);
+
+  /// No description provided for @groupInvitationAccept.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chấp nhận'**
+  String get groupInvitationAccept;
+
+  /// No description provided for @groupInvitationDecline.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ chối'**
+  String get groupInvitationDecline;
+
+  /// No description provided for @groupInvitationDeclinedSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã từ chối lời mời nhóm.'**
+  String get groupInvitationDeclinedSuccess;
+
+  /// No description provided for @groupInvitationPending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chờ'**
+  String get groupInvitationPending;
+
+  /// No description provided for @groupInvitationAccepted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tham gia'**
+  String get groupInvitationAccepted;
+
+  /// No description provided for @groupInvitationDeclined.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã từ chối'**
+  String get groupInvitationDeclined;
+
+  /// No description provided for @groupInvitationExpired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hết hạn'**
+  String get groupInvitationExpired;
+
+  /// No description provided for @groupInvitationRevoked.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thu hồi'**
+  String get groupInvitationRevoked;
+
+  /// No description provided for @groupInvitationInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời không còn hợp lệ.'**
+  String get groupInvitationInvalid;
+
   /// No description provided for @groupMemberEmailHint.
   ///
   /// In vi, this message translates to:

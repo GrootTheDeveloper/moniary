@@ -27,6 +27,7 @@ import '../features/groups/presentation/screens/create_group_screen.dart';
 import '../features/groups/presentation/screens/debt_settlement_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
 import '../features/groups/presentation/screens/group_invite_accept_screen.dart';
+import '../features/groups/presentation/screens/group_invitations_screen.dart';
 import '../features/groups/presentation/screens/group_transaction_detail_screen.dart';
 import '../features/groups/presentation/screens/invite_member_screen.dart';
 import '../features/groups/presentation/screens/member_amount_input_screen.dart';
@@ -454,6 +455,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               : GroupInviteAcceptScreen(token: token);
           return buildSlideTransitionPage(state: state, child: child);
         },
+      ),
+      GoRoute(
+        path: GroupInvitationsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const GroupInvitationsScreen(),
+        ),
       ),
       GoRoute(
         path: PrivacyCenterScreen.routePath,
