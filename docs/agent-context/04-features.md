@@ -82,8 +82,9 @@
 - **Backend**: versioned group tables, RPCs, RLS, Storage policies, and views are
   defined in `20260611000000_groups_community.sql`.
 - **Invite links**: owner/admin can create a shared link that multiple people
-  may use for seven days. The recipient sees a localized preview, can join the
-  group through a deep link, and gets an already-member state without an error.
+  may use for seven days. The recipient sees a localized preview through a deep
+  link, can explicitly join or dismiss the preview without joining, and gets an
+  already-member state without an error.
 - **Direct invitations**: recipients can reopen username/friend invitations
   from the localized group-invitations inbox, where they can accept or decline
   before the seven-day expiry; the Group tab shows a pending-invitation badge.
@@ -97,8 +98,10 @@
   invite links, deep-link acceptance, and inviting a friend to a group.
 - **Backend**: friends and invite-link migrations define tables, RLS, and RPCs.
   The Flutter data source uses RPCs and returns minimal profile data.
-- **Deep link**: `moniary://friends/invite/<token>`. Pending links survive the
-  auth/profile setup decision flow in Riverpod memory.
+- **Deep link**: invite links are generated as
+  `https://go.vuivethoima.id.vn/friends/invite/<token>` and Android also keeps
+  legacy `moniary://friends/invite/<token>` parsing for compatibility. Pending
+  links survive the auth/profile setup decision flow in Riverpod memory.
 
 ## Scanning (OCR)
 

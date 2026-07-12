@@ -64,6 +64,7 @@ class GroupInviteAcceptScreen extends ConsumerWidget {
               preview: preview,
               actionLoading: action.isLoading,
               onAccept: () => _accept(context, ref),
+              onDismiss: () => context.go(GroupsScreen.routePath),
               onOpenGroups: () => context.go(GroupsScreen.routePath),
             ),
           ),
@@ -84,7 +85,7 @@ class GroupInviteAcceptScreen extends ConsumerWidget {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
-      context.go(GroupDetailScreen.routePath, extra: result.groupId);
+      await context.push(GroupDetailScreen.routePath, extra: result.groupId);
     } catch (_) {
       // The listener maps stable AppException codes to localized messages.
     }
@@ -96,12 +97,14 @@ class _GroupInviteBody extends StatelessWidget {
     required this.preview,
     required this.actionLoading,
     required this.onAccept,
+    required this.onDismiss,
     required this.onOpenGroups,
   });
 
   final GroupInvitePreview preview;
   final bool actionLoading;
   final VoidCallback onAccept;
+  final VoidCallback onDismiss;
   final VoidCallback onOpenGroups;
 
   @override
@@ -142,6 +145,14 @@ class _GroupInviteBody extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
+          const SizedBox(height: 12),
+          Text(
+            context.l10n.groupInvitePreviewNotice,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: context.moniaryColors.textSecondary,
+            ),
+          ),
           const SizedBox(height: 28),
           _GroupInviteCard(preview: preview),
           const SizedBox(height: 32),
@@ -155,6 +166,11 @@ class _GroupInviteBody extends StatelessWidget {
                   )
                 : const Icon(Icons.group_add_outlined),
             label: Text(context.l10n.groupInviteAcceptButton),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: actionLoading ? null : onDismiss,
+            child: Text(context.l10n.groupInviteDismissButton),
           ),
         ],
       ),

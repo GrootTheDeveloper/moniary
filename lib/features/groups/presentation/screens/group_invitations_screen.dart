@@ -93,7 +93,7 @@ class GroupInvitationsScreen extends ConsumerWidget {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
-      context.go(GroupDetailScreen.routePath, extra: result.groupId);
+      await context.push(GroupDetailScreen.routePath, extra: result.groupId);
     } catch (_) {
       // The controller listener maps stable backend codes to localized text.
     }
