@@ -84,7 +84,7 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
 
   void _handleDeepLink(Uri uri) {
     final deepLink = AppDeepLink.parse(uri);
-    if (deepLink is! FriendInviteDeepLink) return;
+    if (deepLink == null) return;
 
     final routeLocation = deepLink.routeLocation;
     final router = ref.read(appRouterProvider);

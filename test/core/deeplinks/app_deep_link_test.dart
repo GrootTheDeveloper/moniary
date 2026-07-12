@@ -26,10 +26,20 @@ void main() {
     );
   });
 
-  test('ignore unrelated links', () {
+  test('parse moniary group invite link', () {
     final deepLink = AppDeepLink.parse(
       Uri.parse('moniary://groups/invite/abc'),
     );
+
+    expect(deepLink, isA<GroupInviteDeepLink>());
+    expect(
+      (deepLink as GroupInviteDeepLink).routeLocation,
+      '/groups/invite/abc',
+    );
+  });
+
+  test('ignore unrelated links', () {
+    final deepLink = AppDeepLink.parse(Uri.parse('moniary://unknown/path/abc'));
 
     expect(deepLink, isNull);
   });

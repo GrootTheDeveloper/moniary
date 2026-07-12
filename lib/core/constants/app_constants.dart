@@ -45,10 +45,17 @@ class AppConstants {
   static const friendInviteScheme = 'moniary';
   static const friendInviteHost = 'friends';
   static const friendInvitePath = 'invite';
+  static const groupInviteHost = 'groups';
+  static const groupInvitePath = 'invite';
 
   static String friendInviteLink(String token) {
     return '$friendInviteScheme://$friendInviteHost/'
         '$friendInvitePath/${Uri.encodeComponent(token)}';
+  }
+
+  static String groupInviteLink(String token) {
+    return '$friendInviteScheme://$groupInviteHost/'
+        '$groupInvitePath/${Uri.encodeComponent(token)}';
   }
 
   // --- Contact ---
