@@ -84,4 +84,64 @@ void main() {
       ),
     );
   });
+
+  test(
+    'direct invite is available later and activates membership on accept',
+    () async {
+      final owner = source('owner');
+      final groupId = await owner.createGroup(name: 'Trip to Da Lat');
+      await owner.inviteByUserId(groupId: groupId, userId: 'member-1');
+
+      final member = source('member-1');
+      final invites = await member.fetchDirectInvites();
+      expect(invites, hasLength(1));
+      expect(invites.single.status, GroupDirectInviteStatus.pending);
+
+      final result = await member.acceptDirectInvite(invites.single.id);
+      expect(result.status, GroupInviteStatus.accepted);
+      expect((await member.fetchGroups()).single.id, groupId);
+      expect(
+        (await member.fetchDirectInvites()).single.status,
+        GroupDirectInviteStatus.accepted,
+      );
+    },
+  );
+
+  test(
+    'direct invite can be declined and remains visible as declined',
+    () async {
+      final owner = source('owner');
+      final groupId = await owner.createGroup(name: 'Trip to Da Lat');
+      await owner.inviteByUserId(groupId: groupId, userId: 'member-1');
+
+      final member = source('member-1');
+      final invite = (await member.fetchDirectInvites()).single;
+      await member.declineDirectInvite(invite.id);
+
+      expect((await member.fetchGroups()), isEmpty);
+      expect(
+        (await member.fetchDirectInvites()).single.status,
+        GroupDirectInviteStatus.declined,
+      );
+    },
+  );
+
+  test(
+    'direct invite returns already-member after the user joined by link',
+    () async {
+      final owner = source('owner');
+      final groupId = await owner.createGroup(name: 'Trip to Da Lat');
+      final link = await owner.createInviteLink(groupId);
+      await owner.inviteByUserId(groupId: groupId, userId: 'member-1');
+
+      final member = source('member-1');
+      await member.acceptInvite(tokenFrom(link));
+      final directInvite = (await member.fetchDirectInvites()).single;
+
+      expect(
+        (await member.acceptDirectInvite(directInvite.id)).status,
+        GroupInviteStatus.alreadyMember,
+      );
+    },
+  );
 }

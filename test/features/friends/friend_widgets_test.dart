@@ -16,6 +16,8 @@ import 'package:moniary/features/groups/domain/entities/group_transaction.dart';
 import 'package:moniary/features/groups/domain/entities/spending_group.dart';
 import 'package:moniary/features/groups/domain/repositories/group_repository.dart';
 import 'package:moniary/features/groups/presentation/screens/invite_member_screen.dart';
+import 'package:moniary/features/groups/presentation/screens/group_invitations_screen.dart';
+import 'package:moniary/features/groups/presentation/screens/group_list_screen.dart';
 import 'package:moniary/l10n/gen_l10n/app_localizations.dart';
 
 void main() {
@@ -242,6 +244,72 @@ void main() {
     expect(find.text('Đã gửi lời mời.'), findsOneWidget);
   });
 
+  testWidgets('GroupInvitationsScreen cho phép từ chối lời mời trực tiếp', (
+    tester,
+  ) async {
+    final groupRepository = FakeGroupRepository(
+      directInvites: [
+        GroupDirectInvite(
+          id: 'invite-1',
+          groupId: 'group-1',
+          groupName: 'Chuyến đi Đà Lạt',
+          inviterName: 'An Nguyen',
+          status: GroupDirectInviteStatus.pending,
+          createdAt: DateTime(2026, 7, 1),
+          expiresAt: DateTime(2026, 7, 8),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      app(
+        const GroupInvitationsScreen(),
+        friendRepository: FakeFriendRepository(),
+        groupRepository: groupRepository,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Chuyến đi Đà Lạt'), findsOneWidget);
+    expect(find.text('Đang chờ'), findsOneWidget);
+
+    await tester.tap(find.text('Từ chối'));
+    await tester.pumpAndSettle();
+
+    expect(groupRepository.declinedInviteIds, ['invite-1']);
+    expect(find.text('Bạn chưa có lời mời nhóm nào.'), findsOneWidget);
+  });
+
+  testWidgets('GroupListScreen hiển thị badge lời mời đang chờ', (
+    tester,
+  ) async {
+    final groupRepository = FakeGroupRepository(
+      directInvites: [
+        GroupDirectInvite(
+          id: 'invite-1',
+          groupId: 'group-1',
+          groupName: 'Chuyến đi Đà Lạt',
+          inviterName: 'An Nguyen',
+          status: GroupDirectInviteStatus.pending,
+          createdAt: DateTime(2026, 7, 1),
+          expiresAt: DateTime(2026, 7, 8),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      app(
+        const GroupListScreen(),
+        friendRepository: FakeFriendRepository(),
+        groupRepository: groupRepository,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Lời mời nhóm'), findsOneWidget);
+    expect(find.text('1'), findsOneWidget);
+  });
+
   testWidgets('InviteMemberScreen disable bạn đã là thành viên nhóm', (
     tester,
   ) async {
@@ -436,11 +504,16 @@ class FakeFriendRepository implements FriendRepository {
 }
 
 class FakeGroupRepository implements GroupRepository {
-  FakeGroupRepository({List<SpendingGroupMember>? members})
-    : members = members ?? const [];
+  FakeGroupRepository({
+    List<SpendingGroupMember>? members,
+    List<GroupDirectInvite>? directInvites,
+  }) : members = members ?? const [],
+       directInvites = [...?directInvites];
 
   final List<SpendingGroupMember> members;
   final List<String> invitedUserIds = [];
+  final List<GroupDirectInvite> directInvites;
+  final List<String> declinedInviteIds = [];
 
   @override
   String get currentUserId => 'mock-user-id';
@@ -492,6 +565,28 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
+  Future<List<GroupDirectInvite>> fetchDirectInvites() async => directInvites;
+
+  @override
+  Future<GroupInviteAcceptResult> acceptDirectInvite(String inviteId) {
+    final invite = directInvites.firstWhere((item) => item.id == inviteId);
+    directInvites.removeWhere((item) => item.id == inviteId);
+    return Future.value(
+      GroupInviteAcceptResult(
+        status: GroupInviteStatus.accepted,
+        groupId: invite.groupId,
+      ),
+    );
+  }
+
+  @override
+  Future<void> declineDirectInvite(String inviteId) {
+    declinedInviteIds.add(inviteId);
+    directInvites.removeWhere((item) => item.id == inviteId);
+    return Future.value();
+  }
+
+  @override
   Future<String> createTransaction(GroupTransactionDraft draft) {
     throw UnimplementedError();
   }
@@ -510,9 +605,7 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
-  Future<List<SpendingGroup>> fetchGroups() {
-    throw UnimplementedError();
-  }
+  Future<List<SpendingGroup>> fetchGroups() async => const [];
 
   @override
   Future<SpendingGroupDetail> fetchGroupDetail(String groupId) async {
