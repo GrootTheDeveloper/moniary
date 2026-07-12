@@ -10,6 +10,7 @@ import 'package:moniary/features/friends/presentation/screens/friend_invite_acce
 import 'package:moniary/features/friends/presentation/screens/friends_screen.dart';
 import 'package:moniary/features/groups/data/repositories/group_repository_impl.dart';
 import 'package:moniary/features/groups/domain/entities/group_enums.dart';
+import 'package:moniary/features/groups/domain/entities/group_invite.dart';
 import 'package:moniary/features/groups/domain/entities/group_settlement.dart';
 import 'package:moniary/features/groups/domain/entities/group_transaction.dart';
 import 'package:moniary/features/groups/domain/entities/spending_group.dart';
@@ -472,6 +473,21 @@ class FakeGroupRepository implements GroupRepository {
 
   @override
   Future<String> createInviteLink(String groupId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<GroupInvitePreview> fetchInvitePreview(String token) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<GroupInviteAcceptResult> acceptInvite(String token) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> revokeInviteLink(String token) {
     throw UnimplementedError();
   }
 
