@@ -401,6 +401,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calendarSelectCategoryFilter => 'Select category filter';
 
   @override
+  String get calendarAllFilter => 'All';
+
+  @override
+  String get calendarSaved => 'Saved';
+
+  @override
+  String get calendarSearchLabel => 'Search';
+
+  @override
+  String get calendarWalletsCategoriesAction => 'Wallets';
+
+  @override
   String get calendarMonthlyExpense => 'Monthly Expense';
 
   @override
@@ -1277,6 +1289,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yearlyReportDesc => 'Once a year';
+
+  @override
+  String get reminderSectionTitle => 'Device reminders';
+
+  @override
+  String get reminderSectionDesc =>
+      'A notification right on your phone, nudging you to log today\'s spending.';
+
+  @override
+  String get reminderDailyTitle => 'Daily logging reminder';
+
+  @override
+  String reminderDailyDesc(String time) {
+    return 'Every day at $time';
+  }
+
+  @override
+  String get reminderNotificationTitle =>
+      'Don\'t forget to log your spending 💸';
+
+  @override
+  String get reminderNotificationBody =>
+      'Take a few seconds to record today\'s transactions.';
+
+  @override
+  String get reminderPermissionDenied =>
+      'Enable notification permission in system settings to receive reminders.';
 
   @override
   String get deleteAccountTitle => 'Delete account';

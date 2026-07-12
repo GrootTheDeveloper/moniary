@@ -842,6 +842,30 @@ abstract class AppLocalizations {
   /// **'Chọn danh mục lọc'**
   String get calendarSelectCategoryFilter;
 
+  /// No description provided for @calendarAllFilter.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả'**
+  String get calendarAllFilter;
+
+  /// No description provided for @calendarSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu'**
+  String get calendarSaved;
+
+  /// No description provided for @calendarSearchLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm'**
+  String get calendarSearchLabel;
+
+  /// No description provided for @calendarWalletsCategoriesAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví & mục'**
+  String get calendarWalletsCategoriesAction;
+
   /// No description provided for @calendarMonthlyExpense.
   ///
   /// In vi, this message translates to:
@@ -2437,6 +2461,48 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Mỗi năm một lần'**
   String get yearlyReportDesc;
+
+  /// No description provided for @reminderSectionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhắc nhở trên thiết bị'**
+  String get reminderSectionTitle;
+
+  /// No description provided for @reminderSectionDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo ngay trên máy, nhắc bạn ghi lại chi tiêu trong ngày.'**
+  String get reminderSectionDesc;
+
+  /// No description provided for @reminderDailyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhắc ghi chép hàng ngày'**
+  String get reminderDailyTitle;
+
+  /// No description provided for @reminderDailyDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi ngày lúc {time}'**
+  String reminderDailyDesc(String time);
+
+  /// No description provided for @reminderNotificationTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đừng quên ghi lại chi tiêu nhé 💸'**
+  String get reminderNotificationTitle;
+
+  /// No description provided for @reminderNotificationBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dành vài giây ghi lại các giao dịch hôm nay của bạn.'**
+  String get reminderNotificationBody;
+
+  /// No description provided for @reminderPermissionDenied.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy bật quyền thông báo trong cài đặt hệ thống để nhận nhắc nhở.'**
+  String get reminderPermissionDenied;
 
   /// No description provided for @deleteAccountTitle.
   ///

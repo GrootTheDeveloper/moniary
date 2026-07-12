@@ -401,6 +401,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get calendarSelectCategoryFilter => 'Chọn danh mục lọc';
 
   @override
+  String get calendarAllFilter => 'Tất cả';
+
+  @override
+  String get calendarSaved => 'Đã lưu';
+
+  @override
+  String get calendarSearchLabel => 'Tìm';
+
+  @override
+  String get calendarWalletsCategoriesAction => 'Ví & mục';
+
+  @override
   String get calendarMonthlyExpense => 'Tổng chi tháng';
 
   @override
@@ -1276,6 +1288,32 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get yearlyReportDesc => 'Mỗi năm một lần';
+
+  @override
+  String get reminderSectionTitle => 'Nhắc nhở trên thiết bị';
+
+  @override
+  String get reminderSectionDesc =>
+      'Thông báo ngay trên máy, nhắc bạn ghi lại chi tiêu trong ngày.';
+
+  @override
+  String get reminderDailyTitle => 'Nhắc ghi chép hàng ngày';
+
+  @override
+  String reminderDailyDesc(String time) {
+    return 'Mỗi ngày lúc $time';
+  }
+
+  @override
+  String get reminderNotificationTitle => 'Đừng quên ghi lại chi tiêu nhé 💸';
+
+  @override
+  String get reminderNotificationBody =>
+      'Dành vài giây ghi lại các giao dịch hôm nay của bạn.';
+
+  @override
+  String get reminderPermissionDenied =>
+      'Hãy bật quyền thông báo trong cài đặt hệ thống để nhận nhắc nhở.';
 
   @override
   String get deleteAccountTitle => 'Xóa tài khoản';

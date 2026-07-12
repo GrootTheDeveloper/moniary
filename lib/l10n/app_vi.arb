@@ -138,6 +138,10 @@
   "calendarBalance": "Số dư",
   "calendarSelectWalletFilter": "Chọn ví lọc",
   "calendarSelectCategoryFilter": "Chọn danh mục lọc",
+  "calendarAllFilter": "Tất cả",
+  "calendarSaved": "Đã lưu",
+  "calendarSearchLabel": "Tìm",
+  "calendarWalletsCategoriesAction": "Ví & mục",
   "calendarMonthlyExpense": "Tổng chi tháng",
   "calendarMonthlyIncome": "Tổng thu tháng",
   "calendarEmptyMessage": "Chưa có giao dịch nào trong tháng này. Bạn vẫn có thể chọn ngày hoặc nhấn + để thêm giao dịch.",
@@ -543,6 +547,20 @@
   "monthlyReportDesc": "Mỗi tháng một lần",
   "yearlyReport": "Báo cáo hàng năm",
   "yearlyReportDesc": "Mỗi năm một lần",
+  "reminderSectionTitle": "Nhắc nhở trên thiết bị",
+  "reminderSectionDesc": "Thông báo ngay trên máy, nhắc bạn ghi lại chi tiêu trong ngày.",
+  "reminderDailyTitle": "Nhắc ghi chép hàng ngày",
+  "reminderDailyDesc": "Mỗi ngày lúc {time}",
+  "@reminderDailyDesc": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderNotificationTitle": "Đừng quên ghi lại chi tiêu nhé 💸",
+  "reminderNotificationBody": "Dành vài giây ghi lại các giao dịch hôm nay của bạn.",
+  "reminderPermissionDenied": "Hãy bật quyền thông báo trong cài đặt hệ thống để nhận nhắc nhở.",
   "deleteAccountTitle": "Xóa tài khoản",
   "deleteAccountWarning": "Hành động này sẽ xóa toàn bộ dữ liệu cá nhân, giao dịch và ảnh giao dịch của bạn.",
   "deleteAccountConfirm": "Xóa tài khoản",

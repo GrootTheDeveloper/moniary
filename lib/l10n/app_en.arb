@@ -138,6 +138,10 @@
   "calendarBalance": "Balance",
   "calendarSelectWalletFilter": "Select wallet filter",
   "calendarSelectCategoryFilter": "Select category filter",
+  "calendarAllFilter": "All",
+  "calendarSaved": "Saved",
+  "calendarSearchLabel": "Search",
+  "calendarWalletsCategoriesAction": "Wallets",
   "calendarMonthlyExpense": "Monthly Expense",
   "calendarMonthlyIncome": "Monthly Income",
   "calendarEmptyMessage": "No transactions this month yet. You can still pick a day or tap + to add one.",
@@ -542,6 +546,20 @@
   "monthlyReportDesc": "Once a month",
   "yearlyReport": "Yearly Report",
   "yearlyReportDesc": "Once a year",
+  "reminderSectionTitle": "Device reminders",
+  "reminderSectionDesc": "A notification right on your phone, nudging you to log today's spending.",
+  "reminderDailyTitle": "Daily logging reminder",
+  "reminderDailyDesc": "Every day at {time}",
+  "@reminderDailyDesc": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderNotificationTitle": "Don't forget to log your spending 💸",
+  "reminderNotificationBody": "Take a few seconds to record today's transactions.",
+  "reminderPermissionDenied": "Enable notification permission in system settings to receive reminders.",
   "profileDeleteSubtitle": "Delete personal data, transactions, and saved photos.",
   "deleteAccountTitle": "Delete account",
   "deleteAccountWarning": "This action will permanently delete all your personal data, transactions, and transaction photos.",
