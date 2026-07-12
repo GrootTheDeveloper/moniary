@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
+import '../../../../core/constants/app_color.dart';
 import '../../../profile/application/profile_setup_controller.dart';
 import '../../../journal/application/journal_controller.dart';
 import '../../../journal/presentation/monthly_recap_screen.dart';
@@ -24,7 +25,6 @@ import '../../application/month/calendar_visible_month_provider.dart';
 import '../../domain/month/calendar_month_data.dart';
 import 'manage_data_sheet.dart';
 import 'transaction_search_delegate.dart';
-import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
 import '../../../../shared/utils/error_helpers.dart';
@@ -89,6 +89,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           monthAsync: monthAsync,
                         ),
                       ),
+                      _CalendarHeader(
+                        month: visibleMonth,
+                        onPreviousMonth: () => _changeMonth(-1),
+                        onNextMonth: () => _changeMonth(1),
+                        onMonthSelect: (date) {
+                          ref
+                              .read(calendarVisibleMonthProvider.notifier)
+                              .setMonth(date);
+                        },
+                      ),
+                      const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: _UnifiedFilterRow(
@@ -103,26 +114,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                               _isTodayGridMode = false;
                             });
                           },
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      if (!_isTodayGridMode) ...[
-                        _CalendarHeader(
-                          month: visibleMonth,
-                          onPreviousMonth: () => _changeMonth(-1),
-                          onNextMonth: () => _changeMonth(1),
-                          onMonthSelect: (date) {
-                            ref
-                                .read(calendarVisibleMonthProvider.notifier)
-                                .setMonth(date);
-                          },
                           onRecapTap: () => context.push(
                             MonthlyRecapScreen.routePath,
                             extra: visibleMonth,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                      ],
+                      ),
+                      const SizedBox(height: 12),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: monthAsync.when(
@@ -272,25 +270,13 @@ class _SeamlessHeader extends ConsumerWidget {
     final isHidden = ref.watch(privacyControllerProvider).isBalancesHidden;
     final streak = ref.watch(recordingStreakProvider).value;
     final colors = context.moniaryColors;
-    return Container(
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
-      decoration: BoxDecoration(
-        color: colors.surface.withValues(alpha: 0.84),
-        borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: colors.outline),
-        boxShadow: [
-          BoxShadow(
-            color: colors.textPrimary.withValues(alpha: 0.045),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Column(
@@ -360,17 +346,20 @@ class _SeamlessHeader extends ConsumerWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _HeaderCircleButton(
                     tooltip: context.l10n.friendsTitle,
+                    label: context.l10n.friendsTitle,
                     icon: Icons.people_outline,
                     onTap: onFriendsTap,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 7),
                   _HeaderCircleButton(
                     tooltip: context.l10n.calendarSearchHint,
+                    label: context.l10n.calendarSearchLabel,
                     icon: Icons.search,
                     onTap: () async {
                       final transaction = await showSearch<TransactionEntry?>(
@@ -386,9 +375,10 @@ class _SeamlessHeader extends ConsumerWidget {
                       await onTransactionTap(transaction);
                     },
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 7),
                   _HeaderCircleButton(
                     tooltip: context.l10n.walletTitle,
+                    label: context.l10n.calendarWalletsCategoriesAction,
                     icon: Icons.account_balance_wallet_outlined,
                     onTap: onProfileTap,
                   ),
@@ -396,7 +386,7 @@ class _SeamlessHeader extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 6),
           walletsAsync.when(
             data: (wallets) {
               final totalBalance = wallets.fold(
@@ -426,7 +416,7 @@ class _SeamlessHeader extends ConsumerWidget {
                           ),
                           style: context.moniaryTypography.displayLarge
                               .copyWith(
-                                fontSize: 42,
+                                fontSize: 40,
                                 color: colors.textPrimary,
                               ),
                         ),
@@ -520,11 +510,13 @@ class _BalanceVisibilityButton extends StatelessWidget {
 class _HeaderCircleButton extends StatelessWidget {
   const _HeaderCircleButton({
     required this.tooltip,
+    required this.label,
     required this.icon,
     required this.onTap,
   });
 
   final String tooltip;
+  final String label;
   final IconData icon;
   final VoidCallback onTap;
 
@@ -533,16 +525,71 @@ class _HeaderCircleButton extends StatelessWidget {
     final colors = context.moniaryColors;
     return Tooltip(
       message: tooltip,
+      child: SizedBox(
+        width: 46,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Material(
+              color: colors.surfaceRaised.withValues(alpha: 0.68),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+                side: BorderSide(color: colors.outline),
+              ),
+              child: InkWell(
+                onTap: onTap,
+                borderRadius: BorderRadius.circular(14),
+                child: SizedBox(
+                  width: 38,
+                  height: 38,
+                  child: Icon(icon, color: colors.textSecondary, size: 18),
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.moniaryTypography.metadata.copyWith(
+                color: colors.textDim,
+                fontSize: 7.5,
+                letterSpacing: 1.1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _IconPill extends StatelessWidget {
+  const _IconPill({
+    required this.icon,
+    required this.onTap,
+    required this.tooltip,
+  });
+
+  final IconData icon;
+  final VoidCallback onTap;
+  final String tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Tooltip(
+      message: tooltip,
       child: Material(
-        color: colors.surfaceRaised.withValues(alpha: 0.76),
+        color: colors.surfaceRaised.withValues(alpha: 0.68),
         shape: CircleBorder(side: BorderSide(color: colors.outline)),
         child: InkWell(
           onTap: onTap,
           customBorder: const CircleBorder(),
           child: SizedBox(
-            width: 40,
-            height: 40,
-            child: Icon(icon, color: colors.textSecondary, size: 20),
+            width: 32,
+            height: 32,
+            child: Icon(icon, color: colors.textSecondary, size: 16),
           ),
         ),
       ),
@@ -602,45 +649,44 @@ class _CalendarHeader extends StatelessWidget {
     required this.onPreviousMonth,
     required this.onNextMonth,
     required this.onMonthSelect,
-    required this.onRecapTap,
   });
 
   final DateTime month;
   final VoidCallback onPreviousMonth;
   final VoidCallback onNextMonth;
   final ValueChanged<DateTime> onMonthSelect;
-  final VoidCallback onRecapTap;
 
   @override
   Widget build(BuildContext context) {
-    final localeName = Localizations.localeOf(context).toString();
-    final label = DateFormat.MMMM(localeName).format(month);
-    final title = '${label.toLowerCase()} ${month.year}';
+    final title = _monthTitle(context, month);
     final colors = context.moniaryColors;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_outlined,
-            color: colors.primary,
-            size: 16,
-          ),
-          onPressed: onPreviousMonth,
+        _IconPill(
+          icon: Icons.arrow_back_ios_new_outlined,
+          tooltip: MaterialLocalizations.of(context).previousPageTooltip,
+          onTap: onPreviousMonth,
         ),
-        const SizedBox(width: 24),
+        const SizedBox(width: 12),
         InkWell(
           onTap: () => _showMonthPicker(context),
-          borderRadius: BorderRadius.circular(8),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          borderRadius: BorderRadius.circular(999),
+          child: Ink(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+            decoration: BoxDecoration(
+              color: colors.backgroundSoft.withValues(alpha: 0.62),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: colors.outline),
+            ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
                   style: context.moniaryTypography.displaySmall.copyWith(
+                    fontSize: 22,
                     color: colors.textPrimary,
                   ),
                 ),
@@ -654,22 +700,22 @@ class _CalendarHeader extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 24),
-        IconButton(
-          icon: Icon(
-            Icons.arrow_forward_ios_outlined,
-            color: colors.primary,
-            size: 16,
-          ),
-          onPressed: onNextMonth,
-        ),
-        IconButton(
-          tooltip: context.l10n.journalRecapTitle,
-          icon: Icon(Icons.ios_share_outlined, color: colors.primary, size: 18),
-          onPressed: onRecapTap,
+        const SizedBox(width: 12),
+        _IconPill(
+          icon: Icons.arrow_forward_ios_outlined,
+          tooltip: MaterialLocalizations.of(context).nextPageTooltip,
+          onTap: onNextMonth,
         ),
       ],
     );
+  }
+
+  String _monthTitle(BuildContext context, DateTime month) {
+    final locale = Localizations.localeOf(context);
+    if (locale.languageCode == 'vi') {
+      return 'Tháng ${month.month}, ${month.year}';
+    }
+    return DateFormat.yMMMM(locale.toString()).format(month);
   }
 
   void _showMonthPicker(BuildContext context) {
@@ -799,11 +845,13 @@ class _UnifiedFilterRow extends ConsumerWidget {
     required this.isTodaySelected,
     required this.onTodayTap,
     required this.onResetTap,
+    required this.onRecapTap,
   });
 
   final bool isTodaySelected;
   final VoidCallback onTodayTap;
   final VoidCallback onResetTap;
+  final VoidCallback onRecapTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -827,7 +875,7 @@ class _UnifiedFilterRow extends ConsumerWidget {
               child: Row(
                 children: [
                   _PillButton(
-                    label: context.l10n.calendarAllWallets,
+                    label: context.l10n.calendarAllFilter,
                     selected: isAll,
                     onTap: () =>
                         ref.read(calendarFilterProvider.notifier).reset(),
@@ -864,7 +912,7 @@ class _UnifiedFilterRow extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   _PillButton(
-                    label: context.l10n.calendarStarred,
+                    label: context.l10n.calendarSaved,
                     selected: filters.isStarredOnly,
                     onTap: () => ref
                         .read(calendarFilterProvider.notifier)
@@ -880,7 +928,16 @@ class _UnifiedFilterRow extends ConsumerWidget {
           ),
           const SizedBox(width: 8),
           _RoundIconButton(
+            icon: Icons.auto_stories_outlined,
+            tooltip: context.l10n.journalRecapTitle,
+            onTap: onRecapTap,
+          ),
+          const SizedBox(width: 8),
+          _RoundIconButton(
             icon: Icons.refresh_outlined,
+            tooltip: MaterialLocalizations.of(
+              context,
+            ).refreshIndicatorSemanticLabel,
             onTap: () {
               onResetTap();
               // Reset filters (Wallet/Category)
@@ -951,19 +1008,7 @@ class _MonthCalendarCard extends ConsumerWidget {
     ];
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(10, 12, 10, 8),
-      decoration: BoxDecoration(
-        color: colors.surface.withValues(alpha: 0.84),
-        borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: colors.outline),
-        boxShadow: [
-          BoxShadow(
-            color: colors.textPrimary.withValues(alpha: 0.04),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
       child: Column(
         children: [
           Row(
@@ -973,21 +1018,22 @@ class _MonthCalendarCard extends ConsumerWidget {
                     child: Center(
                       child: Text(
                         day,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: colors.textDim,
-                          fontSize: 13,
-                        ),
+                        style: context.moniaryTypography.metadataStrong
+                            .copyWith(
+                              fontWeight: FontWeight.w800,
+                              color: colors.textDim,
+                              fontSize: 9,
+                            ),
                       ),
                     ),
                   ),
                 )
                 .toList(),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           ...monthData.weeks.map(
             (week) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
+              padding: const EdgeInsets.only(bottom: 7),
               child: Row(
                 children: week
                     .map(
@@ -1017,179 +1063,226 @@ class _CalendarDayCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
-    final images = day.transactions
-        .where((t) => t.imagePath != null && t.imagePath!.isNotEmpty)
-        .toList()
-        .reversed
-        .toList();
+    final dominant = _DominantDayCategory.from(day.transactions, colors);
+    final transactionCount = day.transactions.length;
+    final hasTransactions = transactionCount > 0;
+    final foreground = hasTransactions
+        ? _readableTextColor(dominant.color)
+        : colors.textPrimary;
+    final blockWidth = hasTransactions
+        ? 36.0 + transactionCount.clamp(0, 3) * 3
+        : 0.0;
+    final blockHeight = hasTransactions
+        ? 34.0 + transactionCount.clamp(0, 3) * 4
+        : 0.0;
 
     return InkWell(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(15),
       onTap: day.isCurrentMonth ? onTap : null,
       child: SizedBox(
-        height: 60,
+        height: 61,
         child: Stack(
-          alignment: Alignment.topCenter,
+          alignment: Alignment.center,
           clipBehavior: Clip.none,
           children: [
-            // Always show placeholder circle for current month
-            if (day.isCurrentMonth)
+            if (hasTransactions)
               Positioned(
-                top: 4,
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: colors.textPrimary.withValues(alpha: 0.04),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-
-            // If there's an image, place it at the very top (over the placeholder).
-            if (images.isNotEmpty)
-              Positioned(
-                top: 4,
+                top: 3,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    // Background image (if more than 1)
-                    if (images.length > 1)
-                      Positioned(
-                        top: 3,
-                        left: -4,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: colors.warning,
-                              width: 1.5,
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOutCubic,
+                      width: blockWidth,
+                      height: blockHeight,
+                      decoration: BoxDecoration(
+                        color: Color.lerp(
+                          dominant.color,
+                          colors.background,
+                          0.16,
+                        ),
+                        borderRadius: BorderRadius.circular(9),
+                        border: day.isToday
+                            ? Border.all(color: colors.primary, width: 1.4)
+                            : null,
+                        boxShadow: [
+                          BoxShadow(
+                            color: dominant.color.withValues(alpha: 0.18),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            left: 7,
+                            bottom: 5,
+                            child: Text(
+                              '${day.date.day}',
+                              style: context.moniaryTypography.metadataStrong
+                                  .copyWith(
+                                    color: foreground,
+                                    fontSize: 10,
+                                    letterSpacing: 0,
+                                  ),
                             ),
                           ),
-                          child: SupabaseImage(
-                            imagePath: images[1].imagePath,
-                            width: 28,
-                            height: 28,
-                            borderRadius: BorderRadius.circular(6.5),
-                          ),
-                        ),
-                      ),
-
-                    // Main foreground image
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: colors.warning, width: 1.5),
-                      ),
-                      child: SupabaseImage(
-                        imagePath: images[0].imagePath,
-                        width: 28,
-                        height: 28,
-                        borderRadius: BorderRadius.circular(6.5),
+                          if (day.hasImportant)
+                            Positioned(
+                              right: 6,
+                              bottom: 5,
+                              child: Icon(
+                                Icons.star_rounded,
+                                color: foreground.withValues(alpha: 0.86),
+                                size: 10,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-
-                    // Badge (+1, +2)
-                    if (images.length > 1)
-                      Positioned(
-                        top: -6,
-                        right: -6,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 2,
+                    Positioned(
+                      top: -5,
+                      right: -5,
+                      child: Container(
+                        constraints: const BoxConstraints(
+                          minWidth: 17,
+                          minHeight: 17,
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Color.lerp(
+                            dominant.color,
+                            colors.textPrimary,
+                            0.25,
                           ),
-                          decoration: BoxDecoration(
-                            color: colors.warning,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: colors.surface,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Text(
-                            '+${images.length - 1}',
-                            style: const TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w900,
-                              color: AppTheme.ink,
-                            ),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: colors.background.withValues(alpha: 0.95),
+                            width: 1.3,
                           ),
                         ),
+                        child: Text(
+                          '$transactionCount',
+                          style: context.moniaryTypography.metadataStrong
+                              .copyWith(
+                                color: _readableTextColor(dominant.color),
+                                fontSize: 8,
+                                letterSpacing: 0,
+                              ),
+                        ),
                       ),
+                    ),
                   ],
                 ),
               ),
-
-            // Day Number (Always consistently placed below the placeholder)
-            Positioned(
-              top: 36,
-              child: SizedBox(
-                width: 22,
-                height: 22,
-                child: Center(
-                  child: Text(
-                    '${day.date.day}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: 13,
-                      color: day.isCurrentMonth
-                          ? (day.isToday ? colors.primary : colors.textPrimary)
-                          : colors.textPrimary.withValues(alpha: 0.28),
-                      fontWeight: day.isToday
-                          ? FontWeight.w900
-                          : FontWeight.w600,
+            if (!hasTransactions)
+              Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 11),
+                  child: DecoratedBox(
+                    decoration: day.isToday
+                        ? BoxDecoration(
+                            border: Border.all(
+                              color: colors.primary.withValues(alpha: 0.8),
+                              width: 1.2,
+                            ),
+                            borderRadius: BorderRadius.circular(9),
+                          )
+                        : const BoxDecoration(),
+                    child: SizedBox(
+                      width: 32,
+                      height: 30,
+                      child: Center(
+                        child: Text(
+                          '${day.date.day}',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                fontSize: 12,
+                                color: day.isCurrentMonth
+                                    ? (day.isToday
+                                          ? colors.primary
+                                          : colors.textPrimary.withValues(
+                                              alpha: 0.46,
+                                            ))
+                                    : colors.textPrimary.withValues(
+                                        alpha: 0.18,
+                                      ),
+                                fontWeight: day.isToday
+                                    ? FontWeight.w800
+                                    : FontWeight.w500,
+                              ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-
-            // Dot Indicator at the bottom for TODAY
-            if (day.isToday)
-              Positioned(
-                bottom: 4,
-                child: Container(
-                  width: 4,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: colors.primary,
-                  ),
-                ),
-              ),
-
-            // Star Indicator for Important Transactions
-            if (day.hasImportant)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: colors.warning.withValues(alpha: 0.16),
-                        blurRadius: 12,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-            if (day.hasImportant)
-              Positioned(
-                top: 2,
-                right: 2,
-                child: Icon(Icons.star, color: colors.warning, size: 10),
               ),
           ],
         ),
       ),
     );
   }
+}
+
+class _DominantDayCategory {
+  const _DominantDayCategory({required this.color});
+
+  final Color color;
+
+  static const _fallbackPalette = [
+    Color(0xFF7E8CA0),
+    Color(0xFF8E9B8F),
+    Color(0xFFA98C86),
+    Color(0xFFC2A98E),
+    Color(0xFF8B7BA7),
+    Color(0xFF6F8F95),
+  ];
+
+  static _DominantDayCategory from(
+    List<TransactionEntry> transactions,
+    MoniaryColors colors,
+  ) {
+    if (transactions.isEmpty) {
+      return _DominantDayCategory(color: colors.textDim);
+    }
+
+    final totals = <String, double>{};
+    final colorsByCategory = <String, String?>{};
+    final namesByCategory = <String, String>{};
+    for (final transaction in transactions) {
+      totals.update(
+        transaction.categoryId,
+        (value) => value + transaction.amount.abs(),
+        ifAbsent: () => transaction.amount.abs(),
+      );
+      colorsByCategory[transaction.categoryId] = transaction.categoryColor;
+      namesByCategory[transaction.categoryId] = transaction.categoryName;
+    }
+
+    final dominantId = totals.entries.reduce((a, b) {
+      return a.value >= b.value ? a : b;
+    }).key;
+
+    final fallback = _fallbackFor(namesByCategory[dominantId] ?? dominantId);
+    return _DominantDayCategory(
+      color: AppColor.fromHex(colorsByCategory[dominantId], fallback: fallback),
+    );
+  }
+
+  static Color _fallbackFor(String value) {
+    final index = value.hashCode.abs() % _fallbackPalette.length;
+    return _fallbackPalette[index];
+  }
+}
+
+Color _readableTextColor(Color color) {
+  return color.computeLuminance() > 0.42
+      ? AppTheme.ink
+      : AppTheme.surfaceRaised;
 }
 
 class _PillButton extends StatelessWidget {
@@ -1249,26 +1342,34 @@ class _PillButton extends StatelessWidget {
 }
 
 class _RoundIconButton extends StatelessWidget {
-  const _RoundIconButton({required this.icon, required this.onTap});
+  const _RoundIconButton({
+    required this.icon,
+    required this.onTap,
+    required this.tooltip,
+  });
 
   final IconData icon;
   final VoidCallback onTap;
+  final String tooltip;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap,
-      child: Ink(
-        width: 42,
-        height: 42,
-        decoration: BoxDecoration(
-          color: colors.surfaceRaised.withValues(alpha: 0.78),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colors.outline),
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Ink(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: colors.surfaceRaised.withValues(alpha: 0.78),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: colors.outline),
+          ),
+          child: Icon(icon, size: 20, color: colors.textSecondary),
         ),
-        child: Icon(icon, size: 20, color: colors.textSecondary),
       ),
     );
   }

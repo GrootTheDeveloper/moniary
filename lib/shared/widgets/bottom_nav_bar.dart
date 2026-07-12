@@ -28,7 +28,7 @@ class MoniaryBottomNavBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: SizedBox(
-        height: 82,
+        height: 86,
         child: Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.topCenter,
@@ -37,7 +37,7 @@ class MoniaryBottomNavBar extends StatelessWidget {
               top: 14,
               child: Container(
                 decoration: BoxDecoration(
-                  color: colors.navBar.withValues(alpha: 0.97),
+                  color: colors.navBar.withValues(alpha: 0.96),
                   border: Border(
                     top: BorderSide(
                       color: colors.textPrimary.withValues(alpha: 0.1),
@@ -49,7 +49,7 @@ class MoniaryBottomNavBar extends StatelessWidget {
                   children: [
                     const SizedBox(width: 8),
                     _NavItem(
-                      icon: Icons.calendar_month_outlined,
+                      icon: Icons.calendar_today_outlined,
                       label: context.l10n.calendarTitle,
                       active: currentTab == MoniaryTab.calendar,
                       onTap: () {
@@ -61,7 +61,7 @@ class MoniaryBottomNavBar extends StatelessWidget {
                       },
                     ),
                     _NavItem(
-                      icon: Icons.pie_chart_outline,
+                      icon: Icons.bar_chart_rounded,
                       label: context.l10n.navStatsLabel,
                       active: currentTab == MoniaryTab.stats,
                       onTap: () {
@@ -74,7 +74,7 @@ class MoniaryBottomNavBar extends StatelessWidget {
                     ),
                     const SizedBox(width: 78),
                     _NavItem(
-                      icon: Icons.groups_2_outlined,
+                      icon: Icons.group_rounded,
                       label: context.l10n.navGroupsLabel,
                       active: currentTab == MoniaryTab.groups,
                       onTap: () {
@@ -86,7 +86,7 @@ class MoniaryBottomNavBar extends StatelessWidget {
                       },
                     ),
                     _NavItem(
-                      icon: Icons.person_outline,
+                      icon: Icons.person_rounded,
                       label: context.l10n.navProfileLabel,
                       active: currentTab == MoniaryTab.profile,
                       onTap: () {
@@ -123,26 +123,27 @@ class _CameraActionButton extends StatelessWidget {
       button: true,
       label: context.l10n.scanTakePhoto,
       child: SizedBox(
-        width: 70,
-        height: 70,
+        width: 68,
+        height: 68,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: BorderRadius.circular(24),
             color: colors.background,
-            border: Border.all(color: colors.background, width: 5),
           ),
           child: Material(
             color: colors.button,
-            shape: const CircleBorder(),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
             child: InkWell(
-              customBorder: const CircleBorder(),
+              borderRadius: BorderRadius.circular(18),
               onTap: onPressed,
               child: Icon(
-                Icons.camera_alt_outlined,
+                Icons.camera_alt_rounded,
                 color: Theme.of(
                   context,
                 ).floatingActionButtonTheme.foregroundColor,
-                size: 30,
+                size: 27,
               ),
             ),
           ),
@@ -168,7 +169,7 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
-    final color = active ? colors.primary : colors.navInactive;
+    final color = active ? colors.button : colors.navInactive;
     return Expanded(
       child: Semantics(
         selected: active,

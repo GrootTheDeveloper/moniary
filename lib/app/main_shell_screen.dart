@@ -36,7 +36,7 @@ class MainShellScreen extends ConsumerWidget {
             right: 18,
             bottom: 18,
             child: _AssistantChatBubble(
-              color: colors.primary,
+              color: colors.button,
               foregroundColor: colors.surfaceRaised,
               onPressed: () => context.push(AssistantHomeScreen.routePath),
             ),
