@@ -1593,6 +1593,8 @@
   "budgetRemoveLimit": "Bỏ hạn mức",
   "budgetNearLimit": "Sắp vượt hạn mức",
   "budgetOverLimit": "Đã vượt hạn mức",
+  "budgetNearLimitShort": "Sắp vượt",
+  "budgetOverLimitShort": "Vượt hạn",
   "budgetEmptyTitle": "Chưa đặt hạn mức",
   "budgetEmptyBody": "Chọn một danh mục để bắt đầu theo dõi ngân sách tháng.",
   "cameraFrameHint": "Đưa hóa đơn vào khung",

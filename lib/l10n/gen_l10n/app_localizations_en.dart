@@ -3923,6 +3923,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get budgetOverLimit => 'Over the limit';
 
   @override
+  String get budgetNearLimitShort => 'Near limit';
+
+  @override
+  String get budgetOverLimitShort => 'Over limit';
+
+  @override
   String get budgetEmptyTitle => 'No limits yet';
 
   @override

@@ -42,9 +42,9 @@ class TransactionRepository {
       walletId: 'w1',
       walletName: 'Cash Wallet',
       walletColor: '#44D884',
-      categoryId: 'c1',
-      categoryName: 'Food',
-      categoryColor: '#FC8181',
+      categoryId: 'mock-cat-food',
+      categoryName: 'Ăn uống',
+      categoryColor: '#F6B24D',
     ),
     TransactionEntry(
       id: 'mock-2',
@@ -56,9 +56,9 @@ class TransactionRepository {
       walletId: 'w1',
       walletName: 'Cash Wallet',
       walletColor: '#44D884',
-      categoryId: 'c2',
-      categoryName: 'Entertainment',
-      categoryColor: '#2563EB',
+      categoryId: 'mock-cat-food',
+      categoryName: 'Ăn uống',
+      categoryColor: '#F6B24D',
     ),
     TransactionEntry(
       id: 'mock-3',
@@ -70,9 +70,9 @@ class TransactionRepository {
       walletId: 'w1',
       walletName: 'Cash Wallet',
       walletColor: '#44D884',
-      categoryId: 'c3',
-      categoryName: 'Shopping',
-      categoryColor: '#8B5CF6',
+      categoryId: 'mock-cat-shopping',
+      categoryName: 'Mua sắm',
+      categoryColor: '#E45CA6',
     ),
   ];
 

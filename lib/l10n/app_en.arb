@@ -1593,6 +1593,8 @@
   "budgetRemoveLimit": "Remove limit",
   "budgetNearLimit": "Near the limit",
   "budgetOverLimit": "Over the limit",
+  "budgetNearLimitShort": "Near limit",
+  "budgetOverLimitShort": "Over limit",
   "budgetEmptyTitle": "No limits yet",
   "budgetEmptyBody": "Choose a category to start tracking your monthly budget.",
   "cameraFrameHint": "Place the receipt inside the frame",

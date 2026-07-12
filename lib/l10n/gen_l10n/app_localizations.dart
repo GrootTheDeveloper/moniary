@@ -7112,6 +7112,18 @@ abstract class AppLocalizations {
   /// **'Đã vượt hạn mức'**
   String get budgetOverLimit;
 
+  /// No description provided for @budgetNearLimitShort.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sắp vượt'**
+  String get budgetNearLimitShort;
+
+  /// No description provided for @budgetOverLimitShort.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vượt hạn'**
+  String get budgetOverLimitShort;
+
   /// No description provided for @budgetEmptyTitle.
   ///
   /// In vi, this message translates to:

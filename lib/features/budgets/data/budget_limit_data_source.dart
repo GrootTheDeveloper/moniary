@@ -130,6 +130,7 @@ class MockBudgetLimitDataSource implements BudgetLimitDataSource {
 
   @override
   Future<Map<String, BudgetLimitRecord>> fetchLimits(DateTime month) async {
+    _seedMonthIfEmpty(month);
     return Map<String, BudgetLimitRecord>.from(
       _limits[_key(month)] ?? const {},
     );
@@ -157,4 +158,14 @@ class MockBudgetLimitDataSource implements BudgetLimitDataSource {
 
   String _key(DateTime month) =>
       '${month.year}-${month.month.toString().padLeft(2, '0')}';
+
+  void _seedMonthIfEmpty(DateTime month) {
+    final key = _key(month);
+    if (_limits.containsKey(key)) return;
+    _limits[key] = const {
+      'mock-cat-food': BudgetLimitRecord(limitAmount: 210000),
+      'mock-cat-shopping': BudgetLimitRecord(limitAmount: 230000),
+      'mock-cat-transport': BudgetLimitRecord(limitAmount: 130000),
+    };
+  }
 }

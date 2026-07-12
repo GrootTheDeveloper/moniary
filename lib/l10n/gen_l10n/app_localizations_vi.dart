@@ -3925,6 +3925,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get budgetOverLimit => 'Đã vượt hạn mức';
 
   @override
+  String get budgetNearLimitShort => 'Sắp vượt';
+
+  @override
+  String get budgetOverLimitShort => 'Vượt hạn';
+
+  @override
   String get budgetEmptyTitle => 'Chưa đặt hạn mức';
 
   @override
