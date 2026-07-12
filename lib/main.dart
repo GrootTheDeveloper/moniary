@@ -7,6 +7,7 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'app/app.dart';
 import 'core/constants/app_constants.dart';
+import 'core/notifications/local_notification_service.dart';
 import 'core/preferences/preferences_bootstrap.dart';
 import 'core/supabase/supabase_bootstrap.dart';
 
@@ -26,6 +27,14 @@ Future<void> main() async {
   AppConstants.assertSupabaseConfig();
   await bootstrapPreferences();
   await bootstrapSupabase();
+
+  try {
+    await LocalNotificationService.instance.init();
+  } catch (error) {
+    // Never block startup if the notification plugin fails to initialize.
+    debugPrint('Local notifications init failed: $error');
+  }
+
   runApp(const ProviderScope(child: MoniaryApp()));
 }
 
