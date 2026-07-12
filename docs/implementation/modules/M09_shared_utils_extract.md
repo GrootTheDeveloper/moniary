@@ -84,5 +84,5 @@ Chạy: flutter analyze && flutter test
 - [ ] `flutter analyze` pass
 - [ ] `flutter test` pass
 - [ ] Commit: `refactor(M09): extract formatVnd + move signedUrlProvider to core`
-- [ ] Update `handoff/current_status.md`
-- [ ] Ghi issues mới (nếu có) vào `handoff/issues_backlog.md`
+- [ ] Update `../handoff/current_status.md`
+- [ ] Ghi issues mới (nếu có) vào `../handoff/issues_backlog.md`

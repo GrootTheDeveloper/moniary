@@ -101,5 +101,5 @@ Chạy: flutter analyze
 - [ ] `flutter analyze` pass
 - [ ] `flutter test` pass
 - [ ] Commit: `fix(M11): add localization delegates + router errorBuilder + safe extra casts`
-- [ ] Update `handoff/current_status.md`
-- [ ] Ghi issues mới (nếu có) vào `handoff/issues_backlog.md`
+- [ ] Update `../handoff/current_status.md`
+- [ ] Ghi issues mới (nếu có) vào `../handoff/issues_backlog.md`

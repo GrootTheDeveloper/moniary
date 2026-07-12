@@ -1,43 +1,58 @@
 # Domain Models & Entities
 
-**Confidence / Verification Status**: `VERIFIED`
+**Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
+**Last source audit**: `2026-07-12`
 
-## Model: TransactionEntry
-- **Path**: `lib/features/transactions/domain/models/transaction_entry.dart`
-- **Type**: Domain Entity / DTO
-- **Serialization**: `fromMap`, `toMap` matching Supabase schema.
+## Core finance
 
-## Model: Wallet & Category
-- **Path**: `lib/features/wallets/domain/models/wallet.dart`, `lib/features/categories/domain/models/category.dart`
-- **Type**: Domain Entity
+| Model | Path | Notes |
+|---|---|---|
+| `TransactionEntry` | `lib/features/transactions/domain/models/transaction_entry.dart` | Transaction aggregate/DTO; maps Supabase rows and includes joined category/wallet display fields |
+| `TransactionMutationResult` | `lib/features/transactions/domain/models/transaction_mutation_result.dart` | Describes old/new transaction dates so month queries can be invalidated |
+| `Wallet` | `lib/features/wallets/domain/models/wallet.dart` | Wallet identity, type, balance/default/active state |
+| `Category` | `lib/features/categories/domain/models/category.dart` | Income/expense category |
+| `CalendarMonthData`, `CalendarFilters` | `lib/features/calendar/domain/month/` | Read models for the month grid and filters |
+| `MonthlyBudget`, `CategoryBudget` | `lib/features/budgets/domain/monthly_budget.dart` | Computed limit/spend/progress models, including warning ratio and category transactions |
 
-## Model: ExpenseGroup & GroupMember
-- **Path**: `lib/features/groups/domain/expense_group.dart`, `lib/features/groups/domain/group_member.dart`
-- **Type**: Domain Entity
+## Journal and assistant
 
-## Model: GroupExpense & ExpenseSplit
-- **Path**: `lib/features/groups/domain/group_expense.dart`, `lib/features/groups/domain/expense_split.dart`
-- **Type**: Domain Entity
-- **Used by**: `DebtCalculatorService`
+| Model | Path | Notes |
+|---|---|---|
+| `MonthlyRecap` | `lib/features/journal/domain/journal_models.dart` | Current/previous expense comparison, highest day, and top categories |
+| `RecordingStreak` | same file | Current/longest streak plus recorded dates |
+| `JournalCollectionSummary` | same file | Collection metadata hydrated with transaction entries |
+| `AssistantAccess` | `lib/features/assistant/domain/assistant_models.dart` | Locally persisted consent/access flags |
+| `FinancialAssistantSnapshot` | same file | Deterministic transaction-derived metrics |
+| `AssistantMessage`, `AssistantInsight` | same file | Conversation presentation/domain state; not a remote chat payload |
 
-## Model: OcrResult
-- **Path**: `lib/features/scanning/domain/ocr_result.dart`
-- **Type**: DTO / UI Model
-- **Used by**: `OcrService` and `OcrReviewScreen`
+## Profile and collaboration
 
-## Model: NotificationSettings
-- **Path**: `lib/features/settings/domain/models/notification_settings.dart`
-- **Type**: Domain Entity / DTO
-- **Serialization**: `fromJson`, `toJson` matching Supabase schema.
+| Model | Path | Notes |
+|---|---|---|
+| `UserProfile` | `lib/features/profile/domain/user_profile.dart` | Profile, username, occupation, preferred currency, and setup/survey status |
+| Friend entities | `lib/features/friends/domain/entities/friend_profile.dart` | Minimal friend/search/request representations |
+| Group entities | `lib/features/groups/domain/entities/` | Current group, transaction, payer/share, settlement, invite-link preview/acceptance result, and enum models |
+| Group calculation models | `lib/features/groups/domain/` | Balance/split data used by pure calculators and repository mapping |
 
-## Model: ImportHistoryEntry
-- **Path**: `lib/features/settings/domain/import/import_history_entry.dart`
-- **Type**: Local history DTO
-- **Serialization**: `fromMap`, `toMap` matching the local JSON import history file.
-- **Status**: `pending`, `completed`, or `failed`. Import starts with a pending entry, then updates the same entry after the import finishes.
+The groups directory also contains older-compatible domain types
+(`expense_group.dart`, `group_expense.dart`, and related files) used by
+calculation/validation tests. Do not delete or merge the two sets without
+tracing all call sites.
 
-## Model: ExportHistoryEntry
-- **Path**: `lib/features/settings/domain/export/export_history_entry.dart`
-- **Type**: Local history DTO
-- **Serialization**: `fromMap`, `toMap` matching the local JSON export history file.
-- **Data Types**: Stored as stable technical keys (`transactions`, `wallets`, `categories`) so presentation can localize labels without putting UI text in domain/data layers.
+## Scanning and settings
+
+| Model | Path | Notes |
+|---|---|---|
+| `OcrResult` | `lib/features/scanning/domain/ocr_result.dart` | DTO consumed by OCR repository/review UI |
+| `NotificationSettings` | `lib/features/settings/domain/models/notification_settings.dart` | Supabase/mock notification and report preferences |
+| `CsvTransactionRow` | `lib/features/settings/domain/models/csv_transaction_row.dart` | Parsed import row with validation state |
+| `ImportHistoryEntry` | `lib/features/settings/domain/import/import_history_entry.dart` | Local JSON history with pending/completed/failed status |
+| `ExportHistoryEntry` | `lib/features/settings/domain/export/export_history_entry.dart` | Local JSON export record using stable data-type keys |
+| Account/privacy models | `lib/features/settings/domain/account/`, `privacy_requests/` | Active sessions, deletion state/feedback, privacy request type/SLA/history |
+
+## Mapping rule
+
+Domain/data serialization uses stable technical keys. Labels and error messages
+are localized only in presentation. When adding a field, update the Dart model,
+repository/data-source mapping, relevant Supabase migration or local JSON
+compatibility handling, and tests together.

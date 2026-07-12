@@ -1,28 +1,48 @@
 # Project Structure
 
-**Confidence / Verification Status**: `VERIFIED`
+**Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
+**Last source audit**: `2026-07-10`
 
-The project strictly follows a **Feature-First** directory structure inside `lib/`.
+Moniary uses feature-first organization with lightweight layered boundaries.
+Not every small feature needs every layer, but code must preserve the direction
+`presentation -> application -> domain/repository -> data source`.
 
-## Directory Map
+## Directory map
 
-| Path | Purpose | Notes |
+| Path | Purpose | Current contents |
 |---|---|---|
-| `lib/app/` | App initialization and routing | Contains `app.dart`, `app_router.dart`, `app_theme.dart`, `main_shell_screen.dart` |
-| `lib/core/` | Core configurations, providers, and exceptions | `constants/`, `preferences/`, `providers/`, `supabase/` |
-| `lib/features/` | Feature modules | 12 features: `auth`, `calendar`, `categories`, `groups`, `onboarding`, `profile`, `scanning`, `settings`, `splash`, `statistics`, `transactions`, `wallets`. |
-| `lib/l10n/` | Localization files | Contains `.arb` files and generated localizations. |
-| `lib/shared/` | Shared UI and Utils | Common widgets, formatters, loggers used across features. |
-| `backend/ocr/` | Receipt OCR API | FastAPI + Ollama vision backend used by the scanning feature. |
-| `test/` | Tests | Contains unit and widget tests. |
+| `lib/app/` | App composition | `app.dart`, router, theme, shell |
+| `lib/core/` | Cross-feature infrastructure | constants, deep links, preferences, camera provider, Supabase bootstrap/providers |
+| `lib/features/` | Product modules | 16 feature directories; see below |
+| `lib/l10n/` | Localization | Vietnamese/English ARB plus generated output |
+| `lib/shared/` | Shared presentation/utilities | design widgets, image/amount widgets, logger, formatters, error helpers |
+| `supabase/migrations/` | Versioned database schema | core finance, reports, account lifecycle, groups, friends, budgets, journal, profile survey, RLS and RPCs |
+| `supabase/functions/` | Edge Functions | `scheduled-reports`, `soft-delete-account`, `delete-account`, `garbage-collect` |
+| `backend/ocr/` | Receipt OCR API | FastAPI + Tesseract/OpenCV/regex implementation and pytest suite |
+| `test/` | Flutter tests | unit and widget tests organized by core/feature |
+| `docs/implementation/` | Historical stabilization plan | completed M01-M14 records, not the current roadmap |
 
-## Feature Module Internal Structure
-A typical feature (e.g., `transactions`) follows this internal structure:
-- `application/`: Riverpod controllers and notifiers.
-- `data/`: Repositories, Services, and API calls.
-- `domain/`: Models, Entities, and DTOs.
-- `presentation/`: UI Screens, Widgets, and Sheets.
+## Feature directories
+
+`assistant`, `auth`, `budgets`, `calendar`, `categories`, `friends`, `groups`,
+`journal`, `onboarding`, `profile`, `scanning`, `settings`, `splash`,
+`statistics`, `transactions`, and `wallets`.
+
+## Typical feature layout
+
+- `presentation/`: screens, sheets, feature widgets.
+- `application/`: Riverpod controllers, notifiers, and query providers.
+- `domain/`: entities, immutable models, repository interfaces, pure services.
+- `data/`: repository implementations, Supabase/mock data sources, local file
+  storage, and external services.
+
+Small presentation-only features may omit layers. New database/API access must
+still enter through a repository/data source rather than a widget.
 
 ## Entrypoints
-- `lib/main.dart`: The main entrypoint. Bootstraps preferences and Supabase.
-- `lib/app/app_router.dart`: Defines all `go_router` routes.
+
+- `lib/main.dart`: initializes locale data, release configuration checks,
+  preferences, Supabase, and `ProviderScope`.
+- `lib/app/app.dart`: Material app, localization, app lifecycle lock, and friend
+  deep-link handling.
+- `lib/app/app_router.dart`: all GoRouter routes and global redirects.

@@ -1,5 +1,8 @@
 # OCR Backend Integration
 
+**Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
+**Last source audit**: `2026-07-10`
+
 The OCR backend in `backend/ocr` uses Tesseract, OpenCV, regex, and keyword
 matching. It does not use Ollama, an LLM, a cloud OCR API, or another AI model.
 

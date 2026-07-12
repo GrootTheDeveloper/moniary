@@ -1,5 +1,7 @@
 # Module Index
 
+**Archive notice (2026-07-10)**: Toàn bộ M01-M14 đã đóng. Trạng thái hệ thống hiện tại nằm trong `docs/agent-context/` và source code.
+
 | Module | Mục tiêu (1 dòng) | Files chính | Phụ thuộc | Status |
 |---|---|---|---|---|
 | **M01** | ~~Fix compile errors~~ — Issues invalidated (Riverpod 3 / Flutter 3.41) | _(no changes)_ | Không | ✅ Completed |

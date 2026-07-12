@@ -1,18 +1,60 @@
-# Storage, Cache & Offline
+# Storage, Cache & Offline Behavior
 
-**Confidence / Verification Status**: `VERIFIED`
+**Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
+**Last source audit**: `2026-07-10`
 
-## Local Preferences
-- **Package**: `shared_preferences`
-- **Location**: `lib/core/preferences/`
-- **Purpose**: Store simple keys like `onboarding_seen`.
+## SharedPreferences
 
-## Mock Data Mode
-- **Switch**: `AppConstants.hasSupabaseConfig`
-- **Behavior**: If `false`, repositories (e.g., `TransactionRepository`) use in-memory static lists (`_mockTransactions`) instead of hitting Supabase. 
-- **Offline Implication**: This mock mode allows the app to function without internet, but data is lost on app restart if not persisted. Currently, mock lists are in-memory.
+Bootstrapped in `lib/core/preferences/` and exposed through Riverpod.
 
-## Image Caching & Storage
-- Supabase Storage is used for uploading receipt images.
-- Images are retrieved via Signed URLs which are cached/managed by `SignedUrlProvider`.
-- Temporary directory is used via `path_provider` during mock mode image selection.
+Current preference areas include:
+
+- onboarding seen state;
+- preferred currency;
+- assistant intro/enablement and data-access flags;
+- app lock enabled state;
+- hide-balances state.
+
+These preferences are device-local and are not a substitute for synced domain
+data.
+
+## Guest/mock data mode
+
+`useMockDataModeProvider` is true when Supabase configuration is missing or the
+resolved session is the explicit mock guest. Core finance, profile, groups,
+friends, budgets, journal collections, notification settings, and account flows
+provide mock behavior.
+
+Most mock repositories/data sources keep static or instance in-memory state.
+That state can survive some provider rebuilds but is lost on process restart.
+Mock mode is a development/guest experience, not durable offline sync.
+
+## Local files
+
+The application documents/download directories are used for:
+
+- `moniary_import_history.json`;
+- `moniary_export_history.json`;
+- `moniary_privacy_request_history.json`;
+- exported CSV/XLSX/PDF files;
+- permanently saved journal recap PNGs.
+
+Journal sharing and mock transaction images may use the temporary directory.
+Repositories must surface unreadable/corrupt history files rather than silently
+replacing them.
+
+## Supabase image storage
+
+- Private bucket: `transaction-images`.
+- Contents include transaction images, profile avatars, group avatars, and group
+  transaction images.
+- Display paths are resolved to signed URLs with the configured one-hour TTL.
+- Mock transaction images are copied to local temporary storage where needed.
+
+## Offline expectations
+
+There is no general synchronization queue, conflict resolution, or persistent
+offline database. A configured Supabase session needs network connectivity for
+remote reads/mutations. The assistant, budget summaries, statistics, and journal
+recaps can only operate on data their underlying repositories can currently
+load.

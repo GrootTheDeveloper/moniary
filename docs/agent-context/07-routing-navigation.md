@@ -1,92 +1,158 @@
 # Routing & Navigation
 
-**Confidence / Verification Status**: `VERIFIED`
+**Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
+**Last source audit**: `2026-07-12`
 
 ## Setup
-- **Package**: `go_router`
-- **Location**: `lib/app/app_router.dart`
 
-## Key Behaviors
-- **Auth Redirect**: Global redirect logic checks if the user has completed onboarding and if they are logged in. Soft-deleted accounts (`accountStatus.isPending == true`) are redirected to `/login`.
-- **Main Shell**: Uses `StatefulShellRoute.indexedStack` to manage bottom navigation tabs (Calendar, Statistics, AI Assistant, Groups, Profile).
-- **Transitions**: Custom transitions (`buildSlideTransitionPage`, `buildSlideUpTransitionPage`, `buildFadeTransitionPage`) are used for almost all routes to provide smooth, controlled animations.
+- Package: `go_router`
+- Router: `lib/app/app_router.dart`
+- App/deep-link lifecycle: `lib/app/app.dart`
+- Initial location: `/`
 
-## Route Table
+## Global redirect behavior
 
-| Route | Screen | Notes |
+The router refreshes from Supabase auth changes plus Riverpod listeners for app
+lock and account soft-deletion state.
+
+Redirect order and responsibilities:
+
+1. A signed-in account pending deletion is sent to `/login`.
+2. Before onboarding is marked seen, non-onboarding routes go to
+   `/onboarding`.
+3. Protected routes without a resolved session go to `/login`.
+4. When app lock is enabled and unauthenticated, protected routes go to
+   `/app-lock`; successful unlock returns to `/calendar`.
+
+Post-auth profile setup, profile survey, and pending friend-invite routing are
+decided by the splash/auth application providers rather than duplicated in the
+GoRouter redirect.
+
+## Main shell
+
+`StatefulShellRoute.indexedStack` preserves four bottom tabs:
+
+| Index | Route | Screen |
+|---:|---|---|
+| 0 | `/calendar` | `CalendarScreen` |
+| 1 | `/statistics` | `StatisticsView` |
+| 2 | `/groups` | `GroupsScreen` / group list |
+| 3 | `/profile` | `ProfileScreen` |
+
+The centered camera button opens `/camera`. The financial assistant is a
+floating global action that pushes `/assistant`; it is not a fifth shell tab.
+
+## Route table
+
+### Auth and setup
+
+| Route | Screen | Extra/notes |
 |---|---|---|
-| **Auth / Setup** | | |
-| `/` | `SplashScreen` | Initial location; redirects to Onboarding, Login, or Shell |
+| `/` | `SplashScreen` | Initial decision screen |
 | `/onboarding` | `OnboardingScreen` | Public |
 | `/login` | `LoginScreen` | Public |
-| `/profile-setup` | `ProfileSetupScreen` | Public; also used for edit mode via query param |
-| **Shell (Bottom Nav Tabs)** | | |
-| `/calendar` | `CalendarScreen` | Tab 0 |
-| `/statistics` | `StatisticsView` | Tab 1 |
-| `/assistant` | `AssistantHomeScreen` | Tab 2 |
-| `/groups` | `GroupsScreen` | Tab 3 (alias for `GroupListScreen`) |
-| `/profile` | `ProfileScreen` | Tab 4 |
-| **Global** | | |
-| `/app-lock` | `AppLockScreen` | Biometric auth gate; no slide transition |
-| **Transactions & Calendar** | | |
-| `/camera` | `CameraScreen` | Slides up; accessed via main FAB |
-| `/transaction-form` | `TransactionFormScreen` | Slides up; `imagePath` via `state.extra` map |
-| `/scanning` | `ScanningScreen` | Slides up |
-| `/ocr-review` | `OcrReviewScreen` | Slides up; `OcrReviewArgs` via `state.extra` |
-| `/day-detail` | `DayDetailScreen` | `DateTime` via `state.extra`; falls back to today |
-| `/transaction-detail` | `TransactionDetailScreen` | `TransactionDetailRouteArgs` via `state.extra`; fade transition |
-| `/starred-transactions` | `StarredTransactionsScreen` | Starred transactions list |
-| **AI Assistant** | | |
-| `/assistant/intro` | `AssistantIntroScreen` | Slides in; first-run assistant onboarding |
-| `/assistant/permissions` | `AssistantPermissionScreen` | Slides in; assistant data access consent |
-| `/assistant/conversation` | `AssistantConversationScreen` | Slides in; launched from Assistant Home or question library |
-| `/assistant/questions` | `AssistantQuestionLibraryScreen` | Suggested question catalog |
-| **Groups** | | |
-| `/group-detail` | `GroupDetailScreen` | `String` groupId via `state.extra` |
-| `/groups/create` | `CreateGroupScreen` | |
-| `/groups/invite` | `InviteMemberScreen` | Admin/owner only |
-| `/groups/transaction/form` | `AddGroupTransactionScreen` | |
-| `/groups/member-amount` | `MemberAmountInputScreen` | |
-| `/groups/settlements` | `DebtSettlementScreen` | `String` groupId via `state.extra` |
-| `/groups/transaction/detail` | `GroupTransactionDetailScreen` | `String` transactionId via `state.extra`; fade transition |
-| **Friends** | | |
-| `/friends` | `FriendsScreen` | |
-| `/friends/add` | `AddFriendScreen` | Slides up |
-| `/friends/invite/:token` | `FriendInviteAcceptScreen` | `token` as path parameter |
-| **Settings – Account** | | |
-| `/active-sessions` | `ActiveSessionsScreen` | Manage active sessions & remote logout |
-| `/delete-account` | `DeleteAccountScreen` | |
-| `/delete-account-help` | `DeleteAccountHelpScreen` | |
-| `/notification-settings` | `NotificationSettingsScreen` | |
-| `/import` | `ImportDataScreen` | |
-| `/import-history` | `ImportHistoryScreen` | Lists CSV import history |
-| `/import-history/detail` | `ImportDetailScreen` | `ImportHistoryEntry` via `state.extra`; uses `ImportHistoryScreen.detailRoutePath` |
-| `/export-data` | `ExportDataScreen` | |
-| `/export-history` | `ExportHistoryScreen` | |
-| `/export-detail` | `ExportDetailScreen` | `ExportHistoryEntry` via `state.extra` |
-| `/export-troubleshooting` | `ExportTroubleshootingScreen` | |
-| **Settings – Privacy** | | |
-| `/privacy-center` | `PrivacyCenterScreen` | Optional `group` query param (`PrivacyCenterGroup`) |
-| `/privacy-policy` | `PrivacyPolicyScreen` | |
-| `/privacy-account-faq` | `PrivacyAccountFaqScreen` | |
-| `/privacy-contact` | `PrivacyContactScreen` | |
-| `/privacy-request-detail` | `PrivacyRequestDetailScreen` | `PrivacyRequestHistoryEntry` via `state.extra` |
-| `/permission-rationale` | `PermissionRationaleScreen` | |
-| `/data-safety` | `DataSafetyScreen` | |
-| `/data-transparency` | `DataTransparencyScreen` | |
-| **Settings – Legal** | | |
-| `/data-deletion-policy` | `DataDeletionPolicyScreen` | |
-| `/data-retention-policy` | `DataRetentionPolicyScreen` | |
-| `/third-party-services` | `ThirdPartyServicesScreen` | |
-| `/financial-disclaimer` | `FinancialDisclaimerScreen` | |
-| `/policy-changelog` | `PolicyChangelogScreen` | |
-| `/user-rights-summary` | `UserRightsSummaryScreen` | |
-| `/policy-acceptance-notice` | `PolicyAcceptanceNoticeScreen` | |
-| `/terms-of-use` | `TermsOfUseScreen` | |
-| `/legal-contact` | `LegalContactScreen` | |
-| **Settings – Support & Store** | | |
-| `/help-center` | `HelpCenterScreen` | |
-| `/support-request-checklist` | `SupportRequestChecklistScreen` | |
-| `/about-moniary` | `AboutMoniaryScreen` | |
-| `/store-compliance-checklist` | `StoreComplianceChecklistScreen` | |
-| `/trust-safety` | `TrustSafetyScreen` | |
+| `/profile-setup` | `ProfileSetupScreen` | Public; `?mode=edit` enables edit mode |
+| `/profile-survey` | `ProfileSurveyScreen` | Public setup step |
+| `/app-lock` | `AppLockScreen` | Biometric gate |
+| `/settings` | `SettingsHomeScreen` | Settings hub |
+
+### Transactions and scanning
+
+| Route | Screen | Extra/fallback |
+|---|---|---|
+| `/camera` | `CameraScreen` | Slide-up camera flow |
+| `/transaction-form` | `TransactionFormScreen` | Optional `Map['imagePath']` |
+| `/scanning` | `ScanningScreen` | Optional initial image path `String` |
+| `/ocr-review` | `OcrReviewScreen` | `OcrReviewArgs`; falls back to calendar |
+| `/day-detail` | `DayDetailScreen` | `DateTime`; defaults to now |
+| `/transaction-detail` | `TransactionDetailScreen` | `TransactionDetailRouteArgs`; fade transition |
+| `/starred-transactions` | `StarredTransactionsScreen` | Important entries |
+
+### Assistant, budgets, and journal
+
+| Route | Screen | Extra/fallback |
+|---|---|---|
+| `/assistant` | `AssistantHomeScreen` | Global route |
+| `/assistant/intro` | `AssistantIntroScreen` | First-run explanation |
+| `/assistant/permissions` | `AssistantPermissionScreen` | Data-access consent |
+| `/assistant/conversation` | `AssistantConversationScreen` | Optional `AssistantLaunch` |
+| `/assistant/questions` | `AssistantQuestionLibraryScreen` | Fixed question catalog |
+| `/budgets` | `BudgetScreen` | Monthly budgets |
+| `/budgets/category` | `BudgetCategoryDetailScreen` | `BudgetCategoryDetailArgs`; falls back to budgets |
+| `/journal/recap` | `MonthlyRecapScreen` | Optional month; defaults to current month |
+| `/journal/export` | `JournalExportScreen` | `MonthlyRecap`; falls back to current recap |
+| `/journal/collections` | `JournalCollectionsScreen` | Collection list/create |
+| `/journal/collection` | `JournalCollectionDetailScreen` | Collection ID; falls back to list |
+| `/journal/streak` | `RecordingStreakScreen` | Recording streak |
+
+### Groups and friends
+
+| Route | Screen | Extra/fallback |
+|---|---|---|
+| `/group-detail` | `GroupDetailScreen` | Group ID |
+| `/groups/create` | `CreateGroupScreen` | Slide up |
+| `/groups/invite` | `InviteMemberScreen` | Group ID |
+| `/groups/invite/:token` | `GroupInviteAcceptScreen` | Shared invite token; recipient previews and joins the group |
+| `/groups/transaction/form` | `AddGroupTransactionScreen` | `AddGroupTransactionArgs` |
+| `/groups/member-amount` | `MemberAmountInputScreen` | `MemberAmountInputArgs` |
+| `/groups/settlements` | `DebtSettlementScreen` | Group ID |
+| `/groups/transaction/detail` | `GroupTransactionDetailScreen` | Transaction ID; fade |
+| `/friends` | `FriendsScreen` | Friend list/requests |
+| `/friends/add` | `AddFriendScreen` | Search/add |
+| `/friends/invite/:token` | `FriendInviteAcceptScreen` | Path token |
+
+Invalid/missing group extras fall back to `GroupsScreen`; the friend token
+route falls back to `FriendsScreen`.
+
+### Settings: account and data
+
+| Route | Screen |
+|---|---|
+| `/active-sessions` | `ActiveSessionsScreen` |
+| `/delete-account` | `DeleteAccountScreen` |
+| `/delete-account-help` | `DeleteAccountHelpScreen` |
+| `/notification-settings` | `NotificationSettingsScreen` |
+| `/import` | `ImportDataScreen` |
+| `/import-history` | `ImportHistoryScreen` |
+| `/import-history/detail` | `ImportDetailScreen` with `ImportHistoryEntry` |
+| `/export-data` | `ExportDataScreen` |
+| `/export-history` | `ExportHistoryScreen` |
+| `/export-detail` | `ExportDetailScreen` with `ExportHistoryEntry` |
+| `/export-troubleshooting` | `ExportTroubleshootingScreen` |
+
+Missing import/export detail extras fall back to the corresponding history
+screen.
+
+### Settings: privacy, legal, support, and store
+
+| Route | Screen/notes |
+|---|---|
+| `/privacy-center` | `PrivacyCenterScreen`; optional `group` query |
+| `/privacy-policy` | `PrivacyPolicyScreen` |
+| `/privacy-account-faq` | `PrivacyAccountFaqScreen` |
+| `/privacy-contact` | `PrivacyContactScreen` |
+| `/privacy-request-detail` | `PrivacyRequestDetailScreen` with history entry |
+| `/permission-rationale` | `PermissionRationaleScreen` |
+| `/data-safety` | `DataSafetyScreen` |
+| `/data-transparency` | `DataTransparencyScreen` |
+| `/data-deletion-policy` | `DataDeletionPolicyScreen` |
+| `/data-retention-policy` | `DataRetentionPolicyScreen` |
+| `/third-party-services` | `ThirdPartyServicesScreen` |
+| `/financial-disclaimer` | `FinancialDisclaimerScreen` |
+| `/policy-changelog` | `PolicyChangelogScreen` |
+| `/user-rights-summary` | `UserRightsSummaryScreen` |
+| `/policy-acceptance-notice` | `PolicyAcceptanceNoticeScreen` |
+| `/terms-of-use` | `TermsOfUseScreen` |
+| `/legal-contact` | `LegalContactScreen` |
+| `/help-center` | `HelpCenterScreen` |
+| `/support-request-checklist` | `SupportRequestChecklistScreen` |
+| `/about-moniary` | `AboutMoniaryScreen` |
+| `/store-compliance-checklist` | `StoreComplianceChecklistScreen` |
+| `/trust-safety` | `TrustSafetyScreen` |
+
+## Adding or changing a route
+
+Define a `static const routePath` on the screen when practical, import the
+screen in `app_router.dart`, use a safe typed cast for `state.extra`, and
+provide a non-crashing fallback. Update this table in the same change. Route
+errors must remain localized through the router `errorBuilder`.

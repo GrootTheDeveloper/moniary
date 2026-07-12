@@ -1,5 +1,7 @@
 # Quyết định kỹ thuật
 
+**Archive notice (2026-07-10)**: Đây là decision log của kế hoạch M01-M14. Giữ để tham khảo lịch sử; kiểm tra lại mọi chi tiết phiên bản/cấu trúc với source hiện tại.
+
 > Ghi lại mọi quyết định kỹ thuật đã chốt trong quá trình dev.
 > Mục đích: model/dev tiếp theo đọc để không phải quyết định lại.
 
