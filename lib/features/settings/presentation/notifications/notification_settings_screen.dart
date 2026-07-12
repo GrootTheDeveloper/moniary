@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../application/notification_settings_controller.dart';
 import '../../../../app/app_theme.dart';
+import '../../application/notification_settings_controller.dart';
+import '../../application/reminder_controller.dart';
+import '../../domain/models/reminder_settings.dart';
 
 class NotificationSettingsScreen extends ConsumerWidget {
   const NotificationSettingsScreen({super.key});
@@ -11,184 +13,295 @@ class NotificationSettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(notificationSettingsControllerProvider);
-
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.notificationSettings)),
-      body: state.when(
-        data: (settings) => ListView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-          children: [
-            Text(
-              context.l10n.emailReports,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              context.l10n.emailReportsDesc,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: AppTheme.mint),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              decoration: BoxDecoration(
-                color: AppTheme.surface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.outline),
-              ),
-              child: Column(
-                children: [
-                  _buildSwitchTile(
-                    context: context,
-                    icon: Icons.today_outlined,
-                    title: context.l10n.dailyReport,
-                    subtitle: context.l10n.dailyReportDesc(
-                      _formatReportTime(context, settings.dailyReminderTime),
-                    ),
-                    value: settings.dailyReminderEnabled,
-                    onChanged: (val) {
-                      ref
-                          .read(notificationSettingsControllerProvider.notifier)
-                          .updateDailyReminder(val, null);
-                    },
-                  ),
-                  const _SettingsDivider(),
-                  _buildSwitchTile(
-                    context: context,
-                    icon: Icons.calendar_view_week_outlined,
-                    title: context.l10n.weeklyReport,
-                    subtitle: context.l10n.weeklyReportDesc,
-                    value: settings.weeklySummaryEnabled,
-                    onChanged: (val) {
-                      ref
-                          .read(notificationSettingsControllerProvider.notifier)
-                          .updateWeeklySummary(val);
-                    },
-                  ),
-                  const _SettingsDivider(),
-                  _buildSwitchTile(
-                    context: context,
-                    icon: Icons.calendar_month_outlined,
-                    title: context.l10n.monthlyReport,
-                    subtitle: context.l10n.monthlyReportDesc,
-                    value: settings.monthlySummaryEnabled,
-                    onChanged: (val) {
-                      ref
-                          .read(notificationSettingsControllerProvider.notifier)
-                          .updateMonthlySummary(val);
-                    },
-                  ),
-                  const _SettingsDivider(),
-                  _buildSwitchTile(
-                    context: context,
-                    icon: Icons.event_repeat_outlined,
-                    title: context.l10n.yearlyReport,
-                    subtitle: context.l10n.yearlyReportDesc,
-                    value: settings.yearlySummaryEnabled,
-                    onChanged: (val) {
-                      ref
-                          .read(notificationSettingsControllerProvider.notifier)
-                          .updateYearlySummary(val);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppTheme.danger.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppTheme.danger.withValues(alpha: 0.35),
-                ),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    color: AppTheme.danger,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      context.l10n.errorGeneric,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: AppTheme.danger),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () =>
-                        ref.invalidate(notificationSettingsControllerProvider),
-                    child: Text(context.l10n.commonRetry),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSwitchTile({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: AppTheme.mint.withValues(alpha: 0.14),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: AppTheme.mint, size: 22),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 4),
-                Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeThumbColor: AppTheme.mint,
-          ),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+        children: const [
+          _ReminderSection(),
+          SizedBox(height: 28),
+          _EmailReportsSection(),
         ],
       ),
     );
   }
+}
 
-  String _formatReportTime(BuildContext context, TimeOfDay? time) {
-    final reportTime = time ?? const TimeOfDay(hour: 20, minute: 0);
-    return MaterialLocalizations.of(context).formatTimeOfDay(
-      reportTime,
-      alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+/// On-device daily reminder — delivered locally, independent of email reports.
+class _ReminderSection extends ConsumerWidget {
+  const _ReminderSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(reminderControllerProvider);
+    final time = TimeOfDay(hour: settings.hour, minute: settings.minute);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.l10n.reminderSectionTitle,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          context.l10n.reminderSectionDesc,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppTheme.mint),
+        ),
+        const SizedBox(height: 20),
+        _SettingsCard(
+          child: _NotificationTile(
+            icon: Icons.notifications_active_outlined,
+            title: context.l10n.reminderDailyTitle,
+            subtitle: context.l10n.reminderDailyDesc(_formatTime(context, time)),
+            value: settings.enabled,
+            onChanged: (val) => _toggle(context, ref, val),
+            onTap: settings.enabled
+                ? () => _changeTime(context, ref, settings)
+                : null,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _toggle(BuildContext context, WidgetRef ref, bool value) async {
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    final controller = ref.read(reminderControllerProvider.notifier);
+
+    if (!value) {
+      await controller.disable();
+      return;
+    }
+
+    final granted = await controller.enable(
+      title: l10n.reminderNotificationTitle,
+      body: l10n.reminderNotificationBody,
+    );
+    if (!granted) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.reminderPermissionDenied)),
+      );
+    }
+  }
+
+  Future<void> _changeTime(
+    BuildContext context,
+    WidgetRef ref,
+    ReminderSettings settings,
+  ) async {
+    final l10n = context.l10n;
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: settings.hour, minute: settings.minute),
+    );
+    if (picked == null) return;
+
+    await ref
+        .read(reminderControllerProvider.notifier)
+        .setTime(
+          hour: picked.hour,
+          minute: picked.minute,
+          title: l10n.reminderNotificationTitle,
+          body: l10n.reminderNotificationBody,
+        );
+  }
+}
+
+/// Automated income/expense summaries delivered by email (Supabase function).
+class _EmailReportsSection extends ConsumerWidget {
+  const _EmailReportsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(notificationSettingsControllerProvider);
+    final notifier = ref.read(notificationSettingsControllerProvider.notifier);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.l10n.emailReports,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          context.l10n.emailReportsDesc,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppTheme.mint),
+        ),
+        const SizedBox(height: 20),
+        state.when(
+          data: (settings) => _SettingsCard(
+            child: Column(
+              children: [
+                _NotificationTile(
+                  icon: Icons.today_outlined,
+                  title: context.l10n.dailyReport,
+                  subtitle: context.l10n.dailyReportDesc(
+                    _formatTime(context, settings.dailyReminderTime),
+                  ),
+                  value: settings.dailyReminderEnabled,
+                  onChanged: (val) => notifier.updateDailyReminder(val, null),
+                ),
+                const _SettingsDivider(),
+                _NotificationTile(
+                  icon: Icons.calendar_view_week_outlined,
+                  title: context.l10n.weeklyReport,
+                  subtitle: context.l10n.weeklyReportDesc,
+                  value: settings.weeklySummaryEnabled,
+                  onChanged: notifier.updateWeeklySummary,
+                ),
+                const _SettingsDivider(),
+                _NotificationTile(
+                  icon: Icons.calendar_month_outlined,
+                  title: context.l10n.monthlyReport,
+                  subtitle: context.l10n.monthlyReportDesc,
+                  value: settings.monthlySummaryEnabled,
+                  onChanged: notifier.updateMonthlySummary,
+                ),
+                const _SettingsDivider(),
+                _NotificationTile(
+                  icon: Icons.event_repeat_outlined,
+                  title: context.l10n.yearlyReport,
+                  subtitle: context.l10n.yearlyReportDesc,
+                  value: settings.yearlySummaryEnabled,
+                  onChanged: notifier.updateYearlySummary,
+                ),
+              ],
+            ),
+          ),
+          loading: () => const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          error: (err, stack) => _ErrorCard(
+            onRetry: () =>
+                ref.invalidate(notificationSettingsControllerProvider),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SettingsCard extends StatelessWidget {
+  const _SettingsCard({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: child,
+    );
+  }
+}
+
+class _NotificationTile extends StatelessWidget {
+  const _NotificationTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: AppTheme.mint.withValues(alpha: 0.14),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: AppTheme.mint, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+              activeThumbColor: AppTheme.mint,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ErrorCard extends StatelessWidget {
+  const _ErrorCard({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.danger.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.danger.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.error_outline, color: AppTheme.danger, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              context.l10n.errorGeneric,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppTheme.danger),
+            ),
+          ),
+          TextButton(
+            onPressed: onRetry,
+            child: Text(context.l10n.commonRetry),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -205,4 +318,12 @@ class _SettingsDivider extends StatelessWidget {
       color: AppTheme.outline,
     );
   }
+}
+
+String _formatTime(BuildContext context, TimeOfDay? time) {
+  final value = time ?? const TimeOfDay(hour: 20, minute: 0);
+  return MaterialLocalizations.of(context).formatTimeOfDay(
+    value,
+    alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+  );
 }
