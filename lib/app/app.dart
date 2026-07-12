@@ -59,6 +59,9 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       routerConfig: ref.watch(appRouterProvider),
+      // Vietnamese-first product: pin the UI to Vietnamese regardless of the
+      // device locale so it always matches the approved design.
+      locale: const Locale('vi'),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
     );
