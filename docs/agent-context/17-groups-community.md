@@ -481,7 +481,9 @@ Do not support invite by email.
 Requirements:
 
 - Generate a shared link that expires after seven days; generating a replacement revokes the earlier active link.
-- Opening the link shows a localized preview/confirmation screen and handles invalid, expired, revoked, used, and already-member states.
+- Opening the link shows a localized preview/confirmation screen with explicit join and dismiss actions.
+- Dismissing a shared-link preview does not write a decline state because shared links are reusable and are not per-recipient invitations.
+- The preview handles invalid, expired, revoked, used, and already-member states.
 - If the recipient accepts, add or update their member status to `active` without consuming the shared link.
 
 ### 7.2. Invite from Friend List

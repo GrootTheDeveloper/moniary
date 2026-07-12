@@ -69,7 +69,8 @@ environment operations.
 
 - `camera` and `image_picker`: capture/select receipt and avatar images.
 - `local_auth`: app lock.
-- `app_links`: friend invite and auth callback/deep-link intake.
+- `app_links`: HTTPS friend/group invite links plus auth callback/deep-link
+  intake.
 - `file_picker`: CSV import.
 - `open_filex` and `share_plus`: exported file actions and sharing.
 - `path_provider`: histories, exports, temporary images, and journal PNGs.
