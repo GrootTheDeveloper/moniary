@@ -1137,18 +1137,9 @@ class _CalendarDayCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
     final dominant = _DominantDayCategory.from(day.transactions, colors);
-    final images = day.transactions
-        .where((t) => t.imagePath != null && t.imagePath!.isNotEmpty)
-        .toList()
-        .reversed
-        .toList();
+    final imageTransactions = day.transactions.reversed.toList();
     final transactionCount = day.transactions.length;
     final hasTransactions = transactionCount > 0;
-    final hasImages = images.isNotEmpty;
-    final foreground = hasTransactions
-        ? _readableTextColor(dominant.color)
-        : colors.textPrimary;
-    final blockSize = hasTransactions ? 42.0 : 0.0;
 
     return InkWell(
       borderRadius: BorderRadius.circular(10),
@@ -1159,109 +1150,14 @@ class _CalendarDayCell extends StatelessWidget {
           alignment: Alignment.center,
           clipBehavior: Clip.none,
           children: [
-            if (hasImages)
+            if (hasTransactions)
               Positioned(
                 top: 0,
                 child: _CalendarPhotoBlock(
                   day: day,
-                  images: images,
+                  transactions: imageTransactions,
                   transactionCount: transactionCount,
                   accentColor: dominant.color,
-                ),
-              )
-            else if (hasTransactions)
-              Positioned(
-                top: 0,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      curve: Curves.easeOutCubic,
-                      width: blockSize,
-                      height: blockSize,
-                      decoration: BoxDecoration(
-                        color: Color.lerp(
-                          dominant.color,
-                          colors.background,
-                          0.16,
-                        ),
-                        borderRadius: BorderRadius.circular(7),
-                        border: day.isToday
-                            ? Border.all(color: colors.primary, width: 1.4)
-                            : null,
-                        boxShadow: [
-                          BoxShadow(
-                            color: dominant.color.withValues(alpha: 0.18),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: 7,
-                            bottom: 5,
-                            child: Text(
-                              '${day.date.day}',
-                              style: context.moniaryTypography.metadataStrong
-                                  .copyWith(
-                                    color: foreground,
-                                    fontSize: 10,
-                                    letterSpacing: 0,
-                                  ),
-                            ),
-                          ),
-                          if (day.hasImportant)
-                            Positioned(
-                              right: 6,
-                              bottom: 5,
-                              child: Icon(
-                                Icons.star_rounded,
-                                color: foreground.withValues(alpha: 0.86),
-                                size: 10,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      top: 4,
-                      right: 4,
-                      child: Container(
-                        constraints: const BoxConstraints(
-                          minWidth: 15,
-                          minHeight: 15,
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 3),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Color.lerp(
-                            dominant.color,
-                            colors.textPrimary,
-                            0.25,
-                          ),
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(
-                            color: colors.backgroundSoft.withValues(
-                              alpha: 0.76,
-                            ),
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          '$transactionCount',
-                          style: context.moniaryTypography.metadataStrong
-                              .copyWith(
-                                color: _readableTextColor(dominant.color),
-                                fontSize: 7.5,
-                                letterSpacing: 0,
-                              ),
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             if (!hasTransactions)
@@ -1317,13 +1213,13 @@ class _CalendarDayCell extends StatelessWidget {
 class _CalendarPhotoBlock extends StatelessWidget {
   const _CalendarPhotoBlock({
     required this.day,
-    required this.images,
+    required this.transactions,
     required this.transactionCount,
     required this.accentColor,
   });
 
   final CalendarDayData day;
-  final List<TransactionEntry> images;
+  final List<TransactionEntry> transactions;
   final int transactionCount;
   final Color accentColor;
 
@@ -1336,19 +1232,19 @@ class _CalendarPhotoBlock extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        if (images.length > 1)
+        if (transactions.length > 1)
           Positioned(
             top: 4,
             left: -4,
             child: _PhotoFrame(
-              imagePath: images[1].imagePath,
+              imagePath: _calendarImagePathFor(transactions[1]),
               size: size - 2,
               radius: radius,
               borderColor: accentColor.withValues(alpha: 0.52),
             ),
           ),
         _PhotoFrame(
-          imagePath: images.first.imagePath,
+          imagePath: _calendarImagePathFor(transactions.first),
           size: size,
           radius: radius,
           borderColor: day.isToday ? colors.primary : accentColor,
@@ -1539,6 +1435,23 @@ Color _readableTextColor(Color color) {
   return color.computeLuminance() > 0.42
       ? AppTheme.ink
       : AppTheme.surfaceRaised;
+}
+
+String _calendarImagePathFor(TransactionEntry transaction) {
+  final imagePath = transaction.imagePath?.trim();
+  if (imagePath != null && imagePath.isNotEmpty) {
+    return imagePath;
+  }
+
+  return switch (transaction.categoryId) {
+    'mock-cat-food' => 'asset://assets/demo_transactions/lunch.png',
+    'mock-cat-transport' => 'asset://assets/demo_transactions/transport.png',
+    'mock-cat-shopping' => 'asset://assets/demo_transactions/shopping.png',
+    'mock-cat-salary' => 'asset://assets/demo_transactions/salary.png',
+    _ when transaction.isIncome =>
+      'asset://assets/demo_transactions/salary.png',
+    _ => 'asset://assets/demo_transactions/market.png',
+  };
 }
 
 Color _controlFill(MoniaryColors colors) {
