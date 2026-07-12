@@ -5,17 +5,17 @@ import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../app/app_theme.dart';
-import '../../../../l10n/l10n_extension.dart';
 import '../../../../core/constants/app_color.dart';
-import '../../../../shared/widgets/supabase_image.dart';
+import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
-import '../../../../shared/utils/app_logger.dart';
-import '../../application/queries/transaction_queries.dart';
+import '../../../../shared/widgets/supabase_image.dart';
 import '../../../calendar/application/month/calendar_month_provider.dart';
 import '../../../statistics/presentation/statistics_view.dart';
-import '../../domain/models/transaction_mutation_result.dart';
+import '../../application/queries/transaction_queries.dart';
 import '../../domain/models/transaction_entry.dart';
+import '../../domain/models/transaction_mutation_result.dart';
 import '../form/transaction_form_sheet.dart';
 import 'transaction_detail_screen.dart';
 import 'transaction_route_args.dart';
@@ -32,49 +32,37 @@ class DayDetailScreen extends ConsumerWidget {
     final transactionsAsync = ref.watch(transactionsForDayProvider(date));
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        title: Text(
-          DateUtils.isSameDay(date, DateTime.now())
-              ? context.l10n.calendarToday
-              : DateFormat(
-                  'd/M',
-                  Localizations.localeOf(context).toString(),
-                ).format(date),
-        ),
-      ),
+      backgroundColor: context.moniaryColors.background,
       body: transactionsAsync.when(
         data: (transactions) =>
             _DayDetailBody(date: date, transactions: transactions),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(
+          child: CircularProgressIndicator(
+            color: context.moniaryColors.primary,
+          ),
+        ),
         error: (error, stackTrace) {
           AppLogger.error('Failed to load day transactions', error, stackTrace);
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(
-                context.l10n.transactionLoadDayError(
-                  userFriendlyMessage(context, error),
+          return SafeArea(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 393),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    context.l10n.transactionLoadDayError(
+                      userFriendlyMessage(context, error),
+                    ),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: context.moniaryColors.textSecondary,
+                    ),
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppTheme.mint,
-        foregroundColor: Colors.white,
-        onPressed: () async {
-          final result = await showTransactionFormSheet(
-            context,
-            ref,
-            initialDateTime: date,
-          );
-          if (result == null || !context.mounted) return;
-          _applyMutation(ref, result);
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -95,191 +83,355 @@ class _DayDetailBody extends ConsumerWidget {
         .where((transaction) => transaction.isExpense)
         .fold<double>(0, (sum, item) => sum + item.amount);
     final net = income - expense;
-    final locale = Localizations.localeOf(context).toString();
     final colors = context.moniaryColors;
     final typography = context.moniaryTypography;
+    final isToday = DateUtils.isSameDay(date, DateTime.now());
 
-    return CustomScrollView(
-      slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 18),
-          sliver: SliverToBoxAdapter(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: colors.outline),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.textPrimary.withValues(alpha: 0.06),
-                    blurRadius: 24,
-                    offset: const Offset(0, 14),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
+    return SafeArea(
+      bottom: false,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 393),
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(22, 10, 22, 0),
+                      child: Row(
+                        children: [
+                          _DayTopButton(
+                            icon: Icons.arrow_back_ios_new_rounded,
+                            tooltip: MaterialLocalizations.of(
+                              context,
+                            ).backButtonTooltip,
+                            onPressed: () {
+                              if (context.canPop()) {
+                                context.pop();
+                              } else {
+                                context.go('/calendar');
+                              }
+                            },
+                          ),
+                          const Spacer(),
+                          _DayTopButton(
+                            icon: Icons.star_border_rounded,
+                            tooltip: context.l10n.starredTransactionsTitle,
+                            onPressed: () =>
+                                context.push('/starred-transactions'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 15),
                     Text(
-                      DateUtils.isSameDay(date, DateTime.now())
+                      isToday
                           ? context.l10n.calendarToday.toUpperCase()
-                          : DateFormat(
-                              'EEEE',
-                              locale,
-                            ).format(date).toUpperCase(),
+                          : _titleCase(
+                              DateFormat(
+                                'EEEE',
+                                Localizations.localeOf(context).toString(),
+                              ).format(date),
+                            ).toUpperCase(),
                       style: typography.metadataStrong.copyWith(
                         color: colors.primary,
+                        fontSize: 9,
+                        letterSpacing: 2.2,
                       ),
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      DateFormat('EEEE, d MMMM', locale).format(date),
-                      style: typography.displayMedium,
+                      _dayTitle(context, date),
+                      textAlign: TextAlign.center,
+                      style: typography.displayMedium.copyWith(
+                        fontSize: 29,
+                        height: 1,
+                      ),
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      '${context.l10n.transactionCount(transactions.length).toUpperCase()} · '
-                      '${net >= 0 ? '+' : '-'}${formatVnd(net.abs())}',
+                    const SizedBox(height: 13),
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: context.l10n
+                                .transactionCount(transactions.length)
+                                .toUpperCase(),
+                          ),
+                          const TextSpan(text: '   '),
+                          TextSpan(
+                            text:
+                                '${net >= 0 ? '+' : '-'}${formatVnd(net.abs())}',
+                            style: TextStyle(
+                              color: net >= 0 ? colors.success : colors.danger,
+                              letterSpacing: 0.45,
+                            ),
+                          ),
+                        ],
+                      ),
                       style: typography.metadataStrong.copyWith(
-                        color: net >= 0 ? colors.success : colors.danger,
+                        color: colors.textDim,
+                        fontSize: 9.5,
+                        letterSpacing: 2.1,
                       ),
                     ),
+                    const SizedBox(height: 30),
                   ],
                 ),
               ),
-            ),
+              if (transactions.isEmpty)
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(30, 10, 30, 18),
+                  sliver: SliverToBoxAdapter(
+                    child: Text(
+                      context.l10n.transactionDayEmpty,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                  sliver: SliverList.separated(
+                    itemCount: transactions.length,
+                    separatorBuilder: (context, index) => Padding(
+                      padding: const EdgeInsets.only(left: 58),
+                      child: Divider(
+                        height: 1,
+                        color: colors.outline.withValues(alpha: 0.74),
+                      ),
+                    ),
+                    itemBuilder: (context, index) {
+                      final transaction = transactions[index];
+                      return _DayTransactionRow(
+                            transaction: transaction,
+                            onTap: () async {
+                              final result = await context
+                                  .push<TransactionMutationResult>(
+                                    TransactionDetailScreen.routePath,
+                                    extra: TransactionDetailRouteArgs(
+                                      transaction: transaction,
+                                      day: date,
+                                    ),
+                                  );
+                              if (result == null || !context.mounted) return;
+                              _applyMutation(ref, result);
+                            },
+                          )
+                          .animate(delay: (26 * index).ms)
+                          .fade()
+                          .slideY(
+                            begin: 0.08,
+                            end: 0,
+                            curve: Curves.easeOutQuad,
+                            duration: 260.ms,
+                          );
+                    },
+                  ),
+                ),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(24, 22, 24, 108),
+                sliver: SliverToBoxAdapter(
+                  child: _AddForDayButton(
+                    onPressed: () async {
+                      final result = await showTransactionFormSheet(
+                        context,
+                        ref,
+                        initialDateTime: date,
+                      );
+                      if (result == null || !context.mounted) return;
+                      _applyMutation(ref, result);
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        if (transactions.isNotEmpty)
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
-            sliver: SliverToBoxAdapter(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: _DayMetric(
-                      label: context.l10n.transactionTotalIncome,
-                      value: '+${formatVnd(income)}',
-                      color: colors.success,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _DayMetric(
-                      label: context.l10n.transactionTotalExpense,
-                      value: '-${formatVnd(expense)}',
-                      color: colors.danger,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        if (transactions.isEmpty)
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            sliver: SliverToBoxAdapter(
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: colors.outline),
-                ),
-                child: Text(
-                  context.l10n.transactionDayEmpty,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(color: colors.textSecondary),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          )
-        else
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 96),
-            sliver: SliverList.separated(
-              itemCount: transactions.length,
-              separatorBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.only(left: 72),
-                child: Divider(height: 1, color: colors.outline),
-              ),
-              itemBuilder: (context, index) {
-                final transaction = transactions[index];
-                return _DayTransactionRow(
-                      transaction: transaction,
-                      onTap: () async {
-                        final result = await context
-                            .push<TransactionMutationResult>(
-                              TransactionDetailScreen.routePath,
-                              extra: TransactionDetailRouteArgs(
-                                transaction: transaction,
-                                day: date,
-                              ),
-                            );
-                        if (result == null || !context.mounted) return;
-                        _applyMutation(ref, result);
-                      },
-                    )
-                    .animate(delay: (30 * index).ms)
-                    .fade()
-                    .slideY(
-                      begin: 0.1,
-                      end: 0,
-                      curve: Curves.easeOutQuad,
-                      duration: 300.ms,
-                    );
-              },
-            ),
-          ),
-      ],
+      ),
     );
   }
 }
 
-class _DayMetric extends StatelessWidget {
-  const _DayMetric({
-    required this.label,
-    required this.value,
-    required this.color,
+class _DayTopButton extends StatelessWidget {
+  const _DayTopButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
   });
 
-  final String label;
-  final String value;
-  final Color color;
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: colors.outline),
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: colors.surface.withValues(alpha: 0.56),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(13),
+          side: BorderSide(color: colors.outline),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onPressed,
+          child: SizedBox(
+            width: 41,
+            height: 41,
+            child: Icon(icon, size: 18, color: colors.icon),
+          ),
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label.toUpperCase(),
-              style: context.moniaryTypography.metadata,
+    );
+  }
+}
+
+class _AddForDayButton extends StatelessWidget {
+  const _AddForDayButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return CustomPaint(
+      painter: _DashedBorderPainter(color: colors.outline, radius: 13),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(13),
+          onTap: onPressed,
+          child: SizedBox(
+            height: 54,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.add_rounded, size: 20, color: colors.primary),
+                const SizedBox(width: 8),
+                Text(
+                  context.l10n.transactionAddForDay,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: colors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: color,
-                fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DashedBorderPainter extends CustomPainter {
+  const _DashedBorderPainter({required this.color, required this.radius});
+
+  final Color color;
+  final double radius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.1
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    final path = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(Offset.zero & size, Radius.circular(radius)),
+      );
+    for (final metric in path.computeMetrics()) {
+      var distance = 0.0;
+      while (distance < metric.length) {
+        final end = (distance + 6).clamp(0.0, metric.length);
+        canvas.drawPath(metric.extractPath(distance, end), paint);
+        distance += 11;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DashedBorderPainter oldDelegate) {
+    return color != oldDelegate.color || radius != oldDelegate.radius;
+  }
+}
+
+class _CategoryTile extends StatelessWidget {
+  const _CategoryTile({
+    required this.color,
+    required this.isImportant,
+    required this.imagePath,
+  });
+
+  final Color color;
+  final bool isImportant;
+  final String? imagePath;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return SizedBox(
+      width: 42,
+      height: 42,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: Color.lerp(color, colors.backgroundSoft, 0.08),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.textPrimary.withValues(alpha: 0.07),
+                  blurRadius: 10,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: imagePath == null
+                  ? const SizedBox.expand()
+                  : SupabaseImage(
+                      imagePath: imagePath,
+                      width: 42,
+                      height: 42,
+                      fit: BoxFit.cover,
+                      fallbackIcon: Icons.receipt_long_outlined,
+                    ),
+            ),
+          ),
+          if (isImportant)
+            Positioned(
+              top: -5,
+              right: -5,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: colors.background, width: 1.4),
+                ),
+                child: SizedBox(
+                  width: 17,
+                  height: 17,
+                  child: Icon(
+                    Icons.star_rounded,
+                    size: 11,
+                    color: colors.surfaceRaised,
+                  ),
+                ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -302,75 +454,67 @@ class _DayTransactionRow extends StatelessWidget {
         ? transaction.note!.trim()
         : transaction.categoryName;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: SizedBox(
-                    width: 56,
-                    height: 56,
-                    child: ColoredBox(
-                      color: accent.withValues(alpha: 0.18),
-                      child: SupabaseImage(
-                        imagePath: transaction.imagePath,
-                        width: 56,
-                        height: 56,
-                        fit: BoxFit.cover,
-                        fallbackIcon: Icons.receipt_long_outlined,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 13),
+          child: Row(
+            children: [
+              _CategoryTile(
+                color: accent,
+                isImportant: transaction.isImportant,
+                imagePath: transaction.imagePath,
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: colors.textPrimary,
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w800,
+                        height: 1.15,
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              color: colors.textPrimary,
-                              fontWeight: FontWeight.w800,
-                            ),
+                    const SizedBox(height: 7),
+                    Text(
+                      '${DateFormat('HH:mm').format(transaction.transactionDate)} · '
+                      '${transaction.categoryName.toUpperCase()} · '
+                      '${transaction.walletName.toUpperCase()}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.moniaryTypography.metadata.copyWith(
+                        color: colors.textDim,
+                        fontSize: 8.6,
+                        letterSpacing: 0.55,
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        '${DateFormat('HH:mm').format(transaction.transactionDate)} · '
-                        '${transaction.categoryName.toUpperCase()} · '
-                        '${transaction.walletName.toUpperCase()}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.moniaryTypography.metadata.copyWith(
-                          color: colors.textDim,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: transaction.isIncome
-                        ? colors.success
-                        : colors.danger,
-                    fontWeight: FontWeight.w900,
-                  ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
+                textAlign: TextAlign.right,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: transaction.isIncome
+                      ? colors.success
+                      : colors.textPrimary,
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w900,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -538,6 +682,21 @@ class GridTag extends StatelessWidget {
       ),
     );
   }
+}
+
+String _dayTitle(BuildContext context, DateTime date) {
+  final locale = Localizations.localeOf(context).toString();
+  return _titleCase(DateFormat('EEEE, d MMMM', locale).format(date));
+}
+
+String _titleCase(String value) {
+  return value
+      .split(' ')
+      .map((word) {
+        if (word.isEmpty) return word;
+        return '${word[0].toUpperCase()}${word.substring(1)}';
+      })
+      .join(' ');
 }
 
 void _applyMutation(WidgetRef ref, TransactionMutationResult result) {

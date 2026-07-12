@@ -207,6 +207,7 @@
     }
   },
   "transactionDayEmpty": "Ngày này chưa có giao dịch. Bạn có thể bấm nút + để thêm ngay.",
+  "transactionAddForDay": "Thêm khoản cho ngày này",
   "transactionLoadDetailError": "Không tải được chi tiết giao dịch.\n{error}",
   "@transactionLoadDetailError": {
     "placeholders": {

@@ -1070,6 +1070,12 @@ abstract class AppLocalizations {
   /// **'Ngày này chưa có giao dịch. Bạn có thể bấm nút + để thêm ngay.'**
   String get transactionDayEmpty;
 
+  /// No description provided for @transactionAddForDay.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm khoản cho ngày này'**
+  String get transactionAddForDay;
+
   /// No description provided for @transactionLoadDetailError.
   ///
   /// In vi, this message translates to:

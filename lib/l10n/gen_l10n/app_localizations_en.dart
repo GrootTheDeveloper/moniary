@@ -527,6 +527,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'No transactions for this day. Tap + to add one.';
 
   @override
+  String get transactionAddForDay => 'Add an entry for this day';
+
+  @override
   String transactionLoadDetailError(String error) {
     return 'Could not load transaction details.\n$error';
   }

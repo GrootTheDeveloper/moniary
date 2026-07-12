@@ -527,6 +527,9 @@ class AppLocalizationsVi extends AppLocalizations {
       'Ngày này chưa có giao dịch. Bạn có thể bấm nút + để thêm ngay.';
 
   @override
+  String get transactionAddForDay => 'Thêm khoản cho ngày này';
+
+  @override
   String transactionLoadDetailError(String error) {
     return 'Không tải được chi tiết giao dịch.\n$error';
   }

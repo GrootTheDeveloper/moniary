@@ -207,6 +207,7 @@
     }
   },
   "transactionDayEmpty": "No transactions for this day. Tap + to add one.",
+  "transactionAddForDay": "Add an entry for this day",
   "transactionLoadDetailError": "Could not load transaction details.\n{error}",
   "@transactionLoadDetailError": {
     "placeholders": {
