@@ -1,3 +1,4 @@
+import '../entities/group_invite.dart';
 import '../entities/group_settlement.dart';
 import '../entities/group_transaction.dart';
 import '../entities/spending_group.dart';
@@ -17,6 +18,12 @@ abstract interface class GroupRepository {
   });
 
   Future<String> createInviteLink(String groupId);
+
+  Future<GroupInvitePreview> fetchInvitePreview(String token);
+
+  Future<GroupInviteAcceptResult> acceptInvite(String token);
+
+  Future<void> revokeInviteLink(String token);
 
   Future<void> inviteByUsername({
     required String groupId,

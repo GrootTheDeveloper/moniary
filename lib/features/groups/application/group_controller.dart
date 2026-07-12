@@ -4,6 +4,7 @@ import '../../../shared/utils/app_logger.dart';
 import '../data/repositories/group_repository_impl.dart';
 import '../domain/entities/group_settlement.dart';
 import '../domain/entities/group_transaction.dart';
+import '../domain/entities/group_invite.dart';
 import '../domain/entities/spending_group.dart';
 
 final groupsControllerProvider =
@@ -35,6 +36,11 @@ final groupSettlementOverviewProvider =
       return ref
           .watch(groupRepositoryProvider)
           .fetchSettlementOverview(groupId);
+    });
+
+final groupInvitePreviewProvider = FutureProvider.autoDispose
+    .family<GroupInvitePreview, String>((ref, token) {
+      return ref.watch(groupRepositoryProvider).fetchInvitePreview(token);
     });
 
 final currentGroupUserIdProvider = Provider<String>((ref) {
@@ -86,6 +92,24 @@ class GroupActionController extends AsyncNotifier<void> {
     return _run(
       () => ref.read(groupRepositoryProvider).createInviteLink(groupId),
     );
+  }
+
+  Future<GroupInviteAcceptResult> acceptInvite(String token) {
+    return _run(() async {
+      final result = await ref
+          .read(groupRepositoryProvider)
+          .acceptInvite(token);
+      ref.invalidate(groupsControllerProvider);
+      ref.invalidate(groupInvitePreviewProvider(token));
+      return result;
+    });
+  }
+
+  Future<void> revokeInviteLink(String token) {
+    return _run(() async {
+      await ref.read(groupRepositoryProvider).revokeInviteLink(token);
+      ref.invalidate(groupInvitePreviewProvider(token));
+    });
   }
 
   Future<void> inviteByUsername({

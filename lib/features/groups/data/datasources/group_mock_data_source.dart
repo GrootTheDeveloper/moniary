@@ -1,5 +1,6 @@
 import '../../../../core/supabase/app_exception.dart';
 import '../../domain/entities/group_enums.dart';
+import '../../domain/entities/group_invite.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
@@ -18,7 +19,17 @@ class GroupMockDataSource {
   static final Map<String, List<SpendingGroupMember>> _members = {};
   static final Map<String, _MockTransactionRecord> _transactions = {};
   static final Map<String, List<GroupSettlementSuggestion>> _settlements = {};
+  static final Map<String, _MockGroupInviteLink> _inviteLinks = {};
   static var _sequence = 0;
+
+  static void resetForTesting() {
+    _groups.clear();
+    _members.clear();
+    _transactions.clear();
+    _settlements.clear();
+    _inviteLinks.clear();
+    _sequence = 0;
+  }
 
   Future<List<SpendingGroup>> fetchGroups() async {
     final memberGroupIds = _members.entries
@@ -124,7 +135,112 @@ class GroupMockDataSource {
 
   Future<String> createInviteLink(String groupId) async {
     _requireAdmin(groupId);
-    return 'moniary://groups/invite/${_id('invite')}';
+    for (final invite in _inviteLinks.values) {
+      if (invite.groupId == groupId &&
+          invite.status == GroupInviteStatus.active) {
+        invite.status = GroupInviteStatus.revoked;
+      }
+    }
+    final token = _id('invite');
+    _inviteLinks[token] = _MockGroupInviteLink(
+      token: token,
+      groupId: groupId,
+      invitedBy: currentUserId,
+      expiresAt: DateTime.now().add(const Duration(days: 7)),
+    );
+    return 'moniary://groups/invite/$token';
+  }
+
+  Future<GroupInvitePreview> fetchInvitePreview(String token) async {
+    final invite = _inviteLinks[token.trim()];
+    if (invite == null) {
+      return const GroupInvitePreview(status: GroupInviteStatus.invalid);
+    }
+    if (invite.status == GroupInviteStatus.active &&
+        !invite.expiresAt.isAfter(DateTime.now())) {
+      invite.status = GroupInviteStatus.expired;
+    }
+    final group = _groups[invite.groupId];
+    if (group == null) {
+      return const GroupInvitePreview(status: GroupInviteStatus.invalid);
+    }
+    final isMember = (_members[invite.groupId] ?? const []).any(
+      (member) =>
+          member.userId == currentUserId &&
+          member.status == GroupMemberStatus.active,
+    );
+    return GroupInvitePreview(
+      status: isMember ? GroupInviteStatus.alreadyMember : invite.status,
+      groupId: group.id,
+      groupName: group.name,
+      groupAvatarPath: group.avatarPath,
+      inviterName: invite.invitedBy == currentUserId
+          ? 'mock-user'
+          : invite.invitedBy,
+      expiresAt: invite.expiresAt,
+    );
+  }
+
+  Future<GroupInviteAcceptResult> acceptInvite(String token) async {
+    final preview = await fetchInvitePreview(token);
+    final groupId = preview.groupId;
+    if (groupId == null) {
+      throw const AppException(
+        'Invite not found',
+        code: 'GROUP_INVITE_INVALID',
+      );
+    }
+    if (preview.status == GroupInviteStatus.alreadyMember) {
+      return GroupInviteAcceptResult(
+        status: GroupInviteStatus.alreadyMember,
+        groupId: groupId,
+      );
+    }
+    if (!preview.canAccept) {
+      throw AppException(
+        'Invite cannot be accepted',
+        code: _inviteErrorCode(preview.status),
+      );
+    }
+    final members = _members[groupId] ?? const <SpendingGroupMember>[];
+    final existingIndex = members.indexWhere(
+      (member) => member.userId == currentUserId,
+    );
+    final activeMember = SpendingGroupMember(
+      id: existingIndex == -1 ? _id('member') : members[existingIndex].id,
+      groupId: groupId,
+      userId: currentUserId,
+      role: GroupRole.member,
+      status: GroupMemberStatus.active,
+      joinedAt: DateTime.now(),
+      displayName: currentUserId == 'mock-user-id'
+          ? 'mock-user'
+          : currentUserId,
+      username: currentUserId == 'mock-user-id' ? 'mock-user' : currentUserId,
+    );
+    _members[groupId] = [
+      for (var index = 0; index < members.length; index++)
+        if (index == existingIndex) activeMember else members[index],
+      if (existingIndex == -1) activeMember,
+    ];
+    return GroupInviteAcceptResult(
+      status: GroupInviteStatus.accepted,
+      groupId: groupId,
+    );
+  }
+
+  Future<void> revokeInviteLink(String token) async {
+    final invite = _inviteLinks[token.trim()];
+    if (invite == null) {
+      throw const AppException(
+        'Invite not found',
+        code: 'GROUP_INVITE_INVALID',
+      );
+    }
+    _requireAdmin(invite.groupId);
+    if (invite.status == GroupInviteStatus.active) {
+      invite.status = GroupInviteStatus.revoked;
+    }
   }
 
   Future<void> inviteByUsername({
@@ -794,6 +910,16 @@ class GroupMockDataSource {
   static String? _blankToNull(String? value) =>
       value?.trim().isEmpty == true ? null : value?.trim();
 
+  static String _inviteErrorCode(GroupInviteStatus status) => switch (status) {
+    GroupInviteStatus.expired => 'GROUP_INVITE_EXPIRED',
+    GroupInviteStatus.revoked => 'GROUP_INVITE_REVOKED',
+    GroupInviteStatus.used => 'GROUP_INVITE_USED',
+    GroupInviteStatus.invalid => 'GROUP_INVITE_INVALID',
+    GroupInviteStatus.alreadyMember ||
+    GroupInviteStatus.active ||
+    GroupInviteStatus.accepted => 'GROUP_INVITE_INVALID',
+  };
+
   static String _id(String prefix) =>
       '$prefix-${DateTime.now().microsecondsSinceEpoch}-${_sequence++}';
 }
@@ -817,6 +943,21 @@ class _MockTransactionRecord {
     shares: List.unmodifiable(shares),
     comments: List.unmodifiable(comments),
   );
+}
+
+class _MockGroupInviteLink {
+  _MockGroupInviteLink({
+    required this.token,
+    required this.groupId,
+    required this.invitedBy,
+    required this.expiresAt,
+  });
+
+  final String token;
+  final String groupId;
+  final String invitedBy;
+  final DateTime expiresAt;
+  GroupInviteStatus status = GroupInviteStatus.active;
 }
 
 class _SettlementMatch {
