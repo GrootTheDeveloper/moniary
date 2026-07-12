@@ -66,6 +66,10 @@ class CategoryRepository {
     ),
   ];
 
+  void clearMockUserData() {
+    if (_useMockData) _mockCategories.clear();
+  }
+
   Future<List<Category>> fetchCategories() async {
     if (_useMockData) {
       return _mockCategories.where((c) => c.isActive).toList();

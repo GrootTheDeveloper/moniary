@@ -39,5 +39,7 @@ class ProfileSetupController extends AsyncNotifier<UserProfile?> {
           ),
     );
     ref.invalidate(currentProfileProvider);
+    // Invalidate the controller to ensure next build gets fresh data
+    ref.invalidateSelf();
   }
 }

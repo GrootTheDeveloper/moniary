@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../app/app_theme.dart';
+import '../../../../core/supabase/session_utils.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
@@ -130,27 +130,10 @@ class _SessionTile extends ConsumerWidget {
     return Icons.computer;
   }
 
-  String? _getCurrentSessionId(Session? session) {
-    if (session == null) return null;
-    try {
-      final parts = session.accessToken.split('.');
-      if (parts.length != 3) return null;
-      var normalized = parts[1];
-      while (normalized.length % 4 != 0) {
-        normalized += '=';
-      }
-      final payload = utf8.decode(base64Url.decode(normalized));
-      final data = jsonDecode(payload) as Map<String, dynamic>;
-      return data['session_id'] as String?;
-    } catch (e) {
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentSession = ref.watch(currentSessionProvider);
-    final currentSessionId = _getCurrentSessionId(currentSession);
+    final currentSessionId = extractJwtSessionId(currentSession?.accessToken);
     final isCurrent = currentSessionId == session.id;
 
     final deviceName = _parseDeviceName(session.userAgent, context);
@@ -204,7 +187,7 @@ class _SessionTile extends ConsumerWidget {
       trailing: isCurrent
           ? null
           : IconButton(
-              icon: const Icon(Icons.logout, color: Colors.red),
+              icon: const Icon(Icons.logout, color: AppTheme.danger),
               onPressed: () => _showRevokeDialog(context, ref),
               tooltip: context.l10n.activeSessionsRevokeTooltip,
             ),

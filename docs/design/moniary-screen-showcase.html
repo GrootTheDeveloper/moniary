@@ -1,0 +1,3914 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Bộ màn hình HTML minh hoạ giao diện Moniary." />
+  <title>Moniary — Screen Collection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Cormorant+Garamond:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <style>
+    /* FROZEN FOUNDATION TOKENS — shared by all Moniary screens */
+    :root {
+      --color-primary: #c65c34;
+      --color-secondary: #8d9c90;
+      --color-accent: #df794d;
+      --color-bg: #e7e3dc;
+      --color-surface: #f6f1e7;
+      --color-text: #1f1b16;
+      --color-muted: #978f83;
+      --color-border: #d8d0c2;
+      --font-heading: "Cormorant Garamond", Georgia, serif;
+      --font-body: "Be Vietnam Pro", sans-serif;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 42px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --shadow-style: 0 14px 18px rgba(66, 52, 38, 0.08), 0 2px 5px rgba(66, 52, 38, 0.08);
+      --density: balanced;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-width: 320px;
+      min-height: 100dvh;
+      margin: 0;
+      color: var(--color-text);
+      background:
+        radial-gradient(circle at 12% 4%, rgba(198, 92, 52, 0.08), transparent 24rem),
+        radial-gradient(circle at 92% 30%, rgba(141, 156, 144, 0.12), transparent 28rem),
+        var(--color-bg);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      min-width: 44px;
+      min-height: 44px;
+      border: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 3px solid rgba(198, 92, 52, 0.38);
+      outline-offset: 3px;
+    }
+
+    svg {
+      width: 1em;
+      height: 1em;
+      stroke-width: 1.6;
+      vertical-align: -0.125em;
+    }
+
+    .showcase-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-6);
+      align-items: end;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: clamp(32px, 6vw, 72px) clamp(20px, 4vw, 48px) 28px;
+    }
+
+    .showcase-eyebrow,
+    .eyebrow,
+    .kicker,
+    .micro,
+    .section-label,
+    .meta {
+      font-family: "IBM Plex Mono", monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+    }
+
+    .showcase-eyebrow {
+      margin: 0 0 8px;
+      color: var(--color-primary);
+      font-size: 0.68rem;
+      font-weight: 500;
+    }
+
+    .showcase-title {
+      max-width: 780px;
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 500;
+      letter-spacing: -0.045em;
+      line-height: 0.88;
+    }
+
+    .showcase-note {
+      max-width: 360px;
+      margin: 0 0 6px;
+      color: #665e53;
+      font-size: 0.86rem;
+      line-height: 1.65;
+    }
+
+    .screen-id-nav {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.7fr) minmax(280px, 1.3fr);
+      gap: var(--space-6);
+      align-items: center;
+      max-width: 1224px;
+      margin: 0 auto 12px;
+      padding: 14px 16px;
+      border: 1px solid rgba(31, 27, 22, 0.1);
+      border-radius: 18px;
+      background:
+        linear-gradient(120deg, rgba(255, 255, 255, 0.42), rgba(246, 241, 231, 0.25)),
+        rgba(246, 241, 231, 0.58);
+      box-shadow: 0 8px 14px rgba(66, 52, 38, 0.04), inset 0 1px rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(10px);
+    }
+
+    .screen-id-copy {
+      margin: 0;
+      color: #6d655b;
+      font-size: 0.7rem;
+      line-height: 1.55;
+    }
+
+    .screen-id-copy strong {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--color-text);
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .screen-id-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+
+    .screen-id-input {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--color-border);
+      border-radius: 13px;
+      color: var(--color-text);
+      background: rgba(255, 255, 255, 0.5);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.7rem;
+      transition:
+        border-color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .screen-id-input:focus {
+      border-color: var(--color-primary);
+      outline: 0;
+      box-shadow: 0 0 0 3px rgba(198, 92, 52, 0.12);
+    }
+
+    .screen-id-submit {
+      min-width: 96px;
+      border-radius: 13px;
+      color: #fffaf2;
+      background: var(--color-text);
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition:
+        background-color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        transform 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .screen-id-submit:hover {
+      background: var(--color-primary);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 14px rgba(198, 92, 52, 0.18);
+    }
+
+    .screen-id-submit:active {
+      transform: scale(0.97);
+    }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(32px, 5vw, 72px) clamp(20px, 3vw, 44px);
+      align-items: start;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 24px clamp(16px, 4vw, 48px) 96px;
+    }
+
+    .screen-figure {
+      min-width: 0;
+      margin: 0;
+      scroll-margin-top: 24px;
+      border-radius: 28px;
+      transition:
+        background-color 240ms cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 240ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .screen-figure.is-target {
+      background: rgba(198, 92, 52, 0.075);
+      box-shadow: 0 0 0 12px rgba(198, 92, 52, 0.075);
+    }
+
+    .screen-caption {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 12px;
+      align-items: start;
+      max-width: 370px;
+      margin: 0 auto 14px;
+      color: #6d655b;
+      font-size: 0.76rem;
+      line-height: 1.5;
+    }
+
+    .screen-index {
+      display: grid;
+      width: 32px;
+      height: 24px;
+      place-items: center;
+      border: 1px solid rgba(31, 27, 22, 0.1);
+      border-radius: 7px;
+      color: var(--color-text);
+      background: rgba(246, 241, 231, 0.62);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+    }
+
+    .screen-caption strong {
+      color: var(--color-text);
+      font-weight: 600;
+    }
+
+    .phone {
+      position: relative;
+      width: min(100%, 370px);
+      aspect-ratio: 390 / 844;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 8px solid #080808;
+      border-radius: 46px;
+      background: var(--color-surface);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 18px 18px rgba(47, 39, 29, 0.12),
+        0 2px 4px rgba(47, 39, 29, 0.1);
+      isolation: isolate;
+    }
+
+    .phone::after {
+      position: absolute;
+      inset: 1px;
+      z-index: 15;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 37px;
+      pointer-events: none;
+      content: "";
+    }
+
+    .phone-screen {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      height: 100%;
+      overflow: hidden;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.22), transparent 28%),
+        var(--color-surface);
+    }
+
+    .phone-screen.has-nav {
+      grid-template-rows: auto minmax(0, 1fr) 68px;
+    }
+
+    .status-bar {
+      position: relative;
+      z-index: 4;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      height: 42px;
+      padding: 10px 18px 0;
+      font-size: 0.74rem;
+      font-weight: 600;
+    }
+
+    .status-icons {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .signal {
+      display: flex;
+      gap: 2px;
+      align-items: end;
+      height: 12px;
+    }
+
+    .signal i {
+      display: block;
+      width: 2px;
+      border-radius: 2px;
+      background: currentColor;
+    }
+
+    .signal i:nth-child(1) { height: 4px; }
+    .signal i:nth-child(2) { height: 6px; }
+    .signal i:nth-child(3) { height: 9px; }
+    .signal i:nth-child(4) { height: 11px; }
+
+    .battery {
+      position: relative;
+      width: 20px;
+      height: 10px;
+      border: 1px solid currentColor;
+      border-radius: 3px;
+      opacity: 0.72;
+    }
+
+    .battery::before {
+      position: absolute;
+      top: 2px;
+      right: -3px;
+      width: 2px;
+      height: 4px;
+      border-radius: 0 2px 2px 0;
+      background: currentColor;
+      content: "";
+    }
+
+    .battery::after {
+      position: absolute;
+      inset: 2px;
+      right: 4px;
+      border-radius: 1px;
+      background: currentColor;
+      content: "";
+    }
+
+    .screen-body {
+      min-height: 0;
+      padding: 10px 18px 18px;
+      overflow: hidden;
+    }
+
+    .screen-body.scrollable {
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .screen-body.scrollable::-webkit-scrollbar {
+      display: none;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+      min-height: 48px;
+      margin-bottom: 8px;
+    }
+
+    .topbar-title {
+      margin: 0;
+      text-align: center;
+      color: #a07c6f;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.58rem;
+      font-weight: 500;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+    }
+
+    .icon-button {
+      display: inline-grid;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      place-items: center;
+      border: 1px solid var(--color-border);
+      border-radius: 14px;
+      color: #675f55;
+      background: rgba(246, 241, 231, 0.66);
+      font-size: 1.05rem;
+      transition:
+        color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        border-color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        transform 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .icon-button:hover {
+      color: var(--color-primary);
+      border-color: rgba(198, 92, 52, 0.45);
+      box-shadow: 0 7px 14px rgba(198, 92, 52, 0.08);
+    }
+
+    .icon-button:active {
+      transform: scale(0.94);
+    }
+
+    .icon-button.dark {
+      color: #fffaf1;
+      border-color: #2e2923;
+      background: var(--color-text);
+    }
+
+    .icon-button.star {
+      color: var(--color-primary);
+      border-color: rgba(198, 92, 52, 0.38);
+    }
+
+    .bottom-nav {
+      position: relative;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      padding: 6px 14px 10px;
+      border-top: 1px solid rgba(216, 208, 194, 0.68);
+      background: rgba(246, 241, 231, 0.92);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-item {
+      display: grid;
+      min-width: 44px;
+      min-height: 48px;
+      padding: 5px 2px;
+      place-items: center;
+      align-content: center;
+      gap: 3px;
+      border-radius: 13px;
+      color: #aaa297;
+      background: transparent;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.42rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      transition:
+        color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        transform 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .nav-item svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      color: var(--color-text);
+    }
+
+    .nav-item:active {
+      transform: translateY(2px);
+    }
+
+    .nav-item.camera {
+      width: 48px;
+      height: 48px;
+      min-height: 48px;
+      margin: -16px auto 0;
+      border-radius: 15px;
+      color: white;
+      background: var(--color-primary);
+      box-shadow: 0 9px 16px rgba(198, 92, 52, 0.25);
+    }
+
+    .nav-item.camera:hover {
+      color: white;
+      background: #af4e2b;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 18px rgba(198, 92, 52, 0.3);
+    }
+
+    .nav-item.camera span {
+      display: none;
+    }
+
+    .primary-button,
+    .outline-button,
+    .danger-button {
+      display: grid;
+      width: 100%;
+      min-height: 48px;
+      place-items: center;
+      border-radius: 14px;
+      font-size: 0.77rem;
+      font-weight: 600;
+      transition:
+        color 200ms cubic-bezier(0.25, 1, 0.5, 1),
+        background-color 200ms cubic-bezier(0.25, 1, 0.5, 1),
+        border-color 200ms cubic-bezier(0.25, 1, 0.5, 1),
+        transform 200ms cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 200ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .primary-button {
+      color: #fffaf2;
+      background: var(--color-text);
+      box-shadow: 0 8px 14px rgba(31, 27, 22, 0.1);
+    }
+
+    .primary-button:hover {
+      background: var(--color-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 18px rgba(198, 92, 52, 0.24);
+    }
+
+    .primary-button:active,
+    .outline-button:active,
+    .danger-button:active {
+      transform: scale(0.98);
+    }
+
+    .outline-button {
+      border: 1px solid var(--color-border);
+      color: #6f675d;
+      background: transparent;
+    }
+
+    .outline-button:hover {
+      border-color: var(--color-secondary);
+      color: var(--color-text);
+      background: rgba(141, 156, 144, 0.08);
+    }
+
+    .danger-button {
+      border: 1px solid rgba(198, 92, 52, 0.38);
+      color: var(--color-primary);
+      background: transparent;
+    }
+
+    .danger-button:hover {
+      color: #fff8f2;
+      background: var(--color-primary);
+      box-shadow: 0 8px 16px rgba(198, 92, 52, 0.2);
+    }
+
+    /* Login */
+    .login-screen {
+      background:
+        radial-gradient(circle at 16% 2%, rgba(223, 121, 77, 0.09), transparent 34%),
+        radial-gradient(circle at 90% 14%, rgba(141, 156, 144, 0.09), transparent 32%),
+        var(--color-surface);
+    }
+
+    .login-content {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      height: 100%;
+      padding: 24px 22px 22px;
+    }
+
+    .login-hero {
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      padding-bottom: 44px;
+      text-align: center;
+    }
+
+    .brand-icon {
+      position: relative;
+      display: grid;
+      width: 74px;
+      height: 74px;
+      margin-bottom: 22px;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 23px;
+      color: #89fff0;
+      background:
+        linear-gradient(145deg, rgba(46, 64, 86, 0.72), rgba(7, 13, 22, 0.96)),
+        #101824;
+      box-shadow: 0 13px 17px rgba(12, 19, 29, 0.22), inset 0 1px rgba(255, 255, 255, 0.16);
+    }
+
+    .brand-icon::before,
+    .brand-icon::after {
+      position: absolute;
+      width: 58px;
+      height: 18px;
+      border: 2px solid rgba(123, 158, 204, 0.28);
+      border-radius: 5px;
+      transform: rotate(-7deg);
+      content: "";
+    }
+
+    .brand-icon::before {
+      top: 13px;
+    }
+
+    .brand-icon::after {
+      bottom: 11px;
+      transform: rotate(7deg);
+    }
+
+    .brand-coin {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border: 2px solid #7cf2e4;
+      border-radius: 50%;
+      color: white;
+      background: #079c8e;
+      box-shadow: 0 0 0 5px rgba(11, 167, 151, 0.18);
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .brand-ribbon {
+      position: absolute;
+      top: 7px;
+      left: 27px;
+      z-index: 3;
+      width: 11px;
+      height: 17px;
+      background: #1ed8c6;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 76%, 0 100%);
+    }
+
+    .login-brand {
+      margin: 0 0 6px;
+      color: var(--color-primary);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.58rem;
+      font-weight: 500;
+      letter-spacing: 0.36em;
+    }
+
+    .login-title {
+      max-width: 270px;
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 2.15rem;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      line-height: 0.98;
+    }
+
+    .login-copy {
+      max-width: 270px;
+      margin: 16px 0 0;
+      color: var(--color-muted);
+      font-size: 0.69rem;
+      line-height: 1.6;
+    }
+
+    .auth-actions {
+      display: grid;
+      gap: 8px;
+    }
+
+    .auth-secondary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .coming-soon {
+      margin: 3px 0 0;
+      color: #b4aa9c;
+      text-align: center;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.46rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    /* Profile */
+    .profile-content {
+      padding-top: 10px;
+    }
+
+    .profile-head {
+      display: grid;
+      justify-items: center;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .avatar {
+      display: grid;
+      width: 68px;
+      height: 68px;
+      margin-bottom: 8px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff9ec;
+      background: var(--color-secondary);
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.35);
+    }
+
+    .profile-name {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 1.55rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .profile-handle {
+      margin: 8px 0 0;
+      color: var(--color-muted);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.52rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      width: 220px;
+      margin-top: 16px;
+    }
+
+    .profile-stat {
+      display: grid;
+      gap: 3px;
+      border-right: 1px solid var(--color-border);
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .profile-stat:last-child {
+      border-right: 0;
+    }
+
+    .profile-stat small {
+      color: var(--color-muted);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.42rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .settings-section {
+      margin-top: 18px;
+    }
+
+    .section-label {
+      margin: 0 0 7px;
+      color: #a59b8d;
+      font-size: 0.48rem;
+      font-weight: 500;
+    }
+
+    .settings-list {
+      border-top: 1px solid rgba(216, 208, 194, 0.7);
+    }
+
+    .settings-row {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+      min-height: 43px;
+      padding: 0;
+      border-bottom: 1px solid rgba(216, 208, 194, 0.7);
+      color: var(--color-text);
+      background: transparent;
+      text-align: left;
+      font-size: 0.67rem;
+      transition:
+        color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        padding-left 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .settings-row:hover {
+      padding-left: 4px;
+      color: var(--color-primary);
+    }
+
+    .settings-row > svg {
+      color: #756d63;
+      font-size: 0.85rem;
+    }
+
+    .row-end {
+      color: #aaa094;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.42rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .switch {
+      position: relative;
+      width: 34px;
+      height: 20px;
+      border-radius: 999px;
+      background: #4e8563;
+    }
+
+    .switch::after {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      content: "";
+    }
+
+    .profile-logout {
+      margin-top: 14px;
+    }
+
+    /* Camera */
+    .camera-screen {
+      color: #fffaf1;
+      background:
+        radial-gradient(circle at 50% 56%, rgba(198, 92, 52, 0.08), transparent 23rem),
+        #110e0b;
+    }
+
+    .camera-screen .status-bar {
+      color: #fffaf1;
+    }
+
+    .camera-layout {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) 90px;
+      min-height: 0;
+      padding: 8px 18px 14px;
+    }
+
+    .camera-topbar {
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .camera-topbar .topbar-title {
+      color: #d2b7a9;
+    }
+
+    .camera-topbar .icon-button {
+      color: #c9c1b9;
+      border-color: #3a342e;
+      background: transparent;
+    }
+
+    .scan-area {
+      position: relative;
+      display: grid;
+      min-height: 0;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.025);
+      border-radius: 26px;
+      background:
+        repeating-linear-gradient(to bottom, transparent 0 45px, rgba(255, 255, 255, 0.025) 46px),
+        #211910;
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.025);
+    }
+
+    .scan-corner {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-color: var(--color-accent);
+      border-style: solid;
+    }
+
+    .scan-corner.tl {
+      top: 52px;
+      left: 30px;
+      border-width: 2px 0 0 2px;
+      border-radius: 10px 0 0;
+    }
+
+    .scan-corner.tr {
+      top: 52px;
+      right: 30px;
+      border-width: 2px 2px 0 0;
+      border-radius: 0 10px 0 0;
+    }
+
+    .scan-corner.bl {
+      bottom: 52px;
+      left: 30px;
+      border-width: 0 0 2px 2px;
+      border-radius: 0 0 0 10px;
+    }
+
+    .scan-corner.br {
+      right: 30px;
+      bottom: 52px;
+      border-width: 0 2px 2px 0;
+      border-radius: 0 0 10px;
+    }
+
+    .scan-copy {
+      display: grid;
+      gap: 7px;
+      width: 80%;
+      color: #c9a696;
+      text-align: center;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.52rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+    }
+
+    .scan-copy::before {
+      width: 100%;
+      height: 1px;
+      margin-bottom: 1px;
+      background: linear-gradient(90deg, transparent, rgba(198, 92, 52, 0.5), transparent);
+      content: "";
+    }
+
+    .camera-actions {
+      display: grid;
+      grid-template-columns: 52px 1fr 52px;
+      align-items: end;
+      padding: 14px 18px 0;
+    }
+
+    .camera-control {
+      display: grid;
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      place-items: center;
+      border: 1px solid #3c362f;
+      border-radius: 14px;
+      color: #d5cec5;
+      background: transparent;
+      font-size: 1rem;
+      transition:
+        color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        border-color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        transform 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .camera-control:hover {
+      color: var(--color-accent);
+      border-color: var(--color-accent);
+    }
+
+    .camera-control:active {
+      transform: scale(0.94);
+    }
+
+    .shutter {
+      position: relative;
+      width: 66px;
+      height: 66px;
+      margin: 0 auto -3px;
+      padding: 0;
+      border: 3px solid #d6d0c6;
+      border-radius: 50%;
+      background: transparent;
+      box-shadow: 0 0 0 2px #17120e inset;
+      transition:
+        transform 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .shutter::after {
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      content: "";
+    }
+
+    .shutter:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 0 4px rgba(223, 121, 77, 0.14);
+    }
+
+    .shutter:active {
+      transform: scale(0.94);
+    }
+
+    /* Transaction detail */
+    .transaction-photo {
+      position: relative;
+      display: grid;
+      aspect-ratio: 1 / 1;
+      align-content: end;
+      margin-top: 4px;
+      overflow: hidden;
+      border-radius: 28px;
+      color: white;
+      background:
+        linear-gradient(to bottom, rgba(56, 39, 36, 0.12) 0 54%, rgba(38, 26, 23, 0.78) 100%),
+        linear-gradient(145deg, #a98484, #c2a3a3 48%, #876d6b);
+      box-shadow: var(--shadow-style), inset 0 1px rgba(255, 255, 255, 0.16);
+    }
+
+    .transaction-photo::before {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 72% 12%, rgba(255, 255, 255, 0.16), transparent 34%),
+        linear-gradient(115deg, transparent 46%, rgba(255, 255, 255, 0.05) 47%, transparent 49%);
+      content: "";
+    }
+
+    .photo-date {
+      position: absolute;
+      top: 16px;
+      left: 18px;
+      margin: 0;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.51rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .photo-copy {
+      position: relative;
+      z-index: 2;
+      padding: 20px;
+    }
+
+    .photo-amount {
+      margin: 0 0 2px;
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 500;
+      letter-spacing: -0.035em;
+      line-height: 1;
+    }
+
+    .photo-note {
+      margin: 8px 0 10px;
+      font-size: 0.68rem;
+      font-weight: 500;
+    }
+
+    .tags {
+      display: flex;
+      gap: 5px;
+    }
+
+    .tag {
+      padding: 4px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(5px);
+      font-size: 0.48rem;
+      font-weight: 500;
+    }
+
+    .detail-list {
+      margin-top: 15px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .detail-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      min-height: 48px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .detail-row dt {
+      color: #9f9588;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.5rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .detail-row dd {
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 500;
+    }
+
+    .detail-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    /* Groups */
+    .simple-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .simple-header .eyebrow {
+      margin: 0 0 2px;
+      color: var(--color-primary);
+      font-size: 0.48rem;
+    }
+
+    .screen-title {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 1.55rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .balance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 14px 0 18px;
+    }
+
+    .balance-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 76px;
+      padding: 13px 12px;
+      border: 1px solid;
+      border-radius: 15px;
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.38);
+    }
+
+    .balance-card::after {
+      position: absolute;
+      right: -14px;
+      bottom: -26px;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.035;
+      content: "";
+    }
+
+    .balance-card.positive {
+      border-color: rgba(78, 133, 99, 0.32);
+      color: #4e8563;
+      background: linear-gradient(145deg, rgba(78, 133, 99, 0.12), rgba(255, 255, 255, 0.08));
+    }
+
+    .balance-card.negative {
+      border-color: rgba(198, 92, 52, 0.3);
+      color: var(--color-primary);
+      background: linear-gradient(145deg, rgba(198, 92, 52, 0.08), rgba(255, 255, 255, 0.08));
+    }
+
+    .balance-label {
+      display: block;
+      margin-bottom: 5px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.44rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .balance-value {
+      font-family: var(--font-heading);
+      font-size: 1.18rem;
+      line-height: 1;
+    }
+
+    .group-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 10px;
+    }
+
+    .group-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 74px;
+      padding: 10px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 18px;
+      color: inherit;
+      background: rgba(255, 255, 255, 0.36);
+      box-shadow: 0 3px 0 rgba(120, 105, 86, 0.04), inset 0 1px rgba(255, 255, 255, 0.75);
+      text-align: left;
+      transition:
+        border-color 200ms cubic-bezier(0.25, 1, 0.5, 1),
+        transform 200ms cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 200ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .group-card:hover {
+      border-color: rgba(198, 92, 52, 0.38);
+      transform: translateY(-2px);
+      box-shadow: 0 9px 16px rgba(66, 52, 38, 0.08), inset 0 1px rgba(255, 255, 255, 0.75);
+    }
+
+    .group-swatch,
+    .expense-swatch,
+    .category-swatch {
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: rgba(255, 255, 255, 0.78);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.3);
+    }
+
+    .group-swatch {
+      width: 44px;
+      height: 44px;
+    }
+
+    .swatch-blue { background: #899bb3; }
+    .swatch-sage { background: #96a498; }
+    .swatch-rose { background: #b79494; }
+    .swatch-sand { background: #ccb291; }
+
+    .group-name {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 0.72rem;
+      font-weight: 500;
+    }
+
+    .group-meta {
+      display: block;
+      color: #9d9386;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.43rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .group-balance {
+      text-align: right;
+      font-size: 0.65rem;
+      font-weight: 600;
+    }
+
+    .group-balance small {
+      display: block;
+      margin-top: 3px;
+      color: #a49a8e;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.4rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .positive-text { color: #4e8563; }
+    .negative-text { color: var(--color-primary); }
+    .muted-text { color: #8e867d; }
+
+    .member-dots {
+      display: flex;
+      margin-top: 8px;
+      padding-left: 6px;
+    }
+
+    .member-dot {
+      width: 20px;
+      height: 20px;
+      margin-left: -6px;
+      border: 2px solid var(--color-surface);
+      border-radius: 50%;
+      background: var(--color-secondary);
+    }
+
+    .member-dot:nth-child(2) { background: #b8a997; }
+    .member-dot:nth-child(3) { background: #ad8f8d; }
+    .member-dot:nth-child(4) { background: #c8b294; }
+
+    /* Statistics */
+    .stat-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+
+    .stat-brand {
+      margin-bottom: 3px;
+      font-size: 0.48rem;
+    }
+
+    .month-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .month-buttons .icon-button {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      min-height: 34px;
+      border-radius: 10px;
+    }
+
+    .total-block {
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .total-block .kicker {
+      margin: 0 0 6px;
+      color: #a1988b;
+      font-size: 0.5rem;
+    }
+
+    .total-value {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .total-value span {
+      color: var(--color-primary);
+      font-size: 0.75rem;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .trend {
+      margin: 7px 0 0;
+      color: #4e8563;
+      font-size: 0.56rem;
+    }
+
+    .donut-row {
+      display: grid;
+      grid-template-columns: 124px 1fr;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .donut {
+      position: relative;
+      display: grid;
+      width: 118px;
+      height: 118px;
+      place-items: center;
+      border-radius: 50%;
+      background: conic-gradient(
+        #ad918d 0 37%,
+        #cbb28f 37% 62%,
+        #8296b0 62% 79%,
+        #8f9f92 79% 92%,
+        #bcb2a4 92% 100%
+      );
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.3);
+    }
+
+    .donut::after {
+      position: absolute;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--color-surface);
+      box-shadow: 0 0 0 1px rgba(216, 208, 194, 0.32);
+      content: "";
+    }
+
+    .donut-center {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      line-height: 0.9;
+    }
+
+    .donut-center small {
+      display: block;
+      margin-top: 7px;
+      color: #9a7a6b;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.38rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .legend {
+      display: grid;
+      gap: 6px;
+    }
+
+    .legend-row {
+      display: grid;
+      grid-template-columns: 8px 1fr auto;
+      gap: 7px;
+      align-items: center;
+      font-size: 0.59rem;
+    }
+
+    .legend-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ad918d;
+    }
+
+    .legend-row:nth-child(2) .legend-dot { background: #cbb28f; }
+    .legend-row:nth-child(3) .legend-dot { background: #8296b0; }
+    .legend-row:nth-child(4) .legend-dot { background: #8f9f92; }
+    .legend-row:nth-child(5) .legend-dot { background: #bcb2a4; }
+
+    .weekly-chart {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      align-items: end;
+      height: 88px;
+      margin: 8px 0 18px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .week {
+      position: relative;
+      display: grid;
+      height: 100%;
+      align-items: end;
+      text-align: center;
+    }
+
+    .bar {
+      position: relative;
+      min-height: 18px;
+      border-radius: 7px 7px 0 0;
+      background: #ddd2bf;
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.4);
+    }
+
+    .bar::before {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      color: #8c8378;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.41rem;
+      transform: translateX(-50%);
+      content: attr(data-value);
+      white-space: nowrap;
+    }
+
+    .week:nth-child(1) .bar { height: 40%; }
+    .week:nth-child(2) .bar { height: 62%; }
+    .week:nth-child(3) .bar {
+      height: 76%;
+      background: var(--color-primary);
+    }
+    .week:nth-child(4) .bar { height: 27%; }
+
+    .week-label {
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      color: #a39a8f;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.38rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    .week:nth-child(3) .week-label {
+      color: var(--color-primary);
+    }
+
+    .category-list {
+      display: grid;
+    }
+
+    .category-row {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 54px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .category-swatch {
+      width: 34px;
+      height: 34px;
+      background: rgba(173, 145, 141, 0.22);
+    }
+
+    .category-swatch::after {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #ad918d;
+      content: "";
+    }
+
+    .category-row:nth-child(2) .category-swatch {
+      background: rgba(203, 178, 143, 0.22);
+    }
+
+    .category-row:nth-child(2) .category-swatch::after {
+      background: #cbb28f;
+    }
+
+    .category-row:nth-child(3) .category-swatch {
+      background: rgba(130, 150, 176, 0.2);
+    }
+
+    .category-row:nth-child(3) .category-swatch::after {
+      background: #8296b0;
+    }
+
+    .category-name {
+      display: block;
+      font-size: 0.67rem;
+      font-weight: 500;
+    }
+
+    .category-count {
+      display: block;
+      color: #9d9387;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.42rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .category-amount {
+      font-size: 0.67rem;
+      font-weight: 600;
+    }
+
+    /* Day detail */
+    .day-heading {
+      margin: 12px 0 4px;
+      text-align: center;
+      font-family: var(--font-heading);
+      font-size: 1.72rem;
+      font-weight: 500;
+      letter-spacing: -0.035em;
+      line-height: 1;
+    }
+
+    .day-summary {
+      margin: 0 0 14px;
+      color: #9d9386;
+      text-align: center;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.48rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .day-summary strong {
+      color: var(--color-primary);
+      font-family: var(--font-body);
+      font-size: 0.67rem;
+      letter-spacing: 0;
+    }
+
+    .expense-list {
+      display: grid;
+    }
+
+    .expense-row {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 62px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .expense-swatch {
+      width: 42px;
+      height: 42px;
+      color: #4e8563;
+    }
+
+    .income-swatch {
+      background: #dbe3d5;
+    }
+
+    .expense-name {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 0.66rem;
+      font-weight: 500;
+    }
+
+    .expense-meta {
+      display: block;
+      overflow: hidden;
+      color: #9d9387;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.4rem;
+      letter-spacing: 0.06em;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .expense-amount {
+      font-size: 0.66rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .add-day {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 17px;
+      border: 1px dashed #c8bdad;
+      border-radius: 13px;
+      color: #8f867a;
+      background: transparent;
+      font-size: 0.62rem;
+      transition:
+        color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        border-color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        background-color 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .add-day:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: rgba(198, 92, 52, 0.05);
+    }
+
+    /* Calendar */
+    .calendar-profile-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .calendar-profile-head .eyebrow {
+      margin: 0 0 3px;
+      color: var(--color-primary);
+      font-size: 0.44rem;
+    }
+
+    .calendar-profile-name {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .calendar-profile-head .icon-button {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 13px;
+    }
+
+    .calendar-mini-avatar {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fffaf2;
+      background: var(--color-secondary);
+      font-size: 0.66rem;
+      font-weight: 500;
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.35);
+    }
+
+    .calendar-balance {
+      display: grid;
+      justify-items: center;
+      margin-bottom: 19px;
+      text-align: center;
+    }
+
+    .calendar-balance .kicker {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      margin: 0 0 5px;
+      color: #9f9588;
+      font-size: 0.45rem;
+    }
+
+    .calendar-balance .kicker svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .calendar-balance-value {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 2.45rem;
+      font-weight: 500;
+      letter-spacing: -0.055em;
+      line-height: 0.92;
+    }
+
+    .calendar-balance-value span {
+      color: var(--color-primary);
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      letter-spacing: 0;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .calendar-cashflow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 244px;
+      margin-top: 16px;
+    }
+
+    .cashflow-pill {
+      display: flex;
+      min-height: 34px;
+      gap: 5px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid;
+      border-radius: 12px;
+      font-size: 0.59rem;
+      font-weight: 600;
+    }
+
+    .cashflow-pill.income {
+      border-color: rgba(78, 133, 99, 0.28);
+      color: #4e8563;
+      background: rgba(78, 133, 99, 0.07);
+    }
+
+    .cashflow-pill.expense {
+      border-color: rgba(198, 92, 52, 0.28);
+      color: var(--color-primary);
+      background: rgba(198, 92, 52, 0.055);
+    }
+
+    .calendar-month-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .calendar-month-title {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 1.26rem;
+      font-weight: 600;
+    }
+
+    .calendar-month-title svg {
+      width: 14px;
+      height: 14px;
+      color: #a0978a;
+    }
+
+    .calendar-month-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .calendar-month-actions .icon-button {
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      min-height: 36px;
+      border-radius: 12px;
+    }
+
+    .calendar-filters {
+      display: grid;
+      grid-template-columns: 1fr 0.62fr 1.12fr 1fr 38px;
+      gap: 6px;
+      margin-bottom: 13px;
+    }
+
+    .calendar-filter {
+      min-width: 0;
+      min-height: 36px;
+      padding: 0 8px;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      color: #847b70;
+      background: rgba(255, 255, 255, 0.2);
+      font-size: 0.54rem;
+      font-weight: 500;
+      white-space: nowrap;
+      transition:
+        color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        background-color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        border-color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        transform 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .calendar-filter:hover {
+      border-color: rgba(198, 92, 52, 0.38);
+      color: var(--color-primary);
+      transform: translateY(-1px);
+    }
+
+    .calendar-filter.active {
+      border-color: var(--color-text);
+      color: #fffaf2;
+      background: var(--color-text);
+      box-shadow: 0 7px 12px rgba(31, 27, 22, 0.12);
+    }
+
+    .calendar-filter.refresh {
+      display: grid;
+      padding: 0;
+      place-items: center;
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .calendar-weekdays {
+      margin-bottom: 4px;
+    }
+
+    .calendar-weekdays span {
+      color: #a9a093;
+      text-align: center;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.39rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .calendar-weekdays span:last-child {
+      color: #9a7366;
+      font-weight: 500;
+    }
+
+    .calendar-day {
+      position: relative;
+      display: grid;
+      min-width: 0;
+      min-height: 41px;
+      height: 41px;
+      padding: 5px;
+      place-items: start center;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      color: #ad9f90;
+      background: transparent;
+      font-size: 0.48rem;
+      transition:
+        border-color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        transform 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .calendar-day.outside {
+      color: #d4ccbf;
+    }
+
+    .calendar-day.has-photo {
+      place-items: end start;
+      color: white;
+      background: #b7aaa0;
+      box-shadow: 0 4px 7px rgba(66, 52, 38, 0.12), inset 0 1px rgba(255, 255, 255, 0.18);
+      font-size: 0.45rem;
+      font-weight: 600;
+    }
+
+    .calendar-day.photo-sage { background: #809590; }
+    .calendar-day.photo-blue { background: #8498b1; }
+    .calendar-day.photo-sand { background: #c7ae8f; }
+    .calendar-day.photo-rose { background: #ad8e8d; }
+    .calendar-day.photo-lilac { background: #9d93a8; }
+
+    .calendar-day.has-photo::before {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        radial-gradient(circle at 72% 22%, rgba(255, 255, 255, 0.16), transparent 42%),
+        linear-gradient(145deg, transparent 45%, rgba(31, 27, 22, 0.08));
+      content: "";
+    }
+
+    .calendar-day.has-photo > span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .calendar-day-count {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      z-index: 2;
+      display: grid;
+      min-width: 14px;
+      height: 14px;
+      padding: 0 4px;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.68);
+      border-radius: 999px;
+      color: white;
+      background: rgba(48, 64, 62, 0.72);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.34rem;
+    }
+
+    .calendar-day.selected {
+      border: 2px solid var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(246, 241, 231, 0.92), 0 5px 9px rgba(198, 92, 52, 0.18);
+    }
+
+    .calendar-day:hover {
+      border-color: var(--color-primary);
+      transform: translateY(-2px);
+    }
+
+    /* Detail, settlement and forms */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .group-detail-hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: 62px minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+      min-height: 108px;
+      padding: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(137, 155, 179, 0.32);
+      border-radius: 22px;
+      background:
+        linear-gradient(135deg, rgba(137, 155, 179, 0.18), rgba(255, 255, 255, 0.18)),
+        rgba(255, 255, 255, 0.24);
+      box-shadow: 0 8px 14px rgba(66, 52, 38, 0.05), inset 0 1px rgba(255, 255, 255, 0.72);
+    }
+
+    .group-detail-hero::after {
+      position: absolute;
+      top: -38px;
+      right: -20px;
+      width: 128px;
+      height: 128px;
+      border: 22px solid rgba(198, 92, 52, 0.055);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .group-detail-avatar {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      width: 60px;
+      height: 60px;
+      place-items: center;
+      border-radius: 18px;
+      color: #fffaf2;
+      background: #899bb3;
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.35);
+    }
+
+    .group-detail-name {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .group-detail-copy {
+      position: relative;
+      z-index: 1;
+      margin: 5px 0 8px;
+      color: #746b60;
+      font-size: 0.56rem;
+      line-height: 1.45;
+    }
+
+    .member-line {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      color: #83796c;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.43rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .member-line .member-dots {
+      margin: 0;
+    }
+
+    .compact-action-grid {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 8px;
+      margin: 10px 0 18px;
+    }
+
+    .compact-action-grid button {
+      min-height: 42px;
+    }
+
+    .button-content {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .overview-card {
+      min-height: 76px;
+      padding: 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      background:
+        linear-gradient(140deg, rgba(255, 255, 255, 0.54), rgba(141, 156, 144, 0.06)),
+        rgba(255, 255, 255, 0.22);
+      box-shadow: 0 4px 0 rgba(120, 105, 86, 0.035), inset 0 1px rgba(255, 255, 255, 0.8);
+    }
+
+    .overview-card small {
+      display: block;
+      margin-bottom: 5px;
+      color: #948a7e;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.43rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .overview-card strong {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .overview-card strong span {
+      color: var(--color-primary);
+      font-family: var(--font-body);
+      font-size: 0.55rem;
+    }
+
+    .subsection-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      margin: 18px 0 8px;
+    }
+
+    .subsection-title {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .text-action {
+      min-width: auto;
+      min-height: 36px;
+      padding: 0 5px;
+      color: var(--color-primary);
+      background: transparent;
+      font-size: 0.54rem;
+      font-weight: 500;
+    }
+
+    .debt-route-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .debt-route {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      min-height: 54px;
+      padding: 8px 10px;
+      border: 1px solid rgba(216, 208, 194, 0.86);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .debt-route-icon {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--color-primary);
+      background: rgba(198, 92, 52, 0.1);
+    }
+
+    .debt-route-name {
+      display: block;
+      font-size: 0.6rem;
+      font-weight: 500;
+    }
+
+    .debt-route-status {
+      display: block;
+      color: #9c9285;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.39rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .debt-route-amount {
+      color: var(--color-primary);
+      font-size: 0.6rem;
+      font-weight: 600;
+    }
+
+    .group-feed {
+      display: grid;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .group-feed-row {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr) auto;
+      gap: 9px;
+      align-items: center;
+      min-height: 58px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .group-feed-row .expense-swatch {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+    }
+
+    .settlement-summary {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      min-height: 105px;
+      padding: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(198, 92, 52, 0.26);
+      border-radius: 22px;
+      background:
+        linear-gradient(135deg, rgba(198, 92, 52, 0.1), rgba(141, 156, 144, 0.09)),
+        rgba(255, 255, 255, 0.28);
+      box-shadow: var(--shadow-style), inset 0 1px rgba(255, 255, 255, 0.7);
+    }
+
+    .settlement-summary::after {
+      position: absolute;
+      top: -24px;
+      right: -20px;
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      background: rgba(198, 92, 52, 0.05);
+      content: "";
+    }
+
+    .settlement-summary .kicker {
+      margin: 0 0 5px;
+      color: #8f8375;
+      font-size: 0.43rem;
+    }
+
+    .settlement-total {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 1.7rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .settlement-total span {
+      color: var(--color-primary);
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+    }
+
+    .settlement-progress {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      width: 64px;
+      height: 64px;
+      place-items: center;
+      border-radius: 50%;
+      background: conic-gradient(#4e8563 0 67%, rgba(78, 133, 99, 0.12) 67% 100%);
+    }
+
+    .settlement-progress::after {
+      position: absolute;
+      inset: 7px;
+      border-radius: 50%;
+      background: var(--color-surface);
+      content: "";
+    }
+
+    .settlement-progress span {
+      position: relative;
+      z-index: 1;
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .balance-table {
+      display: grid;
+      margin-top: 8px;
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.24);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.7);
+    }
+
+    .balance-table-row {
+      display: grid;
+      grid-template-columns: 30px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      min-height: 46px;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .balance-table-row:last-child {
+      border-bottom: 0;
+    }
+
+    .mini-avatar {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: #899bb3;
+      font-family: var(--font-heading);
+      font-size: 0.58rem;
+    }
+
+    .balance-person {
+      display: block;
+      font-size: 0.58rem;
+      font-weight: 500;
+    }
+
+    .balance-breakdown {
+      display: block;
+      color: #9d9387;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.36rem;
+      letter-spacing: 0.04em;
+    }
+
+    .balance-state {
+      font-size: 0.53rem;
+      font-weight: 600;
+    }
+
+    .settlement-card {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 8px;
+      padding: 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 17px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.48), rgba(198, 92, 52, 0.035)),
+        rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 0 rgba(120, 105, 86, 0.035), inset 0 1px rgba(255, 255, 255, 0.72);
+    }
+
+    .settlement-card-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .settlement-path {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 0.61rem;
+      font-weight: 500;
+    }
+
+    .settlement-path svg {
+      color: #a99d8f;
+    }
+
+    .settlement-card-meta {
+      display: block;
+      margin-top: 3px;
+      color: #9c9285;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.39rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .settlement-card-amount {
+      color: var(--color-primary);
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .settlement-action {
+      min-height: 40px;
+      border: 1px solid rgba(198, 92, 52, 0.34);
+      border-radius: 12px;
+      color: var(--color-primary);
+      background: rgba(198, 92, 52, 0.04);
+      font-size: 0.56rem;
+      font-weight: 600;
+      transition:
+        color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        background-color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        transform 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .settlement-action:hover {
+      color: #fffaf2;
+      background: var(--color-primary);
+      transform: translateY(-1px);
+      box-shadow: 0 7px 13px rgba(198, 92, 52, 0.18);
+    }
+
+    .settlement-action.confirm {
+      border-color: rgba(78, 133, 99, 0.36);
+      color: #4e8563;
+      background: rgba(78, 133, 99, 0.05);
+    }
+
+    .settlement-action.confirm:hover {
+      color: #fff;
+      background: #4e8563;
+      box-shadow: 0 7px 13px rgba(78, 133, 99, 0.17);
+    }
+
+    .review-receipt {
+      position: relative;
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      min-height: 104px;
+      padding: 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 20px;
+      background:
+        linear-gradient(130deg, rgba(255, 255, 255, 0.55), rgba(141, 156, 144, 0.07)),
+        rgba(255, 255, 255, 0.24);
+      box-shadow: var(--shadow-style), inset 0 1px rgba(255, 255, 255, 0.75);
+    }
+
+    .receipt-preview {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      overflow: hidden;
+      border-radius: 15px;
+      background:
+        repeating-linear-gradient(to bottom, #fffdf6 0 7px, #d8d0c2 8px, #fffdf6 9px 14px),
+        #fffdf6;
+      box-shadow: inset 0 0 0 1px rgba(31, 27, 22, 0.08);
+      transform: rotate(-2deg);
+    }
+
+    .receipt-preview::before {
+      position: absolute;
+      inset: 9px 12px;
+      background:
+        linear-gradient(#1f1b16, #1f1b16) 0 0 / 66% 3px no-repeat,
+        linear-gradient(#c65c34, #c65c34) 0 11px / 38% 2px no-repeat,
+        linear-gradient(#8d9c90, #8d9c90) 0 22px / 80% 2px no-repeat,
+        linear-gradient(#8d9c90, #8d9c90) 0 33px / 72% 2px no-repeat,
+        linear-gradient(#1f1b16, #1f1b16) 0 48px / 86% 3px no-repeat;
+      content: "";
+    }
+
+    .review-receipt h3 {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.05;
+    }
+
+    .review-receipt p {
+      margin: 5px 0 0;
+      color: #8d8376;
+      font-size: 0.52rem;
+      line-height: 1.45;
+    }
+
+    .confidence-ring {
+      position: relative;
+      display: grid;
+      width: 50px;
+      height: 50px;
+      place-items: center;
+      border-radius: 50%;
+      background: conic-gradient(#4e8563 0 94%, rgba(78, 133, 99, 0.12) 94% 100%);
+    }
+
+    .confidence-ring::after {
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      background: var(--color-surface);
+      content: "";
+    }
+
+    .confidence-ring strong {
+      position: relative;
+      z-index: 1;
+      color: #4e8563;
+      font-family: var(--font-heading);
+      font-size: 0.77rem;
+    }
+
+    .form-stack {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .field-card {
+      position: relative;
+      display: grid;
+      min-height: 58px;
+      padding: 9px 12px 8px;
+      border: 1px solid var(--color-border);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.34);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.68);
+      transition:
+        border-color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .field-card:focus-within {
+      border-color: rgba(198, 92, 52, 0.62);
+      box-shadow: 0 0 0 3px rgba(198, 92, 52, 0.08), inset 0 1px rgba(255, 255, 255, 0.68);
+    }
+
+    .field-label {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      color: #9b9084;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.39rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .field-label svg {
+      width: 13px;
+      height: 13px;
+      color: #7f7569;
+    }
+
+    .field-control {
+      width: 100%;
+      min-width: 0;
+      min-height: 28px;
+      padding: 2px 0 0;
+      border: 0;
+      color: var(--color-text);
+      background: transparent;
+      font-size: 0.65rem;
+      font-weight: 500;
+      outline: 0;
+    }
+
+    textarea.field-control {
+      min-height: 42px;
+      resize: none;
+      line-height: 1.4;
+    }
+
+    .field-control.amount-control {
+      color: var(--color-primary);
+      font-family: var(--font-heading);
+      font-size: 1.12rem;
+      font-weight: 600;
+    }
+
+    .review-items {
+      display: grid;
+      margin-top: 8px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .review-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      min-height: 34px;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 0.53rem;
+    }
+
+    .review-item small {
+      color: #998f82;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.38rem;
+    }
+
+    .sticky-form-action {
+      position: sticky;
+      bottom: -18px;
+      z-index: 4;
+      padding: 10px 0 3px;
+      background: linear-gradient(to top, var(--color-surface) 72%, rgba(246, 241, 231, 0));
+    }
+
+    .transaction-form-preview {
+      position: relative;
+      display: grid;
+      aspect-ratio: 1.28 / 1;
+      align-content: end;
+      overflow: hidden;
+      border-radius: 24px;
+      background:
+        linear-gradient(to bottom, rgba(50, 34, 30, 0.03) 15%, rgba(37, 26, 23, 0.78) 100%),
+        linear-gradient(135deg, #c7b0a0, #a98986 52%, #88716d);
+      box-shadow: var(--shadow-style), inset 0 1px rgba(255, 255, 255, 0.22);
+    }
+
+    .transaction-form-preview::before {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 56px;
+      height: 72px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 8px 8px 3px 3px;
+      background:
+        repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.68) 0 6px, rgba(31, 27, 22, 0.16) 7px, rgba(255, 255, 255, 0.68) 8px 12px);
+      box-shadow: 0 7px 12px rgba(31, 27, 22, 0.12);
+      content: "";
+      transform: rotate(6deg);
+    }
+
+    .preview-inputs {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 7px;
+      padding: 42px 16px 15px;
+      background: linear-gradient(to top, rgba(31, 27, 22, 0.8), transparent);
+    }
+
+    .preview-amount {
+      width: 100%;
+      min-height: 38px;
+      padding: 0;
+      border: 0;
+      color: white;
+      background: transparent;
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 600;
+      text-align: center;
+      outline: 0;
+    }
+
+    .preview-note {
+      width: 100%;
+      min-height: 36px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      color: white;
+      background: rgba(31, 27, 22, 0.34);
+      font-size: 0.57rem;
+      text-align: center;
+      outline: 0;
+      backdrop-filter: blur(5px);
+    }
+
+    .preview-amount:focus-visible,
+    .preview-note:focus-visible {
+      box-shadow: 0 0 0 3px rgba(223, 121, 77, 0.28);
+    }
+
+    .photo-form-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .photo-form-actions button {
+      min-height: 38px;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      color: #766c60;
+      background: transparent;
+      font-size: 0.52rem;
+      transition:
+        color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        border-color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        background-color 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .photo-form-actions button:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: rgba(198, 92, 52, 0.04);
+    }
+
+    .form-tile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .form-tile {
+      display: grid;
+      grid-template-columns: 31px minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      min-height: 59px;
+      padding: 8px;
+      border: 1px solid var(--color-border);
+      border-radius: 14px;
+      color: var(--color-text);
+      background: rgba(255, 255, 255, 0.3);
+      text-align: left;
+      transition:
+        border-color 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        transform 180ms cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .form-tile:hover {
+      border-color: rgba(198, 92, 52, 0.42);
+      transform: translateY(-1px);
+      box-shadow: 0 7px 12px rgba(66, 52, 38, 0.06);
+    }
+
+    .form-tile-icon {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 10px;
+      color: var(--color-primary);
+      background: rgba(198, 92, 52, 0.09);
+    }
+
+    .form-tile-label {
+      display: block;
+      color: #9a9084;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.37rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .form-tile-value {
+      display: block;
+      overflow: hidden;
+      font-size: 0.56rem;
+      font-weight: 600;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .important-row {
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      min-height: 54px;
+      margin: 9px 0;
+      padding: 7px 10px;
+      border: 1px solid var(--color-border);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .important-row > svg {
+      color: var(--color-primary);
+      font-size: 1.05rem;
+    }
+
+    .important-copy strong {
+      display: block;
+      font-size: 0.58rem;
+    }
+
+    .important-copy small {
+      display: block;
+      color: #9a9084;
+      font-size: 0.43rem;
+    }
+
+    .switch-button {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      background: transparent;
+    }
+
+    .switch-button::before {
+      position: absolute;
+      top: 12px;
+      right: 2px;
+      width: 36px;
+      height: 20px;
+      border-radius: 999px;
+      background: #4e8563;
+      content: "";
+    }
+
+    .switch-button::after {
+      position: absolute;
+      top: 15px;
+      right: 5px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 2px 4px rgba(31, 27, 22, 0.16);
+      content: "";
+      transition: transform 180ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .switch-button:active::after {
+      transform: translateX(-3px);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 100;
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 10px;
+      align-items: center;
+      max-width: min(340px, calc(100vw - 32px));
+      padding: 13px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      color: #fffaf2;
+      background: rgba(31, 27, 22, 0.94);
+      box-shadow: 0 12px 18px rgba(31, 27, 22, 0.18);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px) scale(0.98);
+      transition:
+        opacity 200ms cubic-bezier(0.25, 1, 0.5, 1),
+        transform 200ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .toast svg {
+      color: var(--color-accent);
+      font-size: 1.2rem;
+    }
+
+    .toast span {
+      font-size: 0.78rem;
+    }
+
+    @media (max-width: 1080px) {
+      .screen-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 700px) {
+      .showcase-header {
+        grid-template-columns: 1fr;
+      }
+
+      .showcase-title {
+        max-width: 520px;
+      }
+
+      .screen-grid {
+        grid-template-columns: 1fr;
+        padding-inline: 12px;
+      }
+
+      .screen-id-nav {
+        grid-template-columns: 1fr;
+        margin-inline: 16px;
+      }
+
+      .screen-caption {
+        padding-inline: 8px;
+      }
+
+      .toast {
+        right: 16px;
+        bottom: 16px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="showcase-header" data-ai-id="showcase-header">
+    <div>
+      <p class="showcase-eyebrow">Moniary / UI study 2026</p>
+      <h1 class="showcase-title">Nhật ký tài chính,<br />kể bằng hình.</h1>
+    </div>
+    <p class="showcase-note">
+      Bảy màn hình cốt lõi được tái dựng bằng HTML thuần, giữ lại nền giấy ngà,
+      serif thanh lịch, sắc cam đất và những đường hairline đặc trưng.
+    </p>
+  </header>
+
+  <nav class="screen-id-nav" aria-label="Đi tới màn hình theo ID" data-ai-id="screen-id-navigator">
+    <p class="screen-id-copy">
+      <strong>Chỉnh đúng màn, gọi đúng ID.</strong>
+      Ví dụ: <code>screen-group-detail</code> hoặc <code>screen-ocr-review</code>.
+    </p>
+    <form class="screen-id-form" id="screen-id-form">
+      <label class="sr-only" for="screen-id-input">ID màn hình</label>
+      <input class="screen-id-input" id="screen-id-input" list="screen-id-list" placeholder="Nhập ID màn hình…" autocomplete="off" />
+      <datalist id="screen-id-list">
+        <option value="screen-login"></option>
+        <option value="screen-profile"></option>
+        <option value="screen-camera"></option>
+        <option value="screen-transaction-detail"></option>
+        <option value="screen-groups"></option>
+        <option value="screen-statistics"></option>
+        <option value="screen-calendar"></option>
+        <option value="screen-day-detail"></option>
+        <option value="screen-group-detail"></option>
+        <option value="screen-debt-settlement"></option>
+        <option value="screen-ocr-review"></option>
+        <option value="screen-transaction-form"></option>
+      </datalist>
+      <button class="screen-id-submit" type="submit">Đi tới</button>
+    </form>
+  </nav>
+
+  <main class="screen-grid" data-ai-id="screen-collection">
+    <figure class="screen-figure" id="screen-login" data-screen-id="screen-login" data-ai-id="login-screen-showcase">
+      <figcaption class="screen-caption">
+        <span class="screen-index">4g</span>
+        <span><strong>Đăng nhập.</strong> Aurora nhẹ, tuyên ngôn sản phẩm và một lối vào chính không cần tài khoản.</span>
+      </figcaption>
+      <article class="phone" aria-label="Màn hình đăng nhập Moniary">
+        <div class="phone-screen login-screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="status-icons">
+              <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="battery" aria-hidden="true"></span>
+            </span>
+          </div>
+          <section class="login-content" data-ai-id="login-content">
+            <div class="login-hero">
+              <div class="brand-icon" aria-label="Biểu tượng ứng dụng Moniary">
+                <span class="brand-ribbon"></span>
+                <span class="brand-coin">₫</span>
+              </div>
+              <p class="login-brand">MONIARY</p>
+              <h2 class="login-title">Cuốn nhật ký<br />chi tiêu của bạn</h2>
+              <p class="login-copy">Chụp hoá đơn, ghi lại từng ngày.<br />Nhìn lại cả tháng như một cuốn album.</p>
+            </div>
+            <div class="auth-actions" data-ai-id="login-actions">
+              <button class="primary-button" type="button" data-toast="Đang mở Moniary ở chế độ dùng ngay…">Dùng thử ngay — không cần tài khoản</button>
+              <div class="auth-secondary">
+                <button class="outline-button" type="button" data-toast="Google đang được phát triển.">Google</button>
+                <button class="outline-button" type="button" data-toast="Apple đang được phát triển.">Apple</button>
+              </div>
+              <p class="coming-soon">Google / Apple đang phát triển</p>
+            </div>
+          </section>
+        </div>
+      </article>
+    </figure>
+
+    <figure class="screen-figure" id="screen-profile" data-screen-id="screen-profile" data-ai-id="profile-screen-showcase">
+      <figcaption class="screen-caption">
+        <span class="screen-index">4e</span>
+        <span><strong>Tôi.</strong> Hồ sơ, dữ liệu và cài đặt gom thành các nhóm rõ ràng với nhịp mono mảnh.</span>
+      </figcaption>
+      <article class="phone" aria-label="Màn hình hồ sơ Moniary">
+        <div class="phone-screen has-nav">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="status-icons">
+              <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="battery" aria-hidden="true"></span>
+            </span>
+          </div>
+          <main class="screen-body profile-content scrollable" data-ai-id="profile-main">
+            <section class="profile-head">
+              <div class="avatar" aria-label="Ảnh đại diện chữ MA">MA</div>
+              <h2 class="profile-name">Minh Anh</h2>
+              <p class="profile-handle">@minhanh · tham gia 3/2025</p>
+              <div class="profile-stats">
+                <span class="profile-stat">312<small>Khoản ghi</small></span>
+                <span class="profile-stat">4<small>Ví</small></span>
+                <span class="profile-stat">12<small>Bạn bè</small></span>
+              </div>
+            </section>
+
+            <section class="settings-section" data-ai-id="profile-data-settings">
+              <h3 class="section-label">Dữ liệu</h3>
+              <div class="settings-list">
+                <button class="settings-row" type="button" data-toast="Mở Ví & danh mục">
+                  <i data-lucide="wallet-cards"></i><span>Ví &amp; danh mục</span><i data-lucide="chevron-right"></i>
+                </button>
+                <button class="settings-row" type="button" data-toast="Mở xuất dữ liệu">
+                  <i data-lucide="download"></i><span>Xuất dữ liệu (CSV · XLSX · PDF)</span><i data-lucide="chevron-right"></i>
+                </button>
+                <button class="settings-row" type="button" data-toast="Mở nhập dữ liệu CSV">
+                  <i data-lucide="upload"></i><span>Nhập từ CSV</span><i data-lucide="chevron-right"></i>
+                </button>
+              </div>
+            </section>
+
+            <section class="settings-section" data-ai-id="profile-app-settings">
+              <h3 class="section-label">Cài đặt</h3>
+              <div class="settings-list">
+                <button class="settings-row" type="button" data-toast="Báo cáo email: hàng tuần">
+                  <i data-lucide="bell"></i><span>Báo cáo qua email</span><span class="row-end">Hàng tuần</span>
+                </button>
+                <button class="settings-row" type="button" data-toast="Khoá ứng dụng đang bật">
+                  <i data-lucide="lock-keyhole"></i><span>Khoá ứng dụng (FaceID)</span><span class="switch" aria-label="Đang bật"></span>
+                </button>
+                <button class="settings-row" type="button" data-toast="Mở Trung tâm riêng tư">
+                  <i data-lucide="shield"></i><span>Trung tâm riêng tư</span><i data-lucide="chevron-right"></i>
+                </button>
+              </div>
+            </section>
+            <button class="danger-button profile-logout" type="button" data-toast="Đăng xuất cần xác nhận">Đăng xuất</button>
+          </main>
+          <nav class="bottom-nav" aria-label="Điều hướng chính">
+            <button class="nav-item" type="button"><i data-lucide="calendar-days"></i><span>Lịch</span></button>
+            <button class="nav-item" type="button"><i data-lucide="chart-no-axes-column-increasing"></i><span>Số liệu</span></button>
+            <button class="nav-item camera" type="button" aria-label="Mở camera"><i data-lucide="camera"></i><span>Camera</span></button>
+            <button class="nav-item" type="button"><i data-lucide="users"></i><span>Nhóm</span></button>
+            <button class="nav-item active" type="button"><i data-lucide="user-round"></i><span>Tôi</span></button>
+          </nav>
+        </div>
+      </article>
+    </figure>
+
+    <figure class="screen-figure" id="screen-camera" data-screen-id="screen-camera" data-ai-id="camera-screen-showcase">
+      <figcaption class="screen-caption">
+        <span class="screen-index">4f</span>
+        <span><strong>Quét hoá đơn.</strong> Camera nền tối, khung quét bốn góc cam và một điểm chụp duy nhất trong flow light.</span>
+      </figcaption>
+      <article class="phone" aria-label="Màn hình quét hoá đơn Moniary">
+        <div class="phone-screen camera-screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="status-icons">
+              <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="battery" aria-hidden="true"></span>
+            </span>
+          </div>
+          <main class="camera-layout" data-ai-id="camera-main">
+            <header class="camera-topbar">
+              <button class="icon-button" type="button" aria-label="Đóng camera"><i data-lucide="x"></i></button>
+              <h2 class="topbar-title">Quét hoá đơn</h2>
+              <button class="icon-button" type="button" aria-label="Bật đèn flash"><i data-lucide="zap"></i></button>
+            </header>
+            <section class="scan-area" aria-label="Khung quét hoá đơn" data-ai-id="receipt-scanner">
+              <span class="scan-corner tl"></span>
+              <span class="scan-corner tr"></span>
+              <span class="scan-corner bl"></span>
+              <span class="scan-corner br"></span>
+              <span class="scan-copy">Đưa hoá đơn<br />vào khung</span>
+            </section>
+            <div class="camera-actions" data-ai-id="camera-actions">
+              <button class="camera-control" type="button" aria-label="Chọn ảnh từ thư viện"><i data-lucide="image"></i></button>
+              <button class="shutter" type="button" aria-label="Chụp hoá đơn" data-toast="Đã chụp — đang nhận diện hoá đơn"></button>
+              <button class="camera-control" type="button" aria-label="Đổi camera"><i data-lucide="camera"></i></button>
+            </div>
+          </main>
+        </div>
+      </article>
+    </figure>
+
+    <figure class="screen-figure" id="screen-transaction-detail" data-screen-id="screen-transaction-detail" data-ai-id="transaction-screen-showcase">
+      <figcaption class="screen-caption">
+        <span class="screen-index">4c</span>
+        <span><strong>Chi tiết giao dịch.</strong> Ảnh polaroid 1:1 giữ vị trí trung tâm; metadata hairline nằm bên dưới.</span>
+      </figcaption>
+      <article class="phone" aria-label="Màn hình chi tiết giao dịch Moniary">
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="status-icons">
+              <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="battery" aria-hidden="true"></span>
+            </span>
+          </div>
+          <main class="screen-body scrollable" data-ai-id="transaction-detail-main">
+            <header class="topbar">
+              <button class="icon-button" type="button" aria-label="Quay lại"><i data-lucide="chevron-left"></i></button>
+              <h2 class="topbar-title">Giao dịch</h2>
+              <button class="icon-button star" type="button" aria-label="Đánh dấu yêu thích" data-toast="Đã thêm vào khoản yêu thích"><i data-lucide="star"></i></button>
+            </header>
+            <section class="transaction-photo" aria-label="Ảnh giao dịch bữa tối" data-ai-id="transaction-photo">
+              <p class="photo-date">20:10 · Thứ Năm, 19 tháng 6</p>
+              <div class="photo-copy">
+                <p class="photo-amount">−320.000 ₫</p>
+                <p class="photo-note">Ăn tối với Linh — quán quen gần nhà</p>
+                <div class="tags"><span class="tag">Ăn uống</span><span class="tag">#hẹnnhò</span></div>
+              </div>
+            </section>
+            <dl class="detail-list" data-ai-id="transaction-metadata">
+              <div class="detail-row"><dt>Ví</dt><dd>Tiền mặt</dd></div>
+              <div class="detail-row"><dt>Danh mục</dt><dd>Ăn uống</dd></div>
+              <div class="detail-row"><dt>Nguồn</dt><dd>Quét hoá đơn (OCR)</dd></div>
+            </dl>
+            <div class="detail-actions">
+              <button class="outline-button" type="button" data-toast="Mở chỉnh sửa giao dịch">Chỉnh sửa</button>
+              <button class="danger-button" type="button" data-toast="Xoá giao dịch cần xác nhận">Xoá</button>
+            </div>
+          </main>
+        </div>
+      </article>
+    </figure>
+
+    <figure class="screen-figure" id="screen-groups" data-screen-id="screen-groups" data-ai-id="groups-screen-showcase">
+      <figcaption class="screen-caption">
+        <span class="screen-index">4d</span>
+        <span><strong>Nhóm.</strong> Tổng công nợ và danh sách nhóm chi tiêu, mỗi nhóm có sắc nhận diện riêng.</span>
+      </figcaption>
+      <article class="phone" aria-label="Màn hình nhóm Moniary">
+        <div class="phone-screen has-nav">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="status-icons">
+              <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="battery" aria-hidden="true"></span>
+            </span>
+          </div>
+          <main class="screen-body scrollable" data-ai-id="groups-main">
+            <header class="simple-header">
+              <div>
+                <p class="eyebrow">Moniary</p>
+                <h2 class="screen-title">Nhóm</h2>
+              </div>
+              <button class="icon-button dark" type="button" aria-label="Tạo nhóm mới" data-toast="Mở biểu mẫu tạo nhóm"><i data-lucide="plus"></i></button>
+            </header>
+            <section class="balance-grid" aria-label="Tổng công nợ" data-ai-id="group-balances">
+              <article class="balance-card positive">
+                <span class="balance-label">Bạn được nhận</span>
+                <span class="balance-value">+320.000 ₫</span>
+              </article>
+              <article class="balance-card negative">
+                <span class="balance-label">Bạn cần trả</span>
+                <span class="balance-value">−85.000 ₫</span>
+              </article>
+            </section>
+            <section data-ai-id="group-list">
+              <h3 class="section-label">Nhóm của bạn · 3</h3>
+              <div class="group-list">
+                <button class="group-card" type="button" data-toast="Mở nhóm Đà Lạt 6/2025">
+                  <span class="group-swatch swatch-blue"></span>
+                  <span>
+                    <span class="group-name">Đà Lạt 6/2025</span>
+                    <span class="group-meta">5 thành viên · 14 khoản</span>
+                    <span class="member-dots" aria-label="4 thành viên">
+                      <i class="member-dot"></i><i class="member-dot"></i><i class="member-dot"></i><i class="member-dot"></i>
+                    </span>
+                  </span>
+                  <span class="group-balance positive-text">+320.000<small>Được nhận</small></span>
+                </button>
+                <button class="group-card" type="button" data-toast="Mở nhóm Nhà chung Q3">
+                  <span class="group-swatch swatch-sage"></span>
+                  <span><span class="group-name">Nhà chung Q3</span><span class="group-meta">3 thành viên · 28 khoản</span></span>
+                  <span class="group-balance negative-text">−85.000<small>Cần trả</small></span>
+                </button>
+                <button class="group-card" type="button" data-toast="Mở nhóm Cafe cuối tuần">
+                  <span class="group-swatch swatch-rose"></span>
+                  <span><span class="group-name">Cafe cuối tuần</span><span class="group-meta">4 thành viên · 6 khoản</span></span>
+                  <span class="group-balance muted-text">0 ₫<small>Đã cân</small></span>
+                </button>
+              </div>
+            </section>
+          </main>
+          <nav class="bottom-nav" aria-label="Điều hướng chính">
+            <button class="nav-item" type="button"><i data-lucide="calendar-days"></i><span>Lịch</span></button>
+            <button class="nav-item" type="button"><i data-lucide="chart-no-axes-column-increasing"></i><span>Số liệu</span></button>
+            <button class="nav-item camera" type="button" aria-label="Mở camera"><i data-lucide="camera"></i><span>Camera</span></button>
+            <button class="nav-item active" type="button"><i data-lucide="users"></i><span>Nhóm</span></button>
+            <button class="nav-item" type="button"><i data-lucide="user-round"></i><span>Tôi</span></button>
+          </nav>
+        </div>
+      </article>
+    </figure>
+
+    <figure class="screen-figure" id="screen-statistics" data-screen-id="screen-statistics" data-ai-id="statistics-screen-showcase">
+      <figcaption class="screen-caption">
+        <span class="screen-index">4a</span>
+        <span><strong>Số liệu.</strong> Donut danh mục, chi theo tuần và bảng danh mục cùng dùng chung hệ token.</span>
+      </figcaption>
+      <article class="phone" aria-label="Màn hình số liệu Moniary">
+        <div class="phone-screen has-nav">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="status-icons">
+              <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="battery" aria-hidden="true"></span>
+            </span>
+          </div>
+          <main class="screen-body scrollable" data-ai-id="statistics-main">
+            <header class="stat-header">
+              <div>
+                <p class="showcase-eyebrow stat-brand">Moniary</p>
+                <h2 class="screen-title">Số liệu</h2>
+              </div>
+              <div class="month-buttons">
+                <button class="icon-button" type="button" aria-label="Tháng trước" data-toast="Đang xem tháng 5"><i data-lucide="chevron-left"></i></button>
+                <button class="icon-button" type="button" aria-label="Tháng sau" data-toast="Đang xem tháng 7"><i data-lucide="chevron-right"></i></button>
+              </div>
+            </header>
+            <section class="total-block" data-ai-id="monthly-total">
+              <p class="kicker">Tổng chi · tháng 6</p>
+              <p class="total-value">5.770.000 <span>₫</span></p>
+              <p class="trend">↓ ít hơn tháng 5 là 12%</p>
+            </section>
+            <section class="donut-row" aria-label="Tỷ lệ chi tiêu theo danh mục" data-ai-id="category-donut">
+              <div class="donut"><span class="donut-center">37%<small>Ăn uống</small></span></div>
+              <div class="legend">
+                <span class="legend-row"><i class="legend-dot"></i><span>Ăn uống</span><strong>37%</strong></span>
+                <span class="legend-row"><i class="legend-dot"></i><span>Mua sắm</span><strong>25%</strong></span>
+                <span class="legend-row"><i class="legend-dot"></i><span>Di chuyển</span><strong>17%</strong></span>
+                <span class="legend-row"><i class="legend-dot"></i><span>Hoá đơn</span><strong>13%</strong></span>
+                <span class="legend-row"><i class="legend-dot"></i><span>Khác</span><strong>8%</strong></span>
+              </div>
+            </section>
+            <section data-ai-id="weekly-spending">
+              <h3 class="section-label">Chi theo tuần</h3>
+              <div class="weekly-chart" aria-label="Biểu đồ chi tiêu theo tuần">
+                <span class="week"><i class="bar" data-value="1,2tr"></i><small class="week-label">Tuần 1</small></span>
+                <span class="week"><i class="bar" data-value="1,8tr"></i><small class="week-label">Tuần 2</small></span>
+                <span class="week"><i class="bar" data-value="2,1tr"></i><small class="week-label">Tuần 3</small></span>
+                <span class="week"><i class="bar" data-value="0,7tr"></i><small class="week-label">Tuần 4</small></span>
+              </div>
+            </section>
+            <section data-ai-id="category-breakdown">
+              <h3 class="section-label">Danh mục</h3>
+              <div class="category-list">
+                <div class="category-row">
+                  <span class="category-swatch"></span>
+                  <span><span class="category-name">Ăn uống</span><span class="category-count">42 khoản</span></span>
+                  <strong class="category-amount">2.140.000</strong>
+                </div>
+                <div class="category-row">
+                  <span class="category-swatch"></span>
+                  <span><span class="category-name">Mua sắm</span><span class="category-count">11 khoản</span></span>
+                  <strong class="category-amount">1.450.000</strong>
+                </div>
+                <div class="category-row">
+                  <span class="category-swatch"></span>
+                  <span><span class="category-name">Di chuyển</span><span class="category-count">23 khoản</span></span>
+                  <strong class="category-amount">980.000</strong>
+                </div>
+              </div>
+            </section>
+          </main>
+          <nav class="bottom-nav" aria-label="Điều hướng chính">
+            <button class="nav-item" type="button"><i data-lucide="calendar-days"></i><span>Lịch</span></button>
+            <button class="nav-item active" type="button"><i data-lucide="chart-no-axes-column-increasing"></i><span>Số liệu</span></button>
+            <button class="nav-item camera" type="button" aria-label="Mở camera"><i data-lucide="camera"></i><span>Camera</span></button>
+            <button class="nav-item" type="button"><i data-lucide="users"></i><span>Nhóm</span></button>
+            <button class="nav-item" type="button"><i data-lucide="user-round"></i><span>Tôi</span></button>
+          </nav>
+        </div>
+      </article>
+    </figure>
+
+    <figure class="screen-figure" id="screen-day-detail" data-screen-id="screen-day-detail" data-ai-id="day-detail-screen-showcase">
+      <figcaption class="screen-caption">
+        <span class="screen-index">4b</span>
+        <span><strong>Chi tiết ngày.</strong> Mỗi chấm lịch mở ra một dòng thời gian khoản chi kèm ảnh và nguồn tiền.</span>
+      </figcaption>
+      <article class="phone" aria-label="Màn hình chi tiết ngày Moniary">
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="status-icons">
+              <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="battery" aria-hidden="true"></span>
+            </span>
+          </div>
+          <main class="screen-body scrollable" data-ai-id="day-detail-main">
+            <header class="topbar">
+              <button class="icon-button" type="button" aria-label="Quay lại"><i data-lucide="chevron-left"></i></button>
+              <h2 class="topbar-title">Hôm nay</h2>
+              <button class="icon-button" type="button" aria-label="Đánh dấu ngày" data-toast="Đã đánh dấu ngày 19 tháng 6"><i data-lucide="star"></i></button>
+            </header>
+            <h2 class="day-heading">Thứ Năm, 19 Tháng 6</h2>
+            <p class="day-summary">9 khoản · <strong>−1.245.000 ₫</strong></p>
+            <section class="expense-list" aria-label="Danh sách khoản chi trong ngày" data-ai-id="daily-transactions">
+              <article class="expense-row">
+                <span class="expense-swatch swatch-sand"></span>
+                <span><span class="expense-name">Cà phê Cộng</span><span class="expense-meta">08:15 · Ăn uống · Tiền mặt</span></span>
+                <strong class="expense-amount">−45.000</strong>
+              </article>
+              <article class="expense-row">
+                <span class="expense-swatch swatch-blue"></span>
+                <span><span class="expense-name">Grab đi làm</span><span class="expense-meta">08:40 · Di chuyển · MoMo</span></span>
+                <strong class="expense-amount">−62.000</strong>
+              </article>
+              <article class="expense-row">
+                <span class="expense-swatch swatch-rose"></span>
+                <span><span class="expense-name">Cơm trưa văn phòng</span><span class="expense-meta">12:05 · Ăn uống · Tiền mặt</span></span>
+                <strong class="expense-amount">−58.000</strong>
+              </article>
+              <article class="expense-row">
+                <span class="expense-swatch swatch-sage"></span>
+                <span><span class="expense-name">Siêu thị WinMart</span><span class="expense-meta">18:30 · Mua sắm · Vietcombank</span></span>
+                <strong class="expense-amount">−480.000</strong>
+              </article>
+              <article class="expense-row">
+                <span class="expense-swatch income-swatch"><i data-lucide="arrow-up"></i></span>
+                <span><span class="expense-name">Bạn trả tiền ăn nhóm</span><span class="expense-meta">19:20 · Thu vào · MoMo</span></span>
+                <strong class="expense-amount positive-text">+120.000</strong>
+              </article>
+              <article class="expense-row">
+                <span class="expense-swatch swatch-rose"></span>
+                <span><span class="expense-name">Ăn tối với Linh</span><span class="expense-meta">20:10 · Ăn uống · Tiền mặt</span></span>
+                <strong class="expense-amount">−320.000</strong>
+              </article>
+            </section>
+            <button class="add-day" type="button" data-toast="Mở biểu mẫu thêm khoản cho ngày 19/6"><i data-lucide="plus"></i>Thêm khoản cho ngày này</button>
+          </main>
+        </div>
+      </article>
+    </figure>
+
+    <figure class="screen-figure" id="screen-calendar" data-screen-id="screen-calendar" data-ai-id="calendar-screen-showcase">
+      <figcaption class="screen-caption">
+        <span class="screen-index">6a</span>
+        <span><strong>Lịch tài chính.</strong> Tổng số dư, dòng tiền tháng và lưới ngày bằng ảnh giúp biến lịch sử chi tiêu thành một cuốn album.</span>
+      </figcaption>
+      <article class="phone" aria-label="Màn hình lịch tài chính tháng 6 năm 2025">
+        <div class="phone-screen has-nav">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="status-icons">
+              <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="battery" aria-hidden="true"></span>
+            </span>
+          </div>
+          <main class="screen-body scrollable" data-ai-id="calendar-main">
+            <header class="calendar-profile-head" data-ai-id="calendar-profile-header">
+              <div>
+                <p class="eyebrow">Moniary</p>
+                <h2 class="calendar-profile-name">Minh Anh</h2>
+              </div>
+              <button class="icon-button" type="button" aria-label="Tìm kiếm giao dịch" data-toast="Mở tìm kiếm giao dịch"><i data-lucide="search"></i></button>
+              <div class="calendar-mini-avatar" aria-label="Ảnh đại diện Minh Anh">MA</div>
+            </header>
+
+            <section class="calendar-balance" data-ai-id="calendar-balance-summary">
+              <p class="kicker">Tổng số dư <i data-lucide="eye"></i></p>
+              <p class="calendar-balance-value">12.480.000 <span>₫</span></p>
+              <div class="calendar-cashflow">
+                <span class="cashflow-pill income">↓ Thu&nbsp; 8.250.000</span>
+                <span class="cashflow-pill expense">↑ Chi&nbsp; 5.770.000</span>
+              </div>
+            </section>
+
+            <section data-ai-id="monthly-calendar">
+              <header class="calendar-month-head">
+                <h3 class="calendar-month-title">Tháng 6, 2025 <i data-lucide="chevron-down"></i></h3>
+                <div class="calendar-month-actions">
+                  <button class="icon-button" type="button" aria-label="Tháng trước" data-toast="Đang xem tháng 5, 2025"><i data-lucide="chevron-left"></i></button>
+                  <button class="icon-button" type="button" aria-label="Tháng sau" data-toast="Đang xem tháng 7, 2025"><i data-lucide="chevron-right"></i></button>
+                </div>
+              </header>
+
+              <nav class="calendar-filters" aria-label="Bộ lọc lịch">
+                <button class="calendar-filter active" type="button" data-calendar-filter>Tất cả</button>
+                <button class="calendar-filter" type="button" data-calendar-filter>Ví</button>
+                <button class="calendar-filter" type="button" data-calendar-filter>Hôm nay</button>
+                <button class="calendar-filter" type="button" data-calendar-filter>Đã lưu</button>
+                <button class="calendar-filter refresh" type="button" aria-label="Đặt lại bộ lọc" data-toast="Đã đặt lại bộ lọc"><i data-lucide="rotate-cw"></i></button>
+              </nav>
+
+              <div class="calendar-weekdays" aria-hidden="true">
+                <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+              </div>
+
+              <div class="calendar-grid" data-ai-id="calendar-date-grid">
+                <button class="calendar-day outside" type="button" aria-label="29 tháng 5"><span>29</span></button>
+                <button class="calendar-day outside" type="button" aria-label="30 tháng 5"><span>30</span></button>
+                <button class="calendar-day" type="button" aria-label="1 tháng 6"><span>1</span></button>
+                <button class="calendar-day has-photo" type="button" aria-label="2 tháng 6, 1 khoản" data-toast="Mở ngày 02/06"><span>2</span></button>
+                <button class="calendar-day has-photo photo-sage" type="button" aria-label="3 tháng 6, 3 khoản" data-toast="Mở ngày 03/06"><span class="calendar-day-count">3</span><span>3</span></button>
+                <button class="calendar-day" type="button" aria-label="4 tháng 6"><span>4</span></button>
+                <button class="calendar-day has-photo photo-rose" type="button" aria-label="5 tháng 6" data-toast="Mở ngày 05/06"><span>5</span></button>
+
+                <button class="calendar-day" type="button" aria-label="6 tháng 6"><span>6</span></button>
+                <button class="calendar-day" type="button" aria-label="7 tháng 6"><span>7</span></button>
+                <button class="calendar-day has-photo photo-blue" type="button" aria-label="8 tháng 6, 2 khoản" data-toast="Mở ngày 08/06"><span class="calendar-day-count">2</span><span>8</span></button>
+                <button class="calendar-day has-photo photo-sand" type="button" aria-label="9 tháng 6" data-toast="Mở ngày 09/06"><span>9</span></button>
+                <button class="calendar-day" type="button" aria-label="10 tháng 6"><span>10</span></button>
+                <button class="calendar-day" type="button" aria-label="11 tháng 6"><span>11</span></button>
+                <button class="calendar-day has-photo photo-lilac" type="button" aria-label="12 tháng 6" data-toast="Mở ngày 12/06"><span>12</span></button>
+
+                <button class="calendar-day" type="button" aria-label="13 tháng 6"><span>13</span></button>
+                <button class="calendar-day has-photo photo-sage" type="button" aria-label="14 tháng 6, 2 khoản" data-toast="Mở ngày 14/06"><span class="calendar-day-count">2</span><span>14</span></button>
+                <button class="calendar-day has-photo photo-rose" type="button" aria-label="15 tháng 6, 3 khoản" data-toast="Mở ngày 15/06"><span class="calendar-day-count">3</span><span>15</span></button>
+                <button class="calendar-day" type="button" aria-label="16 tháng 6"><span>16</span></button>
+                <button class="calendar-day" type="button" aria-label="17 tháng 6"><span>17</span></button>
+                <button class="calendar-day has-photo photo-sage" type="button" aria-label="18 tháng 6" data-toast="Mở ngày 18/06"><span>18</span></button>
+                <button class="calendar-day has-photo photo-sand selected" type="button" aria-label="19 tháng 6, đang chọn" data-toast="Mở ngày 19/06"><span>19</span></button>
+
+                <button class="calendar-day has-photo photo-blue" type="button" aria-label="20 tháng 6, 2 khoản" data-toast="Mở ngày 20/06"><span class="calendar-day-count">2</span><span>20</span></button>
+                <button class="calendar-day" type="button" aria-label="21 tháng 6"><span>21</span></button>
+                <button class="calendar-day" type="button" aria-label="22 tháng 6"><span>22</span></button>
+                <button class="calendar-day has-photo photo-rose" type="button" aria-label="23 tháng 6" data-toast="Mở ngày 23/06"><span>23</span></button>
+                <button class="calendar-day" type="button" aria-label="24 tháng 6"><span>24</span></button>
+                <button class="calendar-day" type="button" aria-label="25 tháng 6"><span>25</span></button>
+                <button class="calendar-day has-photo photo-lilac" type="button" aria-label="26 tháng 6" data-toast="Mở ngày 26/06"><span>26</span></button>
+
+                <button class="calendar-day has-photo photo-sage" type="button" aria-label="27 tháng 6, 2 khoản" data-toast="Mở ngày 27/06"><span class="calendar-day-count">2</span><span>27</span></button>
+                <button class="calendar-day has-photo photo-rose" type="button" aria-label="28 tháng 6" data-toast="Mở ngày 28/06"><span>28</span></button>
+                <button class="calendar-day" type="button" aria-label="29 tháng 6"><span>29</span></button>
+                <button class="calendar-day has-photo photo-blue" type="button" aria-label="30 tháng 6" data-toast="Mở ngày 30/06"><span>30</span></button>
+                <button class="calendar-day outside" type="button" aria-label="1 tháng 7"><span>1</span></button>
+                <button class="calendar-day outside" type="button" aria-label="2 tháng 7"><span>2</span></button>
+                <button class="calendar-day outside" type="button" aria-label="3 tháng 7"><span>3</span></button>
+
+                <button class="calendar-day outside" type="button" aria-label="4 tháng 7"><span>4</span></button>
+                <button class="calendar-day outside" type="button" aria-label="5 tháng 7"><span>5</span></button>
+                <button class="calendar-day outside" type="button" aria-label="6 tháng 7"><span>6</span></button>
+                <button class="calendar-day outside" type="button" aria-label="7 tháng 7"><span>7</span></button>
+                <button class="calendar-day outside" type="button" aria-label="8 tháng 7"><span>8</span></button>
+                <button class="calendar-day outside" type="button" aria-label="9 tháng 7"><span>9</span></button>
+                <button class="calendar-day outside" type="button" aria-label="10 tháng 7"><span>10</span></button>
+              </div>
+            </section>
+          </main>
+          <nav class="bottom-nav" aria-label="Điều hướng chính">
+            <button class="nav-item active" type="button"><i data-lucide="calendar-days"></i><span>Lịch</span></button>
+            <button class="nav-item" type="button"><i data-lucide="chart-no-axes-column-increasing"></i><span>Số liệu</span></button>
+            <button class="nav-item camera" type="button" aria-label="Mở camera"><i data-lucide="camera"></i><span>Camera</span></button>
+            <button class="nav-item" type="button"><i data-lucide="users"></i><span>Nhóm</span></button>
+            <button class="nav-item" type="button"><i data-lucide="user-round"></i><span>Tôi</span></button>
+          </nav>
+        </div>
+      </article>
+    </figure>
+
+    <figure class="screen-figure" id="screen-group-detail" data-screen-id="screen-group-detail" data-ai-id="group-detail-screen-showcase">
+      <figcaption class="screen-caption">
+        <span class="screen-index">5a</span>
+        <span><strong>Chi tiết nhóm.</strong> Tổng quan chuyến đi, công nợ đang mở và dòng giao dịch gần nhất trong một nhịp cuộn.</span>
+      </figcaption>
+      <article class="phone" aria-label="Màn hình chi tiết nhóm Đà Lạt 6/2025">
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="status-icons">
+              <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="battery" aria-hidden="true"></span>
+            </span>
+          </div>
+          <main class="screen-body scrollable" data-ai-id="group-detail-main">
+            <header class="topbar">
+              <button class="icon-button" type="button" aria-label="Quay lại"><i data-lucide="chevron-left"></i></button>
+              <h2 class="topbar-title">Chi tiêu nhóm</h2>
+              <button class="icon-button" type="button" aria-label="Tuỳ chọn nhóm"><i data-lucide="ellipsis"></i></button>
+            </header>
+
+            <section class="group-detail-hero" data-ai-id="group-detail-hero">
+              <div class="group-detail-avatar">ĐL</div>
+              <div>
+                <h2 class="group-detail-name">Đà Lạt 6/2025</h2>
+                <p class="group-detail-copy">Ba ngày trốn nóng, săn mây và ăn hết những món đã lưu.</p>
+                <div class="member-line">
+                  <span class="member-dots" aria-label="5 thành viên">
+                    <i class="member-dot"></i><i class="member-dot"></i><i class="member-dot"></i><i class="member-dot"></i>
+                  </span>
+                  <span>5 thành viên · Du lịch</span>
+                </div>
+              </div>
+            </section>
+
+            <div class="compact-action-grid" data-ai-id="group-detail-actions">
+              <button class="outline-button" type="button" data-toast="Mở danh sách mời thành viên">
+                <span class="button-content"><i data-lucide="user-plus"></i>Mời bạn</span>
+              </button>
+              <button class="primary-button" type="button" data-toast="Mở form thêm khoản chi nhóm">
+                <span class="button-content"><i data-lucide="plus"></i>Thêm khoản chi</span>
+              </button>
+            </div>
+
+            <section data-ai-id="group-overview">
+              <h3 class="section-label">Tổng quan</h3>
+              <div class="overview-grid">
+                <article class="overview-card"><small>Tổng chi nhóm</small><strong>8.420.000 <span>₫</span></strong></article>
+                <article class="overview-card"><small>Thành viên</small><strong>5</strong></article>
+              </div>
+            </section>
+
+            <section data-ai-id="group-open-debts">
+              <header class="subsection-head">
+                <h3 class="subsection-title">Công nợ đang mở</h3>
+                <button class="text-action" type="button" data-toast="Đi tới màn screen-debt-settlement">Xem tất cả →</button>
+              </header>
+              <div class="debt-route-list">
+                <article class="debt-route">
+                  <span class="debt-route-icon"><i data-lucide="arrow-right-left"></i></span>
+                  <span><span class="debt-route-name">Bạn trả cho Huy</span><span class="debt-route-status">Chờ thanh toán</span></span>
+                  <strong class="debt-route-amount">85.000 ₫</strong>
+                </article>
+                <article class="debt-route">
+                  <span class="debt-route-icon"><i data-lucide="arrow-right-left"></i></span>
+                  <span><span class="debt-route-name">Linh trả cho bạn</span><span class="debt-route-status">Đã báo chuyển</span></span>
+                  <strong class="debt-route-amount">320.000 ₫</strong>
+                </article>
+              </div>
+            </section>
+
+            <section data-ai-id="group-recent-transactions">
+              <header class="subsection-head">
+                <h3 class="subsection-title">Khoản chi gần đây</h3>
+                <button class="text-action" type="button" data-toast="Hiện có 14 khoản chi">14 khoản</button>
+              </header>
+              <div class="group-feed">
+                <article class="group-feed-row">
+                  <span class="expense-swatch swatch-rose"></span>
+                  <span><span class="expense-name">Lẩu gà lá é</span><span class="expense-meta">Linh trả · chia đều 5 người</span></span>
+                  <strong class="expense-amount">650.000</strong>
+                </article>
+                <article class="group-feed-row">
+                  <span class="expense-swatch swatch-blue"></span>
+                  <span><span class="expense-name">Thuê xe 3 ngày</span><span class="expense-meta">Bạn trả · chia đều 5 người</span></span>
+                  <strong class="expense-amount">1.200.000</strong>
+                </article>
+              </div>
+            </section>
+          </main>
+        </div>
+      </article>
+    </figure>
+
+    <figure class="screen-figure" id="screen-debt-settlement" data-screen-id="screen-debt-settlement" data-ai-id="debt-settlement-screen-showcase">
+      <figcaption class="screen-caption">
+        <span class="screen-index">5b</span>
+        <span><strong>Tất toán nợ.</strong> Bảng công nợ, luồng tiền tối ưu và trạng thái xác nhận hai chiều để tránh “ai trả rồi nhỉ?”.</span>
+      </figcaption>
+      <article class="phone" aria-label="Màn hình tất toán công nợ nhóm">
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="status-icons">
+              <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="battery" aria-hidden="true"></span>
+            </span>
+          </div>
+          <main class="screen-body scrollable" data-ai-id="debt-settlement-main">
+            <header class="topbar">
+              <button class="icon-button" type="button" aria-label="Quay lại"><i data-lucide="chevron-left"></i></button>
+              <h2 class="topbar-title">Công nợ nhóm</h2>
+              <button class="icon-button" type="button" aria-label="Làm mới công nợ" data-toast="Đã cập nhật công nợ mới nhất"><i data-lucide="refresh-cw"></i></button>
+            </header>
+
+            <section class="settlement-summary" data-ai-id="settlement-summary">
+              <div>
+                <p class="kicker">Còn cần tất toán</p>
+                <p class="settlement-total">405.000 <span>₫</span></p>
+                <p class="trend">3 trong 5 khoản đã hoàn tất</p>
+              </div>
+              <div class="settlement-progress" aria-label="Đã hoàn tất 67 phần trăm"><span>67%</span></div>
+            </section>
+
+            <section data-ai-id="group-balance-table">
+              <header class="subsection-head">
+                <h3 class="subsection-title">Bảng công nợ</h3>
+                <span class="row-end">Cập nhật 9:41</span>
+              </header>
+              <div class="balance-table">
+                <div class="balance-table-row">
+                  <span class="mini-avatar">MA</span>
+                  <span><span class="balance-person">Bạn</span><span class="balance-breakdown">Đã trả 2,4tr · Phần 2,315tr</span></span>
+                  <strong class="balance-state negative-text">−85.000</strong>
+                </div>
+                <div class="balance-table-row">
+                  <span class="mini-avatar swatch-rose">L</span>
+                  <span><span class="balance-person">Linh</span><span class="balance-breakdown">Đã trả 2,1tr · Phần 1,78tr</span></span>
+                  <strong class="balance-state positive-text">+320.000</strong>
+                </div>
+                <div class="balance-table-row">
+                  <span class="mini-avatar swatch-sage">H</span>
+                  <span><span class="balance-person">Huy</span><span class="balance-breakdown">Đã trả 1,2tr · Phần 1,285tr</span></span>
+                  <strong class="balance-state negative-text">−85.000</strong>
+                </div>
+              </div>
+            </section>
+
+            <section data-ai-id="settlements-to-pay">
+              <header class="subsection-head">
+                <h3 class="subsection-title">Bạn cần trả</h3>
+                <span class="row-end">1 khoản</span>
+              </header>
+              <article class="settlement-card">
+                <div class="settlement-card-top">
+                  <div>
+                    <span class="settlement-path"><span>Bạn</span><i data-lucide="arrow-right"></i><span>Huy</span></span>
+                    <span class="settlement-card-meta">Chờ bạn thanh toán</span>
+                  </div>
+                  <strong class="settlement-card-amount">85.000 ₫</strong>
+                </div>
+                <button class="settlement-action" type="button" data-toast="Đã đánh dấu chuyển 85.000 ₫ cho Huy">Tôi đã chuyển tiền</button>
+              </article>
+            </section>
+
+            <section data-ai-id="settlements-to-receive">
+              <header class="subsection-head">
+                <h3 class="subsection-title">Người khác trả bạn</h3>
+                <span class="row-end">1 khoản</span>
+              </header>
+              <article class="settlement-card">
+                <div class="settlement-card-top">
+                  <div>
+                    <span class="settlement-path"><span>Linh</span><i data-lucide="arrow-right"></i><span>Bạn</span></span>
+                    <span class="settlement-card-meta">Linh đã báo chuyển</span>
+                  </div>
+                  <strong class="settlement-card-amount">320.000 ₫</strong>
+                </div>
+                <button class="settlement-action confirm" type="button" data-toast="Đã xác nhận nhận 320.000 ₫ từ Linh">Xác nhận đã nhận</button>
+              </article>
+            </section>
+          </main>
+        </div>
+      </article>
+    </figure>
+
+    <figure class="screen-figure" id="screen-ocr-review" data-screen-id="screen-ocr-review" data-ai-id="ocr-review-screen-showcase">
+      <figcaption class="screen-caption">
+        <span class="screen-index">5c</span>
+        <span><strong>Xem lại OCR.</strong> Ảnh hoá đơn, độ tin cậy và các trường đã trích xuất được đặt cạnh nhau để kiểm tra nhanh.</span>
+      </figcaption>
+      <article class="phone" aria-label="Màn hình kiểm tra kết quả OCR">
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="status-icons">
+              <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="battery" aria-hidden="true"></span>
+            </span>
+          </div>
+          <main class="screen-body scrollable" data-ai-id="ocr-review-main">
+            <header class="topbar">
+              <button class="icon-button" type="button" aria-label="Quay lại"><i data-lucide="chevron-left"></i></button>
+              <h2 class="topbar-title">Kiểm tra hoá đơn</h2>
+              <button class="icon-button" type="button" aria-label="Quét lại" data-toast="Quay lại camera để quét lại"><i data-lucide="scan-line"></i></button>
+            </header>
+
+            <section class="review-receipt" data-ai-id="ocr-confidence-card">
+              <div class="receipt-preview" role="img" aria-label="Bản xem trước hoá đơn Cộng Cà Phê"></div>
+              <div>
+                <h3>Đã đọc gần xong.</h3>
+                <p>Kiểm tra số tiền và ngày trước khi lưu vào nhật ký.</p>
+              </div>
+              <div class="confidence-ring" aria-label="Độ tin cậy 94 phần trăm"><strong>94%</strong></div>
+            </section>
+
+            <form class="form-stack" data-ai-id="ocr-review-form">
+              <label class="field-card">
+                <span class="field-label"><i data-lucide="store"></i>Cửa hàng</span>
+                <input class="field-control" name="merchant" value="Cộng Cà Phê — Đồng Khởi" />
+              </label>
+              <div class="form-grid">
+                <label class="field-card">
+                  <span class="field-label"><i data-lucide="banknote"></i>Số tiền</span>
+                  <input class="field-control amount-control" name="amount" value="145.000 ₫" inputmode="numeric" />
+                </label>
+                <label class="field-card">
+                  <span class="field-label"><i data-lucide="calendar-days"></i>Ngày giao dịch</span>
+                  <input class="field-control" name="date" value="19/06/2025" />
+                </label>
+              </div>
+              <div class="form-grid">
+                <label class="field-card">
+                  <span class="field-label"><i data-lucide="wallet-cards"></i>Ví</span>
+                  <select class="field-control" name="wallet">
+                    <option>Tiền mặt</option>
+                    <option>MoMo</option>
+                    <option>Vietcombank</option>
+                  </select>
+                </label>
+                <label class="field-card">
+                  <span class="field-label"><i data-lucide="shapes"></i>Danh mục chi</span>
+                  <select class="field-control" name="category">
+                    <option>Ăn uống</option>
+                    <option>Mua sắm</option>
+                    <option>Di chuyển</option>
+                  </select>
+                </label>
+              </div>
+              <label class="field-card">
+                <span class="field-label"><i data-lucide="notebook-pen"></i>Ghi chú</span>
+                <textarea class="field-control" name="note">Cà phê sáng với Linh</textarea>
+              </label>
+
+              <section data-ai-id="ocr-line-items">
+                <header class="subsection-head">
+                  <h3 class="subsection-title">Món đã nhận diện</h3>
+                  <span class="row-end">2 món</span>
+                </header>
+                <div class="review-items">
+                  <div class="review-item"><span>Bạc xỉu đá <small>× 2</small></span><strong>90.000</strong></div>
+                  <div class="review-item"><span>Cà phê dừa <small>× 1</small></span><strong>55.000</strong></div>
+                </div>
+              </section>
+
+              <div class="sticky-form-action">
+                <button class="primary-button" type="button" data-toast="Đã lưu giao dịch từ hoá đơn">Lưu giao dịch</button>
+              </div>
+            </form>
+          </main>
+        </div>
+      </article>
+    </figure>
+
+    <figure class="screen-figure" id="screen-transaction-form" data-screen-id="screen-transaction-form" data-ai-id="transaction-form-screen-showcase">
+      <figcaption class="screen-caption">
+        <span class="screen-index">5d</span>
+        <span><strong>Thêm giao dịch.</strong> Ảnh và số tiền là tâm điểm; loại, danh mục, ví và thời gian nằm trong grid thao tác nhanh.</span>
+      </figcaption>
+      <article class="phone" aria-label="Form thêm giao dịch Moniary">
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="status-icons">
+              <span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span class="battery" aria-hidden="true"></span>
+            </span>
+          </div>
+          <main class="screen-body scrollable" data-ai-id="transaction-form-main">
+            <header class="topbar">
+              <button class="icon-button" type="button" aria-label="Đóng form"><i data-lucide="x"></i></button>
+              <h2 class="topbar-title">Tạo giao dịch</h2>
+              <button class="icon-button star" type="button" aria-label="Lưu giao dịch" data-toast="Đã lưu giao dịch mới"><i data-lucide="circle-check"></i></button>
+            </header>
+
+            <form data-ai-id="transaction-create-form">
+              <section class="transaction-form-preview" aria-label="Ảnh và thông tin chính của giao dịch" data-ai-id="transaction-photo-form">
+                <div class="preview-inputs">
+                  <label class="sr-only" for="transaction-amount">Số tiền</label>
+                  <input class="preview-amount" id="transaction-amount" value="320.000 ₫" inputmode="numeric" />
+                  <label class="sr-only" for="transaction-note">Ghi chú</label>
+                  <input class="preview-note" id="transaction-note" value="Ăn tối với Linh" />
+                </div>
+              </section>
+
+              <div class="photo-form-actions">
+                <button type="button" data-toast="Mở thư viện ảnh"><span class="button-content"><i data-lucide="image"></i>Đổi ảnh</span></button>
+                <button type="button" data-toast="Đang đọc ảnh bằng OCR"><span class="button-content"><i data-lucide="scan-text"></i>Đọc bằng OCR</span></button>
+              </div>
+
+              <section class="form-tile-grid" data-ai-id="transaction-quick-fields">
+                <button class="form-tile" type="button" data-toast="Chuyển loại giao dịch">
+                  <span class="form-tile-icon"><i data-lucide="arrow-down-right"></i></span>
+                  <span><span class="form-tile-label">Loại giao dịch</span><span class="form-tile-value">Chi</span></span>
+                </button>
+                <button class="form-tile" type="button" data-toast="Chọn danh mục">
+                  <span class="form-tile-icon"><i data-lucide="utensils"></i></span>
+                  <span><span class="form-tile-label">Danh mục</span><span class="form-tile-value">Ăn uống</span></span>
+                </button>
+                <button class="form-tile" type="button" data-toast="Chọn ví hoặc tài khoản">
+                  <span class="form-tile-icon"><i data-lucide="wallet-cards"></i></span>
+                  <span><span class="form-tile-label">Ví / Tài khoản</span><span class="form-tile-value">Tiền mặt</span></span>
+                </button>
+                <button class="form-tile" type="button" data-toast="Chọn ngày và giờ">
+                  <span class="form-tile-icon"><i data-lucide="calendar-clock"></i></span>
+                  <span><span class="form-tile-label">Ngày giờ</span><span class="form-tile-value">19/06 · 20:10</span></span>
+                </button>
+              </section>
+
+              <section class="important-row" data-ai-id="important-transaction-toggle">
+                <i data-lucide="star"></i>
+                <span class="important-copy"><strong>Khoản đáng nhớ</strong><small>Hiện trong album nổi bật</small></span>
+                <button class="switch-button" type="button" aria-label="Đánh dấu khoản đáng nhớ" data-toast="Đã đánh dấu khoản đáng nhớ"></button>
+              </section>
+
+              <div class="sticky-form-action">
+                <button class="primary-button" type="button" data-toast="Đã lưu giao dịch 320.000 ₫">Lưu giao dịch</button>
+              </div>
+            </form>
+          </main>
+        </div>
+      </article>
+    </figure>
+  </main>
+
+  <aside class="toast" role="status" aria-live="polite" data-ai-id="feedback-toast">
+    <i data-lucide="sparkles"></i>
+    <span>Đã cập nhật.</span>
+  </aside>
+
+  <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+
+    const toast = document.querySelector(".toast");
+    const toastMessage = toast.querySelector("span");
+    let toastTimer;
+
+    document.addEventListener("click", (event) => {
+      const trigger = event.target.closest("[data-toast]");
+      if (!trigger) return;
+
+      window.clearTimeout(toastTimer);
+      toastMessage.textContent = trigger.dataset.toast;
+      toast.classList.add("visible");
+      toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 2200);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") toast.classList.remove("visible");
+    });
+
+    const screenIdForm = document.querySelector("#screen-id-form");
+    const screenIdInput = document.querySelector("#screen-id-input");
+
+    function focusScreenById(screenId, announce = true) {
+      const screen = document.getElementById(screenId.trim());
+      document.querySelectorAll(".screen-figure.is-target").forEach((item) => item.classList.remove("is-target"));
+
+      if (!screen || !screen.matches(".screen-figure")) {
+        if (announce) {
+          window.clearTimeout(toastTimer);
+          toastMessage.textContent = `Không tìm thấy ID “${screenId}”.`;
+          toast.classList.add("visible");
+          toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 2400);
+        }
+        return;
+      }
+
+      screen.classList.add("is-target");
+      screen.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.history.replaceState(null, "", `#${screen.id}`);
+
+      if (announce) {
+        window.clearTimeout(toastTimer);
+        toastMessage.textContent = `Đã chọn ${screen.id}.`;
+        toast.classList.add("visible");
+        toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 2200);
+      }
+    }
+
+    screenIdForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      focusScreenById(screenIdInput.value);
+    });
+
+    const calendarFilterButtons = document.querySelectorAll("[data-calendar-filter]");
+    calendarFilterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        calendarFilterButtons.forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+      });
+    });
+
+    const calendarResetButton = document.querySelector(".calendar-filter.refresh");
+    calendarResetButton.addEventListener("click", () => {
+      calendarFilterButtons.forEach((item) => item.classList.remove("active"));
+      calendarFilterButtons[0].classList.add("active");
+    });
+
+    if (window.location.hash) {
+      focusScreenById(window.location.hash.slice(1), false);
+    }
+  </script>
+</body>
+</html>

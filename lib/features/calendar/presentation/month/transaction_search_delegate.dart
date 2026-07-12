@@ -1,12 +1,13 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/widgets/moniary_design.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
-import '../../../transactions/data/repositories/transaction_repository.dart';
+import '../../../transactions/application/queries/transaction_queries.dart';
 import '../../../transactions/domain/models/transaction_entry.dart';
 
 class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
@@ -18,30 +19,60 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
   final WidgetRef ref;
   final String searchFieldLabelText;
 
+  bool _showStarredOnly = false;
+
   @override
   String get searchFieldLabel => searchFieldLabelText;
 
   @override
   ThemeData appBarTheme(BuildContext context) {
+    final colors = context.moniaryColors;
     return Theme.of(context).copyWith(
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppTheme.background,
+      scaffoldBackgroundColor: colors.background,
+      appBarTheme: AppBarTheme(
+        backgroundColor: colors.background,
+        foregroundColor: colors.textPrimary,
         elevation: 0,
       ),
-      inputDecorationTheme: const InputDecorationTheme(
+      inputDecorationTheme: InputDecorationTheme(
         border: InputBorder.none,
-        hintStyle: TextStyle(color: Colors.white54),
+        hintStyle: TextStyle(color: colors.textDim),
       ),
-      textTheme: const TextTheme(titleLarge: TextStyle(color: Colors.white)),
+      textTheme: Theme.of(context).textTheme.copyWith(
+        titleLarge: Theme.of(context).textTheme.titleLarge?.copyWith(
+          color: colors.textPrimary,
+          fontFamily: 'Manrope',
+          fontSize: 17,
+        ),
+      ),
     );
   }
 
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
+      StatefulBuilder(
+        builder: (context, setState) {
+          return IconButton(
+            icon: Icon(
+              _showStarredOnly ? Icons.star : Icons.star_border,
+              color: _showStarredOnly
+                  ? context.moniaryColors.warning
+                  : context.moniaryColors.textDim,
+            ),
+            onPressed: () {
+              setState(() {
+                _showStarredOnly = !_showStarredOnly;
+              });
+              showSuggestions(context);
+            },
+            tooltip: context.l10n.calendarStarred,
+          );
+        },
+      ),
       if (query.isNotEmpty)
         IconButton(
-          icon: const Icon(Icons.clear, color: Colors.white70),
+          icon: Icon(Icons.clear, color: context.moniaryColors.textDim),
           onPressed: () => query = '',
         ),
     ];
@@ -50,7 +81,7 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
   @override
   Widget? buildLeading(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.arrow_back, color: Colors.white70),
+      icon: Icon(Icons.arrow_back, color: context.moniaryColors.textPrimary),
       onPressed: () => close(context, null),
     );
   }
@@ -64,9 +95,24 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
   Widget buildSuggestions(BuildContext context) {
     if (query.isEmpty) {
       return Center(
-        child: Text(
-          context.l10n.calendarSearchPrompt,
-          style: const TextStyle(color: Colors.white54),
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.search,
+                size: 44,
+                color: context.moniaryColors.textDim,
+              ),
+              const SizedBox(height: 14),
+              Text(
+                context.l10n.calendarSearchPrompt,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -74,15 +120,11 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
   }
 
   Widget _buildSearchList(BuildContext context) {
-    final repo = ref.read(transactionRepositoryProvider);
-
     return FutureBuilder<List<TransactionEntry>>(
-      future: repo.searchTransactions(query),
+      future: ref.read(transactionSearchProvider(query).future),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(color: AppTheme.mint),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
@@ -95,49 +137,86 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
         }
 
         final transactions = snapshot.data ?? [];
+        var filtered = transactions;
 
-        if (transactions.isEmpty) {
+        if (_showStarredOnly) {
+          filtered = filtered.where((tx) => tx.isImportant).toList();
+        }
+
+        // Sort: Starred items first, then by date (already sorted by date from repo)
+        filtered.sort((a, b) {
+          if (a.isImportant != b.isImportant) {
+            return b.isImportant ? 1 : -1;
+          }
+          return b.transactionDate.compareTo(a.transactionDate);
+        });
+
+        if (filtered.isEmpty) {
           return Center(
-            child: Text(
-              context.l10n.calendarSearchNoResults,
-              style: const TextStyle(color: Colors.white54),
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.search_off_outlined,
+                    size: 44,
+                    color: context.moniaryColors.textDim,
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    context.l10n.calendarSearchNoResults,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
             ),
           );
         }
 
         return ListView.builder(
-          itemCount: transactions.length,
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
+          itemCount: filtered.length,
           itemBuilder: (context, index) {
-            final tx = transactions[index];
-            return ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: (tx.isIncome ? AppTheme.success : AppTheme.danger)
-                      .withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  tx.isIncome ? Icons.north_east : Icons.south_east,
-                  color: tx.isIncome ? AppTheme.success : AppTheme.danger,
-                  size: 16,
-                ),
+            final tx = filtered[index];
+            final amountColor = tx.isIncome
+                ? context.moniaryColors.success
+                : context.moniaryColors.danger;
+            return MoniaryHairlineTile(
+              showTopDivider: index == 0,
+              contentPadding: const EdgeInsets.symmetric(vertical: 15),
+              leading: Icon(
+                tx.isIncome ? Icons.north_east : Icons.south_east,
+                color: amountColor,
+                size: 18,
               ),
-              title: Text(
-                tx.note?.trim().isNotEmpty == true
-                    ? tx.note!.trim()
-                    : tx.categoryName,
-                style: const TextStyle(color: Colors.white),
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      tx.note?.trim().isNotEmpty == true
+                          ? tx.note!.trim()
+                          : tx.categoryName,
+                    ),
+                  ),
+                  if (tx.isImportant) ...[
+                    const SizedBox(width: 4),
+                    const Icon(Icons.star, color: AppTheme.amber, size: 14),
+                  ],
+                ],
               ),
               subtitle: Text(
-                '${MaterialLocalizations.of(context).formatShortDate(tx.transactionDate)} - ${tx.walletName}',
-                style: const TextStyle(color: Colors.white54, fontSize: 12),
+                '${MaterialLocalizations.of(context).formatShortDate(tx.transactionDate)} · ${tx.walletName}',
+                style: context.moniaryTypography.metadata,
               ),
               trailing: ObscurableAmountText(
                 amountText: _formatMoney(context, tx.amount),
                 style: TextStyle(
-                  color: tx.isIncome ? AppTheme.success : AppTheme.danger,
-                  fontWeight: FontWeight.bold,
+                  color: amountColor,
+                  fontFamily: 'JetBrains Mono',
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               onTap: () => close(context, tx),

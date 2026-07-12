@@ -35,6 +35,7 @@ class FriendsScreen extends ConsumerWidget {
     });
 
     return Scaffold(
+      backgroundColor: context.moniaryColors.background,
       appBar: AppBar(
         title: Text(context.l10n.friendsTitle),
         actions: [
@@ -58,6 +59,12 @@ class FriendsScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 36),
           children: [
+            _FriendsHero(
+              actionLoading: action.isLoading,
+              onAdd: () => context.push(AddFriendScreen.routePath),
+              onShare: () => _shareInviteLink(context, ref),
+            ),
+            const SizedBox(height: 22),
             incomingAsync.when(
               loading: () => const _SectionLoading(),
               error: (error, stackTrace) {
@@ -337,12 +344,18 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            title,
+            style: context.moniaryTypography.metadataStrong.copyWith(
+              color: colors.textDim,
+            ),
+          ),
           const SizedBox(height: 12),
           ...children,
         ],
@@ -358,22 +371,19 @@ class _EmptyFriendsState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 72),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.people_outline,
-              size: 72,
-              color: AppTheme.mintSoft,
-            ),
+            Icon(Icons.people_outline, size: 72, color: colors.secondary),
             const SizedBox(height: 16),
             Text(
               context.l10n.friendNoFriends,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: context.moniaryTypography.displaySmall,
             ),
             const SizedBox(height: 8),
             Text(
@@ -385,6 +395,69 @@ class _EmptyFriendsState extends StatelessWidget {
               onPressed: onAdd,
               icon: const Icon(Icons.person_add_alt_1_outlined),
               label: Text(context.l10n.friendAdd),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FriendsHero extends StatelessWidget {
+  const _FriendsHero({
+    required this.actionLoading,
+    required this.onAdd,
+    required this.onShare,
+  });
+
+  final bool actionLoading;
+  final VoidCallback onAdd;
+  final VoidCallback onShare;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final typography = context.moniaryTypography;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: colors.outline),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              context.l10n.appName.toUpperCase(),
+              style: typography.metadataStrong,
+            ),
+            const SizedBox(height: 8),
+            Text(context.l10n.friendsTitle, style: typography.displayMedium),
+            const SizedBox(height: 8),
+            Text(
+              context.l10n.friendsProfileSubtitle,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: onAdd,
+                    icon: const Icon(Icons.person_add_alt_1_outlined),
+                    label: Text(context.l10n.friendAdd),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                IconButton.filledTonal(
+                  onPressed: actionLoading ? null : onShare,
+                  icon: const Icon(Icons.ios_share_outlined),
+                ),
+              ],
             ),
           ],
         ),

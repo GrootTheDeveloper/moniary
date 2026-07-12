@@ -20,15 +20,21 @@ class FriendProfileTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
+    final colors = context.moniaryColors;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: colors.outline),
+      ),
       child: ListTile(
         onTap: onTap,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         leading: ClipOval(
           child: SupabaseImage(
             imagePath: profile.avatarPath,
-            width: 44,
-            height: 44,
+            width: 48,
+            height: 48,
             fallbackIcon: Icons.person_outline,
           ),
         ),
@@ -36,7 +42,10 @@ class FriendProfileTile extends StatelessWidget {
           profile.displayName,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w700),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: colors.textPrimary,
+            fontWeight: FontWeight.w900,
+          ),
         ),
         subtitle: Text(
           subtitle?.trim().isNotEmpty == true
@@ -44,7 +53,9 @@ class FriendProfileTile extends StatelessWidget {
               : profile.displayUsername,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: AppTheme.textSubtle),
+          style: context.moniaryTypography.metadata.copyWith(
+            color: colors.textDim,
+          ),
         ),
         trailing: trailing,
       ),

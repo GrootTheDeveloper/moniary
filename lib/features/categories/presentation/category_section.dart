@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/app_logger.dart';
@@ -15,11 +16,16 @@ class CategorySection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(categoriesControllerProvider);
+    final colors = context.moniaryColors;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
-      child: Card(
-        margin: EdgeInsets.zero,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.surface.withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: colors.outline),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -30,9 +36,7 @@ class CategorySection extends ConsumerWidget {
                   Expanded(
                     child: Text(
                       context.l10n.categoryTitle,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: context.moniaryTypography.displaySmall,
                     ),
                   ),
                   TextButton.icon(
@@ -45,13 +49,18 @@ class CategorySection extends ConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 context.l10n.categoryDescription,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
               ),
               const SizedBox(height: 16),
               categoriesAsync.when(
                 data: (categories) {
                   if (categories.isEmpty) {
-                    return Text(context.l10n.categoryEmpty);
+                    return Text(
+                      context.l10n.categoryEmpty,
+                      style: TextStyle(color: colors.textDim),
+                    );
                   }
 
                   final expense = categories
@@ -89,6 +98,7 @@ class CategorySection extends ConsumerWidget {
                     context.l10n.categoryError(
                       userFriendlyMessage(context, error),
                     ),
+                    style: TextStyle(color: colors.danger),
                   );
                 },
                 loading: () => const Padding(
@@ -112,18 +122,22 @@ class _CategoryGroup extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.moniaryColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          style: context.moniaryTypography.metadataStrong.copyWith(
+            color: colors.textDim,
+          ),
         ),
         const SizedBox(height: 8),
         if (categories.isEmpty)
-          Text(context.l10n.categoryNoData)
+          Text(
+            context.l10n.categoryNoData,
+            style: TextStyle(color: colors.textDim),
+          )
         else
           ...categories.map(
             (category) => Padding(
@@ -148,41 +162,66 @@ class _CategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColor.fromHex(
-      category.color,
-      fallback: const Color(0xFF4EA1FF),
-    );
+    final colors = context.moniaryColors;
+    final color = AppColor.fromHex(category.color, fallback: colors.primary);
 
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
+        color: colors.surfaceRaised.withValues(alpha: 0.72),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: colors.outline),
       ),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: color.withValues(alpha: 0.18),
-          foregroundColor: color,
-          child: const Icon(Icons.label_outline),
-        ),
-        title: Row(
-          children: [
-            Expanded(child: Text(category.name)),
-            if (category.isDefault)
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Chip(label: Text(context.l10n.walletDefault)),
-              ),
-          ],
-        ),
-        subtitle: Text(
-          category.isActive
-              ? context.l10n.walletActive
-              : context.l10n.walletInactive,
-        ),
-        trailing: IconButton(
-          onPressed: onEdit,
-          icon: const Icon(Icons.edit_outlined),
-        ),
+      child: Row(
+        children: [
+          Container(
+            width: 12,
+            height: 42,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        category.name,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(color: colors.textPrimary),
+                      ),
+                    ),
+                    if (category.isDefault)
+                      Chip(
+                        label: Text(context.l10n.walletDefault),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  category.isActive
+                      ? context.l10n.walletActive
+                      : context.l10n.walletInactive,
+                  style: context.moniaryTypography.metadata.copyWith(
+                    color: colors.textDim,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton.filledTonal(
+            onPressed: onEdit,
+            icon: const Icon(Icons.edit_outlined),
+            iconSize: 18,
+          ),
+        ],
       ),
     );
   }

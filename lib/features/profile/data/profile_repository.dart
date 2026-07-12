@@ -25,6 +25,10 @@ class ProfileRepository {
 
   static UserProfile? _mockProfile;
 
+  void resetMockProfile() {
+    if (_useMockData) _mockProfile = null;
+  }
+
   String get _userId {
     if (_useMockData) {
       return 'mock-user-id';
@@ -46,6 +50,7 @@ class ProfileRepository {
         loginProvider: 'anonymous',
         timezone: AppConstants.defaultTimezone,
         username: 'mock-user',
+        surveyCompleted: false,
       );
       return _mockProfile;
     }
@@ -58,7 +63,23 @@ class ProfileRepository {
           .eq('id', uid)
           .maybeSingle();
 
-      if (row == null) return null;
+      if (row == null) {
+        // Fallback: If profile record hasn't been created yet, attempt to initialize it
+        try {
+          await _client.rpc('initialize_user');
+          final retryRow = await _client
+              .from('profiles')
+              .select()
+              .eq('id', uid)
+              .maybeSingle();
+          if (retryRow != null) {
+            return UserProfile.fromMap(retryRow);
+          }
+        } catch (e, st) {
+          AppLogger.error('Failed to auto-initialize profile', e, st);
+        }
+        return null;
+      }
       return UserProfile.fromMap(row);
     } on PostgrestException catch (e, st) {
       AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
@@ -85,6 +106,9 @@ class ProfileRepository {
         loginProvider: _mockProfile?.loginProvider ?? 'anonymous',
         timezone: timezone,
         username: username,
+        occupation: _mockProfile?.occupation,
+        preferredCurrency: _mockProfile?.preferredCurrency ?? 'VND',
+        surveyCompleted: _mockProfile?.surveyCompleted ?? false,
       );
       return _mockProfile!;
     }
@@ -100,15 +124,25 @@ class ProfileRepository {
         'username': username,
         'timezone': timezone,
       };
-      if (avatarUrl != null) {
-        values['avatar_url'] = avatarUrl;
-      }
+      if (avatarUrl != null) values['avatar_url'] = avatarUrl;
 
       final row = await _client
           .from('profiles')
           .upsert(values)
           .select()
           .single();
+
+      // Fix for Problem 3: Also update Supabase Auth metadata so login doesn't reset full_name
+      try {
+        final authMeta = <String, dynamic>{
+          'full_name': fullName,
+          'username': username,
+        };
+        if (avatarUrl != null) authMeta['avatar_url'] = avatarUrl;
+        await _client.auth.updateUser(UserAttributes(data: authMeta));
+      } catch (e, st) {
+        AppLogger.error('Failed to sync auth metadata (non-blocking)', e, st);
+      }
 
       return UserProfile.fromMap(row);
     } on PostgrestException catch (e, st) {
@@ -118,6 +152,65 @@ class ProfileRepository {
       if (e is AppException) rethrow;
       AppLogger.error('Lỗi kết nối', e, st);
       throw const AppException('errorConnection');
+    }
+  }
+
+  Future<UserProfile> completeSurvey({
+    required String occupation,
+    required String preferredCurrency,
+  }) async {
+    if (_useMockData) {
+      final profile = _mockProfile ?? await fetchCurrentProfile();
+      if (profile == null) {
+        throw const AppException(
+          'Profile is not available',
+          code: 'PROFILE_NOT_FOUND',
+        );
+      }
+      _mockProfile = UserProfile(
+        id: profile.id,
+        fullName: profile.fullName,
+        email: profile.email,
+        avatarUrl: profile.avatarUrl,
+        loginProvider: profile.loginProvider,
+        timezone: profile.timezone,
+        username: profile.username,
+        occupation: occupation,
+        preferredCurrency: preferredCurrency,
+        surveyCompleted: true,
+      );
+      return _mockProfile!;
+    }
+
+    try {
+      final uid = _userId;
+      try {
+        await _client.rpc('initialize_user');
+      } catch (e, st) {
+        AppLogger.error('initialize_user RPC failed before survey', e, st);
+      }
+
+      final row = await _client
+          .from('profiles')
+          .upsert({
+            'id': uid,
+            'occupation': occupation,
+            'preferred_currency': preferredCurrency,
+            'survey_completed_at': DateTime.now().toUtc().toIso8601String(),
+          }, onConflict: 'id')
+          .select()
+          .single();
+      return UserProfile.fromMap(row);
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Failed to complete profile survey', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to complete profile survey', e, st);
+      throw const AppException(
+        'errorConnection',
+        code: 'PROFILE_SURVEY_FAILED',
+      );
     }
   }
 
@@ -133,6 +226,9 @@ class ProfileRepository {
       loginProvider: loginProvider,
       timezone: _mockProfile?.timezone ?? AppConstants.defaultTimezone,
       username: _mockProfile?.username ?? 'mock-user',
+      occupation: _mockProfile?.occupation,
+      preferredCurrency: _mockProfile?.preferredCurrency ?? 'VND',
+      surveyCompleted: _mockProfile?.surveyCompleted ?? false,
     );
   }
 

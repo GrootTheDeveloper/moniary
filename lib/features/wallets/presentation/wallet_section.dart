@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/app_logger.dart';
@@ -17,6 +18,7 @@ class WalletSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final walletsAsync = ref.watch(walletsControllerProvider);
+    final colors = context.moniaryColors;
     final currency = NumberFormat.currency(
       locale: Localizations.localeOf(context).toString(),
       symbol: '',
@@ -26,8 +28,12 @@ class WalletSection extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
-      child: Card(
-        margin: EdgeInsets.zero,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.surface.withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: colors.outline),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -38,9 +44,7 @@ class WalletSection extends ConsumerWidget {
                   Expanded(
                     child: Text(
                       context.l10n.walletTitle,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: context.moniaryTypography.displaySmall,
                     ),
                   ),
                   TextButton.icon(
@@ -53,13 +57,18 @@ class WalletSection extends ConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 context.l10n.walletDescription,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
               ),
               const SizedBox(height: 16),
               walletsAsync.when(
                 data: (wallets) {
                   if (wallets.isEmpty) {
-                    return Text(context.l10n.walletEmpty);
+                    return Text(
+                      context.l10n.walletEmpty,
+                      style: TextStyle(color: colors.textDim),
+                    );
                   }
 
                   return Column(
@@ -89,6 +98,7 @@ class WalletSection extends ConsumerWidget {
                     context.l10n.walletError(
                       userFriendlyMessage(context, error),
                     ),
+                    style: TextStyle(color: colors.danger),
                   );
                 },
                 loading: () => const Padding(
@@ -117,26 +127,33 @@ class _WalletTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColor.fromHex(
-      wallet.color,
-      fallback: const Color(0xFF4EA1FF),
-    );
+    final colors = context.moniaryColors;
+    final color = AppColor.fromHex(wallet.color, fallback: colors.primary);
 
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
+        color: colors.surfaceRaised.withValues(alpha: 0.72),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        border: Border.all(color: colors.outline),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CircleAvatar(
-          backgroundColor: color.withValues(alpha: 0.18),
+          backgroundColor: color.withValues(alpha: 0.14),
           foregroundColor: color,
           child: const Icon(Icons.account_balance_wallet_outlined),
         ),
         title: Row(
           children: [
-            Expanded(child: Text(wallet.name)),
+            Expanded(
+              child: Text(
+                wallet.name,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(color: colors.textPrimary),
+              ),
+            ),
             if (wallet.isDefault)
               Padding(
                 padding: const EdgeInsets.only(left: 8),
@@ -146,11 +163,16 @@ class _WalletTile extends StatelessWidget {
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 8),
-          child: ObscurableAmountText(
-            prefixText: '${_walletTypeLabel(context, wallet.type)} • ',
-            amountText: balanceLabel,
-            suffixText:
-                ' • ${wallet.isActive ? context.l10n.walletActive : context.l10n.walletInactive}',
+          child: DefaultTextStyle.merge(
+            style: context.moniaryTypography.metadata.copyWith(
+              color: colors.textDim,
+            ),
+            child: ObscurableAmountText(
+              prefixText: '${_walletTypeLabel(context, wallet.type)} · ',
+              amountText: balanceLabel,
+              suffixText:
+                  ' · ${wallet.isActive ? context.l10n.walletActive : context.l10n.walletInactive}',
+            ),
           ),
         ),
         trailing: IconButton(

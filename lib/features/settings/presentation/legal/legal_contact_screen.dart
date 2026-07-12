@@ -22,19 +22,19 @@ class LegalContactScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _ContactCard(
               icon: Icons.privacy_tip_outlined,
-              title: 'Privacy',
+              title: context.l10n.legalContactPrivacyLabel,
               value: AppConstants.privacyEmail,
               description: context.l10n.legalContactPrivacyDesc,
             ),
             _ContactCard(
               icon: Icons.support_agent_outlined,
-              title: 'Support',
+              title: context.l10n.legalContactSupportLabel,
               value: AppConstants.supportEmail,
               description: context.l10n.legalContactSupportDesc,
             ),
             _ContactCard(
               icon: Icons.gavel_outlined,
-              title: 'Legal',
+              title: context.l10n.legalContactLegalLabel,
               value: AppConstants.legalEmail,
               description: context.l10n.legalContactLegalDesc,
             ),
@@ -54,7 +54,9 @@ class LegalContactScreen extends StatelessWidget {
     Clipboard.setData(
       ClipboardData(
         text:
-            'Privacy: ${AppConstants.privacyEmail}\nSupport: ${AppConstants.supportEmail}\nLegal: ${AppConstants.legalEmail}',
+            '${context.l10n.legalContactPrivacyLabel}: ${AppConstants.privacyEmail}\n'
+            '${context.l10n.legalContactSupportLabel}: ${AppConstants.supportEmail}\n'
+            '${context.l10n.legalContactLegalLabel}: ${AppConstants.legalEmail}',
       ),
     );
     ScaffoldMessenger.of(context).showSnackBar(
@@ -122,7 +124,7 @@ class _ContactCard extends StatelessWidget {
               IconButton(
                 onPressed: () => _copy(context),
                 icon: const Icon(Icons.copy_outlined),
-                tooltip: 'Copy',
+                tooltip: context.l10n.commonCopy,
               ),
             ],
           ),

@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../app/app_theme.dart';
 import '../../../../core/providers/camera_provider.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../scanning/presentation/scanning_screen.dart';
 import '../../domain/models/transaction_mutation_result.dart';
-
-enum _CameraError { permissionDenied, generic }
 
 class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({super.key});
@@ -26,6 +25,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
   List<CameraDescription> _cameras = [];
   int _selectedCameraIndex = 0;
   bool _isFlashOn = false;
+  bool _isInitializing = true;
 
   @override
   void initState() {
@@ -36,13 +36,19 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
 
   Future<void> _initCameras() async {
     final cameras = await ref.read(cameraProvider.future);
-    if (mounted && cameras.isNotEmpty) {
-      _cameras = cameras;
-      await _initializeCamera(cameras, index: _selectedCameraIndex);
+    if (!mounted) return;
+    if (cameras.isEmpty) {
+      // No cameras available on this device — signal failure immediately
+      ref
+          .read(cameraFailureReasonProvider.notifier)
+          .setFailure(CameraFailureReason.generic);
+      AppLogger.warning('No cameras available — signalling fallback');
+      context.pop();
+      return;
     }
+    _cameras = cameras;
+    await _initializeCamera(cameras, index: _selectedCameraIndex);
   }
-
-  _CameraError? _cameraError;
 
   Future<void> _initializeCamera(
     List<CameraDescription> cameras, {
@@ -71,22 +77,26 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
         _isFlashOn ? FlashMode.torch : FlashMode.off,
       );
       setState(() {
-        _cameraError = null;
+        _isInitializing = false;
       });
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          if (e is CameraException && e.code == 'CameraAccessDenied') {
-            _cameraError = _CameraError.permissionDenied;
-          } else if (e.toString().contains('disposed')) {
-            // Ignore disposed errors from interrupted initializations
-            return;
-          } else {
-            _cameraError = _CameraError.generic;
-          }
-        });
+      if (e.toString().contains('disposed')) {
+        // Ignore disposed errors from interrupted initializations
+        return;
       }
-      AppLogger.error('Error initializing camera', e);
+      if (mounted) {
+        // Signal failure reason to MainShellScreen via provider,
+        // then auto-pop — no error UI shown to the user.
+        final reason = (e is CameraException && e.code == 'CameraAccessDenied')
+            ? CameraFailureReason.permissionDenied
+            : CameraFailureReason.generic;
+        ref.read(cameraFailureReasonProvider.notifier).setFailure(reason);
+        AppLogger.error(
+          'Camera init failed ($reason) — signalling fallback',
+          e,
+        );
+        context.pop();
+      }
     }
   }
 
@@ -118,23 +128,24 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
   Future<void> _takePicture({bool useOcr = false}) async {
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) return;
+    final router = GoRouter.of(context);
 
     try {
       final image = await controller.takePicture();
       if (!mounted) return;
 
       final result = useOcr
-          ? await context.push<TransactionMutationResult>(
+          ? await router.push<TransactionMutationResult>(
               ScanningScreen.routePath,
               extra: image.path,
             )
-          : await context.push<TransactionMutationResult>(
+          : await router.push<TransactionMutationResult>(
               '/transaction-form',
               extra: {'imagePath': image.path},
             );
 
       if (result != null && mounted) {
-        context.pop(result);
+        router.pop(result);
       }
     } catch (e, st) {
       AppLogger.error('Error taking picture', e, st);
@@ -142,16 +153,17 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
   }
 
   Future<void> _pickFromAlbum() async {
+    final router = GoRouter.of(context);
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null && mounted) {
-      final result = await context.push<TransactionMutationResult>(
+      final result = await router.push<TransactionMutationResult>(
         '/transaction-form',
         extra: {'imagePath': image.path},
       );
 
       if (result != null && mounted) {
-        context.pop(result);
+        router.pop(result);
       }
     }
   }
@@ -165,39 +177,8 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
     });
   }
 
-  String _cameraErrorMessage(BuildContext context, _CameraError error) {
-    return switch (error) {
-      _CameraError.permissionDenied => context.l10n.cameraNoPermission,
-      _CameraError.generic => context.l10n.errorGeneric,
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
-    final cameraError = _cameraError;
-    if (cameraError != null) {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          leading: IconButton(
-            icon: const Icon(Icons.close, color: Colors.white),
-            onPressed: () => context.pop(),
-          ),
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Text(
-              _cameraErrorMessage(context, cameraError),
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.redAccent, fontSize: 16),
-            ),
-          ),
-        ),
-      );
-    }
-
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) {
       return Scaffold(
@@ -209,8 +190,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
             onPressed: () => context.pop(),
           ),
         ),
-        body: const Center(
-          child: CircularProgressIndicator(color: Colors.white),
+        body: Center(
+          child: _isInitializing
+              ? const CircularProgressIndicator(color: Colors.white)
+              : const SizedBox.shrink(),
         ),
       );
     }
@@ -271,6 +254,28 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                               controller.value.previewSize?.width ?? squareSize,
                           child: CameraPreview(controller),
                         ),
+                      ),
+                    ),
+                  ),
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(painter: const _ReceiptFramePainter()),
+                    ),
+                  ),
+                  Positioned(
+                    top: 18,
+                    left: 24,
+                    right: 24,
+                    child: Text(
+                      context.l10n.cameraFrameHint.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'JetBrains Mono',
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.2,
+                        shadows: [Shadow(color: Colors.black87, blurRadius: 8)],
                       ),
                     ),
                   ),
@@ -364,7 +369,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: isActive
-              ? Colors.amber.withValues(alpha: 0.8)
+              ? AppTheme.amber.withValues(alpha: 0.8)
               : Colors.black.withValues(alpha: 0.5),
           shape: BoxShape.circle,
         ),
@@ -404,4 +409,37 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
       ),
     );
   }
+}
+
+class _ReceiptFramePainter extends CustomPainter {
+  const _ReceiptFramePainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const inset = 18.0;
+    const arm = 42.0;
+    final paint = Paint()
+      ..color = AppTheme.terracottaBright
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    final path = Path()
+      ..moveTo(inset, inset + arm)
+      ..lineTo(inset, inset)
+      ..lineTo(inset + arm, inset)
+      ..moveTo(size.width - inset - arm, inset)
+      ..lineTo(size.width - inset, inset)
+      ..lineTo(size.width - inset, inset + arm)
+      ..moveTo(size.width - inset, size.height - inset - arm)
+      ..lineTo(size.width - inset, size.height - inset)
+      ..lineTo(size.width - inset - arm, size.height - inset)
+      ..moveTo(inset + arm, size.height - inset)
+      ..lineTo(inset, size.height - inset)
+      ..lineTo(inset, size.height - inset - arm);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

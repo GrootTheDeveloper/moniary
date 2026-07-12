@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moniary/features/auth/application/account_status_controller.dart';
 import 'package:moniary/features/settings/data/account/account_repository.dart';
+import 'package:moniary/features/settings/domain/account/account_deletion_status.dart';
 
 class MockAccountRepository extends Mock implements AccountRepository {}
 
@@ -24,24 +25,31 @@ void main() {
   });
 
   test('build reads pending deletion status from repository', () async {
-    when(
-      () => accountRepository.isAccountPendingDeletion(),
-    ).thenAnswer((_) async => true);
+    when(() => accountRepository.fetchAccountDeletionStatus()).thenAnswer(
+      (_) async => AccountDeletionStatus(deletedAt: DateTime.utc(2026, 6, 1)),
+    );
 
     final isPendingDeletion = await container.read(
       accountStatusControllerProvider.future,
     );
 
-    expect(isPendingDeletion, isTrue);
-    verify(() => accountRepository.isAccountPendingDeletion()).called(1);
+    expect(isPendingDeletion.isPending, isTrue);
+    verify(() => accountRepository.fetchAccountDeletionStatus()).called(1);
+  });
+
+  test('scheduled deletion is exactly 30 days after server timestamp', () {
+    final deletedAt = DateTime.utc(2026, 6, 1, 12);
+    final status = AccountDeletionStatus(deletedAt: deletedAt);
+
+    expect(status.scheduledDeletionAt, DateTime.utc(2026, 7, 1, 12));
   });
 
   test(
     'restoreAccount delegates to repository and clears pending state',
     () async {
-      when(
-        () => accountRepository.isAccountPendingDeletion(),
-      ).thenAnswer((_) async => true);
+      when(() => accountRepository.fetchAccountDeletionStatus()).thenAnswer(
+        (_) async => AccountDeletionStatus(deletedAt: DateTime.utc(2026, 6, 1)),
+      );
       when(() => accountRepository.restoreAccount()).thenAnswer((_) async {});
 
       await container.read(accountStatusControllerProvider.future);
@@ -50,7 +58,7 @@ void main() {
           .restoreAccount();
 
       final state = container.read(accountStatusControllerProvider);
-      expect(state.value, isFalse);
+      expect(state.value?.isPending, isFalse);
       verify(() => accountRepository.restoreAccount()).called(1);
     },
   );

@@ -45,3 +45,18 @@ flutter:
   uses-material-design: true
   assets:
     - logo.png
+    - assets/fonts/OFL-Manrope.txt
+    - assets/fonts/OFL-InstrumentSerif.txt
+    - assets/fonts/OFL-JetBrainsMono.txt
+  fonts:
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope-Variable.ttf
+    - family: Instrument Serif
+      fonts:
+        - asset: assets/fonts/InstrumentSerif-Regular.ttf
+        - asset: assets/fonts/InstrumentSerif-Italic.ttf
+          style: italic
+    - family: JetBrains Mono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Variable.ttf

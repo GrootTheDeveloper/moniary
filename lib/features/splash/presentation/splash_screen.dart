@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,14 +6,13 @@ import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/preferences/preferences_providers.dart';
-import '../../../core/supabase/supabase_providers.dart';
-import '../../../shared/utils/app_logger.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../auth/presentation/login_screen.dart';
+import '../../auth/application/post_auth_decision_provider.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../onboarding/presentation/onboarding_screen.dart';
-import '../../profile/data/profile_repository.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
+import '../../profile/presentation/profile_survey_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -27,55 +24,41 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
-  bool _hasError = false;
-
-  @override
-  void initState() {
-    super.initState();
-    unawaited(_bootstrap());
-  }
-
-  Future<void> _bootstrap() async {
-    await Future<void>.delayed(const Duration(milliseconds: 1400));
-
-    if (!mounted) {
-      return;
-    }
-
-    try {
-      final onboardingSeen = ref.read(onboardingSeenProvider);
-      if (!onboardingSeen) {
-        context.go(OnboardingScreen.routePath);
-        return;
-      }
-
-      final session = ref.read(currentSessionProvider);
-      if (session == null) {
-        context.go(LoginScreen.routePath);
-        return;
-      }
-
-      final profile = await ref
-          .read(profileRepositoryProvider)
-          .fetchCurrentProfile();
-      if (!mounted) return;
-
-      context.go(
-        profile == null || profile.needsSetup
-            ? ProfileSetupScreen.routePath
-            : CalendarScreen.routePath,
-      );
-    } catch (e, st) {
-      AppLogger.error('Failed to bootstrap splash flow', e, st);
-      if (!mounted) return;
-      setState(() {
-        _hasError = true;
-      });
-    }
-  }
+  bool _isNavigated = false;
 
   @override
   Widget build(BuildContext context) {
+    final onboardingSeen = ref.watch(onboardingSeenProvider);
+    final decisionAsync = ref.watch(postAuthDecisionProvider);
+
+    ref.listen(postAuthDecisionProvider, (previous, next) {
+      if (_isNavigated || !mounted) return;
+
+      next.whenData((decision) {
+        if (!onboardingSeen) {
+          _isNavigated = true;
+          context.go(OnboardingScreen.routePath);
+          return;
+        }
+
+        switch (decision.destination) {
+          case PostAuthDestination.profileSetup:
+            _isNavigated = true;
+            context.go(ProfileSetupScreen.routePath);
+          case PostAuthDestination.profileSurvey:
+            _isNavigated = true;
+            context.go(ProfileSurveyScreen.routePath);
+          case PostAuthDestination.home:
+            _isNavigated = true;
+            context.go(CalendarScreen.routePath);
+          case PostAuthDestination.pendingDeletion:
+          case PostAuthDestination.noSession:
+            _isNavigated = true;
+            context.go(LoginScreen.routePath);
+        }
+      });
+    });
+
     return Scaffold(
       body: AuroraBackground(
         child: SafeArea(
@@ -115,7 +98,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const Spacer(),
-                if (_hasError)
+                if (decisionAsync.hasError)
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -133,10 +116,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                       const SizedBox(height: 16),
                       FilledButton(
                         onPressed: () {
-                          setState(() {
-                            _hasError = false;
-                          });
-                          unawaited(_bootstrap());
+                          ref.invalidate(postAuthDecisionProvider);
                         },
                         child: Text(context.l10n.splashRetry),
                       ),

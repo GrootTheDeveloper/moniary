@@ -18,7 +18,7 @@ Read the full agent context before making non-trivial changes:
 - `docs/agent-context/04-features.md`
 - `docs/agent-context/06-state-management.md`
 - `docs/agent-context/07-routing-navigation.md`
-- `docs/agent-context/16-agent-task-playbook.md`
+- `docs/agent-context/20-agent-task-playbook.md`
 
 ## Strict Rules
 

@@ -3,9 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
-import '../../../l10n/l10n_extension.dart';
 import '../../../core/preferences/preferences_providers.dart';
-import '../../../shared/widgets/aurora_background.dart';
+import '../../../l10n/l10n_extension.dart';
 import '../../auth/presentation/login_screen.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -21,45 +20,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _controller = PageController();
   int _pageIndex = 0;
 
-  List<
-    ({
-      String title1,
-      String title2,
-      String subtitle,
-      String caption,
-      IconData icon,
-      Color accent,
-    })
-  >
-  _getPages(BuildContext context) {
-    return [
-      (
-        title1: context.l10n.onboardingPage1Title1,
-        title2: context.l10n.onboardingPage1Title2,
-        subtitle: context.l10n.onboardingPage1Subtitle,
-        caption: context.l10n.onboardingPage1Caption,
-        icon: Icons.camera_alt_outlined,
-        accent: AppTheme.amber,
-      ),
-      (
-        title1: context.l10n.onboardingPage2Title1,
-        title2: context.l10n.onboardingPage2Title2,
-        subtitle: context.l10n.onboardingPage2Subtitle,
-        caption: context.l10n.onboardingPage2Caption,
-        icon: Icons.calendar_month_outlined,
-        accent: AppTheme.mint,
-      ),
-      (
-        title1: context.l10n.onboardingPage3Title1,
-        title2: context.l10n.onboardingPage3Title2,
-        subtitle: context.l10n.onboardingPage3Subtitle,
-        caption: context.l10n.onboardingPage3Caption,
-        icon: Icons.pie_chart_outline,
-        accent: AppTheme.pink,
-      ),
-    ];
-  }
-
   @override
   void dispose() {
     _controller.dispose();
@@ -68,136 +28,84 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = _getPages(context);
-    final page = pages[_pageIndex];
+    final colors = context.moniaryColors;
 
     return Scaffold(
-      body: AuroraBackground(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: _finish,
-                    child: Text(context.l10n.onboardingSkip),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4, right: 12),
+                child: TextButton(
+                  onPressed: _finish,
+                  style: TextButton.styleFrom(
+                    foregroundColor: colors.textDim,
+                    minimumSize: const Size(64, 44),
+                    textStyle: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
+                  child: Text(context.l10n.onboardingSkip),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  page.title1,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                Text(
-                  page.title2,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.headlineMedium?.copyWith(color: AppTheme.mint),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  page.subtitle,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: PageView.builder(
-                    controller: _controller,
-                    onPageChanged: (index) =>
-                        setState(() => _pageIndex = index),
-                    itemCount: pages.length,
-                    itemBuilder: (context, index) {
-                      final item = pages[index];
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 320,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 18,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppTheme.surface,
-                              borderRadius: BorderRadius.circular(32),
-                              border: Border.all(color: AppTheme.outline),
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Icon(
-                                      Icons.chevron_left_outlined,
-                                      color: Colors.white70,
-                                    ),
-                                    Text(
-                                      context.l10n.onboardingMonthMock,
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleMedium,
-                                    ),
-                                    const Icon(
-                                      Icons.chevron_right_outlined,
-                                      color: Colors.white70,
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                _MockFeatureCard(
-                                  icon: item.icon,
-                                  accent: item.accent,
-                                ),
-                              ],
-                            ),
+              ),
+            ),
+            Expanded(
+              child: PageView(
+                controller: _controller,
+                onPageChanged: (index) => setState(() => _pageIndex = index),
+                children: const [
+                  _ReceiptScanSlide(),
+                  _PhotoDiarySlide(),
+                  _BudgetSlide(),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 4, 24, 24),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: List.generate(
+                        3,
+                        (index) => AnimatedContainer(
+                          duration: const Duration(milliseconds: 220),
+                          curve: Curves.easeOutCubic,
+                          width: _pageIndex == index ? 24 : 6,
+                          height: 6,
+                          margin: const EdgeInsets.only(right: 6),
+                          decoration: BoxDecoration(
+                            color: _pageIndex == index
+                                ? colors.primary
+                                : colors.textPrimary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(3),
                           ),
-                          const SizedBox(height: 18),
-                          Text(
-                            item.caption,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    pages.length,
-                    (index) => AnimatedContainer(
-                      duration: const Duration(milliseconds: 220),
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: _pageIndex == index ? 18 : 7,
-                      height: 7,
-                      decoration: BoxDecoration(
-                        color: _pageIndex == index
-                            ? AppTheme.mint
-                            : const Color(0xFF3A4A5E),
-                        borderRadius: BorderRadius.circular(999),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 18),
-                FilledButton(
-                  onPressed: _pageIndex == pages.length - 1
-                      ? _finish
-                      : _nextPage,
-                  child: Text(
-                    _pageIndex == pages.length - 1
-                        ? context.l10n.onboardingFinish
-                        : context.l10n.onboardingNextPage,
+                  FilledButton(
+                    onPressed: _pageIndex == 2 ? _finish : _nextPage,
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.square(48),
+                      maximumSize: const Size.square(48),
+                      padding: EdgeInsets.zero,
+                      shape: const CircleBorder(),
+                    ),
+                    child: Icon(
+                      _pageIndex == 2
+                          ? Icons.check_outlined
+                          : Icons.chevron_right_outlined,
+                      size: 21,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -211,77 +119,269 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _nextPage() async {
     await _controller.nextPage(
-      duration: const Duration(milliseconds: 260),
-      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOutCubic,
     );
   }
 }
 
-class _MockFeatureCard extends StatelessWidget {
-  const _MockFeatureCard({required this.icon, required this.accent});
+class _SlideLayout extends StatelessWidget {
+  const _SlideLayout({
+    required this.illustration,
+    required this.title,
+    this.subtitle,
+    this.status,
+  });
 
-  final IconData icon;
-  final Color accent;
+  final Widget illustration;
+  final String title;
+  final String? subtitle;
+  final String? status;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 270,
-      decoration: BoxDecoration(
-        color: const Color(0xFF0F1824),
-        borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: AppTheme.outline),
-      ),
-      child: Stack(
+    final colors = context.moniaryColors;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 34),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Positioned(
-            top: 16,
-            left: 20,
-            child: CircleAvatar(
-              radius: 24,
-              backgroundColor: accent,
-              child: Icon(icon, color: Colors.white),
+          illustration,
+          const SizedBox(height: 28),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: context.moniaryTypography.displayMedium.copyWith(
+              fontSize: 27,
+              height: 1.18,
             ),
           ),
-          Positioned(
-            top: 76,
-            left: 16,
-            right: 16,
-            child: Container(
-              height: 110,
-              decoration: BoxDecoration(
-                color: const Color(0xFF152231),
-                borderRadius: BorderRadius.circular(22),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.image_outlined,
-                  color: Colors.white24,
-                  size: 48,
-                ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              subtitle!,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: colors.textSecondary,
+                fontSize: 13,
+                height: 1.55,
               ),
             ),
-          ),
-          Positioned(
-            bottom: 12,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _FeaturePill(
-                  icon: Icons.camera_alt_outlined,
-                  label: context.l10n.onboardingPillCapture,
-                ),
-                _FeaturePill(
-                  icon: Icons.today_outlined,
-                  label: context.l10n.onboardingPillCalendar,
-                ),
-                _FeaturePill(
-                  icon: Icons.pie_chart_outline,
-                  label: context.l10n.onboardingPillStats,
+          ],
+          if (status != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              status!.toUpperCase(),
+              textAlign: TextAlign.center,
+              style: context.moniaryTypography.metadataStrong.copyWith(
+                color: colors.primary,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ReceiptScanSlide extends StatelessWidget {
+  const _ReceiptScanSlide();
+
+  @override
+  Widget build(BuildContext context) {
+    return _SlideLayout(
+      illustration: const _ReceiptScanIllustration(),
+      title:
+          '${context.l10n.onboardingPage1Title1}\n${context.l10n.onboardingPage1Title2}',
+      status: context.l10n.onboardingPage1Subtitle,
+    );
+  }
+}
+
+class _ReceiptScanIllustration extends StatefulWidget {
+  const _ReceiptScanIllustration();
+
+  @override
+  State<_ReceiptScanIllustration> createState() =>
+      _ReceiptScanIllustrationState();
+}
+
+class _ReceiptScanIllustrationState extends State<_ReceiptScanIllustration>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _linePosition;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1350),
+    )..repeat(reverse: true);
+    _linePosition = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOutCubic,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+
+    return SizedBox(
+      width: 210,
+      height: 250,
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          Container(
+            width: 160,
+            height: 200,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: colors.surfaceRaised,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: colors.textPrimary.withValues(alpha: 0.1),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.textPrimary.withValues(alpha: 0.18),
+                  blurRadius: 18,
+                  offset: const Offset(0, 14),
                 ),
               ],
+            ),
+            child: Stack(
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: colors.primary.withValues(alpha: 0.42),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: const SizedBox.expand(),
+                ),
+                ...List.generate(
+                  5,
+                  (index) => Positioned(
+                    left: 12,
+                    right: index == 4 ? 38 : 12,
+                    top: 18 + index * 18,
+                    child: Container(
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: colors.textPrimary.withValues(
+                          alpha: index == 0 ? 0.13 : 0.075,
+                        ),
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  ),
+                ),
+                AnimatedBuilder(
+                  animation: _linePosition,
+                  builder: (context, child) {
+                    return Positioned(
+                      left: 4,
+                      right: 4,
+                      top: 18 + (_linePosition.value * 132),
+                      child: child!,
+                    );
+                  },
+                  child: Container(
+                    height: 2,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF5FD3C4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF5FD3C4).withValues(alpha: 0.6),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 4,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+              decoration: BoxDecoration(
+                color: colors.textPrimary,
+                borderRadius: BorderRadius.circular(13),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.textPrimary.withValues(alpha: 0.25),
+                    blurRadius: 14,
+                    offset: const Offset(0, 9),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: colors.primary.withValues(alpha: 0.24),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: 7,
+                      height: 7,
+                      decoration: BoxDecoration(
+                        color: colors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 9),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.onboardingReceiptCategory,
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: colors.background,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        Text(
+                          context.l10n.onboardingReceiptDate,
+                          style: context.moniaryTypography.metadata.copyWith(
+                            color: colors.background.withValues(alpha: 0.54),
+                            fontSize: 8,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    context.l10n.onboardingReceiptAmount,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: colors.secondary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -290,32 +390,150 @@ class _MockFeatureCard extends StatelessWidget {
   }
 }
 
-class _FeaturePill extends StatelessWidget {
-  const _FeaturePill({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
+class _PhotoDiarySlide extends StatelessWidget {
+  const _PhotoDiarySlide();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: AppTheme.surfaceRaised,
-            shape: BoxShape.circle,
-            border: Border.all(color: AppTheme.outline),
+    return _SlideLayout(
+      illustration: const _PhotoDiaryIllustration(),
+      title:
+          '${context.l10n.onboardingPage2Title1}\n${context.l10n.onboardingPage2Title2}',
+      subtitle: context.l10n.onboardingPage2Subtitle,
+    );
+  }
+}
+
+class _PhotoDiaryIllustration extends StatelessWidget {
+  const _PhotoDiaryIllustration();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+
+    return Container(
+      width: 194,
+      height: 194,
+      decoration: BoxDecoration(
+        color: AppTheme.sage,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: colors.textPrimary.withValues(alpha: 0.18),
+            blurRadius: 18,
+            offset: const Offset(0, 14),
           ),
-          child: Icon(icon, size: 22),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 11),
-        ),
-      ],
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            left: 14,
+            top: 14,
+            child: Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.24),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.receipt_long_outlined,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(14, 38, 14, 14),
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(24),
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    colors.textPrimary.withValues(alpha: 0.55),
+                  ],
+                ),
+              ),
+              child: Text(
+                context.l10n.onboardingPhotoAmount,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BudgetSlide extends StatelessWidget {
+  const _BudgetSlide();
+
+  @override
+  Widget build(BuildContext context) {
+    return _SlideLayout(
+      illustration: const _BudgetIllustration(),
+      title:
+          '${context.l10n.onboardingPage3Title1}\n${context.l10n.onboardingPage3Title2}',
+      subtitle: context.l10n.onboardingPage3Subtitle,
+    );
+  }
+}
+
+class _BudgetIllustration extends StatelessWidget {
+  const _BudgetIllustration();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+
+    return SizedBox.square(
+      dimension: 184,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox.square(
+            dimension: 168,
+            child: CircularProgressIndicator(
+              value: 0.7,
+              strokeWidth: 15,
+              strokeCap: StrokeCap.round,
+              color: colors.primary,
+              backgroundColor: colors.textPrimary.withValues(alpha: 0.08),
+            ),
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                context.l10n.onboardingBudgetPercent,
+                style: context.moniaryTypography.displayMedium.copyWith(
+                  fontSize: 31,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                context.l10n.onboardingBudgetLabel.toUpperCase(),
+                style: context.moniaryTypography.metadata.copyWith(
+                  fontSize: 8.5,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

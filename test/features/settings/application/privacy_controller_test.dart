@@ -4,6 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:moniary/features/settings/application/privacy_controller.dart';
 import 'package:moniary/features/settings/data/repositories/privacy_repository.dart';
+import 'package:moniary/core/supabase/app_exception.dart';
 
 class MockPrivacyRepository extends Mock implements PrivacyRepository {}
 
@@ -94,6 +95,49 @@ void main() {
 
     final state = container.read(privacyControllerProvider);
     expect(state.isAppLocked, isFalse);
+    verifyNever(() => mockRepo.setIsAppLocked(true));
+  });
+
+  test('toggleAppLock(false) also requires successful auth', () async {
+    when(() => mockRepo.getIsAppLocked()).thenReturn(true);
+    when(
+      () =>
+          mockAuth.authenticate(localizedReason: any(named: 'localizedReason')),
+    ).thenAnswer((_) async => true);
+
+    final container = makeContainer();
+    final changed = await container
+        .read(privacyControllerProvider.notifier)
+        .toggleAppLock(false, reason: 'Disable lock');
+
+    expect(changed, isTrue);
+    expect(container.read(privacyControllerProvider).isAppLocked, isFalse);
+    verify(
+      () => mockAuth.authenticate(localizedReason: 'Disable lock'),
+    ).called(1);
+    verify(() => mockRepo.setIsAppLocked(false)).called(1);
+  });
+
+  test('unsupported local auth does not enable App Lock', () async {
+    when(() => mockAuth.canCheckBiometrics).thenAnswer((_) async => false);
+    when(() => mockAuth.isDeviceSupported()).thenAnswer((_) async => false);
+
+    final container = makeContainer();
+    final operation = container
+        .read(privacyControllerProvider.notifier)
+        .toggleAppLock(true, reason: 'Enable lock');
+
+    await expectLater(
+      operation,
+      throwsA(
+        isA<AppException>().having(
+          (error) => error.code,
+          'code',
+          'LOCAL_AUTH_UNAVAILABLE',
+        ),
+      ),
+    );
+    expect(container.read(privacyControllerProvider).isAppLocked, isFalse);
     verifyNever(() => mockRepo.setIsAppLocked(true));
   });
 

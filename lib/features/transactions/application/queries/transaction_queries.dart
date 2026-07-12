@@ -23,3 +23,14 @@ final transactionByIdProvider = FutureProvider.family<TransactionEntry, String>(
         .fetchTransactionById(transactionId);
   },
 );
+
+final starredTransactionsProvider = FutureProvider<List<TransactionEntry>>((
+  ref,
+) async {
+  return ref.watch(transactionRepositoryProvider).fetchStarredTransactions();
+});
+
+final transactionSearchProvider =
+    FutureProvider.family<List<TransactionEntry>, String>((ref, query) async {
+      return ref.watch(transactionRepositoryProvider).searchTransactions(query);
+    });

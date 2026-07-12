@@ -7,6 +7,9 @@ class UserProfile {
     required this.loginProvider,
     required this.timezone,
     this.username,
+    this.occupation,
+    this.preferredCurrency = 'VND',
+    this.surveyCompleted = true,
   });
 
   final String id;
@@ -16,12 +19,17 @@ class UserProfile {
   final String loginProvider;
   final String timezone;
   final String? username;
+  final String? occupation;
+  final String preferredCurrency;
+  final bool surveyCompleted;
 
   bool get needsSetup {
     final name = fullName?.trim() ?? '';
     // Assumption: default displayName from Supabase trigger is 'guest'
     return name.isEmpty || name.toLowerCase() == 'guest';
   }
+
+  bool get needsSurvey => !surveyCompleted;
 
   factory UserProfile.fromMap(Map<String, dynamic> map) {
     return UserProfile(
@@ -32,6 +40,9 @@ class UserProfile {
       loginProvider: (map['login_provider'] as String?) ?? 'anonymous',
       timezone: (map['timezone'] as String?) ?? 'Asia/Ho_Chi_Minh',
       username: map['username'] as String?,
+      occupation: map['occupation'] as String?,
+      preferredCurrency: (map['preferred_currency'] as String?) ?? 'VND',
+      surveyCompleted: map['survey_completed_at'] != null,
     );
   }
 }

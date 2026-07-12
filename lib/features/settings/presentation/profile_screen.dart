@@ -4,20 +4,32 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/widgets/supabase_image.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/presentation/login_screen.dart';
+import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../friends/presentation/screens/friends_screen.dart';
+import '../../journal/presentation/journal_collections_screen.dart';
+import '../../journal/presentation/monthly_recap_screen.dart';
+import '../../journal/presentation/recording_streak_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../application/account/account_actions_controller.dart';
+import '../application/privacy_controller.dart';
 import 'export/export_data_screen.dart';
 import 'import/import_data_screen.dart';
 import 'notifications/notification_settings_screen.dart';
 import 'privacy/privacy_center_screen.dart';
-import 'widgets/delete_account_dialog.dart';
+import 'privacy/privacy_contact_screen.dart';
+import 'settings_home_screen.dart';
+import 'account/delete_account_screen.dart';
+import 'support/help_center_screen.dart';
+import 'widgets/settings_action_tile.dart';
+import 'widgets/settings_group_card.dart';
+import 'widgets/settings_status_chip.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -244,7 +256,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         labelText: context.l10n.profileNewPassword,
                         labelStyle: const TextStyle(color: Colors.white54),
                         prefixIcon: const Icon(
-                          Icons.lock_outline,
+                          Icons.lock_outlined,
                           color: Colors.white54,
                         ),
                         filled: true,
@@ -281,13 +293,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         },
                         style: FilledButton.styleFrom(
                           backgroundColor: AppTheme.mint,
-                          foregroundColor: Colors.black,
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        icon: const Icon(Icons.link),
+                        icon: const Icon(Icons.link_outlined),
                         label: Text(
                           context.l10n.profileLinkEmail,
                           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -359,6 +371,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final profileAsync = ref.watch(currentProfileProvider);
     final state = ref.watch(accountActionsControllerProvider);
+    final privacyState = ref.watch(privacyControllerProvider);
+    final requestHistory = ref.watch(privacyRequestHistoryProvider);
+    final isGuest = ref.watch(guestModeEnabledProvider);
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -373,23 +388,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final colors = context.moniaryColors;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.profileTitle),
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        elevation: 0,
-      ),
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              colors.backgroundSoft,
-              colors.background,
-              Color.lerp(colors.background, Colors.black, 0.12)!,
-            ],
-          ),
-        ),
+      appBar: AppBar(title: Text(context.l10n.profileTitle)),
+      body: ColoredBox(
+        color: colors.background,
         child: SafeArea(
           child: Stack(
             children: [
@@ -401,6 +402,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
                   final provider = profile.loginProvider;
                   final isAnonymous = provider == 'anonymous';
+                  final accountMode = _ProfileAccountMode.from(
+                    isGuest: isGuest,
+                    provider: provider,
+                  );
                   final name = profile.fullName?.trim().isNotEmpty == true
                       ? profile.fullName!.trim()
                       : context.l10n.profileUserDefault;
@@ -409,7 +414,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       : context.l10n.profileAnonymous;
 
                   return ListView(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 36),
                     children: [
                       _ProfileHeader(
                         title: name,
@@ -421,82 +426,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           '${ProfileSetupScreen.routePath}?mode=edit',
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      if (isAnonymous) ...[
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                AppTheme.mint.withValues(alpha: 0.15),
-                                Colors.transparent,
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(
-                              color: AppTheme.mint.withValues(alpha: 0.3),
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.warning_amber_outlined,
-                                    color: AppTheme.mint,
-                                    size: 24,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    context.l10n.profileProtectAccount,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                context.l10n.profileAnonymousWarning,
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 13,
-                                  height: 1.4,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              SizedBox(
-                                width: double.infinity,
-                                child: FilledButton(
-                                  onPressed: _showLinkAccountSheet,
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: AppTheme.mint,
-                                    foregroundColor: Colors.black,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    context.l10n.profileLinkNow,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                      ],
+                      const SizedBox(height: 18),
+                      _ProfileQuickActions(
+                        onFriends: () => context.push(FriendsScreen.routePath),
+                        onExport: () =>
+                            context.push(ExportDataScreen.routePath),
+                        onSettings: () =>
+                            context.push(SettingsHomeScreen.routePath),
+                      ),
+                      const SizedBox(height: 28),
                       _SettingsGroup(
-                        title: context.l10n.profileMyData,
+                        title: context.l10n.profileMoniarySetup,
                         children: [
                           _SettingsTile(
                             icon: Icons.file_download_outlined,
@@ -512,17 +452,64 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             onTap: () =>
                                 context.push(ExportDataScreen.routePath),
                           ),
+                          _SettingsTile(
+                            icon: Icons.star_outlined,
+                            title: context.l10n.starredTransactionsTitle,
+                            subtitle: '',
+                            onTap: () => context.push('/starred-transactions'),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.auto_stories_outlined,
+                            title: context.l10n.journalRecapTitle,
+                            subtitle: '',
+                            onTap: () {
+                              final now = DateTime.now();
+                              context.push(
+                                MonthlyRecapScreen.routePath,
+                                extra: DateTime(now.year, now.month),
+                              );
+                            },
+                          ),
+                          _SettingsTile(
+                            icon: Icons.collections_bookmark_outlined,
+                            title: context.l10n.journalCollectionsTitle,
+                            subtitle: '',
+                            onTap: () => context.push(
+                              JournalCollectionsScreen.routePath,
+                            ),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.local_fire_department_outlined,
+                            title: context.l10n.journalStreakTitle,
+                            subtitle: '',
+                            onTap: () =>
+                                context.push(RecordingStreakScreen.routePath),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.auto_awesome_outlined,
+                            title: context.l10n.profileHowMoniaryWorksTitle,
+                            subtitle:
+                                context.l10n.profileHowMoniaryWorksSubtitle,
+                            onTap: _showMoniarySetupSheet,
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
                       _SettingsGroup(
-                        title: context.l10n.profileAccount,
+                        title: context.l10n.profileGeneralSection,
                         children: [
                           _SettingsTile(
-                            icon: Icons.people_outline,
-                            title: context.l10n.friendsTitle,
-                            subtitle: context.l10n.friendsProfileSubtitle,
-                            onTap: () => context.push(FriendsScreen.routePath),
+                            icon: Icons.person_outlined,
+                            title:
+                                '${context.l10n.commonEdit} ${context.l10n.profileTitle}',
+                            subtitle: email,
+                            onTap: () => _showEditProfileSheet(
+                              name: name,
+                              email: email,
+                              provider: provider,
+                              isAnonymous: isAnonymous,
+                              avatarUrl: profile.avatarUrl,
+                            ),
                           ),
                           _SettingsTile(
                             icon: Icons.notifications_outlined,
@@ -533,34 +520,56 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ),
                           _SettingsTile(
-                            icon: Icons.lock_outline,
+                            icon: Icons.lock_outlined,
                             title: context.l10n.profileChangeTimezone,
                             subtitle: profile.timezone,
                             onTap: () =>
                                 context.push(ProfileSetupScreen.routePath),
                           ),
+                          if (accountMode.needsAccountProtectionCard)
+                            _AccountModeBanner(
+                              mode: accountMode,
+                              onAction: accountMode == _ProfileAccountMode.guest
+                                  ? () {
+                                      _switchFromGuestToLogin();
+                                    }
+                                  : _showLinkAccountSheet,
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      _SettingsGroup(
+                        title: context.l10n.profileSupportSection,
+                        children: [
                           _SettingsTile(
-                            icon: Icons.logout_outlined,
-                            title: context.l10n.profileSignOut,
-                            subtitle: context.l10n.profileSignOutSubtitle,
-                            onTap: state.isLoading
-                                ? null
-                                : () => _signOut(context),
+                            icon: Icons.help_outlined,
+                            title: context.l10n.helpCenterTitle,
+                            subtitle: context.l10n.privacyHelpCenterSubtitle,
+                            onTap: () =>
+                                context.push(HelpCenterScreen.routePath),
                           ),
                           _SettingsTile(
-                            icon: Icons.delete_forever_outlined,
-                            title: context.l10n.profileDeleteAccount,
-                            subtitle: context.l10n.profileDeleteSubtitle,
-                            destructive: true,
-                            onTap: state.isLoading
-                                ? null
-                                : () => _confirmDelete(context),
+                            icon: Icons.support_agent_outlined,
+                            title: context.l10n.privacyRequestsTitle,
+                            subtitle: context.l10n.privacyRequestsSubtitle,
+                            status: requestHistory.whenOrNull(
+                              data: (items) => SettingsStatusChip(
+                                label: context.l10n.privacyRequestCount(
+                                  items.length,
+                                ),
+                                tone: items.isEmpty
+                                    ? SettingsStatusTone.neutral
+                                    : SettingsStatusTone.info,
+                              ),
+                            ),
+                            onTap: () =>
+                                context.push(PrivacyContactScreen.routePath),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
                       _SettingsGroup(
-                        title: context.l10n.profilePrivacyCenter,
+                        title: context.l10n.profilePrivacySafetySection,
                         children: [
                           _SettingsTile(
                             icon: Icons.privacy_tip_outlined,
@@ -578,6 +587,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             title: context.l10n.privacyGroupDataSafetyTitle,
                             subtitle:
                                 context.l10n.privacyGroupDataSafetySubtitle,
+                            status: SettingsStatusChip(
+                              label: privacyState.isAppLocked
+                                  ? context.l10n.privacyStatusProtected
+                                  : context.l10n.privacyStatusReview,
+                              tone: privacyState.isAppLocked
+                                  ? SettingsStatusTone.success
+                                  : SettingsStatusTone.warning,
+                            ),
                             onTap: () => context.push(
                               PrivacyCenterScreen.location(
                                 PrivacyCenterGroup.dataSafety,
@@ -594,6 +611,35 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 PrivacyCenterGroup.helpRequests,
                               ),
                             ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      _SettingsGroup(
+                        title: context.l10n.profileDangerZoneSection,
+                        children: [
+                          _SettingsTile(
+                            icon: Icons.logout_outlined,
+                            title: context.l10n.profileSignOut,
+                            subtitle: context.l10n.profileSignOutSubtitle,
+                            onTap: state.isLoading
+                                ? null
+                                : () => _signOut(context),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.delete_forever_outlined,
+                            title: isGuest
+                                ? context.l10n.deleteGuestDataTitle
+                                : context.l10n.profileDeleteAccount,
+                            subtitle: isGuest
+                                ? context.l10n.deleteGuestDataBody
+                                : context.l10n.profileDeleteSubtitle,
+                            destructive: true,
+                            onTap: state.isLoading
+                                ? null
+                                : () => context.push(
+                                    DeleteAccountScreen.routePath,
+                                  ),
                           ),
                         ],
                       ),
@@ -623,6 +669,109 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showMoniarySetupSheet() {
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                context.l10n.profileHowMoniaryWorksTitle,
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 18),
+              _SetupStep(
+                icon: Icons.account_balance_wallet_outlined,
+                title: context.l10n.profileSetupGuideWalletTitle,
+                body: context.l10n.profileSetupGuideWalletBody,
+              ),
+              _SetupStep(
+                icon: Icons.camera_alt_outlined,
+                title: context.l10n.profileSetupGuideTransactionTitle,
+                body: context.l10n.profileSetupGuideTransactionBody,
+              ),
+              _SetupStep(
+                icon: Icons.calendar_month_outlined,
+                title: context.l10n.profileSetupGuideReviewTitle,
+                body: context.l10n.profileSetupGuideReviewBody,
+              ),
+              _SetupStep(
+                icon: Icons.ios_share_outlined,
+                title: context.l10n.profileSetupGuideExportTitle,
+                body: context.l10n.profileSetupGuideExportBody,
+              ),
+              const SizedBox(height: 18),
+              FilledButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.go(CalendarScreen.routePath);
+                },
+                child: Text(context.l10n.calendarTitle),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showEditProfileSheet({
+    required String name,
+    required String email,
+    required String provider,
+    required bool isAnonymous,
+    required String? avatarUrl,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _ProfileHeader(
+                title: name,
+                subtitle: email,
+                provider: provider,
+                isAnonymous: isAnonymous,
+                avatarUrl: avatarUrl,
+                onTap: () {},
+              ),
+              const SizedBox(height: 18),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.push('${ProfileSetupScreen.routePath}?mode=edit');
+                },
+                icon: const Icon(Icons.edit_outlined),
+                label: Text(
+                  '${context.l10n.commonEdit} ${context.l10n.profileTitle}',
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -663,18 +812,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
-  Future<void> _confirmDelete(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => const DeleteAccountDialog(),
-    );
-
-    if (confirmed != true) {
-      return;
-    }
-
-    await ref.read(accountActionsControllerProvider.notifier).deleteAccount();
-    if (context.mounted) {
+  Future<void> _switchFromGuestToLogin() async {
+    await ref.read(authControllerProvider.notifier).signOut();
+    if (mounted) {
       context.go(LoginScreen.routePath);
     }
   }
@@ -700,109 +840,348 @@ class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
-
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: colors.surfaceRaised,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: colors.outline),
+          border: Border(
+            bottom: BorderSide(
+              color: colors.textPrimary.withValues(alpha: 0.12),
+            ),
+          ),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: 76,
+              height: 76,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [colors.primary, colors.secondary],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                color: colors.primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: colors.primary.withValues(alpha: 0.35),
                 ),
               ),
               child: avatarUrl?.isNotEmpty == true
                   ? SupabaseImage(
                       imagePath: avatarUrl,
-                      width: 56,
-                      height: 56,
-                      borderRadius: BorderRadius.circular(28),
+                      width: 76,
+                      height: 76,
+                      borderRadius: BorderRadius.circular(23),
                     )
                   : Center(
                       child: Text(
                         title.isNotEmpty
                             ? title.substring(0, 1).toUpperCase()
-                            : 'U',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                            : '',
+                        style: context.moniaryTypography.displayMedium.copyWith(
+                          color: colors.primary,
                         ),
                       ),
                     ),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: 4),
-                  Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
-                  const SizedBox(height: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isAnonymous
-                          ? AppTheme.danger.withValues(alpha: 0.12)
-                          : AppTheme.success.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isAnonymous ? AppTheme.danger : AppTheme.success,
-                        width: 1,
+                  Text(title, style: context.moniaryTypography.displayMedium),
+                  const SizedBox(height: 5),
+                  Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.moniaryTypography.metadata,
+                  ),
+                  const SizedBox(height: 9),
+                  Row(
+                    children: [
+                      Icon(
+                        isAnonymous
+                            ? Icons.lock_open_outlined
+                            : Icons.verified_user_outlined,
+                        size: 15,
+                        color: isAnonymous ? colors.danger : colors.success,
                       ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          isAnonymous
-                              ? Icons.lock_open_outlined
-                              : Icons.verified_user_outlined,
-                          size: 14,
-                          color: isAnonymous
-                              ? AppTheme.danger
-                              : AppTheme.success,
+                      const SizedBox(width: 5),
+                      Flexible(
+                        child: Text(
+                          (isAnonymous
+                                  ? context.l10n.profileAnonymousBadge
+                                  : context.l10n.profileVerifiedBadge(provider))
+                              .toUpperCase(),
+                          overflow: TextOverflow.ellipsis,
+                          style: context.moniaryTypography.metadataStrong
+                              .copyWith(
+                                color: isAnonymous
+                                    ? colors.danger
+                                    : colors.success,
+                              ),
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          isAnonymous
-                              ? context.l10n.profileAnonymousBadge
-                              : context.l10n.profileVerifiedBadge(provider),
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: isAnonymous
-                                ? AppTheme.danger
-                                : AppTheme.success,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 10),
-            Icon(Icons.chevron_right_outlined, color: colors.primary),
+            const SizedBox(width: 8),
+            Icon(Icons.edit_outlined, size: 19, color: colors.textDim),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ProfileQuickActions extends StatelessWidget {
+  const _ProfileQuickActions({
+    required this.onFriends,
+    required this.onExport,
+    required this.onSettings,
+  });
+
+  final VoidCallback onFriends;
+  final VoidCallback onExport;
+  final VoidCallback onSettings;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _QuickActionButton(
+            icon: Icons.people_outlined,
+            label: context.l10n.friendsTitle,
+            onTap: onFriends,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _QuickActionButton(
+            icon: Icons.file_upload_outlined,
+            label: context.l10n.exportDataTitle,
+            onTap: onExport,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _QuickActionButton(
+            icon: Icons.settings_outlined,
+            label: context.l10n.settingsTitle,
+            onTap: onSettings,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _QuickActionButton extends StatelessWidget {
+  const _QuickActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 64),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: colors.surface.withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colors.outline),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: colors.primary, size: 20),
+            const SizedBox(height: 8),
+            Text(
+              label.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.moniaryTypography.metadataStrong,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SetupStep extends StatelessWidget {
+  const _SetupStep({
+    required this.icon,
+    required this.title,
+    required this.body,
+  });
+
+  final IconData icon;
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppTheme.mint.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: AppTheme.mint, size: 21),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 4),
+                Text(body, style: Theme.of(context).textTheme.bodyMedium),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+enum _ProfileAccountMode {
+  guest,
+  supabaseAnonymous,
+  authenticated;
+
+  static _ProfileAccountMode from({
+    required bool isGuest,
+    required String provider,
+  }) {
+    if (isGuest) return _ProfileAccountMode.guest;
+    if (provider == 'anonymous') return _ProfileAccountMode.supabaseAnonymous;
+    return _ProfileAccountMode.authenticated;
+  }
+
+  bool get needsAccountProtectionCard =>
+      this != _ProfileAccountMode.authenticated;
+
+  Color get accentColor {
+    return switch (this) {
+      _ProfileAccountMode.guest => AppTheme.amber,
+      _ProfileAccountMode.supabaseAnonymous => AppTheme.mint,
+      _ProfileAccountMode.authenticated => AppTheme.success,
+    };
+  }
+
+  IconData get icon {
+    return switch (this) {
+      _ProfileAccountMode.guest => Icons.person_outlined,
+      _ProfileAccountMode.supabaseAnonymous => Icons.warning_amber_outlined,
+      _ProfileAccountMode.authenticated => Icons.verified_user_outlined,
+    };
+  }
+
+  String title(BuildContext context) {
+    return switch (this) {
+      _ProfileAccountMode.guest => context.l10n.profileAnonymous,
+      _ProfileAccountMode.supabaseAnonymous =>
+        context.l10n.profileProtectAccount,
+      _ProfileAccountMode.authenticated => context.l10n.profileAccount,
+    };
+  }
+
+  String body(BuildContext context) {
+    return switch (this) {
+      _ProfileAccountMode.guest => context.l10n.profileAnonymousWarning,
+      _ProfileAccountMode.supabaseAnonymous =>
+        context.l10n.profileLinkAccountSubtitle,
+      _ProfileAccountMode.authenticated => '',
+    };
+  }
+
+  String actionLabel(BuildContext context) {
+    return switch (this) {
+      _ProfileAccountMode.guest => context.l10n.loginSignIn,
+      _ProfileAccountMode.supabaseAnonymous => context.l10n.profileLinkNow,
+      _ProfileAccountMode.authenticated => context.l10n.profileAccount,
+    };
+  }
+}
+
+class _AccountModeBanner extends StatelessWidget {
+  const _AccountModeBanner({required this.mode, required this.onAction});
+
+  final _ProfileAccountMode mode;
+  final VoidCallback onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = mode.accentColor;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: accent.withValues(alpha: 0.32)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(mode.icon, color: accent, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  mode.title(context),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  mode.body(context),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 14),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: onAction,
+                    icon: const Icon(Icons.link_outlined),
+                    label: Text(mode.actionLabel(context)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -816,25 +1195,7 @@ class _SettingsGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.moniaryColors;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 10),
-          child: Text(title, style: Theme.of(context).textTheme.titleMedium),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: colors.outline),
-          ),
-          child: Column(children: children),
-        ),
-      ],
-    );
+    return SettingsGroupCard(title: title, children: children);
   }
 }
 
@@ -845,6 +1206,7 @@ class _SettingsTile extends StatelessWidget {
     required this.subtitle,
     required this.onTap,
     this.destructive = false,
+    this.status,
   });
 
   final IconData icon;
@@ -852,53 +1214,18 @@ class _SettingsTile extends StatelessWidget {
   final String subtitle;
   final VoidCallback? onTap;
   final bool destructive;
+  final Widget? status;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.moniaryColors;
-    final color = destructive ? colors.danger : colors.primary;
-    return InkWell(
+    return SettingsActionTile(
+      grouped: true,
       onTap: onTap,
-      borderRadius: BorderRadius.circular(22),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.14),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: destructive ? colors.danger : colors.textPrimary,
-                    ),
-                  ),
-                  if (subtitle.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            Icon(Icons.chevron_right_outlined, color: color),
-          ],
-        ),
-      ),
+      icon: icon,
+      title: title,
+      subtitle: subtitle,
+      destructive: destructive,
+      status: status,
     );
   }
 }

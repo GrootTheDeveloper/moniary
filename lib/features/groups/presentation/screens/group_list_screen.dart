@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
+import '../../../../shared/utils/currency_formatter.dart';
+import '../../domain/entities/spending_group.dart';
 import '../../application/group_controller.dart';
 import '../widgets/group_card.dart';
 import 'create_group_screen.dart';
@@ -53,20 +55,27 @@ class GroupListScreen extends ConsumerWidget {
           return RefreshIndicator(
             onRefresh: () =>
                 ref.read(groupsControllerProvider.notifier).refresh(),
-            child: ListView.separated(
+            child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
-              itemCount: groups.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final group = groups[index];
-                return GroupCard(
-                  group: group,
-                  onTap: () => context.push(
-                    GroupDetailScreen.routePath,
-                    extra: group.id,
+              children: [
+                _GroupOverviewCard(groups: groups),
+                const SizedBox(height: 20),
+                Text(
+                  '${context.l10n.groupTitle.toUpperCase()} · ${groups.length}',
+                  style: context.moniaryTypography.metadataStrong,
+                ),
+                const SizedBox(height: 12),
+                for (final group in groups) ...[
+                  GroupCard(
+                    group: group,
+                    onTap: () => context.push(
+                      GroupDetailScreen.routePath,
+                      extra: group.id,
+                    ),
                   ),
-                );
-              },
+                  const SizedBox(height: 12),
+                ],
+              ],
             ),
           );
         },
@@ -89,6 +98,98 @@ class GroupListScreen extends ConsumerWidget {
       if (!context.mounted) return;
     }
     await context.push(GroupDetailScreen.routePath, extra: groupId);
+  }
+}
+
+class _GroupOverviewCard extends StatelessWidget {
+  const _GroupOverviewCard({required this.groups});
+
+  final List<SpendingGroup> groups;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final typography = context.moniaryTypography;
+    final toPay = groups
+        .where((group) => group.currentUserBalance > 0)
+        .fold<int>(0, (sum, group) => sum + group.currentUserBalance);
+    final toReceive = groups
+        .where((group) => group.currentUserBalance < 0)
+        .fold<int>(0, (sum, group) => sum + group.currentUserBalance.abs());
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: colors.outline),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              context.l10n.appName.toUpperCase(),
+              style: typography.metadataStrong,
+            ),
+            const SizedBox(height: 8),
+            Text(context.l10n.groupTitle, style: typography.displayMedium),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                Expanded(
+                  child: _OverviewMetric(
+                    label: context.l10n.groupOthersNeedPayYou,
+                    value: '+${formatVnd(toReceive)}',
+                    color: colors.success,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _OverviewMetric(
+                    label: context.l10n.groupYouNeedPay,
+                    value: '-${formatVnd(toPay)}',
+                    color: colors.danger,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewMetric extends StatelessWidget {
+  const _OverviewMetric({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: context.moniaryTypography.metadata.copyWith(
+            color: context.moniaryColors.textDim,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: context.moniaryTypography.displaySmall.copyWith(color: color),
+        ),
+      ],
+    );
   }
 }
 

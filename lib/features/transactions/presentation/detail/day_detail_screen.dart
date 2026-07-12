@@ -34,24 +34,13 @@ class DayDetailScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: Column(
-          children: [
-            Text(
-              DateUtils.isSameDay(date, DateTime.now())
-                  ? context.l10n.calendarToday
-                  : DateFormat(
-                      'EEEE, d/M',
-                      Localizations.localeOf(context).toString(),
-                    ).format(date),
-            ),
-            Text(
-              DateFormat(
-                'dd MMMM, yyyy',
-                Localizations.localeOf(context).toString(),
-              ).format(date),
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
+        title: Text(
+          DateUtils.isSameDay(date, DateTime.now())
+              ? context.l10n.calendarToday
+              : DateFormat(
+                  'd/M',
+                  Localizations.localeOf(context).toString(),
+                ).format(date),
         ),
       ),
       body: transactionsAsync.when(
@@ -105,67 +94,106 @@ class _DayDetailBody extends ConsumerWidget {
     final expense = transactions
         .where((transaction) => transaction.isExpense)
         .fold<double>(0, (sum, item) => sum + item.amount);
+    final net = income - expense;
+    final locale = Localizations.localeOf(context).toString();
+    final colors = context.moniaryColors;
+    final typography = context.moniaryTypography;
 
     return CustomScrollView(
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 18),
           sliver: SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: colors.outline),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.textPrimary.withValues(alpha: 0.06),
+                    blurRadius: 24,
+                    offset: const Offset(0, 14),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: _SummaryCard(
-                        label: context.l10n.transactionTotalIncome,
-                        value: '+${formatVnd(income)}',
-                        color: AppTheme.success,
+                    Text(
+                      DateUtils.isSameDay(date, DateTime.now())
+                          ? context.l10n.calendarToday.toUpperCase()
+                          : DateFormat(
+                              'EEEE',
+                              locale,
+                            ).format(date).toUpperCase(),
+                      style: typography.metadataStrong.copyWith(
+                        color: colors.primary,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _SummaryCard(
-                        label: context.l10n.transactionTotalExpense,
-                        value: '-${formatVnd(expense)}',
-                        color: AppTheme.danger,
+                    const SizedBox(height: 10),
+                    Text(
+                      DateFormat('EEEE, d MMMM', locale).format(date),
+                      style: typography.displayMedium,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      '${context.l10n.transactionCount(transactions.length).toUpperCase()} · '
+                      '${net >= 0 ? '+' : '-'}${formatVnd(net.abs())}',
+                      style: typography.metadataStrong.copyWith(
+                        color: net >= 0 ? colors.success : colors.danger,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                _SummaryCard(
-                  label: context.l10n.transactionNetTotal,
-                  value:
-                      '${income - expense >= 0 ? '+' : '-'}${formatVnd((income - expense).abs())}',
-                  color: income - expense >= 0
-                      ? AppTheme.success
-                      : AppTheme.danger,
-                ),
-                const SizedBox(height: 18),
-                Text(
-                  context.l10n.transactionCount(transactions.length),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 12),
-              ],
+              ),
             ),
           ),
         ),
+        if (transactions.isNotEmpty)
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
+            sliver: SliverToBoxAdapter(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: _DayMetric(
+                      label: context.l10n.transactionTotalIncome,
+                      value: '+${formatVnd(income)}',
+                      color: colors.success,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _DayMetric(
+                      label: context.l10n.transactionTotalExpense,
+                      value: '-${formatVnd(expense)}',
+                      color: colors.danger,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         if (transactions.isEmpty)
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             sliver: SliverToBoxAdapter(
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: AppTheme.surface,
+                  color: colors.surface,
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: AppTheme.outline),
+                  border: Border.all(color: colors.outline),
                 ),
                 child: Text(
                   context.l10n.transactionDayEmpty,
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(color: colors.textSecondary),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -173,16 +201,16 @@ class _DayDetailBody extends ConsumerWidget {
           )
         else
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 96),
+            sliver: SliverList.separated(
+              itemCount: transactions.length,
+              separatorBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.only(left: 72),
+                child: Divider(height: 1, color: colors.outline),
               ),
-              delegate: SliverChildBuilderDelegate((context, index) {
+              itemBuilder: (context, index) {
                 final transaction = transactions[index];
-                return TransactionGridTile(
+                return _DayTransactionRow(
                       transaction: transaction,
                       onTap: () async {
                         final result = await context
@@ -205,7 +233,7 @@ class _DayDetailBody extends ConsumerWidget {
                       curve: Curves.easeOutQuad,
                       duration: 300.ms,
                     );
-              }, childCount: transactions.length),
+              },
             ),
           ),
       ],
@@ -213,8 +241,8 @@ class _DayDetailBody extends ConsumerWidget {
   }
 }
 
-class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({
+class _DayMetric extends StatelessWidget {
+  const _DayMetric({
     required this.label,
     required this.value,
     required this.color,
@@ -226,23 +254,121 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
+    final colors = context.moniaryColors;
+    return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppTheme.outline),
+        color: colors.surface.withValues(alpha: 0.72),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: colors.outline),
       ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label.toUpperCase(),
+              style: context.moniaryTypography.metadata,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DayTransactionRow extends StatelessWidget {
+  const _DayTransactionRow({required this.transaction, required this.onTap});
+
+  final TransactionEntry transaction;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final accent = AppColor.fromHex(
+      transaction.categoryColor ?? transaction.walletColor,
+      fallback: transaction.isIncome ? colors.success : colors.warning,
+    );
+    final title = transaction.note?.trim().isNotEmpty == true
+        ? transaction.note!.trim()
+        : transaction.categoryName;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(color: color),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: ColoredBox(
+                      color: accent.withValues(alpha: 0.18),
+                      child: SupabaseImage(
+                        imagePath: transaction.imagePath,
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                        fallbackIcon: Icons.receipt_long_outlined,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: colors.textPrimary,
+                              fontWeight: FontWeight.w800,
+                            ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        '${DateFormat('HH:mm').format(transaction.transactionDate)} · '
+                        '${transaction.categoryName.toUpperCase()} · '
+                        '${transaction.walletName.toUpperCase()}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.moniaryTypography.metadata.copyWith(
+                          color: colors.textDim,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: transaction.isIncome
+                        ? colors.success
+                        : colors.danger,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -282,6 +408,15 @@ class TransactionGridTile extends StatelessWidget {
                   end: Alignment.bottomRight,
                   colors: [accent, accent.withValues(alpha: 0.42)],
                 ),
+                boxShadow: transaction.isImportant
+                    ? [
+                        BoxShadow(
+                          color: AppTheme.amber.withValues(alpha: 0.2),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                      ]
+                    : null,
               ),
               child: Hero(
                 tag: 'tx_image_${transaction.id}',
@@ -339,7 +474,34 @@ class TransactionGridTile extends StatelessWidget {
                     ),
                     if (transaction.isImportant) ...[
                       const SizedBox(width: 4),
-                      const Icon(Icons.star, color: AppTheme.amber, size: 16),
+                      const Icon(Icons.star, color: AppTheme.amber, size: 16)
+                          .animate(
+                            onPlay: (controller) =>
+                                controller.repeat(reverse: true),
+                          )
+                          .scale(
+                            begin: const Offset(1, 1),
+                            end: const Offset(1.2, 1.2),
+                            duration: 1000.ms,
+                            curve: Curves.easeInOut,
+                          )
+                          .custom(
+                            builder: (context, value, child) => Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppTheme.amber.withValues(
+                                      alpha: 0.3 * value,
+                                    ),
+                                    blurRadius: 8 * value,
+                                    spreadRadius: 2 * value,
+                                  ),
+                                ],
+                              ),
+                              child: child,
+                            ),
+                          ),
                     ],
                   ],
                 ),

@@ -6,7 +6,10 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
-import '../../../../core/supabase/supabase_providers.dart';
+import '../../../profile/application/profile_setup_controller.dart';
+import '../../../journal/application/journal_controller.dart';
+import '../../../journal/presentation/monthly_recap_screen.dart';
+import '../../../journal/presentation/recording_streak_screen.dart';
 import '../../../transactions/domain/models/transaction_entry.dart';
 import '../../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../../transactions/presentation/detail/day_detail_screen.dart';
@@ -41,22 +44,30 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final session = ref.watch(currentSessionProvider);
-    final userId = session?.user.id ?? '';
+    final profileName = ref
+        .watch(currentProfileProvider)
+        .value
+        ?.fullName
+        ?.trim();
+    final displayName = profileName?.isNotEmpty == true
+        ? profileName!
+        : context.l10n.profileSurveyFallbackName;
     final visibleMonth = ref.watch(calendarVisibleMonthProvider);
     final monthAsync = ref.watch(calendarMonthProvider(visibleMonth));
     final walletsAsync = ref.watch(walletsControllerProvider);
+    final colors = context.moniaryColors;
 
     return Scaffold(
+      backgroundColor: colors.background,
       body: DecoratedBox(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF0A1128),
-              AppTheme.background,
-              AppTheme.background,
+              colors.backgroundSoft,
+              colors.background,
+              colors.background,
             ],
           ),
         ),
@@ -70,8 +81,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                         child: _SeamlessHeader(
-                          userName:
-                              session?.user.userMetadata?['name'] ?? 'groot',
+                          userName: displayName,
                           onProfileTap: () => _openManager(context),
                           onFriendsTap: () => _openFriendsSheet(context),
                           onTransactionTap: _openTransactionDetail,
@@ -82,11 +92,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: _UnifiedFilterRow(
-                          userId: userId,
                           isTodaySelected: _isTodayGridMode,
                           onTodayTap: () {
                             setState(() {
-                              _isTodayGridMode = true;
+                              _isTodayGridMode = !_isTodayGridMode;
                             });
                           },
                           onResetTap: () {
@@ -107,6 +116,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 .read(calendarVisibleMonthProvider.notifier)
                                 .setMonth(date);
                           },
+                          onRecapTap: () => context.push(
+                            MonthlyRecapScreen.routePath,
+                            extra: visibleMonth,
+                          ),
                         ),
                         const SizedBox(height: 8),
                       ],
@@ -114,17 +127,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: monthAsync.when(
                           data: (monthData) {
-                            if (monthData.isEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 24,
-                                ),
-                                child: PlaceholderCard(
-                                  title: context.l10n.calendarTitle,
-                                  body: context.l10n.calendarEmptyMessage,
-                                ),
-                              );
-                            }
                             if (_isTodayGridMode) {
                               return _TodayGrid(
                                 monthData: monthData,
@@ -268,176 +270,249 @@ class _SeamlessHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isHidden = ref.watch(privacyControllerProvider).isBalancesHidden;
-    return Column(
-      children: [
-        // Row 1: Greeting & Avatar
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.l10n.appName,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: Colors.white54),
-                ),
-                Text(
-                  userName.isEmpty ? 'User' : userName,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    ref
-                        .read(privacyControllerProvider.notifier)
-                        .toggleHideBalances(!isHidden);
-                  },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      isHidden
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      color: Colors.white70,
-                      size: 20,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                _HeaderCircleButton(
-                  tooltip: context.l10n.friendsTitle,
-                  icon: Icons.people_outline,
-                  onTap: onFriendsTap,
-                ),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: () async {
-                    final transaction = await showSearch<TransactionEntry?>(
-                      context: context,
-                      delegate: TransactionSearchDelegate(
-                        ref: ref,
-                        searchFieldLabelText: context.l10n.calendarSearchHint,
+    final streak = ref.watch(recordingStreakProvider).value;
+    final colors = context.moniaryColors;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
+      decoration: BoxDecoration(
+        color: colors.surface.withValues(alpha: 0.84),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: colors.outline),
+        boxShadow: [
+          BoxShadow(
+            color: colors.textPrimary.withValues(alpha: 0.045),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.l10n.appName.toUpperCase(),
+                      style: context.moniaryTypography.metadataStrong.copyWith(
+                        color: colors.textDim,
                       ),
-                    );
-                    if (transaction == null || !context.mounted) {
-                      return;
-                    }
-                    await onTransactionTap(transaction);
-                  },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
                     ),
-                    child: const Icon(
-                      Icons.search,
-                      color: Colors.white70,
-                      size: 20,
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            userName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.moniaryTypography.displaySmall
+                                .copyWith(color: colors.textPrimary),
+                          ),
+                        ),
+                        if (streak != null && streak.currentDays > 0) ...[
+                          const SizedBox(width: 8),
+                          InkWell(
+                            onTap: () =>
+                                context.push(RecordingStreakScreen.routePath),
+                            borderRadius: BorderRadius.circular(999),
+                            child: Container(
+                              constraints: const BoxConstraints(
+                                minWidth: 44,
+                                minHeight: 44,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 9,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppTheme.terracotta.withValues(
+                                  alpha: 0.1,
+                                ),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.local_fire_department_outlined,
+                                    size: 17,
+                                    color: AppTheme.terracotta,
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    '${streak.currentDays}',
+                                    style: context
+                                        .moniaryTypography
+                                        .metadataStrong
+                                        .copyWith(color: AppTheme.terracotta),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Row(
+                children: [
+                  _HeaderCircleButton(
+                    tooltip: context.l10n.friendsTitle,
+                    icon: Icons.people_outline,
+                    onTap: onFriendsTap,
+                  ),
+                  const SizedBox(width: 8),
+                  _HeaderCircleButton(
+                    tooltip: context.l10n.calendarSearchHint,
+                    icon: Icons.search,
+                    onTap: () async {
+                      final transaction = await showSearch<TransactionEntry?>(
+                        context: context,
+                        delegate: TransactionSearchDelegate(
+                          ref: ref,
+                          searchFieldLabelText: context.l10n.calendarSearchHint,
+                        ),
+                      );
+                      if (transaction == null || !context.mounted) {
+                        return;
+                      }
+                      await onTransactionTap(transaction);
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  _HeaderCircleButton(
+                    tooltip: context.l10n.walletTitle,
+                    icon: Icons.account_balance_wallet_outlined,
+                    onTap: onProfileTap,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          walletsAsync.when(
+            data: (wallets) {
+              final totalBalance = wallets.fold(
+                0.0,
+                (sum, w) => sum + w.initialBalance,
+              );
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    context.l10n.calendarBalance.toUpperCase(),
+                    style: context.moniaryTypography.metadata.copyWith(
+                      color: colors.textDim,
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: onProfileTap,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.account_balance_wallet_outlined,
-                      color: Colors.white70,
-                      size: 20,
-                    ),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: ObscurableAmountText(
+                          amountText: _formatMoney(
+                            context,
+                            totalBalance,
+                            isNegative: totalBalance < 0,
+                          ),
+                          style: context.moniaryTypography.displayLarge
+                              .copyWith(
+                                fontSize: 42,
+                                color: colors.textPrimary,
+                              ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      _BalanceVisibilityButton(
+                        isHidden: isHidden,
+                        onTap: () {
+                          ref
+                              .read(privacyControllerProvider.notifier)
+                              .toggleHideBalances(!isHidden);
+                        },
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                ],
+              );
+            },
+            loading: () => const SizedBox(height: 64),
+            error: (_, _) => const SizedBox(height: 64),
+          ),
+          const SizedBox(height: 14),
+          monthAsync.when(
+            data: (monthData) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _IncomeExpensePill(
+                    label: context.l10n.calendarIncome,
+                    amount: monthData.totalIncome,
+                    color: colors.success,
+                    icon: Icons.south_west_outlined,
+                  ),
+                  const SizedBox(width: 10),
+                  _IncomeExpensePill(
+                    label: context.l10n.calendarExpense,
+                    amount: monthData.totalExpense,
+                    color: colors.danger,
+                    icon: Icons.north_east_outlined,
+                  ),
+                ],
+              );
+            },
+            loading: () => const SizedBox(height: 30),
+            error: (_, _) => const SizedBox(height: 30),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BalanceVisibilityButton extends StatelessWidget {
+  const _BalanceVisibilityButton({required this.isHidden, required this.onTap});
+
+  final bool isHidden;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Tooltip(
+      message: isHidden
+          ? context.l10n.privacyHideBalancesTitle
+          : context.l10n.calendarBalance,
+      child: Material(
+        color: AppTheme.terracotta.withValues(alpha: 0.1),
+        shape: CircleBorder(
+          side: BorderSide(color: AppTheme.terracotta.withValues(alpha: 0.24)),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const CircleBorder(),
+          child: SizedBox(
+            width: 36,
+            height: 36,
+            child: Icon(
+              isHidden
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+              color: colors.primary,
+              size: 18,
             ),
-          ],
+          ),
         ),
-        const SizedBox(height: 16),
-        // Row 2: Total Balance (Huge & Centered)
-        walletsAsync.when(
-          data: (wallets) {
-            final totalBalance = wallets.fold(
-              0.0,
-              (sum, w) => sum + w.initialBalance,
-            );
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  context.l10n.calendarBalance,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                ObscurableAmountText(
-                  amountText: _formatMoney(
-                    context,
-                    totalBalance,
-                    isNegative: totalBalance < 0,
-                  ),
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 36,
-                    letterSpacing: -1,
-                  ),
-                ),
-              ],
-            );
-          },
-          loading: () => const SizedBox(height: 60),
-          error: (_, _) => const SizedBox(height: 60),
-        ),
-        const SizedBox(height: 12),
-        // Row 3: Income & Expense (Pills)
-        monthAsync.when(
-          data: (monthData) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _IncomeExpensePill(
-                  label: context.l10n.calendarIncome,
-                  amount: monthData.totalIncome,
-                  color: AppTheme.mint,
-                  icon: Icons.arrow_downward_outlined,
-                ),
-                const SizedBox(width: 12),
-                _IncomeExpensePill(
-                  label: context.l10n.calendarExpense,
-                  amount: monthData.totalExpense,
-                  color: Colors.redAccent,
-                  icon: Icons.arrow_upward_outlined,
-                ),
-              ],
-            );
-          },
-          loading: () => const SizedBox(height: 30),
-          error: (_, _) => const SizedBox(height: 30),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -455,18 +530,20 @@ class _HeaderCircleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return Tooltip(
       message: tooltip,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
+      child: Material(
+        color: colors.surfaceRaised.withValues(alpha: 0.76),
+        shape: CircleBorder(side: BorderSide(color: colors.outline)),
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const CircleBorder(),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: Icon(icon, color: colors.textSecondary, size: 20),
           ),
-          child: Icon(icon, color: Colors.white70, size: 20),
         ),
       ),
     );
@@ -489,11 +566,11 @@ class _IncomeExpensePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withValues(alpha: 0.09),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.18)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -510,6 +587,7 @@ class _IncomeExpensePill extends StatelessWidget {
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: color,
               fontWeight: FontWeight.w600,
+              fontFamily: 'JetBrains Mono',
             ),
           ),
         ],
@@ -524,26 +602,29 @@ class _CalendarHeader extends StatelessWidget {
     required this.onPreviousMonth,
     required this.onNextMonth,
     required this.onMonthSelect,
+    required this.onRecapTap,
   });
 
   final DateTime month;
   final VoidCallback onPreviousMonth;
   final VoidCallback onNextMonth;
   final ValueChanged<DateTime> onMonthSelect;
+  final VoidCallback onRecapTap;
 
   @override
   Widget build(BuildContext context) {
     final localeName = Localizations.localeOf(context).toString();
     final label = DateFormat.MMMM(localeName).format(month);
     final title = '${label.toLowerCase()} ${month.year}';
+    final colors = context.moniaryColors;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_outlined,
-            color: AppTheme.mint,
+            color: colors.primary,
             size: 16,
           ),
           onPressed: onPreviousMonth,
@@ -559,15 +640,14 @@ class _CalendarHeader extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  style: context.moniaryTypography.displaySmall.copyWith(
+                    color: colors.textPrimary,
                   ),
                 ),
                 const SizedBox(width: 4),
-                const Icon(
+                Icon(
                   Icons.keyboard_arrow_down_outlined,
-                  color: Colors.white70,
+                  color: colors.textDim,
                   size: 24,
                 ),
               ],
@@ -576,12 +656,17 @@ class _CalendarHeader extends StatelessWidget {
         ),
         const SizedBox(width: 24),
         IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_forward_ios_outlined,
-            color: AppTheme.mint,
+            color: colors.primary,
             size: 16,
           ),
           onPressed: onNextMonth,
+        ),
+        IconButton(
+          tooltip: context.l10n.journalRecapTitle,
+          icon: Icon(Icons.ios_share_outlined, color: colors.primary, size: 18),
+          onPressed: onRecapTap,
         ),
       ],
     );
@@ -590,7 +675,7 @@ class _CalendarHeader extends StatelessWidget {
   void _showMonthPicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppTheme.surface,
+      backgroundColor: context.moniaryColors.backgroundSoft,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -630,6 +715,7 @@ class _MonthPickerContentState extends State<_MonthPickerContent> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return Container(
       height: 380,
       padding: const EdgeInsets.all(20),
@@ -644,9 +730,8 @@ class _MonthPickerContentState extends State<_MonthPickerContent> {
               ),
               Text(
                 '$_selectedYear',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                style: context.moniaryTypography.displaySmall.copyWith(
+                  color: colors.textPrimary,
                 ),
               ),
               IconButton(
@@ -676,10 +761,12 @@ class _MonthPickerContentState extends State<_MonthPickerContent> {
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: isSelected ? AppTheme.mint : Colors.transparent,
+                      color: isSelected
+                          ? colors.primary.withValues(alpha: 0.14)
+                          : colors.surface.withValues(alpha: 0.64),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: isSelected ? AppTheme.mint : Colors.white10,
+                        color: isSelected ? colors.primary : colors.outline,
                       ),
                     ),
                     alignment: Alignment.center,
@@ -691,7 +778,9 @@ class _MonthPickerContentState extends State<_MonthPickerContent> {
                         fontWeight: isSelected
                             ? FontWeight.bold
                             : FontWeight.normal,
-                        color: isSelected ? Colors.black : Colors.white,
+                        color: isSelected
+                            ? colors.primary
+                            : colors.textSecondary,
                       ),
                     ),
                   ),
@@ -707,13 +796,11 @@ class _MonthPickerContentState extends State<_MonthPickerContent> {
 
 class _UnifiedFilterRow extends ConsumerWidget {
   const _UnifiedFilterRow({
-    required this.userId,
     required this.isTodaySelected,
     required this.onTodayTap,
     required this.onResetTap,
   });
 
-  final String userId;
   final bool isTodaySelected;
   final VoidCallback onTodayTap;
   final VoidCallback onResetTap;
@@ -727,45 +814,71 @@ class _UnifiedFilterRow extends ConsumerWidget {
       orElse: () => null,
     );
     final isAll = filters.walletId == null && filters.categoryId == null;
+    final colors = context.moniaryColors;
 
     return SizedBox(
-      height: 38,
+      height: 44,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _PillButton(
-            label: context.l10n.calendarAllWallets,
-            selected: isAll,
-            onTap: () => ref.read(calendarFilterProvider.notifier).reset(),
-            activeColor: AppTheme.mint.withValues(alpha: 0.2),
-            activeTextColor: AppTheme.mint,
-            inactiveColor: Colors.transparent,
-            inactiveBorderColor: Colors.white10,
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _PillButton(
+                    label: context.l10n.calendarAllWallets,
+                    selected: isAll,
+                    onTap: () =>
+                        ref.read(calendarFilterProvider.notifier).reset(),
+                    activeColor: colors.textPrimary,
+                    activeTextColor: colors.background,
+                    inactiveColor: colors.surface.withValues(alpha: 0.58),
+                    inactiveBorderColor: colors.outline,
+                  ),
+                  const SizedBox(width: 8),
+                  _PillButton(
+                    label: selectedWallet != null
+                        ? selectedWallet.name
+                        : context.l10n.transactionWallet,
+                    selected: filters.walletId != null,
+                    onTap: () => _showWalletPicker(
+                      context,
+                      ref,
+                      walletsAsync.value ?? [],
+                    ),
+                    activeColor: colors.textPrimary,
+                    activeTextColor: colors.background,
+                    inactiveColor: colors.surface.withValues(alpha: 0.58),
+                    inactiveBorderColor: colors.outline,
+                  ),
+                  const SizedBox(width: 8),
+                  _PillButton(
+                    label: context.l10n.calendarToday,
+                    selected: isTodaySelected,
+                    onTap: onTodayTap,
+                    activeColor: colors.primary,
+                    activeTextColor: colors.background,
+                    inactiveColor: colors.surface.withValues(alpha: 0.58),
+                    inactiveBorderColor: colors.outline,
+                  ),
+                  const SizedBox(width: 8),
+                  _PillButton(
+                    label: context.l10n.calendarStarred,
+                    selected: filters.isStarredOnly,
+                    onTap: () => ref
+                        .read(calendarFilterProvider.notifier)
+                        .toggleStarredOnly(),
+                    activeColor: colors.warning,
+                    activeTextColor: colors.textPrimary,
+                    inactiveColor: colors.surface.withValues(alpha: 0.58),
+                    inactiveBorderColor: colors.outline,
+                  ),
+                ],
+              ),
+            ),
           ),
           const SizedBox(width: 8),
-          _PillButton(
-            label: selectedWallet != null
-                ? selectedWallet.name
-                : context.l10n.transactionWallet,
-            selected: filters.walletId != null,
-            onTap: () =>
-                _showWalletPicker(context, ref, walletsAsync.value ?? []),
-            activeColor: AppTheme.mint.withValues(alpha: 0.2),
-            activeTextColor: AppTheme.mint,
-            inactiveColor: Colors.transparent,
-            inactiveBorderColor: Colors.white10,
-          ),
-          const SizedBox(width: 8),
-          _PillButton(
-            label: context.l10n.calendarToday,
-            selected: isTodaySelected,
-            onTap: onTodayTap,
-            activeColor: AppTheme.mint.withValues(alpha: 0.2),
-            activeTextColor: AppTheme.mint,
-            inactiveColor: Colors.transparent,
-            inactiveBorderColor: Colors.white10,
-          ),
-          const Spacer(),
           _RoundIconButton(
             icon: Icons.refresh_outlined,
             onTap: () {
@@ -792,7 +905,7 @@ class _UnifiedFilterRow extends ConsumerWidget {
   ) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppTheme.surface,
+      backgroundColor: context.moniaryColors.backgroundSoft,
       builder: (context) => ListView(
         shrinkWrap: true,
         padding: const EdgeInsets.symmetric(vertical: 20),
@@ -826,6 +939,7 @@ class _MonthCalendarCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.moniaryColors;
     final weekdayLabels = [
       context.l10n.calendarMon,
       context.l10n.calendarTue,
@@ -839,14 +953,14 @@ class _MonthCalendarCard extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 12, 10, 8),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppTheme.outline),
+        color: colors.surface.withValues(alpha: 0.84),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: colors.outline),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.16),
-            blurRadius: 26,
-            offset: const Offset(0, 14),
+            color: colors.textPrimary.withValues(alpha: 0.04),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -861,8 +975,7 @@ class _MonthCalendarCard extends ConsumerWidget {
                         day,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w500,
-                          color:
-                              Colors.white54, // Dimmer text for weekday headers
+                          color: colors.textDim,
                           fontSize: 13,
                         ),
                       ),
@@ -903,6 +1016,7 @@ class _CalendarDayCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     final images = day.transactions
         .where((t) => t.imagePath != null && t.imagePath!.isNotEmpty)
         .toList()
@@ -926,9 +1040,7 @@ class _CalendarDayCell extends StatelessWidget {
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(
-                      alpha: 0.05,
-                    ), // Subtle placeholder
+                    color: colors.textPrimary.withValues(alpha: 0.04),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -950,7 +1062,7 @@ class _CalendarDayCell extends StatelessWidget {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: Colors.orange,
+                              color: colors.warning,
                               width: 1.5,
                             ),
                           ),
@@ -967,7 +1079,7 @@ class _CalendarDayCell extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.orange, width: 1.5),
+                        border: Border.all(color: colors.warning, width: 1.5),
                       ),
                       child: SupabaseImage(
                         imagePath: images[0].imagePath,
@@ -988,10 +1100,10 @@ class _CalendarDayCell extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.orange,
+                            color: colors.warning,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: AppTheme.surface,
+                              color: colors.surface,
                               width: 1.5,
                             ),
                           ),
@@ -1000,7 +1112,7 @@ class _CalendarDayCell extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.w900,
-                              color: Colors.white,
+                              color: AppTheme.ink,
                             ),
                           ),
                         ),
@@ -1021,11 +1133,8 @@ class _CalendarDayCell extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontSize: 13,
                       color: day.isCurrentMonth
-                          ? (day.isToday
-                                ? AppTheme.mint
-                                : Colors
-                                      .white) // Highlight number mint if today
-                          : Colors.white24, // Dimmer for non-current month
+                          ? (day.isToday ? colors.primary : colors.textPrimary)
+                          : colors.textPrimary.withValues(alpha: 0.28),
                       fontWeight: day.isToday
                           ? FontWeight.w900
                           : FontWeight.w600,
@@ -1042,9 +1151,9 @@ class _CalendarDayCell extends StatelessWidget {
                 child: Container(
                   width: 4,
                   height: 4,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppTheme.mint, // Dot indicates today
+                    color: colors.primary,
                   ),
                 ),
               ),
@@ -1052,9 +1161,29 @@ class _CalendarDayCell extends StatelessWidget {
             // Star Indicator for Important Transactions
             if (day.hasImportant)
               Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: colors.warning.withValues(alpha: 0.16),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            if (day.hasImportant)
+              Positioned(
                 top: 2,
                 right: 2,
-                child: const Icon(Icons.star, color: AppTheme.amber, size: 10),
+                child: Icon(Icons.star, color: colors.warning, size: 10),
               ),
           ],
         ),
@@ -1084,31 +1213,35 @@ class _PillButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? activeColor : inactiveColor,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: selected ? activeColor : inactiveBorderColor,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              label,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: selected ? activeTextColor : Colors.white70,
-                fontSize: 14,
-                fontWeight: selected ? FontWeight.bold : FontWeight.w500,
-              ),
+    final colors = context.moniaryColors;
+    return Material(
+      color: selected ? activeColor : inactiveColor,
+      shape: StadiumBorder(
+        side: BorderSide(color: selected ? activeColor : inactiveBorderColor),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const StadiumBorder(),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 44),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  label,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: selected ? activeTextColor : colors.textSecondary,
+                    fontSize: 13,
+                    fontWeight: selected ? FontWeight.bold : FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -1123,6 +1256,7 @@ class _RoundIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: onTap,
@@ -1130,11 +1264,11 @@ class _RoundIconButton extends StatelessWidget {
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: AppTheme.surfaceRaised,
+          color: colors.surfaceRaised.withValues(alpha: 0.78),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.outline),
+          border: Border.all(color: colors.outline),
         ),
-        child: Icon(icon, size: 20),
+        child: Icon(icon, size: 20, color: colors.textSecondary),
       ),
     );
   }
@@ -1276,7 +1410,7 @@ class _TodayGrid extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: PlaceholderCard(
           title: context.l10n.calendarToday,
-          body: context.l10n.calendarEmptyMessage,
+          body: context.l10n.calendarTodayEmptyMessage,
         ),
       );
     }
