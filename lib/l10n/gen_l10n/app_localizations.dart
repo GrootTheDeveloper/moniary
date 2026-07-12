@@ -1163,7 +1163,7 @@ abstract class AppLocalizations {
   /// No description provided for @transactionCreateTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tạo giao dịch'**
+  /// **'Thêm giao dịch'**
   String get transactionCreateTitle;
 
   /// No description provided for @transactionEditTitle.

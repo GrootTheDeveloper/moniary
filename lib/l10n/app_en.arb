@@ -229,7 +229,7 @@
   "transactionSelectWalletCategory": "Select wallet and category before saving.",
   "transactionAmountInvalid": "Enter a valid amount.",
   "transactionSaving": "Saving...",
-  "transactionCreateTitle": "Create transaction",
+  "transactionCreateTitle": "Add transaction",
   "transactionEditTitle": "Edit transaction",
   "transactionDetailTitle": "Transaction",
   "transactionDeleteConfirm": "Delete this transaction?",

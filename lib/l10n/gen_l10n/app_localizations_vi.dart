@@ -575,7 +575,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get transactionSaving => 'Đang lưu...';
 
   @override
-  String get transactionCreateTitle => 'Tạo giao dịch';
+  String get transactionCreateTitle => 'Thêm giao dịch';
 
   @override
   String get transactionEditTitle => 'Sửa giao dịch';

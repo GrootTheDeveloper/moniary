@@ -229,7 +229,7 @@
   "transactionSelectWalletCategory": "Chọn ví và danh mục trước khi lưu.",
   "transactionAmountInvalid": "Nhập số tiền hợp lệ.",
   "transactionSaving": "Đang lưu...",
-  "transactionCreateTitle": "Tạo giao dịch",
+  "transactionCreateTitle": "Thêm giao dịch",
   "transactionEditTitle": "Sửa giao dịch",
   "transactionDetailTitle": "Giao dịch",
   "transactionDeleteConfirm": "Xác nhận xóa giao dịch này?",

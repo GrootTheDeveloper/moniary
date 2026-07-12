@@ -575,7 +575,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionSaving => 'Saving...';
 
   @override
-  String get transactionCreateTitle => 'Create transaction';
+  String get transactionCreateTitle => 'Add transaction';
 
   @override
   String get transactionEditTitle => 'Edit transaction';
