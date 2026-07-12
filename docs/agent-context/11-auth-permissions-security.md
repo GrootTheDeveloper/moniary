@@ -30,7 +30,10 @@ In mock/guest mode these flows return or maintain a synthetic
 
 ## Deep links
 
-- Friend invites: `moniary://friends/invite/<token>`.
+- Friend invites: `https://go.vuivethoima.id.vn/friends/invite/<token>`;
+  legacy `moniary://friends/invite/<token>` is still parsed.
+- Group invites: `https://go.vuivethoima.id.vn/groups/invite/<token>`;
+  legacy `moniary://groups/invite/<token>` is still parsed.
 - Supabase OAuth callback: `io.supabase.moniary://login-callback`.
 - Password reset callback: `io.supabase.moniary://reset-password`.
 

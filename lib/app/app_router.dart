@@ -103,6 +103,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   final router = GoRouter(
     initialLocation: SplashScreen.routePath,
+    overridePlatformDefaultLocation: true,
     refreshListenable: authRefreshListenable,
     errorBuilder: (context, state) => Scaffold(
       body: Center(

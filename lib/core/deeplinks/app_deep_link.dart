@@ -42,7 +42,8 @@ sealed class AppDeepLink {
       return _validToken(segments.last);
     }
 
-    if ((uri.scheme == 'https' || uri.scheme == 'http') &&
+    if (uri.scheme == AppConstants.inviteLinkScheme &&
+        uri.host == AppConstants.inviteLinkHost &&
         segments.length >= 3 &&
         segments[segments.length - 3] == host &&
         segments[segments.length - 2] == path) {

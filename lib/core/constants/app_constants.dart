@@ -42,6 +42,11 @@ class AppConstants {
   static const storageBucket = 'transaction-images';
 
   // --- Deep links ---
+  static const inviteLinkScheme = 'https';
+  static const inviteLinkHost = String.fromEnvironment(
+    'INVITE_LINK_HOST',
+    defaultValue: 'go.vuivethoima.id.vn',
+  );
   static const friendInviteScheme = 'moniary';
   static const friendInviteHost = 'friends';
   static const friendInvitePath = 'invite';
@@ -49,12 +54,12 @@ class AppConstants {
   static const groupInvitePath = 'invite';
 
   static String friendInviteLink(String token) {
-    return '$friendInviteScheme://$friendInviteHost/'
+    return '$inviteLinkScheme://$inviteLinkHost/$friendInviteHost/'
         '$friendInvitePath/${Uri.encodeComponent(token)}';
   }
 
   static String groupInviteLink(String token) {
-    return '$friendInviteScheme://$groupInviteHost/'
+    return '$inviteLinkScheme://$inviteLinkHost/$groupInviteHost/'
         '$groupInvitePath/${Uri.encodeComponent(token)}';
   }
 
