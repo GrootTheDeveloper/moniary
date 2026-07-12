@@ -3116,6 +3116,72 @@ abstract class AppLocalizations {
   /// **'Xu hướng hàng ngày'**
   String get statsDailyTrend;
 
+  /// No description provided for @statsWeeklySpending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi theo tuần'**
+  String get statsWeeklySpending;
+
+  /// No description provided for @statsCategories.
+  ///
+  /// In vi, this message translates to:
+  /// **'Danh mục'**
+  String get statsCategories;
+
+  /// No description provided for @statsMonthExpenseMeta.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng chi · {month}'**
+  String statsMonthExpenseMeta(String month);
+
+  /// No description provided for @statsExpenseLessThanPrevious.
+  ///
+  /// In vi, this message translates to:
+  /// **'↓ Ít hơn tháng trước là {percent}%'**
+  String statsExpenseLessThanPrevious(int percent);
+
+  /// No description provided for @statsExpenseMoreThanPrevious.
+  ///
+  /// In vi, this message translates to:
+  /// **'↑ Cao hơn tháng trước là {percent}%'**
+  String statsExpenseMoreThanPrevious(int percent);
+
+  /// No description provided for @statsExpenseSameAsPrevious.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gần bằng tháng trước'**
+  String get statsExpenseSameAsPrevious;
+
+  /// No description provided for @statsExpenseNoPrevious.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có dữ liệu tháng trước'**
+  String get statsExpenseNoPrevious;
+
+  /// No description provided for @statsBudgetUsed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngân sách · đã dùng {percent}%'**
+  String statsBudgetUsed(int percent);
+
+  /// No description provided for @statsBudgetNoLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngân sách'**
+  String get statsBudgetNoLimit;
+
+  /// No description provided for @statsWeekLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tuần {week}'**
+  String statsWeekLabel(int week);
+
+  /// No description provided for @statsMillionShort.
+  ///
+  /// In vi, this message translates to:
+  /// **'tr'**
+  String get statsMillionShort;
+
   /// No description provided for @statsLargestTransactions.
   ///
   /// In vi, this message translates to:

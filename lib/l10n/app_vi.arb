@@ -697,6 +697,52 @@
   "statsEmptySubtitle": "Các biểu đồ thống kê sẽ hiện ra sau khi bạn thêm giao dịch.",
   "statsCategoryAllocation": "Phân bổ danh mục",
   "statsDailyTrend": "Xu hướng hàng ngày",
+  "statsWeeklySpending": "Chi theo tuần",
+  "statsCategories": "Danh mục",
+  "statsMonthExpenseMeta": "Tổng chi · {month}",
+  "@statsMonthExpenseMeta": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "statsExpenseLessThanPrevious": "↓ Ít hơn tháng trước là {percent}%",
+  "@statsExpenseLessThanPrevious": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "statsExpenseMoreThanPrevious": "↑ Cao hơn tháng trước là {percent}%",
+  "@statsExpenseMoreThanPrevious": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "statsExpenseSameAsPrevious": "Gần bằng tháng trước",
+  "statsExpenseNoPrevious": "Chưa có dữ liệu tháng trước",
+  "statsBudgetUsed": "Ngân sách · đã dùng {percent}%",
+  "@statsBudgetUsed": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "statsBudgetNoLimit": "Ngân sách",
+  "statsWeekLabel": "Tuần {week}",
+  "@statsWeekLabel": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "statsMillionShort": "tr",
   "statsLargestTransactions": "Giao dịch lớn nhất",
   "starredTransactionsTitle": "Giao dịch quan trọng",
   "starredTransactionsEmpty": "Chưa có giao dịch quan trọng nào",

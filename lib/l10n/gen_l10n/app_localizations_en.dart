@@ -1663,6 +1663,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statsDailyTrend => 'Daily trend';
 
   @override
+  String get statsWeeklySpending => 'Weekly spending';
+
+  @override
+  String get statsCategories => 'Categories';
+
+  @override
+  String statsMonthExpenseMeta(String month) {
+    return 'Total expense · $month';
+  }
+
+  @override
+  String statsExpenseLessThanPrevious(int percent) {
+    return '↓ Less than last month by $percent%';
+  }
+
+  @override
+  String statsExpenseMoreThanPrevious(int percent) {
+    return '↑ Higher than last month by $percent%';
+  }
+
+  @override
+  String get statsExpenseSameAsPrevious => 'About the same as last month';
+
+  @override
+  String get statsExpenseNoPrevious => 'No previous month data yet';
+
+  @override
+  String statsBudgetUsed(int percent) {
+    return 'Budget · used $percent%';
+  }
+
+  @override
+  String get statsBudgetNoLimit => 'Budget';
+
+  @override
+  String statsWeekLabel(int week) {
+    return 'Week $week';
+  }
+
+  @override
+  String get statsMillionShort => 'm';
+
+  @override
   String get statsLargestTransactions => 'Largest transactions';
 
   @override

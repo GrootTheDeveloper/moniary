@@ -697,6 +697,52 @@
   "statsEmptySubtitle": "Statistics charts will appear after you add transactions.",
   "statsCategoryAllocation": "Category allocation",
   "statsDailyTrend": "Daily trend",
+  "statsWeeklySpending": "Weekly spending",
+  "statsCategories": "Categories",
+  "statsMonthExpenseMeta": "Total expense · {month}",
+  "@statsMonthExpenseMeta": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "statsExpenseLessThanPrevious": "↓ Less than last month by {percent}%",
+  "@statsExpenseLessThanPrevious": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "statsExpenseMoreThanPrevious": "↑ Higher than last month by {percent}%",
+  "@statsExpenseMoreThanPrevious": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "statsExpenseSameAsPrevious": "About the same as last month",
+  "statsExpenseNoPrevious": "No previous month data yet",
+  "statsBudgetUsed": "Budget · used {percent}%",
+  "@statsBudgetUsed": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "statsBudgetNoLimit": "Budget",
+  "statsWeekLabel": "Week {week}",
+  "@statsWeekLabel": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "statsMillionShort": "m",
   "statsLargestTransactions": "Largest transactions",
   "starredTransactionsTitle": "Starred Transactions",
   "starredTransactionsEmpty": "No starred transactions yet",

@@ -1661,6 +1661,49 @@ class AppLocalizationsVi extends AppLocalizations {
   String get statsDailyTrend => 'Xu hướng hàng ngày';
 
   @override
+  String get statsWeeklySpending => 'Chi theo tuần';
+
+  @override
+  String get statsCategories => 'Danh mục';
+
+  @override
+  String statsMonthExpenseMeta(String month) {
+    return 'Tổng chi · $month';
+  }
+
+  @override
+  String statsExpenseLessThanPrevious(int percent) {
+    return '↓ Ít hơn tháng trước là $percent%';
+  }
+
+  @override
+  String statsExpenseMoreThanPrevious(int percent) {
+    return '↑ Cao hơn tháng trước là $percent%';
+  }
+
+  @override
+  String get statsExpenseSameAsPrevious => 'Gần bằng tháng trước';
+
+  @override
+  String get statsExpenseNoPrevious => 'Chưa có dữ liệu tháng trước';
+
+  @override
+  String statsBudgetUsed(int percent) {
+    return 'Ngân sách · đã dùng $percent%';
+  }
+
+  @override
+  String get statsBudgetNoLimit => 'Ngân sách';
+
+  @override
+  String statsWeekLabel(int week) {
+    return 'Tuần $week';
+  }
+
+  @override
+  String get statsMillionShort => 'tr';
+
+  @override
   String get statsLargestTransactions => 'Giao dịch lớn nhất';
 
   @override
