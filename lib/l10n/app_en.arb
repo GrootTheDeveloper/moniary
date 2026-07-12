@@ -186,6 +186,21 @@
   "calendarSearchHint": "Search by note or category...",
   "calendarSearchPrompt": "Enter a note or category to search.",
   "calendarSearchNoResults": "No transactions found.",
+  "calendarRecentSearches": "Recent searches",
+  "calendarRecentSearchCoffee": "coffee",
+  "calendarRecentSearchRide": "grab",
+  "calendarRecentSearchMarket": "market",
+  "calendarSearchResultsHeader": "Results · \"{query}\" · {count}",
+  "@calendarSearchResultsHeader": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "transactionSaveTransaction": "Save transaction",
   "transactionLoadDayError": "Could not load transactions for this day.\n{error}",
   "@transactionLoadDayError": {

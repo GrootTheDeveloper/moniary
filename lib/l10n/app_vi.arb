@@ -186,6 +186,21 @@
   "calendarSearchHint": "Tìm theo ghi chú hoặc danh mục...",
   "calendarSearchPrompt": "Nhập ghi chú hoặc danh mục để tìm kiếm.",
   "calendarSearchNoResults": "Không tìm thấy giao dịch nào.",
+  "calendarRecentSearches": "Tìm gần đây",
+  "calendarRecentSearchCoffee": "cà phê",
+  "calendarRecentSearchRide": "grab",
+  "calendarRecentSearchMarket": "siêu thị",
+  "calendarSearchResultsHeader": "Kết quả · \"{query}\" · {count}",
+  "@calendarSearchResultsHeader": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "transactionSaveTransaction": "Lưu giao dịch",
   "transactionLoadDayError": "Không tải được giao dịch trong ngày.\n{error}",
   "@transactionLoadDayError": {

@@ -1028,6 +1028,36 @@ abstract class AppLocalizations {
   /// **'Không tìm thấy giao dịch nào.'**
   String get calendarSearchNoResults;
 
+  /// No description provided for @calendarRecentSearches.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm gần đây'**
+  String get calendarRecentSearches;
+
+  /// No description provided for @calendarRecentSearchCoffee.
+  ///
+  /// In vi, this message translates to:
+  /// **'cà phê'**
+  String get calendarRecentSearchCoffee;
+
+  /// No description provided for @calendarRecentSearchRide.
+  ///
+  /// In vi, this message translates to:
+  /// **'grab'**
+  String get calendarRecentSearchRide;
+
+  /// No description provided for @calendarRecentSearchMarket.
+  ///
+  /// In vi, this message translates to:
+  /// **'siêu thị'**
+  String get calendarRecentSearchMarket;
+
+  /// No description provided for @calendarSearchResultsHeader.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết quả · \"{query}\" · {count}'**
+  String calendarSearchResultsHeader(String query, int count);
+
   /// No description provided for @transactionSaveTransaction.
   ///
   /// In vi, this message translates to:

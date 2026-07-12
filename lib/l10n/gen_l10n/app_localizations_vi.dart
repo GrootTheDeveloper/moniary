@@ -501,6 +501,23 @@ class AppLocalizationsVi extends AppLocalizations {
   String get calendarSearchNoResults => 'Không tìm thấy giao dịch nào.';
 
   @override
+  String get calendarRecentSearches => 'Tìm gần đây';
+
+  @override
+  String get calendarRecentSearchCoffee => 'cà phê';
+
+  @override
+  String get calendarRecentSearchRide => 'grab';
+
+  @override
+  String get calendarRecentSearchMarket => 'siêu thị';
+
+  @override
+  String calendarSearchResultsHeader(String query, int count) {
+    return 'Kết quả · \"$query\" · $count';
+  }
+
+  @override
   String get transactionSaveTransaction => 'Lưu giao dịch';
 
   @override

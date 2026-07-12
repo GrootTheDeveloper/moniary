@@ -28,6 +28,20 @@ class SupabaseImage extends ConsumerWidget {
       return _buildFallback();
     }
 
+    if (imagePath!.startsWith('asset://')) {
+      final assetPath = imagePath!.substring('asset://'.length);
+      return ClipRRect(
+        borderRadius: borderRadius ?? BorderRadius.zero,
+        child: Image.asset(
+          assetPath,
+          width: width,
+          height: height,
+          fit: fit,
+          errorBuilder: (context, error, stackTrace) => _buildFallback(),
+        ),
+      );
+    }
+
     final isHttp = imagePath!.startsWith('http');
     if (isHttp) {
       return ClipRRect(

@@ -501,6 +501,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calendarSearchNoResults => 'No transactions found.';
 
   @override
+  String get calendarRecentSearches => 'Recent searches';
+
+  @override
+  String get calendarRecentSearchCoffee => 'coffee';
+
+  @override
+  String get calendarRecentSearchRide => 'grab';
+
+  @override
+  String get calendarRecentSearchMarket => 'market';
+
+  @override
+  String calendarSearchResultsHeader(String query, int count) {
+    return 'Results · \"$query\" · $count';
+  }
+
+  @override
   String get transactionSaveTransaction => 'Save transaction';
 
   @override

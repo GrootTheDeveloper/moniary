@@ -37,7 +37,7 @@ class TransactionRepository {
       amount: 150000,
       type: TransactionType.expense,
       note: 'Lunch',
-      imagePath: 'https://picsum.photos/seed/moniary1/200/200',
+      imagePath: 'asset://assets/demo_transactions/lunch.png',
       transactionDate: DateTime.now(),
       walletId: 'w1',
       walletName: 'Cash Wallet',
@@ -51,7 +51,7 @@ class TransactionRepository {
       amount: 50000,
       type: TransactionType.expense,
       note: 'Cafe',
-      imagePath: 'https://picsum.photos/seed/moniary2/200/200',
+      imagePath: 'asset://assets/demo_transactions/cafe.png',
       transactionDate: DateTime.now(),
       walletId: 'w1',
       walletName: 'Cash Wallet',
@@ -65,7 +65,7 @@ class TransactionRepository {
       amount: 200000,
       type: TransactionType.expense,
       note: 'Shopping',
-      imagePath: 'https://picsum.photos/seed/moniary3/200/200',
+      imagePath: 'asset://assets/demo_transactions/shopping.png',
       transactionDate: DateTime.now().subtract(const Duration(days: 1)),
       walletId: 'w1',
       walletName: 'Cash Wallet',
@@ -80,7 +80,11 @@ class TransactionRepository {
     if (!_useMockData) return;
     for (final transaction in List<TransactionEntry>.from(_mockTransactions)) {
       final imagePath = transaction.imagePath;
-      if (imagePath == null || imagePath.startsWith('http')) continue;
+      if (imagePath == null ||
+          imagePath.startsWith('http') ||
+          imagePath.startsWith('asset://')) {
+        continue;
+      }
       final image = File(imagePath);
       if (await image.exists()) await image.delete();
     }
