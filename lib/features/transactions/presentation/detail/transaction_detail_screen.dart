@@ -31,30 +31,7 @@ class TransactionDetailScreen extends ConsumerWidget {
     final transaction = transactionAsync.value ?? args.transaction;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        title: Text(context.l10n.transactionDetailTitle),
-        actions: [
-          IconButton(
-            icon: Icon(
-              transaction.isImportant ? Icons.star : Icons.star_border,
-              color: transaction.isImportant
-                  ? AppTheme.amber
-                  : context.moniaryColors.textDim,
-            ),
-            onPressed: () async {
-              await ref
-                  .read(transactionComposerProvider.notifier)
-                  .toggleImportance(
-                    transaction.id,
-                    !transaction.isImportant,
-                    transaction.transactionDate,
-                  );
-            },
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+      backgroundColor: context.moniaryColors.background,
       body: _TransactionDetailBody(transaction: transaction),
     );
   }
@@ -77,123 +54,171 @@ class _TransactionDetailBody extends ConsumerWidget {
     final note = transaction.note?.trim();
     final title = note?.isNotEmpty == true ? note! : transaction.categoryName;
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-      children: [
-        AspectRatio(
-          aspectRatio: 1,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: colors.surfaceRaised,
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: colors.outline),
-              boxShadow: [
-                BoxShadow(
-                  color: colors.textPrimary.withValues(alpha: 0.14),
-                  blurRadius: 28,
-                  offset: const Offset(0, 18),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Stack(
-                fit: StackFit.expand,
+    return SafeArea(
+      bottom: false,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 393),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(30, 20, 30, 40),
+            children: [
+              Row(
                 children: [
-                  Hero(
-                    tag: 'tx_image_${transaction.id}',
-                    child: SupabaseImage(
-                      imagePath: transaction.imagePath,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      fallbackIcon: Icons.receipt_long_outlined,
-                    ),
+                  _DetailTopButton(
+                    icon: Icons.arrow_back_ios_new_rounded,
+                    tooltip: MaterialLocalizations.of(
+                      context,
+                    ).backButtonTooltip,
+                    onPressed: () => context.pop(),
                   ),
-                  Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                            Colors.black.withValues(alpha: 0.82),
-                            Colors.transparent,
-                          ],
-                          stops: const [0, 0.62],
-                        ),
+                  Expanded(
+                    child: Text(
+                      context.l10n.transactionDetailTitle.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: typography.metadataStrong.copyWith(
+                        color: colors.textDim,
+                        fontSize: 8.8,
+                        letterSpacing: 2.2,
                       ),
                     ),
                   ),
-                  Positioned(
-                    left: 22,
-                    right: 22,
-                    bottom: 24,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  _DetailTopButton(
+                    icon: transaction.isImportant
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    tooltip: context.l10n.starredTransactionsTitle,
+                    isActive: transaction.isImportant,
+                    onPressed: () async {
+                      await ref
+                          .read(transactionComposerProvider.notifier)
+                          .toggleImportance(
+                            transaction.id,
+                            !transaction.isImportant,
+                            transaction.transactionDate,
+                          );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 298,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: categoryColor,
+                    borderRadius: BorderRadius.circular(21),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colors.textPrimary.withValues(alpha: 0.11),
+                        blurRadius: 18,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(21),
+                    child: Stack(
+                      fit: StackFit.expand,
                       children: [
-                        Text(
-                          DateFormat(
-                            'HH:mm · EEEE, d MMMM',
-                            locale,
-                          ).format(transaction.transactionDate).toUpperCase(),
-                          style: typography.metadataStrong.copyWith(
-                            color: Colors.white.withValues(alpha: 0.82),
+                        Hero(
+                          tag: 'tx_image_${transaction.id}',
+                          child: SupabaseImage(
+                            imagePath: transaction.imagePath,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                            fallbackIcon: Icons.receipt_long_outlined,
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        ObscurableAmountText(
-                          amountText: formatVnd(transaction.amount),
-                          prefixText: transaction.isIncome ? '+' : '-',
-                          style: typography.displayMedium.copyWith(
-                            color: transaction.isIncome
-                                ? colors.success
-                                : Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800,
+                        Positioned.fill(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black.withValues(alpha: 0.18),
+                                  Colors.transparent,
+                                  Colors.black.withValues(alpha: 0.72),
+                                ],
+                                stops: const [0, 0.46, 1],
                               ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: 17,
+                          top: 16,
+                          right: 17,
+                          child: Text(
+                            DateFormat(
+                              'HH:mm · EEEE, d MMMM',
+                              locale,
+                            ).format(transaction.transactionDate).toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: typography.metadataStrong.copyWith(
+                              color: Colors.white.withValues(alpha: 0.9),
+                              fontSize: 8.8,
+                              letterSpacing: 1.1,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: 17,
+                          right: 17,
+                          bottom: 18,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ObscurableAmountText(
+                                amountText: formatVnd(transaction.amount),
+                                prefixText: transaction.isIncome ? '+' : '-',
+                                style: typography.displayMedium.copyWith(
+                                  color: transaction.isIncome
+                                      ? colors.success
+                                      : Colors.white,
+                                  fontSize: 37,
+                                  height: 0.96,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                title,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                      fontSize: 13.5,
+                                      fontWeight: FontWeight.w800,
+                                      height: 1.2,
+                                    ),
+                              ),
+                              const SizedBox(height: 11),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 6,
+                                children: [
+                                  _HeroTag(label: transaction.categoryName),
+                                  _HeroTag(
+                                    label: transaction.imagePath == null
+                                        ? context.l10n.transactionSourceManual
+                                        : context
+                                              .l10n
+                                              .transactionSourceReceiptImage,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  if (transaction.isImportant)
-                    Positioned(
-                      top: 18,
-                      right: 18,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: colors.warning,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(9),
-                          child: Icon(Icons.star, size: 18),
-                        ),
-                      ),
-                    ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 22),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: colors.outline),
-          ),
-          child: Column(
-            children: [
+              const SizedBox(height: 21),
               _DetailMetaRow(
                 label: context.l10n.transactionWallet,
                 value: transaction.walletName,
@@ -204,46 +229,37 @@ class _TransactionDetailBody extends ConsumerWidget {
                 indicatorColor: categoryColor,
               ),
               _DetailMetaRow(
-                label: context.l10n.transactionDate,
-                value: DateFormat(
-                  'd/M/y · HH:mm',
-                  locale,
-                ).format(transaction.transactionDate),
-              ),
-              _DetailMetaRow(
                 label: context.l10n.transactionSource,
                 value: transaction.imagePath == null
                     ? context.l10n.transactionSourceManual
                     : context.l10n.transactionSourceReceiptImage,
                 showDivider: false,
               ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: _DetailActionButton(
+                      label: context.l10n.commonEdit,
+                      onPressed: () => _editTransaction(context, ref),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _DetailActionButton(
+                      label: context.l10n.commonDelete,
+                      foregroundColor: colors.danger,
+                      backgroundColor: colors.danger.withValues(alpha: 0.06),
+                      borderColor: colors.danger.withValues(alpha: 0.32),
+                      onPressed: () => _deleteTransaction(context, ref),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
-        const SizedBox(height: 18),
-        Row(
-          children: [
-            Expanded(
-              child: FilledButton.tonalIcon(
-                onPressed: () => _editTransaction(context, ref),
-                icon: const Icon(Icons.edit_outlined),
-                label: Text(context.l10n.commonEdit),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () => _deleteTransaction(context, ref),
-                icon: Icon(Icons.delete_outline, color: colors.danger),
-                label: Text(
-                  context.l10n.commonDelete,
-                  style: TextStyle(color: colors.danger),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
+      ),
     );
   }
 
@@ -291,6 +307,130 @@ class _TransactionDetailBody extends ConsumerWidget {
   }
 }
 
+class _DetailTopButton extends StatelessWidget {
+  const _DetailTopButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+    this.isActive = false,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onPressed;
+  final bool isActive;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: isActive
+            ? colors.primary.withValues(alpha: 0.12)
+            : colors.surface.withValues(alpha: 0.56),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(13),
+          side: BorderSide(
+            color: isActive
+                ? colors.primary.withValues(alpha: 0.46)
+                : colors.outline,
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onPressed,
+          child: SizedBox(
+            width: 37,
+            height: 37,
+            child: Icon(
+              icon,
+              size: 18,
+              color: isActive ? colors.primary : colors.icon,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HeroTag extends StatelessWidget {
+  const _HeroTag({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: Colors.white,
+            fontSize: 9,
+            fontWeight: FontWeight.w800,
+            height: 1,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DetailActionButton extends StatelessWidget {
+  const _DetailActionButton({
+    required this.label,
+    required this.onPressed,
+    this.foregroundColor,
+    this.backgroundColor,
+    this.borderColor,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+  final Color? foregroundColor;
+  final Color? backgroundColor;
+  final Color? borderColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final textColor = foregroundColor ?? colors.textPrimary;
+    return Material(
+      color: backgroundColor ?? colors.surface.withValues(alpha: 0.4),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: borderColor ?? colors.outline),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onPressed,
+        child: SizedBox(
+          height: 44,
+          child: Center(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: textColor,
+                fontSize: 13.5,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _DetailMetaRow extends StatelessWidget {
   const _DetailMetaRow({
     required this.label,
@@ -308,21 +448,27 @@ class _DetailMetaRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
+      padding: EdgeInsets.zero,
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: showDivider
-              ? Border(bottom: BorderSide(color: colors.outline))
+              ? Border(
+                  bottom: BorderSide(
+                    color: colors.outline.withValues(alpha: 0.78),
+                  ),
+                )
               : null,
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           child: Row(
             children: [
               Text(
                 label.toUpperCase(),
                 style: context.moniaryTypography.metadataStrong.copyWith(
                   color: colors.textDim,
+                  fontSize: 8.8,
+                  letterSpacing: 1.55,
                 ),
               ),
               const Spacer(),
@@ -344,6 +490,7 @@ class _DetailMetaRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     color: colors.textPrimary,
+                    fontSize: 13.2,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
