@@ -63,6 +63,13 @@ class FriendSupabaseDataSource {
     return client.rpc('send_friend_request', params: {'p_username': username});
   }
 
+  Future<void> sendRequestToUser(String userId) {
+    return client.rpc(
+      'send_friend_request_by_user_id',
+      params: {'p_target_user_id': userId},
+    );
+  }
+
   Future<void> acceptRequest(String requestId) {
     return client.rpc(
       'accept_friend_request',

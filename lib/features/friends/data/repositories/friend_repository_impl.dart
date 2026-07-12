@@ -137,6 +137,15 @@ class FriendRepositoryImpl implements FriendRepository {
   }
 
   @override
+  Future<void> sendRequestToUser(String userId) {
+    if (_useMockData) return _mock.sendRequestToUser(userId);
+    return _guard(
+      'send friend request to user',
+      () => _remote.sendRequestToUser(userId.trim()),
+    );
+  }
+
+  @override
   Future<void> acceptRequest(String requestId) {
     if (_useMockData) return _mock.acceptRequest(requestId);
     return _guard(

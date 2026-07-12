@@ -10,12 +10,18 @@ void main() {
       FriendMockDataSource(currentUserId: userId);
 
   test('search trả profile tối thiểu và không có email field', () async {
-    final results = await source('mock-user-id').searchUsers('an');
+    final results = await source('mock-user-id').searchUsers('an_');
 
     expect(results, hasLength(1));
     expect(results.first.profile.username, 'an_nguyen');
     expect(results.first.profile.fullName, 'An Nguyen');
     expect(results.first.relationStatus, FriendRelationStatus.none);
+  });
+
+  test('search không tìm theo tên hiển thị', () async {
+    final results = await source('mock-user-id').searchUsers('nguyen');
+
+    expect(results, isEmpty);
   });
 
   test('không cho tự kết bạn với chính mình', () async {
@@ -142,7 +148,10 @@ void main() {
     final invite = await creator.createInviteLink();
     final preview = await receiver.fetchInvitePreview(invite.token);
 
-    expect(invite.link, startsWith('moniary://friends/invite/'));
+    expect(
+      invite.link,
+      startsWith('https://go.vuivethoima.id.vn/friends/invite/'),
+    );
     expect(preview.status, FriendInviteStatus.active);
     expect(preview.inviter?.userId, 'mock-user-id');
     expect(preview.inviter?.username, 'mock-user');

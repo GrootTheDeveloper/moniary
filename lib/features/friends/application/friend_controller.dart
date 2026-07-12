@@ -59,6 +59,13 @@ class FriendActionController extends AsyncNotifier<void> {
     });
   }
 
+  Future<void> sendRequestToUser(String userId) {
+    return _run(() async {
+      await ref.read(friendRepositoryProvider).sendRequestToUser(userId);
+      _invalidateFriendState();
+    });
+  }
+
   Future<FriendInviteLink> createInviteLink() {
     return _run(() async {
       return ref.read(friendRepositoryProvider).createInviteLink();

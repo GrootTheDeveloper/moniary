@@ -99,7 +99,7 @@ void main() {
     await tester.tap(find.text('Kết bạn'));
     await tester.pumpAndSettle();
 
-    expect(repository.sentUsernames, ['an_nguyen']);
+    expect(repository.sentUserIds, ['user-an']);
     expect(find.text('Đã gửi lời mời kết bạn.'), findsOneWidget);
   });
 
@@ -414,6 +414,7 @@ class FakeFriendRepository implements FriendRepository {
   final List<FriendSearchResult> searchResults;
   FriendInvitePreview invitePreview;
   final List<String> sentUsernames = [];
+  final List<String> sentUserIds = [];
   final List<String> acceptedRequestIds = [];
   final List<String> declinedRequestIds = [];
   final List<String> cancelledRequestIds = [];
@@ -442,7 +443,7 @@ class FakeFriendRepository implements FriendRepository {
   Future<FriendInviteLink> createInviteLink() async {
     return FriendInviteLink(
       token: 'token-1',
-      link: 'moniary://friends/invite/token-1',
+      link: 'https://go.vuivethoima.id.vn/friends/invite/token-1',
       expiresAt: DateTime(2026),
     );
   }
@@ -476,6 +477,11 @@ class FakeFriendRepository implements FriendRepository {
   @override
   Future<void> sendRequest(String username) async {
     sentUsernames.add(username);
+  }
+
+  @override
+  Future<void> sendRequestToUser(String userId) async {
+    sentUserIds.add(userId);
   }
 
   @override

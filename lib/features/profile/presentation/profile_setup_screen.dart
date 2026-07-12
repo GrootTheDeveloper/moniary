@@ -73,7 +73,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       }
 
       final username = profile?.username?.trim() ?? '';
-      if (_usernameController.text.isEmpty && username.isNotEmpty) {
+      if (_usernameController.text.isEmpty &&
+          username.isNotEmpty &&
+          !_isGeneratedUsername(username)) {
         _usernameController.text = username;
       }
 
@@ -322,6 +324,10 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+
+  bool _isGeneratedUsername(String value) {
+    return RegExp(r'^user_[0-9a-f]{24}$').hasMatch(value.trim());
   }
 
   Future<void> _pickAvatar() async {

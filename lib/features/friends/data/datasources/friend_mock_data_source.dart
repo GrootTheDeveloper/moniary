@@ -238,6 +238,42 @@ class FriendMockDataSource {
     );
   }
 
+  Future<void> sendRequestToUser(String userId) async {
+    final targetId = userId.trim();
+    if (!_directory.containsKey(targetId)) {
+      throw const AppException(
+        'Friend user not found',
+        code: 'FRIEND_USER_NOT_FOUND',
+      );
+    }
+    if (targetId == currentUserId) {
+      throw const AppException(
+        'Cannot add yourself',
+        code: 'FRIEND_CANNOT_ADD_SELF',
+      );
+    }
+    if (_areFriends(currentUserId, targetId)) {
+      throw const AppException(
+        'Already friends',
+        code: 'FRIEND_ALREADY_EXISTS',
+      );
+    }
+    if (_hasPendingRequest(currentUserId, targetId)) {
+      throw const AppException(
+        'Friend request already pending',
+        code: 'FRIEND_REQUEST_ALREADY_PENDING',
+      );
+    }
+    final id = _id('friend-request');
+    _requests[id] = _MockFriendRequest(
+      id: id,
+      fromUserId: currentUserId,
+      toUserId: targetId,
+      status: FriendRequestStatus.pending,
+      createdAt: DateTime.now(),
+    );
+  }
+
   Future<void> acceptRequest(String requestId) async {
     final request = _requireRequest(requestId);
     if (request.toUserId != currentUserId ||
