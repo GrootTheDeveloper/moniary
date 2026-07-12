@@ -392,6 +392,12 @@ abstract class AppLocalizations {
   /// **'Hoặc đăng nhập bằng'**
   String get loginSocialDivider;
 
+  /// No description provided for @loginDemoCta.
+  ///
+  /// In vi, this message translates to:
+  /// **'DEMO'**
+  String get loginDemoCta;
+
   /// No description provided for @loginGuestCta.
   ///
   /// In vi, this message translates to:

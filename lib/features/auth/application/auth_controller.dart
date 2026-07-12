@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../data/auth_repository.dart';
@@ -56,6 +57,37 @@ class AuthController extends AsyncNotifier<void> {
           .read(authRepositoryProvider)
           .startGuestSession();
       ref.read(mockSessionProvider.notifier).setSession(mockSession);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> startDemoSession() async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      final mockSession = await ref
+          .read(authRepositoryProvider)
+          .startGuestSession();
+      ref.read(mockSessionProvider.notifier).setSession(mockSession);
+
+      final profileRepository = ref.read(profileRepositoryProvider);
+      await profileRepository.upsertProfile(
+        fullName: 'Minh Anh',
+        username: 'minhanh',
+        timezone: AppConstants.defaultTimezone,
+      );
+      await profileRepository.completeSurvey(
+        occupation: 'demo',
+        preferredCurrency: 'VND',
+      );
+
+      ref.invalidate(currentProfileProvider);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);

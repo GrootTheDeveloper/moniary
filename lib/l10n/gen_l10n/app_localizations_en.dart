@@ -160,6 +160,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginSocialDivider => 'Or sign in with';
 
   @override
+  String get loginDemoCta => 'DEMO';
+
+  @override
   String get loginGuestCta => 'Try it now — no account needed →';
 
   @override

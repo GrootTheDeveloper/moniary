@@ -5,8 +5,11 @@ import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/features/auth/application/auth_controller.dart';
 import 'package:moniary/features/auth/data/auth_repository.dart';
+import 'package:moniary/features/profile/application/profile_setup_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+class _FakeSupabaseClient extends Fake implements SupabaseClient {}
 
 Session _mockSession() {
   const user = User(
@@ -67,7 +70,10 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
+      ],
     );
     addTearDown(container.dispose);
 
@@ -84,7 +90,10 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
+      ],
     );
     addTearDown(container.dispose);
 
@@ -95,6 +104,29 @@ void main() {
     expect(authState.hasError, isFalse);
     expect(prefs.getBool('guest_mode_enabled'), isNull);
     expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
+  });
+
+  test('startDemoSession seeds a ready mock profile', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await container.read(authControllerProvider.notifier).startDemoSession();
+
+    final authState = container.read(authControllerProvider);
+    final profile = await container.read(currentProfileProvider.future);
+    expect(authState.isLoading, isFalse);
+    expect(authState.hasError, isFalse);
+    expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
+    expect(profile?.fullName, 'Minh Anh');
+    expect(profile?.needsSetup, isFalse);
+    expect(profile?.needsSurvey, isFalse);
   });
 
   test('signInWithEmail applies returned mock session', () async {

@@ -297,6 +297,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ],
                         ),
                         const Spacer(),
+                        OutlinedButton(
+                          key: const ValueKey('login_demo_button'),
+                          onPressed: isBusy
+                              ? null
+                              : () => _enterApp(
+                                  () => ref
+                                      .read(authControllerProvider.notifier)
+                                      .startDemoSession(),
+                                ),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(44),
+                            foregroundColor: colors.primary,
+                            side: BorderSide(
+                              color: colors.primary.withValues(alpha: 0.5),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          child: Text(context.l10n.loginDemoCta),
+                        ),
+                        const SizedBox(height: 6),
                         TextButton(
                           key: const ValueKey('login_guest_button'),
                           onPressed: isBusy

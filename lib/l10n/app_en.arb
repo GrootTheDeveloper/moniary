@@ -49,6 +49,7 @@
   "loginRegisterNow": "Register now",
   "loginHaveAccount": "Already have an account?",
   "loginSocialDivider": "Or sign in with",
+  "loginDemoCta": "DEMO",
   "loginGuestCta": "Try it now — no account needed →",
   "loginPasswordResetSent": "Password reset instructions were sent by email.",
   "splashLoading": "Loading app...",

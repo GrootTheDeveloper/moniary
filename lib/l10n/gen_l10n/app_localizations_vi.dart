@@ -161,6 +161,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginSocialDivider => 'Hoặc đăng nhập bằng';
 
   @override
+  String get loginDemoCta => 'DEMO';
+
+  @override
   String get loginGuestCta => 'Dùng thử ngay — không cần tài khoản →';
 
   @override
