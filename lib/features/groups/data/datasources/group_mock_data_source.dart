@@ -1,3 +1,4 @@
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_invite.dart';
@@ -150,7 +151,7 @@ class GroupMockDataSource {
       invitedBy: currentUserId,
       expiresAt: DateTime.now().add(const Duration(days: 7)),
     );
-    return 'moniary://groups/invite/$token';
+    return AppConstants.groupInviteLink(token);
   }
 
   Future<GroupInvitePreview> fetchInvitePreview(String token) async {

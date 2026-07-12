@@ -17,6 +17,12 @@ void main() {
 
   String tokenFrom(String link) => Uri.parse(link).pathSegments.last;
 
+  test('shared group invite uses https app link host', () async {
+    final link = await createInvite();
+
+    expect(link, startsWith('https://go.vuivethoima.id.vn/groups/invite/'));
+  });
+
   test(
     'shared group invite remains active after multiple users join',
     () async {
