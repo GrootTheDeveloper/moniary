@@ -3379,7 +3379,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get groupInvitePreviewNotice =>
+      'You have not joined yet. Only tap Join group if you want to accept this invite.';
+
+  @override
   String get groupInviteAcceptButton => 'Join group';
+
+  @override
+  String get groupInviteDismissButton => 'Not now';
 
   @override
   String get groupInviteAccepted => 'You joined the group.';
@@ -3670,7 +3677,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendSearchUsername => 'Search by username';
 
   @override
-  String get friendSearchHint => 'For example: an_nguyen';
+  String get friendSearchHint => 'For example: erling_haaland';
 
   @override
   String get friendSearch => 'Search';
@@ -4194,8 +4201,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendInviteOpenFriends => 'Open friends';
 
   @override
-  String get profileUsernameHint =>
-      '3-30 characters: lowercase letters, numbers, or underscores';
+  String get profileUsernameHint => 'For example: erling_haaland';
 
   @override
   String get profileUsernameInvalid =>

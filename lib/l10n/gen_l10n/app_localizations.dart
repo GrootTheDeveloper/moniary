@@ -6116,11 +6116,23 @@ abstract class AppLocalizations {
   /// **'{name} mời bạn tham gia nhóm {group}.'**
   String groupInviteAcceptSubtitle(String name, String group);
 
+  /// No description provided for @groupInvitePreviewNotice.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chưa tham gia nhóm. Chỉ bấm Tham gia nhóm khi bạn muốn nhận lời mời này.'**
+  String get groupInvitePreviewNotice;
+
   /// No description provided for @groupInviteAcceptButton.
   ///
   /// In vi, this message translates to:
   /// **'Tham gia nhóm'**
   String get groupInviteAcceptButton;
+
+  /// No description provided for @groupInviteDismissButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tham gia'**
+  String get groupInviteDismissButton;
 
   /// No description provided for @groupInviteAccepted.
   ///
@@ -6665,7 +6677,7 @@ abstract class AppLocalizations {
   /// No description provided for @friendSearchHint.
   ///
   /// In vi, this message translates to:
-  /// **'Ví dụ: an_nguyen'**
+  /// **'Ví dụ: erling_haaland'**
   String get friendSearchHint;
 
   /// No description provided for @friendSearch.
@@ -7573,7 +7585,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileUsernameHint.
   ///
   /// In vi, this message translates to:
-  /// **'3-30 ký tự: chữ thường, số hoặc dấu gạch dưới'**
+  /// **'Ví dụ: erling_haaland'**
   String get profileUsernameHint;
 
   /// No description provided for @profileUsernameInvalid.

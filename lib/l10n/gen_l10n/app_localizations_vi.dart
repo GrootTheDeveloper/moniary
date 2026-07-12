@@ -3381,7 +3381,14 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get groupInvitePreviewNotice =>
+      'Bạn chưa tham gia nhóm. Chỉ bấm Tham gia nhóm khi bạn muốn nhận lời mời này.';
+
+  @override
   String get groupInviteAcceptButton => 'Tham gia nhóm';
+
+  @override
+  String get groupInviteDismissButton => 'Không tham gia';
 
   @override
   String get groupInviteAccepted => 'Bạn đã tham gia nhóm.';
@@ -3673,7 +3680,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendSearchUsername => 'Tìm bằng username';
 
   @override
-  String get friendSearchHint => 'Ví dụ: an_nguyen';
+  String get friendSearchHint => 'Ví dụ: erling_haaland';
 
   @override
   String get friendSearch => 'Tìm kiếm';
@@ -4198,8 +4205,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendInviteOpenFriends => 'Xem danh sách bạn bè';
 
   @override
-  String get profileUsernameHint =>
-      '3-30 ký tự: chữ thường, số hoặc dấu gạch dưới';
+  String get profileUsernameHint => 'Ví dụ: erling_haaland';
 
   @override
   String get profileUsernameInvalid =>
