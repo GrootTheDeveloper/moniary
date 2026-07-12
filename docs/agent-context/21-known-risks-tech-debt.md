@@ -5,8 +5,7 @@
 
 | Risk | Severity | Evidence | Suggested action |
 |---|---|---|---|
-| Remote Supabase migration drift | High | The repository has 13 ordered migrations with RLS/RPC/schema changes, but source inspection cannot prove each deployed project is current. | Run migration status/diff against every environment and perform multi-user RLS tests before release. |
-| Direct group invitations lack a recipient acceptance inbox | Medium | Username/friend invitations create `group_members` records with `invited` status, while the completed deep-link flow covers only shared links. | Define whether direct invites auto-join or add a localized pending-invitations inbox with accept/decline actions. |
+| Remote Supabase migration drift | High | The repository has 15 ordered migrations with RLS/RPC/schema changes, including shared-link and direct-invite acceptance functions, but source inspection cannot prove each deployed project is current. | Run migration status/diff against every environment and perform multi-user RLS tests before release. |
 | OCR requires a reachable external process | Medium | Flutter always calls `FastApiOcrService`; default host is Android-emulator-only and there is no mock result fallback. | Deploy the FastAPI/Tesseract service over HTTPS, set `OCR_API_URL`, and add health/timeout monitoring. |
 | Guest/mock state is volatile | Medium | Transactions, budgets, journal collections, groups/friends, and settings use in-memory mock records. | Clearly label guest persistence limits; add local persistence only if guest data is expected to survive restart. |
 | Journal export owns file I/O in presentation | Medium | `journal_export_screen.dart` creates directories/files, writes PNG bytes, and calls sharing directly. | Extract render/save/share orchestration behind an application controller and data service so failures/state are testable. |

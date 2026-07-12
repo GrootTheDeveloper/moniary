@@ -1,7 +1,7 @@
 # API & Integrations
 
 **Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
-**Last source audit**: `2026-07-10`
+**Last source audit**: `2026-07-12`
 
 ## Supabase
 
@@ -23,6 +23,12 @@ versioned migrations, seed configuration, and Edge Functions.
 RLS policies and RPCs are defined in migrations. Repository presence proves the
 intended schema, not that every remote environment has applied the latest
 migration; deployment parity must still be verified.
+
+Group invitations use security-definer RPCs for the recipient inbox because an
+`invited` user is intentionally not yet an active group member. Shared links
+use a separate token-preview/accept flow; direct username/friend invitations
+use `get_my_group_invites`, `accept_direct_group_invite`, and
+`decline_direct_group_invite`.
 
 ### Auth
 

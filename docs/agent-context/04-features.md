@@ -84,8 +84,12 @@
 - **Invite links**: owner/admin can create a shared link that multiple people
   may use for seven days. The recipient sees a localized preview, can join the
   group through a deep link, and gets an already-member state without an error.
-- **Screens**: group list/detail/create, invite member, invite acceptance,
-  add/detail transaction, member amount input, and debt settlement.
+- **Direct invitations**: recipients can reopen username/friend invitations
+  from the localized group-invitations inbox, where they can accept or decline
+  before the seven-day expiry; the Group tab shows a pending-invitation badge.
+- **Screens**: group list/detail/create, invite member, shared-invite
+  acceptance, direct-invitations inbox, add/detail transaction, member amount
+  input, and debt settlement.
 
 ## Friends
 

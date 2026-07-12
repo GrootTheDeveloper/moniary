@@ -93,6 +93,7 @@ floating global action that pushes `/assistant`; it is not a fifth shell tab.
 | `/groups/create` | `CreateGroupScreen` | Slide up |
 | `/groups/invite` | `InviteMemberScreen` | Group ID |
 | `/groups/invite/:token` | `GroupInviteAcceptScreen` | Shared invite token; recipient previews and joins the group |
+| `/groups/invitations` | `GroupInvitationsScreen` | Persistent direct username/friend invitations; accept or decline |
 | `/groups/transaction/form` | `AddGroupTransactionScreen` | `AddGroupTransactionArgs` |
 | `/groups/member-amount` | `MemberAmountInputScreen` | `MemberAmountInputArgs` |
 | `/groups/settlements` | `DebtSettlementScreen` | Group ID |

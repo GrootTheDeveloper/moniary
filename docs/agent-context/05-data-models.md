@@ -31,7 +31,7 @@
 |---|---|---|
 | `UserProfile` | `lib/features/profile/domain/user_profile.dart` | Profile, username, occupation, preferred currency, and setup/survey status |
 | Friend entities | `lib/features/friends/domain/entities/friend_profile.dart` | Minimal friend/search/request representations |
-| Group entities | `lib/features/groups/domain/entities/` | Current group, transaction, payer/share, settlement, invite-link preview/acceptance result, and enum models |
+| Group entities | `lib/features/groups/domain/entities/` | Current group, transaction, payer/share, settlement, shared-link preview/acceptance result, direct invitation, and enum models |
 | Group calculation models | `lib/features/groups/domain/` | Balance/split data used by pure calculators and repository mapping |
 
 The groups directory also contains older-compatible domain types
