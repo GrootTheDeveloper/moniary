@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/utils/app_logger.dart';
 import '../data/repositories/group_repository_impl.dart';
+import '../domain/entities/group_community.dart';
+import '../domain/entities/group_roadmap.dart';
 import '../domain/entities/group_settlement.dart';
 import '../domain/entities/group_transaction.dart';
 import '../domain/entities/group_invite.dart';
@@ -37,6 +39,25 @@ final groupSettlementOverviewProvider =
           .watch(groupRepositoryProvider)
           .fetchSettlementOverview(groupId);
     });
+
+final groupReactionsProvider =
+    FutureProvider.family<List<GroupReactionSummary>, String>((
+      ref,
+      transactionId,
+    ) {
+      return ref.watch(groupRepositoryProvider).fetchReactions(transactionId);
+    });
+
+final groupActivitiesProvider =
+    FutureProvider.family<List<GroupActivity>, String>((ref, groupId) {
+      return ref.watch(groupRepositoryProvider).fetchActivities(groupId);
+    });
+
+final groupNotificationsProvider = FutureProvider<List<GroupNotification>>((
+  ref,
+) {
+  return ref.watch(groupRepositoryProvider).fetchNotifications();
+});
 
 final groupInvitePreviewProvider = FutureProvider.autoDispose
     .family<GroupInvitePreview, String>((ref, token) {
@@ -260,6 +281,29 @@ class GroupActionController extends AsyncNotifier<void> {
           .read(groupRepositoryProvider)
           .addComment(transactionId: transactionId, content: content);
       ref.invalidate(groupTransactionDetailProvider(transactionId));
+      ref.invalidate(groupActivitiesProvider);
+    });
+  }
+
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .toggleReaction(transactionId: transactionId, emoji: emoji);
+      ref.invalidate(groupReactionsProvider(transactionId));
+      ref.invalidate(groupActivitiesProvider);
+    });
+  }
+
+  Future<void> markNotificationRead(String notificationId) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .markNotificationRead(notificationId);
+      ref.invalidate(groupNotificationsProvider);
     });
   }
 

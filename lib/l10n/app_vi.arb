@@ -12,6 +12,31 @@
   "commonDelete": "Xóa",
   "commonEdit": "Sửa",
   "commonRetry": "Thử lại",
+  "commonJustNow": "Vừa xong",
+  "commonMinutesAgo": "{count} phút trước",
+  "@commonMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonHoursAgo": "{count} giờ trước",
+  "@commonHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonDaysAgo": "{count} ngày trước",
+  "@commonDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "commonAdd": "Thêm",
   "commonClose": "Đóng",
   "commonSaving": "Đang lưu...",
@@ -1553,6 +1578,21 @@
   "groupTransactionHistorySubtitle": "{payer} trả · Chia {count} người",
   "@groupTransactionHistorySubtitle": {"placeholders": {"payer": {"type": "String"}, "count": {"type": "int"}}},
   "groupTransactionDetailTitle": "Chi tiết giao dịch nhóm",
+  "groupActivityCenterTitle": "Hoạt động nhóm",
+  "groupActivityTabTimeline": "Hoạt động",
+  "groupActivityTabNotifications": "Thông báo",
+  "groupActivityEmpty": "Chưa có hoạt động nào",
+  "groupNotificationsEmptyState": "Chưa có thông báo nào",
+  "groupActivityTransactionReacted": "đã thả cảm xúc vào một giao dịch",
+  "groupActivityTransactionCommented": "đã bình luận vào một giao dịch",
+  "groupActivityMemberJoined": "đã tham gia nhóm",
+  "groupActivityMemberLeft": "đã rời nhóm",
+  "groupActivityInvitationAccepted": "đã chấp nhận lời mời vào nhóm",
+  "groupActivityInvitationDeclined": "đã từ chối lời mời vào nhóm",
+  "groupNotificationTransactionPosted": "Có giao dịch mới",
+  "groupNotificationMemberAmountRequired": "Cần bạn nhập số tiền của mình",
+  "groupNotificationDebtSettled": "Một khoản nợ đã được tất toán",
+  "groupNotificationGroupInvite": "Bạn có lời mời vào nhóm mới",
   "groupTransactionCreator": "Người đăng",
   "groupTransactionPayers": "Người đã trả",
   "groupTransactionShares": "Phần phải chịu",

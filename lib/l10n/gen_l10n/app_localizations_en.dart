@@ -45,6 +45,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonRetry => 'Retry';
 
   @override
+  String get commonJustNow => 'Just now';
+
+  @override
+  String commonMinutesAgo(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String commonHoursAgo(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String commonDaysAgo(int count) {
+    return '${count}d ago';
+  }
+
+  @override
   String get commonAdd => 'Add';
 
   @override
@@ -3743,6 +3761,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupTransactionDetailTitle => 'Group transaction details';
+
+  @override
+  String get groupActivityCenterTitle => 'Group activity';
+
+  @override
+  String get groupActivityTabTimeline => 'Activity';
+
+  @override
+  String get groupActivityTabNotifications => 'Notifications';
+
+  @override
+  String get groupActivityEmpty => 'No activity yet';
+
+  @override
+  String get groupNotificationsEmptyState => 'No notifications yet';
+
+  @override
+  String get groupActivityTransactionReacted => 'reacted to a transaction';
+
+  @override
+  String get groupActivityTransactionCommented => 'commented on a transaction';
+
+  @override
+  String get groupActivityMemberJoined => 'joined the group';
+
+  @override
+  String get groupActivityMemberLeft => 'left the group';
+
+  @override
+  String get groupActivityInvitationAccepted => 'accepted a group invite';
+
+  @override
+  String get groupActivityInvitationDeclined => 'declined a group invite';
+
+  @override
+  String get groupNotificationTransactionPosted => 'New transaction posted';
+
+  @override
+  String get groupNotificationMemberAmountRequired =>
+      'Your share amount is needed';
+
+  @override
+  String get groupNotificationDebtSettled => 'A debt was settled';
+
+  @override
+  String get groupNotificationGroupInvite => 'You have a new group invite';
 
   @override
   String get groupTransactionCreator => 'Posted by';

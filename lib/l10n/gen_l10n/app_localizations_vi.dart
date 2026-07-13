@@ -46,6 +46,24 @@ class AppLocalizationsVi extends AppLocalizations {
   String get commonRetry => 'Thử lại';
 
   @override
+  String get commonJustNow => 'Vừa xong';
+
+  @override
+  String commonMinutesAgo(int count) {
+    return '$count phút trước';
+  }
+
+  @override
+  String commonHoursAgo(int count) {
+    return '$count giờ trước';
+  }
+
+  @override
+  String commonDaysAgo(int count) {
+    return '$count ngày trước';
+  }
+
+  @override
   String get commonAdd => 'Thêm';
 
   @override
@@ -3745,6 +3763,54 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupTransactionDetailTitle => 'Chi tiết giao dịch nhóm';
+
+  @override
+  String get groupActivityCenterTitle => 'Hoạt động nhóm';
+
+  @override
+  String get groupActivityTabTimeline => 'Hoạt động';
+
+  @override
+  String get groupActivityTabNotifications => 'Thông báo';
+
+  @override
+  String get groupActivityEmpty => 'Chưa có hoạt động nào';
+
+  @override
+  String get groupNotificationsEmptyState => 'Chưa có thông báo nào';
+
+  @override
+  String get groupActivityTransactionReacted =>
+      'đã thả cảm xúc vào một giao dịch';
+
+  @override
+  String get groupActivityTransactionCommented =>
+      'đã bình luận vào một giao dịch';
+
+  @override
+  String get groupActivityMemberJoined => 'đã tham gia nhóm';
+
+  @override
+  String get groupActivityMemberLeft => 'đã rời nhóm';
+
+  @override
+  String get groupActivityInvitationAccepted => 'đã chấp nhận lời mời vào nhóm';
+
+  @override
+  String get groupActivityInvitationDeclined => 'đã từ chối lời mời vào nhóm';
+
+  @override
+  String get groupNotificationTransactionPosted => 'Có giao dịch mới';
+
+  @override
+  String get groupNotificationMemberAmountRequired =>
+      'Cần bạn nhập số tiền của mình';
+
+  @override
+  String get groupNotificationDebtSettled => 'Một khoản nợ đã được tất toán';
+
+  @override
+  String get groupNotificationGroupInvite => 'Bạn có lời mời vào nhóm mới';
 
   @override
   String get groupTransactionCreator => 'Người đăng';

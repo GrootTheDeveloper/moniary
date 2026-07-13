@@ -11,8 +11,10 @@ import 'package:moniary/features/friends/presentation/screens/add_friend_screen.
 import 'package:moniary/features/friends/presentation/screens/friend_invite_accept_screen.dart';
 import 'package:moniary/features/friends/presentation/screens/friends_screen.dart';
 import 'package:moniary/features/groups/data/repositories/group_repository_impl.dart';
+import 'package:moniary/features/groups/domain/entities/group_community.dart';
 import 'package:moniary/features/groups/domain/entities/group_enums.dart';
 import 'package:moniary/features/groups/domain/entities/group_invite.dart';
+import 'package:moniary/features/groups/domain/entities/group_roadmap.dart';
 import 'package:moniary/features/groups/domain/entities/group_settlement.dart';
 import 'package:moniary/features/groups/domain/entities/group_transaction.dart';
 import 'package:moniary/features/groups/domain/entities/spending_group.dart';
@@ -698,6 +700,34 @@ class FakeGroupRepository implements GroupRepository {
     required String transactionId,
     required String content,
   }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<GroupReactionSummary>> fetchReactions(String transactionId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<GroupActivity>> fetchActivities(String groupId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<GroupNotification>> fetchNotifications() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> markNotificationRead(String notificationId) {
     throw UnimplementedError();
   }
 }

@@ -298,6 +298,46 @@ class GroupSupabaseDataSource {
     });
   }
 
+  Future<List<Map<String, dynamic>>> fetchReactions(
+    String transactionId,
+  ) async {
+    final rows = await client.rpc(
+      'list_group_transaction_reactions',
+      params: {'p_transaction_id': transactionId},
+    );
+    return _rows(rows);
+  }
+
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) {
+    return client.rpc(
+      'toggle_group_transaction_reaction',
+      params: {'p_transaction_id': transactionId, 'p_emoji': emoji},
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> fetchActivities(String groupId) async {
+    final rows = await client.rpc(
+      'list_group_activities',
+      params: {'p_group_id': groupId},
+    );
+    return _rows(rows);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchNotifications() async {
+    final rows = await client.rpc('list_group_notifications');
+    return _rows(rows);
+  }
+
+  Future<void> markNotificationRead(String notificationId) {
+    return client.rpc(
+      'mark_group_notification_read',
+      params: {'p_notification_id': notificationId},
+    );
+  }
+
   Future<String> uploadGroupAvatar({
     required String groupId,
     required String filePath,
