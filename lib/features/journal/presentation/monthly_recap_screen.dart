@@ -197,8 +197,8 @@ class _StoryHeader extends StatelessWidget {
               ),
               IconButton(
                 onPressed: onClose,
-                tooltip: context.l10n.commonClose,
-                icon: const Icon(Icons.close_rounded),
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                icon: const Icon(Icons.arrow_back_ios_new_rounded),
                 color: _storyMuted,
                 iconSize: 18,
                 visualDensity: VisualDensity.compact,

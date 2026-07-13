@@ -65,16 +65,26 @@ class _StreakContent extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(30, 18, 30, 48),
             children: [
-              Text(
-                context.l10n.journalStreakBreadcrumb,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.moniaryTypography.displaySmall.copyWith(
-                  color: context.moniaryColors.textPrimary,
-                  fontSize: 19,
-                  height: 1.1,
-                  letterSpacing: 0,
-                ),
+              Row(
+                children: [
+                  _StreakBackButton(
+                    onTap: () => Navigator.of(context).maybePop(),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      context.l10n.journalStreakBreadcrumb,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.moniaryTypography.displaySmall.copyWith(
+                        color: context.moniaryColors.textPrimary,
+                        fontSize: 19,
+                        height: 1.1,
+                        letterSpacing: 0,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 18),
               _StreakBrandStrip(days: streak.currentDays),
@@ -101,6 +111,41 @@ class _StreakContent extends StatelessWidget {
     final locale = Localizations.localeOf(context).toString();
     if (locale.startsWith('vi')) return 'Tháng ${date.month}, ${date.year}';
     return DateFormat.yMMMM(locale).format(date);
+  }
+}
+
+class _StreakBackButton extends StatelessWidget {
+  const _StreakBackButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Tooltip(
+      message: MaterialLocalizations.of(context).backButtonTooltip,
+      child: Material(
+        color: colors.surface.withValues(alpha: 0.62),
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: colors.outline),
+            ),
+            child: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: colors.textPrimary,
+              size: 19,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

@@ -225,8 +225,8 @@ class _ExportTopBar extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: IconButton(
               onPressed: busy ? null : onClose,
-              tooltip: context.l10n.commonClose,
-              icon: const Icon(Icons.close_rounded),
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              icon: const Icon(Icons.arrow_back_ios_new_rounded),
               color: _posterSurface,
               iconSize: 22,
             ),

@@ -202,10 +202,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
                     child: Row(
                       children: [
                         _CameraIconButton(
-                          icon: Icons.close_rounded,
+                          icon: Icons.arrow_back_ios_new_rounded,
                           tooltip: MaterialLocalizations.of(
                             context,
-                          ).closeButtonTooltip,
+                          ).backButtonTooltip,
                           onTap: () => context.pop(),
                         ),
                         Expanded(
