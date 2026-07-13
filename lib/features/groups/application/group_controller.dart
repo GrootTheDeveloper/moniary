@@ -44,6 +44,13 @@ final groupBudgetProvider =
       return ref.watch(groupRepositoryProvider).fetchGroupBudget(groupId);
     });
 
+final groupNotificationPreferenceProvider =
+    FutureProvider.family<GroupNotificationPreference, String>((ref, groupId) {
+      return ref
+          .watch(groupRepositoryProvider)
+          .fetchNotificationPreference(groupId);
+    });
+
 final groupInvitePreviewProvider = FutureProvider.autoDispose
     .family<GroupInvitePreview, String>((ref, token) {
       return ref.watch(groupRepositoryProvider).fetchInvitePreview(token);
@@ -284,6 +291,17 @@ class GroupActionController extends AsyncNotifier<void> {
           );
       ref.invalidate(groupBudgetProvider(groupId));
       _invalidateGroup(groupId);
+    });
+  }
+
+  Future<void> upsertNotificationPreference(
+    GroupNotificationPreference preference,
+  ) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .upsertNotificationPreference(preference);
+      ref.invalidate(groupNotificationPreferenceProvider(preference.groupId));
     });
   }
 

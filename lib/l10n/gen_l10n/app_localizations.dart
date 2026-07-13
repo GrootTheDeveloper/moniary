@@ -6878,6 +6878,78 @@ abstract class AppLocalizations {
   /// **'Đã cập nhật ngân sách'**
   String get groupBudgetSaved;
 
+  /// No description provided for @groupNotificationPrefsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cài đặt thông báo'**
+  String get groupNotificationPrefsTitle;
+
+  /// No description provided for @groupNotificationPrefsMuteAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tắt tất cả'**
+  String get groupNotificationPrefsMuteAll;
+
+  /// No description provided for @groupNotificationPrefsMuteAllHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tắt mọi thông báo từ nhóm này'**
+  String get groupNotificationPrefsMuteAllHelp;
+
+  /// No description provided for @groupNotificationPrefsTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch mới'**
+  String get groupNotificationPrefsTransactions;
+
+  /// No description provided for @groupNotificationPrefsDebts.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nợ và tất toán'**
+  String get groupNotificationPrefsDebts;
+
+  /// No description provided for @groupNotificationPrefsInvites.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời'**
+  String get groupNotificationPrefsInvites;
+
+  /// No description provided for @groupNotificationPrefsMentions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhắc đến'**
+  String get groupNotificationPrefsMentions;
+
+  /// No description provided for @groupNotificationPrefsQuietHours.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giờ yên lặng'**
+  String get groupNotificationPrefsQuietHours;
+
+  /// No description provided for @groupNotificationPrefsQuietHoursHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tắt thông báo trong khoảng giờ này'**
+  String get groupNotificationPrefsQuietHoursHelp;
+
+  /// No description provided for @groupNotificationPrefsFrom.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ'**
+  String get groupNotificationPrefsFrom;
+
+  /// No description provided for @groupNotificationPrefsTo.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đến'**
+  String get groupNotificationPrefsTo;
+
+  /// No description provided for @groupNotificationPrefsSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu cài đặt thông báo'**
+  String get groupNotificationPrefsSaved;
+
   /// No description provided for @groupActivityTransactionReacted.
   ///
   /// In vi, this message translates to:

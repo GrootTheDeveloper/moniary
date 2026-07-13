@@ -3808,6 +3808,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupBudgetSaved => 'Budget updated';
 
   @override
+  String get groupNotificationPrefsTitle => 'Notification settings';
+
+  @override
+  String get groupNotificationPrefsMuteAll => 'Mute all';
+
+  @override
+  String get groupNotificationPrefsMuteAllHelp =>
+      'Turn off every notification from this group';
+
+  @override
+  String get groupNotificationPrefsTransactions => 'New transactions';
+
+  @override
+  String get groupNotificationPrefsDebts => 'Debts and settlements';
+
+  @override
+  String get groupNotificationPrefsInvites => 'Invitations';
+
+  @override
+  String get groupNotificationPrefsMentions => 'Mentions';
+
+  @override
+  String get groupNotificationPrefsQuietHours => 'Quiet hours';
+
+  @override
+  String get groupNotificationPrefsQuietHoursHelp =>
+      'Silence notifications during these hours';
+
+  @override
+  String get groupNotificationPrefsFrom => 'From';
+
+  @override
+  String get groupNotificationPrefsTo => 'To';
+
+  @override
+  String get groupNotificationPrefsSaved => 'Notification settings saved';
+
+  @override
   String get groupActivityTransactionReacted => 'reacted to a transaction';
 
   @override

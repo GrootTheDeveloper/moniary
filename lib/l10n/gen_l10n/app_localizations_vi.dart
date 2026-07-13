@@ -3810,6 +3810,44 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupBudgetSaved => 'Đã cập nhật ngân sách';
 
   @override
+  String get groupNotificationPrefsTitle => 'Cài đặt thông báo';
+
+  @override
+  String get groupNotificationPrefsMuteAll => 'Tắt tất cả';
+
+  @override
+  String get groupNotificationPrefsMuteAllHelp =>
+      'Tắt mọi thông báo từ nhóm này';
+
+  @override
+  String get groupNotificationPrefsTransactions => 'Giao dịch mới';
+
+  @override
+  String get groupNotificationPrefsDebts => 'Nợ và tất toán';
+
+  @override
+  String get groupNotificationPrefsInvites => 'Lời mời';
+
+  @override
+  String get groupNotificationPrefsMentions => 'Nhắc đến';
+
+  @override
+  String get groupNotificationPrefsQuietHours => 'Giờ yên lặng';
+
+  @override
+  String get groupNotificationPrefsQuietHoursHelp =>
+      'Tắt thông báo trong khoảng giờ này';
+
+  @override
+  String get groupNotificationPrefsFrom => 'Từ';
+
+  @override
+  String get groupNotificationPrefsTo => 'Đến';
+
+  @override
+  String get groupNotificationPrefsSaved => 'Đã lưu cài đặt thông báo';
+
+  @override
   String get groupActivityTransactionReacted =>
       'đã thả cảm xúc vào một giao dịch';
 

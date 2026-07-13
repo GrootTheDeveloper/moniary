@@ -548,6 +548,72 @@ class GroupRepositoryImpl implements GroupRepository {
     );
   }
 
+  @override
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  ) {
+    if (_useMockData) {
+      return _mock
+          .fetchNotificationPreference(groupId)
+          .then((row) => _mapNotificationPreference(groupId, row));
+    }
+    return _guard('fetch group notification preference', () async {
+      final row = await _remote.fetchNotificationPreference(groupId);
+      return _mapNotificationPreference(groupId, row);
+    });
+  }
+
+  @override
+  Future<void> upsertNotificationPreference(
+    GroupNotificationPreference preference,
+  ) {
+    if (_useMockData) {
+      return _mock.upsertNotificationPreference(
+        groupId: preference.groupId,
+        muteAll: preference.muteAll,
+        transactionNotifications: preference.transactionNotifications,
+        debtNotifications: preference.debtNotifications,
+        inviteNotifications: preference.inviteNotifications,
+        mentionNotifications: preference.mentionNotifications,
+        quietHoursStart: preference.quietHoursStart,
+        quietHoursEnd: preference.quietHoursEnd,
+      );
+    }
+    return _guard(
+      'upsert group notification preference',
+      () => _remote.upsertNotificationPreference(
+        groupId: preference.groupId,
+        muteAll: preference.muteAll,
+        transactionNotifications: preference.transactionNotifications,
+        debtNotifications: preference.debtNotifications,
+        inviteNotifications: preference.inviteNotifications,
+        mentionNotifications: preference.mentionNotifications,
+        quietHoursStart: preference.quietHoursStart,
+        quietHoursEnd: preference.quietHoursEnd,
+      ),
+    );
+  }
+
+  GroupNotificationPreference _mapNotificationPreference(
+    String groupId,
+    Map<String, dynamic>? row,
+  ) {
+    if (row == null) {
+      return GroupNotificationPreference.defaults(groupId);
+    }
+    return GroupNotificationPreference(
+      groupId: groupId,
+      muteAll: row['mute_all'] as bool? ?? false,
+      transactionNotifications:
+          row['transaction_notifications'] as bool? ?? true,
+      debtNotifications: row['debt_notifications'] as bool? ?? true,
+      inviteNotifications: row['invite_notifications'] as bool? ?? true,
+      mentionNotifications: row['mention_notifications'] as bool? ?? true,
+      quietHoursStart: (row['quiet_hours_start'] as num?)?.toInt(),
+      quietHoursEnd: (row['quiet_hours_end'] as num?)?.toInt(),
+    );
+  }
+
   Future<T> _guard<T>(String operation, Future<T> Function() action) async {
     try {
       return await action();

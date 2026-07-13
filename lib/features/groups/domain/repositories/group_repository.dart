@@ -80,4 +80,12 @@ abstract interface class GroupRepository {
     required int monthlyLimit,
     required int warningThresholdPercent,
   });
+
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  );
+
+  Future<void> upsertNotificationPreference(
+    GroupNotificationPreference preference,
+  );
 }

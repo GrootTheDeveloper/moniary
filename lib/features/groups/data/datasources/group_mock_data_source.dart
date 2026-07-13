@@ -25,6 +25,7 @@ class GroupMockDataSource {
   static final Map<String, _MockGroupInviteLink> _inviteLinks = {};
   static final Map<String, _MockDirectGroupInvite> _directInvites = {};
   static final Map<String, Map<String, dynamic>> _budgets = {};
+  static final Map<String, Map<String, dynamic>> _notificationPrefs = {};
   static var _sequence = 0;
 
   static void resetForTesting() {
@@ -35,6 +36,7 @@ class GroupMockDataSource {
     _inviteLinks.clear();
     _directInvites.clear();
     _budgets.clear();
+    _notificationPrefs.clear();
     _sequence = 0;
   }
 
@@ -1119,6 +1121,37 @@ class GroupMockDataSource {
       'group_id': groupId,
       'monthly_limit': monthlyLimit,
       'warning_threshold_percent': warningThresholdPercent,
+    };
+  }
+
+  Future<Map<String, dynamic>?> fetchNotificationPreference(
+    String groupId,
+  ) async {
+    _requireActiveMember(groupId);
+    return _notificationPrefs['$groupId:$currentUserId'];
+  }
+
+  Future<void> upsertNotificationPreference({
+    required String groupId,
+    required bool muteAll,
+    required bool transactionNotifications,
+    required bool debtNotifications,
+    required bool inviteNotifications,
+    required bool mentionNotifications,
+    int? quietHoursStart,
+    int? quietHoursEnd,
+  }) async {
+    _requireActiveMember(groupId);
+    _notificationPrefs['$groupId:$currentUserId'] = {
+      'group_id': groupId,
+      'user_id': currentUserId,
+      'mute_all': muteAll,
+      'transaction_notifications': transactionNotifications,
+      'debt_notifications': debtNotifications,
+      'invite_notifications': inviteNotifications,
+      'mention_notifications': mentionNotifications,
+      'quiet_hours_start': quietHoursStart,
+      'quiet_hours_end': quietHoursEnd,
     };
   }
 

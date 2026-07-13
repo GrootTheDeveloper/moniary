@@ -357,6 +357,52 @@ class GroupSupabaseDataSource {
     );
   }
 
+  Future<Map<String, dynamic>?> fetchNotificationPreference(
+    String groupId,
+  ) async {
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) {
+      throw const AuthException('AUTH_REQUIRED');
+    }
+    final rows = await client
+        .from('group_notification_preferences')
+        .select()
+        .eq('group_id', groupId)
+        .eq('user_id', userId);
+    if (rows.isEmpty) return null;
+    return rows.first as Map<String, dynamic>?;
+  }
+
+  Future<void> upsertNotificationPreference({
+    required String groupId,
+    required bool muteAll,
+    required bool transactionNotifications,
+    required bool debtNotifications,
+    required bool inviteNotifications,
+    required bool mentionNotifications,
+    int? quietHoursStart,
+    int? quietHoursEnd,
+  }) {
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) {
+      throw const AuthException('AUTH_REQUIRED');
+    }
+    return client.from('group_notification_preferences').upsert(
+      {
+        'group_id': groupId,
+        'user_id': userId,
+        'mute_all': muteAll,
+        'transaction_notifications': transactionNotifications,
+        'debt_notifications': debtNotifications,
+        'invite_notifications': inviteNotifications,
+        'mention_notifications': mentionNotifications,
+        'quiet_hours_start': quietHoursStart,
+        'quiet_hours_end': quietHoursEnd,
+      },
+      onConflict: 'group_id,user_id',
+    );
+  }
+
   Future<void> _uploadCompressed({
     required String path,
     required String filePath,

@@ -702,4 +702,18 @@ class FakeGroupRepository implements GroupRepository {
   }) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  ) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> upsertNotificationPreference(
+    GroupNotificationPreference preference,
+  ) {
+    throw UnimplementedError();
+  }
 }
