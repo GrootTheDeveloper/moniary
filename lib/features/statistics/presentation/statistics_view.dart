@@ -376,7 +376,7 @@ class _StatsHero extends ConsumerWidget {
         ),
         const SizedBox(height: 7),
         ObscurableAmountText(
-          amountText: _money(context, ref, expense),
+          amountText: _money(ref, expense),
           style: context.moniaryTypography.displayLarge.copyWith(
             color: colors.textPrimary,
             fontSize: 43,
@@ -855,7 +855,7 @@ class _CategoryAmountRow extends ConsumerWidget {
                   ),
                   const SizedBox(width: 12),
                   ObscurableAmountText(
-                    amountText: _money(context, ref, category.amount),
+                    amountText: _money(ref, category.amount),
                     style: TextStyle(
                       color: colors.textPrimary,
                       fontFamily: 'JetBrains Mono',
@@ -996,13 +996,8 @@ class _WeeklySummary {
   }
 }
 
-String _money(BuildContext context, WidgetRef ref, double amount) {
-  final formatter = NumberFormat.currency(
-    locale: Localizations.localeOf(context).toString(),
-    symbol: '',
-    decimalDigits: 0,
-  );
-  return '${formatter.format(amount).trim()}${ref.currencySymbol}';
+String _money(WidgetRef ref, double amount) {
+  return ref.formatAmount(amount);
 }
 
 String _compactAmount(BuildContext context, double amount) {

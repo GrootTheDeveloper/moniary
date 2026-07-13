@@ -409,18 +409,22 @@ class _SeamlessHeader extends ConsumerWidget {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _IncomeExpensePill(
-                    label: context.l10n.calendarIncome,
-                    amount: monthData.totalIncome,
-                    color: colors.success,
-                    icon: Icons.south_west_outlined,
+                  Expanded(
+                    child: _IncomeExpensePill(
+                      label: context.l10n.calendarIncome,
+                      amount: monthData.totalIncome,
+                      color: colors.success,
+                      icon: Icons.south_west_outlined,
+                    ),
                   ),
                   const SizedBox(width: 10),
-                  _IncomeExpensePill(
-                    label: context.l10n.calendarExpense,
-                    amount: monthData.totalExpense,
-                    color: colors.danger,
-                    icon: Icons.north_east_outlined,
+                  Expanded(
+                    child: _IncomeExpensePill(
+                      label: context.l10n.calendarExpense,
+                      amount: monthData.totalExpense,
+                      color: colors.danger,
+                      icon: Icons.north_east_outlined,
+                    ),
                   ),
                 ],
               );
@@ -689,18 +693,22 @@ class _IncomeExpensePill extends ConsumerWidget {
         children: [
           Icon(icon, color: color, size: 14),
           const SizedBox(width: 6),
-          ObscurableAmountText(
-            prefixText: '$label: ',
-            amountText: _formatMoney(
-              context,
-              ref,
-              amount,
-              isNegative: false,
-            ).replaceAll('+', ''),
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'JetBrains Mono',
+          Flexible(
+            child: ObscurableAmountText(
+              prefixText: '$label: ',
+              amountText: _formatMoney(
+                context,
+                ref,
+                amount,
+                isNegative: false,
+              ).replaceAll('+', ''),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'JetBrains Mono',
+              ),
             ),
           ),
         ],
@@ -1791,14 +1799,8 @@ String _formatMoney(
   double amount, {
   required bool isNegative,
 }) {
-  final formatter = NumberFormat.currency(
-    locale: Localizations.localeOf(context).toString(),
-    symbol: '',
-    decimalDigits: 0,
-  );
   final sign = isNegative ? '-' : '+';
-  final formatted = formatter.format(amount).trim();
-  return '$sign$formatted${ref.currencySymbol}';
+  return '$sign${ref.formatAmount(amount.abs())}';
 }
 
 class _TodayGrid extends StatelessWidget {
