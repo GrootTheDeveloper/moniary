@@ -16,6 +16,7 @@ import '../../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../../transactions/presentation/detail/day_detail_screen.dart';
 import '../../../transactions/presentation/detail/transaction_detail_screen.dart';
 import '../../../transactions/presentation/detail/transaction_route_args.dart';
+import '../../../transactions/presentation/utils/transaction_image_source.dart';
 import '../../../friends/presentation/screens/friends_screen.dart';
 import '../../../wallets/domain/models/wallet.dart';
 import '../../../wallets/application/wallets_controller.dart';
@@ -1241,14 +1242,14 @@ class _CalendarPhotoBlock extends StatelessWidget {
             top: 4,
             left: -4,
             child: _PhotoFrame(
-              imagePath: _calendarImagePathFor(transactions[1]),
+              transaction: transactions[1],
               size: size - 2,
               radius: radius,
               borderColor: accentColor.withValues(alpha: 0.52),
             ),
           ),
         _PhotoFrame(
-          imagePath: _calendarImagePathFor(transactions.first),
+          transaction: transactions.first,
           size: size,
           radius: radius,
           borderColor: day.isToday ? colors.primary : accentColor,
@@ -1333,7 +1334,7 @@ class _CalendarPhotoBlock extends StatelessWidget {
 
 class _PhotoFrame extends StatelessWidget {
   const _PhotoFrame({
-    required this.imagePath,
+    required this.transaction,
     required this.size,
     required this.radius,
     required this.borderColor,
@@ -1341,7 +1342,7 @@ class _PhotoFrame extends StatelessWidget {
     this.child,
   });
 
-  final String? imagePath;
+  final TransactionEntry transaction;
   final double size;
   final BorderRadius radius;
   final Color borderColor;
@@ -1370,20 +1371,47 @@ class _PhotoFrame extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             SupabaseImage(
-              imagePath: imagePath,
+              imagePath: transactionImagePathForDisplay(transaction),
               width: size,
               height: size,
               borderRadius: radius,
               fallbackIcon: Icons.receipt_long_outlined,
-              fallbackBuilder: (context) => _CalendarReceiptFallback(
+              fallbackBuilder: (context) => _CalendarAssetFallback(
+                assetPath: transactionFallbackAssetPath(transaction),
                 size: size,
-                accentColor: borderColor,
+                fallback: _CalendarReceiptFallback(
+                  size: size,
+                  accentColor: borderColor,
+                ),
               ),
             ),
             ?child,
           ],
         ),
       ),
+    );
+  }
+}
+
+class _CalendarAssetFallback extends StatelessWidget {
+  const _CalendarAssetFallback({
+    required this.assetPath,
+    required this.size,
+    required this.fallback,
+  });
+
+  final String assetPath;
+  final double size;
+  final Widget fallback;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      assetPath,
+      width: size,
+      height: size,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) => fallback,
     );
   }
 }
@@ -1566,23 +1594,6 @@ Color _readableTextColor(Color color) {
   return color.computeLuminance() > 0.42
       ? AppTheme.ink
       : AppTheme.surfaceRaised;
-}
-
-String _calendarImagePathFor(TransactionEntry transaction) {
-  final imagePath = transaction.imagePath?.trim();
-  if (imagePath != null && imagePath.isNotEmpty) {
-    return imagePath;
-  }
-
-  return switch (transaction.categoryId) {
-    'mock-cat-food' => 'asset://assets/demo_transactions/lunch.png',
-    'mock-cat-transport' => 'asset://assets/demo_transactions/transport.png',
-    'mock-cat-shopping' => 'asset://assets/demo_transactions/shopping.png',
-    'mock-cat-salary' => 'asset://assets/demo_transactions/salary.png',
-    _ when transaction.isIncome =>
-      'asset://assets/demo_transactions/salary.png',
-    _ => 'asset://assets/demo_transactions/market.png',
-  };
 }
 
 Color _controlFill(MoniaryColors colors) {

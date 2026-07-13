@@ -11,6 +11,7 @@ import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../transactions/application/queries/transaction_queries.dart';
 import '../../../transactions/domain/models/transaction_entry.dart';
+import '../../../transactions/presentation/utils/transaction_image_source.dart';
 
 class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
   TransactionSearchDelegate({
@@ -528,9 +529,8 @@ class _TransactionPhotoThumb extends StatelessWidget {
       transaction.categoryColor ?? transaction.walletColor,
       fallback: transaction.isIncome ? colors.success : AppTheme.taupe,
     );
-    final hasImage =
-        transaction.imagePath != null &&
-        transaction.imagePath!.trim().isNotEmpty;
+    final imagePath = transactionImagePathForDisplay(transaction);
+    final fallbackAssetPath = transactionFallbackAssetPath(transaction);
 
     return SizedBox(
       width: 42,
@@ -553,25 +553,26 @@ class _TransactionPhotoThumb extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(9),
-              child: hasImage
-                  ? SupabaseImage(
-                      imagePath: transaction.imagePath,
-                      width: 42,
-                      height: 42,
-                      fit: BoxFit.cover,
-                      fallbackIcon: Icons.receipt_long_outlined,
-                    )
-                  : Center(
-                      child: Icon(
-                        transaction.isIncome
-                            ? Icons.south_west_rounded
-                            : Icons.north_east_rounded,
-                        size: 17,
-                        color: _readableTextColor(
-                          accent,
-                        ).withValues(alpha: 0.84),
-                      ),
+              child: SupabaseImage(
+                imagePath: imagePath,
+                width: 42,
+                height: 42,
+                fit: BoxFit.cover,
+                fallbackIcon: Icons.receipt_long_outlined,
+                fallbackBuilder: (context) => Image.asset(
+                  fallbackAssetPath,
+                  width: 42,
+                  height: 42,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Center(
+                    child: Icon(
+                      Icons.receipt_long_outlined,
+                      size: 17,
+                      color: _readableTextColor(accent).withValues(alpha: 0.84),
                     ),
+                  ),
+                ),
+              ),
             ),
           ),
           if (transaction.isImportant)
