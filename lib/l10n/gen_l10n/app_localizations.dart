@@ -1670,6 +1670,18 @@ abstract class AppLocalizations {
   /// **'Nhóm chi tiêu'**
   String get groupTitle;
 
+  /// No description provided for @groupListTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhóm'**
+  String get groupListTitle;
+
+  /// No description provided for @groupListSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhóm của bạn · {count}'**
+  String groupListSection(int count);
+
   /// No description provided for @groupEmpty.
   ///
   /// In vi, this message translates to:
@@ -1711,6 +1723,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'{count} thành viên'**
   String groupMemberCount(int count);
+
+  /// No description provided for @groupTransactionCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} khoản'**
+  String groupTransactionCount(int count);
 
   /// No description provided for @groupLoadError.
   ///
@@ -6164,6 +6182,12 @@ abstract class AppLocalizations {
   /// **'Đã cân bằng'**
   String get groupBalanceSettled;
 
+  /// No description provided for @groupBalanceSettledShort.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã cân'**
+  String get groupBalanceSettledShort;
+
   /// No description provided for @groupBalanceOwes.
   ///
   /// In vi, this message translates to:
@@ -6175,6 +6199,24 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bạn sẽ nhận {amount}'**
   String groupBalanceReceives(String amount);
+
+  /// No description provided for @groupBalanceReceiveShort.
+  ///
+  /// In vi, this message translates to:
+  /// **'Được nhận'**
+  String get groupBalanceReceiveShort;
+
+  /// No description provided for @groupBalancePayShort.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần trả'**
+  String get groupBalancePayShort;
+
+  /// No description provided for @groupSettleAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất toán'**
+  String get groupSettleAction;
 
   /// No description provided for @groupUnresolvedBadge.
   ///

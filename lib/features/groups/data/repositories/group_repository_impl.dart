@@ -80,6 +80,17 @@ class GroupRepositoryImpl implements GroupRepository {
             memberCount: members
                 .where((item) => item['status'] == 'active')
                 .length,
+            memberAvatarPaths: members
+                .where((item) => item['status'] == 'active')
+                .map((item) {
+                  final profile = item['profile'] as Map<String, dynamic>?;
+                  return profile?['avatar_url'] as String?;
+                })
+                .take(5)
+                .toList(growable: false),
+            transactionCount: transactions
+                .where((item) => item['split_status'] == 'posted')
+                .length,
             totalSpent: transactions
                 .where((item) => item['split_status'] == 'posted')
                 .fold<int>(

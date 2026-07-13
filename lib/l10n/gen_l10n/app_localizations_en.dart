@@ -853,6 +853,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupTitle => 'Group expenses';
 
   @override
+  String get groupListTitle => 'Groups';
+
+  @override
+  String groupListSection(int count) {
+    return 'Your groups · $count';
+  }
+
+  @override
   String get groupEmpty => 'No expense groups yet';
 
   @override
@@ -874,6 +882,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String groupMemberCount(int count) {
     return '$count members';
+  }
+
+  @override
+  String groupTransactionCount(int count) {
+    return '$count expenses';
   }
 
   @override
@@ -3412,6 +3425,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupBalanceSettled => 'Settled';
 
   @override
+  String get groupBalanceSettledShort => 'Settled';
+
+  @override
   String groupBalanceOwes(String amount) {
     return 'You need to pay $amount';
   }
@@ -3420,6 +3436,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String groupBalanceReceives(String amount) {
     return 'You will receive $amount';
   }
+
+  @override
+  String get groupBalanceReceiveShort => 'To receive';
+
+  @override
+  String get groupBalancePayShort => 'To pay';
+
+  @override
+  String get groupSettleAction => 'Settle';
 
   @override
   String get groupUnresolvedBadge => 'Unresolved';

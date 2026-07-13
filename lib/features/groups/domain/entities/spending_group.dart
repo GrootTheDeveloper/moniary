@@ -12,6 +12,8 @@ class SpendingGroup {
     this.description,
     this.type,
     this.memberCount = 0,
+    this.memberAvatarPaths = const [],
+    this.transactionCount = 0,
     this.totalSpent = 0,
     this.currentUserBalance = 0,
     this.hasUnresolvedSettlements = false,
@@ -27,6 +29,8 @@ class SpendingGroup {
   final DateTime createdAt;
   final DateTime updatedAt;
   final int memberCount;
+  final List<String?> memberAvatarPaths;
+  final int transactionCount;
   final int totalSpent;
   final int currentUserBalance;
   final bool hasUnresolvedSettlements;
@@ -34,6 +38,8 @@ class SpendingGroup {
   SpendingGroup copyWith({
     String? avatarPath,
     int? memberCount,
+    List<String?>? memberAvatarPaths,
+    int? transactionCount,
     int? totalSpent,
     int? currentUserBalance,
     bool? hasUnresolvedSettlements,
@@ -49,6 +55,8 @@ class SpendingGroup {
       createdAt: createdAt,
       updatedAt: updatedAt,
       memberCount: memberCount ?? this.memberCount,
+      memberAvatarPaths: memberAvatarPaths ?? this.memberAvatarPaths,
+      transactionCount: transactionCount ?? this.transactionCount,
       totalSpent: totalSpent ?? this.totalSpent,
       currentUserBalance: currentUserBalance ?? this.currentUserBalance,
       hasUnresolvedSettlements:

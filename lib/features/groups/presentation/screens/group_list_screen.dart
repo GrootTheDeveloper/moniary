@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -6,9 +7,9 @@ import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/currency_formatter.dart';
-import '../../domain/entities/spending_group.dart';
+import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
-import '../widgets/group_card.dart';
+import '../../domain/entities/spending_group.dart';
 import 'create_group_screen.dart';
 import 'group_detail_screen.dart';
 import 'group_invitations_screen.dart';
@@ -22,59 +23,32 @@ class GroupListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final groupsAsync = ref.watch(groupsControllerProvider);
     final pendingInviteCount = ref.watch(pendingGroupInviteCountProvider);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.groupTitle),
-        actions: [
-          _InviteInboxButton(count: pendingInviteCount),
-          IconButton(
-            onPressed: () => _openCreateGroup(context, ref),
-            tooltip: context.l10n.groupCreateNew,
-            icon: const Icon(Icons.group_add_outlined),
-          ),
-          const SizedBox(width: 8),
-        ],
+    final colors = context.moniaryColors;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: colors.backgroundSoft,
+        systemNavigationBarDividerColor: Colors.transparent,
       ),
-      body: groupsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) {
-          AppLogger.error('Failed to load groups', error, stackTrace);
-          return _ErrorState(
-            onRetry: () =>
-                ref.read(groupsControllerProvider.notifier).refresh(),
-          );
-        },
-        data: (groups) {
-          if (groups.isEmpty) {
-            return _EmptyState(onCreate: () => _openCreateGroup(context, ref));
-          }
-          return RefreshIndicator(
+      child: Scaffold(
+        backgroundColor: colors.backgroundSoft,
+        body: groupsAsync.when(
+          loading: () => const _GroupListLoading(),
+          error: (error, stackTrace) {
+            AppLogger.error('Failed to load groups', error, stackTrace);
+            return _GroupListError(
+              onRetry: () =>
+                  ref.read(groupsControllerProvider.notifier).refresh(),
+            );
+          },
+          data: (groups) => _GroupListContent(
+            groups: groups,
+            pendingInviteCount: pendingInviteCount,
+            onCreate: () => _openCreateGroup(context, ref),
             onRefresh: () =>
                 ref.read(groupsControllerProvider.notifier).refresh(),
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
-              children: [
-                _GroupOverviewCard(groups: groups),
-                const SizedBox(height: 20),
-                Text(
-                  '${context.l10n.groupTitle.toUpperCase()} · ${groups.length}',
-                  style: context.moniaryTypography.metadataStrong,
-                ),
-                const SizedBox(height: 12),
-                for (final group in groups) ...[
-                  GroupCard(
-                    group: group,
-                    onTap: () => context.push(
-                      GroupDetailScreen.routePath,
-                      extra: group.id,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-              ],
-            ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -87,109 +61,277 @@ class GroupListScreen extends ConsumerWidget {
   }
 }
 
-class _InviteInboxButton extends StatelessWidget {
-  const _InviteInboxButton({required this.count});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: () => context.push(GroupInvitationsScreen.routePath),
-      tooltip: context.l10n.groupInvitationsTitle,
-      icon: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          const Icon(Icons.mark_email_unread_outlined),
-          if (count > 0)
-            Positioned(
-              top: -7,
-              right: -10,
-              child: Container(
-                constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  color: context.moniaryColors.danger,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  count > 99 ? '99+' : '$count',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: context.moniaryColors.surface,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _GroupOverviewCard extends StatelessWidget {
-  const _GroupOverviewCard({required this.groups});
+class _GroupListContent extends StatelessWidget {
+  const _GroupListContent({
+    required this.groups,
+    required this.pendingInviteCount,
+    required this.onCreate,
+    required this.onRefresh,
+  });
 
   final List<SpendingGroup> groups;
+  final int pendingInviteCount;
+  final VoidCallback onCreate;
+  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.moniaryColors;
-    final typography = context.moniaryTypography;
-    final toPay = groups
-        .where((group) => group.currentUserBalance > 0)
-        .fold<int>(0, (sum, group) => sum + group.currentUserBalance);
-    final toReceive = groups
-        .where((group) => group.currentUserBalance < 0)
-        .fold<int>(0, (sum, group) => sum + group.currentUserBalance.abs());
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: colors.outline),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              context.l10n.appName.toUpperCase(),
-              style: typography.metadataStrong,
-            ),
-            const SizedBox(height: 8),
-            Text(context.l10n.groupTitle, style: typography.displayMedium),
-            const SizedBox(height: 18),
-            Row(
-              children: [
-                Expanded(
-                  child: _OverviewMetric(
-                    label: context.l10n.groupOthersNeedPayYou,
-                    value: '+${formatVnd(toReceive)}',
-                    color: colors.success,
+    return SafeArea(
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 393),
+          child: RefreshIndicator(
+            color: context.moniaryColors.primary,
+            backgroundColor: context.moniaryColors.backgroundSoft,
+            onRefresh: onRefresh,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(30, 18, 30, 0),
+                    child: _GroupsHeader(
+                      pendingInviteCount: pendingInviteCount,
+                      onCreate: onCreate,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _OverviewMetric(
-                    label: context.l10n.groupYouNeedPay,
-                    value: '-${formatVnd(toPay)}',
-                    color: colors.danger,
+                if (groups.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(30, 28, 30, 120),
+                      child: _GroupEmptyState(onCreate: onCreate),
+                    ),
+                  )
+                else ...[
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(30, 20, 30, 18),
+                      child: _GroupBalanceOverview(groups: groups),
+                    ),
                   ),
-                ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(30, 0, 30, 12),
+                      child: Text(
+                        context.l10n
+                            .groupListSection(groups.length)
+                            .toUpperCase(),
+                        style: context.moniaryTypography.metadataStrong
+                            .copyWith(
+                              color: context.moniaryColors.textDim,
+                              fontSize: 9,
+                              letterSpacing: 2.8,
+                            ),
+                      ),
+                    ),
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(30, 0, 30, 132),
+                    sliver: SliverList.separated(
+                      itemCount: groups.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) => _ReferenceGroupCard(
+                        group: groups[index],
+                        index: index,
+                        onTap: () => context.push(
+                          GroupDetailScreen.routePath,
+                          extra: groups[index].id,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _OverviewMetric extends StatelessWidget {
-  const _OverviewMetric({
+class _GroupsHeader extends StatelessWidget {
+  const _GroupsHeader({
+    required this.pendingInviteCount,
+    required this.onCreate,
+  });
+
+  final int pendingInviteCount;
+  final VoidCallback onCreate;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'MONIARY',
+                style: context.moniaryTypography.metadataStrong.copyWith(
+                  color: colors.primary,
+                  fontSize: 9,
+                  letterSpacing: 3.2,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                context.l10n.groupListTitle,
+                style: context.moniaryTypography.displaySmall.copyWith(
+                  color: colors.textPrimary,
+                  fontSize: 24,
+                  height: 1,
+                  letterSpacing: 0,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (pendingInviteCount > 0) ...[
+          _HeaderIconButton(
+            label: context.l10n.groupInvitationsTitle,
+            icon: Icons.mark_email_unread_outlined,
+            badge: pendingInviteCount,
+            onTap: () => context.push(GroupInvitationsScreen.routePath),
+            foreground: colors.textPrimary,
+            background: colors.surface.withValues(alpha: 0.58),
+            border: colors.outline.withValues(alpha: 0.8),
+          ),
+          const SizedBox(width: 9),
+        ],
+        _HeaderIconButton(
+          label: context.l10n.groupCreateNew,
+          icon: Icons.add_rounded,
+          onTap: onCreate,
+          foreground: colors.backgroundSoft,
+          background: colors.textPrimary,
+          border: colors.textPrimary,
+        ),
+      ],
+    );
+  }
+}
+
+class _HeaderIconButton extends StatelessWidget {
+  const _HeaderIconButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+    required this.foreground,
+    required this.background,
+    required this.border,
+    this.badge,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+  final Color foreground;
+  final Color background;
+  final Color border;
+  final int? badge;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: label,
+      child: Material(
+        color: background,
+        borderRadius: BorderRadius.circular(9),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(9),
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(9),
+              border: Border.all(color: border),
+            ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: [
+                Icon(icon, size: 21, color: foreground),
+                if ((badge ?? 0) > 0)
+                  Positioned(
+                    top: -5,
+                    right: -5,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: context.moniaryColors.primary,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 2,
+                        ),
+                        child: Text(
+                          badge! > 99 ? '99+' : '$badge',
+                          style: context.moniaryTypography.metadataStrong
+                              .copyWith(
+                                color: AppTheme.surfaceRaised,
+                                fontSize: 9,
+                                letterSpacing: 0,
+                              ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GroupBalanceOverview extends StatelessWidget {
+  const _GroupBalanceOverview({required this.groups});
+
+  final List<SpendingGroup> groups;
+
+  @override
+  Widget build(BuildContext context) {
+    final toReceive = groups
+        .where((group) => group.currentUserBalance < 0)
+        .fold<int>(0, (sum, group) => sum + group.currentUserBalance.abs());
+    final toPay = groups
+        .where((group) => group.currentUserBalance > 0)
+        .fold<int>(0, (sum, group) => sum + group.currentUserBalance);
+
+    return Row(
+      children: [
+        Expanded(
+          child: _BalanceSummaryTile(
+            label: context.l10n.groupBalanceReceiveShort,
+            value: '+${formatVnd(toReceive)}',
+            color: context.moniaryColors.success,
+          ),
+        ),
+        const SizedBox(width: 9),
+        Expanded(
+          child: _BalanceSummaryTile(
+            label: context.l10n.groupBalancePayShort,
+            value: '-${formatVnd(toPay)}',
+            color: context.moniaryColors.danger,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BalanceSummaryTile extends StatelessWidget {
+  const _BalanceSummaryTile({
     required this.label,
     required this.value,
     required this.color,
@@ -201,81 +343,379 @@ class _OverviewMetric extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: context.moniaryTypography.metadata.copyWith(
-            color: context.moniaryColors.textDim,
+    return Container(
+      height: 68,
+      padding: const EdgeInsets.fromLTRB(14, 13, 12, 11),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.34)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            label.toUpperCase(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.moniaryTypography.metadataStrong.copyWith(
+              color: color,
+              fontSize: 9,
+              letterSpacing: 2.2,
+            ),
+          ),
+          const SizedBox(height: 7),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.moniaryTypography.displaySmall.copyWith(
+              color: color,
+              fontSize: 16,
+              height: 1,
+              letterSpacing: 0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReferenceGroupCard extends StatelessWidget {
+  const _ReferenceGroupCard({
+    required this.group,
+    required this.index,
+    required this.onTap,
+  });
+
+  final SpendingGroup group;
+  final int index;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final balance = group.currentUserBalance;
+    final settled = balance == 0;
+    final amountColor = settled
+        ? colors.textSecondary
+        : balance < 0
+        ? colors.success
+        : colors.danger;
+    final amountText = settled
+        ? formatVnd(0)
+        : balance < 0
+        ? '+${formatVnd(balance.abs())}'
+        : '-${formatVnd(balance)}';
+    final stateLabel = settled
+        ? context.l10n.groupBalanceSettledShort
+        : balance < 0
+        ? context.l10n.groupBalanceReceiveShort
+        : context.l10n.groupBalancePayShort;
+    final showSettlementAction = group.hasUnresolvedSettlements && balance < 0;
+    final accent = _groupAccent(index, group.type ?? group.description);
+
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: colors.surface.withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(13),
+          border: Border.all(color: colors.outline.withValues(alpha: 0.75)),
+          boxShadow: [
+            BoxShadow(
+              color: colors.textPrimary.withValues(alpha: 0.035),
+              blurRadius: 14,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(13),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 13),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: SizedBox.square(
+                        dimension: 39,
+                        child: SupabaseImage(
+                          imagePath: group.avatarPath,
+                          fit: BoxFit.cover,
+                          fallbackBuilder: (context) =>
+                              ColoredBox(color: accent),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            group.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: colors.textPrimary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  height: 1.05,
+                                  letterSpacing: 0,
+                                ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            '${context.l10n.groupMemberCount(group.memberCount)} · '
+                            '${context.l10n.groupTransactionCount(group.transactionCount)}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.moniaryTypography.metadata.copyWith(
+                              color: colors.textDim,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          amountText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.moniaryTypography.metadataStrong
+                              .copyWith(
+                                color: amountColor,
+                                fontSize: 11,
+                                letterSpacing: 0,
+                              ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          stateLabel.toUpperCase(),
+                          style: context.moniaryTypography.metadata.copyWith(
+                            color: colors.textDim,
+                            fontSize: 8,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                if (showSettlementAction) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      _MemberDotStack(
+                        count: group.memberCount,
+                        avatarPaths: group.memberAvatarPaths,
+                        paletteOffset: index,
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${context.l10n.groupSettleAction} →',
+                        style: context.moniaryTypography.metadataStrong
+                            .copyWith(
+                              color: colors.primary,
+                              fontSize: 9,
+                              letterSpacing: 0,
+                            ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
-        const SizedBox(height: 6),
+      ),
+    );
+  }
+
+  Color _groupAccent(int index, String? type) {
+    if (type == 'travel') return const Color(0xFF8796A8);
+    if (type == 'home') return const Color(0xFF91A092);
+    if (type == 'cafe') return const Color(0xFFB58F93);
+    const palette = [
+      Color(0xFF8796A8),
+      Color(0xFF91A092),
+      Color(0xFFB58F93),
+      Color(0xFFC2A98C),
+      Color(0xFF9F91A8),
+    ];
+    return palette[index % palette.length];
+  }
+}
+
+class _MemberDotStack extends StatelessWidget {
+  const _MemberDotStack({
+    required this.count,
+    required this.avatarPaths,
+    required this.paletteOffset,
+  });
+
+  final int count;
+  final List<String?> avatarPaths;
+  final int paletteOffset;
+
+  @override
+  Widget build(BuildContext context) {
+    const palette = [
+      Color(0xFFC2A98C),
+      Color(0xFF91A092),
+      Color(0xFF8796A8),
+      Color(0xFFB58F93),
+      Color(0xFFD0B894),
+    ];
+    final visible = count.clamp(1, 5);
+    return SizedBox(
+      width: 15 + (visible - 1) * 13,
+      height: 19,
+      child: Stack(
+        children: [
+          for (var index = 0; index < visible; index++)
+            Positioned(
+              left: index * 12,
+              child: Container(
+                width: 18,
+                height: 18,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: context.moniaryColors.surface.withValues(alpha: 0.9),
+                    width: 1.1,
+                  ),
+                ),
+                child: ClipOval(
+                  child: SupabaseImage(
+                    imagePath: index < avatarPaths.length
+                        ? avatarPaths[index]
+                        : null,
+                    fit: BoxFit.cover,
+                    fallbackBuilder: (context) => ColoredBox(
+                      color: palette[(index + paletteOffset) % palette.length],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GroupEmptyState extends StatelessWidget {
+  const _GroupEmptyState({required this.onCreate});
+
+  final VoidCallback onCreate;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(Icons.groups_2_rounded, size: 72, color: AppTheme.sand),
+        const SizedBox(height: 18),
         Text(
-          value,
-          style: context.moniaryTypography.displaySmall.copyWith(color: color),
+          context.l10n.groupEmpty,
+          textAlign: TextAlign.center,
+          style: context.moniaryTypography.displaySmall.copyWith(
+            color: colors.textPrimary,
+            fontSize: 28,
+            height: 1.08,
+            letterSpacing: 0,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          context.l10n.groupEmptySubtitle,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: colors.textSecondary,
+            height: 1.35,
+          ),
+        ),
+        const SizedBox(height: 28),
+        SizedBox(
+          width: double.infinity,
+          height: 58,
+          child: FilledButton.icon(
+            onPressed: onCreate,
+            icon: const Icon(Icons.add_rounded),
+            label: Text(context.l10n.groupCreateNew),
+          ),
         ),
       ],
     );
   }
 }
 
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.onCreate});
-
-  final VoidCallback onCreate;
+class _GroupListLoading extends StatelessWidget {
+  const _GroupListLoading();
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.groups_2_outlined,
-              size: 72,
-              color: AppTheme.mintSoft,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              context.l10n.groupEmpty,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(context.l10n.groupEmptySubtitle, textAlign: TextAlign.center),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: onCreate,
-              icon: const Icon(Icons.add_outlined),
-              label: Text(context.l10n.groupCreateNew),
-            ),
-          ],
+    return SafeArea(
+      child: Center(
+        child: SizedBox(
+          width: 22,
+          height: 22,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: context.moniaryColors.primary,
+          ),
         ),
       ),
     );
   }
 }
 
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.onRetry});
+class _GroupListError extends StatelessWidget {
+  const _GroupListError({required this.onRetry});
 
   final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(context.l10n.groupLoadError),
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: onRetry,
-            child: Text(context.l10n.commonRetry),
+    final colors = context.moniaryColors;
+    return SafeArea(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(30),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                context.l10n.groupLoadError,
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
+              ),
+              const SizedBox(height: 14),
+              OutlinedButton(
+                onPressed: onRetry,
+                child: Text(context.l10n.commonRetry),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

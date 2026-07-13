@@ -11,6 +11,8 @@ import '../../domain/services/settlement_calculator.dart';
 class GroupMockDataSource {
   GroupMockDataSource({required this.currentUserId});
 
+  static const _demoUserId = 'mock-user-id';
+
   final String currentUserId;
   final GroupSplitCalculator _splitCalculator = const GroupSplitCalculator();
   final SettlementCalculator _settlementCalculator =
@@ -35,6 +37,7 @@ class GroupMockDataSource {
   }
 
   Future<List<SpendingGroup>> fetchGroups() async {
+    _seedDemoGroupsIfNeeded();
     final memberGroupIds = _members.entries
         .where(
           (entry) => entry.value.any(
@@ -53,6 +56,16 @@ class GroupMockDataSource {
           final balance = _groupBalances(group.id)[currentUserId] ?? 0;
           return group.copyWith(
             memberCount: _activeMembers(group.id).length,
+            memberAvatarPaths: _activeMembers(group.id)
+                .map((member) => member.avatarPath)
+                .take(5)
+                .toList(growable: false),
+            transactionCount: groupTransactions
+                .where(
+                  (record) =>
+                      record.transaction.splitStatus == GroupSplitStatus.posted,
+                )
+                .length,
             totalSpent: groupTransactions
                 .where(
                   (record) =>
@@ -75,6 +88,216 @@ class GroupMockDataSource {
           (left, right) => right.updatedAt.compareTo(left.updatedAt),
         );
     return List.unmodifiable(result);
+  }
+
+  void _seedDemoGroupsIfNeeded() {
+    if (currentUserId != _demoUserId || _groups.isNotEmpty) return;
+
+    final now = DateTime.now();
+    final groups = [
+      _DemoGroupSeed(
+        id: 'mock-group-dalat',
+        name: 'Đà Lạt 6/2025',
+        memberCount: 5,
+        transactionCount: 14,
+        colorName: 'travel',
+        avatarPath: 'asset://assets/demo_transactions/transport.png',
+        createdAt: now.subtract(const Duration(days: 3)),
+        balanceMode: _DemoBalanceMode.receive,
+      ),
+      _DemoGroupSeed(
+        id: 'mock-group-home-q3',
+        name: 'Nhà chung Q3',
+        memberCount: 3,
+        transactionCount: 28,
+        colorName: 'home',
+        avatarPath: 'asset://assets/demo_transactions/market.png',
+        createdAt: now.subtract(const Duration(days: 7)),
+        balanceMode: _DemoBalanceMode.pay,
+      ),
+      _DemoGroupSeed(
+        id: 'mock-group-cafe-weekend',
+        name: 'Cafe cuối tuần',
+        memberCount: 4,
+        transactionCount: 6,
+        colorName: 'cafe',
+        avatarPath: 'asset://assets/demo_transactions/cafe.png',
+        createdAt: now.subtract(const Duration(days: 12)),
+        balanceMode: _DemoBalanceMode.settled,
+      ),
+    ];
+
+    for (final seed in groups) {
+      _groups[seed.id] = SpendingGroup(
+        id: seed.id,
+        name: seed.name,
+        description: seed.colorName,
+        type: seed.colorName,
+        avatarPath: seed.avatarPath,
+        createdBy: currentUserId,
+        status: GroupStatus.active,
+        createdAt: seed.createdAt,
+        updatedAt: seed.createdAt.add(const Duration(hours: 3)),
+      );
+      _members[seed.id] = [
+        _demoMember(
+          seed.id,
+          currentUserId,
+          'Minh Anh',
+          GroupRole.owner,
+          now,
+          'asset://assets/demo_transactions/salary.png',
+        ),
+        for (var index = 1; index < seed.memberCount; index++)
+          _demoMember(
+            seed.id,
+            'mock-friend-$index',
+            'Bạn $index',
+            GroupRole.member,
+            now.subtract(Duration(days: index)),
+            _demoMemberAvatar(index),
+          ),
+      ];
+      _seedDemoTransactions(seed, now);
+      _refreshSettlements(seed.id);
+    }
+  }
+
+  SpendingGroupMember _demoMember(
+    String groupId,
+    String userId,
+    String displayName,
+    GroupRole role,
+    DateTime joinedAt,
+    String avatarPath,
+  ) {
+    return SpendingGroupMember(
+      id: '$groupId-member-$userId',
+      groupId: groupId,
+      userId: userId,
+      role: role,
+      status: GroupMemberStatus.active,
+      joinedAt: joinedAt,
+      displayName: displayName,
+      username: userId,
+      avatarPath: avatarPath,
+    );
+  }
+
+  String _demoMemberAvatar(int index) {
+    const avatars = [
+      'asset://assets/demo_transactions/cafe.png',
+      'asset://assets/demo_transactions/lunch.png',
+      'asset://assets/demo_transactions/shopping.png',
+      'asset://assets/demo_transactions/market.png',
+      'asset://assets/demo_transactions/transport.png',
+    ];
+    return avatars[index % avatars.length];
+  }
+
+  void _seedDemoTransactions(_DemoGroupSeed seed, DateTime now) {
+    switch (seed.balanceMode) {
+      case _DemoBalanceMode.receive:
+        _addDemoTransaction(
+          groupId: seed.id,
+          id: '${seed.id}-tx-main',
+          totalAmount: 640000,
+          paidAmounts: {currentUserId: 640000},
+          shareAmounts: {currentUserId: 320000, 'mock-friend-1': 320000},
+          date: now.subtract(const Duration(days: 2)),
+        );
+        for (var index = 0; index < seed.transactionCount - 1; index++) {
+          _addBalancedDemoTransaction(
+            groupId: seed.id,
+            id: '${seed.id}-tx-$index',
+            totalAmount: 200000,
+            date: now.subtract(Duration(days: 3 + index)),
+          );
+        }
+      case _DemoBalanceMode.pay:
+        _addDemoTransaction(
+          groupId: seed.id,
+          id: '${seed.id}-tx-main',
+          totalAmount: 170000,
+          paidAmounts: {'mock-friend-1': 170000},
+          shareAmounts: {currentUserId: 85000, 'mock-friend-1': 85000},
+          date: now.subtract(const Duration(days: 1)),
+        );
+        for (var index = 0; index < seed.transactionCount - 1; index++) {
+          _addBalancedDemoTransaction(
+            groupId: seed.id,
+            id: '${seed.id}-tx-$index',
+            totalAmount: 100000,
+            date: now.subtract(Duration(days: 2 + index)),
+          );
+        }
+      case _DemoBalanceMode.settled:
+        for (var index = 0; index < seed.transactionCount; index++) {
+          _addBalancedDemoTransaction(
+            groupId: seed.id,
+            id: '${seed.id}-tx-$index',
+            totalAmount: 120000,
+            date: now.subtract(Duration(days: 1 + index)),
+          );
+        }
+    }
+  }
+
+  void _addBalancedDemoTransaction({
+    required String groupId,
+    required String id,
+    required int totalAmount,
+    required DateTime date,
+  }) {
+    final members = _activeMembers(groupId).take(2).toList();
+    final first = members.first.userId;
+    final second = members.length > 1 ? members[1].userId : currentUserId;
+    final firstShare = totalAmount ~/ 2;
+    final secondShare = totalAmount - firstShare;
+    _addDemoTransaction(
+      groupId: groupId,
+      id: id,
+      totalAmount: totalAmount,
+      paidAmounts: {first: firstShare, second: secondShare},
+      shareAmounts: {first: firstShare, second: secondShare},
+      date: date,
+    );
+  }
+
+  void _addDemoTransaction({
+    required String groupId,
+    required String id,
+    required int totalAmount,
+    required Map<String, int> paidAmounts,
+    required Map<String, int> shareAmounts,
+    required DateTime date,
+  }) {
+    _transactions[id] = _MockTransactionRecord(
+      transaction: GroupTransaction(
+        id: id,
+        groupId: groupId,
+        createdBy: currentUserId,
+        totalAmount: totalAmount,
+        categoryName: 'Demo',
+        caption: 'Demo',
+        imageUploadStatus: GroupImageUploadStatus.pending,
+        splitMode: GroupSplitMode.equal,
+        paymentMode: GroupPaymentMode.multiplePayers,
+        splitStatus: GroupSplitStatus.posted,
+        transactionDate: date,
+        createdAt: date,
+        updatedAt: date,
+        creatorName: 'Minh Anh',
+      ),
+      payers: _payers(id, paidAmounts, date),
+      shares: _shares(
+        id,
+        shareAmounts,
+        date,
+        submitted: shareAmounts.keys.toSet(),
+      ),
+      comments: [],
+    );
   }
 
   Future<SpendingGroupDetail> fetchGroupDetail(String groupId) async {
@@ -1120,6 +1343,30 @@ class _MockTransactionRecord {
     comments: List.unmodifiable(comments),
   );
 }
+
+class _DemoGroupSeed {
+  const _DemoGroupSeed({
+    required this.id,
+    required this.name,
+    required this.memberCount,
+    required this.transactionCount,
+    required this.colorName,
+    required this.avatarPath,
+    required this.createdAt,
+    required this.balanceMode,
+  });
+
+  final String id;
+  final String name;
+  final int memberCount;
+  final int transactionCount;
+  final String colorName;
+  final String avatarPath;
+  final DateTime createdAt;
+  final _DemoBalanceMode balanceMode;
+}
+
+enum _DemoBalanceMode { receive, pay, settled }
 
 class _MockGroupInviteLink {
   _MockGroupInviteLink({

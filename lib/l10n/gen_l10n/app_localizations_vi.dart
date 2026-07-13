@@ -852,6 +852,14 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupTitle => 'Nhóm chi tiêu';
 
   @override
+  String get groupListTitle => 'Nhóm';
+
+  @override
+  String groupListSection(int count) {
+    return 'Nhóm của bạn · $count';
+  }
+
+  @override
   String get groupEmpty => 'Chưa có nhóm chi tiêu';
 
   @override
@@ -873,6 +881,11 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String groupMemberCount(int count) {
     return '$count thành viên';
+  }
+
+  @override
+  String groupTransactionCount(int count) {
+    return '$count khoản';
   }
 
   @override
@@ -3412,6 +3425,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupBalanceSettled => 'Đã cân bằng';
 
   @override
+  String get groupBalanceSettledShort => 'Đã cân';
+
+  @override
   String groupBalanceOwes(String amount) {
     return 'Bạn cần trả $amount';
   }
@@ -3420,6 +3436,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String groupBalanceReceives(String amount) {
     return 'Bạn sẽ nhận $amount';
   }
+
+  @override
+  String get groupBalanceReceiveShort => 'Được nhận';
+
+  @override
+  String get groupBalancePayShort => 'Cần trả';
+
+  @override
+  String get groupSettleAction => 'Tất toán';
 
   @override
   String get groupUnresolvedBadge => 'Chưa xử lý';
