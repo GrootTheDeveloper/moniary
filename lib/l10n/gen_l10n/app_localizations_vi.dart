@@ -3937,6 +3937,25 @@ class AppLocalizationsVi extends AppLocalizations {
   String get budgetSaveLimit => 'Lưu hạn mức';
 
   @override
+  String budgetSpentRemainingLine(
+    String spent,
+    String limit,
+    String remaining,
+  ) {
+    return '$spent / $limit — còn $remaining';
+  }
+
+  @override
+  String budgetTransactionsInLimitCount(int count) {
+    return 'Giao dịch tính vào hạn mức · $count';
+  }
+
+  @override
+  String budgetViewAllInStats(int count) {
+    return 'Xem đủ $count giao dịch trong Số liệu →';
+  }
+
+  @override
   String get budgetNearLimit => 'Sắp vượt hạn mức';
 
   @override

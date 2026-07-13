@@ -1622,6 +1622,36 @@
     }
   },
   "budgetSaveLimit": "Lưu hạn mức",
+  "budgetSpentRemainingLine": "{spent} / {limit} — còn {remaining}",
+  "@budgetSpentRemainingLine": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetTransactionsInLimitCount": "Giao dịch tính vào hạn mức · {count}",
+  "@budgetTransactionsInLimitCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "budgetViewAllInStats": "Xem đủ {count} giao dịch trong Số liệu →",
+  "@budgetViewAllInStats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "budgetNearLimit": "Sắp vượt hạn mức",
   "budgetOverLimit": "Đã vượt hạn mức",
   "budgetNearLimitShort": "Sắp vượt",

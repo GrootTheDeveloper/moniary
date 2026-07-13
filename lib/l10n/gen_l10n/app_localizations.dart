@@ -7124,6 +7124,24 @@ abstract class AppLocalizations {
   /// **'Lưu hạn mức'**
   String get budgetSaveLimit;
 
+  /// No description provided for @budgetSpentRemainingLine.
+  ///
+  /// In vi, this message translates to:
+  /// **'{spent} / {limit} — còn {remaining}'**
+  String budgetSpentRemainingLine(String spent, String limit, String remaining);
+
+  /// No description provided for @budgetTransactionsInLimitCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch tính vào hạn mức · {count}'**
+  String budgetTransactionsInLimitCount(int count);
+
+  /// No description provided for @budgetViewAllInStats.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem đủ {count} giao dịch trong Số liệu →'**
+  String budgetViewAllInStats(int count);
+
   /// No description provided for @budgetNearLimit.
   ///
   /// In vi, this message translates to:

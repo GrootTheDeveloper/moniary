@@ -3935,6 +3935,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get budgetSaveLimit => 'Save limit';
 
   @override
+  String budgetSpentRemainingLine(
+    String spent,
+    String limit,
+    String remaining,
+  ) {
+    return '$spent / $limit — $remaining left';
+  }
+
+  @override
+  String budgetTransactionsInLimitCount(int count) {
+    return 'Transactions in this limit · $count';
+  }
+
+  @override
+  String budgetViewAllInStats(int count) {
+    return 'View all $count transactions in Stats →';
+  }
+
+  @override
   String get budgetNearLimit => 'Near the limit';
 
   @override

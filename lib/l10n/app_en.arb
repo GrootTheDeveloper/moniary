@@ -1622,6 +1622,36 @@
     }
   },
   "budgetSaveLimit": "Save limit",
+  "budgetSpentRemainingLine": "{spent} / {limit} — {remaining} left",
+  "@budgetSpentRemainingLine": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetTransactionsInLimitCount": "Transactions in this limit · {count}",
+  "@budgetTransactionsInLimitCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "budgetViewAllInStats": "View all {count} transactions in Stats →",
+  "@budgetViewAllInStats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "budgetNearLimit": "Near the limit",
   "budgetOverLimit": "Over the limit",
   "budgetNearLimitShort": "Near limit",
