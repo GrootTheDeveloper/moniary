@@ -12,6 +12,31 @@
   "commonDelete": "Xóa",
   "commonEdit": "Sửa",
   "commonRetry": "Thử lại",
+  "commonJustNow": "Vừa xong",
+  "commonMinutesAgo": "{count} phút trước",
+  "@commonMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonHoursAgo": "{count} giờ trước",
+  "@commonHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonDaysAgo": "{count} ngày trước",
+  "@commonDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "commonAdd": "Thêm",
   "commonClose": "Đóng",
   "commonSaving": "Đang lưu...",
@@ -736,6 +761,35 @@
   },
   "statsExpenseSameAsPrevious": "Gần bằng tháng trước",
   "statsExpenseNoPrevious": "Chưa có dữ liệu tháng trước",
+  "statsInsightTitle": "Gợi ý thông minh",
+  "statsInsightSavings": "Bạn đã tiết kiệm được {percent}% thu nhập trong tháng này.",
+  "@statsInsightSavings": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsInsightWeekend": "Bạn chi tiêu {percent}% ngân sách vào cuối tuần. Hãy cẩn thận!",
+  "@statsInsightWeekend": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsInsightCategorySurge": "Chi tiêu {category} tăng {percent}% so với tháng trước.",
+  "@statsInsightCategorySurge": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsInsightPositive": "Bạn đang quản lý chi tiêu rất tốt! Hãy tiếp tục duy trì nhé.",
   "statsBudgetUsed": "Ngân sách · đã dùng {percent}%",
   "@statsBudgetUsed": {
     "placeholders": {
@@ -799,6 +853,10 @@
   },
   "profileEditInfo": "Chỉnh sửa thông tin",
   "profileChangeTimezone": "Thay đổi múi giờ",
+  "profileLanguage": "Ngôn ngữ",
+  "timezonePickerSearch": "Tìm múi giờ",
+  "timezonePickerNoResults": "Không tìm thấy múi giờ",
+  "timezonePickerUseDevice": "Dùng múi giờ thiết bị",
   "profileAnonymousBadge": "Tài khoản khách",
   "profileVerifiedBadge": "Đã Xác thực ({provider})",
   "@profileVerifiedBadge": {
@@ -1520,6 +1578,23 @@
   "groupTransactionHistorySubtitle": "{payer} trả · Chia {count} người",
   "@groupTransactionHistorySubtitle": {"placeholders": {"payer": {"type": "String"}, "count": {"type": "int"}}},
   "groupTransactionDetailTitle": "Chi tiết giao dịch nhóm",
+  "groupActivityCenterTitle": "Hoạt động nhóm",
+  "groupActivityTabTimeline": "Hoạt động",
+  "groupActivityTabNotifications": "Thông báo",
+  "groupActivityEmpty": "Chưa có hoạt động nào",
+  "groupNotificationsEmptyState": "Chưa có thông báo nào",
+  "groupPhotoAlbumTitle": "Album ảnh",
+  "groupPhotoAlbumEmpty": "Chưa có ảnh nào",
+  "groupActivityTransactionReacted": "đã thả cảm xúc vào một giao dịch",
+  "groupActivityTransactionCommented": "đã bình luận vào một giao dịch",
+  "groupActivityMemberJoined": "đã tham gia nhóm",
+  "groupActivityMemberLeft": "đã rời nhóm",
+  "groupActivityInvitationAccepted": "đã chấp nhận lời mời vào nhóm",
+  "groupActivityInvitationDeclined": "đã từ chối lời mời vào nhóm",
+  "groupNotificationTransactionPosted": "Có giao dịch mới",
+  "groupNotificationMemberAmountRequired": "Cần bạn nhập số tiền của mình",
+  "groupNotificationDebtSettled": "Một khoản nợ đã được tất toán",
+  "groupNotificationGroupInvite": "Bạn có lời mời vào nhóm mới",
   "groupTransactionCreator": "Người đăng",
   "groupTransactionPayers": "Người đã trả",
   "groupTransactionShares": "Phần phải chịu",
