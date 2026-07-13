@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatting_ref.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
@@ -95,13 +95,13 @@ class GroupPhotoAlbumScreen extends ConsumerWidget {
   }
 }
 
-class _PhotoTile extends ConsumerWidget {
+class _PhotoTile extends StatelessWidget {
   const _PhotoTile({required this.transaction});
 
   final GroupTransaction transaction;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final colors = context.moniaryColors;
     final caption = transaction.caption?.trim();
 
@@ -153,7 +153,7 @@ class _PhotoTile extends ConsumerWidget {
                         ),
                       ),
                     Text(
-                      ref.formatAmount(transaction.totalAmount),
+                      formatMoney(transaction.totalAmount),
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,

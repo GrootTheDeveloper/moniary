@@ -25,10 +25,9 @@ import '../features/groups/presentation/groups_screen.dart';
 import '../features/groups/presentation/screens/add_group_transaction_screen.dart';
 import '../features/groups/presentation/screens/create_group_screen.dart';
 import '../features/groups/presentation/screens/debt_settlement_screen.dart';
-import '../features/groups/presentation/screens/group_activity_center_screen.dart';
-import '../features/groups/presentation/screens/group_photo_album_screen.dart';
 import '../features/groups/presentation/screens/group_budget_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
+import '../features/groups/presentation/screens/group_photo_album_screen.dart';
 import '../features/groups/presentation/screens/group_invite_accept_screen.dart';
 import '../features/groups/presentation/screens/group_invitations_screen.dart';
 import '../features/groups/presentation/screens/group_transaction_detail_screen.dart';
@@ -42,7 +41,6 @@ import '../features/journal/presentation/monthly_recap_screen.dart';
 import '../features/journal/presentation/recording_streak_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
-import '../features/profile/presentation/timezone_picker_screen.dart';
 import '../features/profile/presentation/profile_survey_screen.dart';
 import '../features/scanning/presentation/ocr_review_screen.dart';
 import '../features/scanning/presentation/scanning_screen.dart';
@@ -428,16 +426,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: GroupActivityCenterScreen.routePath,
-        pageBuilder: (context, state) {
-          final groupId = state.extra as String?;
-          final child = groupId == null
-              ? const GroupsScreen()
-              : GroupActivityCenterScreen(groupId: groupId);
-          return buildSlideTransitionPage(state: state, child: child);
-        },
-      ),
-      GoRoute(
         path: GroupPhotoAlbumScreen.routePath,
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
@@ -661,13 +649,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
           child: const NotificationSettingsScreen(),
-        ),
-      ),
-      GoRoute(
-        path: TimezonePickerScreen.routePath,
-        pageBuilder: (context, state) => buildSlideTransitionPage(
-          state: state,
-          child: const TimezonePickerScreen(),
         ),
       ),
       GoRoute(
