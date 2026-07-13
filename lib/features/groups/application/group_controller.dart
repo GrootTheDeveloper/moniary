@@ -51,6 +51,11 @@ final groupNotificationPreferenceProvider =
           .fetchNotificationPreference(groupId);
     });
 
+final groupPublicProfileProvider =
+    FutureProvider.family<GroupPublicProfile, String>((ref, groupId) {
+      return ref.watch(groupRepositoryProvider).fetchPublicProfile(groupId);
+    });
+
 final groupInvitePreviewProvider = FutureProvider.autoDispose
     .family<GroupInvitePreview, String>((ref, token) {
       return ref.watch(groupRepositoryProvider).fetchInvitePreview(token);
@@ -302,6 +307,13 @@ class GroupActionController extends AsyncNotifier<void> {
           .read(groupRepositoryProvider)
           .upsertNotificationPreference(preference);
       ref.invalidate(groupNotificationPreferenceProvider(preference.groupId));
+    });
+  }
+
+  Future<void> upsertPublicProfile(GroupPublicProfile profile) {
+    return _run(() async {
+      await ref.read(groupRepositoryProvider).upsertPublicProfile(profile);
+      ref.invalidate(groupPublicProfileProvider(profile.groupId));
     });
   }
 

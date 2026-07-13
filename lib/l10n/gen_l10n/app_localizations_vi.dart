@@ -3848,6 +3848,40 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupNotificationPrefsSaved => 'Đã lưu cài đặt thông báo';
 
   @override
+  String get groupPublicProfileTitle => 'Trang công khai';
+
+  @override
+  String get groupPublicProfileComingSoon =>
+      'Chia sẻ công khai chưa hoạt động. Các cài đặt này sẽ được lưu để dùng khi tính năng ra mắt.';
+
+  @override
+  String get groupPublicProfileEnable => 'Bật trang công khai';
+
+  @override
+  String get groupPublicProfileEnableHelp =>
+      'Cho phép nhóm có một trang công khai để chia sẻ';
+
+  @override
+  String get groupPublicProfileShowStats => 'Hiển thị thống kê nhóm';
+
+  @override
+  String get groupPublicProfileShowStatsHelp =>
+      'Bao gồm thống kê chi tiêu trên trang công khai';
+
+  @override
+  String get groupPublicProfileSlug => 'Liên kết tùy chỉnh';
+
+  @override
+  String get groupPublicProfileSlugHint => 'ten-nhom-cua-toi';
+
+  @override
+  String get groupPublicProfileSlugInvalid =>
+      'Liên kết phải 3-80 ký tự: chữ thường, số, dấu gạch ngang';
+
+  @override
+  String get groupPublicProfileSaved => 'Đã cập nhật trang công khai';
+
+  @override
   String get groupActivityTransactionReacted =>
       'đã thả cảm xúc vào một giao dịch';
 

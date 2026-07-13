@@ -3846,6 +3846,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupNotificationPrefsSaved => 'Notification settings saved';
 
   @override
+  String get groupPublicProfileTitle => 'Public profile';
+
+  @override
+  String get groupPublicProfileComingSoon =>
+      'Public sharing isn\'t live yet. These settings save your preferences for when it launches.';
+
+  @override
+  String get groupPublicProfileEnable => 'Enable public profile';
+
+  @override
+  String get groupPublicProfileEnableHelp =>
+      'Allow this group to have a shareable public page';
+
+  @override
+  String get groupPublicProfileShowStats => 'Show group stats';
+
+  @override
+  String get groupPublicProfileShowStatsHelp =>
+      'Include spending statistics on the public page';
+
+  @override
+  String get groupPublicProfileSlug => 'Custom link';
+
+  @override
+  String get groupPublicProfileSlugHint => 'my-group-name';
+
+  @override
+  String get groupPublicProfileSlugInvalid =>
+      'Link must be 3-80 chars: lowercase letters, numbers, hyphens';
+
+  @override
+  String get groupPublicProfileSaved => 'Public profile updated';
+
+  @override
   String get groupActivityTransactionReacted => 'reacted to a transaction';
 
   @override

@@ -716,4 +716,14 @@ class FakeGroupRepository implements GroupRepository {
   ) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<GroupPublicProfile> fetchPublicProfile(String groupId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> upsertPublicProfile(GroupPublicProfile profile) {
+    throw UnimplementedError();
+  }
 }

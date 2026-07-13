@@ -403,6 +403,32 @@ class GroupSupabaseDataSource {
     );
   }
 
+  Future<Map<String, dynamic>?> fetchPublicProfile(String groupId) async {
+    final rows = await client
+        .from('group_public_profiles')
+        .select()
+        .eq('group_id', groupId);
+    if (rows.isEmpty) return null;
+    return rows.first as Map<String, dynamic>?;
+  }
+
+  Future<void> upsertPublicProfile({
+    required String groupId,
+    required bool isEnabled,
+    required bool showStats,
+    String? slug,
+  }) {
+    return client.from('group_public_profiles').upsert(
+      {
+        'group_id': groupId,
+        'is_enabled': isEnabled,
+        'show_stats': showStats,
+        'slug': slug,
+      },
+      onConflict: 'group_id',
+    );
+  }
+
   Future<void> _uploadCompressed({
     required String path,
     required String filePath,

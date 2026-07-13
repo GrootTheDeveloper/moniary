@@ -6950,6 +6950,66 @@ abstract class AppLocalizations {
   /// **'Đã lưu cài đặt thông báo'**
   String get groupNotificationPrefsSaved;
 
+  /// No description provided for @groupPublicProfileTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trang công khai'**
+  String get groupPublicProfileTitle;
+
+  /// No description provided for @groupPublicProfileComingSoon.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ công khai chưa hoạt động. Các cài đặt này sẽ được lưu để dùng khi tính năng ra mắt.'**
+  String get groupPublicProfileComingSoon;
+
+  /// No description provided for @groupPublicProfileEnable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bật trang công khai'**
+  String get groupPublicProfileEnable;
+
+  /// No description provided for @groupPublicProfileEnableHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cho phép nhóm có một trang công khai để chia sẻ'**
+  String get groupPublicProfileEnableHelp;
+
+  /// No description provided for @groupPublicProfileShowStats.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiển thị thống kê nhóm'**
+  String get groupPublicProfileShowStats;
+
+  /// No description provided for @groupPublicProfileShowStatsHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bao gồm thống kê chi tiêu trên trang công khai'**
+  String get groupPublicProfileShowStatsHelp;
+
+  /// No description provided for @groupPublicProfileSlug.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết tùy chỉnh'**
+  String get groupPublicProfileSlug;
+
+  /// No description provided for @groupPublicProfileSlugHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'ten-nhom-cua-toi'**
+  String get groupPublicProfileSlugHint;
+
+  /// No description provided for @groupPublicProfileSlugInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết phải 3-80 ký tự: chữ thường, số, dấu gạch ngang'**
+  String get groupPublicProfileSlugInvalid;
+
+  /// No description provided for @groupPublicProfileSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã cập nhật trang công khai'**
+  String get groupPublicProfileSaved;
+
   /// No description provided for @groupActivityTransactionReacted.
   ///
   /// In vi, this message translates to:

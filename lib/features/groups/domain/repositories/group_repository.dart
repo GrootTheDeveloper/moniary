@@ -88,4 +88,8 @@ abstract interface class GroupRepository {
   Future<void> upsertNotificationPreference(
     GroupNotificationPreference preference,
   );
+
+  Future<GroupPublicProfile> fetchPublicProfile(String groupId);
+
+  Future<void> upsertPublicProfile(GroupPublicProfile profile);
 }

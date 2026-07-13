@@ -26,6 +26,7 @@ class GroupMockDataSource {
   static final Map<String, _MockDirectGroupInvite> _directInvites = {};
   static final Map<String, Map<String, dynamic>> _budgets = {};
   static final Map<String, Map<String, dynamic>> _notificationPrefs = {};
+  static final Map<String, Map<String, dynamic>> _publicProfiles = {};
   static var _sequence = 0;
 
   static void resetForTesting() {
@@ -37,6 +38,7 @@ class GroupMockDataSource {
     _directInvites.clear();
     _budgets.clear();
     _notificationPrefs.clear();
+    _publicProfiles.clear();
     _sequence = 0;
   }
 
@@ -1152,6 +1154,27 @@ class GroupMockDataSource {
       'mention_notifications': mentionNotifications,
       'quiet_hours_start': quietHoursStart,
       'quiet_hours_end': quietHoursEnd,
+    };
+  }
+
+  Future<Map<String, dynamic>?> fetchPublicProfile(String groupId) async {
+    _requireActiveMember(groupId);
+    return _publicProfiles[groupId];
+  }
+
+  Future<void> upsertPublicProfile({
+    required String groupId,
+    required bool isEnabled,
+    required bool showStats,
+    String? slug,
+  }) async {
+    _requireGroup(groupId);
+    _requireAdmin(groupId);
+    _publicProfiles[groupId] = {
+      'group_id': groupId,
+      'is_enabled': isEnabled,
+      'show_stats': showStats,
+      'slug': slug,
     };
   }
 

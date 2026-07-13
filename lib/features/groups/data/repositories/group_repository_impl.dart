@@ -614,6 +614,55 @@ class GroupRepositoryImpl implements GroupRepository {
     );
   }
 
+  @override
+  Future<GroupPublicProfile> fetchPublicProfile(String groupId) {
+    if (_useMockData) {
+      return _mock
+          .fetchPublicProfile(groupId)
+          .then((row) => _mapPublicProfile(groupId, row));
+    }
+    return _guard('fetch group public profile', () async {
+      final row = await _remote.fetchPublicProfile(groupId);
+      return _mapPublicProfile(groupId, row);
+    });
+  }
+
+  @override
+  Future<void> upsertPublicProfile(GroupPublicProfile profile) {
+    if (_useMockData) {
+      return _mock.upsertPublicProfile(
+        groupId: profile.groupId,
+        isEnabled: profile.isEnabled,
+        showStats: profile.showStats,
+        slug: profile.slug,
+      );
+    }
+    return _guard(
+      'upsert group public profile',
+      () => _remote.upsertPublicProfile(
+        groupId: profile.groupId,
+        isEnabled: profile.isEnabled,
+        showStats: profile.showStats,
+        slug: profile.slug,
+      ),
+    );
+  }
+
+  GroupPublicProfile _mapPublicProfile(
+    String groupId,
+    Map<String, dynamic>? row,
+  ) {
+    if (row == null) {
+      return GroupPublicProfile.defaults(groupId);
+    }
+    return GroupPublicProfile(
+      groupId: groupId,
+      isEnabled: row['is_enabled'] as bool? ?? false,
+      showStats: row['show_stats'] as bool? ?? false,
+      slug: row['slug'] as String?,
+    );
+  }
+
   Future<T> _guard<T>(String operation, Future<T> Function() action) async {
     try {
       return await action();
