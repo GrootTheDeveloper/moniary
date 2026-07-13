@@ -1,31 +1,62 @@
 # Build Flavors & Environments
 
-**Confidence / Verification Status**: `VERIFIED`
+**Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
+**Last source audit**: `2026-07-10`
 
-## Environments
-- **Variables**: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and optional
-  `OCR_API_URL`.
-- **Injection**: Handled via `String.fromEnvironment()` in `lib/core/constants/app_constants.dart`.
-- **Release Mode**: If the app is compiled in release mode (`kReleaseMode`), the app will throw a fatal error if Supabase credentials are missing. In debug mode, it gracefully falls back to Mock Mode.
+## Dart defines
 
-## Build Commands
+`AppConstants` reads:
+
+| Define | Required | Default/behavior |
+|---|---|---|
+| `SUPABASE_URL` | Required for release | Empty enables shell/mock support in debug |
+| `SUPABASE_ANON_KEY` | Required for release | Must be present with URL |
+| `OCR_API_URL` | Optional at build time | `http://10.0.2.2:8000` |
+| `APP_VERSION` | Optional | `1.0.0+1` |
+
+`AppConstants.assertSupabaseConfig()` throws in release mode if either Supabase
+value is missing. In debug without credentials, bootstrap initializes a
+placeholder client so providers can exist while repositories use mock data.
+
+## Native flavors
+
+No separate native `dev`/`staging`/`prod` flavors are configured in
+Gradle or Xcode. Environment selection currently relies on Dart defines and the
+Supabase project/environment used for deployment.
+
+## Common commands
+
 ```bash
-# Debug Mode (Mock Mode if without args)
+# Debug guest/mock-capable build
 flutter run
 
-# Debug Mode (with Supabase)
-flutter run --dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...
+# Debug against Supabase
+flutter run \
+  --dart-define=SUPABASE_URL=... \
+  --dart-define=SUPABASE_ANON_KEY=...
 
-# Debug Mode with local OCR on Android emulator
-flutter run
+# Physical device or hosted OCR
+flutter run \
+  --dart-define=SUPABASE_URL=... \
+  --dart-define=SUPABASE_ANON_KEY=... \
+  --dart-define=OCR_API_URL=https://ocr.example.com
 
-# Release Build
-flutter build apk --dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...
+# Release APK
+flutter build apk \
+  --dart-define=SUPABASE_URL=... \
+  --dart-define=SUPABASE_ANON_KEY=... \
+  --dart-define=OCR_API_URL=https://ocr.example.com
 ```
 
-The Android emulator defaults to `http://10.0.2.2:8000`. OCR has no mock
-fallback, so the FastAPI backend must be running. Override `OCR_API_URL` for
-physical devices or hosted environments. Backend setup is documented in
-`docs/ocr-backend.md`.
+The Android emulator can reach a host OCR service through `10.0.2.2`. A
+physical device cannot use that host alias and needs a LAN or HTTPS endpoint.
+OCR has no mock result fallback.
 
-There are no explicit flavor setups (like `dev`/`staging`/`prod` flavors configured natively in gradle or Xcode) seen in the current directory structure, so everything relies on `--dart-define`.
+## Backend setup
+
+- Supabase schema/functions: `supabase/`.
+- OCR installation and runbook: `docs/agent-context/19-ocr-backend.md`.
+- Detailed OCR implementation reference: `18-ocr-pipeline.md`.
+
+Do not put real credentials in documentation, launch configurations committed to
+Git, or test fixtures.

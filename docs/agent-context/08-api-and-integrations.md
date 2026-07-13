@@ -1,33 +1,82 @@
 # API & Integrations
 
-**Confidence / Verification Status**: `VERIFIED`
+**Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
+**Last source audit**: `2026-07-12`
 
-## Supabase Database
-- Tables interacted with: `transactions`, `wallets`, `categories`, `profiles`.
-- The **Groups & Community** feature uses group tables, RLS, private Storage paths, and RPCs for atomic split/settlement updates.
-- The **Friends** feature uses `friend_requests` and `friendships` with RLS and RPCs for search, request lifecycle, and friend removal. Friend search is username-based and returns only minimal profile fields.
-- Mock Mode is built into the repositories. If `AppConstants.hasSupabaseConfig` is false, DB calls are bypassed, and data is kept in-memory.
+## Supabase
 
-## Supabase Auth
-- Uses `supabaseClient.auth`. The session state stream triggers router refreshes.
+The repository contains a local Supabase project in `supabase/`, including
+versioned migrations, seed configuration, and Edge Functions.
 
-## Supabase Storage
-- Bucket: `transaction-images`
-- Handles uploading receipt images. In Mock Mode, images are written to local temporary storage instead.
+### Database areas
 
-## OCR Service
-- Flutter integration is in `features/scanning/data/`.
-- `FastApiOcrService` uploads the selected receipt as multipart field `file`
-  to `POST {OCR_API_URL}/extract`.
-- `OcrRepository` keeps API access behind the application controllers.
-- The FastAPI + Ollama backend is in `backend/ocr/`.
-- OCR always uses FastAPI. Android emulator builds default to
-  `http://10.0.2.2:8000`; set `OCR_API_URL` for other environments.
-- OCR configuration is independent of Supabase, so FastAPI OCR also works
-  while repositories use mock Supabase data.
+- Core: `profiles`, `wallets`, `categories`, `transactions`,
+  `notification_settings`.
+- Budgets/journal: `category_budget_limits`, `journal_collections`,
+  `journal_collection_transactions`.
+- Groups: group/member/transaction/payer/share/settlement/comment/invite/
+  notification/activity tables and supporting views/functions.
+- Friends: `friend_requests`, `friendships`, `friend_invite_links`.
+- Account lifecycle: deletion feedback plus functions for soft deletion,
+  sessions, and cleanup.
 
-## Resend API & Edge Functions
-- Supabase Edge Function (`monthly-report`) integrates with Resend API.
-- Generates HTML email reports summarizing income, expenses, and top categories.
-- Frequencies: Daily, Weekly, Monthly, Yearly.
-- Invoked automatically via `pg_cron` (planned) or triggered via API.
+RLS policies and RPCs are defined in migrations. Repository presence proves the
+intended schema, not that every remote environment has applied the latest
+migration; deployment parity must still be verified.
+
+Group invitations use security-definer RPCs for the recipient inbox because an
+`invited` user is intentionally not yet an active group member. Shared links
+use a separate token-preview/accept flow; direct username/friend invitations
+use `get_my_group_invites`, `accept_direct_group_invite`, and
+`decline_direct_group_invite`.
+
+### Auth
+
+`AuthRepository` owns email/password, anonymous, Google/Facebook/Apple OAuth,
+identity linking, sign-out, password reset, and `initialize_user`. Auth state
+feeds `currentSessionProvider` and router refresh.
+
+### Storage
+
+The private bucket is `transaction-images`. It stores transaction images,
+profile avatars, group avatars, and group transaction images using user/group
+scoped paths. Presentation uses `SupabaseImage` and signed URL providers rather
+than assuming public URLs.
+
+### Edge Functions
+
+- `scheduled-reports`: builds scheduled financial emails and calls Resend when
+  `RESEND_API_KEY` is configured.
+- `soft-delete-account`: starts the account-deletion grace flow.
+- `delete-account`: performs deletion.
+- `garbage-collect`: cleanup support.
+
+Scheduling SQL enables `pg_cron`; production secrets, URLs, and schedules remain
+environment operations.
+
+## OCR service
+
+- Flutter flow: `ScanningController -> OcrRepository -> FastApiOcrService`.
+- Request: multipart field `file` to `POST {OCR_API_URL}/extract`.
+- Backend: `backend/ocr/`, using FastAPI, Tesseract, OpenCV, Pillow, regex, and
+  keyword matching.
+- The backend also exposes `GET /health` and `POST /extract/base64`.
+- It does not use Ollama, an LLM, or cloud OCR.
+- OCR configuration is independent of Supabase. There is no fake OCR fallback;
+  the service must be reachable for scanning extraction.
+
+## Device integrations
+
+- `camera` and `image_picker`: capture/select receipt and avatar images.
+- `local_auth`: app lock.
+- `app_links`: HTTPS friend/group invite links plus auth callback/deep-link
+  intake.
+- `file_picker`: CSV import.
+- `open_filex` and `share_plus`: exported file actions and sharing.
+- `path_provider`: histories, exports, temporary images, and journal PNGs.
+
+## Financial assistant
+
+The assistant is local deterministic analysis over repository data. It does not
+call an external AI provider. Any future model/API integration must be documented
+as a new external data processor and remain behind a repository/service boundary.

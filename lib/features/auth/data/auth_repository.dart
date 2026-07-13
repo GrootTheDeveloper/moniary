@@ -127,6 +127,9 @@ class AuthRepository {
       return _mockSession();
     }
     try {
+      // Clear any existing verifier to avoid bad_code_verifier if a previous flow was stale
+      await _requiredClient.auth.signOut(scope: SignOutScope.local);
+
       await _requiredClient.auth.signInWithOAuth(
         OAuthProvider.google,
         redirectTo: kIsWeb ? null : 'io.supabase.moniary://login-callback',
@@ -154,6 +157,22 @@ class AuthRepository {
     }
   }
 
+  Future<Session?> signInWithFacebook() async {
+    if (_useMockData) {
+      return _mockSession();
+    }
+    try {
+      await _requiredClient.auth.signInWithOAuth(
+        OAuthProvider.facebook,
+        redirectTo: kIsWeb ? null : 'io.supabase.moniary://login-callback',
+      );
+      return null;
+    } catch (e, st) {
+      AppLogger.error('Facebook sign-in failed', e, st);
+      throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
+    }
+  }
+
   Future<Session?> signInWithEmail({
     required String email,
     required String password,
@@ -162,36 +181,55 @@ class AuthRepository {
       return _mockSession();
     }
     try {
-      await _requiredClient.auth.signInWithPassword(
+      AppLogger.info('Attempting email sign-in for $email');
+      final response = await _requiredClient.auth.signInWithPassword(
         email: email,
         password: password,
       );
+      AppLogger.info('Email sign-in RPC success, initializing user...');
       await _initializeUserIfPossible();
-      return null;
+      return response.session;
+    } on AuthException catch (e, st) {
+      AppLogger.error('Supabase AuthException during sign-in', e, st);
+      throw AppException(e.message, code: e.code);
     } catch (e, st) {
-      AppLogger.error('Email sign-in failed', e, st);
+      AppLogger.error('Unexpected error during email sign-in', e, st);
       throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
     }
   }
 
-  Future<Session?> signUpWithEmail({
+  Future<void> signUpWithEmail({
     required String email,
     required String password,
   }) async {
-    if (_useMockData) return _mockSession();
+    if (_useMockData) return;
     try {
-      final response = await _requiredClient.auth.signUp(
-        email: email,
-        password: password,
-        emailRedirectTo: kIsWeb ? null : 'io.supabase.moniary://login-callback',
-      );
-      if (response.session != null) {
-        await _initializeUserIfPossible();
-      }
-      return response.session;
-    } catch (e, st) {
+      await _requiredClient.auth.signUp(email: email, password: password);
+    } on AuthException catch (e, st) {
       AppLogger.error('Email sign-up failed', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      AppLogger.error('Email sign-up failed (unexpected)', e, st);
       throw const AppException('errorGeneric', code: 'AUTH_SIGN_UP_FAILED');
+    }
+  }
+
+  Future<void> requestPasswordReset(String email) async {
+    if (_useMockData) return;
+    try {
+      await _requiredClient.auth.resetPasswordForEmail(
+        email,
+        redirectTo: kIsWeb ? null : 'io.supabase.moniary://reset-password',
+      );
+    } on AuthException catch (e, st) {
+      AppLogger.error('Password reset request failed', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      AppLogger.error('Password reset request failed (unexpected)', e, st);
+      throw const AppException(
+        'errorGeneric',
+        code: 'AUTH_PASSWORD_RESET_FAILED',
+      );
     }
   }
 

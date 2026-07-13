@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/app_logger.dart';
@@ -15,126 +16,101 @@ class CategorySection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(categoriesControllerProvider);
+    final colors = context.moniaryColors;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Card(
-        margin: EdgeInsets.zero,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
+    return categoriesAsync.when(
+      data: (categories) {
+        if (categories.isEmpty) {
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      context.l10n.categoryTitle,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () => _showCategoryForm(context, ref),
-                    icon: const Icon(Icons.add),
-                    label: Text(context.l10n.commonAdd),
-                  ),
-                ],
+              _SectionToolbar(
+                countLabel: '0 ${context.l10n.manageDataCategoryCountLabel}',
+                onAdd: () => _showCategoryForm(context, ref),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Text(
-                context.l10n.categoryDescription,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 16),
-              categoriesAsync.when(
-                data: (categories) {
-                  if (categories.isEmpty) {
-                    return Text(context.l10n.categoryEmpty);
-                  }
-
-                  final expense = categories
-                      .where(
-                        (category) => category.type == TransactionType.expense,
-                      )
-                      .toList();
-                  final income = categories
-                      .where(
-                        (category) => category.type == TransactionType.income,
-                      )
-                      .toList();
-
-                  return Column(
-                    children: [
-                      _CategoryGroup(
-                        title: context.l10n.categoryExpense,
-                        categories: expense,
-                      ),
-                      const SizedBox(height: 12),
-                      _CategoryGroup(
-                        title: context.l10n.categoryIncome,
-                        categories: income,
-                      ),
-                    ],
-                  );
-                },
-                error: (error, stackTrace) {
-                  AppLogger.error(
-                    'Failed to load categories section',
-                    error,
-                    stackTrace,
-                  );
-                  return Text(
-                    context.l10n.categoryError(
-                      userFriendlyMessage(context, error),
-                    ),
-                  );
-                },
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: LinearProgressIndicator(),
-                ),
+                context.l10n.categoryEmpty,
+                style: TextStyle(color: colors.textDim),
               ),
             ],
-          ),
-        ),
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SectionToolbar(
+              countLabel:
+                  '${categories.length} ${context.l10n.manageDataCategoryCountLabel}',
+              onAdd: () => _showCategoryForm(context, ref),
+            ),
+            const SizedBox(height: 10),
+            ...categories.map(
+              (category) => Padding(
+                padding: const EdgeInsets.only(bottom: 9),
+                child: _CategoryTile(
+                  category: category,
+                  onEdit: () =>
+                      _showCategoryForm(context, ref, category: category),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      error: (error, stackTrace) {
+        AppLogger.error('Failed to load categories section', error, stackTrace);
+        return Text(
+          context.l10n.categoryError(userFriendlyMessage(context, error)),
+          style: TextStyle(color: colors.danger),
+        );
+      },
+      loading: () => LinearProgressIndicator(
+        minHeight: 2,
+        color: colors.primary,
+        backgroundColor: colors.outline.withValues(alpha: 0.35),
       ),
     );
   }
 }
 
-class _CategoryGroup extends ConsumerWidget {
-  const _CategoryGroup({required this.title, required this.categories});
+class _SectionToolbar extends StatelessWidget {
+  const _SectionToolbar({required this.countLabel, required this.onAdd});
 
-  final String title;
-  final List<Category> categories;
+  final String countLabel;
+  final VoidCallback onAdd;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Row(
       children: [
-        Text(
-          title,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+        Expanded(
+          child: Text(
+            countLabel.toUpperCase(),
+            style: context.moniaryTypography.metadataStrong.copyWith(
+              color: colors.textDim,
+              fontSize: 9,
+              letterSpacing: 1.4,
+            ),
+          ),
         ),
-        const SizedBox(height: 8),
-        if (categories.isEmpty)
-          Text(context.l10n.categoryNoData)
-        else
-          ...categories.map(
-            (category) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _CategoryTile(
-                category: category,
-                onEdit: () =>
-                    _showCategoryForm(context, ref, category: category),
+        InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: onAdd,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+            child: Text(
+              '+ ${context.l10n.commonAdd}',
+              style: context.moniaryTypography.metadataStrong.copyWith(
+                color: colors.primary,
+                fontSize: 11,
+                letterSpacing: 0,
               ),
             ),
           ),
+        ),
       ],
     );
   }
@@ -148,40 +124,108 @@ class _CategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColor.fromHex(
-      category.color,
-      fallback: const Color(0xFF4EA1FF),
-    );
+    final colors = context.moniaryColors;
+    final color = AppColor.fromHex(category.color, fallback: colors.primary);
 
     return Container(
+      constraints: const BoxConstraints(minHeight: 72),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        color: colors.surfaceRaised.withValues(alpha: 0.48),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.outline),
       ),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: color.withValues(alpha: 0.18),
-          foregroundColor: color,
-          child: const Icon(Icons.label_outline),
-        ),
-        title: Row(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 13, 9, 13),
+        child: Row(
           children: [
-            Expanded(child: Text(category.name)),
-            if (category.isDefault)
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Chip(label: Text(context.l10n.walletDefault)),
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
               ),
+              child: Icon(
+                _categoryIconData(category.icon),
+                color: color,
+                size: 18,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          category.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: colors.textPrimary,
+                                fontWeight: FontWeight.w800,
+                                height: 1.05,
+                              ),
+                        ),
+                      ),
+                      if (category.isDefault) ...[
+                        const SizedBox(width: 8),
+                        _DefaultBadge(label: context.l10n.walletDefault),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 7),
+                  Text(
+                    '${category.type == TransactionType.expense ? context.l10n.categoryExpense : context.l10n.categoryIncome} · ${category.isActive ? context.l10n.walletActive : context.l10n.walletInactive}'
+                        .toUpperCase(),
+                    style: context.moniaryTypography.metadata.copyWith(
+                      color: colors.textDim,
+                      fontSize: 8.5,
+                      letterSpacing: 1.1,
+                      height: 1.25,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit_outlined),
+              color: colors.textSecondary,
+              iconSize: 18,
+              visualDensity: VisualDensity.compact,
+              tooltip: context.l10n.categoryEditTitle,
+            ),
           ],
         ),
-        subtitle: Text(
-          category.isActive
-              ? context.l10n.walletActive
-              : context.l10n.walletInactive,
-        ),
-        trailing: IconButton(
-          onPressed: onEdit,
-          icon: const Icon(Icons.edit_outlined),
+      ),
+    );
+  }
+}
+
+class _DefaultBadge extends StatelessWidget {
+  const _DefaultBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: colors.success.withValues(alpha: 0.11),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label.toUpperCase(),
+        style: context.moniaryTypography.metadataStrong.copyWith(
+          color: colors.success,
+          fontSize: 7,
+          letterSpacing: 0.5,
         ),
       ),
     );
@@ -336,4 +380,14 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
       setState(() => _isSubmitting = false);
     }
   }
+}
+
+IconData _categoryIconData(String? name) {
+  return switch (name) {
+    'restaurant' => Icons.restaurant_outlined,
+    'directions_car' => Icons.directions_car_outlined,
+    'shopping_bag' => Icons.shopping_bag_outlined,
+    'attach_money' => Icons.payments_outlined,
+    _ => Icons.category_outlined,
+  };
 }

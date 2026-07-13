@@ -1,5 +1,7 @@
 # Moniary — Project Overview
 
+**Archive notice (2026-07-10)**: This is the May 2026 M01-M14 stabilization-plan snapshot, not the current product overview or roadmap. Use `docs/agent-context/` and current source for system facts.
+
 ## Project
 - **Tên**: Moniary — ứng dụng quản lý tài chính cá nhân trên mobile.
 - **Platform**: Flutter (Dart)

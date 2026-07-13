@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.moniary.moniary",
+      "sha256_cert_fingerprints": [
+        "10:83:5C:82:90:DD:4F:56:E7:75:10:9A:D4:D6:53:33:09:00:35:8A:F0:4D:AB:FD:17:12:8B:0F:15:87:02:96",
+        "FE:4C:A1:55:74:C3:DF:E0:50:C6:A2:52:48:EE:65:51:04:3A:33:EF:1C:2E:CC:BE:F0:60:75:3F:68:FE:05:C8"
+      ]
+    }
+  }
+]

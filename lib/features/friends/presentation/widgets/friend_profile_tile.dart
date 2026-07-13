@@ -20,33 +20,74 @@ class FriendProfileTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: ListTile(
-        onTap: onTap,
-        leading: ClipOval(
-          child: SupabaseImage(
-            imagePath: profile.avatarPath,
-            width: 44,
-            height: 44,
-            fallbackIcon: Icons.person_outline,
+    final colors = context.moniaryColors;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: colors.outline),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(22),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(
+              children: [
+                ClipOval(
+                  child: SupabaseImage(
+                    imagePath: profile.avatarPath,
+                    width: 48,
+                    height: 48,
+                    fallbackIcon: Icons.person_outline,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        profile.displayName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: colors.textPrimary,
+                              fontWeight: FontWeight.w900,
+                            ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle?.trim().isNotEmpty == true
+                            ? subtitle!
+                            : profile.displayUsername,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.moniaryTypography.metadata.copyWith(
+                          color: colors.textDim,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (trailing != null) ...[
+                  const SizedBox(width: 12),
+                  Flexible(
+                    flex: 0,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 220),
+                      child: trailing!,
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
-        title: Text(
-          profile.displayName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w700),
-        ),
-        subtitle: Text(
-          subtitle?.trim().isNotEmpty == true
-              ? subtitle!
-              : profile.displayUsername,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: AppTheme.textSubtle),
-        ),
-        trailing: trailing,
       ),
     );
   }

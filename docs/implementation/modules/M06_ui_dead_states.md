@@ -93,5 +93,5 @@ KHÔNG sửa logic. Chỉ text/UI. Chạy: flutter analyze
 - [ ] `flutter analyze` pass
 - [ ] `flutter test` pass
 - [ ] Commit: `fix(M06): fix dead auth buttons + Vietnamese diacritics + day label`
-- [ ] Update `handoff/current_status.md`
-- [ ] Ghi issues mới (nếu có) vào `handoff/issues_backlog.md`
+- [ ] Update `../handoff/current_status.md`
+- [ ] Ghi issues mới (nếu có) vào `../handoff/issues_backlog.md`

@@ -1,5 +1,7 @@
 # Issues Backlog
 
+**Archive notice (2026-07-10)**: Backlog này thuộc kế hoạch M01-M14 đã đóng. Rủi ro hiện tại được theo dõi trong `docs/agent-context/21-known-risks-tech-debt.md`.
+
 > Ghi lại issues phát hiện thêm trong quá trình dev mà **ngoài scope** module hiện tại.
 > KHÔNG sửa — chỉ ghi lại để xử lý sau.
 

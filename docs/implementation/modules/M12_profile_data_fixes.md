@@ -78,5 +78,5 @@ Chạy: flutter analyze && flutter test
 - [ ] `flutter analyze` pass
 - [ ] `flutter test` pass
 - [ ] Commit: `fix(M12): profile upsert + group owner check by ID + ref.watch in build`
-- [ ] Update `handoff/current_status.md`
-- [ ] Ghi issues mới (nếu có) vào `handoff/issues_backlog.md`
+- [ ] Update `../handoff/current_status.md`
+- [ ] Ghi issues mới (nếu có) vào `../handoff/issues_backlog.md`

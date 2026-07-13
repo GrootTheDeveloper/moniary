@@ -9,6 +9,8 @@ class GroupModelMapper {
   static SpendingGroup group(
     Map<String, dynamic> row, {
     int memberCount = 0,
+    List<String?> memberAvatarPaths = const [],
+    int transactionCount = 0,
     int totalSpent = 0,
     int currentUserBalance = 0,
     bool hasUnresolvedSettlements = false,
@@ -24,6 +26,8 @@ class GroupModelMapper {
       createdAt: _date(row['created_at']),
       updatedAt: _date(row['updated_at']),
       memberCount: memberCount,
+      memberAvatarPaths: memberAvatarPaths,
+      transactionCount: transactionCount,
       totalSpent: totalSpent,
       currentUserBalance: currentUserBalance,
       hasUnresolvedSettlements: hasUnresolvedSettlements,

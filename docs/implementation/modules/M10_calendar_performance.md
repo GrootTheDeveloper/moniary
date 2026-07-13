@@ -80,5 +80,5 @@ Chạy: flutter analyze && flutter test
 - [ ] `flutter analyze` pass
 - [ ] `flutter test` pass
 - [ ] Commit: `perf(M10): remove SupabaseImage from calendar cells + cache getters + lazy list`
-- [ ] Update `handoff/current_status.md`
-- [ ] Ghi issues mới (nếu có) vào `handoff/issues_backlog.md`
+- [ ] Update `../handoff/current_status.md`
+- [ ] Ghi issues mới (nếu có) vào `../handoff/issues_backlog.md`

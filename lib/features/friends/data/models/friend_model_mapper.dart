@@ -11,6 +11,8 @@ class FriendModelMapper {
       username: row['username'] as String?,
       avatarPath: row['avatar_url'] as String?,
       friendsSince: _date(row['friends_since']),
+      sharedGroupCount: (row['shared_group_count'] as num?)?.toInt() ?? 0,
+      currentUserBalance: (row['current_user_balance'] as num?)?.toInt() ?? 0,
     );
   }
 

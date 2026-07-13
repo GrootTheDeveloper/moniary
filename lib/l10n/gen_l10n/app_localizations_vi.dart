@@ -9,6 +9,25 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get budgetEditLimit => 'Chỉnh sửa hạn mức';
+
+  @override
+  String get budgetQuickPresets => 'Gợi ý nhanh';
+
+  @override
+  String get budgetWarningThreshold => 'Cảnh báo khi chạm';
+
+  @override
+  String get budgetCategoryDetailTitle => 'Chi tiết ngân sách';
+
+  @override
+  String get budgetTransactionsInLimit => 'Giao dịch tính vào hạn mức';
+
+  @override
+  String get budgetNoTransactions =>
+      'Chưa có giao dịch nào trong danh mục này.';
+
+  @override
   String get appName => 'Moniary';
 
   @override
@@ -86,7 +105,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginSubtitle => 'Quản lý chi tiêu cá nhân';
 
   @override
-  String get loginAnonymous => 'Kết nối ẩn danh với Supabase';
+  String get loginAnonymous => 'Tiếp tục với tài khoản khách';
 
   @override
   String get loginTerms =>
@@ -105,24 +124,51 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginApple => 'Đăng nhập với Apple';
 
   @override
+  String get loginFacebook => 'Đăng nhập với Facebook';
+
+  @override
   String get loginEmail => 'Đăng nhập với Email';
 
   @override
   String get loginOr => 'hoặc';
 
   @override
-  String get loginConnecting => 'Đang kết nối Supabase...';
+  String get loginConnecting => 'Đang đăng nhập...';
 
   @override
   String get loginTryWithoutAuth => 'Dùng thử không cần đăng nhập';
 
   @override
-  String get loginSessionReady =>
-      'Phiên đăng nhập đã sẵn sàng. Bạn có thể vào thẳng Lịch.';
+  String get loginSessionReady => 'Bạn đã đăng nhập. Đang mở lịch chi tiêu...';
 
   @override
   String get loginDataSecure =>
-      'Dữ liệu của bạn được bảo mật và đồng bộ với Supabase.';
+      'Dữ liệu của bạn được bảo vệ và đồng bộ an toàn.';
+
+  @override
+  String get loginForgotPassword => 'Quên mật khẩu?';
+
+  @override
+  String get loginNoAccount => 'Chưa có tài khoản?';
+
+  @override
+  String get loginRegisterNow => 'Đăng ký ngay';
+
+  @override
+  String get loginHaveAccount => 'Đã có tài khoản?';
+
+  @override
+  String get loginSocialDivider => 'Hoặc đăng nhập bằng';
+
+  @override
+  String get loginDemoCta => 'DEMO';
+
+  @override
+  String get loginGuestCta => 'Dùng thử ngay — không cần tài khoản →';
+
+  @override
+  String get loginPasswordResetSent =>
+      'Đã gửi hướng dẫn đặt lại mật khẩu qua email.';
 
   @override
   String get splashLoading => 'Đang tải ứng dụng...';
@@ -177,45 +223,63 @@ class AppLocalizationsVi extends AppLocalizations {
   String get onboardingPillStats => 'Thống kê';
 
   @override
-  String get onboardingPage1Title1 => 'Ghi chi tiêu';
+  String get onboardingPage1Title1 => 'Quét hoá đơn,';
 
   @override
-  String get onboardingPage1Title2 => 'bằng ảnh';
+  String get onboardingPage1Title2 => 'ghi chép trong 1 chạm';
 
   @override
-  String get onboardingPage1Subtitle => 'Nhanh gọn  •  Dễ nhớ  •  Không bỏ sót';
+  String get onboardingPage1Subtitle => 'Đang nhận diện hoá đơn';
 
   @override
   String get onboardingPage1Caption =>
-      'Lưu khoảnh khắc chi tiêu như một cuốn nhật ký mini.';
+      'Quét hoá đơn và tự động điền số tiền, ngày, ví và danh mục.';
 
   @override
-  String get onboardingPage2Title1 => 'Xem lịch tháng';
+  String get onboardingPage2Title1 => 'Mỗi ngày là';
 
   @override
-  String get onboardingPage2Title2 => 'trực quan';
+  String get onboardingPage2Title2 => 'một tấm ảnh nhỏ';
 
   @override
   String get onboardingPage2Subtitle =>
-      'Ảnh, tổng chi, bộ lọc và nhắc nhở trong một màn hình';
+      'Cuối tháng nhìn lại như một cuốn album, không phải một bảng số.';
 
   @override
   String get onboardingPage2Caption =>
-      'Mỗi ngày là một ô nhỏ, mỗi giao dịch là một kỷ niệm.';
+      'Mỗi giao dịch là một mảnh nhỏ trong nhật ký của bạn.';
 
   @override
-  String get onboardingPage3Title1 => 'Thống kê';
+  String get onboardingPage3Title1 => 'Ngân sách rõ ràng,';
 
   @override
-  String get onboardingPage3Title2 => 'dễ hiểu';
+  String get onboardingPage3Title2 => 'nhìn 3 giây là hiểu';
 
   @override
   String get onboardingPage3Subtitle =>
-      'Theo dõi thu chi và thói quen tiêu dùng không cần bảng biểu khó';
+      'Vòng tiến độ theo từng danh mục, báo trước khi bạn sắp vượt hạn mức.';
 
   @override
   String get onboardingPage3Caption =>
-      'Moniary giúp bạn nhìn tiền theo ngữ cảnh sống thật.';
+      'Theo dõi hạn mức mà không cần đọc những bảng số phức tạp.';
+
+  @override
+  String get onboardingReceiptCategory => 'Ăn uống';
+
+  @override
+  String get onboardingReceiptDate => '15/6';
+
+  @override
+  String get onboardingReceiptAmount => '385.000';
+
+  @override
+  String get onboardingPhotoAmount => '−145.000 ₫';
+
+  @override
+  String get onboardingBudgetPercent => '70%';
+
+  @override
+  String get onboardingBudgetLabel => 'Ngân sách tháng';
 
   @override
   String get profileSetupTitle => 'Thiết lập hồ sơ';
@@ -234,6 +298,80 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profileSetupStart => 'Bắt đầu';
+
+  @override
+  String profileSurveyWelcomeTitle(String name) {
+    return 'Rất vui được chào đón bạn, $name!';
+  }
+
+  @override
+  String get profileSurveyWelcomeBody =>
+      'Một vài lựa chọn ngắn sẽ giúp Moniary chuẩn bị trải nghiệm phù hợp với bạn.';
+
+  @override
+  String get profileSurveyFallbackName => 'bạn';
+
+  @override
+  String get profileSurveyOccupationTitle => 'Hiện tại bạn đang làm nghề gì?';
+
+  @override
+  String get profileSurveyOccupationBody =>
+      'Để Moniary gợi ý danh mục và cách ghi chép phù hợp với bạn.';
+
+  @override
+  String get profileSurveyOccupationStudent => 'Sinh viên';
+
+  @override
+  String get profileSurveyOccupationOffice => 'Nhân viên văn phòng';
+
+  @override
+  String get profileSurveyOccupationFreelancer => 'Làm việc tự do';
+
+  @override
+  String get profileSurveyOccupationBusiness => 'Kinh doanh';
+
+  @override
+  String get profileSurveyOccupationOther => 'Khác';
+
+  @override
+  String get profileSurveyCurrencyTitle => 'Chọn loại tiền tệ bạn đang dùng';
+
+  @override
+  String get profileSurveyCurrencyBody =>
+      'Moniary sẽ dùng đơn vị này khi hiển thị số dư và báo cáo.';
+
+  @override
+  String get profileSurveyCurrencyVnd => 'Vietnamese Dong';
+
+  @override
+  String get profileSurveyCurrencyVgo => 'Vietnamese Gold (SJC)';
+
+  @override
+  String get profileSurveyCurrencyUsd => 'United States Dollar';
+
+  @override
+  String get profileSurveyWalletTitle => 'Hãy tạo cho mình một chiếc Ví';
+
+  @override
+  String get profileSurveyWalletBody => 'Bạn đang có bao nhiêu tiền trong Ví?';
+
+  @override
+  String get profileSurveyWalletName => 'Tên ví';
+
+  @override
+  String get profileSurveyWalletDefaultName => 'Ví của tôi';
+
+  @override
+  String get profileSurveyAmountLabel => 'Số tiền';
+
+  @override
+  String get profileSurveyAmountHint => '0';
+
+  @override
+  String get profileSurveyNext => 'Tiếp tục';
+
+  @override
+  String get profileSurveyFinish => 'Tạo ví và bắt đầu';
 
   @override
   String get profileSetupNameRequired => 'Nhập tên hiển thị trước.';
@@ -266,6 +404,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get calendarSelectCategoryFilter => 'Chọn danh mục lọc';
 
   @override
+  String get calendarAllFilter => 'Tất cả';
+
+  @override
+  String get calendarSaved => 'Đã lưu';
+
+  @override
+  String get calendarSearchLabel => 'Tìm';
+
+  @override
+  String get calendarWalletsCategoriesAction => 'Ví & mục';
+
+  @override
   String get calendarMonthlyExpense => 'Tổng chi tháng';
 
   @override
@@ -273,11 +423,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get calendarEmptyMessage =>
-      'Chưa có giao dịch nào trong tháng này. Bước tiếp theo là thêm giao dịch để lịch hiện dữ liệu thật.';
+      'Chưa có giao dịch nào trong tháng này. Bạn vẫn có thể chọn ngày hoặc nhấn + để thêm giao dịch.';
+
+  @override
+  String get calendarTodayEmptyMessage =>
+      'Hôm nay chưa có giao dịch nào. Nhấn + để ghi lại khoản thu chi mới.';
 
   @override
   String calendarStatsMessage(int count, int days) {
-    return '$count giao dịch trong $days ngày có hoạt động. Lịch đang đọc dữ liệu thật từ Supabase.';
+    return '$count giao dịch trong $days ngày có hoạt động. Dữ liệu lịch đã được cập nhật.';
   }
 
   @override
@@ -287,6 +441,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get calendarStatsTab => 'Thống kê';
+
+  @override
+  String get navStatsLabel => 'Số liệu';
+
+  @override
+  String get navGroupsLabel => 'Nhóm';
+
+  @override
+  String get navProfileLabel => 'Tôi';
 
   @override
   String get calendarLoading => 'Đang đồng bộ lịch...';
@@ -338,6 +501,23 @@ class AppLocalizationsVi extends AppLocalizations {
   String get calendarSearchNoResults => 'Không tìm thấy giao dịch nào.';
 
   @override
+  String get calendarRecentSearches => 'Tìm gần đây';
+
+  @override
+  String get calendarRecentSearchCoffee => 'cà phê';
+
+  @override
+  String get calendarRecentSearchRide => 'grab';
+
+  @override
+  String get calendarRecentSearchMarket => 'siêu thị';
+
+  @override
+  String calendarSearchResultsHeader(String query, int count) {
+    return 'Kết quả · \"$query\" · $count';
+  }
+
+  @override
   String get transactionSaveTransaction => 'Lưu giao dịch';
 
   @override
@@ -364,6 +544,9 @@ class AppLocalizationsVi extends AppLocalizations {
       'Ngày này chưa có giao dịch. Bạn có thể bấm nút + để thêm ngay.';
 
   @override
+  String get transactionAddForDay => 'Thêm khoản cho ngày này';
+
+  @override
   String transactionLoadDetailError(String error) {
     return 'Không tải được chi tiết giao dịch.\n$error';
   }
@@ -379,6 +562,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get transactionAmount => 'Số tiền';
+
+  @override
+  String get transactionAmountSuffix => 'đ';
 
   @override
   String get transactionAmountHint => '0';
@@ -409,10 +595,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get transactionSaving => 'Đang lưu...';
 
   @override
-  String get transactionCreateTitle => 'Tạo giao dịch';
+  String get transactionCreateTitle => 'Thêm giao dịch';
 
   @override
   String get transactionEditTitle => 'Sửa giao dịch';
+
+  @override
+  String get transactionDetailTitle => 'Giao dịch';
 
   @override
   String get transactionDeleteConfirm => 'Xác nhận xóa giao dịch này?';
@@ -450,6 +639,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get transactionWalletAccount => 'Ví / Tài khoản';
+
+  @override
+  String get transactionSource => 'Nguồn';
+
+  @override
+  String get transactionSourceManual => 'Nhập thủ công';
+
+  @override
+  String get transactionSourceReceiptImage => 'Ảnh hóa đơn';
 
   @override
   String get transactionExpenseCategory => 'Danh mục chi';
@@ -663,6 +861,14 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupTitle => 'Nhóm chi tiêu';
 
   @override
+  String get groupListTitle => 'Nhóm';
+
+  @override
+  String groupListSection(int count) {
+    return 'Nhóm của bạn · $count';
+  }
+
+  @override
   String get groupEmpty => 'Chưa có nhóm chi tiêu';
 
   @override
@@ -684,6 +890,17 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String groupMemberCount(int count) {
     return '$count thành viên';
+  }
+
+  @override
+  String get groupDetailKindLabel => 'Nhóm';
+
+  @override
+  String get groupMoreActions => 'Tác vụ nhóm';
+
+  @override
+  String groupTransactionCount(int count) {
+    return '$count khoản';
   }
 
   @override
@@ -733,6 +950,56 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupDeletedMember => 'Thành viên đã xóa';
+
+  @override
+  String get groupInvitationsTitle => 'Lời mời nhóm';
+
+  @override
+  String get groupInvitationsEmpty => 'Bạn chưa có lời mời nhóm nào.';
+
+  @override
+  String get groupInvitationsEmptySubtitle =>
+      'Các lời mời qua username hoặc bạn bè sẽ xuất hiện tại đây.';
+
+  @override
+  String get groupInvitationsLoadError => 'Không thể tải lời mời nhóm.';
+
+  @override
+  String groupInvitationInvitedBy(String name) {
+    return '$name đã mời bạn tham gia.';
+  }
+
+  @override
+  String groupInvitationExpiresAt(String date) {
+    return 'Hết hạn ngày $date';
+  }
+
+  @override
+  String get groupInvitationAccept => 'Chấp nhận';
+
+  @override
+  String get groupInvitationDecline => 'Từ chối';
+
+  @override
+  String get groupInvitationDeclinedSuccess => 'Đã từ chối lời mời nhóm.';
+
+  @override
+  String get groupInvitationPending => 'Đang chờ';
+
+  @override
+  String get groupInvitationAccepted => 'Đã tham gia';
+
+  @override
+  String get groupInvitationDeclined => 'Đã từ chối';
+
+  @override
+  String get groupInvitationExpired => 'Đã hết hạn';
+
+  @override
+  String get groupInvitationRevoked => 'Đã thu hồi';
+
+  @override
+  String get groupInvitationInvalid => 'Lời mời không còn hợp lệ.';
 
   @override
   String get groupMemberEmailHint => 'Email (không bắt buộc)';
@@ -883,7 +1150,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileUserDefault => 'Người dùng Moniary';
 
   @override
-  String get profileAnonymous => 'Tài khoản dùng thử ẩn danh';
+  String get profileAnonymous => 'Tài khoản khách';
 
   @override
   String get profileMyData => 'Dữ liệu của tôi';
@@ -1019,7 +1286,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyAboutSubtitle =>
-      'Mục đích app, trạng thái MVP và thông tin phát hành.';
+      'Mục đích app, trạng thái phiên bản hiện tại và thông tin phát hành.';
 
   @override
   String get profileAccount => 'Tài khoản';
@@ -1077,6 +1344,32 @@ class AppLocalizationsVi extends AppLocalizations {
   String get yearlyReportDesc => 'Mỗi năm một lần';
 
   @override
+  String get reminderSectionTitle => 'Nhắc nhở trên thiết bị';
+
+  @override
+  String get reminderSectionDesc =>
+      'Thông báo ngay trên máy, nhắc bạn ghi lại chi tiêu trong ngày.';
+
+  @override
+  String get reminderDailyTitle => 'Nhắc ghi chép hàng ngày';
+
+  @override
+  String reminderDailyDesc(String time) {
+    return 'Mỗi ngày lúc $time';
+  }
+
+  @override
+  String get reminderNotificationTitle => 'Đừng quên ghi lại chi tiêu nhé 💸';
+
+  @override
+  String get reminderNotificationBody =>
+      'Dành vài giây ghi lại các giao dịch hôm nay của bạn.';
+
+  @override
+  String get reminderPermissionDenied =>
+      'Hãy bật quyền thông báo trong cài đặt hệ thống để nhận nhắc nhở.';
+
+  @override
   String get deleteAccountTitle => 'Xóa tài khoản';
 
   @override
@@ -1103,7 +1396,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get deleteAccountConsequence3 =>
-      'Xóa ảnh giao dịch trong Storage theo user ID.';
+      'Xóa ảnh giao dịch gắn với tài khoản hiện tại.';
 
   @override
   String get deleteAccountUnderstand =>
@@ -1155,10 +1448,22 @@ class AppLocalizationsVi extends AppLocalizations {
   String get manageDataTitle => 'Quản lý dữ liệu';
 
   @override
+  String get manageDataWalletTab => 'Ví';
+
+  @override
+  String get manageDataWalletCountLabel => 'ví';
+
+  @override
+  String get manageDataCategoryCountLabel => 'danh mục';
+
+  @override
   String get cameraTakePhoto => 'Chụp';
 
   @override
   String get cameraFlip => 'Lật camera';
+
+  @override
+  String get cameraFlash => 'Đèn flash';
 
   @override
   String get cameraNoPermission => 'Không có quyền truy cập camera';
@@ -1233,26 +1538,26 @@ class AppLocalizationsVi extends AppLocalizations {
   String get deleteAccountHelpExportBefore => 'Xuất dữ liệu trước';
 
   @override
-  String get deleteAccountHelpCreateRequest => 'Tạo request xóa dữ liệu';
+  String get deleteAccountHelpCreateRequest => 'Tạo yêu cầu xóa dữ liệu';
 
   @override
-  String get deleteAccountHelpContactPrivacy => 'Liên hệ privacy';
+  String get deleteAccountHelpContactPrivacy => 'Liên hệ quyền riêng tư';
 
   @override
   String get legalContactHero =>
-      'Các kênh liên hệ này giúp người dùng, reviewer hoặc team phát hành biết nơi gửi yêu cầu phù hợp.';
+      'Các kênh liên hệ này giúp bạn gửi đúng yêu cầu về dữ liệu, hỗ trợ hoặc pháp lý.';
 
   @override
   String get legalContactPrivacyDesc =>
-      'Yêu cầu dữ liệu cá nhân, xóa dữ liệu hoặc câu hỏi privacy.';
+      'Yêu cầu dữ liệu cá nhân, xóa dữ liệu hoặc câu hỏi về quyền riêng tư.';
 
   @override
   String get legalContactSupportDesc =>
-      'Hỗ trợ chung về app, file export hoặc thao tác người dùng.';
+      'Hỗ trợ chung về app, file xuất dữ liệu hoặc thao tác người dùng.';
 
   @override
   String get legalContactLegalDesc =>
-      'Vấn đề điều khoản, phát hành Store hoặc yêu cầu pháp lý.';
+      'Vấn đề điều khoản, phát hành hoặc yêu cầu pháp lý.';
 
   @override
   String get legalContactPrivacy => 'Quyền riêng tư';
@@ -1335,6 +1640,49 @@ class AppLocalizationsVi extends AppLocalizations {
   String get statsDailyTrend => 'Xu hướng hàng ngày';
 
   @override
+  String get statsWeeklySpending => 'Chi theo tuần';
+
+  @override
+  String get statsCategories => 'Danh mục';
+
+  @override
+  String statsMonthExpenseMeta(String month) {
+    return 'Tổng chi · $month';
+  }
+
+  @override
+  String statsExpenseLessThanPrevious(int percent) {
+    return '↓ Ít hơn tháng trước là $percent%';
+  }
+
+  @override
+  String statsExpenseMoreThanPrevious(int percent) {
+    return '↑ Cao hơn tháng trước là $percent%';
+  }
+
+  @override
+  String get statsExpenseSameAsPrevious => 'Gần bằng tháng trước';
+
+  @override
+  String get statsExpenseNoPrevious => 'Chưa có dữ liệu tháng trước';
+
+  @override
+  String statsBudgetUsed(int percent) {
+    return 'Ngân sách · đã dùng $percent%';
+  }
+
+  @override
+  String get statsBudgetNoLimit => 'Ngân sách';
+
+  @override
+  String statsWeekLabel(int week) {
+    return 'Tuần $week';
+  }
+
+  @override
+  String get statsMillionShort => 'tr';
+
+  @override
   String get statsLargestTransactions => 'Giao dịch lớn nhất';
 
   @override
@@ -1356,7 +1704,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profileAnonymousWarning =>
-      'Bạn đang đăng nhập bằng tài khoản khách. Hãy liên kết tài khoản để tránh mất mát dữ liệu khi đổi thiết bị.';
+      'Bạn đang dùng tài khoản khách. Hãy liên kết Email hoặc Google để giữ dữ liệu khi đổi thiết bị.';
 
   @override
   String get profileLinkNow => 'Liên kết ngay';
@@ -1366,7 +1714,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profileLinkAccountSubtitle =>
-      'Tài khoản của bạn hiện là ẩn danh. Liên kết với Email hoặc Google để lưu trữ dữ liệu vĩnh viễn và đăng nhập trên nhiều thiết bị.';
+      'Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email hoặc Google để lưu dữ liệu và đăng nhập trên nhiều thiết bị.';
 
   @override
   String get profileNewPassword => 'Mật khẩu mới';
@@ -1426,7 +1774,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileLanguageEn => 'English';
 
   @override
-  String get profileAnonymousBadge => 'Tài khoản Ẩn danh';
+  String get profileAnonymousBadge => 'Tài khoản khách';
 
   @override
   String profileVerifiedBadge(String provider) {
@@ -1482,11 +1830,11 @@ class AppLocalizationsVi extends AppLocalizations {
       'Sau khi tạo file, vào lịch sử export để mở lại đường dẫn file và chia sẻ khi cần.';
 
   @override
-  String get exportTroubleshootingSupportTitle => '4. Tạo request hỗ trợ';
+  String get exportTroubleshootingSupportTitle => '4. Tạo yêu cầu hỗ trợ';
 
   @override
   String get exportTroubleshootingSupportDesc =>
-      'Nếu file không tạo được hoặc không mở được, hãy tạo request privacy/support kèm mô tả lỗi.';
+      'Nếu file không tạo được hoặc không mở được, hãy tạo yêu cầu hỗ trợ kèm mô tả lỗi.';
 
   @override
   String get legalDataDeletionPolicy => 'Chính sách xóa dữ liệu';
@@ -1501,7 +1849,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get legalContact => 'Liên hệ pháp lý';
 
   @override
-  String get legalCopyAllContacts => 'Copy tất cả liên hệ';
+  String get legalCopyAllContacts => 'Sao chép tất cả liên hệ';
 
   @override
   String legalCopyAllText(
@@ -1513,7 +1861,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get legalCopyContactSuccess => 'Đã copy thông tin liên hệ.';
+  String get legalCopyContactSuccess => 'Đã sao chép thông tin liên hệ.';
 
   @override
   String get legalPolicyAcceptance => 'Đồng ý chính sách';
@@ -1549,19 +1897,61 @@ class AppLocalizationsVi extends AppLocalizations {
   String get privacyDataFreshness => 'Độ mới dữ liệu';
 
   @override
-  String get privacyLocalFiles => 'File cục bộ';
+  String get privacyLocalFiles => 'File trên thiết bị';
 
   @override
   String get privacyTransactionPhotos => 'Ảnh giao dịch';
 
   @override
-  String get privacyViewExportHistory => 'Xem lịch sử export';
+  String get privacyViewExportHistory => 'Xem lịch sử xuất dữ liệu';
 
   @override
   String get privacyPermissionRationale => 'Quyền truy cập';
 
   @override
-  String get privacyFaq => 'FAQ privacy & tài khoản';
+  String get privacyFaq => 'FAQ quyền riêng tư & tài khoản';
+
+  @override
+  String get privacyFaqHeroBody =>
+      'Các câu hỏi thường gặp về dữ liệu cá nhân, export, xóa tài khoản và yêu cầu privacy.';
+
+  @override
+  String get privacyFaqStoredDataQuestion => 'Moniary lưu những dữ liệu nào?';
+
+  @override
+  String get privacyFaqStoredDataAnswer =>
+      'App lưu hồ sơ, ví, danh mục, giao dịch, ghi chú và đường dẫn ảnh giao dịch khi người dùng tạo dữ liệu trong app.';
+
+  @override
+  String get privacyFaqExportBeforeDeletionQuestion =>
+      'Tôi có thể xuất dữ liệu trước khi xóa tài khoản không?';
+
+  @override
+  String get privacyFaqExportBeforeDeletionAnswer =>
+      'Có. Bạn có thể xuất dữ liệu thành CSV, Excel hoặc PDF trong phần Xuất dữ liệu của tôi.';
+
+  @override
+  String get privacyFaqDeletionImagesQuestion =>
+      'Xóa tài khoản có xóa ảnh giao dịch không?';
+
+  @override
+  String get privacyFaqDeletionImagesAnswer =>
+      'Luồng xóa tài khoản được thiết kế để xóa dữ liệu app và ảnh giao dịch gắn với user hiện tại.';
+
+  @override
+  String get privacyFaqDeletionFailQuestion =>
+      'Nếu xóa tài khoản trực tiếp thất bại thì sao?';
+
+  @override
+  String get privacyFaqDeletionFailAnswer =>
+      'Bạn có thể tạo file yêu cầu xóa dữ liệu thủ công và gửi cho kênh hỗ trợ privacy.';
+
+  @override
+  String get privacyFaqExportLocationQuestion => 'File export nằm ở đâu?';
+
+  @override
+  String get privacyFaqExportLocationAnswer =>
+      'File export được lưu trong thư mục tài liệu của app trên thiết bị và có thể mở/chia sẻ từ lịch sử export.';
 
   @override
   String get privacyCenter => 'Trung tâm riêng tư';
@@ -1573,16 +1963,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get privacyUseTemplate => 'Dùng mẫu nội dung';
 
   @override
-  String get privacyCreateRequest => 'Tạo yêu cầu privacy';
+  String get privacyCreateRequest => 'Tạo yêu cầu quyền riêng tư';
 
   @override
   String get privacyRequestCreated => 'Đã tạo yêu cầu';
 
   @override
-  String get privacyCopyEmail => 'Copy email';
+  String get privacyCopyEmail => 'Sao chép email';
 
   @override
-  String get privacyCopyInstructions => 'Copy hướng dẫn';
+  String get privacyCopyInstructions => 'Sao chép hướng dẫn';
 
   @override
   String get privacyPolicyTitle => 'Chính sách bảo mật';
@@ -1591,16 +1981,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get privacyRequestDetailTitle => 'Chi tiết yêu cầu';
 
   @override
-  String get privacyCopyFilePath => 'Copy file path';
+  String get privacyCopyFilePath => 'Sao chép đường dẫn file';
 
   @override
-  String get privacyCopyFilePathSuccess => 'Đã copy đường dẫn file';
+  String get privacyCopyFilePathSuccess => 'Đã sao chép đường dẫn file';
 
   @override
-  String get privacyCopyRequest => 'Copy request';
+  String get privacyCopyRequest => 'Sao chép yêu cầu';
 
   @override
-  String get privacyCopyRequestSuccess => 'Đã copy nội dung yêu cầu';
+  String get privacyCopyRequestSuccess => 'Đã sao chép nội dung yêu cầu';
 
   @override
   String get storeAboutMoniary => 'Giới thiệu Moniary';
@@ -1615,10 +2005,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get supportHelpCenter => 'Trung tâm trợ giúp';
 
   @override
-  String get supportCopySuccess => 'Đã copy thông tin support.';
+  String get supportCopySuccess => 'Đã sao chép thông tin hỗ trợ.';
 
   @override
-  String get supportCopyDiagnostic => 'Copy diagnostic info';
+  String get supportCopyDiagnostic => 'Sao chép thông tin hỗ trợ';
 
   @override
   String get supportRequestChecklist => 'Checklist gửi hỗ trợ';
@@ -1726,6 +2116,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get settingsTitle => 'Cài đặt';
+
+  @override
+  String get settingsAccountSection => 'Tài khoản';
+
+  @override
+  String get settingsDataSection => 'Dữ liệu';
+
+  @override
+  String get settingsLegalSupportSection => 'Pháp lý & trợ giúp';
 
   @override
   String importPreviewTitle(int count) {
@@ -2060,22 +2459,23 @@ class AppLocalizationsVi extends AppLocalizations {
   String get privacyContactShortcuts => 'Lối tắt hỗ trợ';
 
   @override
-  String get privacyContactCopyEmailSuccess => 'Đã copy email support.';
+  String get privacyContactCopyEmailSuccess => 'Đã sao chép email hỗ trợ.';
 
   @override
   String privacyContactCopyGuide(String email) {
-    return 'Email: $email\nChủ đề: Moniary privacy request\nNội dung: Dán nội dung yêu cầu đã copy từ app.';
+    return 'Email: $email\nChủ đề: Yêu cầu hỗ trợ Moniary\nNội dung: Dán nội dung yêu cầu đã sao chép từ app.';
   }
 
   @override
-  String get privacyContactCopyGuideSuccess => 'Đã copy hướng dẫn gửi request.';
+  String get privacyContactCopyGuideSuccess =>
+      'Đã sao chép hướng dẫn gửi yêu cầu.';
 
   @override
   String get privacyContactHeroTitle => 'Yêu cầu về dữ liệu cá nhân';
 
   @override
   String get privacyContactHeroDesc =>
-      'Nếu không thể xử lý trực tiếp trong app, người dùng có thể liên hệ team để yêu cầu hỗ trợ về dữ liệu.';
+      'Nếu không thể xử lý trực tiếp trong app, bạn có thể liên hệ nhóm hỗ trợ Moniary để được hỗ trợ về dữ liệu.';
 
   @override
   String get privacyContactEmailTitle => 'Email hỗ trợ';
@@ -2088,11 +2488,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get privacyContactInfoTitle => 'Thông tin cần gửi';
 
   @override
-  String get privacyContactInfoValue => 'User ID hoặc email đăng nhập';
+  String get privacyContactInfoValue => 'Mã tài khoản hoặc email đăng nhập';
 
   @override
   String get privacyContactInfoDesc =>
-      'Không gửi mật khẩu, access token, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.';
+      'Không gửi mật khẩu, mã truy cập, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.';
 
   @override
   String get privacyContactTimeTitle => 'Thời gian phản hồi';
@@ -2102,7 +2502,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyContactTimeDesc =>
-      'Team cần cập nhật thời gian thực tế trước khi phát hành production.';
+      'Moniary sẽ cập nhật thời gian phản hồi thực tế khi phát hành chính thức.';
 
   @override
   String get privacyContactRecentRequests => 'Yêu cầu gần đây';
@@ -2118,69 +2518,69 @@ class AppLocalizationsVi extends AppLocalizations {
       'Yêu cầu đã được tạo. Vui lòng kiểm tra lịch sử và gửi yêu cầu thủ công.';
 
   @override
-  String get privacyAndAccountTitle => 'Privacy & tài khoản';
+  String get privacyAndAccountTitle => 'Quyền riêng tư & tài khoản';
 
   @override
   String get privacyAndAccountSubtitle =>
-      'Xem quyền dữ liệu, yêu cầu privacy và các lựa chọn liên quan tài khoản.';
+      'Xem quyền dữ liệu, yêu cầu hỗ trợ và các lựa chọn liên quan tài khoản.';
 
   @override
   String get dataRightsTitle => 'Quyền dữ liệu';
 
   @override
   String get dataRightsSubtitle =>
-      'Tóm tắt quyền xem, xuất, sửa/xóa dữ liệu và liên hệ privacy.';
+      'Tóm tắt quyền xem, xuất, sửa/xóa dữ liệu và liên hệ quyền riêng tư.';
 
   @override
   String get exportDataSubTitle =>
-      'Xử lý khi export CSV, Excel hoặc PDF lỗi, trống hoặc không tìm thấy file.';
+      'Xử lý khi xuất CSV, Excel hoặc PDF lỗi, trống hoặc không tìm thấy file.';
 
   @override
-  String get createExportFileTitle => 'Tạo file export';
+  String get createExportFileTitle => 'Tạo file xuất dữ liệu';
 
   @override
   String get createExportFileSubtitle =>
-      'Mở luồng export khi cần tạo bản sao dữ liệu cá nhân.';
+      'Mở luồng xuất dữ liệu khi cần tạo bản sao dữ liệu cá nhân.';
 
   @override
   String get contactSupportSubtitle =>
-      'Tạo request privacy hoặc copy thông tin liên hệ để gửi cho team hỗ trợ.';
+      'Tạo yêu cầu quyền riêng tư hoặc sao chép thông tin liên hệ để gửi cho nhóm hỗ trợ.';
 
   @override
   String get deleteAccountSubtitle =>
-      'Chuẩn bị trước khi xóa, hiểu dữ liệu bị ảnh hưởng và fallback khi có lỗi.';
+      'Chuẩn bị trước khi xóa, hiểu dữ liệu bị ảnh hưởng và phương án xử lý khi có lỗi.';
 
   @override
   String get supportChecklistTitle => 'Checklist gửi hỗ trợ';
 
   @override
   String get supportChecklistSubtitle =>
-      'Chuẩn bị mô tả lỗi, file liên quan và diagnostic info trước khi gửi request.';
+      'Chuẩn bị mô tả lỗi, file liên quan và thông tin hỗ trợ trước khi gửi yêu cầu.';
 
   @override
   String get helpHeroText =>
-      'Tìm nhanh các hướng dẫn liên quan đến dữ liệu, quyền riêng tư, export và hỗ trợ tài khoản trong Moniary.';
+      'Tìm nhanh các hướng dẫn liên quan đến dữ liệu, quyền riêng tư, xuất dữ liệu và hỗ trợ tài khoản trong Moniary.';
 
   @override
-  String get supportDiagnosticTitle => 'Thông tin gửi support';
+  String get supportDiagnosticTitle => 'Thông tin gửi hỗ trợ';
 
   @override
   String get supportDiagnosticSubtitle =>
-      'Copy version, build và kênh liên hệ để gửi kèm khi báo lỗi.';
+      'Sao chép phiên bản, bản dựng và kênh liên hệ để gửi kèm khi báo lỗi.';
 
   @override
   String get helpCenterTitle => 'Trung tâm trợ giúp';
 
   @override
   String get helpCenterSubtitle =>
-      'Tìm hướng dẫn về privacy, tài khoản, export dữ liệu và cách liên hệ hỗ trợ.';
+      'Tìm hướng dẫn về quyền riêng tư, tài khoản, xuất dữ liệu và cách liên hệ hỗ trợ.';
 
   @override
   String get aboutMoniaryTitle => 'Giới thiệu Moniary';
 
   @override
   String get aboutMoniarySubtitle =>
-      'Xem mục đích app, định hướng dữ liệu và trạng thái MVP trước khi phát hành.';
+      'Xem mục đích app, định hướng dữ liệu và trạng thái phiên bản hiện tại.';
 
   @override
   String get privacyPolicySubtitle =>
@@ -2191,14 +2591,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get termsOfUseSubtitle =>
-      'Xem phạm vi sử dụng, trách nhiệm người dùng và giới hạn của phiên bản MVP.';
+      'Xem phạm vi sử dụng, trách nhiệm người dùng và giới hạn của phiên bản hiện tại.';
 
   @override
   String get dataRetentionPolicyTitle => 'Chính sách lưu giữ dữ liệu';
 
   @override
   String get dataRetentionPolicySubtitle =>
-      'Xem dữ liệu nào được lưu trên cloud, dữ liệu nào nằm cục bộ và cách xử lý sau khi xóa tài khoản.';
+      'Xem dữ liệu nào được đồng bộ theo tài khoản, dữ liệu nào nằm trên thiết bị và cách xử lý sau khi xóa tài khoản.';
 
   @override
   String get thirdPartyServicesTitle => 'Dịch vụ bên thứ ba';
@@ -2238,7 +2638,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get releaseChecklistSubtitle =>
-      'Rà soát các mục privacy, data export, xóa tài khoản và contact trước khi lên Store.';
+      'Rà soát quyền riêng tư, xuất dữ liệu, xóa tài khoản và kênh liên hệ trước khi phát hành.';
 
   @override
   String get trustSafetyTitle => 'Tin cậy & an toàn';
@@ -2259,7 +2659,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get policyChangelogSubtitle =>
-      'Xem các mốc cập nhật privacy, legal và store readiness trong app.';
+      'Xem các mốc cập nhật quyền riêng tư, pháp lý và chuẩn bị phát hành trong app.';
 
   @override
   String get userDataRightsTitle => 'Quyền dữ liệu của người dùng';
@@ -2301,48 +2701,6 @@ class AppLocalizationsVi extends AppLocalizations {
       'Người dùng có thể xóa tài khoản trong app hoặc tạo request thủ công khi luồng trực tiếp thất bại.';
 
   @override
-  String get privacyFaqHeroBody =>
-      'Các câu hỏi thường gặp về dữ liệu cá nhân, export, xóa tài khoản và yêu cầu privacy.';
-
-  @override
-  String get privacyFaqStoredDataQuestion => 'Moniary lưu những dữ liệu nào?';
-
-  @override
-  String get privacyFaqStoredDataAnswer =>
-      'App lưu hồ sơ, ví, danh mục, giao dịch, ghi chú và đường dẫn ảnh giao dịch khi người dùng tạo dữ liệu trong app.';
-
-  @override
-  String get privacyFaqExportBeforeDeletionQuestion =>
-      'Tôi có thể xuất dữ liệu trước khi xóa tài khoản không?';
-
-  @override
-  String get privacyFaqExportBeforeDeletionAnswer =>
-      'Có. Bạn có thể xuất dữ liệu thành CSV, Excel hoặc PDF trong phần Xuất dữ liệu của tôi.';
-
-  @override
-  String get privacyFaqDeletionImagesQuestion =>
-      'Xóa tài khoản có xóa ảnh giao dịch không?';
-
-  @override
-  String get privacyFaqDeletionImagesAnswer =>
-      'Luồng xóa tài khoản được thiết kế để xóa dữ liệu app và ảnh giao dịch gắn với user hiện tại.';
-
-  @override
-  String get privacyFaqDeletionFailQuestion =>
-      'Nếu xóa tài khoản trực tiếp thất bại thì sao?';
-
-  @override
-  String get privacyFaqDeletionFailAnswer =>
-      'Bạn có thể tạo file yêu cầu xóa dữ liệu thủ công và gửi cho kênh hỗ trợ privacy.';
-
-  @override
-  String get privacyFaqExportLocationQuestion => 'File export nằm ở đâu?';
-
-  @override
-  String get privacyFaqExportLocationAnswer =>
-      'File export được lưu trong thư mục tài liệu của app trên thiết bị và có thể mở/chia sẻ từ lịch sử export.';
-
-  @override
   String get policyAcceptanceNoticeTitle => 'Thông báo đồng ý chính sách';
 
   @override
@@ -2362,14 +2720,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get legalContactSubtitle =>
-      'Xem và copy email privacy, support và legal dùng cho phát hành Store.';
+      'Xem và sao chép email quyền riêng tư, hỗ trợ và pháp lý.';
 
   @override
   String get dataSafetyTitle => 'An toàn dữ liệu';
 
   @override
   String get dataSafetySubtitle =>
-      'Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong MVP.';
+      'Tóm tắt các nhóm dữ liệu được thu thập hoặc không thu thập trong phiên bản hiện tại.';
 
   @override
   String get myDataTitle => 'Dữ liệu của tôi';
@@ -2419,7 +2777,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyContactSubtitle =>
-      'Kênh hỗ trợ cho yêu cầu dữ liệu, xóa dữ liệu hoặc câu hỏi privacy.';
+      'Kênh hỗ trợ cho yêu cầu dữ liệu, xóa dữ liệu hoặc câu hỏi về quyền riêng tư.';
 
   @override
   String get trustHeroText =>
@@ -2444,7 +2802,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get noOverCollectionDesc =>
-      'MVP không đọc danh bạ, SMS, email inbox, vị trí hoặc tài khoản ngân hàng tự động.';
+      'Moniary không đọc danh bạ, SMS, email cá nhân, vị trí hoặc tự động kết nối tài khoản ngân hàng.';
 
   @override
   String get carefulFileSharingTitle => 'Cẩn thận khi chia sẻ file';
@@ -2466,7 +2824,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String legalCopyContactValue(String value) {
-    return 'Đã copy $value';
+    return 'Đã sao chép $value';
   }
 
   @override
@@ -2478,42 +2836,42 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get storeCompliancePrivacyDesc =>
-      'Có màn privacy policy mô tả dữ liệu tài chính, ảnh giao dịch và cách xử lý dữ liệu.';
+      'Có màn chính sách quyền riêng tư mô tả dữ liệu tài chính, ảnh giao dịch và cách xử lý dữ liệu.';
 
   @override
   String get storeComplianceDeleteTitle => 'Xóa tài khoản';
 
   @override
   String get storeComplianceDeleteDesc =>
-      'Có luồng xóa tài khoản trong app và fallback tạo request thủ công.';
+      'Có luồng xóa tài khoản trong app và phương án gửi yêu cầu thủ công khi cần.';
 
   @override
   String get storeComplianceExportTitle => 'Xuất dữ liệu';
 
   @override
   String get storeComplianceExportDesc =>
-      'Người dùng có thể export dữ liệu CSV, Excel hoặc PDF trước khi rời app.';
+      'Người dùng có thể xuất dữ liệu CSV, Excel hoặc PDF trước khi rời app.';
 
   @override
-  String get storeComplianceDataSafetyTitle => 'Data Safety';
+  String get storeComplianceDataSafetyTitle => 'An toàn dữ liệu';
 
   @override
   String get storeComplianceDataSafetyDesc =>
       'Có phần tóm tắt nhóm dữ liệu được lưu và nhóm dữ liệu app không thu thập.';
 
   @override
-  String get storeComplianceContactTitle => 'Liên hệ privacy';
+  String get storeComplianceContactTitle => 'Liên hệ quyền riêng tư';
 
   @override
   String get storeComplianceContactDesc =>
-      'Có kênh hỗ trợ, request history và trạng thái xử lý yêu cầu privacy.';
+      'Có kênh hỗ trợ, lịch sử yêu cầu và trạng thái xử lý yêu cầu quyền riêng tư.';
 
   @override
   String get storeComplianceTermsTitle => 'Điều khoản sử dụng';
 
   @override
   String get storeComplianceTermsDesc =>
-      'Có terms of use và ghi chú giới hạn trách nhiệm của app MVP.';
+      'Có điều khoản sử dụng và ghi chú giới hạn trách nhiệm của app.';
 
   @override
   String get privacyNoData => 'Chưa có dữ liệu';
@@ -2581,7 +2939,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get inventoryPhotoDesc =>
-      'Đường dẫn ảnh trong Storage private bucket, hiển thị qua signed URL.';
+      'Đường dẫn ảnh giao dịch được lưu an toàn và chỉ hiển thị khi cần trong app.';
 
   @override
   String get inventorySettingsTitle => 'Thiết lập nhắc nhở';
@@ -2592,7 +2950,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get sensitiveDataDesc =>
-      'Dữ liệu tài chính có thể gồm số tiền, ghi chú, ảnh hóa đơn và file đã xuất. Chỉ chia sẻ file export với người bạn tin cậy và xóa file cục bộ khi không còn cần dùng.';
+      'Dữ liệu tài chính có thể gồm số tiền, ghi chú, ảnh hóa đơn và file đã xuất. Chỉ chia sẻ file xuất dữ liệu với người bạn tin cậy và xóa file trên thiết bị khi không còn cần dùng.';
 
   @override
   String localFilesExportCount(int count) {
@@ -2605,11 +2963,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get localFilesNoExport => 'Chưa có file export';
+  String get localFilesNoExport => 'Chưa có file xuất dữ liệu';
 
   @override
   String get localFilesDesc =>
-      'Các file CSV, Excel và PDF được tạo trên thiết bị này. Bạn có thể mở lại, chia sẻ hoặc tự xóa file trong bộ nhớ cục bộ.';
+      'Các file CSV, Excel và PDF được tạo trên thiết bị này. Bạn có thể mở lại, chia sẻ hoặc tự xóa file trong bộ nhớ thiết bị.';
 
   @override
   String reportSummaryDesc(int txs, int wallets, int categories) {
@@ -2662,46 +3020,46 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get supportChecklistHero =>
-      'Chuẩn bị đủ thông tin trước khi gửi yêu cầu giúp team hỗ trợ nhanh hơn và tránh chia sẻ dữ liệu nhạy cảm không cần thiết.';
+      'Chuẩn bị đủ thông tin trước khi gửi yêu cầu giúp nhóm hỗ trợ xử lý nhanh hơn và tránh chia sẻ dữ liệu nhạy cảm không cần thiết.';
 
   @override
   String get supportChecklistActionTitle => 'Mô tả thao tác đã làm';
 
   @override
   String get supportChecklistActionDesc =>
-      'Ghi rõ bạn đang export, xóa tài khoản, tạo request hay mở file nào.';
+      'Ghi rõ bạn đang xuất dữ liệu, xóa tài khoản, tạo yêu cầu hay mở file nào.';
 
   @override
   String get supportChecklistErrorTitle => 'Thêm thông báo lỗi nếu có';
 
   @override
   String get supportChecklistErrorDesc =>
-      'Copy nội dung lỗi hoặc mô tả màn hình đang hiển thị để team dễ kiểm tra.';
+      'Sao chép nội dung lỗi hoặc mô tả màn hình đang hiển thị để nhóm hỗ trợ dễ kiểm tra.';
 
   @override
   String get supportChecklistFileTitle =>
-      'Đính kèm file request/export khi phù hợp';
+      'Đính kèm file yêu cầu hoặc file xuất dữ liệu khi phù hợp';
 
   @override
   String get supportChecklistFileDesc =>
-      'Nếu là yêu cầu privacy hoặc xóa dữ liệu thủ công, gửi kèm file JSON đã tạo.';
+      'Nếu là yêu cầu quyền riêng tư hoặc xóa dữ liệu thủ công, gửi kèm file đã tạo.';
 
   @override
-  String get supportChecklistDiagnosticTitle => 'Copy diagnostic info';
+  String get supportChecklistDiagnosticTitle => 'Sao chép thông tin hỗ trợ';
 
   @override
   String get supportChecklistDiagnosticDesc =>
-      'Gửi kèm version, build và kênh release từ Trung tâm trợ giúp.';
+      'Gửi kèm phiên bản, bản dựng và kênh phát hành từ Trung tâm trợ giúp.';
 
   @override
   String get supportChecklistSensitiveTitle => 'Không gửi dữ liệu quá nhạy cảm';
 
   @override
   String get supportChecklistSensitiveDesc =>
-      'Không gửi mật khẩu, access token hoặc ảnh hóa đơn nhạy cảm nếu không thật sự cần thiết.';
+      'Không gửi mật khẩu, mã truy cập hoặc ảnh hóa đơn nhạy cảm nếu không thật sự cần thiết.';
 
   @override
-  String get dataSafetyPersonalInfoTitle => 'Personal info';
+  String get dataSafetyPersonalInfoTitle => 'Thông tin cá nhân';
 
   @override
   String get dataSafetyPersonalInfoStatus =>
@@ -2709,10 +3067,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get dataSafetyPersonalInfoDesc =>
-      'Tên hiển thị, email, avatar và user ID dùng cho đăng nhập và đồng bộ dữ liệu.';
+      'Tên hiển thị, email, avatar và mã tài khoản dùng cho đăng nhập và đồng bộ dữ liệu.';
 
   @override
-  String get dataSafetyFinancialInfoTitle => 'Financial info';
+  String get dataSafetyFinancialInfoTitle => 'Thông tin tài chính';
 
   @override
   String get dataSafetyFinancialInfoStatus => 'Có';
@@ -2722,30 +3080,31 @@ class AppLocalizationsVi extends AppLocalizations {
       'Ví, danh mục, số tiền, ghi chú và ngày giao dịch do người dùng nhập.';
 
   @override
-  String get dataSafetyPhotosTitle => 'Photos';
+  String get dataSafetyPhotosTitle => 'Ảnh';
 
   @override
   String get dataSafetyPhotosStatus => 'Có, khi người dùng chủ động chọn/chụp';
 
   @override
   String get dataSafetyPhotosDesc =>
-      'Ảnh giao dịch được lưu trong private storage và chỉ hiển thị qua signed URL.';
+      'Ảnh giao dịch được lưu an toàn và chỉ hiển thị trong app khi cần.';
 
   @override
-  String get dataSafetyUserIdTitle => 'User ID';
+  String get dataSafetyUserIdTitle => 'Mã tài khoản';
 
   @override
   String get dataSafetyUserIdStatus => 'Có';
 
   @override
   String get dataSafetyUserIdDesc =>
-      'Dùng để gắn dữ liệu với đúng tài khoản và áp dụng RLS trên Supabase.';
+      'Dùng để gắn dữ liệu với đúng tài khoản và giới hạn quyền truy cập dữ liệu.';
 
   @override
-  String get dataSafetyLocationTitle => 'Location, Contacts, SMS';
+  String get dataSafetyLocationTitle => 'Vị trí, danh bạ, SMS';
 
   @override
-  String get dataSafetyLocationStatus => 'Không thu thập trong MVP';
+  String get dataSafetyLocationStatus =>
+      'Không thu thập trong phiên bản hiện tại';
 
   @override
   String get dataSafetyLocationDesc =>
@@ -2772,7 +3131,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get aboutMoniaryLicenseDesc =>
-      'Xem license của Flutter và các package đang dùng trong app.';
+      'Xem giấy phép của các thư viện đang dùng trong app.';
 
   @override
   String get aboutMoniaryPurposeTitle => 'Mục đích';
@@ -2786,14 +3145,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get aboutMoniaryDataDirDesc =>
-      'Dữ liệu tài chính thuộc về người dùng. App cung cấp công cụ xuất dữ liệu, xóa tài khoản và liên hệ privacy khi cần hỗ trợ.';
+      'Dữ liệu tài chính thuộc về người dùng. App cung cấp công cụ xuất dữ liệu, xóa tài khoản và liên hệ quyền riêng tư khi cần hỗ trợ.';
 
   @override
-  String get aboutMoniaryMvpStatusTitle => 'Trạng thái MVP';
+  String get aboutMoniaryMvpStatusTitle => 'Trạng thái phiên bản';
 
   @override
   String get aboutMoniaryMvpStatusDesc =>
-      'Phiên bản hiện tại tập trung vào ghi chép chi tiêu, minh bạch dữ liệu và các yêu cầu cần thiết để chuẩn bị phát hành Store.';
+      'Phiên bản hiện tại tập trung vào ghi chép chi tiêu, minh bạch dữ liệu và các yêu cầu cần thiết để chuẩn bị phát hành chính thức.';
 
   @override
   String get permissionInternetTitle => 'Internet';
@@ -2803,7 +3162,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get permissionInternetDesc =>
-      'Dùng để đăng nhập, đồng bộ Supabase Database và tải ảnh giao dịch từ Storage.';
+      'Dùng để đăng nhập, đồng bộ dữ liệu và tải ảnh giao dịch khi cần hiển thị.';
 
   @override
   String get permissionCameraTitle => 'Camera';
@@ -2816,7 +3175,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Dùng để chụp hóa đơn hoặc hình ảnh liên quan đến giao dịch.';
 
   @override
-  String get permissionPhotoTitle => 'Photo Picker';
+  String get permissionPhotoTitle => 'Chọn ảnh';
 
   @override
   String get permissionPhotoStatus => 'Chỉ mở khi người dùng chọn ảnh';
@@ -2826,20 +3185,19 @@ class AppLocalizationsVi extends AppLocalizations {
       'Dùng Android Photo Picker để chọn ảnh mà không cần đọc toàn bộ thư viện.';
 
   @override
-  String get permissionNotiTitle => 'Notifications';
+  String get permissionNotiTitle => 'Thông báo';
 
   @override
   String get permissionNotiStatus => 'Chỉ dùng khi bật nhắc nhở';
 
   @override
-  String get permissionNotiDesc =>
-      'MVP hiện không bắt buộc quyền này nếu chưa triển khai reminder production.';
+  String get permissionNotiDesc => 'Quyền này chỉ cần khi bạn bật nhắc nhở.';
 
   @override
-  String get permissionLocationTitle => 'Không dùng Location, Contacts, SMS';
+  String get permissionLocationTitle => 'Không dùng vị trí, danh bạ, SMS';
 
   @override
-  String get permissionLocationStatus => 'Không khai báo trong MVP';
+  String get permissionLocationStatus => 'Không sử dụng';
 
   @override
   String get permissionLocationDesc =>
@@ -2851,14 +3209,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyPolicyLeadDesc =>
-      'Nội dung này dùng cho màn hình trong app và làm bản nháp public Privacy Policy trước khi submit Google Play.';
+      'Nội dung này giải thích cách Moniary xử lý dữ liệu và có thể được cập nhật khi app phát hành chính thức.';
 
   @override
   String get privacyPolicyDataTitle => 'Dữ liệu Moniary xử lý';
 
   @override
   String get privacyPolicyDataItem1 =>
-      'Thông tự tài khoản như tên hiển thị, email, avatar và user ID khi người dùng đăng nhập.';
+      'Thông tin tài khoản như tên hiển thị, email, avatar và mã tài khoản khi người dùng đăng nhập.';
 
   @override
   String get privacyPolicyDataItem2 =>
@@ -2885,11 +3243,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyPolicyPurposeItem3 =>
-      'Lưu ảnh giao dịch trong Supabase Storage private bucket và cấp signed URL khi cần hiển thị.';
+      'Lưu ảnh giao dịch an toàn và chỉ hiển thị trong app khi cần.';
 
   @override
   String get privacyPolicyPurposeItem4 =>
-      'Bảo vệ tài khoản, kiểm soát truy cập bằng RLS và hỗ trợ người dùng khi có yêu cầu.';
+      'Bảo vệ tài khoản, giới hạn quyền truy cập dữ liệu và hỗ trợ người dùng khi có yêu cầu.';
 
   @override
   String get privacyPolicyShareTitle => 'Chia sẻ dữ liệu';
@@ -2900,11 +3258,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyPolicyShareItem2 =>
-      'Dữ liệu được lưu trên Supabase để cung cấp Auth, Database và Storage cho ứng dụng.';
+      'Dữ liệu được lưu trên hạ tầng bảo mật để cung cấp đăng nhập, đồng bộ dữ liệu và lưu trữ ảnh cho ứng dụng.';
 
   @override
   String get privacyPolicyShareItem3 =>
-      'MVP không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.';
+      'Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.';
 
   @override
   String get privacyPolicyDeleteTitle => 'Xóa dữ liệu';
@@ -2919,30 +3277,30 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyPolicyDeleteItem3 =>
-      'Khi xóa tài khoản, Moniary yêu cầu xóa hồ sơ, ví, danh mục, giao dịch và ảnh trong Storage thuộc user ID hiện tại.';
+      'Khi xóa tài khoản, Moniary yêu cầu xóa hồ sơ, ví, danh mục, giao dịch và ảnh thuộc tài khoản hiện tại.';
 
   @override
-  String get privacyPolicySafetyTitle => 'Khai báo Google Play Data Safety';
+  String get privacyPolicySafetyTitle => 'Khai báo an toàn dữ liệu';
 
   @override
   String get privacyPolicySafetyItem1 =>
-      'Personal info: chỉ thu thập khi người dùng đăng nhập bằng email hoặc Google.';
+      'Thông tin cá nhân: chỉ thu thập khi người dùng đăng nhập bằng email hoặc Google.';
 
   @override
   String get privacyPolicySafetyItem2 =>
-      'Financial info: thu thập để lưu và hiển thị thu chi cá nhân.';
+      'Thông tin tài chính: thu thập để lưu và hiển thị thu chi cá nhân.';
 
   @override
   String get privacyPolicySafetyItem3 =>
-      'Photos: chỉ thu thập ảnh người dùng chủ động chụp hoặc chọn.';
+      'Ảnh: chỉ thu thập ảnh người dùng chủ động chụp hoặc chọn.';
 
   @override
   String get privacyPolicySafetyItem4 =>
-      'Location, Contacts, SMS: không thu thập trong MVP.';
+      'Vị trí, danh bạ, SMS: không thu thập trong phiên bản hiện tại.';
 
   @override
   String get privacyPolicyContactDesc =>
-      'Trước khi phát hành, team cần đưa nội dung này lên một URL public và cập nhật email liên hệ chính thức trong Play Console.';
+      'Moniary sẽ cập nhật nội dung chính sách và email liên hệ chính thức khi phát hành.';
 
   @override
   String get deletionPolicyStep1Title => 'Trước khi xóa';
@@ -2956,25 +3314,25 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get deletionPolicyStep2Desc =>
-      'Hồ sơ, ví, danh mục, giao dịch, thiết lập nhắc nhở và ảnh trong Storage thuộc user ID hiện tại.';
+      'Hồ sơ, ví, danh mục, giao dịch, thiết lập nhắc nhở và ảnh thuộc tài khoản hiện tại.';
 
   @override
   String get deletionPolicyStep3Title => 'Cách xóa';
 
   @override
   String get deletionPolicyStep3Desc =>
-      'App gọi Edge Function delete-account. Function xác thực session, xóa ảnh giao dịch rồi xóa Auth user.';
+      'Moniary xác thực yêu cầu, xóa dữ liệu liên quan rồi đóng tài khoản.';
 
   @override
   String get deletionPolicyStep4Title => 'Dữ liệu ngoài app';
 
   @override
   String get deletionPolicyStep4Desc =>
-      'Nếu cần xóa dữ liệu backup, log hoặc yêu cầu ngoài app, người dùng có thể liên hệ qua kênh privacy support của team.';
+      'Nếu cần hỗ trợ thêm về dữ liệu ngoài app, người dùng có thể liên hệ kênh hỗ trợ quyền riêng tư của Moniary.';
 
   @override
   String get termsOfUseHeroDesc =>
-      'Các điều khoản này tóm tắt cách người dùng nên sử dụng Moniary trong phiên bản MVP.';
+      'Các điều khoản này tóm tắt cách người dùng nên sử dụng Moniary trong phiên bản hiện tại.';
 
   @override
   String get termsOfUseScopeTitle => '1. Phạm vi sử dụng';
@@ -2988,7 +3346,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get termsOfUseAccountDesc =>
-      'Người dùng có thể xuất dữ liệu, gửi yêu cầu privacy và xóa tài khoản theo các công cụ được cung cấp trong app.';
+      'Người dùng có thể xuất dữ liệu, gửi yêu cầu quyền riêng tư và xóa tài khoản theo các công cụ được cung cấp trong app.';
 
   @override
   String get termsOfUseContentTitle => '3. Nội dung người dùng';
@@ -3039,7 +3397,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get exportReportRecentTransactions => 'Giao dịch gần đây';
 
   @override
-  String get dataRetentionCloudTitle => 'Dữ liệu trên cloud';
+  String get dataRetentionCloudTitle => 'Dữ liệu được đồng bộ';
 
   @override
   String get dataRetentionCloudDesc =>
@@ -3053,18 +3411,18 @@ class AppLocalizationsVi extends AppLocalizations {
       'Ảnh giao dịch chỉ được lưu khi người dùng chủ động chụp hoặc chọn ảnh. Ảnh sẽ được xử lý cùng dữ liệu tài khoản khi xóa tài khoản.';
 
   @override
-  String get dataRetentionLocalFilesTitle => 'File cục bộ';
+  String get dataRetentionLocalFilesTitle => 'File trên thiết bị';
 
   @override
   String get dataRetentionLocalFilesDesc =>
-      'File export và lịch sử request được tạo trên thiết bị. Người dùng có thể tự quản lý, chia sẻ hoặc xóa các file này khỏi bộ nhớ cục bộ.';
+      'File xuất dữ liệu và lịch sử yêu cầu được tạo trên thiết bị. Người dùng có thể tự quản lý, chia sẻ hoặc xóa các file này khỏi bộ nhớ thiết bị.';
 
   @override
   String get dataRetentionDeleteTitle => 'Sau khi xóa tài khoản';
 
   @override
   String get dataRetentionDeleteDesc =>
-      'Moniary gọi luồng xóa tài khoản để gỡ dữ liệu app gắn với user hiện tại. Nếu thao tác thất bại, người dùng có thể tạo request xóa dữ liệu thủ công.';
+      'Moniary dùng luồng xóa tài khoản để gỡ dữ liệu app gắn với tài khoản hiện tại. Nếu thao tác thất bại, người dùng có thể tạo yêu cầu xóa dữ liệu thủ công.';
 
   @override
   String get financialDisclaimerInvestmentTitle => 'Không phải tư vấn đầu tư';
@@ -3085,7 +3443,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get financialDisclaimerReferenceDesc =>
-      'Tổng thu, tổng chi và các file export phụ thuộc vào dữ liệu người dùng nhập, có thể sai nếu nhập thiếu hoặc nhập nhầm.';
+      'Tổng thu, tổng chi và các file xuất dữ liệu phụ thuộc vào dữ liệu người dùng nhập, có thể sai nếu nhập thiếu hoặc nhập nhầm.';
 
   @override
   String get financialDisclaimerExpertTitle => 'Khi cần quyết định quan trọng';
@@ -3095,32 +3453,35 @@ class AppLocalizationsVi extends AppLocalizations {
       'Người dùng nên kiểm tra lại dữ liệu gốc và hỏi chuyên gia phù hợp trước các quyết định tài chính, thuế hoặc pháp lý.';
 
   @override
-  String get policyChangelogEntry1Title => 'Bổ sung Legal & Policy Center';
+  String get policyChangelogEntry1Title =>
+      'Bổ sung trung tâm pháp lý & chính sách';
 
   @override
   String get policyChangelogEntry1Desc =>
       'Thêm chính sách lưu giữ dữ liệu, thông báo dịch vụ bên thứ ba, miễn trừ tài chính và lịch sử thay đổi chính sách.';
 
   @override
-  String get policyChangelogEntry2Title => 'Bổ sung Privacy Requests & Support';
+  String get policyChangelogEntry2Title =>
+      'Bổ sung yêu cầu quyền riêng tư & hỗ trợ';
 
   @override
   String get policyChangelogEntry2Desc =>
-      'Thêm loại yêu cầu privacy, mẫu nội dung, preview, lịch sử request, trạng thái và timeline phản hồi.';
+      'Thêm loại yêu cầu quyền riêng tư, mẫu nội dung, xem trước, lịch sử yêu cầu, trạng thái và tiến trình phản hồi.';
 
   @override
-  String get policyChangelogEntry3Title => 'Bổ sung Store Readiness & Trust';
+  String get policyChangelogEntry3Title =>
+      'Bổ sung tin cậy & chuẩn bị phát hành';
 
   @override
   String get policyChangelogEntry3Desc =>
-      'Thêm About, Terms of Use, license entry, version/build info, checklist phát hành và liên hệ pháp lý.';
+      'Thêm giới thiệu, điều khoản sử dụng, giấy phép, thông tin phiên bản/bản dựng, checklist phát hành và liên hệ pháp lý.';
 
   @override
-  String get policyChangelogEntry4Title => 'Khởi tạo chính sách MVP';
+  String get policyChangelogEntry4Title => 'Khởi tạo chính sách phiên bản đầu';
 
   @override
   String get policyChangelogEntry4Desc =>
-      'Thêm privacy policy, data safety, data deletion policy, export dữ liệu và xóa tài khoản.';
+      'Thêm chính sách quyền riêng tư, an toàn dữ liệu, chính sách xóa dữ liệu, xuất dữ liệu và xóa tài khoản.';
 
   @override
   String get groupCreateNew => 'Tạo nhóm mới';
@@ -3153,6 +3514,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupBalanceSettled => 'Đã cân bằng';
 
   @override
+  String get groupBalanceSettledShort => 'Đã cân';
+
+  @override
   String groupBalanceOwes(String amount) {
     return 'Bạn cần trả $amount';
   }
@@ -3160,6 +3524,36 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String groupBalanceReceives(String amount) {
     return 'Bạn sẽ nhận $amount';
+  }
+
+  @override
+  String get groupBalanceReceiveShort => 'Được nhận';
+
+  @override
+  String get groupBalancePayShort => 'Cần trả';
+
+  @override
+  String get groupBalanceReceiveSummary => 'Bạn được nhận';
+
+  @override
+  String get groupBalancePaySummary => 'Bạn cần trả';
+
+  @override
+  String get groupSettleAction => 'Tất toán';
+
+  @override
+  String get groupSettlementYou => 'Bạn';
+
+  @override
+  String get groupSettlementConfirmAll => 'Xác nhận đã tất toán';
+
+  @override
+  String get groupSettlementWaitingForPayers =>
+      'Chờ người trả đánh dấu đã thanh toán trước.';
+
+  @override
+  String groupSettlementOptimizedSubtitle(String groupName, int count) {
+    return '$groupName · Tối ưu $count giao dịch';
   }
 
   @override
@@ -3214,6 +3608,67 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupInviteLinkCreated => 'Đã tạo link mời nhóm.';
 
   @override
+  String get groupInviteLinkActiveNote =>
+      'Link có thể được nhiều người dùng trong 7 ngày.';
+
+  @override
+  String get groupInviteCopyLink => 'Sao chép link';
+
+  @override
+  String get groupInviteLinkCopied => 'Đã sao chép link mời.';
+
+  @override
+  String get groupInviteRevokeLink => 'Thu hồi link';
+
+  @override
+  String get groupInviteLinkRevoked => 'Đã thu hồi link mời nhóm.';
+
+  @override
+  String get groupInviteAcceptTitle => 'Lời mời vào nhóm';
+
+  @override
+  String groupInviteAcceptSubtitle(String name, String group) {
+    return '$name mời bạn tham gia nhóm $group.';
+  }
+
+  @override
+  String get groupInvitePreviewNotice =>
+      'Bạn chưa tham gia nhóm. Chỉ bấm Tham gia nhóm khi bạn muốn nhận lời mời này.';
+
+  @override
+  String get groupInviteAcceptButton => 'Tham gia nhóm';
+
+  @override
+  String get groupInviteDismissButton => 'Không tham gia';
+
+  @override
+  String get groupInviteAccepted => 'Bạn đã tham gia nhóm.';
+
+  @override
+  String get groupInviteAlreadyMember => 'Bạn đã tham gia nhóm này.';
+
+  @override
+  String get groupInviteLoading => 'Đang tải lời mời...';
+
+  @override
+  String get groupInvitePreviewError => 'Không thể tải lời mời vào nhóm.';
+
+  @override
+  String get groupInviteInvalid => 'Link mời nhóm không hợp lệ.';
+
+  @override
+  String get groupInviteExpired => 'Link mời nhóm đã hết hạn.';
+
+  @override
+  String get groupInviteUsed => 'Link mời nhóm này đã được sử dụng.';
+
+  @override
+  String get groupInviteRevoked => 'Link mời nhóm đã bị thu hồi.';
+
+  @override
+  String get groupInviteOpenGroups => 'Mở nhóm';
+
+  @override
   String get groupInviteSent => 'Đã gửi lời mời.';
 
   @override
@@ -3232,7 +3687,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupMemberActive => 'Đang tham gia';
 
   @override
-  String get groupAddTransaction => 'Thêm giao dịch nhóm';
+  String get groupAddTransaction => 'Thêm khoản chi nhóm';
 
   @override
   String get groupTransactionCaption => 'Caption';
@@ -3333,6 +3788,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupTransactionLoadError => 'Không tải được giao dịch nhóm.';
 
   @override
+  String groupTransactionHistorySubtitle(String payer, int count) {
+    return '$payer trả · Chia $count người';
+  }
+
+  @override
   String get groupTransactionDetailTitle => 'Chi tiết giao dịch nhóm';
 
   @override
@@ -3374,10 +3834,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupBalanceTableTitle => 'Bảng công nợ';
 
   @override
+  String get groupMemberBalanceTitle => 'Số dư thành viên';
+
+  @override
   String get groupYouNeedPay => 'Bạn cần trả';
 
   @override
   String get groupOthersNeedPayYou => 'Người khác cần trả cho bạn';
+
+  @override
+  String get groupDetailReceiveBack => 'Bạn được nhận lại';
+
+  @override
+  String get groupDetailYouPay => 'Bạn cần trả';
 
   @override
   String get groupMarkPaid => 'Đã trả nợ';
@@ -3447,7 +3916,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupInviteLinkPlaceholder =>
-      'Deep link đã được tạo. Màn hình chấp nhận lời mời sẽ được kết nối ở phase deep linking.';
+      'Tạo link để mời nhiều người vào nhóm trong thời hạn 7 ngày.';
 
   @override
   String get groupStatsPlaceholder =>
@@ -3476,7 +3945,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendSearchUsername => 'Tìm bằng username';
 
   @override
-  String get friendSearchHint => 'Ví dụ: an_nguyen';
+  String get friendSearchHint => 'Ví dụ: erling_haaland';
 
   @override
   String get friendSearch => 'Tìm kiếm';
@@ -3493,6 +3962,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendSearchError => 'Không thể tìm bạn bè. Vui lòng thử lại.';
 
   @override
+  String get friendSearchPlaceholder => 'Tìm bạn bè...';
+
+  @override
   String get friendLoadError => 'Không tải được danh sách bạn bè.';
 
   @override
@@ -3501,6 +3973,25 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get friendNoFriendsSubtitle =>
       'Thêm bạn bè để mời vào nhóm chi tiêu nhanh hơn.';
+
+  @override
+  String friendListSection(int count) {
+    return 'Bạn bè · $count';
+  }
+
+  @override
+  String friendSharedGroups(int count) {
+    return '$count nhóm chung';
+  }
+
+  @override
+  String get friendOwesYou => 'Nợ bạn';
+
+  @override
+  String get friendYouOwe => 'Bạn nợ';
+
+  @override
+  String get friendBalanceSettled => 'Đã cân';
 
   @override
   String get friendIncomingRequests => 'Lời mời kết bạn';
@@ -3578,6 +4069,428 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendShareInviteLink => 'Chia sẻ link kết bạn';
 
   @override
+  String get friendInviteOr => 'Hoặc';
+
+  @override
+  String get budgetTitle => 'Ngân sách';
+
+  @override
+  String get budgetUsed => 'Đã dùng';
+
+  @override
+  String get budgetCategoryLimits => 'Hạn mức danh mục';
+
+  @override
+  String budgetSpentOfLimit(String spent, String limit) {
+    return '$spent / $limit tháng này';
+  }
+
+  @override
+  String get budgetAddCategory => 'Đặt hạn mức cho danh mục khác';
+
+  @override
+  String get budgetChooseCategory => 'Chọn danh mục';
+
+  @override
+  String get budgetMonthlyLimit => 'Hạn mức tháng';
+
+  @override
+  String get budgetLimitHelper =>
+      'Nhập số tiền tối đa bạn muốn chi cho danh mục này trong tháng.';
+
+  @override
+  String get budgetRemoveLimit => 'Bỏ hạn mức';
+
+  @override
+  String budgetLimitTitleForCategory(String category) {
+    return 'Hạn mức · $category';
+  }
+
+  @override
+  String budgetUsedWarningLine(String spent, int percent, String status) {
+    return 'Đã dùng $spent ($percent%) — $status';
+  }
+
+  @override
+  String budgetAlertAtPercent(int percent) {
+    return 'Báo khi đạt $percent%';
+  }
+
+  @override
+  String get budgetSaveLimit => 'Lưu hạn mức';
+
+  @override
+  String budgetSpentRemainingLine(
+    String spent,
+    String limit,
+    String remaining,
+  ) {
+    return '$spent / $limit — còn $remaining';
+  }
+
+  @override
+  String budgetTransactionsInLimitCount(int count) {
+    return 'Giao dịch tính vào hạn mức · $count';
+  }
+
+  @override
+  String budgetViewAllInStats(int count) {
+    return 'Xem đủ $count giao dịch trong Số liệu →';
+  }
+
+  @override
+  String get budgetNearLimit => 'Sắp vượt hạn mức';
+
+  @override
+  String get budgetOverLimit => 'Đã vượt hạn mức';
+
+  @override
+  String get budgetNearLimitShort => 'Sắp vượt';
+
+  @override
+  String get budgetOverLimitShort => 'Vượt hạn';
+
+  @override
+  String get budgetEmptyTitle => 'Chưa đặt hạn mức';
+
+  @override
+  String get budgetEmptyBody =>
+      'Chọn một danh mục để bắt đầu theo dõi ngân sách tháng.';
+
+  @override
+  String get cameraFrameHint => 'Đưa hóa đơn vào khung';
+
+  @override
+  String get assistantTitle => 'Trợ lý tài chính';
+
+  @override
+  String get assistantNavLabel => 'AI';
+
+  @override
+  String get assistantIntroSkip => 'Bỏ qua';
+
+  @override
+  String get assistantIntroNext => 'Tiếp tục';
+
+  @override
+  String get assistantIntroStart => 'Bắt đầu';
+
+  @override
+  String get assistantIntroTitle1 => 'Hỏi bất cứ điều gì về chi tiêu của bạn';
+
+  @override
+  String get assistantIntroBody1 =>
+      'Nhận câu trả lời ngay từ chính dữ liệu bạn đã ghi trong Moniary.';
+
+  @override
+  String get assistantIntroTitle2 => 'Nhận diện chi tiêu bất thường sớm';
+
+  @override
+  String get assistantIntroBody2 =>
+      'Phát hiện khoản tăng vọt hoặc lặp lại nhiều lần trước khi bạn mất kiểm soát.';
+
+  @override
+  String get assistantIntroTitle3 => 'Gợi ý hành động thực tế';
+
+  @override
+  String get assistantIntroBody3 =>
+      'Chỉ rõ cần giảm bao nhiêu và ở danh mục nào, không dùng lời khuyên mơ hồ.';
+
+  @override
+  String get assistantPermissionTitle =>
+      'Cho phép trợ lý hiểu tài chính của bạn';
+
+  @override
+  String get assistantPermissionBody =>
+      'Bạn quyết định phạm vi dữ liệu được đọc. Có thể thay đổi bất cứ lúc nào.';
+
+  @override
+  String get assistantPermissionDateRange =>
+      'AI chỉ đọc dữ liệu từ 01/01/2025 đến hiện tại';
+
+  @override
+  String get assistantAnalyzeAll => 'Phân tích tất cả dữ liệu';
+
+  @override
+  String get assistantTransactionsAccess => 'Ghi chép thu chi';
+
+  @override
+  String get assistantTransactionsAccessBody =>
+      'Dùng giao dịch để phân tích dòng tiền và thói quen chi tiêu.';
+
+  @override
+  String get assistantWalletsAccess => 'Ví và số dư';
+
+  @override
+  String get assistantWalletsAccessBody =>
+      'Dùng số dư để đặt các con số chi tiêu vào đúng bối cảnh.';
+
+  @override
+  String get assistantBudgetsAccess => 'Hạn mức chi';
+
+  @override
+  String get assistantBudgetsAccessBody =>
+      'Kiểm tra mức sử dụng và cảnh báo khi gần chạm hạn mức.';
+
+  @override
+  String get assistantSavingsAccess => 'Tiết kiệm và tích luỹ';
+
+  @override
+  String get assistantSavingsAccessBody =>
+      'Theo dõi mục tiêu tiết kiệm và gợi ý kế hoạch phù hợp.';
+
+  @override
+  String get assistantUpcomingBadge => 'Sắp ra mắt';
+
+  @override
+  String get assistantPermissionConfirm => 'Xác nhận';
+
+  @override
+  String get assistantPrivacyNote =>
+      'Phân tích diễn ra từ dữ liệu Moniary của bạn và không tự gửi dữ liệu cho bên thứ ba.';
+
+  @override
+  String assistantGreeting(String name) {
+    return 'Chào $name';
+  }
+
+  @override
+  String get assistantHomePrompt => 'Hôm nay mình có thể giúp gì cho bạn?';
+
+  @override
+  String get assistantInputHint => 'Nhập câu hỏi của bạn';
+
+  @override
+  String get assistantSuggestionsTitle => 'Gợi ý cho bạn';
+
+  @override
+  String get assistantQuestionsTitle => 'Câu hỏi nhanh';
+
+  @override
+  String get assistantOpenLibrary => 'Xem thư viện câu hỏi';
+
+  @override
+  String get assistantQuestionLibraryTitle => 'Câu hỏi gợi ý';
+
+  @override
+  String get assistantFilterAll => 'Tất cả';
+
+  @override
+  String get assistantFilterUnderstand => 'Thấu hiểu chi tiêu';
+
+  @override
+  String get assistantFilterAlerts => 'Cảnh báo bất thường';
+
+  @override
+  String get assistantFilterActions => 'Hành động';
+
+  @override
+  String get assistantQuestionMonthly =>
+      'Tháng này tôi đã tiêu hết bao nhiêu tiền rồi?';
+
+  @override
+  String get assistantQuestionWeekly => 'Chi tiêu tuần này so với tuần trước?';
+
+  @override
+  String get assistantQuestionDaily =>
+      'Trung bình mỗi ngày tôi tiêu bao nhiêu?';
+
+  @override
+  String get assistantQuestionTopCategory =>
+      'Hạng mục nào tôi chi nhiều tiền nhất tháng này?';
+
+  @override
+  String get assistantQuestionRecurring =>
+      'Có khoản chi nào lặp lại nhiều lần mà tôi không chú ý không?';
+
+  @override
+  String get assistantQuestionSaving => 'Cắt giảm ở đâu để tiết kiệm thêm?';
+
+  @override
+  String assistantMonthlyAnswer(String amount) {
+    return 'Bạn đã chi $amount trong tháng này.';
+  }
+
+  @override
+  String assistantMonthlyCompare(String direction, String percent) {
+    return '$direction $percent% so với tháng trước.';
+  }
+
+  @override
+  String get assistantDirectionMore => 'Nhiều hơn';
+
+  @override
+  String get assistantDirectionLess => 'Ít hơn';
+
+  @override
+  String assistantWeeklyAnswer(
+    String current,
+    String direction,
+    String percent,
+  ) {
+    return 'Tuần này bạn đã chi $current, $direction $percent% so với tuần trước.';
+  }
+
+  @override
+  String assistantDailyAnswer(String amount) {
+    return 'Trung bình bạn chi $amount mỗi ngày trong tháng này.';
+  }
+
+  @override
+  String assistantTopCategoryAnswer(
+    String category,
+    String amount,
+    String percent,
+  ) {
+    return '$category đang đứng đầu với $amount, chiếm $percent% tổng chi.';
+  }
+
+  @override
+  String assistantRecurringAnswer(String label, int count, String amount) {
+    return 'Khoản “$label” xuất hiện $count lần, tổng cộng $amount.';
+  }
+
+  @override
+  String assistantSavingAnswer(String category, String amount) {
+    return 'Nếu giảm khoảng 15% ở $category, bạn có thể tiết kiệm gần $amount trong tháng.';
+  }
+
+  @override
+  String get assistantNoData =>
+      'Chưa có đủ dữ liệu để trả lời câu này. Hãy ghi thêm vài giao dịch rồi thử lại.';
+
+  @override
+  String get assistantAnalysisError =>
+      'Không thể phân tích lúc này. Hãy thử lại sau.';
+
+  @override
+  String get journalRecapTitle => 'Tổng kết tháng';
+
+  @override
+  String journalRecapMonth(String month) {
+    return 'Tổng kết $month';
+  }
+
+  @override
+  String journalRecordedCount(int count) {
+    return 'Bạn đã ghi lại $count khoản chi';
+  }
+
+  @override
+  String journalRecapSummary(String amount, String category) {
+    return 'Tổng cộng $amount. Danh mục lớn nhất là $category.';
+  }
+
+  @override
+  String get journalHighestDay => 'Ngày chi nhiều nhất';
+
+  @override
+  String journalHighestDayValue(String date, String amount) {
+    return '$date — $amount trong một ngày';
+  }
+
+  @override
+  String get journalComparedPrevious => 'So với tháng trước';
+
+  @override
+  String get journalSpentMore => 'Chi nhiều hơn';
+
+  @override
+  String get journalSpentLess => 'Chi ít hơn';
+
+  @override
+  String get journalTopCategories => 'Top danh mục';
+
+  @override
+  String get journalShareRecap => 'Chia sẻ tổng kết';
+
+  @override
+  String get journalExportTitle => 'Xuất nhật ký';
+
+  @override
+  String get journalExportPost => 'Đăng';
+
+  @override
+  String get journalExportSave => 'Lưu ảnh về máy';
+
+  @override
+  String get journalExportBrand => 'Moniary · Nhật ký chi tiêu';
+
+  @override
+  String get journalExportSaved => 'Đã tạo ảnh nhật ký để bạn chia sẻ.';
+
+  @override
+  String get journalExportWholeMonth => 'Cả tháng';
+
+  @override
+  String get journalExportToday => 'Hôm nay';
+
+  @override
+  String get journalExportCustomRange => 'Tùy chọn ngày';
+
+  @override
+  String get journalExportNoTransactions =>
+      'Chưa có giao dịch trong khoảng này';
+
+  @override
+  String get journalCollectionsTitle => 'Bộ sưu tập';
+
+  @override
+  String get journalCreateCollection => 'Tạo bộ sưu tập mới';
+
+  @override
+  String get journalCollectionName => 'Tên bộ sưu tập';
+
+  @override
+  String get journalCollectionNameHint => 'Ví dụ: Đà Lạt tháng 6';
+
+  @override
+  String get journalCollectionEmptyTitle => 'Chưa có bộ sưu tập';
+
+  @override
+  String get journalCollectionEmptyBody =>
+      'Gom những khoản chi của một chuyến đi hoặc dịp đặc biệt để xem lại sau.';
+
+  @override
+  String journalCollectionMeta(int count, String amount) {
+    return '$count khoản · $amount';
+  }
+
+  @override
+  String get journalAddTransaction => 'Thêm khoản vào bộ sưu tập';
+
+  @override
+  String get journalChooseTransaction => 'Chọn giao dịch';
+
+  @override
+  String get journalCollectionNoTransactions =>
+      'Bộ sưu tập này chưa có giao dịch.';
+
+  @override
+  String get journalStreakTitle => 'Chuỗi ghi chép';
+
+  @override
+  String get journalStreakBreadcrumb => 'Trang chủ — chuỗi ghi chép';
+
+  @override
+  String journalStreakDays(int count) {
+    return '$count ngày liên tiếp';
+  }
+
+  @override
+  String journalStreakBody(int count) {
+    return 'Bạn đã ghi lại chi tiêu mỗi ngày trong $count ngày gần đây.';
+  }
+
+  @override
+  String get journalStreakRecord => 'Kỷ lục của bạn';
+
+  @override
+  String journalStreakRecordDays(int count) {
+    return '$count ngày';
+  }
+
+  @override
   String get friendInviteShareDescription =>
       'Gửi link cho người khác để họ kết bạn với bạn nhanh hơn.';
 
@@ -3629,8 +4542,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendInviteOpenFriends => 'Xem danh sách bạn bè';
 
   @override
-  String get profileUsernameHint =>
-      '3-30 ký tự: chữ thường, số hoặc dấu gạch dưới';
+  String get profileUsernameHint => 'Ví dụ: erling_haaland';
 
   @override
   String get profileUsernameInvalid =>
@@ -3675,18 +4587,18 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bạn sẽ được đăng xuất ngay. Trong 30 ngày, hãy đăng nhập bằng đúng phương thức hiện tại nếu muốn khôi phục tài khoản trước khi dữ liệu bị xóa vĩnh viễn.';
 
   @override
-  String get deleteGuestDataTitle => 'Xóa dữ liệu Guest';
+  String get deleteGuestDataTitle => 'Xóa dữ liệu tài khoản khách';
 
   @override
   String get deleteGuestDataBody =>
-      'Dữ liệu Guest chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và trạng thái onboarding vẫn được giữ lại.';
+      'Dữ liệu tài khoản khách chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và hướng dẫn ban đầu vẫn được giữ lại.';
 
   @override
   String get deleteGuestDataUnderstand =>
-      'Tôi hiểu dữ liệu Guest trên thiết bị sẽ bị xóa ngay.';
+      'Tôi hiểu dữ liệu tài khoản khách trên thiết bị sẽ bị xóa ngay.';
 
   @override
-  String get deleteGuestDataAction => 'Xóa dữ liệu Guest';
+  String get deleteGuestDataAction => 'Xóa dữ liệu khách';
 
   @override
   String get deleteAccountExportTitle => 'Giữ một bản sao trước khi xóa';

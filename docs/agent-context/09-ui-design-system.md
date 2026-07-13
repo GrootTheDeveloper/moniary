@@ -1,35 +1,65 @@
 # UI & Design System
 
-**Confidence / Verification Status**: `VERIFIED`
+**Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
+**Last source audit**: `2026-07-10`
 
-## Theme
-- The app uses `AppTheme.darkTheme` exclusively. Dark mode is default.
-- Colors are defined in `lib/core/constants/app_color.dart`.
+## Current visual foundation
 
-## Localization (l10n)
-- **Tooling**: `flutter_localizations` with `.arb` files.
-- **Location**: `lib/l10n/app_en.arb` and `lib/l10n/app_vi.arb`.
-- **Default Language**: Vietnamese (`vi_VN`).
-- **Usage**: Hardcoding strings in UI is strictly prohibited. You must use `context.l10n.<key>`.
+Moniary currently uses a warm light editorial theme from
+`lib/app/app_theme.dart`:
 
-## Common Widgets
-| Widget | Path | Purpose | Usage notes |
-|---|---|---|---|
-| `BrandMark` | `lib/shared/widgets/brand_mark.dart` | Logo/branding | Use on Splash/Login |
-| `AuroraBackground` | `lib/shared/widgets/aurora_background.dart` | Background style | Used on Auth screens |
-| `BottomNavBar` | `lib/shared/widgets/bottom_nav_bar.dart` | Shell navigation | Shell shell route |
-| `PlaceholderCard` | `lib/shared/widgets/placeholder_card.dart` | Empty/Loading state | Use when no data |
-| `SupabaseImage` | `lib/shared/widgets/supabase_image.dart` | Network image | Resolves signed URLs |
+- Background/surfaces: parchment and warm white.
+- Primary accent: terracotta, with sage/forest/sand/dusty-rose support colors.
+- Body/UI font: Manrope.
+- Editorial display font: Instrument Serif.
+- Metadata/eyebrow font: JetBrains Mono.
 
-## Animations & Micro-interactions
-- **Package**: `flutter_animate`
-- **Lists and Grids**: Use staggered entrance animations for list items and grids (e.g., `.animate(delay: (30 * index).ms).fade().slideY(...)`) to create a fluid, cascading effect when data loads.
-- **Hero Transitions**: Used primarily for images flying from a list/grid into a detail view. To create a clean "zoom out" popup effect, pair the destination `Hero` screen with `buildFadeTransitionPage` (avoid sliding page transitions). Ensure `fit` attributes match between source and destination (e.g., `BoxFit.cover`) to prevent glitchy image resizing. Place the `Hero` wrapper directly around the `SupabaseImage` unless the entire container is meant to cross-fade.
+`AppTheme.lightTheme` is passed to `MaterialApp`.
+`AppTheme.darkTheme` currently returns the light theme for compatibility; do
+not describe the product as dark-mode-only.
 
-## Design Rules
-- Follow Material 3 guidelines but lean heavily into custom dark-themed cards.
-- Add graceful loading, empty, and error states for every screen.
-- **Deep Aesthetic**: UI elements (like status pills, category/wallet icons) should avoid fully opaque, bright backgrounds. Instead, use a deep translucent effect. The standard pattern is a background of `color.withValues(alpha: 0.15)` paired with a foreground icon/text of `color`.
-- **Polaroid-Style Image Overlay**: For image displays (like transaction previews or detail cards), use a 1:1 `AspectRatio` container with deeply rounded corners (`borderRadius: BorderRadius.circular(32)`). Overlays (Amount, Note, Date, Tags) should sit directly on the image, separated by dark-to-transparent `LinearGradient` wrappers (e.g., `Colors.black87` to `Colors.transparent`) to ensure text legibility while maintaining an immersive, focused aesthetic without disjointed frames.
-- **Iconography**: Use `_outlined` icons globally. Avoid `_rounded`, `_filled`, or generic emojis.
-- **Colors**: Do not use raw Material generic colors (`Colors.amber`, `#FF9800`, etc.) even in mock data. Always map to `AppTheme` colors (e.g., `AppTheme.amber`, `#F6B24D`) to maintain the deep consistency.
+## Theme access
+
+- Use `context.moniaryColors` for semantic colors.
+- Use `context.moniaryTypography` for editorial display and metadata styles.
+- Compatibility constants remain on `AppTheme`, but new UI should prefer the
+  theme extensions where a `BuildContext` exists.
+- Do not introduce raw generic Material colors or ad-hoc hex colors when an
+  existing semantic token fits.
+
+The frozen foundation was derived from
+`docs/design/moniary-screen-showcase.html`. Shared primitives are in
+`lib/shared/widgets/moniary_design.dart`.
+
+## Localization
+
+- Source ARB files: `lib/l10n/app_vi.arb` and `app_en.arb`.
+- Primary/default product locale: Vietnamese.
+- Use `context.l10n.<key>` in presentation.
+- Add/update both ARB files together.
+- Never edit `lib/l10n/gen_l10n/` manually; run `flutter gen-l10n` or a
+  Flutter build.
+
+## Shared widgets
+
+| Widget/file | Purpose |
+|---|---|
+| `BrandMark` | Product mark for onboarding/auth |
+| `AuroraBackground` | Legacy/shared decorative background |
+| `MoniaryBottomNavBar` | Four-tab shell plus centered camera action |
+| `SupabaseImage` | Local/private Supabase image display through signed URLs |
+| `ObscurableAmountText` | Honors hidden-balance privacy state |
+| `PlaceholderCard` | Empty/loading/error content |
+| `moniary_design.dart` | Editorial page headers, cards, labels, and layout primitives |
+
+## Interaction rules
+
+- Provide explicit loading, empty, error, and retry states for async screens.
+- Use fade transitions for image Hero destinations and keep source/destination
+  image fit consistent.
+- Use `flutter_animate` sparingly for meaningful staged entrances.
+- Prefer outlined Material icons as established by the app.
+- Preserve accessibility semantics for custom icon buttons, navigation, camera,
+  assistant, and privacy-sensitive controls.
+- Keep amount display routed through privacy-aware widgets when balances may be
+  hidden.

@@ -35,10 +35,14 @@ Future<TransactionMutationResult?> showTransactionFormSheet(
   return showModalBottomSheet<TransactionMutationResult>(
     context: context,
     isScrollControlled: true,
-    useSafeArea: true,
-    builder: (context) => TransactionFormScreen(
-      initialTransaction: initialTransaction,
-      initialDateTime: initialDateTime,
+    useSafeArea: false,
+    backgroundColor: Colors.transparent,
+    builder: (context) => SizedBox(
+      height: MediaQuery.sizeOf(context).height,
+      child: TransactionFormScreen(
+        initialTransaction: initialTransaction,
+        initialDateTime: initialDateTime,
+      ),
     ),
   );
 }
@@ -234,6 +238,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     final walletsAsync = ref.watch(walletsControllerProvider);
     final categoriesAsync = ref.watch(categoriesControllerProvider);
     final composerState = ref.watch(transactionComposerProvider);
@@ -274,268 +279,194 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     );
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.chevron_left, size: 32),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          _isEditing
-              ? context.l10n.transactionEditTitle
-              : context.l10n.transactionCreateTitle,
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.check_circle_outline,
-              color: canSubmit ? AppTheme.mint : AppTheme.textDim,
-              size: 32,
-            ),
-            onPressed: canSubmit ? _submit : null,
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            const SizedBox(height: 12),
-            _ImagePreview(
-              file: _pickedFile,
-              initialImagePath: widget.initialTransaction?.imagePath,
-              amountController: _amountController,
-              amountFormatter: _amountFormatter,
-              noteController: _noteController,
-              onClear: () => setState(() => _pickedFile = null),
-              onPick: () => _showImageSourceOptions(context),
-              currencySuffix: currencySymbolFor(
-                currencyCode: ref.watch(preferredCurrencyProvider),
-                locale: Localizations.localeOf(context).toString(),
-              ),
-            ),
-            if (_pickedFile != null) ...[
-              const SizedBox(height: 12),
-              if (_isOcrExtracting)
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: AppTheme.mint,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          context.l10n.transactionOcrExtracting,
-                          style: const TextStyle(
-                            color: AppTheme.mint,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              else
-                Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 40,
-                        child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white54,
-                            side: const BorderSide(
-                              color: Colors.white54,
-                              width: 1.0,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                          ),
-                          onPressed: () => _showImageSourceOptions(context),
-                          icon: const Icon(Icons.camera_alt_outlined, size: 20),
-                          label: Text(context.l10n.transactionChangePhoto),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: SizedBox(
-                        height: 40,
-                        child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppTheme.mint,
-                            side: const BorderSide(
-                              color: AppTheme.mint,
-                              width: 1.5,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                          ),
-                          onPressed: _runOcr,
-                          icon: const Icon(
-                            Icons.document_scanner_outlined,
-                            size: 20,
-                          ),
-                          label: Text(
-                            context.l10n.cameraOcrScan,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-            ] else ...[
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 40,
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white54,
-                    side: const BorderSide(color: Colors.white54, width: 1.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                  ),
-                  onPressed: () => _showImageSourceOptions(context),
-                  icon: const Icon(Icons.camera_alt_outlined, size: 20),
-                  label: Text(context.l10n.transactionChangePhoto),
-                ),
-              ),
-            ],
-
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _GridFormTile(
-                    label: context.l10n.transactionType,
-                    value: _type == TransactionType.expense
-                        ? context.l10n.categoryExpense
-                        : context.l10n.categoryIncome,
-                    defaultIcon: _type == TransactionType.expense
-                        ? Icons.south_east
-                        : Icons.north_east,
-                    iconColor: _type == TransactionType.expense
-                        ? AppTheme.danger
-                        : AppTheme.success,
-                    onTap: () {
-                      setState(() {
-                        _type = _type == TransactionType.expense
-                            ? TransactionType.income
-                            : TransactionType.expense;
-                        _selectedCategoryId = null;
-                      });
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (mounted) _setDefaultSelections();
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _GridFormTile(
-                    label: context.l10n.transactionCategory,
-                    value:
-                        selectedCategory?.name ??
-                        context.l10n.transactionSelectCategory,
-                    iconWidget: selectedCategory != null
-                        ? _CategoryIcon(category: selectedCategory)
-                        : null,
-                    defaultIcon: Icons.category_outlined,
-                    onTap: () => _showCategoryPicker(context, categoryOptions),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _GridFormTile(
-                    label: context.l10n.transactionWalletAccount,
-                    value:
-                        selectedWallet?.name ??
-                        context.l10n.transactionSelectWallet,
-                    iconWidget: selectedWallet != null
-                        ? _WalletIcon(wallet: selectedWallet)
-                        : null,
-                    defaultIcon: Icons.account_balance_wallet_outlined,
-                    onTap: () => _showWalletPicker(context, walletOptions),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _GridFormTile(
-                    label: context.l10n.transactionDateTime,
-                    value: DateFormat(
-                      'dd/MM/yyyy',
-                      Localizations.localeOf(context).toString(),
-                    ).format(_selectedDate),
-                    defaultIcon: Icons.calendar_today_outlined,
-                    onTap: _pickDateTime,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppTheme.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.outline),
-              ),
-              child: Row(
+      backgroundColor: colors.background,
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 393),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(25, 10, 25, 28),
+              child: Column(
                 children: [
-                  const Icon(
-                    Icons.star_outline,
-                    color: Colors.white54,
-                    size: 24,
+                  Row(
+                    children: [
+                      _FormTopButton(
+                        icon: Icons.arrow_back_ios_new_rounded,
+                        tooltip: MaterialLocalizations.of(
+                          context,
+                        ).backButtonTooltip,
+                        onPressed: () => context.pop(),
+                      ),
+                      Expanded(
+                        child: Text(
+                          _isEditing
+                              ? context.l10n.transactionEditTitle
+                              : context.l10n.transactionCreateTitle,
+                          textAlign: TextAlign.center,
+                          style: context.moniaryTypography.displaySmall
+                              .copyWith(fontSize: 17, height: 1),
+                        ),
+                      ),
+                      _FormTopButton(
+                        icon: Icons.check_rounded,
+                        tooltip: context.l10n.transactionSaveTransaction,
+                        isPrimary: true,
+                        isEnabled: canSubmit,
+                        onPressed: _submit,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      context.l10n.transactionIsImportant,
-                      style: const TextStyle(color: Colors.white),
+                  const SizedBox(height: 13),
+                  _ImagePreview(
+                    file: _pickedFile,
+                    initialImagePath: widget.initialTransaction?.imagePath,
+                    amountController: _amountController,
+                    amountFormatter: _amountFormatter,
+                    noteController: _noteController,
+                    onClear: () => setState(() => _pickedFile = null),
+                    currencySuffix: currencySymbolFor(
+                      currencyCode: ref.watch(preferredCurrencyProvider),
+                      locale: Localizations.localeOf(context).toString(),
                     ),
                   ),
-                  Switch(
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _FormPillButton(
+                          label: context.l10n.transactionChangePhoto,
+                          icon: Icons.camera_alt_outlined,
+                          onPressed: () => _showImageSourceOptions(context),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _FormPillButton(
+                          label: _isOcrExtracting
+                              ? context.l10n.transactionOcrExtracting
+                              : context.l10n.cameraOcrScan,
+                          icon: Icons.document_scanner_outlined,
+                          foregroundColor: colors.primary,
+                          borderColor: colors.primary.withValues(alpha: 0.62),
+                          isLoading: _isOcrExtracting,
+                          onPressed: _isOcrExtracting
+                              ? null
+                              : _pickedFile == null
+                              ? () => _showImageSourceOptions(context)
+                              : _runOcr,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _GridFormTile(
+                          label: context.l10n.transactionType,
+                          value: _type == TransactionType.expense
+                              ? context.l10n.categoryExpense
+                              : context.l10n.categoryIncome,
+                          defaultIcon: _type == TransactionType.expense
+                              ? Icons.south_east
+                              : Icons.north_east,
+                          iconColor: _type == TransactionType.expense
+                              ? AppTheme.danger
+                              : AppTheme.success,
+                          onTap: () {
+                            setState(() {
+                              _type = _type == TransactionType.expense
+                                  ? TransactionType.income
+                                  : TransactionType.expense;
+                              _selectedCategoryId = null;
+                            });
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (mounted) _setDefaultSelections();
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _GridFormTile(
+                          label: context.l10n.transactionCategory,
+                          value:
+                              selectedCategory?.name ??
+                              context.l10n.transactionSelectCategory,
+                          iconWidget: selectedCategory != null
+                              ? _CategoryIcon(category: selectedCategory)
+                              : null,
+                          defaultIcon: Icons.category_outlined,
+                          onTap: () =>
+                              _showCategoryPicker(context, categoryOptions),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _GridFormTile(
+                          label: context.l10n.transactionWallet,
+                          value:
+                              selectedWallet?.name ??
+                              context.l10n.transactionSelectWallet,
+                          iconWidget: selectedWallet != null
+                              ? _WalletIcon(wallet: selectedWallet)
+                              : null,
+                          defaultIcon: Icons.account_balance_wallet_outlined,
+                          onTap: () =>
+                              _showWalletPicker(context, walletOptions),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _GridFormTile(
+                          label: context.l10n.transactionDateTime,
+                          value: DateFormat(
+                            'dd/MM · HH:mm',
+                            Localizations.localeOf(context).toString(),
+                          ).format(_selectedDate),
+                          defaultIcon: Icons.calendar_today_outlined,
+                          onTap: _pickDateTime,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  _ImportantToggle(
                     value: _isImportant,
-                    activeThumbColor: AppTheme.mint,
                     onChanged: (value) {
                       setState(() {
                         _isImportant = value;
                       });
                     },
                   ),
+                  const SizedBox(height: 16),
+                  if (composerState.isLoading)
+                    SizedBox(
+                      height: 45,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: colors.primary,
+                          strokeWidth: 2.5,
+                        ),
+                      ),
+                    )
+                  else
+                    SizedBox(
+                      width: double.infinity,
+                      height: 45,
+                      child: FilledButton(
+                        onPressed: canSubmit ? _submit : null,
+                        child: Text(context.l10n.transactionSaveTransaction),
+                      ),
+                    ),
                 ],
               ),
             ),
-            const SizedBox(height: 40),
-            if (composerState.isLoading)
-              const Center(
-                child: CircularProgressIndicator(color: AppTheme.mint),
-              ),
-          ],
+          ),
         ),
       ),
     );
@@ -726,7 +657,6 @@ class _ImagePreview extends StatelessWidget {
     required this.amountFormatter,
     required this.noteController,
     required this.onClear,
-    required this.onPick,
     required this.currencySuffix,
   });
   final XFile? file;
@@ -735,181 +665,330 @@ class _ImagePreview extends StatelessWidget {
   final CurrencyTextInputFormatter amountFormatter;
   final TextEditingController noteController;
   final VoidCallback onClear;
-  final VoidCallback onPick;
   final String currencySuffix;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AspectRatio(
-          aspectRatio: 1,
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: AppTheme.surfaceRaised,
-              borderRadius: BorderRadius.circular(24),
+    final colors = context.moniaryColors;
+    return SizedBox(
+      width: double.infinity,
+      height: 298,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: AppTheme.taupe,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: colors.textPrimary.withValues(alpha: 0.08),
+              blurRadius: 18,
+              offset: const Offset(0, 10),
             ),
-            child: Stack(
-              children: [
-                if (file != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Image.file(
-                      File(file!.path),
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                else if (initialImagePath != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: SupabaseImage(
-                      imagePath: initialImagePath,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fallbackIcon: Icons.image_outlined,
-                    ),
-                  )
-                else
-                  const Center(
-                    child: Icon(
-                      Icons.image_outlined,
-                      size: 64,
-                      color: Colors.white54,
-                    ),
-                  ),
-                // Gradient Overlay + Inputs
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                      bottom: 20,
-                      top: 48,
-                    ),
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [Colors.black87, Colors.transparent],
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Amount Input
-                        SizedBox(
-                          height: 56,
-                          child: TextField(
-                            controller: amountController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              amountFormatter,
-                              LengthLimitingTextInputFormatter(13),
-                            ],
-                            textAlign: TextAlign.center,
-                            textAlignVertical: TextAlignVertical.center,
-                            expands: true,
-                            maxLines: null,
-                            minLines: null,
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                              filled: false,
-                              hintText: '0',
-                              hintStyle: const TextStyle(color: Colors.white54),
-                              suffixText: currencySuffix,
-                              suffixStyle: const TextStyle(
-                                fontSize: 20,
-                                color: Colors.white70,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              isDense: true,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        // Note Input
-                        Container(
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: Colors.black45,
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: TextField(
-                            controller: noteController,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(27),
-                            ],
-                            textAlign: TextAlign.center,
-                            textAlignVertical: TextAlignVertical.center,
-                            expands: true,
-                            maxLines: null,
-                            minLines: null,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                              filled: false,
-                              hintText: context.l10n.transactionEnterNote,
-                              hintStyle: const TextStyle(
-                                color: Colors.white54,
-                                fontSize: 20,
-                              ),
-                              isDense: true,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (file != null)
+                Image.file(
+                  File(file!.path),
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                )
+              else if (initialImagePath != null)
+                SupabaseImage(
+                  imagePath: initialImagePath,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                  fallbackIcon: Icons.image_outlined,
+                )
+              else
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        AppTheme.taupe.withValues(alpha: 0.94),
+                        AppTheme.dustyRose.withValues(alpha: 0.52),
+                        colors.textPrimary.withValues(alpha: 0.68),
                       ],
+                      stops: const [0, 0.62, 1],
                     ),
                   ),
                 ),
-                if (file != null)
-                  Positioned(
-                    top: 12,
-                    right: 12,
-                    child: GestureDetector(
-                      onTap: onClear,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.black54,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.close,
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.02),
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.7),
+                      ],
+                      stops: const [0, 0.48, 1],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 19,
+                right: 19,
+                bottom: 17,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: 43,
+                      child: TextField(
+                        controller: amountController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          amountFormatter,
+                          LengthLimitingTextInputFormatter(13),
+                        ],
+                        textAlign: TextAlign.center,
+                        textAlignVertical: TextAlignVertical.center,
+                        expands: true,
+                        maxLines: null,
+                        minLines: null,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
                           color: Colors.white,
-                          size: 20,
+                          height: 1,
+                        ),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          filled: false,
+                          hintText: '0',
+                          hintStyle: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          suffixText: currencySuffix,
+                          suffixStyle: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.46),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: SizedBox(
+                        height: 37,
+                        child: TextField(
+                          controller: noteController,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(27),
+                          ],
+                          textAlign: TextAlign.center,
+                          textAlignVertical: TextAlignVertical.center,
+                          expands: true,
+                          maxLines: null,
+                          minLines: null,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            filled: false,
+                            hintText: context.l10n.transactionEnterNote,
+                            hintStyle: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (file != null)
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: GestureDetector(
+                    onTap: onClear,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.42),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const SizedBox(
+                        width: 25,
+                        height: 25,
+                        child: Icon(
+                          Icons.close_rounded,
+                          color: Colors.white,
+                          size: 16,
                         ),
                       ),
                     ),
                   ),
-              ],
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FormTopButton extends StatelessWidget {
+  const _FormTopButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+    this.isPrimary = false,
+    this.isEnabled = true,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onPressed;
+  final bool isPrimary;
+  final bool isEnabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final activeColor = isPrimary ? colors.success : colors.icon;
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: isPrimary
+            ? colors.success.withValues(alpha: 0.09)
+            : colors.surface.withValues(alpha: 0.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: isPrimary
+                ? colors.success.withValues(alpha: 0.4)
+                : colors.outline,
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: isEnabled ? onPressed : null,
+          child: SizedBox(
+            width: 34,
+            height: 34,
+            child: Icon(
+              icon,
+              size: isPrimary ? 18 : 17,
+              color: isEnabled ? activeColor : colors.textDim,
             ),
           ),
         ),
-      ],
+      ),
+    );
+  }
+}
+
+class _FormPillButton extends StatelessWidget {
+  const _FormPillButton({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+    this.foregroundColor,
+    this.borderColor,
+    this.isLoading = false,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final Color? foregroundColor;
+  final Color? borderColor;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final effectiveColor = foregroundColor ?? colors.textSecondary;
+    final enabled = onPressed != null;
+    return Material(
+      color: colors.surface.withValues(alpha: 0.34),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(999),
+        side: BorderSide(
+          color: (borderColor ?? colors.outline).withValues(
+            alpha: enabled ? 1 : 0.56,
+          ),
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onPressed,
+        child: SizedBox(
+          height: 36,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isLoading)
+                SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: effectiveColor,
+                  ),
+                )
+              else
+                Icon(
+                  icon,
+                  size: 14,
+                  color: enabled
+                      ? effectiveColor
+                      : colors.textDim.withValues(alpha: 0.75),
+                ),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: enabled
+                        ? effectiveColor
+                        : colors.textDim.withValues(alpha: 0.75),
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -933,43 +1012,112 @@ class _GridFormTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(13),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        height: 58,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.outline),
+          color: colors.surface.withValues(alpha: 0.34),
+          borderRadius: BorderRadius.circular(13),
+          border: Border.all(color: colors.outline),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (iconWidget != null)
-              iconWidget!
-            else
-              Icon(defaultIcon, color: iconColor ?? Colors.white54, size: 28),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(color: Colors.white54, fontSize: 12),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
+            SizedBox(
+              width: 17,
+              height: 17,
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child:
+                    iconWidget ??
+                    Icon(
+                      defaultIcon,
+                      color: iconColor ?? colors.textDim,
+                      size: 18,
+                    ),
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(width: 9),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    label.toUpperCase(),
+                    style: context.moniaryTypography.metadataStrong.copyWith(
+                      color: colors.textDim,
+                      fontSize: 7.2,
+                      letterSpacing: 1.1,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ImportantToggle extends StatelessWidget {
+  const _ImportantToggle({required this.value, required this.onChanged});
+
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Container(
+      height: 47,
+      padding: const EdgeInsets.only(left: 14, right: 8),
+      decoration: BoxDecoration(
+        color: colors.surface.withValues(alpha: 0.34),
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(color: colors.outline),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.star_border_rounded, color: colors.warning, size: 18),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Text(
+              context.l10n.transactionIsImportant,
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          Transform.scale(
+            scale: 0.84,
+            child: Switch(
+              value: value,
+              activeThumbColor: colors.primary,
+              onChanged: onChanged,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -90,5 +90,5 @@ Chạy: flutter build apk --release
 - [ ] `flutter analyze` pass
 - [ ] `flutter build apk --release` pass
 - [ ] Commit: `chore(M08): add INTERNET permission + ProGuard + R8 config`
-- [ ] Update `handoff/current_status.md`
-- [ ] Ghi issues mới (nếu có) vào `handoff/issues_backlog.md`
+- [ ] Update `../handoff/current_status.md`
+- [ ] Ghi issues mới (nếu có) vào `../handoff/issues_backlog.md`

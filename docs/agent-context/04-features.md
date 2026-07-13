@@ -1,87 +1,156 @@
-# Features
+# Feature Inventory
 
-**Confidence / Verification Status**: `VERIFIED`
+**Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
+**Last source audit**: `2026-07-12`
 
-## Feature: Transactions
-- **Purpose**: Manage expenses and income.
-- **Main files**: `features/transactions/`
-- **UI screens**: `TransactionFormScreen`, `TransactionDetailScreen`, `CameraScreen`, `DayDetailScreen`, `StarredTransactionsScreen`.
-- **Repository**: `TransactionRepository` (Supports Mock & Supabase modes).
-- **Navigation**: The main FAB opens `CameraScreen` for taking/picking photos (or OCR scanning), which then routes to `TransactionFormScreen`.
+## Transactions
 
-## Feature: Calendar
-- **Purpose**: View transactions in a monthly calendar format.
-- **Main files**: `features/calendar/`
-- **UI Architecture**: Zero-scroll optimized layout with a deep blue accent theme. Features a seamless "In-Place" toggle: pressing "Today" instantly replaces the month calendar grid with a scrollable 3xN grid of today's images, hiding the month selector for maximum focus. Utilizes `SingleChildScrollView` for filter rows to prevent OOM rendering issues. No separate data layer (consumes `TransactionRepository`).
+- **Purpose**: CRUD for income/expense entries, receipt images, importance flags,
+  search, and day/detail views.
+- **Layers**: `TransactionComposerController`, query providers,
+  `TransactionRepository`, and transaction domain models.
+- **Entry flow**: the shell camera action opens `CameraScreen`; camera failures
+  surface a localized reason and fall back to the manual create sheet.
+- **Storage**: private `transaction-images` paths in Supabase mode; temporary
+  local files and in-memory entries in mock mode.
 
-## Feature: Statistics
-- **Purpose**: View financial analytics, charts, and trends.
-- **Main files**: `features/statistics/`
-- **UI Architecture**: Presentation-only feature. Uses an inline provider `statisticsMonthProvider` that directly consumes `TransactionRepository`. Shows pie charts and bar charts using `fl_chart`.
+## Calendar
 
-## Feature: Wallets
-- **Purpose**: Manage multiple financial sources (Cash, Bank, E-Wallet, Credit).
-- **Main files**: `features/wallets/`
-- **Repository**: `WalletRepository` (Supports Mock & Supabase).
-- **UI Architecture**: Full clean architecture. Managed primarily via `WalletSection` (bottom sheets).
+- **Purpose**: month calendar, today image grid, filters, search, summary header,
+  day drill-down, and entry points to journal recaps/streaks.
+- **State**: `calendarVisibleMonthProvider`, `calendarFilterProvider`, and
+  `calendarMonthProvider(month)`.
+- **Data**: consumes `TransactionRepository`; it has no independent repository.
 
-## Feature: Categories
-- **Purpose**: Manage expense/income categories.
-- **Main files**: `features/categories/`
-- **Repository**: `CategoryRepository` (Supports Mock & Supabase).
-- **UI Architecture**: Full clean architecture. Managed primarily via `CategorySection` (bottom sheets).
+## Statistics
 
-## Feature: Groups & Community
-- **Purpose**: Create spending groups, post photo-based shared expenses, calculate integer balances, settle debts, and discuss transactions.
-- **Main files**: `features/groups/`
-- **UI screens**: `GroupListScreen`, `CreateGroupScreen`, `GroupDetailScreen`, `AddGroupTransactionScreen`, `MemberAmountInputScreen`, `DebtSettlementScreen`, `GroupTransactionDetailScreen`.
-- **Domain services**: `GroupSplitCalculator`, `SettlementCalculator`.
-- **Data**: `GroupRepository` supports both Supabase and mock mode. Supabase mutations that recalculate shared financial state use atomic RPCs.
-- **Storage**: Group avatars and transaction images are private paths in `transaction-images`; display uses signed URLs.
+- **Purpose**: monthly income/expense/net summaries, category pie chart, trend
+  chart, important spending, and top transactions.
+- **State**: `statisticsMonthProvider(month)` reads
+  `TransactionRepository` directly as a read-only query provider.
+- **Navigation**: links from statistics to budgets and transaction detail.
 
-## Feature: Friends
-- **Purpose**: Search users by username, send/accept/decline/cancel friend requests, create shareable friend invite links, accept friend invites from deep links, remove friends, and invite friends into expense groups.
-- **Main files**: `features/friends/`
-- **UI screens**: `FriendsScreen`, `AddFriendScreen`, `FriendInviteAcceptScreen`.
-- **Deep links**: Android handles `moniary://friends/invite/<token>` via `app_links`; unauthenticated users keep a pending route and continue after login/profile setup.
-- **Data**: `FriendRepository` supports Supabase and mock mode. Supabase mutations use RPCs to avoid direct client-side writes to friend tables.
-- **Privacy**: User search returns minimal profile fields only and does not expose email addresses.
+## Budgets
 
-## Feature: Scanning (OCR)
-- **Purpose**: Extract data from receipts using OCR.
-- **Main files**: `features/scanning/`
-- **UI screens**: `ScanningScreen`, `OcrReviewScreen`.
-- **Data flow**: `ScanningController` -> `OcrRepository` -> `OcrService`.
-- **Services**: `FastApiOcrService` always calls `POST /extract`; there is no mock OCR fallback.
-- **Backend**: `backend/ocr/` contains the FastAPI + Ollama receipt extraction service.
-- **Configuration**: Android emulator defaults to `http://10.0.2.2:8000`. Override `OCR_API_URL` with `--dart-define` for a physical device or hosted backend.
+- **Purpose**: monthly per-category expense limits, warning ratios, progress, and
+  category transaction drill-down.
+- **Layers**: `BudgetController`, `BudgetRepository`,
+  `BudgetRepositoryImpl`, and environment-specific budget limit data sources.
+- **Data**: combines categories + monthly transactions with
+  `category_budget_limits`. Supabase and in-memory mock limit sources are both
+  implemented.
+- **Routes**: `/budgets` and `/budgets/category`.
 
-## Feature: Settings, Privacy & Data Export
-- **Purpose**: App settings, legal agreements, privacy requests, data export (CSV/XLSX/PDF), data import (CSV), App Security, and Automated Reports.
-- **Main files**: `features/settings/`
-- **UI screens**: Massive feature with 30+ screens (ExportDataScreen, ImportDataScreen, NotificationSettingsScreen, PrivacyCenterScreen, DeleteAccountScreen, ActiveSessionsScreen, AppLockScreen, etc.).
-- **Security Features**: Biometric App Lock (FaceID/TouchID) and Hide Balances mode.
-- **Automated Reports**: Uses Supabase Edge Functions + Resend API to send scheduled email reports (Daily/Weekly/Monthly/Yearly).
-- **Repository**: `AccountRepository` (handles exports, privacy requests, file actions), `ImportRepository` (handles CSV import and local import history), `PrivacyRepository` (handles Biometric state in SharedPreferences), `NotificationSettingsRepository` (handles email report frequency). Export history and import history are stored locally in JSON format.
-- **Export History**: Exported data type selections are stored as stable technical keys (`transactions`, `wallets`, `categories`), and date ranges are stored as raw `start_date`/`end_date` values. Labels are localized only in presentation screens; legacy `date_range` text is still read for older history entries.
-- **Export Auth Flow**: CSV/XLSX/PDF export resolves the active user from the Riverpod session path so mock mode exports work with mock anonymous sign-in, while Supabase mode still requires a real signed-in session.
-- **Export File Actions**: Opening and sharing exported files is handled from presentation via `FileActionService`; failures are logged and surfaced with localized SnackBars.
-- **Import History**: CSV imports create a local history entry before transaction creation starts (`pending`), update it to `completed` with the imported count on success, and mark it `failed` with the partial imported count if the import fails.
-- **Import History Guard**: Transaction creation does not start unless the pending import history entry is created successfully, so imported transactions always have a traceable import record.
-- **Import CSV Validation**: CSV row scalar fields are parsed with non-throwing validators; malformed dates, amounts, and types stay in the preview as invalid rows with stable error codes instead of being swallowed by empty exception handlers.
-- **Import Confirmation Errors**: The import screen stays open and shows a localized error state when confirmation fails. If the core transaction import succeeds but local history creation/completion fails, it displays a specific partial-success warning SnackBar and navigates back. Success SnackBars and navigation only run after the controller finishes without any error.
-- **Import Wallet Loading Errors**: The import screen shows a localized retry state when wallets fail to load and does not render raw repository/backend exception details.
-- **Recent History Errors**: Import/export entry screens and full history screens surface history loading errors with a localized retry action and log the exception instead of hiding the section silently. If a local import/export history file exists but cannot be parsed, the repository throws an `AppException` and refuses to overwrite that file during new imports or exports.
-- **Notification Settings Errors**: Supabase notification settings reads and updates are wrapped as `AppException` values with stable error codes; the UI shows a localized retry state instead of backend exception details.
+## Journal
 
-## Feature: Profile
-- **Purpose**: User profile setup and management.
-- **Main files**: `features/profile/`
-- **Repository**: `ProfileRepository` (Profiles table in Supabase).
-- **UI screens**: `ProfileSetupScreen`.
+- **Purpose**: monthly recap, recording streak, custom transaction collections,
+  and shareable/savable recap images.
+- **Layers**: journal query/action providers, `JournalRepository`, repository
+  implementation, and Supabase/mock collection data sources.
+- **Data**: recaps and streaks derive from transactions. Collections use
+  `journal_collections` and `journal_collection_transactions` in Supabase
+  mode and process-local records in mock mode.
+- **Routes**: `/journal/recap`, `/journal/export`,
+  `/journal/collections`, `/journal/collection`, and `/journal/streak`.
 
-## Feature: Auth & Onboarding
-- **Purpose**: User login and introduction.
-- **Main files**: `features/auth/`, `features/onboarding/`, `features/splash/`
-- **Note**: Auth currently relies on Anonymous Sign-in. Google/Apple/Email sign-ins are marked as "Under Development".
-- **Auth Data Boundary**: Auth and account-status controllers delegate Supabase Auth, RPC, and `profiles` table operations to repositories; controllers only manage Riverpod state and mock session state.
+## Financial Assistant
+
+- **Purpose**: answer a fixed catalog of finance questions using the user's
+  transaction history: monthly totals, week comparison, daily average, top
+  category, repeated spending, and saving suggestions.
+- **Important limitation**: this is deterministic on-device/repository logic,
+  not a chat model, external AI API, or free-form financial adviser.
+- **Consent**: intro/enablement and transaction/wallet/budget access flags are
+  stored in `SharedPreferences`. The current snapshot calculation reads
+  transactions; wallet/budget flags are reserved for future expansion.
+- **Access**: opened as a global route from the floating assistant button, not a
+  bottom-navigation tab.
+
+## Wallets and Categories
+
+- **Purpose**: manage financial sources and expense/income classifications.
+- **Repositories**: `WalletRepository` and `CategoryRepository`, both with
+  Supabase and mock paths selected by `useMockDataModeProvider`.
+- **UI**: primarily embedded sections/sheets rather than standalone routes.
+
+## Groups
+
+- **Purpose**: shared expense groups, multiple payer/split modes, integer-safe
+  balances, settlements, comments, invitations, and private images.
+- **Layers**: `GroupController`, repository contract/implementation,
+  Supabase/mock data sources, model mappers, and pure split/settlement services.
+- **Backend**: versioned group tables, RPCs, RLS, Storage policies, and views are
+  defined in `20260611000000_groups_community.sql`.
+- **Invite links**: owner/admin can create a shared link that multiple people
+  may use for seven days. The recipient sees a localized preview through a deep
+  link, can explicitly join or dismiss the preview without joining, and gets an
+  already-member state without an error.
+- **Direct invitations**: recipients can reopen username/friend invitations
+  from the localized group-invitations inbox, where they can accept or decline
+  before the seven-day expiry; the Group tab shows a pending-invitation badge.
+- **Screens**: group list/detail/create, invite member, shared-invite
+  acceptance, direct-invitations inbox, add/detail transaction, member amount
+  input, and debt settlement.
+
+## Friends
+
+- **Purpose**: search by username, request lifecycle, friend removal, friend
+  invite links, deep-link acceptance, and inviting a friend to a group.
+- **Backend**: friends and invite-link migrations define tables, RLS, and RPCs.
+  The Flutter data source uses RPCs and returns minimal profile data.
+- **Deep link**: invite links are generated as
+  `https://go.vuivethoima.id.vn/friends/invite/<token>` and Android also keeps
+  legacy `moniary://friends/invite/<token>` parsing for compatibility. Pending
+  links survive the auth/profile setup decision flow in Riverpod memory.
+
+## Scanning (OCR)
+
+- **Purpose**: upload a receipt to OCR, review parsed fields, and continue into
+  transaction creation.
+- **Flow**: `ScanningController -> OcrRepository -> OcrService ->
+  FastApiOcrService`.
+- **Backend**: `backend/ocr/` is rule-based Tesseract + OpenCV + regex/keyword
+  matching behind FastAPI. It does not use Ollama, an LLM, or cloud OCR.
+- **Environment**: Android emulator default is `http://10.0.2.2:8000`;
+  override `OCR_API_URL` for devices or deployment. There is no mock OCR
+  response fallback.
+
+## Settings, Privacy, and Data Portability
+
+- **Purpose**: account/profile settings, app lock, hidden balances, active
+  sessions, notification/report preferences, CSV import, CSV/XLSX/PDF export,
+  privacy requests, account deletion, legal/support/store-compliance screens.
+- **Data layer**:
+  - `AccountRepository`: account lifecycle, sessions, exports, privacy
+    requests, and local export/privacy history.
+  - `ImportRepository`: CSV parsing and local import history.
+  - `NotificationSettingsRepository`: Supabase or mock notification settings.
+  - `PrivacyRepository`: app lock and hidden-balance preferences.
+  - `FileActionService`: open/share exported files.
+- **Local histories**: import/export/privacy-request histories are JSON files in
+  the application documents directory. Corrupt existing history is surfaced and
+  not silently overwritten.
+- **Import invariant**: a pending history entry must be created before
+  transaction creation begins; completion/failure updates the same entry.
+- **Reports**: `scheduled-reports` Edge Function generates email summaries and
+  uses Resend when configured.
+
+## Profile
+
+- **Purpose**: profile create/edit, username/avatar, and post-setup survey.
+- **Setup**: `ProfileSetupScreen` stores name, username, timezone, and avatar.
+- **Survey**: `ProfileSurveyScreen` stores occupation/preferred currency and
+  creates or updates the default wallet.
+- **Data**: `ProfileRepository` supports Supabase and mock profiles.
+
+## Auth, Onboarding, and Splash
+
+- **Auth methods**: email sign-in/sign-up/password reset, Google/Facebook/Apple
+  OAuth, anonymous sign-in, and explicit guest/mock session.
+- **Account linking**: email, Google, and Apple identity linking paths exist for
+  an already signed-in account.
+- **Boundary**: controllers manage Riverpod state; `AuthRepository` owns
+  Supabase Auth, `initialize_user`, and profile-provider updates.
+- **Routing**: splash/post-auth decisions account for onboarding, session,
+  profile setup, profile survey, pending friend links, soft deletion, and app
+  lock.

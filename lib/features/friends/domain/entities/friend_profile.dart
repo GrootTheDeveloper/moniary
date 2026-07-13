@@ -42,6 +42,8 @@ class FriendProfile {
     this.username,
     this.avatarPath,
     this.friendsSince,
+    this.sharedGroupCount = 0,
+    this.currentUserBalance = 0,
   });
 
   final String userId;
@@ -49,19 +51,29 @@ class FriendProfile {
   final String? username;
   final String? avatarPath;
   final DateTime? friendsSince;
+  final int sharedGroupCount;
+  final int currentUserBalance;
 
   String get displayName {
     final name = fullName?.trim();
     if (name != null && name.isNotEmpty) return name;
     final handle = username?.trim();
-    if (handle != null && handle.isNotEmpty) return handle;
+    if (handle != null && handle.isNotEmpty && !_isGeneratedUsername(handle)) {
+      return handle;
+    }
     return userId;
   }
 
   String get displayUsername {
     final handle = username?.trim();
-    if (handle == null || handle.isEmpty) return '';
+    if (handle == null || handle.isEmpty || _isGeneratedUsername(handle)) {
+      return '';
+    }
     return '@$handle';
+  }
+
+  bool _isGeneratedUsername(String value) {
+    return RegExp(r'^user_[0-9a-f]{24}$').hasMatch(value.trim());
   }
 }
 

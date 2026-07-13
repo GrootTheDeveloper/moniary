@@ -1,11 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../profile/data/profile_repository.dart';
 import '../../settings/domain/account/account_deletion_status.dart';
 import 'account_status_controller.dart';
 
-enum PostAuthDestination { noSession, profileSetup, home, pendingDeletion }
+enum PostAuthDestination {
+  noSession,
+  profileSetup,
+  profileSurvey,
+  home,
+  pendingDeletion,
+}
 
 class PostAuthDecision {
   const PostAuthDecision(this.destination, {this.deletionStatus});
@@ -14,35 +21,36 @@ class PostAuthDecision {
   final AccountDeletionStatus? deletionStatus;
 }
 
-final postAuthDecisionProvider = FutureProvider.autoDispose<PostAuthDecision>((
-  ref,
-) async {
-  if (ref.read(currentSessionProvider) == null) {
+final postAuthDecisionProvider = FutureProvider<PostAuthDecision>((ref) async {
+  final session = ref.watch(currentSessionProvider);
+  // Use ref.read for repositories to avoid race conditions during rebuilds
+  final profileRepo = ref.read(profileRepositoryProvider);
+
+  if (session == null) {
     return const PostAuthDecision(PostAuthDestination.noSession);
   }
 
-  // OAuth callbacks can restore a Supabase session before the app has created
-  // the user's profile/default data. Load the profile first because
-  // ProfileRepository can safely initialize a missing profile; then account
-  // deletion status can read from `profiles` without turning a first-time
-  // Google sign-in into a splash "Cannot connect" state.
-  final profile = await ref
-      .read(profileRepositoryProvider)
-      .fetchCurrentProfile();
-
-  final deletionStatus = await ref.refresh(
-    accountStatusControllerProvider.future,
-  );
-  if (deletionStatus.isPending) {
-    return PostAuthDecision(
-      PostAuthDestination.pendingDeletion,
-      deletionStatus: deletionStatus,
+  try {
+    final deletionStatus = await ref.read(
+      accountStatusControllerProvider.future,
     );
-  }
+    if (deletionStatus.isPending) {
+      return PostAuthDecision(
+        PostAuthDestination.pendingDeletion,
+        deletionStatus: deletionStatus,
+      );
+    }
 
-  return PostAuthDecision(
-    profile == null || profile.needsSetup
-        ? PostAuthDestination.profileSetup
-        : PostAuthDestination.home,
-  );
+    final profile = await profileRepo.fetchCurrentProfile();
+    if (profile == null || profile.needsSetup) {
+      return const PostAuthDecision(PostAuthDestination.profileSetup);
+    }
+    if (profile.needsSurvey) {
+      return const PostAuthDecision(PostAuthDestination.profileSurvey);
+    }
+    return const PostAuthDecision(PostAuthDestination.home);
+  } catch (e, st) {
+    AppLogger.error('Post-auth decision calculation failed', e, st);
+    rethrow;
+  }
 });

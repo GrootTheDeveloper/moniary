@@ -21,6 +21,8 @@ abstract interface class FriendRepository {
 
   Future<void> sendRequest(String username);
 
+  Future<void> sendRequestToUser(String userId);
+
   Future<void> acceptRequest(String requestId);
 
   Future<void> declineRequest(String requestId);

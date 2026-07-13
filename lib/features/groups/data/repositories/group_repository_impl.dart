@@ -6,6 +6,7 @@ import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../domain/entities/group_enums.dart';
+import '../../domain/entities/group_invite.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
@@ -78,6 +79,17 @@ class GroupRepositoryImpl implements GroupRepository {
             row,
             memberCount: members
                 .where((item) => item['status'] == 'active')
+                .length,
+            memberAvatarPaths: members
+                .where((item) => item['status'] == 'active')
+                .map((item) {
+                  final profile = item['profile'] as Map<String, dynamic>?;
+                  return profile?['avatar_url'] as String?;
+                })
+                .take(5)
+                .toList(growable: false),
+            transactionCount: transactions
+                .where((item) => item['split_status'] == 'posted')
                 .length,
             totalSpent: transactions
                 .where((item) => item['split_status'] == 'posted')
@@ -164,6 +176,87 @@ class GroupRepositoryImpl implements GroupRepository {
     return _guard(
       'create group invite link',
       () => _remote.createInviteLink(groupId),
+    );
+  }
+
+  @override
+  Future<GroupInvitePreview> fetchInvitePreview(String token) {
+    if (_useMockData) return _mock.fetchInvitePreview(token);
+    return _guard('fetch group invite preview', () async {
+      final row = await _remote.fetchInvitePreview(token.trim());
+      return GroupInvitePreview(
+        status: GroupInviteStatusValue.fromValue(row['status'] as String?),
+        groupId: row['group_id'] as String?,
+        groupName: row['group_name'] as String?,
+        groupAvatarPath: row['group_avatar_path'] as String?,
+        inviterName: row['inviter_name'] as String?,
+        expiresAt: row['expires_at'] is String
+            ? DateTime.tryParse(row['expires_at'] as String)
+            : null,
+      );
+    });
+  }
+
+  @override
+  Future<GroupInviteAcceptResult> acceptInvite(String token) {
+    if (_useMockData) return _mock.acceptInvite(token);
+    return _guard('accept group invite link', () async {
+      final row = await _remote.acceptInvite(token.trim());
+      return GroupInviteAcceptResult(
+        status: GroupInviteStatusValue.fromValue(row['status'] as String?),
+        groupId: row['group_id'] as String,
+      );
+    });
+  }
+
+  @override
+  Future<void> revokeInviteLink(String token) {
+    if (_useMockData) return _mock.revokeInviteLink(token);
+    return _guard(
+      'revoke group invite link',
+      () => _remote.revokeInviteLink(token.trim()),
+    );
+  }
+
+  @override
+  Future<List<GroupDirectInvite>> fetchDirectInvites() {
+    if (_useMockData) return _mock.fetchDirectInvites();
+    return _guard('fetch direct group invites', () async {
+      return (await _remote.fetchDirectInvites()).map((row) {
+        return GroupDirectInvite(
+          id: row['id'] as String,
+          groupId: row['group_id'] as String,
+          groupName: row['group_name'] as String? ?? '',
+          groupAvatarPath: row['group_avatar_path'] as String?,
+          inviterName: row['inviter_name'] as String? ?? '',
+          status: GroupDirectInviteStatusValue.fromValue(
+            row['status'] as String?,
+          ),
+          createdAt: DateTime.parse(row['created_at'] as String),
+          expiresAt: DateTime.parse(row['expires_at'] as String),
+        );
+      }).toList();
+    });
+  }
+
+  @override
+  Future<GroupInviteAcceptResult> acceptDirectInvite(String inviteId) {
+    if (_useMockData) return _mock.acceptDirectInvite(inviteId);
+    return _guard('accept direct group invite', () async {
+      final row = await _remote.acceptDirectInvite(inviteId);
+      return GroupInviteAcceptResult(
+        status: GroupInviteStatusValue.fromValue(row['status'] as String?),
+        groupId: row['group_id'] as String,
+      );
+    });
+  }
+
+  @override
+  Future<void> declineDirectInvite(String inviteId) {
+    if (_useMockData) return _mock.declineDirectInvite(inviteId);
+    return _guard(
+      'decline direct group invite',
+      () => _remote.declineDirectInvite(inviteId),
     );
   }
 

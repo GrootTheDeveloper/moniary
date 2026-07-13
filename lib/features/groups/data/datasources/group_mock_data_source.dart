@@ -1,5 +1,7 @@
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../domain/entities/group_enums.dart';
+import '../../domain/entities/group_invite.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
@@ -8,6 +10,8 @@ import '../../domain/services/settlement_calculator.dart';
 
 class GroupMockDataSource {
   GroupMockDataSource({required this.currentUserId});
+
+  static const _demoUserId = 'mock-user-id';
 
   final String currentUserId;
   final GroupSplitCalculator _splitCalculator = const GroupSplitCalculator();
@@ -18,9 +22,22 @@ class GroupMockDataSource {
   static final Map<String, List<SpendingGroupMember>> _members = {};
   static final Map<String, _MockTransactionRecord> _transactions = {};
   static final Map<String, List<GroupSettlementSuggestion>> _settlements = {};
+  static final Map<String, _MockGroupInviteLink> _inviteLinks = {};
+  static final Map<String, _MockDirectGroupInvite> _directInvites = {};
   static var _sequence = 0;
 
+  static void resetForTesting() {
+    _groups.clear();
+    _members.clear();
+    _transactions.clear();
+    _settlements.clear();
+    _inviteLinks.clear();
+    _directInvites.clear();
+    _sequence = 0;
+  }
+
   Future<List<SpendingGroup>> fetchGroups() async {
+    _seedDemoGroupsIfNeeded();
     final memberGroupIds = _members.entries
         .where(
           (entry) => entry.value.any(
@@ -39,6 +56,16 @@ class GroupMockDataSource {
           final balance = _groupBalances(group.id)[currentUserId] ?? 0;
           return group.copyWith(
             memberCount: _activeMembers(group.id).length,
+            memberAvatarPaths: _activeMembers(group.id)
+                .map((member) => member.avatarPath)
+                .take(5)
+                .toList(growable: false),
+            transactionCount: groupTransactions
+                .where(
+                  (record) =>
+                      record.transaction.splitStatus == GroupSplitStatus.posted,
+                )
+                .length,
             totalSpent: groupTransactions
                 .where(
                   (record) =>
@@ -63,6 +90,295 @@ class GroupMockDataSource {
     return List.unmodifiable(result);
   }
 
+  void _seedDemoGroupsIfNeeded() {
+    if (currentUserId != _demoUserId || _groups.isNotEmpty) return;
+
+    final now = DateTime.now();
+    final groups = [
+      _DemoGroupSeed(
+        id: 'mock-group-dalat',
+        name: 'Đà Lạt 6/2025',
+        memberCount: 5,
+        transactionCount: 14,
+        colorName: 'travel',
+        avatarPath: 'asset://assets/demo_transactions/transport.png',
+        createdAt: now.subtract(const Duration(days: 3)),
+        balanceMode: _DemoBalanceMode.receive,
+      ),
+      _DemoGroupSeed(
+        id: 'mock-group-home-q3',
+        name: 'Nhà chung Q3',
+        memberCount: 3,
+        transactionCount: 28,
+        colorName: 'home',
+        avatarPath: 'asset://assets/demo_transactions/market.png',
+        createdAt: now.subtract(const Duration(days: 7)),
+        balanceMode: _DemoBalanceMode.pay,
+      ),
+      _DemoGroupSeed(
+        id: 'mock-group-cafe-weekend',
+        name: 'Cafe cuối tuần',
+        memberCount: 4,
+        transactionCount: 6,
+        colorName: 'cafe',
+        avatarPath: 'asset://assets/demo_transactions/cafe.png',
+        createdAt: now.subtract(const Duration(days: 12)),
+        balanceMode: _DemoBalanceMode.settled,
+      ),
+    ];
+
+    for (final seed in groups) {
+      _groups[seed.id] = SpendingGroup(
+        id: seed.id,
+        name: seed.name,
+        description: seed.colorName,
+        type: seed.colorName,
+        avatarPath: seed.avatarPath,
+        createdBy: currentUserId,
+        status: GroupStatus.active,
+        createdAt: seed.createdAt,
+        updatedAt: seed.createdAt.add(const Duration(hours: 3)),
+      );
+      _members[seed.id] = [
+        _demoMember(
+          seed.id,
+          currentUserId,
+          'Minh Anh',
+          GroupRole.owner,
+          now,
+          'asset://assets/demo_avatars/minh-anh.png',
+        ),
+        for (var index = 1; index < seed.memberCount; index++)
+          _demoMember(
+            seed.id,
+            'mock-friend-$index',
+            _demoMemberName(index),
+            GroupRole.member,
+            now.subtract(Duration(days: index)),
+            _demoMemberAvatar(index),
+          ),
+      ];
+      _seedDemoTransactions(seed, now);
+      _refreshSettlements(seed.id);
+    }
+  }
+
+  SpendingGroupMember _demoMember(
+    String groupId,
+    String userId,
+    String displayName,
+    GroupRole role,
+    DateTime joinedAt,
+    String avatarPath,
+  ) {
+    return SpendingGroupMember(
+      id: '$groupId-member-$userId',
+      groupId: groupId,
+      userId: userId,
+      role: role,
+      status: GroupMemberStatus.active,
+      joinedAt: joinedAt,
+      displayName: displayName,
+      username: userId,
+      avatarPath: avatarPath,
+    );
+  }
+
+  String _demoMemberAvatar(int index) {
+    const avatars = [
+      'asset://assets/demo_avatars/hoang-nam.png',
+      'asset://assets/demo_avatars/bao-chau.png',
+      'asset://assets/demo_avatars/linh.png',
+      'asset://assets/demo_avatars/khoa.png',
+      'asset://assets/demo_avatars/minh-anh.png',
+    ];
+    return avatars[(index - 1) % avatars.length];
+  }
+
+  String _demoMemberName(int index) {
+    const names = ['Hoàng Nam', 'Bảo Châu', 'Linh', 'Khoa', 'Minh Anh'];
+    return names[(index - 1) % names.length];
+  }
+
+  void _seedDemoTransactions(_DemoGroupSeed seed, DateTime now) {
+    switch (seed.balanceMode) {
+      case _DemoBalanceMode.receive:
+        _addDemoTransaction(
+          groupId: seed.id,
+          id: '${seed.id}-tx-main',
+          totalAmount: 450000,
+          paidAmounts: {currentUserId: 450000},
+          shareAmounts: {
+            currentUserId: 130000,
+            'mock-friend-1': 140000,
+            'mock-friend-2': 180000,
+          },
+          date: now.subtract(const Duration(days: 2)),
+          caption: 'Xăng xe đi Đà Lạt',
+          categoryName: 'Di chuyển',
+          imagePath: 'asset://assets/demo_transactions/transport.png',
+          creatorName: 'Minh Anh',
+        );
+        _addBalancedDemoTransaction(
+          groupId: seed.id,
+          id: '${seed.id}-tx-dinner',
+          totalAmount: 1250000,
+          date: now.subtract(const Duration(days: 3)),
+          caption: 'Ăn tối nhà hàng',
+          categoryName: 'Ăn uống',
+          imagePath: 'asset://assets/demo_transactions/lunch.png',
+        );
+        const remainingTotals = [
+          420000,
+          320000,
+          280000,
+          260000,
+          250000,
+          240000,
+          230000,
+          220000,
+          210000,
+          200000,
+          175000,
+          175000,
+        ];
+        for (var index = 0; index < remainingTotals.length; index++) {
+          _addBalancedDemoTransaction(
+            groupId: seed.id,
+            id: '${seed.id}-tx-$index',
+            totalAmount: remainingTotals[index],
+            date: now.subtract(Duration(days: 4 + index)),
+            caption: _demoCaption(index),
+            categoryName: 'Du lịch',
+            imagePath: _demoTransactionImage(index),
+          );
+        }
+      case _DemoBalanceMode.pay:
+        _addDemoTransaction(
+          groupId: seed.id,
+          id: '${seed.id}-tx-main',
+          totalAmount: 170000,
+          paidAmounts: {'mock-friend-1': 170000},
+          shareAmounts: {currentUserId: 85000, 'mock-friend-1': 85000},
+          date: now.subtract(const Duration(days: 1)),
+        );
+        for (var index = 0; index < seed.transactionCount - 1; index++) {
+          _addBalancedDemoTransaction(
+            groupId: seed.id,
+            id: '${seed.id}-tx-$index',
+            totalAmount: 100000,
+            date: now.subtract(Duration(days: 2 + index)),
+          );
+        }
+      case _DemoBalanceMode.settled:
+        for (var index = 0; index < seed.transactionCount; index++) {
+          _addBalancedDemoTransaction(
+            groupId: seed.id,
+            id: '${seed.id}-tx-$index',
+            totalAmount: 120000,
+            date: now.subtract(Duration(days: 1 + index)),
+          );
+        }
+    }
+  }
+
+  void _addBalancedDemoTransaction({
+    required String groupId,
+    required String id,
+    required int totalAmount,
+    required DateTime date,
+    String? caption,
+    String? categoryName,
+    String? imagePath,
+  }) {
+    final members = _activeMembers(groupId).take(2).toList();
+    final first = members.first.userId;
+    final second = members.length > 1 ? members[1].userId : currentUserId;
+    final firstShare = totalAmount ~/ 2;
+    final secondShare = totalAmount - firstShare;
+    _addDemoTransaction(
+      groupId: groupId,
+      id: id,
+      totalAmount: totalAmount,
+      paidAmounts: {first: firstShare, second: secondShare},
+      shareAmounts: {first: firstShare, second: secondShare},
+      date: date,
+      caption: caption,
+      categoryName: categoryName,
+      imagePath: imagePath,
+    );
+  }
+
+  void _addDemoTransaction({
+    required String groupId,
+    required String id,
+    required int totalAmount,
+    required Map<String, int> paidAmounts,
+    required Map<String, int> shareAmounts,
+    required DateTime date,
+    String? caption,
+    String? categoryName,
+    String? imagePath,
+    String? creatorName,
+  }) {
+    _transactions[id] = _MockTransactionRecord(
+      transaction: GroupTransaction(
+        id: id,
+        groupId: groupId,
+        createdBy: currentUserId,
+        totalAmount: totalAmount,
+        categoryName: categoryName ?? 'Nhóm',
+        caption: caption ?? 'Khoản chi nhóm',
+        imagePath: imagePath ?? 'asset://assets/demo_transactions/market.png',
+        imageUploadStatus: GroupImageUploadStatus.pending,
+        splitMode: GroupSplitMode.equal,
+        paymentMode: GroupPaymentMode.multiplePayers,
+        splitStatus: GroupSplitStatus.posted,
+        transactionDate: date,
+        createdAt: date,
+        updatedAt: date,
+        creatorName: creatorName ?? 'Minh Anh',
+      ),
+      payers: _payers(id, paidAmounts, date),
+      shares: _shares(
+        id,
+        shareAmounts,
+        date,
+        submitted: shareAmounts.keys.toSet(),
+      ),
+      comments: [],
+    );
+  }
+
+  String _demoCaption(int index) {
+    const captions = [
+      'Vé tham quan',
+      'Cà phê sáng',
+      'Mua đồ picnic',
+      'Gửi xe',
+      'Bữa trưa',
+      'Nước uống',
+      'Thuê áo khoác',
+      'Đồ ăn vặt',
+      'Taxi về homestay',
+      'Bánh mì đêm',
+      'Phụ thu phòng',
+      'Quà địa phương',
+    ];
+    return captions[index % captions.length];
+  }
+
+  String _demoTransactionImage(int index) {
+    const images = [
+      'asset://assets/demo_transactions/shopping.png',
+      'asset://assets/demo_transactions/cafe.png',
+      'asset://assets/demo_transactions/market.png',
+      'asset://assets/demo_transactions/transport.png',
+      'asset://assets/demo_transactions/lunch.png',
+    ];
+    return images[index % images.length];
+  }
+
   Future<SpendingGroupDetail> fetchGroupDetail(String groupId) async {
     final group = _requireGroup(groupId);
     final members = List<SpendingGroupMember>.unmodifiable(
@@ -76,8 +392,37 @@ class GroupMockDataSource {
     if (current.isEmpty) {
       throw const AppException('Group not found', code: 'NOT_FOUND');
     }
+    final groupTransactions = _recordsForGroup(groupId);
     return SpendingGroupDetail(
-      group: group.copyWith(memberCount: _activeMembers(groupId).length),
+      group: group.copyWith(
+        memberCount: _activeMembers(groupId).length,
+        memberAvatarPaths: _activeMembers(
+          groupId,
+        ).map((member) => member.avatarPath).take(5).toList(growable: false),
+        transactionCount: groupTransactions
+            .where(
+              (record) =>
+                  record.transaction.splitStatus == GroupSplitStatus.posted,
+            )
+            .length,
+        totalSpent: groupTransactions
+            .where(
+              (record) =>
+                  record.transaction.splitStatus == GroupSplitStatus.posted,
+            )
+            .fold<int>(
+              0,
+              (sum, record) => sum + record.transaction.totalAmount,
+            ),
+        currentUserBalance: _groupBalances(groupId)[currentUserId] ?? 0,
+        hasUnresolvedSettlements:
+            _settlements[groupId]?.any(
+              (item) =>
+                  item.status == GroupSettlementStatus.pending ||
+                  item.status == GroupSettlementStatus.payerMarkedPaid,
+            ) ??
+            false,
+      ),
       members: members,
       currentUserRole: current.first.role,
     );
@@ -124,7 +469,213 @@ class GroupMockDataSource {
 
   Future<String> createInviteLink(String groupId) async {
     _requireAdmin(groupId);
-    return 'moniary://groups/invite/${_id('invite')}';
+    for (final invite in _inviteLinks.values) {
+      if (invite.groupId == groupId &&
+          invite.status == GroupInviteStatus.active) {
+        invite.status = GroupInviteStatus.revoked;
+      }
+    }
+    final token = _id('invite');
+    _inviteLinks[token] = _MockGroupInviteLink(
+      token: token,
+      groupId: groupId,
+      invitedBy: currentUserId,
+      expiresAt: DateTime.now().add(const Duration(days: 7)),
+    );
+    return AppConstants.groupInviteLink(token);
+  }
+
+  Future<GroupInvitePreview> fetchInvitePreview(String token) async {
+    final invite = _inviteLinks[token.trim()];
+    if (invite == null) {
+      return const GroupInvitePreview(status: GroupInviteStatus.invalid);
+    }
+    if (invite.status == GroupInviteStatus.active &&
+        !invite.expiresAt.isAfter(DateTime.now())) {
+      invite.status = GroupInviteStatus.expired;
+    }
+    final group = _groups[invite.groupId];
+    if (group == null) {
+      return const GroupInvitePreview(status: GroupInviteStatus.invalid);
+    }
+    final isMember = (_members[invite.groupId] ?? const []).any(
+      (member) =>
+          member.userId == currentUserId &&
+          member.status == GroupMemberStatus.active,
+    );
+    return GroupInvitePreview(
+      status: isMember ? GroupInviteStatus.alreadyMember : invite.status,
+      groupId: group.id,
+      groupName: group.name,
+      groupAvatarPath: group.avatarPath,
+      inviterName: invite.invitedBy == currentUserId
+          ? 'mock-user'
+          : invite.invitedBy,
+      expiresAt: invite.expiresAt,
+    );
+  }
+
+  Future<GroupInviteAcceptResult> acceptInvite(String token) async {
+    final preview = await fetchInvitePreview(token);
+    final groupId = preview.groupId;
+    if (groupId == null) {
+      throw const AppException(
+        'Invite not found',
+        code: 'GROUP_INVITE_INVALID',
+      );
+    }
+    if (preview.status == GroupInviteStatus.alreadyMember) {
+      return GroupInviteAcceptResult(
+        status: GroupInviteStatus.alreadyMember,
+        groupId: groupId,
+      );
+    }
+    if (!preview.canAccept) {
+      throw AppException(
+        'Invite cannot be accepted',
+        code: _inviteErrorCode(preview.status),
+      );
+    }
+    final members = _members[groupId] ?? const <SpendingGroupMember>[];
+    final existingIndex = members.indexWhere(
+      (member) => member.userId == currentUserId,
+    );
+    final activeMember = SpendingGroupMember(
+      id: existingIndex == -1 ? _id('member') : members[existingIndex].id,
+      groupId: groupId,
+      userId: currentUserId,
+      role: GroupRole.member,
+      status: GroupMemberStatus.active,
+      joinedAt: DateTime.now(),
+      displayName: currentUserId == 'mock-user-id'
+          ? 'mock-user'
+          : currentUserId,
+      username: currentUserId == 'mock-user-id' ? 'mock-user' : currentUserId,
+    );
+    _members[groupId] = [
+      for (var index = 0; index < members.length; index++)
+        if (index == existingIndex) activeMember else members[index],
+      if (existingIndex == -1) activeMember,
+    ];
+    return GroupInviteAcceptResult(
+      status: GroupInviteStatus.accepted,
+      groupId: groupId,
+    );
+  }
+
+  Future<void> revokeInviteLink(String token) async {
+    final invite = _inviteLinks[token.trim()];
+    if (invite == null) {
+      throw const AppException(
+        'Invite not found',
+        code: 'GROUP_INVITE_INVALID',
+      );
+    }
+    _requireAdmin(invite.groupId);
+    if (invite.status == GroupInviteStatus.active) {
+      invite.status = GroupInviteStatus.revoked;
+    }
+  }
+
+  Future<List<GroupDirectInvite>> fetchDirectInvites() async {
+    for (final invite in _directInvites.values) {
+      _expireDirectInviteIfNeeded(invite);
+      if (invite.status == GroupDirectInviteStatus.pending &&
+          _isActiveMember(invite.groupId, invite.invitedUserId)) {
+        invite.status = GroupDirectInviteStatus.accepted;
+      }
+    }
+    final invites =
+        _directInvites.values
+            .where((invite) => invite.invitedUserId == currentUserId)
+            .map((invite) {
+              final group = _groups[invite.groupId];
+              if (group == null) return null;
+              return GroupDirectInvite(
+                id: invite.id,
+                groupId: group.id,
+                groupName: group.name,
+                groupAvatarPath: group.avatarPath,
+                inviterName: invite.invitedBy,
+                status: invite.status,
+                createdAt: invite.createdAt,
+                expiresAt: invite.expiresAt,
+              );
+            })
+            .whereType<GroupDirectInvite>()
+            .toList()
+          ..sort((left, right) => right.createdAt.compareTo(left.createdAt));
+    return List.unmodifiable(invites);
+  }
+
+  Future<GroupInviteAcceptResult> acceptDirectInvite(String inviteId) async {
+    final invite = _directInvites[inviteId];
+    if (invite == null || invite.invitedUserId != currentUserId) {
+      throw const AppException(
+        'Invite not found',
+        code: 'GROUP_DIRECT_INVITE_INVALID',
+      );
+    }
+    _expireDirectInviteIfNeeded(invite);
+    final group = _groups[invite.groupId];
+    if (group == null || group.status != GroupStatus.active) {
+      throw const AppException(
+        'Invite cannot be accepted',
+        code: 'GROUP_DIRECT_INVITE_INVALID',
+      );
+    }
+    if (_isActiveMember(invite.groupId, currentUserId)) {
+      if (invite.status == GroupDirectInviteStatus.pending) {
+        invite.status = GroupDirectInviteStatus.accepted;
+      }
+      return GroupInviteAcceptResult(
+        status: GroupInviteStatus.alreadyMember,
+        groupId: invite.groupId,
+      );
+    }
+    if (invite.status != GroupDirectInviteStatus.pending) {
+      throw AppException(
+        'Invite cannot be accepted',
+        code: _directInviteErrorCode(invite.status),
+      );
+    }
+    invite.status = GroupDirectInviteStatus.accepted;
+    _setMemberStatus(
+      groupId: invite.groupId,
+      userId: currentUserId,
+      status: GroupMemberStatus.active,
+    );
+    return GroupInviteAcceptResult(
+      status: GroupInviteStatus.accepted,
+      groupId: invite.groupId,
+    );
+  }
+
+  Future<void> declineDirectInvite(String inviteId) async {
+    final invite = _directInvites[inviteId];
+    if (invite == null || invite.invitedUserId != currentUserId) {
+      throw const AppException(
+        'Invite not found',
+        code: 'GROUP_DIRECT_INVITE_INVALID',
+      );
+    }
+    _expireDirectInviteIfNeeded(invite);
+    if (invite.status == GroupDirectInviteStatus.declined ||
+        invite.status == GroupDirectInviteStatus.accepted) {
+      return;
+    }
+    if (invite.status != GroupDirectInviteStatus.pending) {
+      throw AppException(
+        'Invite cannot be declined',
+        code: _directInviteErrorCode(invite.status),
+      );
+    }
+    invite.status = GroupDirectInviteStatus.declined;
+    _setMemberStatus(
+      groupId: invite.groupId,
+      userId: currentUserId,
+      status: GroupMemberStatus.declined,
+    );
   }
 
   Future<void> inviteByUsername({
@@ -152,19 +703,21 @@ class GroupMockDataSource {
         code: 'GROUP_MEMBER_ALREADY_INVITED',
       );
     }
-    _members[groupId] = [
-      ...members,
-      SpendingGroupMember(
-        id: _id('member'),
-        groupId: groupId,
-        userId: userId,
-        role: GroupRole.member,
-        status: GroupMemberStatus.invited,
-        joinedAt: DateTime.now(),
-        displayName: userId,
-        username: userId,
-      ),
-    ];
+    _setMemberStatus(
+      groupId: groupId,
+      userId: userId,
+      status: GroupMemberStatus.invited,
+    );
+    final now = DateTime.now();
+    final inviteId = _id('direct-invite');
+    _directInvites[inviteId] = _MockDirectGroupInvite(
+      id: inviteId,
+      groupId: groupId,
+      invitedUserId: userId,
+      invitedBy: currentUserId,
+      createdAt: now,
+      expiresAt: now.add(const Duration(days: 7)),
+    );
   }
 
   Future<List<GroupTransaction>> fetchTransactions(String groupId) async {
@@ -728,6 +1281,65 @@ class GroupMockDataSource {
           .where((member) => member.status == GroupMemberStatus.active)
           .toList();
 
+  bool _isActiveMember(String groupId, String userId) =>
+      (_members[groupId] ?? const []).any(
+        (member) =>
+            member.userId == userId &&
+            member.status == GroupMemberStatus.active,
+      );
+
+  void _setMemberStatus({
+    required String groupId,
+    required String userId,
+    required GroupMemberStatus status,
+  }) {
+    final members = _members[groupId] ?? <SpendingGroupMember>[];
+    final index = members.indexWhere((member) => member.userId == userId);
+    final now = DateTime.now();
+    final member = index == -1
+        ? SpendingGroupMember(
+            id: _id('member'),
+            groupId: groupId,
+            userId: userId,
+            role: GroupRole.member,
+            status: status,
+            joinedAt: now,
+            leftAt: status == GroupMemberStatus.left ? now : null,
+            displayName: userId,
+            username: userId,
+          )
+        : SpendingGroupMember(
+            id: members[index].id,
+            groupId: groupId,
+            userId: userId,
+            role: members[index].role,
+            status: status,
+            joinedAt: now,
+            leftAt: status == GroupMemberStatus.left ? now : null,
+            displayName: members[index].displayName,
+            username: members[index].username,
+            avatarPath: members[index].avatarPath,
+          );
+    _members[groupId] = [
+      for (var position = 0; position < members.length; position++)
+        if (position == index) member else members[position],
+      if (index == -1) member,
+    ];
+  }
+
+  void _expireDirectInviteIfNeeded(_MockDirectGroupInvite invite) {
+    if (invite.status != GroupDirectInviteStatus.pending ||
+        invite.expiresAt.isAfter(DateTime.now())) {
+      return;
+    }
+    invite.status = GroupDirectInviteStatus.expired;
+    _setMemberStatus(
+      groupId: invite.groupId,
+      userId: invite.invitedUserId,
+      status: GroupMemberStatus.declined,
+    );
+  }
+
   List<_MockTransactionRecord> _recordsForGroup(String groupId) => _transactions
       .values
       .where((record) => record.transaction.groupId == groupId)
@@ -794,6 +1406,27 @@ class GroupMockDataSource {
   static String? _blankToNull(String? value) =>
       value?.trim().isEmpty == true ? null : value?.trim();
 
+  static String _inviteErrorCode(GroupInviteStatus status) => switch (status) {
+    GroupInviteStatus.expired => 'GROUP_INVITE_EXPIRED',
+    GroupInviteStatus.revoked => 'GROUP_INVITE_REVOKED',
+    GroupInviteStatus.used => 'GROUP_INVITE_USED',
+    GroupInviteStatus.invalid => 'GROUP_INVITE_INVALID',
+    GroupInviteStatus.alreadyMember ||
+    GroupInviteStatus.active ||
+    GroupInviteStatus.accepted => 'GROUP_INVITE_INVALID',
+  };
+
+  static String _directInviteErrorCode(GroupDirectInviteStatus status) =>
+      switch (status) {
+        GroupDirectInviteStatus.expired => 'GROUP_DIRECT_INVITE_EXPIRED',
+        GroupDirectInviteStatus.declined => 'GROUP_DIRECT_INVITE_DECLINED',
+        GroupDirectInviteStatus.revoked => 'GROUP_DIRECT_INVITE_REVOKED',
+        GroupDirectInviteStatus.invalid ||
+        GroupDirectInviteStatus.pending ||
+        GroupDirectInviteStatus.accepted ||
+        GroupDirectInviteStatus.alreadyMember => 'GROUP_DIRECT_INVITE_INVALID',
+      };
+
   static String _id(String prefix) =>
       '$prefix-${DateTime.now().microsecondsSinceEpoch}-${_sequence++}';
 }
@@ -817,6 +1450,64 @@ class _MockTransactionRecord {
     shares: List.unmodifiable(shares),
     comments: List.unmodifiable(comments),
   );
+}
+
+class _DemoGroupSeed {
+  const _DemoGroupSeed({
+    required this.id,
+    required this.name,
+    required this.memberCount,
+    required this.transactionCount,
+    required this.colorName,
+    required this.avatarPath,
+    required this.createdAt,
+    required this.balanceMode,
+  });
+
+  final String id;
+  final String name;
+  final int memberCount;
+  final int transactionCount;
+  final String colorName;
+  final String avatarPath;
+  final DateTime createdAt;
+  final _DemoBalanceMode balanceMode;
+}
+
+enum _DemoBalanceMode { receive, pay, settled }
+
+class _MockGroupInviteLink {
+  _MockGroupInviteLink({
+    required this.token,
+    required this.groupId,
+    required this.invitedBy,
+    required this.expiresAt,
+  });
+
+  final String token;
+  final String groupId;
+  final String invitedBy;
+  final DateTime expiresAt;
+  GroupInviteStatus status = GroupInviteStatus.active;
+}
+
+class _MockDirectGroupInvite {
+  _MockDirectGroupInvite({
+    required this.id,
+    required this.groupId,
+    required this.invitedUserId,
+    required this.invitedBy,
+    required this.createdAt,
+    required this.expiresAt,
+  });
+
+  final String id;
+  final String groupId;
+  final String invitedUserId;
+  final String invitedBy;
+  final DateTime createdAt;
+  final DateTime expiresAt;
+  GroupDirectInviteStatus status = GroupDirectInviteStatus.pending;
 }
 
 class _SettlementMatch {

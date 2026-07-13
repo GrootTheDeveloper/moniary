@@ -76,7 +76,7 @@ flutter test --coverage  # optional
 ```
 
 ## Risks
-Medium. Có thể phát hiện bugs mới khi viết tests — ghi vào `handoff/issues_backlog.md`.
+Medium. Có thể phát hiện bugs mới khi viết tests — ghi vào `../handoff/issues_backlog.md`.
 
 ## Dev Prompt
 ```
@@ -98,5 +98,5 @@ Chạy: flutter test (ALL pass)
 - [ ] 6 test files created
 - [ ] `flutter test` pass (all tests)
 - [ ] Commit: `test(M14): add 17+ unit tests for debt calc, validation, scanning, formatting`
-- [ ] Update `handoff/current_status.md`
-- [ ] Ghi issues mới (nếu có) vào `handoff/issues_backlog.md`
+- [ ] Update `../handoff/current_status.md`
+- [ ] Ghi issues mới (nếu có) vào `../handoff/issues_backlog.md`

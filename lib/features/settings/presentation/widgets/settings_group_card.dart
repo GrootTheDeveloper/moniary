@@ -16,39 +16,37 @@ class SettingsGroupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+          padding: const EdgeInsets.only(bottom: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                title.toUpperCase(),
+                style: context.moniaryTypography.metadataStrong.copyWith(
+                  color: colors.textDim,
+                ),
+              ),
               if (subtitle?.isNotEmpty == true) ...[
-                const SizedBox(height: 3),
+                const SizedBox(height: 5),
                 Text(subtitle!, style: Theme.of(context).textTheme.bodyMedium),
               ],
             ],
           ),
         ),
-        DecoratedBox(
+        Container(
           decoration: BoxDecoration(
-            color: AppTheme.surface.withValues(alpha: 0.94),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppTheme.outline),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x24000000),
-                blurRadius: 24,
-                offset: Offset(0, 12),
+            border: Border(
+              top: BorderSide(
+                color: colors.textPrimary.withValues(alpha: 0.12),
               ),
-            ],
+            ),
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(23),
-            child: Column(children: [for (final child in children) child]),
-          ),
+          child: Column(children: [for (final child in children) child]),
         ),
       ],
     );

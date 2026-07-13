@@ -1,4 +1,11 @@
-# AGENTS.md — Rule-based Receipt OCR Pipeline
+# Rule-based Receipt OCR Pipeline — Detailed Reference
+
+**Document type**: `IMPLEMENTATION REFERENCE`
+**Current implementation audit**: `2026-07-10`
+
+The pipeline is implemented under `backend/ocr/`. Use the executable Python
+source, tests, and `19-ocr-backend.md` for current run instructions. The task
+sections below preserve the original design constraints and expected rules.
 
 ## Tổng quan dự án
 

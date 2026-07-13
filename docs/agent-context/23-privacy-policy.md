@@ -1,36 +1,86 @@
-# Moniary Privacy Policy
+# Moniary Privacy & Data-Handling Draft
 
-Last updated: 2026-05-25
+**Document status**: `ENGINEERING DRAFT — LEGAL REVIEW REQUIRED`
+**Source audit date**: `2026-07-10`
 
-Moniary is a personal expense diary app that helps users record income and expenses with optional transaction photos. This policy describes the data handled by the MVP version of the app.
+This document records data handling visible in the current repository. It is not
+a substitute for counsel-approved privacy policy, store disclosure, retention
+schedule, or the public policy URL required for production.
 
-## Data We Process
+## Data processed by current features
 
-- Account data: display name, email, avatar, provider and user ID when a user signs in.
-- Financial data: wallets, categories, transactions, amounts, notes and transaction dates entered by the user.
-- Photos: transaction photos that the user chooses or captures in the app.
-- App settings: profile, timezone and notification preferences.
+- **Account/profile**: user ID, authentication provider/identities, email,
+  display name, username, avatar path, timezone, occupation, preferred currency,
+  and profile-survey completion.
+- **Personal finance**: wallets, categories, transactions, dates, amounts,
+  notes, importance state, category budget limits/warning ratios, and optional
+  receipt images.
+- **Friends/groups**: searches and requests, friendships/invite links, group
+  membership/roles, shared transactions, payers, shares, balances, settlements,
+  comments, invitations, activities/notifications, and group images.
+- **Settings/account operations**: notification/report preferences, active
+  sessions, deletion status/feedback, privacy-request history, app lock and
+  hidden-balance preferences.
+- **Local assistant state**: assistant enablement/consent flags and deterministic
+  summaries calculated from repository transactions. The current assistant does
+  not send prompts or finance data to an AI model.
+- **Device files**: selected CSV imports, generated CSV/XLSX/PDF exports, journal
+  recap PNGs, and local import/export/privacy-request history JSON.
 
-## How We Use Data
+## Purposes
 
-- To authenticate users and sync their data across devices.
-- To show calendar, transaction detail, filters and monthly summaries.
-- To store transaction photos in private Supabase Storage and show them through signed URLs.
-- To protect user data with row-level security and account-based access control.
+Data is used to authenticate users, sync and display their finance records,
+calculate calendar/statistics/budgets/recaps, provide deterministic assistant
+insights, manage friends/shared expenses, process user-requested OCR, send
+configured reports, support exports/imports, and handle privacy/account actions.
 
-## Sharing
+## Service providers and disclosures
 
-Moniary does not sell personal or financial data. MVP data is stored with Supabase services for authentication, database and storage. The MVP does not collect location, contacts, SMS, email inbox data or automatic bank transaction imports.
+- **Supabase**: authentication, PostgreSQL data, private object Storage, RPCs,
+  and Edge Functions.
+- **Configured OCR host**: receives a receipt image when the user starts OCR.
+  The repository implementation is FastAPI/Tesseract; the production host and
+  its operational retention policy must be disclosed.
+- **Resend**: receives report email content/recipient data when scheduled email
+  reports are enabled and the Edge Function is configured.
+- **Operating-system share/open targets**: receive files only when the user
+  explicitly shares or opens an export/recap through another app.
 
-## Retention And Deletion
+Moniary source does not implement sale of personal/financial data, contact-book
+access, SMS reading, email-inbox reading, location collection, or automatic bank
+transaction import.
 
-Users can delete transactions in the app. Users can export their transaction data as CSV before deleting the account. Account deletion requests remove the user's app data and transaction photos associated with the current user ID.
+## Images, permissions, and sensitive financial data
 
-## Google Play Data Safety Notes
+Camera/photo access is user initiated for receipts, transaction/group images, and
+avatars. Biometric APIs can gate local app access. Financial amounts can be
+hidden in UI, but this display preference does not encrypt backend/local data.
 
-- Personal info is collected only when users sign in with email or Google.
-- Financial info is collected to provide expense tracking features.
-- Photos are collected only when users actively choose or capture transaction photos.
-- Location, Contacts and SMS are not collected in the MVP.
+Supabase Storage paths are private and displayed through signed URLs according
+to repository policies. Production must verify the deployed Storage/RLS policy
+set with multiple accounts.
 
-Before production release, publish this policy at a public URL and replace this note with the team's official contact email.
+## Retention, export, and deletion
+
+The app provides transaction deletion, data export, privacy requests, soft
+account deletion, final deletion, and garbage-collection backend components.
+Exact production retention/grace periods must match the deployed functions and
+published policy.
+
+Account deletion does not necessarily remove files the user already exported,
+shared to other apps, or saved locally, nor device preferences/history outside
+the remote account. The final product must explain how users can remove those
+local/external copies.
+
+## Guest mode
+
+Guest/mock data is largely process-local and is not intended as durable cloud
+storage. Guest users should be told that data can be lost on restart and is not
+synced to a Supabase account unless an explicit, tested migration flow exists.
+
+## Before production publication
+
+Legal/Product must verify actual deployed hosts, subprocessors, OAuth providers,
+report delivery, retention periods, deletion behavior, contact addresses, user
+rights, age/region requirements, and Google Play/App Store disclosures. Publish
+the approved policy at a stable public URL and keep the in-app text synchronized.

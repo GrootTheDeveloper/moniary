@@ -3,9 +3,13 @@ import '../../../../core/supabase/app_exception.dart';
 import '../../domain/entities/friend_profile.dart';
 
 class FriendMockDataSource {
-  FriendMockDataSource({required this.currentUserId});
+  FriendMockDataSource({
+    required this.currentUserId,
+    this.seedDemoData = false,
+  });
 
   final String currentUserId;
+  final bool seedDemoData;
 
   static final Map<String, FriendProfile> _directory = {
     'mock-user-id': const FriendProfile(
@@ -23,11 +27,47 @@ class FriendMockDataSource {
       fullName: 'Binh Tran',
       username: 'binh_tran',
     ),
+    'demo-friend-linh': const FriendProfile(
+      userId: 'demo-friend-linh',
+      fullName: 'Trần Thu Linh',
+      username: 'tran_thu_linh',
+      avatarPath: 'asset://assets/demo_avatars/linh.png',
+      sharedGroupCount: 2,
+      currentUserBalance: 120000,
+    ),
+    'demo-friend-hoang': const FriendProfile(
+      userId: 'demo-friend-hoang',
+      fullName: 'Nguyễn Hoàng Nam',
+      username: 'nguyen_hoang_nam',
+      avatarPath: 'asset://assets/demo_avatars/hoang-nam.png',
+      sharedGroupCount: 1,
+      currentUserBalance: -85000,
+    ),
+    'demo-friend-bao': const FriendProfile(
+      userId: 'demo-friend-bao',
+      fullName: 'Phạm Bảo Châu',
+      username: 'pham_bao_chau',
+      avatarPath: 'asset://assets/demo_avatars/bao-chau.png',
+      sharedGroupCount: 3,
+    ),
+    'demo-friend-khue': const FriendProfile(
+      userId: 'demo-friend-khue',
+      fullName: 'Đỗ Minh Khuê',
+      username: 'do_minh_khue',
+      avatarPath: 'asset://assets/demo_avatars/khoa.png',
+      sharedGroupCount: 1,
+    ),
   };
 
   static final Map<String, Set<String>> _friendships = {};
   static final Map<String, _MockFriendRequest> _requests = {};
   static final Map<String, _MockFriendInvite> _invites = {};
+  static const _demoFriendOrder = [
+    'demo-friend-linh',
+    'demo-friend-hoang',
+    'demo-friend-bao',
+    'demo-friend-khue',
+  ];
   static var _sequence = 0;
 
   static void resetForTesting() {
@@ -38,15 +78,24 @@ class FriendMockDataSource {
   }
 
   Future<List<FriendProfile>> fetchFriends() async {
+    _seedDemoFriendsIfNeeded();
     final ids = _friendships[currentUserId] ?? const <String>{};
-    final result =
-        ids.map((id) => _directory[id]).nonNulls.toList(growable: false)..sort(
-          (left, right) => left.displayName.compareTo(right.displayName),
-        );
+    final result = ids.map((id) => _directory[id]).nonNulls.toList();
+    if (seedDemoData && currentUserId == 'mock-user-id') {
+      result.sort(
+        (left, right) =>
+            _demoSortIndex(left.userId).compareTo(_demoSortIndex(right.userId)),
+      );
+    } else {
+      result.sort(
+        (left, right) => left.displayName.compareTo(right.displayName),
+      );
+    }
     return result;
   }
 
   Future<List<FriendRequest>> fetchIncomingRequests() async {
+    _seedDemoFriendsIfNeeded();
     return _requests.values
         .where(
           (request) =>
@@ -58,6 +107,7 @@ class FriendMockDataSource {
   }
 
   Future<List<FriendRequest>> fetchOutgoingRequests() async {
+    _seedDemoFriendsIfNeeded();
     return _requests.values
         .where(
           (request) =>
@@ -75,6 +125,7 @@ class FriendMockDataSource {
         .where(
           (profile) =>
               profile.userId != currentUserId &&
+              (seedDemoData || !profile.userId.startsWith('demo-friend-')) &&
               (profile.username?.toLowerCase().startsWith(query) ?? false),
         )
         .map(
@@ -238,6 +289,42 @@ class FriendMockDataSource {
     );
   }
 
+  Future<void> sendRequestToUser(String userId) async {
+    final targetId = userId.trim();
+    if (!_directory.containsKey(targetId)) {
+      throw const AppException(
+        'Friend user not found',
+        code: 'FRIEND_USER_NOT_FOUND',
+      );
+    }
+    if (targetId == currentUserId) {
+      throw const AppException(
+        'Cannot add yourself',
+        code: 'FRIEND_CANNOT_ADD_SELF',
+      );
+    }
+    if (_areFriends(currentUserId, targetId)) {
+      throw const AppException(
+        'Already friends',
+        code: 'FRIEND_ALREADY_EXISTS',
+      );
+    }
+    if (_hasPendingRequest(currentUserId, targetId)) {
+      throw const AppException(
+        'Friend request already pending',
+        code: 'FRIEND_REQUEST_ALREADY_PENDING',
+      );
+    }
+    final id = _id('friend-request');
+    _requests[id] = _MockFriendRequest(
+      id: id,
+      fromUserId: currentUserId,
+      toUserId: targetId,
+      status: FriendRequestStatus.pending,
+      createdAt: DateTime.now(),
+    );
+  }
+
   Future<void> acceptRequest(String requestId) async {
     final request = _requireRequest(requestId);
     if (request.toUserId != currentUserId ||
@@ -334,6 +421,20 @@ class FriendMockDataSource {
           ((request.fromUserId == left && request.toUserId == right) ||
               (request.fromUserId == right && request.toUserId == left)),
     );
+  }
+
+  void _seedDemoFriendsIfNeeded() {
+    if (!seedDemoData || currentUserId != 'mock-user-id') return;
+    final ids = _friendships.putIfAbsent(currentUserId, () => <String>{});
+    ids.addAll(_demoFriendOrder);
+    for (final id in ids) {
+      _friendships.putIfAbsent(id, () => <String>{}).add(currentUserId);
+    }
+  }
+
+  int _demoSortIndex(String userId) {
+    final index = _demoFriendOrder.indexOf(userId);
+    return index == -1 ? _demoFriendOrder.length : index;
   }
 
   _MockFriendRequest _requireRequest(String requestId) {

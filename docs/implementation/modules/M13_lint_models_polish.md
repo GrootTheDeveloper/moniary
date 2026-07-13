@@ -88,5 +88,5 @@ Chạy: flutter analyze (0 errors, 0 warnings)
 - [ ] `flutter analyze` pass (0 warnings)
 - [ ] `flutter test` pass
 - [ ] Commit: `chore(M13): add lint rules + document theme colors + timezone TODO`
-- [ ] Update `handoff/current_status.md`
-- [ ] Ghi issues mới (nếu có) vào `handoff/issues_backlog.md`
+- [ ] Update `../handoff/current_status.md`
+- [ ] Ghi issues mới (nếu có) vào `../handoff/issues_backlog.md`

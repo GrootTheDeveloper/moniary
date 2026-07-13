@@ -79,5 +79,5 @@ KHÔNG sửa file khác. Chạy: flutter analyze && flutter test
 - [ ] `flutter analyze` pass
 - [ ] `flutter test` pass
 - [ ] Commit: `fix(M02): add splash error handling + fix auth controller re-throw`
-- [ ] Update `handoff/current_status.md`
-- [ ] Ghi issues mới (nếu có) vào `handoff/issues_backlog.md`
+- [ ] Update `../handoff/current_status.md`
+- [ ] Ghi issues mới (nếu có) vào `../handoff/issues_backlog.md`

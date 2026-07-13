@@ -9,6 +9,24 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get budgetEditLimit => 'Edit limit';
+
+  @override
+  String get budgetQuickPresets => 'Quick presets';
+
+  @override
+  String get budgetWarningThreshold => 'Warn at';
+
+  @override
+  String get budgetCategoryDetailTitle => 'Budget detail';
+
+  @override
+  String get budgetTransactionsInLimit => 'Transactions in this limit';
+
+  @override
+  String get budgetNoTransactions => 'No transactions in this category yet.';
+
+  @override
   String get appName => 'Moniary';
 
   @override
@@ -86,7 +104,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginSubtitle => 'Personal expense manager';
 
   @override
-  String get loginAnonymous => 'Connect anonymously with Supabase';
+  String get loginAnonymous => 'Continue as guest';
 
   @override
   String get loginTerms =>
@@ -105,23 +123,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginApple => 'Sign in with Apple';
 
   @override
+  String get loginFacebook => 'Sign in with Facebook';
+
+  @override
   String get loginEmail => 'Sign in with Email';
 
   @override
   String get loginOr => 'or';
 
   @override
-  String get loginConnecting => 'Connecting to Supabase...';
+  String get loginConnecting => 'Signing in...';
 
   @override
   String get loginTryWithoutAuth => 'Try without logging in';
 
   @override
   String get loginSessionReady =>
-      'Session ready. You can go straight to Calendar.';
+      'You\'re signed in. Opening your spending calendar...';
 
   @override
-  String get loginDataSecure => 'Your data is secure and synced with Supabase.';
+  String get loginDataSecure => 'Your data is protected and synced securely.';
+
+  @override
+  String get loginForgotPassword => 'Forgot password?';
+
+  @override
+  String get loginNoAccount => 'No account yet?';
+
+  @override
+  String get loginRegisterNow => 'Register now';
+
+  @override
+  String get loginHaveAccount => 'Already have an account?';
+
+  @override
+  String get loginSocialDivider => 'Or sign in with';
+
+  @override
+  String get loginDemoCta => 'DEMO';
+
+  @override
+  String get loginGuestCta => 'Try it now — no account needed →';
+
+  @override
+  String get loginPasswordResetSent =>
+      'Password reset instructions were sent by email.';
 
   @override
   String get splashLoading => 'Loading app...';
@@ -176,45 +222,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingPillStats => 'Stats';
 
   @override
-  String get onboardingPage1Title1 => 'Track expenses';
+  String get onboardingPage1Title1 => 'Scan a receipt,';
 
   @override
-  String get onboardingPage1Title2 => 'with photos';
+  String get onboardingPage1Title2 => 'save it in one tap';
 
   @override
-  String get onboardingPage1Subtitle => 'Fast  •  Memorable  •  Never miss';
+  String get onboardingPage1Subtitle => 'Reading your receipt';
 
   @override
   String get onboardingPage1Caption =>
-      'Save spending moments like a mini diary.';
+      'Scan a receipt and fill the amount, date, wallet and category automatically.';
 
   @override
-  String get onboardingPage2Title1 => 'View calendar';
+  String get onboardingPage2Title1 => 'Every day becomes';
 
   @override
-  String get onboardingPage2Title2 => 'intuitively';
+  String get onboardingPage2Title2 => 'a small photograph';
 
   @override
   String get onboardingPage2Subtitle =>
-      'Photos, totals, filters and alerts in one screen';
+      'Look back at the month like an album, not a spreadsheet.';
 
   @override
   String get onboardingPage2Caption =>
-      'Each day is a cell, each transaction is a memory.';
+      'Every transaction becomes a small piece of your diary.';
 
   @override
-  String get onboardingPage3Title1 => 'Analytics';
+  String get onboardingPage3Title1 => 'A clear budget,';
 
   @override
-  String get onboardingPage3Title2 => 'made simple';
+  String get onboardingPage3Title2 => 'understood in seconds';
 
   @override
   String get onboardingPage3Subtitle =>
-      'Track income/expenses without complex charts';
+      'Track each category and get a warning before you cross its limit.';
 
   @override
   String get onboardingPage3Caption =>
-      'Moniary helps you view money in real context.';
+      'Keep an eye on limits without reading complicated tables.';
+
+  @override
+  String get onboardingReceiptCategory => 'Food & dining';
+
+  @override
+  String get onboardingReceiptDate => '15 Jun';
+
+  @override
+  String get onboardingReceiptAmount => '385,000';
+
+  @override
+  String get onboardingPhotoAmount => '−145,000 ₫';
+
+  @override
+  String get onboardingBudgetPercent => '70%';
+
+  @override
+  String get onboardingBudgetLabel => 'Monthly budget';
 
   @override
   String get profileSetupTitle => 'Profile Setup';
@@ -233,6 +297,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSetupStart => 'Start';
+
+  @override
+  String profileSurveyWelcomeTitle(String name) {
+    return 'It is lovely to meet you, $name!';
+  }
+
+  @override
+  String get profileSurveyWelcomeBody =>
+      'A few quick choices will help Moniary prepare an experience that fits you.';
+
+  @override
+  String get profileSurveyFallbackName => 'friend';
+
+  @override
+  String get profileSurveyOccupationTitle => 'What do you currently do?';
+
+  @override
+  String get profileSurveyOccupationBody =>
+      'Moniary will use this to suggest categories and a tracking style that fits you.';
+
+  @override
+  String get profileSurveyOccupationStudent => 'Student';
+
+  @override
+  String get profileSurveyOccupationOffice => 'Office worker';
+
+  @override
+  String get profileSurveyOccupationFreelancer => 'Freelancer';
+
+  @override
+  String get profileSurveyOccupationBusiness => 'Business owner';
+
+  @override
+  String get profileSurveyOccupationOther => 'Other';
+
+  @override
+  String get profileSurveyCurrencyTitle => 'Choose the currency you use';
+
+  @override
+  String get profileSurveyCurrencyBody =>
+      'Moniary will use it for balances and reports.';
+
+  @override
+  String get profileSurveyCurrencyVnd => 'Vietnamese Dong';
+
+  @override
+  String get profileSurveyCurrencyVgo => 'Vietnamese Gold (SJC)';
+
+  @override
+  String get profileSurveyCurrencyUsd => 'United States Dollar';
+
+  @override
+  String get profileSurveyWalletTitle => 'Create your first Wallet';
+
+  @override
+  String get profileSurveyWalletBody =>
+      'How much money is currently in this Wallet?';
+
+  @override
+  String get profileSurveyWalletName => 'Wallet name';
+
+  @override
+  String get profileSurveyWalletDefaultName => 'My Wallet';
+
+  @override
+  String get profileSurveyAmountLabel => 'Amount';
+
+  @override
+  String get profileSurveyAmountHint => '0';
+
+  @override
+  String get profileSurveyNext => 'Continue';
+
+  @override
+  String get profileSurveyFinish => 'Create wallet and start';
 
   @override
   String get profileSetupNameRequired => 'Please enter a display name.';
@@ -265,6 +404,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calendarSelectCategoryFilter => 'Select category filter';
 
   @override
+  String get calendarAllFilter => 'All';
+
+  @override
+  String get calendarSaved => 'Saved';
+
+  @override
+  String get calendarSearchLabel => 'Search';
+
+  @override
+  String get calendarWalletsCategoriesAction => 'Wallets';
+
+  @override
   String get calendarMonthlyExpense => 'Monthly Expense';
 
   @override
@@ -272,11 +423,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calendarEmptyMessage =>
-      'No transactions this month. Add a transaction to start tracking.';
+      'No transactions this month yet. You can still pick a day or tap + to add one.';
+
+  @override
+  String get calendarTodayEmptyMessage =>
+      'No transactions today yet. Tap + to record a new income or expense.';
 
   @override
   String calendarStatsMessage(int count, int days) {
-    return '$count transactions in $days active days. Loaded from Supabase.';
+    return '$count transactions across $days active days. Calendar data is up to date.';
   }
 
   @override
@@ -286,6 +441,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calendarStatsTab => 'Stats';
+
+  @override
+  String get navStatsLabel => 'Stats';
+
+  @override
+  String get navGroupsLabel => 'Groups';
+
+  @override
+  String get navProfileLabel => 'Me';
 
   @override
   String get calendarLoading => 'Syncing calendar...';
@@ -337,6 +501,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calendarSearchNoResults => 'No transactions found.';
 
   @override
+  String get calendarRecentSearches => 'Recent searches';
+
+  @override
+  String get calendarRecentSearchCoffee => 'coffee';
+
+  @override
+  String get calendarRecentSearchRide => 'grab';
+
+  @override
+  String get calendarRecentSearchMarket => 'market';
+
+  @override
+  String calendarSearchResultsHeader(String query, int count) {
+    return 'Results · \"$query\" · $count';
+  }
+
+  @override
   String get transactionSaveTransaction => 'Save transaction';
 
   @override
@@ -363,6 +544,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'No transactions for this day. Tap + to add one.';
 
   @override
+  String get transactionAddForDay => 'Add an entry for this day';
+
+  @override
   String transactionLoadDetailError(String error) {
     return 'Could not load transaction details.\n$error';
   }
@@ -378,6 +562,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactionAmount => 'Amount';
+
+  @override
+  String get transactionAmountSuffix => 'đ';
 
   @override
   String get transactionAmountHint => '0';
@@ -408,10 +595,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionSaving => 'Saving...';
 
   @override
-  String get transactionCreateTitle => 'Create transaction';
+  String get transactionCreateTitle => 'Add transaction';
 
   @override
   String get transactionEditTitle => 'Edit transaction';
+
+  @override
+  String get transactionDetailTitle => 'Transaction';
 
   @override
   String get transactionDeleteConfirm => 'Delete this transaction?';
@@ -449,6 +639,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactionWalletAccount => 'Wallet / Account';
+
+  @override
+  String get transactionSource => 'Source';
+
+  @override
+  String get transactionSourceManual => 'Manual entry';
+
+  @override
+  String get transactionSourceReceiptImage => 'Receipt photo';
 
   @override
   String get transactionExpenseCategory => 'Expense category';
@@ -663,6 +862,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupTitle => 'Group expenses';
 
   @override
+  String get groupListTitle => 'Groups';
+
+  @override
+  String groupListSection(int count) {
+    return 'Your groups · $count';
+  }
+
+  @override
   String get groupEmpty => 'No expense groups yet';
 
   @override
@@ -684,6 +891,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String groupMemberCount(int count) {
     return '$count members';
+  }
+
+  @override
+  String get groupDetailKindLabel => 'Group';
+
+  @override
+  String get groupMoreActions => 'Group actions';
+
+  @override
+  String groupTransactionCount(int count) {
+    return '$count expenses';
   }
 
   @override
@@ -733,6 +951,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupDeletedMember => 'Deleted member';
+
+  @override
+  String get groupInvitationsTitle => 'Group invitations';
+
+  @override
+  String get groupInvitationsEmpty => 'You do not have any group invitations.';
+
+  @override
+  String get groupInvitationsEmptySubtitle =>
+      'Invitations sent through username or friends will appear here.';
+
+  @override
+  String get groupInvitationsLoadError => 'Could not load group invitations.';
+
+  @override
+  String groupInvitationInvitedBy(String name) {
+    return '$name invited you to join.';
+  }
+
+  @override
+  String groupInvitationExpiresAt(String date) {
+    return 'Expires on $date';
+  }
+
+  @override
+  String get groupInvitationAccept => 'Accept';
+
+  @override
+  String get groupInvitationDecline => 'Decline';
+
+  @override
+  String get groupInvitationDeclinedSuccess => 'Group invitation declined.';
+
+  @override
+  String get groupInvitationPending => 'Pending';
+
+  @override
+  String get groupInvitationAccepted => 'Joined';
+
+  @override
+  String get groupInvitationDeclined => 'Declined';
+
+  @override
+  String get groupInvitationExpired => 'Expired';
+
+  @override
+  String get groupInvitationRevoked => 'Revoked';
+
+  @override
+  String get groupInvitationInvalid => 'This invitation is no longer valid.';
 
   @override
   String get groupMemberEmailHint => 'Email (optional)';
@@ -882,7 +1150,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileUserDefault => 'Moniary User';
 
   @override
-  String get profileAnonymous => 'Anonymous trial account';
+  String get profileAnonymous => 'Guest account';
 
   @override
   String get profileMyData => 'My Data';
@@ -1019,7 +1287,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyAboutSubtitle =>
-      'App purpose, MVP status, and release information.';
+      'App purpose, current version status, and release information.';
 
   @override
   String get profileAccount => 'Account';
@@ -1077,6 +1345,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yearlyReportDesc => 'Once a year';
 
   @override
+  String get reminderSectionTitle => 'Device reminders';
+
+  @override
+  String get reminderSectionDesc =>
+      'A notification right on your phone, nudging you to log today\'s spending.';
+
+  @override
+  String get reminderDailyTitle => 'Daily logging reminder';
+
+  @override
+  String reminderDailyDesc(String time) {
+    return 'Every day at $time';
+  }
+
+  @override
+  String get reminderNotificationTitle =>
+      'Don\'t forget to log your spending 💸';
+
+  @override
+  String get reminderNotificationBody =>
+      'Take a few seconds to record today\'s transactions.';
+
+  @override
+  String get reminderPermissionDenied =>
+      'Enable notification permission in system settings to receive reminders.';
+
+  @override
   String get deleteAccountTitle => 'Delete account';
 
   @override
@@ -1103,7 +1398,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteAccountConsequence3 =>
-      'Delete transaction photos in Storage by user ID.';
+      'Delete transaction photos linked to the current account.';
 
   @override
   String get deleteAccountUnderstand =>
@@ -1155,10 +1450,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageDataTitle => 'Manage data';
 
   @override
+  String get manageDataWalletTab => 'Wallets';
+
+  @override
+  String get manageDataWalletCountLabel => 'wallets';
+
+  @override
+  String get manageDataCategoryCountLabel => 'categories';
+
+  @override
   String get cameraTakePhoto => 'Capture';
 
   @override
   String get cameraFlip => 'Flip camera';
+
+  @override
+  String get cameraFlash => 'Flash';
 
   @override
   String get cameraNoPermission => 'No camera permission';
@@ -1240,7 +1547,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalContactHero =>
-      'These contact channels help users, reviewers, or the release team know where to send appropriate requests.';
+      'Use these contact channels to send data, support, or legal requests to the right place.';
 
   @override
   String get legalContactPrivacyDesc =>
@@ -1252,7 +1559,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalContactLegalDesc =>
-      'Terms issues, Store releases, or legal requests.';
+      'Terms issues, release questions, or legal requests.';
 
   @override
   String get legalContactPrivacy => 'Privacy';
@@ -1335,6 +1642,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statsDailyTrend => 'Daily trend';
 
   @override
+  String get statsWeeklySpending => 'Weekly spending';
+
+  @override
+  String get statsCategories => 'Categories';
+
+  @override
+  String statsMonthExpenseMeta(String month) {
+    return 'Total expense · $month';
+  }
+
+  @override
+  String statsExpenseLessThanPrevious(int percent) {
+    return '↓ Less than last month by $percent%';
+  }
+
+  @override
+  String statsExpenseMoreThanPrevious(int percent) {
+    return '↑ Higher than last month by $percent%';
+  }
+
+  @override
+  String get statsExpenseSameAsPrevious => 'About the same as last month';
+
+  @override
+  String get statsExpenseNoPrevious => 'No previous month data yet';
+
+  @override
+  String statsBudgetUsed(int percent) {
+    return 'Budget · used $percent%';
+  }
+
+  @override
+  String get statsBudgetNoLimit => 'Budget';
+
+  @override
+  String statsWeekLabel(int week) {
+    return 'Week $week';
+  }
+
+  @override
+  String get statsMillionShort => 'm';
+
+  @override
   String get statsLargestTransactions => 'Largest transactions';
 
   @override
@@ -1356,7 +1706,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileAnonymousWarning =>
-      'You are logged in with a guest account. Please link your account to avoid data loss when switching devices.';
+      'You are using a guest account. Link Email or Google to keep your data when switching devices.';
 
   @override
   String get profileLinkNow => 'Link now';
@@ -1366,7 +1716,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileLinkAccountSubtitle =>
-      'Your account is currently anonymous. Link with Email or Google to store data permanently and sign in across devices.';
+      'Your account is currently a guest account. Link Email or Google to save your data and sign in across devices.';
 
   @override
   String get profileNewPassword => 'New password';
@@ -1426,7 +1776,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLanguageEn => 'English';
 
   @override
-  String get profileAnonymousBadge => 'Anonymous account';
+  String get profileAnonymousBadge => 'Guest account';
 
   @override
   String profileVerifiedBadge(String provider) {
@@ -1486,7 +1836,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportTroubleshootingSupportDesc =>
-      'If the file cannot be created or opened, create a privacy/support request with an error description.';
+      'If the file cannot be created or opened, create a support request with an error description.';
 
   @override
   String get legalDataDeletionPolicy => 'Data deletion policy';
@@ -1564,6 +1914,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyFaq => 'Privacy & account FAQ';
 
   @override
+  String get privacyFaqHeroBody =>
+      'Frequently asked questions about personal data, export, account deletion, and privacy requests.';
+
+  @override
+  String get privacyFaqStoredDataQuestion => 'What data does Moniary store?';
+
+  @override
+  String get privacyFaqStoredDataAnswer =>
+      'The app stores profiles, wallets, categories, transactions, notes, and transaction image paths when users create data in the app.';
+
+  @override
+  String get privacyFaqExportBeforeDeletionQuestion =>
+      'Can I export my data before deleting my account?';
+
+  @override
+  String get privacyFaqExportBeforeDeletionAnswer =>
+      'Yes. You can export data as CSV, Excel, or PDF in the Export my data section.';
+
+  @override
+  String get privacyFaqDeletionImagesQuestion =>
+      'Does deleting my account also delete transaction images?';
+
+  @override
+  String get privacyFaqDeletionImagesAnswer =>
+      'The account deletion flow is designed to delete app data and transaction images linked to the current user.';
+
+  @override
+  String get privacyFaqDeletionFailQuestion =>
+      'What if direct account deletion fails?';
+
+  @override
+  String get privacyFaqDeletionFailAnswer =>
+      'You can create a manual data deletion request file and send it to the privacy support channel.';
+
+  @override
+  String get privacyFaqExportLocationQuestion =>
+      'Where are export files stored?';
+
+  @override
+  String get privacyFaqExportLocationAnswer =>
+      'Export files are saved in the app\'s documents folder on the device and can be opened or shared from the export history.';
+
+  @override
   String get privacyCenter => 'Privacy Center';
 
   @override
@@ -1618,7 +2011,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportCopySuccess => 'Copied support info.';
 
   @override
-  String get supportCopyDiagnostic => 'Copy diagnostic info';
+  String get supportCopyDiagnostic => 'Copy support info';
 
   @override
   String get supportRequestChecklist => 'Support checklist';
@@ -1727,6 +2120,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsAccountSection => 'Account';
+
+  @override
+  String get settingsDataSection => 'Data';
+
+  @override
+  String get settingsLegalSupportSection => 'Legal & Help';
 
   @override
   String importPreviewTitle(int count) {
@@ -2064,7 +2466,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String privacyContactCopyGuide(String email) {
-    return 'Email: $email\nSubject: Moniary privacy request\nContent: Paste the copied request content from the app.';
+    return 'Email: $email\nSubject: Moniary support request\nContent: Paste the request content copied from the app.';
   }
 
   @override
@@ -2075,7 +2477,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyContactHeroDesc =>
-      'If not possible in-app, users can contact the team for data support requests.';
+      'If something cannot be handled in the app, contact Moniary support for help with your data.';
 
   @override
   String get privacyContactEmailTitle => 'Support Email';
@@ -2088,11 +2490,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyContactInfoTitle => 'Information to Send';
 
   @override
-  String get privacyContactInfoValue => 'User ID or login email';
+  String get privacyContactInfoValue => 'Account ID or login email';
 
   @override
   String get privacyContactInfoDesc =>
-      'Do not send passwords, access tokens, sensitive receipt photos, or detailed amounts via email.';
+      'Do not send passwords, access codes, sensitive receipt photos, or detailed amounts via email.';
 
   @override
   String get privacyContactTimeTitle => 'Response Time';
@@ -2102,7 +2504,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyContactTimeDesc =>
-      'The team will update actual times before production release.';
+      'Moniary will update actual response times before the public release.';
 
   @override
   String get privacyContactRecentRequests => 'Recent Requests';
@@ -2155,7 +2557,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportChecklistSubtitle =>
-      'Prepare bug description, related files, and diagnostic info before requesting.';
+      'Prepare a bug description, related files, and support info before sending a request.';
 
   @override
   String get helpHeroText =>
@@ -2180,7 +2582,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutMoniarySubtitle =>
-      'View app purpose, data direction, and MVP status before release.';
+      'View app purpose, data direction, and current version status.';
 
   @override
   String get privacyPolicySubtitle =>
@@ -2191,14 +2593,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get termsOfUseSubtitle =>
-      'View scope of use, user responsibilities, and MVP limitations.';
+      'View scope of use, user responsibilities, and current version limitations.';
 
   @override
   String get dataRetentionPolicyTitle => 'Data Retention Policy';
 
   @override
   String get dataRetentionPolicySubtitle =>
-      'See what is stored on cloud vs locally, and handling after account deletion.';
+      'See what is synced with your account, what stays on this device, and what happens after account deletion.';
 
   @override
   String get thirdPartyServicesTitle => 'Third-Party Services';
@@ -2238,7 +2640,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get releaseChecklistSubtitle =>
-      'Review privacy, data export, account deletion, and contacts before Store release.';
+      'Review privacy, data export, account deletion, and contacts before release.';
 
   @override
   String get trustSafetyTitle => 'Trust & Safety';
@@ -2259,7 +2661,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get policyChangelogSubtitle =>
-      'View milestones for privacy, legal, and store readiness updates.';
+      'View milestones for privacy, legal, and release-readiness updates.';
 
   @override
   String get userDataRightsTitle => 'User Data Rights';
@@ -2301,49 +2703,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Users can delete their account in-app or submit a manual request if the direct flow fails.';
 
   @override
-  String get privacyFaqHeroBody =>
-      'Frequently asked questions about personal data, export, account deletion, and privacy requests.';
-
-  @override
-  String get privacyFaqStoredDataQuestion => 'What data does Moniary store?';
-
-  @override
-  String get privacyFaqStoredDataAnswer =>
-      'The app stores profiles, wallets, categories, transactions, notes, and transaction image paths when users create data in the app.';
-
-  @override
-  String get privacyFaqExportBeforeDeletionQuestion =>
-      'Can I export my data before deleting my account?';
-
-  @override
-  String get privacyFaqExportBeforeDeletionAnswer =>
-      'Yes. You can export data as CSV, Excel, or PDF in the Export my data section.';
-
-  @override
-  String get privacyFaqDeletionImagesQuestion =>
-      'Does deleting my account also delete transaction images?';
-
-  @override
-  String get privacyFaqDeletionImagesAnswer =>
-      'The account deletion flow is designed to delete app data and transaction images linked to the current user.';
-
-  @override
-  String get privacyFaqDeletionFailQuestion =>
-      'What if direct account deletion fails?';
-
-  @override
-  String get privacyFaqDeletionFailAnswer =>
-      'You can create a manual data deletion request file and send it to the privacy support channel.';
-
-  @override
-  String get privacyFaqExportLocationQuestion =>
-      'Where are export files stored?';
-
-  @override
-  String get privacyFaqExportLocationAnswer =>
-      'Export files are saved in the app\'s documents folder on the device and can be opened or shared from the export history.';
-
-  @override
   String get policyAcceptanceNoticeTitle => 'Policy Acceptance Notice';
 
   @override
@@ -2363,14 +2722,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalContactSubtitle =>
-      'View and copy privacy, support, and legal emails for Store release.';
+      'View and copy privacy, support, and legal emails.';
 
   @override
   String get dataSafetyTitle => 'Data Safety';
 
   @override
   String get dataSafetySubtitle =>
-      'Summary of data groups collected or not collected in the MVP.';
+      'Summary of data groups collected or not collected in the current version.';
 
   @override
   String get myDataTitle => 'My Data';
@@ -2445,7 +2804,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noOverCollectionDesc =>
-      'MVP does not read contacts, SMS, emails, location, or auto-sync bank accounts.';
+      'Moniary does not read contacts, SMS, personal emails, location, or automatically connect bank accounts.';
 
   @override
   String get carefulFileSharingTitle => 'Careful File Sharing';
@@ -2582,7 +2941,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inventoryPhotoDesc =>
-      'Path in Storage private bucket, shown via signed URL.';
+      'Transaction photo paths are stored securely and shown only when needed in the app.';
 
   @override
   String get inventorySettingsTitle => 'Reminder Settings';
@@ -2663,7 +3022,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportChecklistHero =>
-      'Prepare enough information before submitting a request to help the team resolve it faster and avoid sharing sensitive data unnecessarily.';
+      'Prepare enough information before submitting a request so support can resolve it faster and avoid unnecessary sensitive data sharing.';
 
   @override
   String get supportChecklistActionTitle => 'Describe what you did';
@@ -2677,18 +3036,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportChecklistErrorDesc =>
-      'Copy the error message or describe the screen so the team can investigate.';
+      'Copy the error message or describe the screen so support can investigate.';
 
   @override
   String get supportChecklistFileTitle =>
-      'Attach request/export files when relevant';
+      'Attach request or export files when relevant';
 
   @override
   String get supportChecklistFileDesc =>
-      'If it is a privacy request or manual deletion, attach the generated JSON file.';
+      'For privacy requests or manual deletion requests, attach the file generated by the app.';
 
   @override
-  String get supportChecklistDiagnosticTitle => 'Copy diagnostic info';
+  String get supportChecklistDiagnosticTitle => 'Copy support info';
 
   @override
   String get supportChecklistDiagnosticDesc =>
@@ -2700,7 +3059,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportChecklistSensitiveDesc =>
-      'Do not send passwords, access tokens, or sensitive receipt photos unless absolutely necessary.';
+      'Do not send passwords, access codes, or sensitive receipt photos unless absolutely necessary.';
 
   @override
   String get dataSafetyPersonalInfoTitle => 'Personal info';
@@ -2711,7 +3070,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dataSafetyPersonalInfoDesc =>
-      'Display name, email, avatar, and user ID used for login and data synchronization.';
+      'Display name, email, avatar, and account ID used for login and data synchronization.';
 
   @override
   String get dataSafetyFinancialInfoTitle => 'Financial info';
@@ -2732,23 +3091,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dataSafetyPhotosDesc =>
-      'Transaction photos are stored in private storage and only accessible via signed URLs.';
+      'Transaction photos are stored securely and shown in the app only when needed.';
 
   @override
-  String get dataSafetyUserIdTitle => 'User ID';
+  String get dataSafetyUserIdTitle => 'Account ID';
 
   @override
   String get dataSafetyUserIdStatus => 'Yes';
 
   @override
   String get dataSafetyUserIdDesc =>
-      'Used to associate data with the correct account and apply RLS on Supabase.';
+      'Used to associate data with the correct account and limit data access.';
 
   @override
   String get dataSafetyLocationTitle => 'Location, Contacts, SMS';
 
   @override
-  String get dataSafetyLocationStatus => 'Not collected in MVP';
+  String get dataSafetyLocationStatus => 'Not collected in the current version';
 
   @override
   String get dataSafetyLocationDesc =>
@@ -2775,7 +3134,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutMoniaryLicenseDesc =>
-      'View licenses for Flutter and packages used in this app.';
+      'View licenses for libraries used in this app.';
 
   @override
   String get aboutMoniaryPurposeTitle => 'Purpose';
@@ -2792,11 +3151,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Financial data belongs to the user. The app provides tools to export data, delete accounts, and contact privacy support.';
 
   @override
-  String get aboutMoniaryMvpStatusTitle => 'MVP Status';
+  String get aboutMoniaryMvpStatusTitle => 'Version Status';
 
   @override
   String get aboutMoniaryMvpStatusDesc =>
-      'The current version focuses on expense tracking, data transparency, and requirements needed for Store release.';
+      'The current version focuses on expense tracking, data transparency, and requirements needed for public release.';
 
   @override
   String get permissionInternetTitle => 'Internet';
@@ -2806,7 +3165,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get permissionInternetDesc =>
-      'Used for login, Supabase Database synchronization, and downloading transaction photos from Storage.';
+      'Used for login, data synchronization, and loading transaction photos when needed.';
 
   @override
   String get permissionCameraTitle => 'Camera';
@@ -2836,13 +3195,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get permissionNotiDesc =>
-      'MVP does not require this permission if reminders are not deployed to production.';
+      'This permission is only needed when you enable reminders.';
 
   @override
   String get permissionLocationTitle => 'Location, Contacts, SMS not used';
 
   @override
-  String get permissionLocationStatus => 'Not declared in MVP';
+  String get permissionLocationStatus => 'Not used';
 
   @override
   String get permissionLocationDesc =>
@@ -2854,14 +3213,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyLeadDesc =>
-      'This content is used for the in-app screen and as a draft public Privacy Policy before submitting to Google Play.';
+      'This explains how Moniary handles data and may be updated before the public release.';
 
   @override
   String get privacyPolicyDataTitle => 'Data processed by Moniary';
 
   @override
   String get privacyPolicyDataItem1 =>
-      'Account information such as display name, email, avatar, and user ID upon login.';
+      'Account information such as display name, email, avatar, and account ID upon login.';
 
   @override
   String get privacyPolicyDataItem2 =>
@@ -2888,11 +3247,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyPurposeItem3 =>
-      'Store transaction photos in Supabase Storage private bucket and provide signed URLs for viewing.';
+      'Store transaction photos securely and show them in the app when needed.';
 
   @override
   String get privacyPolicyPurposeItem4 =>
-      'Protect accounts, control access with RLS, and support users upon request.';
+      'Protect accounts, limit data access, and support users upon request.';
 
   @override
   String get privacyPolicyShareTitle => 'Data sharing';
@@ -2903,11 +3262,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyShareItem2 =>
-      'Data is stored on Supabase to provide Auth, Database, and Storage for the app.';
+      'Data is stored on secure infrastructure to provide login, data sync, and photo storage for the app.';
 
   @override
   String get privacyPolicyShareItem3 =>
-      'MVP does not automatically read location, contacts, SMS, personal email, or bank data.';
+      'Moniary does not automatically read location, contacts, SMS, personal email, or bank data.';
 
   @override
   String get privacyPolicyDeleteTitle => 'Data deletion';
@@ -2922,10 +3281,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyDeleteItem3 =>
-      'When deleting an account, Moniary requests deletion of profiles, wallets, categories, transactions, and photos in Storage belonging to the current user ID.';
+      'When deleting an account, Moniary requests deletion of profiles, wallets, categories, transactions, and photos belonging to the current account.';
 
   @override
-  String get privacyPolicySafetyTitle => 'Google Play Data Safety Declaration';
+  String get privacyPolicySafetyTitle => 'Data Safety Declaration';
 
   @override
   String get privacyPolicySafetyItem1 =>
@@ -2941,11 +3300,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySafetyItem4 =>
-      'Location, Contacts, SMS: not collected in MVP.';
+      'Location, Contacts, SMS: not collected in the current version.';
 
   @override
   String get privacyPolicyContactDesc =>
-      'Before release, the team needs to publish this content on a public URL and update the official contact email in the Play Console.';
+      'Moniary will update the policy content and official contact email before release.';
 
   @override
   String get deletionPolicyStep1Title => 'Before deleting';
@@ -2959,25 +3318,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deletionPolicyStep2Desc =>
-      'Profiles, wallets, categories, transactions, reminder settings, and photos in Storage belonging to the current user ID.';
+      'Profiles, wallets, categories, transactions, reminder settings, and photos belonging to the current account.';
 
   @override
   String get deletionPolicyStep3Title => 'How to delete';
 
   @override
   String get deletionPolicyStep3Desc =>
-      'The app calls the delete-account Edge Function. The function verifies the session, deletes transaction photos, and then deletes the Auth user.';
+      'Moniary verifies the request, removes related data, and then closes the account.';
 
   @override
   String get deletionPolicyStep4Title => 'Data outside the app';
 
   @override
   String get deletionPolicyStep4Desc =>
-      'If backup data, logs, or external requests need to be deleted, users can contact the team via the privacy support channel.';
+      'For additional help with data outside the app, users can contact Moniary privacy support.';
 
   @override
   String get termsOfUseHeroDesc =>
-      'These terms summarize how users should use Moniary in the MVP version.';
+      'These terms summarize how users should use Moniary in the current version.';
 
   @override
   String get termsOfUseScopeTitle => '1. Scope of use';
@@ -3042,7 +3401,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportReportRecentTransactions => 'Recent transactions';
 
   @override
-  String get dataRetentionCloudTitle => 'Cloud data';
+  String get dataRetentionCloudTitle => 'Synced data';
 
   @override
   String get dataRetentionCloudDesc =>
@@ -3056,18 +3415,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Transaction photos are stored only when the user actively takes or selects an image. Photos are processed together with account data when deleting the account.';
 
   @override
-  String get dataRetentionLocalFilesTitle => 'Local files';
+  String get dataRetentionLocalFilesTitle => 'Files on this device';
 
   @override
   String get dataRetentionLocalFilesDesc =>
-      'Export files and request history are created on the device. Users can manage, share, or delete these files from local storage.';
+      'Export files and request history are created on the device. Users can manage, share, or delete these files from device storage.';
 
   @override
   String get dataRetentionDeleteTitle => 'After account deletion';
 
   @override
   String get dataRetentionDeleteDesc =>
-      'Moniary runs the account deletion flow to remove app data tied to the current user. If it fails, users can create a manual data deletion request.';
+      'Moniary runs the account deletion flow to remove app data tied to the current account. If it fails, users can create a manual data deletion request.';
 
   @override
   String get financialDisclaimerInvestmentTitle => 'Not investment advice';
@@ -3112,14 +3471,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Added privacy request types, templates, previews, request history, status, and response timeline.';
 
   @override
-  String get policyChangelogEntry3Title => 'Added Store Readiness & Trust';
+  String get policyChangelogEntry3Title => 'Added Release Readiness & Trust';
 
   @override
   String get policyChangelogEntry3Desc =>
       'Added About, Terms of Use, license entry, version/build info, release checklist, and legal contact flow.';
 
   @override
-  String get policyChangelogEntry4Title => 'Initialized MVP policies';
+  String get policyChangelogEntry4Title => 'Initialized first-version policies';
 
   @override
   String get policyChangelogEntry4Desc =>
@@ -3156,6 +3515,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupBalanceSettled => 'Settled';
 
   @override
+  String get groupBalanceSettledShort => 'Settled';
+
+  @override
   String groupBalanceOwes(String amount) {
     return 'You need to pay $amount';
   }
@@ -3163,6 +3525,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String groupBalanceReceives(String amount) {
     return 'You will receive $amount';
+  }
+
+  @override
+  String get groupBalanceReceiveShort => 'To receive';
+
+  @override
+  String get groupBalancePayShort => 'To pay';
+
+  @override
+  String get groupBalanceReceiveSummary => 'You receive';
+
+  @override
+  String get groupBalancePaySummary => 'You pay';
+
+  @override
+  String get groupSettleAction => 'Settle';
+
+  @override
+  String get groupSettlementYou => 'You';
+
+  @override
+  String get groupSettlementConfirmAll => 'Confirm settled';
+
+  @override
+  String get groupSettlementWaitingForPayers =>
+      'Waiting for payers to mark their payments first.';
+
+  @override
+  String groupSettlementOptimizedSubtitle(String groupName, int count) {
+    return '$groupName · Optimized $count transactions';
   }
 
   @override
@@ -3216,6 +3608,68 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupInviteLinkCreated => 'Group invite link created.';
 
   @override
+  String get groupInviteLinkActiveNote =>
+      'This link can be used by multiple people for 7 days.';
+
+  @override
+  String get groupInviteCopyLink => 'Copy link';
+
+  @override
+  String get groupInviteLinkCopied => 'Invite link copied.';
+
+  @override
+  String get groupInviteRevokeLink => 'Revoke link';
+
+  @override
+  String get groupInviteLinkRevoked => 'Group invite link revoked.';
+
+  @override
+  String get groupInviteAcceptTitle => 'Group invite';
+
+  @override
+  String groupInviteAcceptSubtitle(String name, String group) {
+    return '$name invited you to join $group.';
+  }
+
+  @override
+  String get groupInvitePreviewNotice =>
+      'You have not joined yet. Only tap Join group if you want to accept this invite.';
+
+  @override
+  String get groupInviteAcceptButton => 'Join group';
+
+  @override
+  String get groupInviteDismissButton => 'Not now';
+
+  @override
+  String get groupInviteAccepted => 'You joined the group.';
+
+  @override
+  String get groupInviteAlreadyMember =>
+      'You are already a member of this group.';
+
+  @override
+  String get groupInviteLoading => 'Loading invite...';
+
+  @override
+  String get groupInvitePreviewError => 'Could not load the group invite.';
+
+  @override
+  String get groupInviteInvalid => 'This group invite link is invalid.';
+
+  @override
+  String get groupInviteExpired => 'This group invite link has expired.';
+
+  @override
+  String get groupInviteUsed => 'This group invite link has already been used.';
+
+  @override
+  String get groupInviteRevoked => 'This group invite link was revoked.';
+
+  @override
+  String get groupInviteOpenGroups => 'Open groups';
+
+  @override
   String get groupInviteSent => 'Invite sent.';
 
   @override
@@ -3234,7 +3688,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupMemberActive => 'Active';
 
   @override
-  String get groupAddTransaction => 'Add group transaction';
+  String get groupAddTransaction => 'Add group expense';
 
   @override
   String get groupTransactionCaption => 'Caption';
@@ -3333,6 +3787,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupTransactionLoadError => 'Could not load group transactions.';
 
   @override
+  String groupTransactionHistorySubtitle(String payer, int count) {
+    return '$payer paid · Split $count people';
+  }
+
+  @override
   String get groupTransactionDetailTitle => 'Group transaction details';
 
   @override
@@ -3374,10 +3833,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupBalanceTableTitle => 'Balance table';
 
   @override
+  String get groupMemberBalanceTitle => 'Member balances';
+
+  @override
   String get groupYouNeedPay => 'You need to pay';
 
   @override
   String get groupOthersNeedPayYou => 'Others need to pay you';
+
+  @override
+  String get groupDetailReceiveBack => 'You receive back';
+
+  @override
+  String get groupDetailYouPay => 'You need to pay';
 
   @override
   String get groupMarkPaid => 'Mark as paid';
@@ -3447,7 +3915,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupInviteLinkPlaceholder =>
-      'The deep link is created. Invite acceptance will be connected in the deep-linking phase.';
+      'Create a link to invite multiple people to this group for 7 days.';
 
   @override
   String get groupStatsPlaceholder =>
@@ -3476,7 +3944,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendSearchUsername => 'Search by username';
 
   @override
-  String get friendSearchHint => 'For example: an_nguyen';
+  String get friendSearchHint => 'For example: erling_haaland';
 
   @override
   String get friendSearch => 'Search';
@@ -3493,6 +3961,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendSearchError => 'Could not search friends. Please try again.';
 
   @override
+  String get friendSearchPlaceholder => 'Search friends...';
+
+  @override
   String get friendLoadError => 'Could not load friends.';
 
   @override
@@ -3501,6 +3972,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get friendNoFriendsSubtitle =>
       'Add friends to invite them to expense groups faster.';
+
+  @override
+  String friendListSection(int count) {
+    return 'Friends · $count';
+  }
+
+  @override
+  String friendSharedGroups(int count) {
+    return '$count shared groups';
+  }
+
+  @override
+  String get friendOwesYou => 'Owes you';
+
+  @override
+  String get friendYouOwe => 'You owe';
+
+  @override
+  String get friendBalanceSettled => 'Settled';
 
   @override
   String get friendIncomingRequests => 'Friend requests';
@@ -3578,6 +4068,427 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendShareInviteLink => 'Share friend link';
 
   @override
+  String get friendInviteOr => 'Or';
+
+  @override
+  String get budgetTitle => 'Budget';
+
+  @override
+  String get budgetUsed => 'Used';
+
+  @override
+  String get budgetCategoryLimits => 'Category limits';
+
+  @override
+  String budgetSpentOfLimit(String spent, String limit) {
+    return '$spent / $limit this month';
+  }
+
+  @override
+  String get budgetAddCategory => 'Set a limit for another category';
+
+  @override
+  String get budgetChooseCategory => 'Choose a category';
+
+  @override
+  String get budgetMonthlyLimit => 'Monthly limit';
+
+  @override
+  String get budgetLimitHelper =>
+      'Enter the maximum amount you want to spend in this category this month.';
+
+  @override
+  String get budgetRemoveLimit => 'Remove limit';
+
+  @override
+  String budgetLimitTitleForCategory(String category) {
+    return 'Limit · $category';
+  }
+
+  @override
+  String budgetUsedWarningLine(String spent, int percent, String status) {
+    return 'Used $spent ($percent%) — $status';
+  }
+
+  @override
+  String budgetAlertAtPercent(int percent) {
+    return 'Alert at $percent%';
+  }
+
+  @override
+  String get budgetSaveLimit => 'Save limit';
+
+  @override
+  String budgetSpentRemainingLine(
+    String spent,
+    String limit,
+    String remaining,
+  ) {
+    return '$spent / $limit — $remaining left';
+  }
+
+  @override
+  String budgetTransactionsInLimitCount(int count) {
+    return 'Transactions in this limit · $count';
+  }
+
+  @override
+  String budgetViewAllInStats(int count) {
+    return 'View all $count transactions in Stats →';
+  }
+
+  @override
+  String get budgetNearLimit => 'Near the limit';
+
+  @override
+  String get budgetOverLimit => 'Over the limit';
+
+  @override
+  String get budgetNearLimitShort => 'Near limit';
+
+  @override
+  String get budgetOverLimitShort => 'Over limit';
+
+  @override
+  String get budgetEmptyTitle => 'No limits yet';
+
+  @override
+  String get budgetEmptyBody =>
+      'Choose a category to start tracking your monthly budget.';
+
+  @override
+  String get cameraFrameHint => 'Place the receipt inside the frame';
+
+  @override
+  String get assistantTitle => 'Financial assistant';
+
+  @override
+  String get assistantNavLabel => 'AI';
+
+  @override
+  String get assistantIntroSkip => 'Skip';
+
+  @override
+  String get assistantIntroNext => 'Continue';
+
+  @override
+  String get assistantIntroStart => 'Get started';
+
+  @override
+  String get assistantIntroTitle1 => 'Ask anything about your spending';
+
+  @override
+  String get assistantIntroBody1 =>
+      'Get answers from the information you already record in Moniary.';
+
+  @override
+  String get assistantIntroTitle2 => 'Spot unusual spending early';
+
+  @override
+  String get assistantIntroBody2 =>
+      'Find sharp increases or repeated charges before they get out of hand.';
+
+  @override
+  String get assistantIntroTitle3 => 'Get practical next steps';
+
+  @override
+  String get assistantIntroBody3 =>
+      'See how much to reduce and in which category, without vague advice.';
+
+  @override
+  String get assistantPermissionTitle =>
+      'Let the assistant understand your finances';
+
+  @override
+  String get assistantPermissionBody =>
+      'You control what data can be read and can change it at any time.';
+
+  @override
+  String get assistantPermissionDateRange =>
+      'AI only reads data from 01/01/2025 to today';
+
+  @override
+  String get assistantAnalyzeAll => 'Analyze all data';
+
+  @override
+  String get assistantTransactionsAccess => 'Income and expense records';
+
+  @override
+  String get assistantTransactionsAccessBody =>
+      'Use transactions to analyze cash flow and spending habits.';
+
+  @override
+  String get assistantWalletsAccess => 'Wallets and balances';
+
+  @override
+  String get assistantWalletsAccessBody =>
+      'Use balances to put spending figures in context.';
+
+  @override
+  String get assistantBudgetsAccess => 'Spending limits';
+
+  @override
+  String get assistantBudgetsAccessBody =>
+      'Track usage and warn when a limit is close.';
+
+  @override
+  String get assistantSavingsAccess => 'Savings and goals';
+
+  @override
+  String get assistantSavingsAccessBody =>
+      'Track savings goals and suggest a practical plan.';
+
+  @override
+  String get assistantUpcomingBadge => 'Coming soon';
+
+  @override
+  String get assistantPermissionConfirm => 'Confirm';
+
+  @override
+  String get assistantPrivacyNote =>
+      'Analysis uses your Moniary data and does not automatically send it to a third party.';
+
+  @override
+  String assistantGreeting(String name) {
+    return 'Hello $name';
+  }
+
+  @override
+  String get assistantHomePrompt => 'What can I help you with today?';
+
+  @override
+  String get assistantInputHint => 'Type your question';
+
+  @override
+  String get assistantSuggestionsTitle => 'Suggestions for you';
+
+  @override
+  String get assistantQuestionsTitle => 'Quick questions';
+
+  @override
+  String get assistantOpenLibrary => 'Browse question library';
+
+  @override
+  String get assistantQuestionLibraryTitle => 'Suggested questions';
+
+  @override
+  String get assistantFilterAll => 'All';
+
+  @override
+  String get assistantFilterUnderstand => 'Understand spending';
+
+  @override
+  String get assistantFilterAlerts => 'Unusual activity';
+
+  @override
+  String get assistantFilterActions => 'Actions';
+
+  @override
+  String get assistantQuestionMonthly => 'How much have I spent this month?';
+
+  @override
+  String get assistantQuestionWeekly =>
+      'How does this week\'s spending compare with last week?';
+
+  @override
+  String get assistantQuestionDaily =>
+      'How much do I spend per day on average?';
+
+  @override
+  String get assistantQuestionTopCategory =>
+      'Which category costs me the most this month?';
+
+  @override
+  String get assistantQuestionRecurring =>
+      'Are there repeated expenses I may not have noticed?';
+
+  @override
+  String get assistantQuestionSaving => 'Where can I cut back to save more?';
+
+  @override
+  String assistantMonthlyAnswer(String amount) {
+    return 'You have spent $amount this month.';
+  }
+
+  @override
+  String assistantMonthlyCompare(String direction, String percent) {
+    return '$direction by $percent% compared with last month.';
+  }
+
+  @override
+  String get assistantDirectionMore => 'More';
+
+  @override
+  String get assistantDirectionLess => 'Less';
+
+  @override
+  String assistantWeeklyAnswer(
+    String current,
+    String direction,
+    String percent,
+  ) {
+    return 'You spent $current this week, $direction by $percent% from last week.';
+  }
+
+  @override
+  String assistantDailyAnswer(String amount) {
+    return 'You spend an average of $amount per day this month.';
+  }
+
+  @override
+  String assistantTopCategoryAnswer(
+    String category,
+    String amount,
+    String percent,
+  ) {
+    return '$category ranks first at $amount, or $percent% of total spending.';
+  }
+
+  @override
+  String assistantRecurringAnswer(String label, int count, String amount) {
+    return '“$label” appears $count times for a total of $amount.';
+  }
+
+  @override
+  String assistantSavingAnswer(String category, String amount) {
+    return 'Reducing $category by about 15% could save roughly $amount this month.';
+  }
+
+  @override
+  String get assistantNoData =>
+      'There is not enough data to answer yet. Record a few more transactions and try again.';
+
+  @override
+  String get assistantAnalysisError =>
+      'Analysis is unavailable right now. Please try again later.';
+
+  @override
+  String get journalRecapTitle => 'Monthly recap';
+
+  @override
+  String journalRecapMonth(String month) {
+    return '$month recap';
+  }
+
+  @override
+  String journalRecordedCount(int count) {
+    return 'You recorded $count expenses';
+  }
+
+  @override
+  String journalRecapSummary(String amount, String category) {
+    return 'A total of $amount. Your largest category was $category.';
+  }
+
+  @override
+  String get journalHighestDay => 'Highest-spend day';
+
+  @override
+  String journalHighestDayValue(String date, String amount) {
+    return '$date — $amount in one day';
+  }
+
+  @override
+  String get journalComparedPrevious => 'Compared with last month';
+
+  @override
+  String get journalSpentMore => 'Spent more';
+
+  @override
+  String get journalSpentLess => 'Spent less';
+
+  @override
+  String get journalTopCategories => 'Top categories';
+
+  @override
+  String get journalShareRecap => 'Share recap';
+
+  @override
+  String get journalExportTitle => 'Export journal';
+
+  @override
+  String get journalExportPost => 'Post';
+
+  @override
+  String get journalExportSave => 'Save image';
+
+  @override
+  String get journalExportBrand => 'Moniary · Spending journal';
+
+  @override
+  String get journalExportSaved => 'Your journal image is ready to share.';
+
+  @override
+  String get journalExportWholeMonth => 'Whole month';
+
+  @override
+  String get journalExportToday => 'Today';
+
+  @override
+  String get journalExportCustomRange => 'Custom range';
+
+  @override
+  String get journalExportNoTransactions => 'No transactions in this range';
+
+  @override
+  String get journalCollectionsTitle => 'Collections';
+
+  @override
+  String get journalCreateCollection => 'Create a new collection';
+
+  @override
+  String get journalCollectionName => 'Collection name';
+
+  @override
+  String get journalCollectionNameHint => 'For example: Da Lat in June';
+
+  @override
+  String get journalCollectionEmptyTitle => 'No collections yet';
+
+  @override
+  String get journalCollectionEmptyBody =>
+      'Gather expenses from a trip or special occasion so you can revisit them later.';
+
+  @override
+  String journalCollectionMeta(int count, String amount) {
+    return '$count entries · $amount';
+  }
+
+  @override
+  String get journalAddTransaction => 'Add an entry to this collection';
+
+  @override
+  String get journalChooseTransaction => 'Choose a transaction';
+
+  @override
+  String get journalCollectionNoTransactions =>
+      'This collection has no transactions yet.';
+
+  @override
+  String get journalStreakTitle => 'Recording streak';
+
+  @override
+  String get journalStreakBreadcrumb => 'Home — recording streak';
+
+  @override
+  String journalStreakDays(int count) {
+    return '$count days in a row';
+  }
+
+  @override
+  String journalStreakBody(int count) {
+    return 'You have recorded spending every day for the past $count days.';
+  }
+
+  @override
+  String get journalStreakRecord => 'Your record';
+
+  @override
+  String journalStreakRecordDays(int count) {
+    return '$count days';
+  }
+
+  @override
   String get friendInviteShareDescription =>
       'Send a link so others can add you faster.';
 
@@ -3628,8 +4539,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendInviteOpenFriends => 'Open friends';
 
   @override
-  String get profileUsernameHint =>
-      '3-30 characters: lowercase letters, numbers, or underscores';
+  String get profileUsernameHint => 'For example: erling_haaland';
 
   @override
   String get profileUsernameInvalid =>
@@ -3675,15 +4585,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'You will be signed out immediately. During the next 30 days, sign in with the same method to restore your account before its data is permanently deleted.';
 
   @override
-  String get deleteGuestDataTitle => 'Delete guest data';
+  String get deleteGuestDataTitle => 'Delete guest account data';
 
   @override
   String get deleteGuestDataBody =>
-      'Guest data is stored only on this device and will be deleted immediately. Language, currency, and onboarding preferences will be kept.';
+      'Guest account data is stored only on this device and will be deleted immediately. Language, currency, and first-run preferences will be kept.';
 
   @override
   String get deleteGuestDataUnderstand =>
-      'I understand that guest data on this device will be deleted immediately.';
+      'I understand that guest account data on this device will be deleted immediately.';
 
   @override
   String get deleteGuestDataAction => 'Delete guest data';

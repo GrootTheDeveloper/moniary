@@ -1,34 +1,56 @@
 # Coding Conventions
 
-**Confidence / Verification Status**: `VERIFIED`
+**Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
+**Last source audit**: `2026-07-10`
 
-## 1. Clean Architecture Boundaries
-- UI must **not** call Database/API directly.
-- Data flow: `UI -> Riverpod Controller/Notifier -> Repository -> Data Source`.
-- The Data layer (Repository) must **not** contain UI text, localization logic, or widget logic.
+## Architecture boundaries
 
-## 2. Localization (l10n)
-- Do not hardcode user-facing UI strings.
-- Use `context.l10n.<key>`.
-- Always add keys to both `app_vi.arb` and `app_en.arb`.
+- Preserve `UI -> Riverpod Controller/Provider -> Repository -> Data Source`.
+- UI must not call Supabase, HTTP, Storage, or local history files directly.
+- Data/domain code must not depend on widgets, `BuildContext`, or l10n.
+- Do not rewrite architecture or move broad directory trees without an explicit
+  request.
 
-## 3. Error Handling
-- Repositories throw `AppException`.
-- Never swallow exceptions silently. Log them with `AppLogger.error`.
-- The UI is responsible for mapping error codes/messages to localized strings.
+## Runtime modes
 
-## 4. BuildContext across Async Gaps
-- When using `BuildContext` after an `await`, you must check if the widget is mounted using `if (!context.mounted) return;` or state-specific equivalents.
+- Use `useMockDataModeProvider` as the runtime selector. Checking only
+  `AppConstants.hasSupabaseConfig` misses explicit guest mode.
+- New stateful repositories must preserve both Supabase and mock behavior.
+- Mock mode must never read or mutate a real authenticated user's backend data.
 
-## 5. Naming
-- **Providers**: CamelCase variable name ending with `Provider` (e.g., `userProvider`).
-- **Classes**: PascalCase.
-- **Files**: snake_case.
+## Localization
 
-## 6. Generated Files
-- Never modify files inside `.dart_tool` or `lib/l10n/gen_l10n/` manually.
-- Run `flutter gen-l10n` to regenerate translations if needed (though it typically auto-generates on build).
+- All user-facing text uses `context.l10n.<key>` or localized model extension.
+- Add keys to both `app_vi.arb` and `app_en.arb`.
+- Never edit generated files in `lib/l10n/gen_l10n/`.
 
-## 7. UI & Iconography
-- All icons must use the `_outlined` variant (e.g., `Icons.restaurant_outlined`). Do not use `_rounded`, `_filled`, or generic emojis for UI elements.
-- Avoid using hardcoded raw generic Material colors (e.g. `Colors.grey`, `Colors.amber`, `Colors.redAccent`) in the UI. Always map to `AppTheme` constants instead (e.g. `AppTheme.textSubtle`, `AppTheme.amber`, `AppTheme.danger`).
+## Async and Riverpod
+
+- Check `context.mounted` after awaiting before using `BuildContext`.
+- Do not mutate providers or start I/O from widget `build()`.
+- Invalidate all affected family keys after a mutation succeeds.
+- Do not silently swallow exceptions; log and surface them through the agreed
+  state/error contract.
+
+## Naming and layout
+
+- Classes: PascalCase.
+- Files and folders: snake_case.
+- Provider variables: lowerCamelCase ending in `Provider`.
+- Controllers/notifiers: descriptive class name ending in `Controller` or
+  `Notifier`.
+- Prefer relative imports, matching the existing repository style.
+
+## UI
+
+- Use `context.moniaryColors` and `context.moniaryTypography`.
+- Reuse shared/feature widgets before creating a new primitive.
+- Prefer outlined icons and semantic theme colors.
+- Amounts that can be privacy-hidden should use the established obscurable
+  amount path.
+
+## Generated and secret files
+
+Do not edit `.dart_tool`, generated l10n output, build output, or generated
+platform registrants. Never commit Supabase credentials, tokens, signing
+material, service-role keys, or Edge Function secrets.

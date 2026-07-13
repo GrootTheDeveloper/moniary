@@ -10,6 +10,7 @@ import '../core/deeplinks/app_deep_link.dart';
 import '../core/deeplinks/pending_deep_link_controller.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
+import '../features/settings/presentation/privacy/app_lock_screen.dart';
 import '../l10n/gen_l10n/app_localizations.dart';
 import '../shared/utils/app_logger.dart';
 import 'app_router.dart';
@@ -57,7 +58,7 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
     return MaterialApp.router(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
       locale: ref.watch(preferredLocaleProvider),
       routerConfig: ref.watch(appRouterProvider),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -85,12 +86,19 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
 
   void _handleDeepLink(Uri uri) {
     final deepLink = AppDeepLink.parse(uri);
-    if (deepLink is! FriendInviteDeepLink) return;
+    if (deepLink == null) return;
 
     final routeLocation = deepLink.routeLocation;
     final router = ref.read(appRouterProvider);
     final hasSession = ref.read(currentSessionProvider) != null;
     if (hasSession) {
+      final privacyState = ref.read(privacyControllerProvider);
+      if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
+        ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
+        router.go(AppLockScreen.routePath);
+        return;
+      }
+
       router.go(routeLocation);
       return;
     }

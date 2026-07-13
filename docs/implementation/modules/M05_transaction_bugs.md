@@ -90,5 +90,5 @@ Chạy: flutter analyze && flutter test
 - [ ] `flutter analyze` pass
 - [ ] `flutter test` pass
 - [ ] Commit: `fix(M05): fix composer double-throw + state-in-build + delete image cleanup`
-- [ ] Update `handoff/current_status.md`
-- [ ] Ghi issues mới (nếu có) vào `handoff/issues_backlog.md`
+- [ ] Update `../handoff/current_status.md`
+- [ ] Ghi issues mới (nếu có) vào `../handoff/issues_backlog.md`

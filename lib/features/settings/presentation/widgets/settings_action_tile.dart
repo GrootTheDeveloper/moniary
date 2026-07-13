@@ -33,16 +33,8 @@ class SettingsActionTile extends StatelessWidget {
 
     final content = Row(
       children: [
-        Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.14),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: color, size: 22),
-        ),
-        const SizedBox(width: 14),
+        SizedBox(width: 34, child: Icon(icon, color: color, size: 20)),
+        const SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +53,7 @@ class SettingsActionTile extends StatelessWidget {
           ),
         ),
         if (status != null) ...[const SizedBox(width: 8), status!],
-        const SizedBox(width: 8),
+        const SizedBox(width: 6),
         if (isLoading)
           SizedBox(
             width: 20,
@@ -69,21 +61,28 @@ class SettingsActionTile extends StatelessWidget {
             child: CircularProgressIndicator(strokeWidth: 2, color: color),
           )
         else
-          Icon(Icons.chevron_right_outlined, color: color),
+          Icon(Icons.chevron_right_outlined, color: colors.textDim, size: 20),
       ],
     );
 
     return InkWell(
       onTap: isLoading ? null : onTap,
-      borderRadius: BorderRadius.circular(grouped ? 0 : 22),
+      borderRadius: BorderRadius.circular(grouped ? 0 : 16),
       child: Container(
         margin: margin,
-        padding: const EdgeInsets.all(16),
+        constraints: const BoxConstraints(minHeight: 60),
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 14),
         decoration: grouped
-            ? null
+            ? BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: colors.textPrimary.withValues(alpha: 0.12),
+                  ),
+                ),
+              )
             : BoxDecoration(
                 color: colors.surface,
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: colors.outline),
               ),
         child: content,

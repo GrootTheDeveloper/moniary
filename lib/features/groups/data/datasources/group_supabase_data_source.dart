@@ -132,6 +132,46 @@ class GroupSupabaseDataSource {
     return result as String;
   }
 
+  Future<Map<String, dynamic>> fetchInvitePreview(String token) async {
+    final result = await client.rpc(
+      'get_group_invite_preview',
+      params: {'p_token': token},
+    );
+    return result as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> acceptInvite(String token) async {
+    final result = await client.rpc(
+      'accept_group_invite_link',
+      params: {'p_token': token},
+    );
+    return result as Map<String, dynamic>;
+  }
+
+  Future<void> revokeInviteLink(String token) {
+    return client.rpc('revoke_group_invite_link', params: {'p_token': token});
+  }
+
+  Future<List<Map<String, dynamic>>> fetchDirectInvites() async {
+    final result = await client.rpc('get_my_group_invites');
+    return _rows(result);
+  }
+
+  Future<Map<String, dynamic>> acceptDirectInvite(String inviteId) async {
+    final result = await client.rpc(
+      'accept_direct_group_invite',
+      params: {'p_invite_id': inviteId},
+    );
+    return result as Map<String, dynamic>;
+  }
+
+  Future<void> declineDirectInvite(String inviteId) {
+    return client.rpc(
+      'decline_direct_group_invite',
+      params: {'p_invite_id': inviteId},
+    );
+  }
+
   Future<void> inviteByUsername({
     required String groupId,
     required String username,

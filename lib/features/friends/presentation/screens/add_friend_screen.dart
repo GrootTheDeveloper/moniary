@@ -6,6 +6,7 @@ import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/widgets/moniary_design.dart';
 import '../../application/friend_controller.dart';
 import '../../domain/entities/friend_profile.dart';
 import '../widgets/friend_profile_tile.dart';
@@ -40,30 +41,70 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.friendAdd)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 36),
+        padding: const EdgeInsets.fromLTRB(24, 4, 24, 40),
         children: [
-          TextField(
-            controller: _usernameController,
-            textInputAction: TextInputAction.search,
-            decoration: InputDecoration(
-              labelText: context.l10n.friendSearchUsername,
-              hintText: context.l10n.friendSearchHint,
-              prefixIcon: const Icon(Icons.alternate_email_outlined),
+          MoniaryEditorialCard(
+            radius: 22,
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.l10n.friendSearchUsername.toUpperCase(),
+                  style: context.moniaryTypography.metadataStrong,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _usernameController,
+                  textInputAction: TextInputAction.search,
+                  decoration: InputDecoration(
+                    hintText: context.l10n.friendSearchHint,
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 8),
+                      child: Text(
+                        '@',
+                        style: context.moniaryTypography.displaySmall.copyWith(
+                          color: context.moniaryColors.primary,
+                        ),
+                      ),
+                    ),
+                    prefixIconConstraints: const BoxConstraints(
+                      minWidth: 48,
+                      minHeight: 48,
+                    ),
+                  ),
+                  onSubmitted: (_) => _search(),
+                ),
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  onPressed: action.isLoading ? null : _search,
+                  icon: const Icon(Icons.person_add_outlined),
+                  label: Text(context.l10n.friendSearch),
+                ),
+              ],
             ),
-            onSubmitted: (_) => _search(),
           ),
-          const SizedBox(height: 12),
-          FilledButton.icon(
-            onPressed: action.isLoading ? null : _search,
-            icon: const Icon(Icons.search_outlined),
-            label: Text(context.l10n.friendSearch),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 22),
+            child: Row(
+              children: [
+                Expanded(child: Divider(color: context.moniaryColors.outline)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Text(
+                    context.l10n.friendInviteOr.toUpperCase(),
+                    style: context.moniaryTypography.metadata,
+                  ),
+                ),
+                Expanded(child: Divider(color: context.moniaryColors.outline)),
+              ],
+            ),
           ),
-          const SizedBox(height: 12),
           _ShareInviteCard(
             isLoading: action.isLoading,
             onShare: _shareInviteLink,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 18),
           if (searchAsync == null)
             _SearchHint()
           else
@@ -148,7 +189,7 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
     try {
       await ref
           .read(friendActionControllerProvider.notifier)
-          .sendRequest(result.profile.username ?? '');
+          .sendRequestToUser(result.profile.userId);
       ref.invalidate(friendSearchProvider(_query));
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -222,20 +263,52 @@ class _ShareInviteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: ListTile(
-        leading: const Icon(Icons.ios_share_outlined, color: AppTheme.mint),
-        title: Text(context.l10n.friendShareInviteLink),
-        subtitle: Text(context.l10n.friendInviteShareDescription),
-        trailing: isLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : const Icon(Icons.chevron_right_outlined),
-        onTap: isLoading ? null : onShare,
+    return MoniaryEditorialCard(
+      onTap: isLoading ? null : onShare,
+      radius: 18,
+      backgroundColor: context.moniaryColors.primary.withValues(alpha: 0.08),
+      borderColor: context.moniaryColors.primary.withValues(alpha: 0.26),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: context.moniaryColors.primary,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(
+              Icons.ios_share_outlined,
+              color: context.moniaryColors.surface,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.l10n.friendShareInviteLink,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  context.l10n.friendInviteShareDescription,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          if (isLoading)
+            const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          else
+            Icon(Icons.arrow_forward, color: context.moniaryColors.primary),
+        ],
       ),
     );
   }
@@ -313,7 +386,11 @@ class _SearchHint extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 56),
       child: Column(
         children: [
-          const Icon(Icons.person_search_outlined, size: 64),
+          Icon(
+            Icons.person_search_outlined,
+            size: 48,
+            color: context.moniaryColors.textDim,
+          ),
           const SizedBox(height: 16),
           Text(context.l10n.friendSearchPrompt, textAlign: TextAlign.center),
         ],
@@ -333,7 +410,11 @@ class _SearchEmpty extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 56),
       child: Column(
         children: [
-          const Icon(Icons.search_off_outlined, size: 64),
+          Icon(
+            Icons.search_off_outlined,
+            size: 48,
+            color: context.moniaryColors.textDim,
+          ),
           const SizedBox(height: 16),
           Text(
             context.l10n.friendSearchEmpty(query),

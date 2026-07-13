@@ -4,7 +4,7 @@
 
 > **Cả 2 issues trong module này đều INVALIDATED.**
 > Spec được viết dựa trên API versions cũ. Code hiện tại đã đúng.
-> Xem quyết định D07 trong `handoff/decisions.md`.
+> Xem quyết định D07 trong `../handoff/decisions.md`.
 
 ## Review Issues — INVALIDATED
 

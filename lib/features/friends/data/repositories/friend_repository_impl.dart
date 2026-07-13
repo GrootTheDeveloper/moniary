@@ -19,7 +19,10 @@ final friendRepositoryProvider = Provider<FriendRepository>((ref) {
   return FriendRepositoryImpl(
     client,
     useMockData: useMockData,
-    mockDataSource: FriendMockDataSource(currentUserId: currentUserId),
+    mockDataSource: FriendMockDataSource(
+      currentUserId: currentUserId,
+      seedDemoData: useMockData && currentUserId == 'mock-user-id',
+    ),
   );
 });
 
@@ -133,6 +136,15 @@ class FriendRepositoryImpl implements FriendRepository {
     return _guard(
       'send friend request',
       () => _remote.sendRequest(username.trim().toLowerCase()),
+    );
+  }
+
+  @override
+  Future<void> sendRequestToUser(String userId) {
+    if (_useMockData) return _mock.sendRequestToUser(userId);
+    return _guard(
+      'send friend request to user',
+      () => _remote.sendRequestToUser(userId.trim()),
     );
   }
 

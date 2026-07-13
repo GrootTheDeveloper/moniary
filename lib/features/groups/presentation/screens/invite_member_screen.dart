@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_theme.dart';
@@ -75,8 +76,25 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
             SelectableText(_inviteLink!),
             const SizedBox(height: 6),
             Text(
-              context.l10n.groupInviteLinkPlaceholder,
+              context.l10n.groupInviteLinkActiveNote,
               style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: action.isLoading ? null : _copyLink,
+                  icon: const Icon(Icons.content_copy_outlined),
+                  label: Text(context.l10n.groupInviteCopyLink),
+                ),
+                TextButton.icon(
+                  onPressed: action.isLoading ? null : _revokeLink,
+                  icon: const Icon(Icons.link_off_outlined),
+                  label: Text(context.l10n.groupInviteRevokeLink),
+                ),
+              ],
             ),
           ],
           const SizedBox(height: 28),
@@ -208,6 +226,38 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
       setState(() => _inviteLink = link);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.groupInviteLinkCreated)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
+  }
+
+  Future<void> _copyLink() async {
+    final link = _inviteLink;
+    if (link == null) return;
+    await Clipboard.setData(ClipboardData(text: link));
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(context.l10n.groupInviteLinkCopied)));
+  }
+
+  Future<void> _revokeLink() async {
+    final link = _inviteLink;
+    if (link == null) return;
+    final token = Uri.tryParse(link)?.pathSegments.last;
+    if (token == null || token.isEmpty) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .revokeInviteLink(token);
+      if (!mounted) return;
+      setState(() => _inviteLink = null);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.groupInviteLinkRevoked)),
       );
     } catch (error) {
       if (!mounted) return;

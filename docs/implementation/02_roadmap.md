@@ -1,5 +1,7 @@
 # Roadmap tổng thể
 
+**Archive notice (2026-07-10)**: Roadmap M01-M14 đã hoàn thành và được lưu để tham khảo lịch sử. Đây không phải product roadmap hiện tại.
+
 ## Bảng Roadmap
 
 | Phase | Module | Mục tiêu | Severity | Files | Phụ thuộc | Output |

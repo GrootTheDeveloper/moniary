@@ -12,6 +12,7 @@ class SupabaseImage extends ConsumerWidget {
     this.fit = BoxFit.cover,
     this.borderRadius,
     this.fallbackIcon = Icons.photo_outlined,
+    this.fallbackBuilder,
     super.key,
   });
 
@@ -21,11 +22,26 @@ class SupabaseImage extends ConsumerWidget {
   final BoxFit fit;
   final BorderRadius? borderRadius;
   final IconData fallbackIcon;
+  final Widget Function(BuildContext context)? fallbackBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (imagePath == null || imagePath!.isEmpty) {
-      return _buildFallback();
+      return _buildFallback(context);
+    }
+
+    final assetPath = _assetPathFrom(imagePath!);
+    if (assetPath != null) {
+      return ClipRRect(
+        borderRadius: borderRadius ?? BorderRadius.zero,
+        child: Image.asset(
+          assetPath,
+          width: width,
+          height: height,
+          fit: fit,
+          errorBuilder: (context, error, stackTrace) => _buildFallback(context),
+        ),
+      );
     }
 
     final isHttp = imagePath!.startsWith('http');
@@ -37,7 +53,7 @@ class SupabaseImage extends ConsumerWidget {
           width: width,
           height: height,
           fit: fit,
-          errorBuilder: (context, error, stackTrace) => _buildFallback(),
+          errorBuilder: (context, error, stackTrace) => _buildFallback(context),
         ),
       );
     }
@@ -56,7 +72,7 @@ class SupabaseImage extends ConsumerWidget {
           width: width,
           height: height,
           fit: fit,
-          errorBuilder: (context, error, stackTrace) => _buildFallback(),
+          errorBuilder: (context, error, stackTrace) => _buildFallback(context),
         ),
       );
     }
@@ -71,7 +87,7 @@ class SupabaseImage extends ConsumerWidget {
           width: width,
           height: height,
           fit: fit,
-          errorBuilder: (context, error, stackTrace) => _buildFallback(),
+          errorBuilder: (context, error, stackTrace) => _buildFallback(context),
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
             return Container(
@@ -100,12 +116,25 @@ class SupabaseImage extends ConsumerWidget {
             ),
           ),
         ),
-        error: (err, stack) => _buildFallback(),
+        error: (err, stack) => _buildFallback(context),
       ),
     );
   }
 
-  Widget _buildFallback() {
+  String? _assetPathFrom(String path) {
+    if (path.startsWith('asset://')) {
+      return path.substring('asset://'.length);
+    }
+    if (path.startsWith('assets/')) {
+      return path;
+    }
+    return null;
+  }
+
+  Widget _buildFallback(BuildContext context) {
+    final fallback = fallbackBuilder?.call(context);
+    if (fallback != null) return fallback;
+
     return Container(
       width: width,
       height: height,

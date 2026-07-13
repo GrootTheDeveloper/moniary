@@ -1,5 +1,7 @@
 # Quy tắc triển khai
 
+**Archive notice (2026-07-10)**: Các scope lock/commit rule dưới đây chỉ áp dụng cho kế hoạch M01-M14 đã hoàn thành; không áp dụng mặc định cho task hiện tại.
+
 ## 1. Scope Lock
 - Mỗi module chỉ sửa **files đã liệt kê** trong spec module đó.
 - KHÔNG lan sang file khác dù thấy issue.

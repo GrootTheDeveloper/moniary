@@ -9,6 +9,14 @@ import '../l10n/l10n_extension.dart';
 import '../core/preferences/preferences_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
+import '../features/assistant/presentation/assistant_conversation_screen.dart';
+import '../features/assistant/presentation/assistant_home_screen.dart';
+import '../features/assistant/presentation/assistant_intro_screen.dart';
+import '../features/assistant/presentation/assistant_permission_screen.dart';
+import '../features/assistant/presentation/assistant_question_catalog.dart';
+import '../features/assistant/presentation/assistant_question_library_screen.dart';
+import '../features/budgets/presentation/budget_category_detail_screen.dart';
+import '../features/budgets/presentation/budget_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/friends/presentation/screens/add_friend_screen.dart';
 import '../features/friends/presentation/screens/friend_invite_accept_screen.dart';
@@ -18,12 +26,21 @@ import '../features/groups/presentation/screens/add_group_transaction_screen.dar
 import '../features/groups/presentation/screens/create_group_screen.dart';
 import '../features/groups/presentation/screens/debt_settlement_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
+import '../features/groups/presentation/screens/group_invite_accept_screen.dart';
+import '../features/groups/presentation/screens/group_invitations_screen.dart';
 import '../features/groups/presentation/screens/group_transaction_detail_screen.dart';
 import '../features/groups/presentation/screens/invite_member_screen.dart';
 import '../features/groups/presentation/screens/member_amount_input_screen.dart';
+import '../features/journal/domain/journal_models.dart';
+import '../features/journal/presentation/journal_collection_detail_screen.dart';
+import '../features/journal/presentation/journal_collections_screen.dart';
+import '../features/journal/presentation/journal_export_screen.dart';
+import '../features/journal/presentation/monthly_recap_screen.dart';
+import '../features/journal/presentation/recording_streak_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
 import '../features/profile/presentation/timezone_picker_screen.dart';
+import '../features/profile/presentation/profile_survey_screen.dart';
 import '../features/scanning/presentation/ocr_review_screen.dart';
 import '../features/scanning/presentation/scanning_screen.dart';
 import '../features/settings/domain/export/export_history_entry.dart';
@@ -59,6 +76,7 @@ import '../features/settings/domain/import/import_history_entry.dart';
 import '../features/settings/presentation/notifications/notification_settings_screen.dart';
 import '../features/settings/application/privacy_controller.dart';
 import '../features/settings/presentation/profile_screen.dart';
+import '../features/settings/presentation/settings_home_screen.dart';
 import '../features/statistics/presentation/statistics_view.dart';
 import '../features/settings/presentation/store/store_compliance_checklist_screen.dart';
 import '../features/settings/presentation/support/support_request_checklist_screen.dart';
@@ -86,6 +104,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   final router = GoRouter(
     initialLocation: SplashScreen.routePath,
+    overridePlatformDefaultLocation: true,
     refreshListenable: authRefreshListenable,
     errorBuilder: (context, state) => Scaffold(
       body: Center(
@@ -113,6 +132,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         OnboardingScreen.routePath,
         LoginScreen.routePath,
         ProfileSetupScreen.routePath,
+        ProfileSurveyScreen.routePath,
       };
 
       // Handle account soft delete status
@@ -171,6 +191,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: TimezonePickerScreen.routePath,
         builder: (context, state) => const TimezonePickerScreen(),
       ),
+      GoRoute(
+        path: ProfileSurveyScreen.routePath,
+        builder: (context, state) => const ProfileSurveyScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return MainShellScreen(navigationShell: navigationShell);
@@ -209,6 +233,112 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: AssistantHomeScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const AssistantHomeScreen(),
+        ),
+      ),
+      GoRoute(
+        path: SettingsHomeScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const SettingsHomeScreen(),
+        ),
+      ),
+      GoRoute(
+        path: MonthlyRecapScreen.routePath,
+        pageBuilder: (context, state) {
+          final now = DateTime.now();
+          final month =
+              state.extra as DateTime? ?? DateTime(now.year, now.month);
+          return buildFadeTransitionPage(
+            state: state,
+            child: MonthlyRecapScreen(month: month),
+          );
+        },
+      ),
+      GoRoute(
+        path: JournalExportScreen.routePath,
+        pageBuilder: (context, state) {
+          final recap = state.extra as MonthlyRecap?;
+          final now = DateTime.now();
+          final child = recap == null
+              ? MonthlyRecapScreen(month: DateTime(now.year, now.month))
+              : JournalExportScreen(recap: recap);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: JournalCollectionsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const JournalCollectionsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: JournalCollectionDetailScreen.routePath,
+        pageBuilder: (context, state) {
+          final id = state.extra as String?;
+          final child = id == null
+              ? const JournalCollectionsScreen()
+              : JournalCollectionDetailScreen(collectionId: id);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: RecordingStreakScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const RecordingStreakScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AssistantIntroScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const AssistantIntroScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AssistantPermissionScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const AssistantPermissionScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AssistantConversationScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: AssistantConversationScreen(
+            launch: state.extra as AssistantLaunch?,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AssistantQuestionLibraryScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const AssistantQuestionLibraryScreen(),
+        ),
+      ),
+      GoRoute(
+        path: BudgetScreen.routePath,
+        pageBuilder: (context, state) =>
+            buildSlideTransitionPage(state: state, child: const BudgetScreen()),
+      ),
+      GoRoute(
+        path: BudgetCategoryDetailScreen.routePath,
+        pageBuilder: (context, state) {
+          final args = state.extra as BudgetCategoryDetailArgs?;
+          final child = args == null
+              ? const BudgetScreen()
+              : BudgetCategoryDetailScreen(args: args);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
       ),
       GoRoute(
         path: ScanningScreen.routePath,
@@ -321,6 +451,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               : FriendInviteAcceptScreen(token: token);
           return buildSlideTransitionPage(state: state, child: child);
         },
+      ),
+      GoRoute(
+        path: GroupInviteAcceptScreen.routePath,
+        pageBuilder: (context, state) {
+          final token = state.pathParameters['token'];
+          final child = token == null
+              ? const GroupsScreen()
+              : GroupInviteAcceptScreen(token: token);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupInvitationsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const GroupInvitationsScreen(),
+        ),
       ),
       GoRoute(
         path: PrivacyCenterScreen.routePath,

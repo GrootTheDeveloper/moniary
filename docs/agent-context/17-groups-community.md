@@ -1,4 +1,11 @@
-# AGENTS.md — Moniary Group & Community Feature
+# Groups & Community — Detailed Reference Specification
+
+**Document type**: `IMPLEMENTATION REFERENCE`
+**Current implementation audit**: `2026-07-10`
+
+The feature and its migration are implemented. Use `04-features.md`, current
+Dart source, and `20260611000000_groups_community.sql` for current-state facts.
+The requirements below remain useful for business rules and calculation intent.
 
 ## 1. Role and Objective
 
@@ -473,9 +480,11 @@ Do not support invite by email.
 
 Requirements:
 
-- Generate a group invite link or placeholder logic if deep linking is not implemented yet.
-- Opening the link should show a join confirmation screen if supported.
-- If the user accepts, add or update member status to `active`.
+- Generate a shared link that expires after seven days; generating a replacement revokes the earlier active link.
+- Opening the link shows a localized preview/confirmation screen with explicit join and dismiss actions.
+- Dismissing a shared-link preview does not write a decline state because shared links are reusable and are not per-recipient invitations.
+- The preview handles invalid, expired, revoked, used, and already-member states.
+- If the recipient accepts, add or update their member status to `active` without consuming the shared link.
 
 ### 7.2. Invite from Friend List
 
