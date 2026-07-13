@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -38,66 +39,39 @@ class _MonthlyRecapScreenState extends ConsumerState<MonthlyRecapScreen> {
   @override
   Widget build(BuildContext context) {
     final recapAsync = ref.watch(monthlyRecapProvider(widget.month));
-    return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.journalRecapTitle)),
-      body: recapAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) =>
-            Center(child: Text(userFriendlyMessage(context, error))),
-        data: (recap) => Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
-              child: Row(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: _storyBackground,
+        body: recapAsync.when(
+          loading: () => const _StoryShell(child: _StoryLoading()),
+          error: (error, _) => _StoryShell(
+            child: _StoryError(message: userFriendlyMessage(context, error)),
+          ),
+          data: (recap) => _StoryShell(
+            page: _page,
+            recap: recap,
+            onClose: () => context.pop(),
+            onShare: () =>
+                context.push(JournalExportScreen.routePath, extra: recap),
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTapUp: (details) {
+                final width = MediaQuery.sizeOf(context).width;
+                _move(details.localPosition.dx < width / 2 ? -1 : 1);
+              },
+              child: PageView(
+                controller: _controller,
+                onPageChanged: (value) => setState(() => _page = value),
                 children: [
-                  for (var index = 0; index < 4; index++) ...[
-                    Expanded(
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 220),
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: index <= _page
-                              ? context.moniaryColors.primary
-                              : context.moniaryColors.outline,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ),
-                    if (index < 3) const SizedBox(width: 6),
-                  ],
+                  _OverviewSlide(recap: recap),
+                  _HighlightsSlide(recap: recap),
+                  _ComparisonSlide(recap: recap),
+                  _TopCategoriesSlide(recap: recap),
                 ],
               ),
             ),
-            Expanded(
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTapUp: (details) {
-                  final width = MediaQuery.sizeOf(context).width;
-                  _move(details.localPosition.dx < width / 2 ? -1 : 1);
-                },
-                child: PageView(
-                  controller: _controller,
-                  onPageChanged: (value) => setState(() => _page = value),
-                  children: [
-                    _OverviewSlide(recap: recap),
-                    _HighlightsSlide(recap: recap),
-                    _ComparisonSlide(recap: recap),
-                    _TopCategoriesSlide(recap: recap),
-                  ],
-                ),
-              ),
-            ),
-            if (_page == 3)
-              SafeArea(
-                minimum: const EdgeInsets.fromLTRB(24, 8, 24, 18),
-                child: FilledButton.icon(
-                  onPressed: () =>
-                      context.push(JournalExportScreen.routePath, extra: recap),
-                  icon: const Icon(Icons.ios_share_outlined),
-                  label: Text(context.l10n.journalShareRecap),
-                ),
-              ),
-          ],
+          ),
         ),
       ),
     );
@@ -114,16 +88,207 @@ class _MonthlyRecapScreenState extends ConsumerState<MonthlyRecapScreen> {
   }
 }
 
-class _StoryPadding extends StatelessWidget {
-  const _StoryPadding({required this.child});
+const _storyBackground = Color(0xFF1F1A14);
+const _storyInk = Color(0xFFF3EEE5);
+const _storyMuted = Color(0xFFB7AEA2);
+const _storyLine = Color(0xFF8B8378);
+const _storyAccent = Color(0xFFD9A56D);
+
+class _StoryShell extends StatelessWidget {
+  const _StoryShell({
+    required this.child,
+    this.page = 0,
+    this.recap,
+    this.onClose,
+    this.onShare,
+  });
 
   final Widget child;
+  final int page;
+  final MonthlyRecap? recap;
+  final VoidCallback? onClose;
+  final VoidCallback? onShare;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Column(
+        children: [
+          if (recap != null)
+            _StoryHeader(page: page, recap: recap!, onClose: onClose)
+          else
+            const SizedBox(height: 74),
+          Expanded(child: child),
+          if (recap != null)
+            SafeArea(
+              top: false,
+              minimum: const EdgeInsets.fromLTRB(34, 8, 34, 22),
+              child: _ShareButton(onPressed: onShare),
+            )
+          else
+            const SizedBox(height: 44),
+        ],
+      ),
+    );
+  }
+}
+
+class _StoryHeader extends StatelessWidget {
+  const _StoryHeader({
+    required this.page,
+    required this.recap,
+    required this.onClose,
+  });
+
+  final int page;
+  final MonthlyRecap recap;
+  final VoidCallback? onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    final month = _monthName(context, recap.month);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(34, 13, 22, 0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              for (var index = 0; index < 4; index++) ...[
+                Expanded(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 220),
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: index <= page
+                          ? _storyInk
+                          : _storyInk.withValues(alpha: 0.42),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+                if (index < 3) const SizedBox(width: 6),
+              ],
+            ],
+          ),
+          const SizedBox(height: 13),
+          Row(
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFD6CABD),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 9),
+              Expanded(
+                child: Text(
+                  context.l10n.journalRecapMonth(month),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: _storyInk,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    height: 1,
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: onClose,
+                tooltip: context.l10n.commonClose,
+                icon: const Icon(Icons.close_rounded),
+                color: _storyMuted,
+                iconSize: 18,
+                visualDensity: VisualDensity.compact,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ShareButton extends StatelessWidget {
+  const _ShareButton({required this.onPressed});
+
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: const Icon(Icons.link_rounded, size: 17),
+        label: Text(context.l10n.journalShareRecap),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: _storyInk,
+          side: BorderSide(color: _storyLine.withValues(alpha: 0.85)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(999),
+          ),
+          textStyle: Theme.of(
+            context,
+          ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
+        ),
+      ),
+    );
+  }
+}
+
+class _StoryLoading extends StatelessWidget {
+  const _StoryLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CircularProgressIndicator(
+        color: _storyInk,
+        backgroundColor: _storyInk.withValues(alpha: 0.18),
+      ),
+    );
+  }
+}
+
+class _StoryError extends StatelessWidget {
+  const _StoryError({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 34),
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(color: _storyInk, height: 1.35),
+        ),
+      ),
+    );
+  }
+}
+
+class _StoryPadding extends StatelessWidget {
+  const _StoryPadding({required this.child, this.center = true});
+
+  final Widget child;
+  final bool center;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(28, 18, 28, 24),
-      child: child,
+      padding: const EdgeInsets.fromLTRB(34, 0, 34, 0),
+      child: center
+          ? Center(child: child)
+          : Align(alignment: Alignment.topCenter, child: child),
     );
   }
 }
@@ -135,70 +300,79 @@ class _OverviewSlide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final month = DateFormat.yMMMM(
-      Localizations.localeOf(context).toString(),
-    ).format(recap.month);
     final topCategory = recap.topCategories.firstOrNull?.name ?? '—';
     return _StoryPadding(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            month.toUpperCase(),
-            style: context.moniaryTypography.metadataStrong.copyWith(
-              color: context.moniaryColors.primary,
-            ),
-          ),
-          const SizedBox(height: 18),
-          Text(
-            context.l10n.journalRecordedCount(recap.expenseCount),
-            style: context.moniaryTypography.displayLarge,
-          ),
-          const SizedBox(height: 22),
-          Text(
-            formatVnd(recap.totalExpense),
-            style: context.moniaryTypography.displayLarge.copyWith(
-              color: context.moniaryColors.primary,
-              fontSize: 52,
-            ),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            context.l10n.journalRecapSummary(
-              formatVnd(recap.totalExpense),
-              topCategory,
-            ),
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          if (recap.highestSpendDate != null) ...[
-            const SizedBox(height: 34),
-            MoniaryEditorialCard(
-              backgroundColor: context.moniaryColors.warning.withValues(
-                alpha: 0.08,
+      child: Transform.translate(
+        offset: const Offset(0, 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _storyMonthLabel(context, recap.month).toUpperCase(),
+              textAlign: TextAlign.center,
+              style: context.moniaryTypography.metadataStrong.copyWith(
+                color: _storyAccent,
+                fontSize: 10,
+                letterSpacing: 4,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    context.l10n.journalHighestDay.toUpperCase(),
-                    style: context.moniaryTypography.metadataStrong,
-                  ),
-                  const SizedBox(height: 7),
-                  Text(
-                    context.l10n.journalHighestDayValue(
-                      DateFormat.MMMMd(
-                        Localizations.localeOf(context).toString(),
-                      ).format(recap.highestSpendDate!),
-                      formatVnd(recap.highestDayAmount),
-                    ),
-                  ),
-                ],
+            ),
+            const SizedBox(height: 18),
+            _RecordedCountTitle(count: recap.expenseCount),
+            const SizedBox(height: 18),
+            Text(
+              context.l10n.journalRecapSummary(
+                formatVnd(recap.totalExpense),
+                topCategory,
+              ),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: _storyMuted,
+                fontSize: 16,
+                height: 1.35,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RecordedCountTitle extends StatelessWidget {
+  const _RecordedCountTitle({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = context.l10n.journalRecordedCount(count);
+    final countText = count.toString();
+    final parts = text.split(countText);
+    final baseStyle = context.moniaryTypography.displayLarge.copyWith(
+      color: _storyInk,
+      fontSize: 38,
+      height: 1.08,
+      letterSpacing: 0,
+    );
+
+    if (parts.length < 2) {
+      return Text(text, textAlign: TextAlign.center, style: baseStyle);
+    }
+
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: '${parts.first.trimRight()}\n'),
+          TextSpan(
+            text: countText,
+            style: baseStyle.copyWith(color: _storyAccent),
+          ),
+          TextSpan(text: parts.skip(1).join(countText)),
         ],
       ),
+      textAlign: TextAlign.center,
+      style: baseStyle,
     );
   }
 }
@@ -217,22 +391,33 @@ class _HighlightsSlide extends StatelessWidget {
         .take(4)
         .toList();
     return _StoryPadding(
+      center: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 72),
           Text(
             context.l10n.journalHighestDay,
-            style: context.moniaryTypography.displayMedium,
+            style: context.moniaryTypography.displayMedium.copyWith(
+              color: _storyInk,
+              fontSize: 34,
+            ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 20),
           Expanded(
             child: withImages.isEmpty
-                ? MoniaryEditorialCard(
+                ? DecoratedBox(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _storyLine.withValues(alpha: 0.42),
+                      ),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                     child: Center(
                       child: Icon(
                         Icons.photo_library_outlined,
                         size: 54,
-                        color: context.moniaryColors.textDim,
+                        color: _storyMuted,
                       ),
                     ),
                   )
@@ -254,8 +439,23 @@ class _HighlightsSlide extends StatelessWidget {
                           children: [
                             SupabaseImage(
                               imagePath: transaction.imagePath,
-                              borderRadius: BorderRadius.circular(18),
+                              borderRadius: BorderRadius.circular(16),
                               fallbackIcon: Icons.receipt_long_outlined,
+                            ),
+                            Positioned.fill(
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withValues(alpha: 0.58),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
                             Positioned(
                               left: 10,
@@ -265,13 +465,9 @@ class _HighlightsSlide extends StatelessWidget {
                                 formatVnd(transaction.amount),
                                 style: context.moniaryTypography.metadataStrong
                                     .copyWith(
-                                      color: Colors.white,
-                                      shadows: const [
-                                        Shadow(
-                                          color: Colors.black87,
-                                          blurRadius: 8,
-                                        ),
-                                      ],
+                                      color: _storyInk,
+                                      fontSize: 11,
+                                      letterSpacing: 0,
                                     ),
                               ),
                             ),
@@ -302,16 +498,20 @@ class _ComparisonSlide extends StatelessWidget {
     final change = recap.monthChange;
     return _StoryPadding(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             context.l10n.journalComparedPrevious.toUpperCase(),
-            style: context.moniaryTypography.metadataStrong,
+            textAlign: TextAlign.center,
+            style: context.moniaryTypography.metadataStrong.copyWith(
+              color: _storyAccent,
+              letterSpacing: 3,
+            ),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 26),
           SizedBox(
-            height: 260,
+            height: 230,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -321,31 +521,38 @@ class _ComparisonSlide extends StatelessWidget {
                   ),
                   amount: recap.previousMonthExpense,
                   fraction: recap.previousMonthExpense / maxAmount,
-                  color: context.moniaryColors.secondary,
+                  color: const Color(0xFF8B8378),
                 ),
                 const SizedBox(width: 24),
                 _MonthBar(
                   label: DateFormat.MMM().format(recap.month),
                   amount: recap.totalExpense,
                   fraction: recap.totalExpense / maxAmount,
-                  color: context.moniaryColors.primary,
+                  color: _storyAccent,
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 28),
           Text(
             change >= 0
                 ? context.l10n.journalSpentMore
                 : context.l10n.journalSpentLess,
-            style: context.moniaryTypography.displayMedium,
+            textAlign: TextAlign.center,
+            style: context.moniaryTypography.displayMedium.copyWith(
+              color: _storyInk,
+              fontSize: 30,
+            ),
           ),
+          const SizedBox(height: 4),
           Text(
             '${(change.abs() * 100).round()}%',
+            textAlign: TextAlign.center,
             style: context.moniaryTypography.displayLarge.copyWith(
               color: change >= 0
-                  ? context.moniaryColors.danger
-                  : context.moniaryColors.success,
+                  ? const Color(0xFFE09A80)
+                  : const Color(0xFF8FB79A),
+              fontSize: 56,
             ),
           ),
         ],
@@ -375,20 +582,30 @@ class _MonthBar extends StatelessWidget {
         children: [
           Text(
             formatVnd(amount),
-            style: context.moniaryTypography.metadataStrong,
-          ),
-          const SizedBox(height: 8),
-          Container(
-            height: 190 * fraction.clamp(0.05, 1),
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(18),
-              ),
+            textAlign: TextAlign.center,
+            style: context.moniaryTypography.metadataStrong.copyWith(
+              color: _storyMuted,
+              letterSpacing: 0,
             ),
           ),
           const SizedBox(height: 8),
-          Text(label.toUpperCase(), style: context.moniaryTypography.metadata),
+          Container(
+            height: 180 * fraction.clamp(0.05, 1),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
+            ),
+          ),
+          const SizedBox(height: 9),
+          Text(
+            label.toUpperCase(),
+            style: context.moniaryTypography.metadata.copyWith(
+              color: _storyMuted,
+              letterSpacing: 2,
+            ),
+          ),
         ],
       ),
     );
@@ -404,16 +621,25 @@ class _TopCategoriesSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     return _StoryPadding(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             context.l10n.journalTopCategories,
-            style: context.moniaryTypography.displayLarge,
+            style: context.moniaryTypography.displayLarge.copyWith(
+              color: _storyInk,
+              fontSize: 42,
+              height: 1.05,
+            ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 22),
           if (recap.topCategories.isEmpty)
-            Text(context.l10n.assistantNoData)
+            Text(
+              context.l10n.assistantNoData,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(color: _storyMuted),
+            )
           else
             for (var index = 0; index < recap.topCategories.length; index++)
               _CategoryRank(
@@ -436,12 +662,10 @@ class _CategoryRank extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = AppColor.fromHex(category.color, fallback: AppTheme.sand);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 18),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
-            color: context.moniaryColors.textPrimary.withValues(alpha: 0.12),
-          ),
+          bottom: BorderSide(color: _storyLine.withValues(alpha: 0.38)),
         ),
       ),
       child: Row(
@@ -450,6 +674,7 @@ class _CategoryRank extends StatelessWidget {
             '$rank',
             style: context.moniaryTypography.displayMedium.copyWith(
               color: color,
+              fontSize: 30,
             ),
           ),
           const SizedBox(width: 16),
@@ -458,15 +683,31 @@ class _CategoryRank extends StatelessWidget {
           Expanded(
             child: Text(
               category.name,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: _storyInk,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
           Text(
             formatVnd(category.amount),
-            style: context.moniaryTypography.metadataStrong,
+            style: context.moniaryTypography.metadataStrong.copyWith(
+              color: _storyMuted,
+              letterSpacing: 0,
+            ),
           ),
         ],
       ),
     );
   }
+}
+
+String _monthName(BuildContext context, DateTime month) {
+  return DateFormat.MMMM(
+    Localizations.localeOf(context).toString(),
+  ).format(month);
+}
+
+String _storyMonthLabel(BuildContext context, DateTime month) {
+  return '${_monthName(context, month)}, ${month.year}';
 }
