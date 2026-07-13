@@ -1810,6 +1810,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileChangeTimezone => 'Change Timezone';
 
   @override
+  String get profileLanguage => 'Language';
+
+  @override
+  String get timezonePickerSearch => 'Search timezone';
+
+  @override
+  String get timezonePickerNoResults => 'No timezones found';
+
+  @override
+  String get timezonePickerUseDevice => 'Use device timezone';
+
+  @override
   String get profileAnonymousBadge => 'Guest account';
 
   @override

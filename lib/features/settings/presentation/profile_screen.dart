@@ -4,10 +4,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../core/preferences/preferences_providers.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
+import '../../../shared/utils/timezone_utils.dart';
+import '../../../shared/widgets/selection_picker_sheet.dart';
 import '../../../shared/widgets/supabase_image.dart';
+import '../../profile/presentation/timezone_picker_screen.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
@@ -522,9 +526,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           _SettingsTile(
                             icon: Icons.lock_outlined,
                             title: context.l10n.profileChangeTimezone,
-                            subtitle: profile.timezone,
+                            subtitle: timezoneDisplayLabel(profile.timezone),
                             onTap: () =>
-                                context.push(ProfileSetupScreen.routePath),
+                                context.push(TimezonePickerScreen.routePath),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.language_outlined,
+                            title: context.l10n.profileLanguage,
+                            subtitle: _localeDisplayName(
+                              ref.watch(preferredLocaleProvider),
+                            ),
+                            onTap: _showLanguagePicker,
                           ),
                           if (accountMode.needsAccountProtectionCard)
                             _AccountModeBanner(
@@ -809,6 +821,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (context.mounted) {
         context.go(LoginScreen.routePath);
       }
+    }
+  }
+
+  Future<void> _showLanguagePicker() async {
+    const options = ['vi', 'en'];
+    final current = ref.read(preferredLocaleProvider);
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => SelectionPickerSheet<String>(
+        title: context.l10n.profileLanguage,
+        options: options,
+        labelBuilder: _localeDisplayName,
+        isSelected: (locale) => locale == current,
+      ),
+    );
+    if (selected != null && mounted) {
+      await ref.read(preferredLocaleProvider.notifier).setLocale(selected);
     }
   }
 
@@ -1228,4 +1259,12 @@ class _SettingsTile extends StatelessWidget {
       status: status,
     );
   }
+}
+
+String _localeDisplayName(String locale) {
+  return switch (locale) {
+    'en' => 'English',
+    'vi' => 'Tiếng Việt',
+    _ => locale,
+  };
 }

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../core/preferences/preferences_providers.dart';
 import '../../../features/calendar/presentation/month/calendar_screen.dart';
@@ -33,11 +36,22 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   String _currency = 'VND';
   String? _avatarPath;
   bool _avatarPicked = false;
+  String? _detectedTimezone;
 
   @override
   void initState() {
     super.initState();
     _currency = ref.read(preferredCurrencyProvider);
+    _detectDeviceTimezone();
+  }
+
+  Future<void> _detectDeviceTimezone() async {
+    try {
+      final tz = await FlutterTimezone.getLocalTimezone();
+      if (mounted) setState(() => _detectedTimezone = tz);
+    } catch (e, st) {
+      AppLogger.error('Failed to detect device timezone', e, st);
+    }
   }
 
   @override
@@ -300,13 +314,21 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     }
 
     try {
+      final existingProfile = ref
+          .read(profileSetupControllerProvider)
+          .asData
+          ?.value;
+      final timezone =
+          (widget.isEditMode && existingProfile?.timezone.isNotEmpty == true)
+          ? existingProfile!.timezone
+          : (_detectedTimezone ?? AppConstants.defaultTimezone);
       await ref.read(preferredCurrencyProvider.notifier).setCurrency(_currency);
       await ref
           .read(profileSetupControllerProvider.notifier)
           .saveProfile(
             fullName: name,
             username: username,
-            timezone: 'Asia/Ho_Chi_Minh', // TODO: detect timezone from device
+            timezone: timezone,
             avatarImagePath: _avatarPicked ? _avatarPath : null,
           );
       if (!mounted) return;

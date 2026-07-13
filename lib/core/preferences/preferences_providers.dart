@@ -16,6 +16,11 @@ final preferredCurrencyProvider =
       PreferredCurrencyNotifier.new,
     );
 
+final preferredLocaleProvider =
+    NotifierProvider<PreferredLocaleNotifier, String>(
+      PreferredLocaleNotifier.new,
+    );
+
 class OnboardingSeenNotifier extends Notifier<bool> {
   static const _key = 'onboarding_seen';
 
@@ -39,6 +44,20 @@ class PreferredCurrencyNotifier extends Notifier<String> {
   }
 
   Future<void> setCurrency(String value) async {
+    state = value;
+    await ref.read(sharedPreferencesProvider).setString(_key, value);
+  }
+}
+
+class PreferredLocaleNotifier extends Notifier<String> {
+  static const _key = 'preferred_locale';
+
+  @override
+  String build() {
+    return ref.read(sharedPreferencesProvider).getString(_key) ?? 'vi';
+  }
+
+  Future<void> setLocale(String value) async {
     state = value;
     await ref.read(sharedPreferencesProvider).setString(_key, value);
   }

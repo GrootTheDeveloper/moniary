@@ -3362,6 +3362,30 @@ abstract class AppLocalizations {
   /// **'Thay đổi múi giờ'**
   String get profileChangeTimezone;
 
+  /// No description provided for @profileLanguage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngôn ngữ'**
+  String get profileLanguage;
+
+  /// No description provided for @timezonePickerSearch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm múi giờ'**
+  String get timezonePickerSearch;
+
+  /// No description provided for @timezonePickerNoResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy múi giờ'**
+  String get timezonePickerNoResults;
+
+  /// No description provided for @timezonePickerUseDevice.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng múi giờ thiết bị'**
+  String get timezonePickerUseDevice;
+
   /// No description provided for @profileAnonymousBadge.
   ///
   /// In vi, this message translates to:

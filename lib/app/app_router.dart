@@ -39,6 +39,7 @@ import '../features/journal/presentation/monthly_recap_screen.dart';
 import '../features/journal/presentation/recording_streak_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
+import '../features/profile/presentation/timezone_picker_screen.dart';
 import '../features/profile/presentation/profile_survey_screen.dart';
 import '../features/scanning/presentation/ocr_review_screen.dart';
 import '../features/scanning/presentation/scanning_screen.dart';
@@ -627,6 +628,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
           child: const NotificationSettingsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: TimezonePickerScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const TimezonePickerScreen(),
         ),
       ),
       GoRoute(

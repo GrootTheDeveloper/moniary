@@ -799,6 +799,10 @@
   },
   "profileEditInfo": "Edit information",
   "profileChangeTimezone": "Change Timezone",
+  "profileLanguage": "Language",
+  "timezonePickerSearch": "Search timezone",
+  "timezonePickerNoResults": "No timezones found",
+  "timezonePickerUseDevice": "Use device timezone",
   "profileAnonymousBadge": "Guest account",
   "profileVerifiedBadge": "Verified ({provider})",
   "@profileVerifiedBadge": {

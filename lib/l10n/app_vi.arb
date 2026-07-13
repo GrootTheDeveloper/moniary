@@ -799,6 +799,10 @@
   },
   "profileEditInfo": "Chỉnh sửa thông tin",
   "profileChangeTimezone": "Thay đổi múi giờ",
+  "profileLanguage": "Ngôn ngữ",
+  "timezonePickerSearch": "Tìm múi giờ",
+  "timezonePickerNoResults": "Không tìm thấy múi giờ",
+  "timezonePickerUseDevice": "Dùng múi giờ thiết bị",
   "profileAnonymousBadge": "Tài khoản khách",
   "profileVerifiedBadge": "Đã Xác thực ({provider})",
   "@profileVerifiedBadge": {
