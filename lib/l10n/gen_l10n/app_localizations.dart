@@ -638,6 +638,72 @@ abstract class AppLocalizations {
   /// **'Ngân sách tháng'**
   String get onboardingBudgetLabel;
 
+  /// No description provided for @onboardingScanning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang nhận diện...'**
+  String get onboardingScanning;
+
+  /// No description provided for @onboardingRecognized.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã nhận diện!'**
+  String get onboardingRecognized;
+
+  /// No description provided for @onboardingCategoryFood.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ăn uống'**
+  String get onboardingCategoryFood;
+
+  /// No description provided for @onboardingCategoryTransport.
+  ///
+  /// In vi, this message translates to:
+  /// **'Di chuyển'**
+  String get onboardingCategoryTransport;
+
+  /// No description provided for @onboardingCategoryEntertainment.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giải trí'**
+  String get onboardingCategoryEntertainment;
+
+  /// No description provided for @onboardingIncome.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thu nhập'**
+  String get onboardingIncome;
+
+  /// No description provided for @onboardingExpenseLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu'**
+  String get onboardingExpenseLabel;
+
+  /// No description provided for @onboardingStreakLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'ngày'**
+  String get onboardingStreakLabel;
+
+  /// No description provided for @onboardingBudgetUsed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã dùng'**
+  String get onboardingBudgetUsed;
+
+  /// No description provided for @onboardingBudgetWarning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sắp vượt hạn mức!'**
+  String get onboardingBudgetWarning;
+
+  /// No description provided for @onboardingInsightText.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi ăn uống tăng 20%'**
+  String get onboardingInsightText;
+
   /// No description provided for @profileSetupTitle.
   ///
   /// In vi, this message translates to:

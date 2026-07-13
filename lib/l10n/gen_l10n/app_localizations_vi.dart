@@ -300,6 +300,39 @@ class AppLocalizationsVi extends AppLocalizations {
   String get onboardingBudgetLabel => 'Ngân sách tháng';
 
   @override
+  String get onboardingScanning => 'Đang nhận diện...';
+
+  @override
+  String get onboardingRecognized => 'Đã nhận diện!';
+
+  @override
+  String get onboardingCategoryFood => 'Ăn uống';
+
+  @override
+  String get onboardingCategoryTransport => 'Di chuyển';
+
+  @override
+  String get onboardingCategoryEntertainment => 'Giải trí';
+
+  @override
+  String get onboardingIncome => 'Thu nhập';
+
+  @override
+  String get onboardingExpenseLabel => 'Chi tiêu';
+
+  @override
+  String get onboardingStreakLabel => 'ngày';
+
+  @override
+  String get onboardingBudgetUsed => 'Đã dùng';
+
+  @override
+  String get onboardingBudgetWarning => 'Sắp vượt hạn mức!';
+
+  @override
+  String get onboardingInsightText => 'Chi ăn uống tăng 20%';
+
+  @override
   String get profileSetupTitle => 'Thiết lập hồ sơ';
 
   @override

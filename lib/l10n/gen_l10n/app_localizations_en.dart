@@ -299,6 +299,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingBudgetLabel => 'Monthly budget';
 
   @override
+  String get onboardingScanning => 'Reading receipt...';
+
+  @override
+  String get onboardingRecognized => 'Recognised!';
+
+  @override
+  String get onboardingCategoryFood => 'Food & dining';
+
+  @override
+  String get onboardingCategoryTransport => 'Transport';
+
+  @override
+  String get onboardingCategoryEntertainment => 'Entertainment';
+
+  @override
+  String get onboardingIncome => 'Income';
+
+  @override
+  String get onboardingExpenseLabel => 'Expense';
+
+  @override
+  String get onboardingStreakLabel => 'days';
+
+  @override
+  String get onboardingBudgetUsed => 'Used';
+
+  @override
+  String get onboardingBudgetWarning => 'Nearing limit!';
+
+  @override
+  String get onboardingInsightText => 'Food spending up 20%';
+
+  @override
   String get profileSetupTitle => 'Profile Setup';
 
   @override
