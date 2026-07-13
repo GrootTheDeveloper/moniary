@@ -199,6 +199,10 @@ class SupabaseJournalCollectionDataSource
 class MockJournalCollectionDataSource implements JournalCollectionDataSource {
   static final List<JournalCollectionRecord> _records = [];
 
+  MockJournalCollectionDataSource() {
+    if (_records.isEmpty) _records.addAll(_defaultRecords());
+  }
+
   @override
   Future<List<JournalCollectionRecord>> fetchCollections() async {
     return List.unmodifiable(_records);
@@ -255,4 +259,42 @@ class MockJournalCollectionDataSource implements JournalCollectionDataSource {
   }
 
   static void clear() => _records.clear();
+
+  static List<JournalCollectionRecord> _defaultRecords() {
+    final now = DateTime.now();
+    return [
+      JournalCollectionRecord(
+        id: 'mock-collection-dalat',
+        name: 'Đà Lạt tháng 6',
+        createdAt: DateTime(now.year, now.month, 2),
+        startDate: DateTime(now.year, 6, 14),
+        endDate: DateTime(now.year, 6, 17),
+        transactionIds: const [
+          'mock-1',
+          'mock-2',
+          'mock-3',
+          'mock-4',
+          'mock-5',
+          'mock-8',
+          'mock-9',
+          'mock-11',
+          'mock-12',
+          'mock-14',
+          'mock-15',
+          'mock-16',
+          'mock-17',
+          'mock-19',
+          'mock-20',
+        ],
+      ),
+      JournalCollectionRecord(
+        id: 'mock-collection-birthday',
+        name: 'Sinh nhật Linh',
+        createdAt: DateTime(now.year, now.month, 1),
+        startDate: DateTime(now.year, 6, 2),
+        endDate: DateTime(now.year, 6, 2),
+        transactionIds: const ['mock-5', 'mock-8', 'mock-13', 'mock-18'],
+      ),
+    ];
+  }
 }

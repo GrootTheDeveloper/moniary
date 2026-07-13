@@ -7,8 +7,6 @@ import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/currency_formatter.dart';
 import '../../../shared/utils/error_helpers.dart';
-import '../../../shared/widgets/moniary_design.dart';
-import '../../../shared/widgets/supabase_image.dart';
 import '../application/journal_controller.dart';
 import '../domain/journal_models.dart';
 import 'journal_collection_detail_screen.dart';
@@ -21,53 +19,61 @@ class JournalCollectionsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collectionsAsync = ref.watch(journalCollectionsProvider);
+    final colors = context.moniaryColors;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.journalCollectionsTitle),
-        actions: [
-          IconButton(
-            tooltip: context.l10n.journalCreateCollection,
-            onPressed: () => _createCollection(context, ref),
-            icon: const Icon(Icons.add),
-          ),
-        ],
-      ),
-      body: collectionsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) =>
-            Center(child: Text(userFriendlyMessage(context, error))),
-        data: (collections) {
-          if (collections.isEmpty) {
-            return _CollectionEmpty(
-              onCreate: () => _createCollection(context, ref),
-            );
-          }
-          return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(journalCollectionsProvider),
-            child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(24, 6, 24, 40),
-              itemCount: collections.length + 1,
-              separatorBuilder: (_, _) => const SizedBox(height: 14),
-              itemBuilder: (context, index) {
-                if (index == collections.length) {
-                  return OutlinedButton.icon(
-                    onPressed: () => _createCollection(context, ref),
-                    icon: const Icon(Icons.add),
-                    label: Text(context.l10n.journalCreateCollection),
-                  );
-                }
-                final collection = collections[index];
-                return _CollectionCard(
-                  collection: collection,
-                  onTap: () => context.push(
-                    JournalCollectionDetailScreen.routePath,
-                    extra: collection.id,
+      backgroundColor: colors.backgroundSoft,
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 393),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(28, 18, 28, 18),
+                  child: _CollectionsHeader(
+                    onCreate: () => _createCollection(context, ref),
                   ),
-                );
-              },
+                ),
+                Expanded(
+                  child: collectionsAsync.when(
+                    loading: () => const _CollectionsLoading(),
+                    error: (error, _) => _CollectionsError(
+                      message: userFriendlyMessage(context, error),
+                      onRetry: () => ref.invalidate(journalCollectionsProvider),
+                    ),
+                    data: (collections) => RefreshIndicator(
+                      color: colors.primary,
+                      backgroundColor: colors.backgroundSoft,
+                      onRefresh: () async =>
+                          ref.invalidate(journalCollectionsProvider),
+                      child: ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(28, 4, 28, 40),
+                        itemCount: collections.length + 1,
+                        separatorBuilder: (_, _) => const SizedBox(height: 14),
+                        itemBuilder: (context, index) {
+                          if (index == collections.length) {
+                            return _CreateCollectionTile(
+                              compact: collections.isEmpty,
+                              onCreate: () => _createCollection(context, ref),
+                            );
+                          }
+                          final collection = collections[index];
+                          return _CollectionCard(
+                            collection: collection,
+                            onTap: () => context.push(
+                              JournalCollectionDetailScreen.routePath,
+                              extra: collection.id,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -119,6 +125,64 @@ class JournalCollectionsScreen extends ConsumerWidget {
   }
 }
 
+class _CollectionsHeader extends StatelessWidget {
+  const _CollectionsHeader({required this.onCreate});
+
+  final VoidCallback onCreate;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'MONIARY',
+                style: context.moniaryTypography.metadataStrong.copyWith(
+                  color: colors.primary,
+                  letterSpacing: 3.2,
+                  fontSize: 9,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                context.l10n.journalCollectionsTitle,
+                style: context.moniaryTypography.displaySmall.copyWith(
+                  fontSize: 24,
+                  height: 1,
+                  letterSpacing: 0,
+                  color: colors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Semantics(
+          button: true,
+          label: context.l10n.journalCreateCollection,
+          child: Material(
+            color: colors.textPrimary,
+            borderRadius: BorderRadius.circular(10),
+            child: InkWell(
+              onTap: onCreate,
+              borderRadius: BorderRadius.circular(10),
+              child: SizedBox(
+                width: 36,
+                height: 36,
+                child: Icon(Icons.add, size: 20, color: colors.backgroundSoft),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _CollectionCard extends StatelessWidget {
   const _CollectionCard({required this.collection, required this.onTap});
 
@@ -128,63 +192,76 @@ class _CollectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateRange = _dateRange(context);
-    return MoniaryEditorialCard(
-      onTap: onTap,
-      padding: EdgeInsets.zero,
-      radius: 20,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 148,
-            width: double.infinity,
-            child: collection.coverImagePath == null
-                ? DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: AppTheme.sage.withValues(alpha: 0.18),
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(19),
-                      ),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.collections_bookmark_outlined,
-                        size: 42,
-                      ),
-                    ),
-                  )
-                : SupabaseImage(
-                    imagePath: collection.coverImagePath,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(19),
-                    ),
-                    fallbackIcon: Icons.collections_bookmark_outlined,
-                  ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
+    final colors = context.moniaryColors;
+    final radius = BorderRadius.circular(16);
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: colors.surface.withValues(alpha: 0.72),
+          borderRadius: radius,
+          border: Border.all(color: colors.outline.withValues(alpha: 0.78)),
+          boxShadow: [
+            BoxShadow(
+              color: colors.textPrimary.withValues(alpha: 0.035),
+              blurRadius: 14,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: radius,
+          child: ClipRRect(
+            borderRadius: radius,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  collection.name,
-                  style: context.moniaryTypography.displaySmall,
-                ),
-                const SizedBox(height: 7),
-                Text(
-                  [
-                    context.l10n.journalCollectionMeta(
-                      collection.transactionCount,
-                      formatVnd(collection.totalExpense),
-                    ),
-                    ?dateRange,
-                  ].join(' · ').toUpperCase(),
-                  style: context.moniaryTypography.metadata,
+                _CollectionMosaic(collection: collection),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 13, 16, 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        collection.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: colors.textPrimary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              height: 1.12,
+                              letterSpacing: 0,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        [
+                          context.l10n.journalCollectionMeta(
+                            collection.transactionCount,
+                            formatVnd(collection.totalExpense),
+                          ),
+                          ?dateRange,
+                        ].join(' · '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.moniaryTypography.metadata.copyWith(
+                          color: colors.textDim,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.45,
+                          height: 1,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -193,52 +270,307 @@ class _CollectionCard extends StatelessWidget {
     final start = collection.startDate;
     final end = collection.endDate;
     if (start == null && end == null) return null;
-    final format = DateFormat.MMMd(Localizations.localeOf(context).toString());
+    final locale = Localizations.localeOf(context).toString();
     if (start != null && end != null) {
-      return '${format.format(start)}–${format.format(end)}';
+      if (_sameDate(start, end)) {
+        if (locale.startsWith('vi')) return '${start.day} TH${start.month}';
+        return DateFormat.MMMd(locale).format(start).toUpperCase();
+      }
+      if (start.year == end.year && start.month == end.month) {
+        if (locale.startsWith('vi')) {
+          return '${start.day}–${end.day} TH${end.month}';
+        }
+        return '${DateFormat.MMM(locale).format(end).toUpperCase()} '
+            '${start.day}–${end.day}';
+      }
+      return '${DateFormat.MMMd(locale).format(start)}–'
+          '${DateFormat.MMMd(locale).format(end)}';
     }
-    return format.format(start ?? end!);
+    final value = start ?? end!;
+    if (locale.startsWith('vi')) return '${value.day} TH${value.month}';
+    return DateFormat.MMMd(locale).format(value).toUpperCase();
+  }
+
+  bool _sameDate(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 }
 
-class _CollectionEmpty extends StatelessWidget {
-  const _CollectionEmpty({required this.onCreate});
+class _CollectionMosaic extends StatelessWidget {
+  const _CollectionMosaic({required this.collection});
 
-  final VoidCallback onCreate;
+  final JournalCollectionSummary collection;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: MoniaryEditorialCard(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.collections_bookmark_outlined,
-                size: 48,
-                color: context.moniaryColors.primary,
+    final colors = context.moniaryColors;
+    final palette = _paletteFor(collection);
+    final overflow = collection.transactions.length - 4;
+
+    return SizedBox(
+      height: 78,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: List.generate(4, (index) {
+          final color = palette[index];
+          return Expanded(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: color,
+                border: Border(
+                  right: index == 3
+                      ? BorderSide.none
+                      : BorderSide(
+                          color: colors.backgroundSoft.withValues(alpha: 0.82),
+                          width: 1.2,
+                        ),
+                ),
               ),
-              const SizedBox(height: 14),
-              Text(
-                context.l10n.journalCollectionEmptyTitle,
-                style: context.moniaryTypography.displaySmall,
+              child: index == 3 && overflow > 0
+                  ? Center(
+                      child: Text(
+                        '+$overflow',
+                        style: context.moniaryTypography.metadataStrong
+                            .copyWith(
+                              color: AppTheme.surfaceRaised,
+                              fontSize: 10,
+                              letterSpacing: 0,
+                              shadows: [
+                                Shadow(
+                                  color: colors.textPrimary.withValues(
+                                    alpha: 0.2,
+                                  ),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                      ),
+                    )
+                  : null,
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  List<Color> _paletteFor(JournalCollectionSummary collection) {
+    final lowerName = collection.name.toLowerCase();
+    if (collection.id.contains('birthday') || lowerName.contains('sinh nhật')) {
+      return const [
+        Color(0xFFB58F93),
+        Color(0xFF9F91A8),
+        Color(0xFF78918B),
+        Color(0xFFB7A89B),
+      ];
+    }
+
+    return const [
+      Color(0xFF8796A8),
+      Color(0xFF91A092),
+      Color(0xFFAD918C),
+      Color(0xFFC2A98C),
+    ];
+  }
+}
+
+class _CreateCollectionTile extends StatelessWidget {
+  const _CreateCollectionTile({required this.onCreate, this.compact = false});
+
+  final VoidCallback onCreate;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Semantics(
+      button: true,
+      label: context.l10n.journalCreateCollection,
+      child: CustomPaint(
+        painter: _DashedRoundRectPainter(
+          color: colors.outline.withValues(alpha: 0.92),
+          radius: 15,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onCreate,
+            borderRadius: BorderRadius.circular(15),
+            child: SizedBox(
+              height: compact ? 124 : 90,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add, size: 24, color: colors.textDim),
+                  const SizedBox(height: 10),
+                  Text(
+                    context.l10n.journalCreateCollection,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colors.textDim,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                context.l10n.journalCollectionEmptyBody,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 18),
-              FilledButton(
-                onPressed: onCreate,
-                child: Text(context.l10n.journalCreateCollection),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
+  }
+}
+
+class _CollectionsLoading extends StatelessWidget {
+  const _CollectionsLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(28, 4, 28, 40),
+      itemBuilder: (context, index) => const _CollectionSkeleton(),
+      separatorBuilder: (_, _) => const SizedBox(height: 14),
+      itemCount: 2,
+    );
+  }
+}
+
+class _CollectionSkeleton extends StatelessWidget {
+  const _CollectionSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Container(
+      height: 142,
+      decoration: BoxDecoration(
+        color: colors.surface.withValues(alpha: 0.56),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.outline.withValues(alpha: 0.6)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 78,
+            decoration: BoxDecoration(
+              color: colors.textPrimary.withValues(alpha: 0.08),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(15),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+            child: Column(
+              children: [
+                _SkeletonLine(width: 140, height: 13),
+                const SizedBox(height: 10),
+                _SkeletonLine(width: 210, height: 8),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CollectionsError extends StatelessWidget {
+  const _CollectionsError({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(28, 4, 28, 40),
+      children: [
+        CustomPaint(
+          painter: _DashedRoundRectPainter(
+            color: colors.outline.withValues(alpha: 0.9),
+            radius: 15,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              children: [
+                Icon(Icons.refresh_rounded, color: colors.primary, size: 26),
+                const SizedBox(height: 12),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: onRetry,
+                  child: Text(context.l10n.commonRetry),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SkeletonLine extends StatelessWidget {
+  const _SkeletonLine({required this.width, required this.height});
+
+  final double width;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: context.moniaryColors.textPrimary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(height),
+        ),
+      ),
+    );
+  }
+}
+
+class _DashedRoundRectPainter extends CustomPainter {
+  const _DashedRoundRectPainter({required this.color, required this.radius});
+
+  final Color color;
+  final double radius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+    final path = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(Offset.zero & size, Radius.circular(radius)),
+      );
+    for (final metric in path.computeMetrics()) {
+      var distance = 0.0;
+      while (distance < metric.length) {
+        final next = distance + 7;
+        canvas.drawPath(metric.extractPath(distance, next), paint);
+        distance = next + 5;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DashedRoundRectPainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.radius != radius;
   }
 }
