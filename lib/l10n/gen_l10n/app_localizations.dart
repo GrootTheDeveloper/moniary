@@ -3212,6 +3212,36 @@ abstract class AppLocalizations {
   /// **'Chưa có dữ liệu tháng trước'**
   String get statsExpenseNoPrevious;
 
+  /// No description provided for @statsInsightTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý thông minh'**
+  String get statsInsightTitle;
+
+  /// No description provided for @statsInsightSavings.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã tiết kiệm được {percent}% thu nhập trong tháng này.'**
+  String statsInsightSavings(String percent);
+
+  /// No description provided for @statsInsightWeekend.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chi tiêu {percent}% ngân sách vào cuối tuần. Hãy cẩn thận!'**
+  String statsInsightWeekend(String percent);
+
+  /// No description provided for @statsInsightCategorySurge.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu {category} tăng {percent}% so với tháng trước.'**
+  String statsInsightCategorySurge(String category, String percent);
+
+  /// No description provided for @statsInsightPositive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đang quản lý chi tiêu rất tốt! Hãy tiếp tục duy trì nhé.'**
+  String get statsInsightPositive;
+
   /// No description provided for @statsBudgetUsed.
   ///
   /// In vi, this message translates to:

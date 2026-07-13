@@ -736,6 +736,35 @@
   },
   "statsExpenseSameAsPrevious": "About the same as last month",
   "statsExpenseNoPrevious": "No previous month data yet",
+  "statsInsightTitle": "Smart insights",
+  "statsInsightSavings": "You saved {percent}% of your income this month.",
+  "@statsInsightSavings": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsInsightWeekend": "You spent {percent}% of your budget on weekends. Be careful!",
+  "@statsInsightWeekend": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsInsightCategorySurge": "{category} spending increased {percent}% compared to last month.",
+  "@statsInsightCategorySurge": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsInsightPositive": "You're managing your spending well! Keep it up.",
   "statsBudgetUsed": "Budget · used {percent}%",
   "@statsBudgetUsed": {
     "placeholders": {

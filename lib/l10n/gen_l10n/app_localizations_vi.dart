@@ -1719,6 +1719,28 @@ class AppLocalizationsVi extends AppLocalizations {
   String get statsExpenseNoPrevious => 'Chưa có dữ liệu tháng trước';
 
   @override
+  String get statsInsightTitle => 'Gợi ý thông minh';
+
+  @override
+  String statsInsightSavings(String percent) {
+    return 'Bạn đã tiết kiệm được $percent% thu nhập trong tháng này.';
+  }
+
+  @override
+  String statsInsightWeekend(String percent) {
+    return 'Bạn chi tiêu $percent% ngân sách vào cuối tuần. Hãy cẩn thận!';
+  }
+
+  @override
+  String statsInsightCategorySurge(String category, String percent) {
+    return 'Chi tiêu $category tăng $percent% so với tháng trước.';
+  }
+
+  @override
+  String get statsInsightPositive =>
+      'Bạn đang quản lý chi tiêu rất tốt! Hãy tiếp tục duy trì nhé.';
+
+  @override
   String statsBudgetUsed(int percent) {
     return 'Ngân sách · đã dùng $percent%';
   }

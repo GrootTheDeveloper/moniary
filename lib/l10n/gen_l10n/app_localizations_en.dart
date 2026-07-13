@@ -1721,6 +1721,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statsExpenseNoPrevious => 'No previous month data yet';
 
   @override
+  String get statsInsightTitle => 'Smart insights';
+
+  @override
+  String statsInsightSavings(String percent) {
+    return 'You saved $percent% of your income this month.';
+  }
+
+  @override
+  String statsInsightWeekend(String percent) {
+    return 'You spent $percent% of your budget on weekends. Be careful!';
+  }
+
+  @override
+  String statsInsightCategorySurge(String category, String percent) {
+    return '$category spending increased $percent% compared to last month.';
+  }
+
+  @override
+  String get statsInsightPositive =>
+      'You\'re managing your spending well! Keep it up.';
+
+  @override
   String statsBudgetUsed(int percent) {
     return 'Budget · used $percent%';
   }
