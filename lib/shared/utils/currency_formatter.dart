@@ -1,15 +1,5 @@
 import 'package:intl/intl.dart';
 
-// TODO(phase-2-currency-sweep): remove once all formatVnd call sites move to
-// formatCurrency.
-String formatVnd(num amount) {
-  return NumberFormat.currency(
-    locale: 'vi_VN',
-    symbol: '₫',
-    decimalDigits: 0,
-  ).format(amount);
-}
-
 // Dynamic currency policy:
 // - Empty/null-like code → VND (₫, 0 decimals, locale-aware separators).
 // - VND → same as above.

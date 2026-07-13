@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../../core/constants/app_color.dart';
@@ -636,7 +637,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
   }
 }
 
-class _ImagePreview extends StatelessWidget {
+class _ImagePreview extends ConsumerWidget {
   const _ImagePreview({
     required this.file,
     this.initialImagePath,
@@ -653,7 +654,7 @@ class _ImagePreview extends StatelessWidget {
   final VoidCallback onClear;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     return SizedBox(
       width: double.infinity,
@@ -760,7 +761,7 @@ class _ImagePreview extends StatelessWidget {
                             color: Colors.white,
                             fontWeight: FontWeight.w800,
                           ),
-                          suffixText: context.l10n.transactionAmountSuffix,
+                          suffixText: ref.currencySymbol,
                           suffixStyle: const TextStyle(
                             fontSize: 13,
                             color: Colors.white,

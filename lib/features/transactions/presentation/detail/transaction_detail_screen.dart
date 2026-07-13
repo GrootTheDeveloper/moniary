@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/composer/transaction_composer_controller.dart';
@@ -172,7 +172,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               ObscurableAmountText(
-                                amountText: formatVnd(transaction.amount),
+                                amountText: ref.formatAmount(transaction.amount),
                                 prefixText: transaction.isIncome ? '+' : '-',
                                 style: typography.displayMedium.copyWith(
                                   color: transaction.isIncome

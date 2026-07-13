@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/moniary_design.dart';
 import '../../../../shared/widgets/supabase_image.dart';
@@ -264,7 +264,7 @@ class _BackButton extends StatelessWidget {
   }
 }
 
-class _SettlementCard extends StatelessWidget {
+class _SettlementCard extends ConsumerWidget {
   const _SettlementCard({
     required this.item,
     required this.currentUserId,
@@ -278,7 +278,7 @@ class _SettlementCard extends StatelessWidget {
   final String? toAvatarPath;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     return Container(
       constraints: const BoxConstraints(minHeight: 68),
@@ -344,7 +344,7 @@ class _SettlementCard extends StatelessWidget {
           ),
           const SizedBox(width: 15),
           Text(
-            formatVnd(item.amount),
+            ref.formatAmount(item.amount),
             style: context.moniaryTypography.metadataStrong.copyWith(
               color: colors.textPrimary,
               fontSize: 11,

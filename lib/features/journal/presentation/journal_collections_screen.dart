@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
-import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/widgets/supabase_image.dart';
 import '../../transactions/presentation/utils/transaction_image_source.dart';
@@ -212,14 +212,14 @@ class _CollectionsHeader extends StatelessWidget {
   }
 }
 
-class _CollectionCard extends StatelessWidget {
+class _CollectionCard extends ConsumerWidget {
   const _CollectionCard({required this.collection, required this.onTap});
 
   final JournalCollectionSummary collection;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final dateRange = _dateRange(context);
     final colors = context.moniaryColors;
     final radius = BorderRadius.circular(16);
@@ -270,7 +270,7 @@ class _CollectionCard extends StatelessWidget {
                         [
                           context.l10n.journalCollectionMeta(
                             collection.transactionCount,
-                            formatVnd(collection.totalExpense),
+                            ref.formatAmount(collection.totalExpense),
                           ),
                           ?dateRange,
                         ].join(' · '),

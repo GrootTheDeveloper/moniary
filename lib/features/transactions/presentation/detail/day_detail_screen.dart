@@ -8,7 +8,7 @@ import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../calendar/application/month/calendar_month_provider.dart';
@@ -161,7 +161,7 @@ class _DayDetailBody extends ConsumerWidget {
                           const TextSpan(text: '   '),
                           TextSpan(
                             text:
-                                '${net >= 0 ? '+' : '-'}${formatVnd(net.abs())}',
+                                '${net >= 0 ? '+' : '-'}${ref.formatAmount(net.abs())}',
                             style: TextStyle(
                               color: net >= 0 ? colors.success : colors.danger,
                               letterSpacing: 0.45,
@@ -437,14 +437,14 @@ class _CategoryTile extends StatelessWidget {
   }
 }
 
-class _DayTransactionRow extends StatelessWidget {
+class _DayTransactionRow extends ConsumerWidget {
   const _DayTransactionRow({required this.transaction, required this.onTap});
 
   final TransactionEntry transaction;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final accent = AppColor.fromHex(
       transaction.categoryColor ?? transaction.walletColor,
@@ -502,7 +502,7 @@ class _DayTransactionRow extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
+                '${transaction.isIncome ? '+' : '-'}${ref.formatAmount(transaction.amount)}',
                 textAlign: TextAlign.right,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: transaction.isIncome
@@ -520,7 +520,7 @@ class _DayTransactionRow extends StatelessWidget {
   }
 }
 
-class TransactionGridTile extends StatelessWidget {
+class TransactionGridTile extends ConsumerWidget {
   const TransactionGridTile({
     super.key,
     required this.transaction,
@@ -531,7 +531,7 @@ class TransactionGridTile extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final accent = AppColor.fromHex(
       transaction.categoryColor ?? transaction.walletColor,
       fallback: transaction.isIncome ? AppTheme.success : AppTheme.amber,
@@ -607,7 +607,7 @@ class TransactionGridTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
+                        '${transaction.isIncome ? '+' : '-'}${ref.formatAmount(transaction.amount)}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(

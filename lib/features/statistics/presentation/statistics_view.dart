@@ -8,6 +8,7 @@ import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/app_logger.dart';
+import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/widgets/obscurable_amount_text.dart';
 import '../../budgets/application/budget_controller.dart';
@@ -341,7 +342,7 @@ class _HeaderArrowButton extends StatelessWidget {
   }
 }
 
-class _StatsHero extends StatelessWidget {
+class _StatsHero extends ConsumerWidget {
   const _StatsHero({
     required this.month,
     required this.expense,
@@ -357,7 +358,7 @@ class _StatsHero extends StatelessWidget {
   final VoidCallback onOpenBudget;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final monthLabel = _monthLabel(context, month);
     final budgetProgress = budget?.progress ?? 0;
@@ -375,7 +376,7 @@ class _StatsHero extends StatelessWidget {
         ),
         const SizedBox(height: 7),
         ObscurableAmountText(
-          amountText: _money(context, expense),
+          amountText: _money(context, ref, expense),
           style: context.moniaryTypography.displayLarge.copyWith(
             color: colors.textPrimary,
             fontSize: 43,
@@ -779,7 +780,7 @@ class _CategoryListSection extends StatelessWidget {
   }
 }
 
-class _CategoryAmountRow extends StatelessWidget {
+class _CategoryAmountRow extends ConsumerWidget {
   const _CategoryAmountRow({
     required this.category,
     required this.color,
@@ -791,7 +792,7 @@ class _CategoryAmountRow extends StatelessWidget {
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     return Column(
       children: [
@@ -854,7 +855,7 @@ class _CategoryAmountRow extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   ObscurableAmountText(
-                    amountText: _money(context, category.amount),
+                    amountText: _money(context, ref, category.amount),
                     style: TextStyle(
                       color: colors.textPrimary,
                       fontFamily: 'JetBrains Mono',
@@ -995,13 +996,13 @@ class _WeeklySummary {
   }
 }
 
-String _money(BuildContext context, double amount) {
+String _money(BuildContext context, WidgetRef ref, double amount) {
   final formatter = NumberFormat.currency(
     locale: Localizations.localeOf(context).toString(),
     symbol: '',
     decimalDigits: 0,
   );
-  return '${formatter.format(amount).trim()}${context.l10n.transactionAmountSuffix}';
+  return '${formatter.format(amount).trim()}${ref.currencySymbol}';
 }
 
 String _compactAmount(BuildContext context, double amount) {

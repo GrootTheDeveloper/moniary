@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/spending_group.dart';
@@ -297,13 +297,13 @@ class _HeaderIconButton extends StatelessWidget {
   }
 }
 
-class _GroupBalanceOverview extends StatelessWidget {
+class _GroupBalanceOverview extends ConsumerWidget {
   const _GroupBalanceOverview({required this.groups});
 
   final List<SpendingGroup> groups;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final toReceive = groups
         .where((group) => group.currentUserBalance < 0)
         .fold<int>(0, (sum, group) => sum + group.currentUserBalance.abs());
@@ -317,7 +317,7 @@ class _GroupBalanceOverview extends StatelessWidget {
           child: _BalanceSummaryTile(
             label: context.l10n.groupBalanceReceiveShort,
             summaryLabel: context.l10n.groupBalanceReceiveSummary,
-            value: '+${formatVnd(toReceive)}',
+            value: '+${ref.formatAmount(toReceive)}',
             color: context.moniaryColors.success,
           ),
         ),
@@ -326,7 +326,7 @@ class _GroupBalanceOverview extends StatelessWidget {
           child: _BalanceSummaryTile(
             label: context.l10n.groupBalancePayShort,
             summaryLabel: context.l10n.groupBalancePaySummary,
-            value: '-${formatVnd(toPay)}',
+            value: '-${ref.formatAmount(toPay)}',
             color: context.moniaryColors.danger,
           ),
         ),
@@ -390,7 +390,7 @@ class _BalanceSummaryTile extends StatelessWidget {
   }
 }
 
-class _ReferenceGroupCard extends StatelessWidget {
+class _ReferenceGroupCard extends ConsumerWidget {
   const _ReferenceGroupCard({
     required this.group,
     required this.index,
@@ -402,7 +402,7 @@ class _ReferenceGroupCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final balance = group.currentUserBalance;
     final settled = balance == 0;
@@ -412,10 +412,10 @@ class _ReferenceGroupCard extends StatelessWidget {
         ? colors.success
         : colors.danger;
     final amountText = settled
-        ? formatVnd(0)
+        ? ref.formatAmount(0)
         : balance < 0
-        ? '+${formatVnd(balance.abs())}'
-        : '-${formatVnd(balance)}';
+        ? '+${ref.formatAmount(balance.abs())}'
+        : '-${ref.formatAmount(balance)}';
     final stateLabel = settled
         ? context.l10n.groupBalanceSettledShort
         : balance < 0

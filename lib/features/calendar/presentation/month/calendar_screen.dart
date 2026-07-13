@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../profile/application/profile_setup_controller.dart';
 import '../../../journal/application/journal_controller.dart';
 import '../../../journal/presentation/monthly_recap_screen.dart';
@@ -387,6 +388,7 @@ class _SeamlessHeader extends ConsumerWidget {
                   ObscurableAmountText(
                     amountText: _formatMoney(
                       context,
+                      ref,
                       totalBalance,
                       isNegative: totalBalance < 0,
                     ),
@@ -660,7 +662,7 @@ class _IconPill extends StatelessWidget {
   }
 }
 
-class _IncomeExpensePill extends StatelessWidget {
+class _IncomeExpensePill extends ConsumerWidget {
   const _IncomeExpensePill({
     required this.label,
     required this.amount,
@@ -674,7 +676,7 @@ class _IncomeExpensePill extends StatelessWidget {
   final IconData icon;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
       decoration: BoxDecoration(
@@ -691,6 +693,7 @@ class _IncomeExpensePill extends StatelessWidget {
             prefixText: '$label: ',
             amountText: _formatMoney(
               context,
+              ref,
               amount,
               isNegative: false,
             ).replaceAll('+', ''),
@@ -1784,6 +1787,7 @@ class _CalendarSkeletonCardState extends State<_CalendarSkeletonCard>
 
 String _formatMoney(
   BuildContext context,
+  WidgetRef ref,
   double amount, {
   required bool isNegative,
 }) {
@@ -1794,7 +1798,7 @@ String _formatMoney(
   );
   final sign = isNegative ? '-' : '+';
   final formatted = formatter.format(amount).trim();
-  return '$sign$formatted${context.l10n.transactionAmountSuffix}';
+  return '$sign$formatted${ref.currencySymbol}';
 }
 
 class _TodayGrid extends StatelessWidget {

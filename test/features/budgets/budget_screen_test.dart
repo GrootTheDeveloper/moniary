@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:moniary/app/app_theme.dart';
+import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/features/budgets/application/budget_controller.dart';
 import 'package:moniary/features/budgets/domain/monthly_budget.dart';
 import 'package:moniary/features/budgets/presentation/budget_screen.dart';
@@ -11,9 +13,12 @@ void main() {
   testWidgets('shows monthly total and category budget progress', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           monthlyBudgetProvider.overrideWith((ref, month) async {
             return MonthlyBudget(
               month: month,

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/budget_controller.dart';
 import '../../domain/monthly_budget.dart';
@@ -112,7 +112,7 @@ class BudgetLimitEditor {
   }
 }
 
-class _BudgetLimitSheet extends StatelessWidget {
+class _BudgetLimitSheet extends ConsumerWidget {
   const _BudgetLimitSheet({
     required this.category,
     required this.amount,
@@ -144,7 +144,7 @@ class _BudgetLimitSheet extends StatelessWidget {
   final VoidCallback? onRemove;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final accent = _budgetAccent(category, colors);
     final keyboardBottom = MediaQuery.viewInsetsOf(context).bottom;
@@ -218,7 +218,7 @@ class _BudgetLimitSheet extends StatelessWidget {
                     ),
                     const SizedBox(height: 22),
                     Text(
-                      _formatLimitAmount(context, amount),
+                      ref.formatAmount(amount),
                       textAlign: TextAlign.center,
                       style: context.moniaryTypography.displayLarge.copyWith(
                         color: colors.textPrimary,
@@ -229,7 +229,7 @@ class _BudgetLimitSheet extends StatelessWidget {
                     const SizedBox(height: 9),
                     Text(
                       context.l10n.budgetUsedWarningLine(
-                        formatVnd(category.spentAmount),
+                        ref.formatAmount(category.spentAmount),
                         usedPercent,
                         status,
                       ),
@@ -272,7 +272,7 @@ class _BudgetLimitSheet extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           _ScaleLabel(label: '0'),
-                          _ScaleLabel(label: formatVnd(maxAmount)),
+                          _ScaleLabel(label: ref.formatAmount(maxAmount)),
                         ],
                       ),
                     ),
@@ -390,7 +390,7 @@ class _ScaleLabel extends StatelessWidget {
   }
 }
 
-class _PresetButton extends StatelessWidget {
+class _PresetButton extends ConsumerWidget {
   const _PresetButton({
     required this.amount,
     required this.selected,
@@ -404,7 +404,7 @@ class _PresetButton extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     return Material(
       color: selected ? accent.withValues(alpha: 0.1) : _controlFill(colors),
@@ -424,7 +424,7 @@ class _PresetButton extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
-                formatVnd(amount),
+                ref.formatAmount(amount),
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   color: selected ? accent : colors.textPrimary,
                   fontSize: 12,
@@ -444,13 +444,6 @@ class _BudgetLimitDraft {
 
   final double amount;
   final double warningRatio;
-}
-
-String _formatLimitAmount(BuildContext context, double amount) {
-  final formatted = formatVnd(amount);
-  final suffix = context.l10n.transactionAmountSuffix;
-  if (!formatted.endsWith(suffix)) return formatted;
-  return '${formatted.substring(0, formatted.length - suffix.length).trim()} $suffix';
 }
 
 Color _budgetAccent(CategoryBudget category, MoniaryColors colors) {

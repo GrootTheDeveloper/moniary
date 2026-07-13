@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../l10n/l10n_extension.dart';
-import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/widgets/moniary_design.dart';
 import '../../../shared/widgets/supabase_image.dart';
@@ -293,13 +293,13 @@ class _StoryPadding extends StatelessWidget {
   }
 }
 
-class _OverviewSlide extends StatelessWidget {
+class _OverviewSlide extends ConsumerWidget {
   const _OverviewSlide({required this.recap});
 
   final MonthlyRecap recap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final topCategory = recap.topCategories.firstOrNull?.name ?? '—';
     return _StoryPadding(
       child: Transform.translate(
@@ -321,7 +321,7 @@ class _OverviewSlide extends StatelessWidget {
             const SizedBox(height: 18),
             Text(
               context.l10n.journalRecapSummary(
-                formatVnd(recap.totalExpense),
+                ref.formatAmount(recap.totalExpense),
                 topCategory,
               ),
               textAlign: TextAlign.center,
@@ -377,13 +377,13 @@ class _RecordedCountTitle extends StatelessWidget {
   }
 }
 
-class _HighlightsSlide extends StatelessWidget {
+class _HighlightsSlide extends ConsumerWidget {
   const _HighlightsSlide({required this.recap});
 
   final MonthlyRecap recap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final withImages = recap.transactions
         .where(
           (transaction) => transaction.imagePath?.trim().isNotEmpty == true,
@@ -462,7 +462,7 @@ class _HighlightsSlide extends StatelessWidget {
                               right: 10,
                               bottom: 9,
                               child: Text(
-                                formatVnd(transaction.amount),
+                                ref.formatAmount(transaction.amount),
                                 style: context.moniaryTypography.metadataStrong
                                     .copyWith(
                                       color: _storyInk,
@@ -561,7 +561,7 @@ class _ComparisonSlide extends StatelessWidget {
   }
 }
 
-class _MonthBar extends StatelessWidget {
+class _MonthBar extends ConsumerWidget {
   const _MonthBar({
     required this.label,
     required this.amount,
@@ -575,13 +575,13 @@ class _MonthBar extends StatelessWidget {
   final Color color;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text(
-            formatVnd(amount),
+            ref.formatAmount(amount),
             textAlign: TextAlign.center,
             style: context.moniaryTypography.metadataStrong.copyWith(
               color: _storyMuted,
@@ -652,14 +652,14 @@ class _TopCategoriesSlide extends StatelessWidget {
   }
 }
 
-class _CategoryRank extends StatelessWidget {
+class _CategoryRank extends ConsumerWidget {
   const _CategoryRank({required this.rank, required this.category});
 
   final int rank;
   final JournalCategoryTotal category;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final color = AppColor.fromHex(category.color, fallback: AppTheme.sand);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -690,7 +690,7 @@ class _CategoryRank extends StatelessWidget {
             ),
           ),
           Text(
-            formatVnd(category.amount),
+            ref.formatAmount(category.amount),
             style: context.moniaryTypography.metadataStrong.copyWith(
               color: _storyMuted,
               letterSpacing: 0,

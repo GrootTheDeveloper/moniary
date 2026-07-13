@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/features/friends/data/repositories/friend_repository_impl.dart';
 import 'package:moniary/features/friends/domain/entities/friend_profile.dart';
 import 'package:moniary/features/friends/domain/repositories/friend_repository.dart';
@@ -21,6 +23,13 @@ import 'package:moniary/features/groups/presentation/screens/group_list_screen.d
 import 'package:moniary/l10n/gen_l10n/app_localizations.dart';
 
 void main() {
+  late SharedPreferences prefs;
+
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    prefs = await SharedPreferences.getInstance();
+  });
+
   Widget app(
     Widget child, {
     required FakeFriendRepository friendRepository,
@@ -28,6 +37,7 @@ void main() {
   }) {
     return ProviderScope(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         friendRepositoryProvider.overrideWithValue(friendRepository),
         if (groupRepository != null)
           groupRepositoryProvider.overrideWithValue(groupRepository),
@@ -61,7 +71,10 @@ void main() {
       ],
     );
     return ProviderScope(
-      overrides: [friendRepositoryProvider.overrideWithValue(friendRepository)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        friendRepositoryProvider.overrideWithValue(friendRepository),
+      ],
       child: MaterialApp.router(
         locale: const Locale('vi'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,

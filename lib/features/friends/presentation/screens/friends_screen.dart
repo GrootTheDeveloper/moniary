@@ -6,7 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/supabase_image.dart';
@@ -604,13 +604,13 @@ class _AvatarFallback extends StatelessWidget {
   }
 }
 
-class _FriendBalance extends StatelessWidget {
+class _FriendBalance extends ConsumerWidget {
   const _FriendBalance({required this.profile});
 
   final FriendProfile profile;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final balance = profile.currentUserBalance;
     final isSettled = balance == 0;
@@ -625,8 +625,8 @@ class _FriendBalance extends StatelessWidget {
         ? context.l10n.friendYouOwe
         : context.l10n.friendBalanceSettled;
     final amount = isSettled
-        ? formatVnd(0)
-        : '${balance > 0 ? '+' : '-'}${formatVnd(balance.abs())}';
+        ? ref.formatAmount(0)
+        : '${balance > 0 ? '+' : '-'}${ref.formatAmount(balance.abs())}';
 
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 82, maxWidth: 108),

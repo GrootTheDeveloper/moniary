@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
@@ -78,7 +78,7 @@ class _GroupTransactionDetailScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                formatVnd(transaction.totalAmount),
+                ref.formatAmount(transaction.totalAmount),
                 style: const TextStyle(
                   color: AppTheme.mintSoft,
                   fontSize: 24,
@@ -140,7 +140,7 @@ class _GroupTransactionDetailScreenState
                   title: Text(
                     payer.displayName ?? context.l10n.groupUnknownMember,
                   ),
-                  trailing: Text(formatVnd(payer.paidAmount)),
+                  trailing: Text(ref.formatAmount(payer.paidAmount)),
                 ),
               ),
               const SizedBox(height: 18),
@@ -161,9 +161,9 @@ class _GroupTransactionDetailScreenState
                   ),
                   subtitle: Text(
                     context.l10n.groupSharePaidBalance(
-                      formatVnd(share.shareAmount),
-                      formatVnd(paid),
-                      formatVnd(share.shareAmount - paid),
+                      ref.formatAmount(share.shareAmount),
+                      ref.formatAmount(paid),
+                      ref.formatAmount(share.shareAmount - paid),
                     ),
                   ),
                 );

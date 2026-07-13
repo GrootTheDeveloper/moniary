@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/moniary_design.dart';
 import '../../../../shared/widgets/supabase_image.dart';
@@ -332,7 +332,7 @@ class _TopIconButton extends StatelessWidget {
   }
 }
 
-class _GroupHero extends StatelessWidget {
+class _GroupHero extends ConsumerWidget {
   const _GroupHero({
     required this.detail,
     required this.transactionsAsync,
@@ -344,7 +344,7 @@ class _GroupHero extends StatelessWidget {
   final VoidCallback onSettle;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final group = detail.group;
     final balance = group.currentUserBalance;
@@ -364,7 +364,7 @@ class _GroupHero extends StatelessWidget {
         ?.where((item) => item.splitStatus == GroupSplitStatus.posted)
         .fold<int>(0, (sum, item) => sum + item.totalAmount);
     final transactionCount = transactions?.length ?? group.transactionCount;
-    final totalText = formatVnd(total ?? group.totalSpent);
+    final totalText = ref.formatAmount(total ?? group.totalSpent);
 
     return Column(
       children: [
@@ -422,7 +422,7 @@ class _GroupHero extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      formatVnd(balance.abs()),
+                      ref.formatAmount(balance.abs()),
                       style: context.moniaryTypography.displaySmall.copyWith(
                         color: balanceColor,
                         fontSize: 24,
@@ -480,7 +480,7 @@ class _MemberBalances extends StatelessWidget {
   }
 }
 
-class _BalanceRow extends StatelessWidget {
+class _BalanceRow extends ConsumerWidget {
   const _BalanceRow({
     required this.balance,
     required this.avatarPath,
@@ -492,7 +492,7 @@ class _BalanceRow extends StatelessWidget {
   final bool showTopDivider;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final valueColor = balance.balance == 0
         ? colors.textDim
@@ -500,8 +500,8 @@ class _BalanceRow extends StatelessWidget {
         ? colors.danger
         : colors.success;
     final valueText = balance.balance == 0
-        ? formatVnd(0)
-        : '${balance.balance > 0 ? '-' : '+'}${formatVnd(balance.balance.abs())}';
+        ? ref.formatAmount(0)
+        : '${balance.balance > 0 ? '-' : '+'}${ref.formatAmount(balance.balance.abs())}';
 
     return Container(
       constraints: const BoxConstraints(minHeight: 62),
@@ -590,7 +590,7 @@ class _TransactionHistory extends StatelessWidget {
   }
 }
 
-class _TransactionRow extends StatelessWidget {
+class _TransactionRow extends ConsumerWidget {
   const _TransactionRow({
     required this.transaction,
     required this.memberCount,
@@ -604,7 +604,7 @@ class _TransactionRow extends StatelessWidget {
   final bool showTopDivider;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final payerName = transaction.creatorName?.trim().isNotEmpty == true
         ? transaction.creatorName!
@@ -679,7 +679,7 @@ class _TransactionRow extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                formatVnd(transaction.totalAmount),
+                ref.formatAmount(transaction.totalAmount),
                 style: context.moniaryTypography.metadataStrong.copyWith(
                   color: colors.textPrimary,
                   fontSize: 11,

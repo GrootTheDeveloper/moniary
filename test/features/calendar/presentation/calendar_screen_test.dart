@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:moniary/app/app_theme.dart';
+import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/features/calendar/presentation/month/calendar_screen.dart';
 import 'package:moniary/features/profile/application/profile_setup_controller.dart';
 import 'package:moniary/features/profile/domain/user_profile.dart';
@@ -31,10 +33,13 @@ void main() {
     tester,
   ) async {
     final supabaseClient = _FakeSupabaseClient();
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           transactionRepositoryProvider.overrideWithValue(
             TransactionRepository(supabaseClient),
           ),
