@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
+import '../../../shared/utils/currency_formatter.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../l10n/l10n_extension.dart';
@@ -19,12 +19,6 @@ class WalletSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final walletsAsync = ref.watch(walletsControllerProvider);
     final colors = context.moniaryColors;
-    final currency = NumberFormat.currency(
-      locale: Localizations.localeOf(context).toString(),
-      symbol: '',
-      decimalDigits: 0,
-    );
-    final amountSuffix = context.l10n.transactionAmountSuffix;
 
     return walletsAsync.when(
       data: (wallets) {
@@ -48,8 +42,7 @@ class WalletSection extends ConsumerWidget {
                   padding: const EdgeInsets.only(bottom: 9),
                   child: _WalletTile(
                     wallet: wallet,
-                    balanceLabel:
-                        '${currency.format(wallet.initialBalance).trim()}$amountSuffix',
+                    balanceLabel: formatMoney(wallet.initialBalance),
                     onEdit: () => _showWalletForm(context, ref, wallet: wallet),
                   ),
                 ),

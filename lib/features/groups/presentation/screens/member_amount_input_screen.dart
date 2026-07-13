@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
 
@@ -65,7 +66,7 @@ class _MemberAmountInputScreenState
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: context.l10n.groupAmountUsedLabel,
-              suffixText: context.l10n.transactionAmountSuffix,
+              suffixText: activeCurrencySymbol(),
               prefixIcon: const Icon(Icons.payments_outlined),
             ),
           ),

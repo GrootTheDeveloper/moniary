@@ -142,6 +142,14 @@
 - **Survey**: `ProfileSurveyScreen` stores occupation/preferred currency and
   creates or updates the default wallet.
 - **Data**: `ProfileRepository` supports Supabase and mock profiles.
+- **Display currency**: the chosen currency (`preferredCurrencyProvider`,
+  persisted in `SharedPreferences`) drives all money rendering via
+  `formatMoney`/`formatVnd` in `lib/shared/utils/currency_formatter.dart`. A
+  module-level active currency is synced from the provider (and from prefs at
+  startup in `main`) so the many context-free formatting call sites honour the
+  selection. Scope is **single display currency** (symbol, decimal digits, digit
+  grouping) — amounts are not stored per-currency and there is no FX conversion,
+  so mixing currencies across wallets is out of scope until a Phase 2.
 
 ## Auth, Onboarding, and Splash
 

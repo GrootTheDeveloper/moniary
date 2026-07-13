@@ -8,6 +8,7 @@ import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/app_logger.dart';
+import '../../../shared/utils/currency_formatter.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/widgets/obscurable_amount_text.dart';
 import '../../budgets/application/budget_controller.dart';
@@ -995,14 +996,7 @@ class _WeeklySummary {
   }
 }
 
-String _money(BuildContext context, double amount) {
-  final formatter = NumberFormat.currency(
-    locale: Localizations.localeOf(context).toString(),
-    symbol: '',
-    decimalDigits: 0,
-  );
-  return '${formatter.format(amount).trim()}${context.l10n.transactionAmountSuffix}';
-}
+String _money(BuildContext context, double amount) => formatMoney(amount);
 
 String _compactAmount(BuildContext context, double amount) {
   if (amount <= 0) return '0';

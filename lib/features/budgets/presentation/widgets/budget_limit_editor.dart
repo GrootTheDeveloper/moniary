@@ -447,10 +447,7 @@ class _BudgetLimitDraft {
 }
 
 String _formatLimitAmount(BuildContext context, double amount) {
-  final formatted = formatVnd(amount);
-  final suffix = context.l10n.transactionAmountSuffix;
-  if (!formatted.endsWith(suffix)) return formatted;
-  return '${formatted.substring(0, formatted.length - suffix.length).trim()} $suffix';
+  return formatMoney(amount);
 }
 
 Color _budgetAccent(CategoryBudget category, MoniaryColors colors) {

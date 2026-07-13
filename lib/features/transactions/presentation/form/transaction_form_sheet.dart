@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/utils/app_logger.dart';
@@ -760,7 +761,7 @@ class _ImagePreview extends StatelessWidget {
                             color: Colors.white,
                             fontWeight: FontWeight.w800,
                           ),
-                          suffixText: context.l10n.transactionAmountSuffix,
+                          suffixText: activeCurrencySymbol(),
                           suffixStyle: const TextStyle(
                             fontSize: 13,
                             color: Colors.white,

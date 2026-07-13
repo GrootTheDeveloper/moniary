@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../shared/utils/currency_formatter.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../core/preferences/preferences_providers.dart';
 import '../../../features/calendar/presentation/month/calendar_screen.dart';
@@ -29,7 +30,6 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   final _nameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _currencies = const ['VND', 'USD', 'EUR'];
   String _currency = 'VND';
   String? _avatarPath;
   bool _avatarPicked = false;
@@ -247,11 +247,11 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                       DropdownButtonFormField<String>(
                         initialValue: _currency,
                         decoration: const InputDecoration(),
-                        items: _currencies
+                        items: supportedCurrencies
                             .map(
-                              (currency) => DropdownMenuItem(
-                                value: currency,
-                                child: Text(currency),
+                              (info) => DropdownMenuItem(
+                                value: info.code,
+                                child: Text('${info.code} (${info.symbol})'),
                               ),
                             )
                             .toList(),

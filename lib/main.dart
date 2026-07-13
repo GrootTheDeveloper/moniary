@@ -10,6 +10,7 @@ import 'core/constants/app_constants.dart';
 import 'core/notifications/local_notification_service.dart';
 import 'core/preferences/preferences_bootstrap.dart';
 import 'core/supabase/supabase_bootstrap.dart';
+import 'shared/utils/currency_formatter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +27,9 @@ Future<void> main() async {
   await initializeDateFormatting(AppConstants.defaultLocale);
   AppConstants.assertSupabaseConfig();
   await bootstrapPreferences();
+  setActiveCurrencyCode(
+    appPreferences.getString('preferred_currency') ?? 'VND',
+  );
   await bootstrapSupabase();
 
   try {

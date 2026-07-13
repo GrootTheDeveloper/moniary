@@ -29,6 +29,7 @@ import 'transaction_search_delegate.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../settings/application/privacy_controller.dart';
 
@@ -1787,14 +1788,8 @@ String _formatMoney(
   double amount, {
   required bool isNegative,
 }) {
-  final formatter = NumberFormat.currency(
-    locale: Localizations.localeOf(context).toString(),
-    symbol: '',
-    decimalDigits: 0,
-  );
   final sign = isNegative ? '-' : '+';
-  final formatted = formatter.format(amount).trim();
-  return '$sign$formatted${context.l10n.transactionAmountSuffix}';
+  return '$sign${formatMoney(amount)}';
 }
 
 class _TodayGrid extends StatelessWidget {

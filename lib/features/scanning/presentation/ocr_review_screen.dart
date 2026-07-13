@@ -115,7 +115,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
               labelText: context.l10n.transactionAmount,
-              suffixText: context.l10n.transactionAmountSuffix,
+              suffixText: activeCurrencySymbol(),
               prefixIcon: const Icon(Icons.payments_outlined),
             ),
           ),

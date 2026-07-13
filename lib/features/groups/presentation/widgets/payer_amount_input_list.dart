@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/spending_group.dart';
 
@@ -71,7 +72,7 @@ class PayerAmountInputList extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText: context.l10n.groupTransactionTotal,
-                    suffixText: context.l10n.transactionAmountSuffix,
+                    suffixText: activeCurrencySymbol(),
                   ),
                 ),
               ),
