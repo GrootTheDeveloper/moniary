@@ -1591,6 +1591,37 @@
   "budgetMonthlyLimit": "Hạn mức tháng",
   "budgetLimitHelper": "Nhập số tiền tối đa bạn muốn chi cho danh mục này trong tháng.",
   "budgetRemoveLimit": "Bỏ hạn mức",
+  "budgetLimitTitleForCategory": "Hạn mức · {category}",
+  "@budgetLimitTitleForCategory": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetUsedWarningLine": "Đã dùng {spent} ({percent}%) — {status}",
+  "@budgetUsedWarningLine": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetAlertAtPercent": "Báo khi đạt {percent}%",
+  "@budgetAlertAtPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "budgetSaveLimit": "Lưu hạn mức",
   "budgetNearLimit": "Sắp vượt hạn mức",
   "budgetOverLimit": "Đã vượt hạn mức",
   "budgetNearLimitShort": "Sắp vượt",

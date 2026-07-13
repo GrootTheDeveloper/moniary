@@ -58,7 +58,7 @@ class TransactionRepository {
     ),
     _mockTransaction(
       id: 'mock-3',
-      amount: 200000,
+      amount: 360000,
       note: 'Shopping',
       categoryId: 'mock-cat-shopping',
       categoryName: 'Mua sắm',
@@ -71,7 +71,7 @@ class TransactionRepository {
     ),
     _mockTransaction(
       id: 'mock-4',
-      amount: 82000,
+      amount: 260000,
       note: 'Ride',
       categoryId: 'mock-cat-transport',
       categoryName: 'Đi lại',
@@ -95,7 +95,7 @@ class TransactionRepository {
     ),
     _mockTransaction(
       id: 'mock-6',
-      amount: 120000,
+      amount: 180000,
       note: 'Breakfast',
       categoryId: 'mock-cat-food',
       categoryName: 'Ăn uống',
@@ -107,7 +107,7 @@ class TransactionRepository {
     ),
     _mockTransaction(
       id: 'mock-7',
-      amount: 450000,
+      amount: 690000,
       note: 'Skin care',
       categoryId: 'mock-cat-shopping',
       categoryName: 'Mua sắm',
@@ -132,7 +132,7 @@ class TransactionRepository {
     ),
     _mockTransaction(
       id: 'mock-9',
-      amount: 180000,
+      amount: 310000,
       note: 'Grocery',
       categoryId: 'mock-cat-food',
       categoryName: 'Ăn uống',
@@ -144,7 +144,7 @@ class TransactionRepository {
     ),
     _mockTransaction(
       id: 'mock-10',
-      amount: 92000,
+      amount: 260000,
       note: 'Taxi home',
       categoryId: 'mock-cat-transport',
       categoryName: 'Đi lại',
@@ -156,7 +156,7 @@ class TransactionRepository {
     ),
     _mockTransaction(
       id: 'mock-11',
-      amount: 175000,
+      amount: 275000,
       note: 'Dinner',
       categoryId: 'mock-cat-food',
       categoryName: 'Ăn uống',
@@ -168,7 +168,7 @@ class TransactionRepository {
     ),
     _mockTransaction(
       id: 'mock-12',
-      amount: 280000,
+      amount: 400000,
       note: 'Stationery',
       categoryId: 'mock-cat-shopping',
       categoryName: 'Mua sắm',
@@ -180,7 +180,7 @@ class TransactionRepository {
     ),
     _mockTransaction(
       id: 'mock-13',
-      amount: 85000,
+      amount: 220000,
       note: 'Metro',
       categoryId: 'mock-cat-transport',
       categoryName: 'Đi lại',
@@ -192,7 +192,7 @@ class TransactionRepository {
     ),
     _mockTransaction(
       id: 'mock-14',
-      amount: 235000,
+      amount: 385000,
       note: 'Weekend market',
       categoryId: 'mock-cat-food',
       categoryName: 'Ăn uống',
@@ -216,7 +216,7 @@ class TransactionRepository {
     ),
     _mockTransaction(
       id: 'mock-16',
-      amount: 210000,
+      amount: 415000,
       note: 'Lunch set',
       categoryId: 'mock-cat-food',
       categoryName: 'Ăn uống',
@@ -228,7 +228,7 @@ class TransactionRepository {
     ),
     _mockTransaction(
       id: 'mock-17',
-      amount: 98000,
+      amount: 240000,
       note: 'Airport ride',
       categoryId: 'mock-cat-transport',
       categoryName: 'Đi lại',

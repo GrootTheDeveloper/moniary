@@ -3919,6 +3919,24 @@ class AppLocalizationsVi extends AppLocalizations {
   String get budgetRemoveLimit => 'Bỏ hạn mức';
 
   @override
+  String budgetLimitTitleForCategory(String category) {
+    return 'Hạn mức · $category';
+  }
+
+  @override
+  String budgetUsedWarningLine(String spent, int percent, String status) {
+    return 'Đã dùng $spent ($percent%) — $status';
+  }
+
+  @override
+  String budgetAlertAtPercent(int percent) {
+    return 'Báo khi đạt $percent%';
+  }
+
+  @override
+  String get budgetSaveLimit => 'Lưu hạn mức';
+
+  @override
   String get budgetNearLimit => 'Sắp vượt hạn mức';
 
   @override

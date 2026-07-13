@@ -43,6 +43,6 @@ void main() {
     expect(find.text('Ngân sách'), findsOneWidget);
     expect(find.text('90%'), findsOneWidget);
     expect(find.text('Ăn uống'), findsOneWidget);
-    expect(find.text('Sắp vượt hạn mức'), findsOneWidget);
+    expect(find.textContaining('Sắp vượt', findRichText: true), findsOneWidget);
   });
 }

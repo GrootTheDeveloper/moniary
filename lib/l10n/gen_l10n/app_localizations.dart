@@ -7100,6 +7100,30 @@ abstract class AppLocalizations {
   /// **'Bỏ hạn mức'**
   String get budgetRemoveLimit;
 
+  /// No description provided for @budgetLimitTitleForCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hạn mức · {category}'**
+  String budgetLimitTitleForCategory(String category);
+
+  /// No description provided for @budgetUsedWarningLine.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã dùng {spent} ({percent}%) — {status}'**
+  String budgetUsedWarningLine(String spent, int percent, String status);
+
+  /// No description provided for @budgetAlertAtPercent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo khi đạt {percent}%'**
+  String budgetAlertAtPercent(int percent);
+
+  /// No description provided for @budgetSaveLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu hạn mức'**
+  String get budgetSaveLimit;
+
   /// No description provided for @budgetNearLimit.
   ///
   /// In vi, this message translates to:

@@ -3917,6 +3917,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get budgetRemoveLimit => 'Remove limit';
 
   @override
+  String budgetLimitTitleForCategory(String category) {
+    return 'Limit · $category';
+  }
+
+  @override
+  String budgetUsedWarningLine(String spent, int percent, String status) {
+    return 'Used $spent ($percent%) — $status';
+  }
+
+  @override
+  String budgetAlertAtPercent(int percent) {
+    return 'Alert at $percent%';
+  }
+
+  @override
+  String get budgetSaveLimit => 'Save limit';
+
+  @override
   String get budgetNearLimit => 'Near the limit';
 
   @override

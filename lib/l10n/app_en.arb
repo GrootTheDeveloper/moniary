@@ -1591,6 +1591,37 @@
   "budgetMonthlyLimit": "Monthly limit",
   "budgetLimitHelper": "Enter the maximum amount you want to spend in this category this month.",
   "budgetRemoveLimit": "Remove limit",
+  "budgetLimitTitleForCategory": "Limit · {category}",
+  "@budgetLimitTitleForCategory": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetUsedWarningLine": "Used {spent} ({percent}%) — {status}",
+  "@budgetUsedWarningLine": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetAlertAtPercent": "Alert at {percent}%",
+  "@budgetAlertAtPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "budgetSaveLimit": "Save limit",
   "budgetNearLimit": "Near the limit",
   "budgetOverLimit": "Over the limit",
   "budgetNearLimitShort": "Near limit",
