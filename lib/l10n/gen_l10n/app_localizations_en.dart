@@ -1425,6 +1425,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cameraFlip => 'Flip camera';
 
   @override
+  String get cameraFlash => 'Flash';
+
+  @override
   String get cameraNoPermission => 'No camera permission';
 
   @override

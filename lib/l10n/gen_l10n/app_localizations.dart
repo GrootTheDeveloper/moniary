@@ -2702,6 +2702,12 @@ abstract class AppLocalizations {
   /// **'Lật camera'**
   String get cameraFlip;
 
+  /// No description provided for @cameraFlash.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đèn flash'**
+  String get cameraFlash;
+
   /// No description provided for @cameraNoPermission.
   ///
   /// In vi, this message translates to:

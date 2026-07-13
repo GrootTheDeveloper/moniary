@@ -1423,6 +1423,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get cameraFlip => 'Lật camera';
 
   @override
+  String get cameraFlash => 'Đèn flash';
+
+  @override
   String get cameraNoPermission => 'Không có quyền truy cập camera';
 
   @override

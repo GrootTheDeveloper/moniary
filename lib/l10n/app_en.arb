@@ -604,6 +604,7 @@
   "manageDataTitle": "Manage data",
   "cameraTakePhoto": "Capture",
   "cameraFlip": "Flip camera",
+  "cameraFlash": "Flash",
   "cameraNoPermission": "No camera permission",
   "cameraTitle": "Take a photo of receipt",
   "cameraOcrScan": "OCR Scan",

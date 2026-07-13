@@ -604,6 +604,7 @@
   "manageDataTitle": "Quản lý dữ liệu",
   "cameraTakePhoto": "Chụp",
   "cameraFlip": "Lật camera",
+  "cameraFlash": "Đèn flash",
   "cameraNoPermission": "Không có quyền truy cập camera",
   "cameraTitle": "Chụp hóa đơn",
   "cameraOcrScan": "Quét OCR",
