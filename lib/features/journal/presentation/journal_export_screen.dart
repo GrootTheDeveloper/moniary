@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -10,7 +11,6 @@ import 'package:share_plus/share_plus.dart';
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/currency_formatter.dart';
-import '../../../shared/widgets/supabase_image.dart';
 import '../domain/journal_models.dart';
 
 class JournalExportScreen extends StatefulWidget {
@@ -30,35 +30,43 @@ class _JournalExportScreenState extends State<JournalExportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.journalExportTitle),
-        actions: [
-          TextButton(
-            onPressed: _busy ? null : _share,
-            child: Text(context.l10n.journalExportPost),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: _exportBackground,
+        body: SafeArea(
+          child: Column(
+            children: [
+              _ExportTopBar(
+                busy: _busy,
+                onClose: () => Navigator.of(context).maybePop(),
+                onPost: _share,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(36, 58, 36, 22),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: SizedBox(
+                          width: 325,
+                          child: RepaintBoundary(
+                            key: _boundaryKey,
+                            child: _JournalPoster(recap: widget.recap),
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      _ExportRangePills(),
+                      const SizedBox(height: 14),
+                      _SaveButton(busy: _busy, onPressed: _save),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 6, 24, 36),
-        children: [
-          RepaintBoundary(
-            key: _boundaryKey,
-            child: _JournalPoster(recap: widget.recap),
-          ),
-          const SizedBox(height: 18),
-          FilledButton.icon(
-            onPressed: _busy ? null : _save,
-            icon: _busy
-                ? const SizedBox.square(
-                    dimension: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.download_outlined),
-            label: Text(context.l10n.journalExportSave),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -104,6 +112,70 @@ class _JournalExportScreenState extends State<JournalExportScreen> {
   }
 }
 
+const _exportBackground = Color(0xFF1F1A14);
+const _posterSurface = Color(0xFFF4EEE4);
+const _posterInk = Color(0xFF2A2119);
+const _posterMuted = Color(0xFF8D8176);
+const _posterLine = Color(0xFFE3DACD);
+const _exportAccent = Color(0xFFE4AD72);
+
+class _ExportTopBar extends StatelessWidget {
+  const _ExportTopBar({
+    required this.busy,
+    required this.onClose,
+    required this.onPost,
+  });
+
+  final bool busy;
+  final VoidCallback onClose;
+  final VoidCallback onPost;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 56,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: IconButton(
+              onPressed: busy ? null : onClose,
+              tooltip: context.l10n.commonClose,
+              icon: const Icon(Icons.close_rounded),
+              color: _posterSurface,
+              iconSize: 22,
+            ),
+          ),
+          Text(
+            context.l10n.journalExportTitle,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: _posterSurface,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 14),
+              child: TextButton(
+                onPressed: busy ? null : onPost,
+                style: TextButton.styleFrom(
+                  foregroundColor: _exportAccent,
+                  textStyle: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w900),
+                ),
+                child: Text(context.l10n.journalExportPost),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _JournalPoster extends StatelessWidget {
   const _JournalPoster({required this.recap});
 
@@ -111,103 +183,46 @@ class _JournalPoster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final images = recap.transactions
-        .where(
-          (transaction) => transaction.imagePath?.trim().isNotEmpty == true,
-        )
-        .take(4)
-        .toList();
     final month = DateFormat.yMMMM(
       Localizations.localeOf(context).toString(),
     ).format(recap.month);
-    final colors = context.moniaryColors;
 
     return AspectRatio(
-      aspectRatio: 4 / 5,
+      aspectRatio: 0.62,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(22, 22, 22, 19),
         decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: colors.outline),
+          color: _posterSurface,
+          borderRadius: BorderRadius.circular(22),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    context.l10n.journalExportBrand.toUpperCase(),
-                    style: context.moniaryTypography.metadataStrong,
-                  ),
-                ),
-                Container(
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: colors.primary.withValues(alpha: 0.12),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.auto_stories_outlined,
-                    color: colors.primary,
-                    size: 18,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(month, style: context.moniaryTypography.displayMedium),
-            const SizedBox(height: 16),
-            Expanded(
-              child: _ReceiptMosaic(
-                images: images
-                    .map((transaction) => transaction.imagePath)
-                    .toList(),
-                count: recap.expenseCount,
+            Text(
+              context.l10n.journalExportBrand.toUpperCase(),
+              textAlign: TextAlign.center,
+              style: context.moniaryTypography.metadataStrong.copyWith(
+                color: const Color(0xFFC56A4B),
+                fontSize: 8,
+                letterSpacing: 4,
               ),
             ),
-            const SizedBox(height: 18),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: colors.background,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: colors.textPrimary.withValues(alpha: 0.10),
-                ),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: _PosterMetric(
-                      value: recap.expenseCount.toString(),
-                      label: context.l10n.transactionCount(recap.expenseCount),
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    flex: 2,
-                    child: _PosterMetric(
-                      value: formatVnd(recap.totalExpense),
-                      label: context.l10n.statsTotalExpense,
-                    ),
-                  ),
-                ],
+            const SizedBox(height: 10),
+            Text(
+              month,
+              textAlign: TextAlign.center,
+              style: context.moniaryTypography.displaySmall.copyWith(
+                color: _posterInk,
+                fontSize: 25,
+                height: 1.04,
               ),
             ),
+            const SizedBox(height: 20),
+            Expanded(child: _PosterMosaic(recap: recap)),
+            const SizedBox(height: 17),
+            const Divider(color: _posterLine, height: 1),
             const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _PosterPill(label: context.l10n.journalExportWholeMonth),
-                _PosterPill(label: context.l10n.journalExportToday),
-                _PosterPill(label: context.l10n.journalExportCustomRange),
-              ],
-            ),
+            _PosterMetrics(recap: recap),
           ],
         ),
       ),
@@ -215,148 +230,231 @@ class _JournalPoster extends StatelessWidget {
   }
 }
 
-class _ReceiptMosaic extends StatelessWidget {
-  const _ReceiptMosaic({required this.images, required this.count});
+class _PosterMosaic extends StatelessWidget {
+  const _PosterMosaic({required this.recap});
 
-  final List<String?> images;
-  final int count;
+  final MonthlyRecap recap;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.moniaryColors;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        final height = constraints.maxHeight;
-        final largeWidth = width * 0.62;
-        final smallWidth = width * 0.34;
+    final palette = _posterPalette();
+    final visibleCount = 15;
+    final overflow = (recap.expenseCount - visibleCount).clamp(0, 999);
 
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              left: 0,
-              top: 0,
-              width: largeWidth,
-              height: height * 0.84,
-              child: _ReceiptImage(
-                imagePath: images.isNotEmpty ? images[0] : null,
-                color: AppTheme.sand,
-              ),
-            ),
-            Positioned(
-              right: 0,
-              top: height * 0.08,
-              width: smallWidth,
-              height: height * 0.42,
-              child: _ReceiptImage(
-                imagePath: images.length > 1 ? images[1] : null,
-                color: AppTheme.sage,
-              ),
-            ),
-            Positioned(
-              right: width * 0.09,
-              bottom: 0,
-              width: smallWidth,
-              height: height * 0.42,
-              child: _ReceiptImage(
-                imagePath: images.length > 2 ? images[2] : null,
-                color: AppTheme.dustyRose,
-              ),
-            ),
-            Positioned(
-              left: width * 0.43,
-              bottom: height * 0.08,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: colors.outline),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.18),
-                      blurRadius: 18,
-                      offset: const Offset(0, 10),
+    return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      itemCount: 16,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 4,
+        mainAxisSpacing: 4,
+      ),
+      itemBuilder: (context, index) {
+        final isOverflowCell = index == 15 && overflow > 0;
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            color: isOverflowCell
+                ? const Color(0xFFECE5D9)
+                : palette[index % palette.length],
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Center(
+            child: isOverflowCell
+                ? Text(
+                    '+$overflow',
+                    style: context.moniaryTypography.metadataStrong.copyWith(
+                      color: _posterMuted,
+                      fontSize: 9,
+                      letterSpacing: 0,
                     ),
-                  ],
-                ),
-                child: Text(
-                  '+$count',
-                  style: context.moniaryTypography.metadataStrong,
-                ),
-              ),
-            ),
-          ],
+                  )
+                : const SizedBox.shrink(),
+          ),
         );
       },
     );
   }
 }
 
-class _ReceiptImage extends StatelessWidget {
-  const _ReceiptImage({required this.imagePath, required this.color});
+class _PosterMetrics extends StatelessWidget {
+  const _PosterMetrics({required this.recap});
 
-  final String? imagePath;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.24),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: context.moniaryColors.textPrimary.withValues(alpha: 0.10),
-        ),
-      ),
-      child: SupabaseImage(
-        imagePath: imagePath,
-        borderRadius: BorderRadius.circular(18),
-        fallbackIcon: Icons.receipt_long_outlined,
-      ),
-    );
-  }
-}
-
-class _PosterMetric extends StatelessWidget {
-  const _PosterMetric({required this.value, required this.label});
-
-  final String value;
-  final String label;
+  final MonthlyRecap recap;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(value, style: context.moniaryTypography.displaySmall),
-        const SizedBox(height: 4),
-        Text(label.toUpperCase(), style: context.moniaryTypography.metadata),
+        Expanded(
+          child: _PosterMetric(
+            value: recap.expenseCount.toString(),
+            label: context.l10n.transactionCount(recap.expenseCount),
+          ),
+        ),
+        Expanded(
+          child: _PosterMetric(
+            value: formatVnd(recap.totalExpense),
+            label: context.l10n.statsTotalExpense,
+            alignEnd: true,
+            accentValue: true,
+          ),
+        ),
       ],
     );
   }
 }
 
-class _PosterPill extends StatelessWidget {
-  const _PosterPill({required this.label});
+class _PosterMetric extends StatelessWidget {
+  const _PosterMetric({
+    required this.value,
+    required this.label,
+    this.alignEnd = false,
+    this.accentValue = false,
+  });
 
+  final String value;
   final String label;
+  final bool alignEnd;
+  final bool accentValue;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.moniaryColors;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      decoration: BoxDecoration(
-        color: colors.background,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: colors.outline),
-      ),
-      child: Text(label, style: context.moniaryTypography.metadataStrong),
+    return Column(
+      crossAxisAlignment: alignEnd
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
+      children: [
+        Text(
+          value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: context.moniaryTypography.displaySmall.copyWith(
+            color: accentValue ? const Color(0xFFD96D4D) : _posterInk,
+            fontSize: 15,
+            height: 1,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          label.toUpperCase(),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: context.moniaryTypography.metadata.copyWith(
+            color: _posterMuted,
+            fontSize: 7,
+            letterSpacing: 2.3,
+          ),
+        ),
+      ],
     );
   }
+}
+
+class _ExportRangePills extends StatelessWidget {
+  const _ExportRangePills();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        _ExportPill(
+          label: context.l10n.journalExportWholeMonth,
+          selected: true,
+        ),
+        const SizedBox(width: 8),
+        _ExportPill(label: context.l10n.journalExportToday),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _ExportPill(label: context.l10n.journalExportCustomRange),
+        ),
+      ],
+    );
+  }
+}
+
+class _ExportPill extends StatelessWidget {
+  const _ExportPill({required this.label, this.selected = false});
+
+  final String label;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 34,
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: selected ? _posterSurface : Colors.transparent,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: selected
+              ? _posterSurface
+              : _posterSurface.withValues(alpha: 0.28),
+        ),
+      ),
+      child: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+          color: selected ? _posterInk : _posterSurface.withValues(alpha: 0.72),
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+}
+
+class _SaveButton extends StatelessWidget {
+  const _SaveButton({required this.busy, required this.onPressed});
+
+  final bool busy;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: FilledButton.icon(
+        onPressed: busy ? null : onPressed,
+        icon: busy
+            ? const SizedBox.square(
+                dimension: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.file_download_outlined, size: 18),
+        label: Text(context.l10n.journalExportSave),
+        style: FilledButton.styleFrom(
+          backgroundColor: _exportAccent,
+          foregroundColor: _posterInk,
+          disabledBackgroundColor: _exportAccent.withValues(alpha: 0.54),
+          disabledForegroundColor: _posterInk.withValues(alpha: 0.54),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(999),
+          ),
+          textStyle: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w900),
+        ),
+      ),
+    );
+  }
+}
+
+List<Color> _posterPalette() {
+  return [
+    const Color(0xFFB8AA9D),
+    const Color(0xFF92A197),
+    const Color(0xFFB18F8C),
+    const Color(0xFF8998AB),
+    const Color(0xFFC2A98C),
+    const Color(0xFF9F91A8),
+    const Color(0xFF78908B),
+    const Color(0xFFB78E90),
+    const Color(0xFF8A9AAE),
+  ];
 }
