@@ -241,51 +241,54 @@ class _HeaderIconButton extends StatelessWidget {
     return Semantics(
       button: true,
       label: label,
-      child: Material(
-        color: background,
-        borderRadius: BorderRadius.circular(9),
-        child: InkWell(
-          onTap: onTap,
+      child: Tooltip(
+        message: label,
+        child: Material(
+          color: background,
           borderRadius: BorderRadius.circular(9),
-          child: Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(9),
-              border: Border.all(color: border),
-            ),
-            child: Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.center,
-              children: [
-                Icon(icon, size: 21, color: foreground),
-                if ((badge ?? 0) > 0)
-                  Positioned(
-                    top: -5,
-                    right: -5,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: context.moniaryColors.primary,
-                        borderRadius: BorderRadius.circular(99),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 5,
-                          vertical: 2,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(9),
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(9),
+                border: Border.all(color: border),
+              ),
+              child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  Icon(icon, size: 21, color: foreground),
+                  if ((badge ?? 0) > 0)
+                    Positioned(
+                      top: -5,
+                      right: -5,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: context.moniaryColors.primary,
+                          borderRadius: BorderRadius.circular(99),
                         ),
-                        child: Text(
-                          badge! > 99 ? '99+' : '$badge',
-                          style: context.moniaryTypography.metadataStrong
-                              .copyWith(
-                                color: AppTheme.surfaceRaised,
-                                fontSize: 9,
-                                letterSpacing: 0,
-                              ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 2,
+                          ),
+                          child: Text(
+                            badge! > 99 ? '99+' : '$badge',
+                            style: context.moniaryTypography.metadataStrong
+                                .copyWith(
+                                  color: AppTheme.surfaceRaised,
+                                  fontSize: 9,
+                                  letterSpacing: 0,
+                                ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

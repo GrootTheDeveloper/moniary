@@ -3879,6 +3879,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendSearchError => 'Không thể tìm bạn bè. Vui lòng thử lại.';
 
   @override
+  String get friendSearchPlaceholder => 'Tìm bạn bè...';
+
+  @override
   String get friendLoadError => 'Không tải được danh sách bạn bè.';
 
   @override
@@ -3887,6 +3890,25 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get friendNoFriendsSubtitle =>
       'Thêm bạn bè để mời vào nhóm chi tiêu nhanh hơn.';
+
+  @override
+  String friendListSection(int count) {
+    return 'Bạn bè · $count';
+  }
+
+  @override
+  String friendSharedGroups(int count) {
+    return '$count nhóm chung';
+  }
+
+  @override
+  String get friendOwesYou => 'Nợ bạn';
+
+  @override
+  String get friendYouOwe => 'Bạn nợ';
+
+  @override
+  String get friendBalanceSettled => 'Đã cân';
 
   @override
   String get friendIncomingRequests => 'Lời mời kết bạn';

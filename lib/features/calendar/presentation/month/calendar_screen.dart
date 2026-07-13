@@ -78,7 +78,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                             child: _SeamlessHeader(
                               userName: displayName,
                               onProfileTap: () => _openManager(context),
-                              onFriendsTap: () => _openFriendsSheet(context),
+                              onFriendsTap: () => _openFriendsScreen(context),
                               onRecapTap: () => context.push(
                                 MonthlyRecapScreen.routePath,
                                 extra: visibleMonth,
@@ -187,23 +187,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 
-  Future<void> _openFriendsSheet(BuildContext context) {
-    return showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      enableDrag: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return FractionallySizedBox(
-          heightFactor: 0.94,
-          child: ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-            child: const FriendsScreen(),
-          ),
-        );
-      },
-    );
+  Future<void> _openFriendsScreen(BuildContext context) {
+    return context.push(FriendsScreen.routePath);
   }
 
   Future<void> _openDayDetail(DateTime date) async {

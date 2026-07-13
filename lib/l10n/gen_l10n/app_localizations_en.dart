@@ -3877,6 +3877,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendSearchError => 'Could not search friends. Please try again.';
 
   @override
+  String get friendSearchPlaceholder => 'Search friends...';
+
+  @override
   String get friendLoadError => 'Could not load friends.';
 
   @override
@@ -3885,6 +3888,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get friendNoFriendsSubtitle =>
       'Add friends to invite them to expense groups faster.';
+
+  @override
+  String friendListSection(int count) {
+    return 'Friends · $count';
+  }
+
+  @override
+  String friendSharedGroups(int count) {
+    return '$count shared groups';
+  }
+
+  @override
+  String get friendOwesYou => 'Owes you';
+
+  @override
+  String get friendYouOwe => 'You owe';
+
+  @override
+  String get friendBalanceSettled => 'Settled';
 
   @override
   String get friendIncomingRequests => 'Friend requests';

@@ -42,6 +42,8 @@ class FriendProfile {
     this.username,
     this.avatarPath,
     this.friendsSince,
+    this.sharedGroupCount = 0,
+    this.currentUserBalance = 0,
   });
 
   final String userId;
@@ -49,6 +51,8 @@ class FriendProfile {
   final String? username;
   final String? avatarPath;
   final DateTime? friendsSince;
+  final int sharedGroupCount;
+  final int currentUserBalance;
 
   String get displayName {
     final name = fullName?.trim();

@@ -7016,6 +7016,12 @@ abstract class AppLocalizations {
   /// **'Không thể tìm bạn bè. Vui lòng thử lại.'**
   String get friendSearchError;
 
+  /// No description provided for @friendSearchPlaceholder.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm bạn bè...'**
+  String get friendSearchPlaceholder;
+
   /// No description provided for @friendLoadError.
   ///
   /// In vi, this message translates to:
@@ -7033,6 +7039,36 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thêm bạn bè để mời vào nhóm chi tiêu nhanh hơn.'**
   String get friendNoFriendsSubtitle;
+
+  /// No description provided for @friendListSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn bè · {count}'**
+  String friendListSection(int count);
+
+  /// No description provided for @friendSharedGroups.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} nhóm chung'**
+  String friendSharedGroups(int count);
+
+  /// No description provided for @friendOwesYou.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nợ bạn'**
+  String get friendOwesYou;
+
+  /// No description provided for @friendYouOwe.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn nợ'**
+  String get friendYouOwe;
+
+  /// No description provided for @friendBalanceSettled.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã cân'**
+  String get friendBalanceSettled;
 
   /// No description provided for @friendIncomingRequests.
   ///

@@ -1,24 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/friend_controller.dart';
 import '../../domain/entities/friend_profile.dart';
-import '../widgets/friend_profile_tile.dart';
 import 'add_friend_screen.dart';
 
-class FriendsScreen extends ConsumerWidget {
+class FriendsScreen extends ConsumerStatefulWidget {
   const FriendsScreen({super.key});
 
   static const routePath = '/friends';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<FriendsScreen> createState() => _FriendsScreenState();
+}
+
+class _FriendsScreenState extends ConsumerState<FriendsScreen> {
+  late final TextEditingController _searchController;
+  var _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final friendsAsync = ref.watch(friendsControllerProvider);
     final incomingAsync = ref.watch(incomingFriendRequestsProvider);
     final outgoingAsync = ref.watch(outgoingFriendRequestsProvider);
@@ -34,91 +56,122 @@ class FriendsScreen extends ConsumerWidget {
       );
     });
 
-    return Scaffold(
-      backgroundColor: context.moniaryColors.background,
-      appBar: AppBar(
-        title: Text(context.l10n.friendsTitle),
-        actions: [
-          IconButton(
-            tooltip: context.l10n.friendShareInviteLink,
-            onPressed: action.isLoading
-                ? null
-                : () => _shareInviteLink(context, ref),
-            icon: const Icon(Icons.ios_share_outlined),
-          ),
-          IconButton(
-            tooltip: context.l10n.friendAdd,
-            onPressed: () => context.push(AddFriendScreen.routePath),
-            icon: const Icon(Icons.person_add_alt_1_outlined),
-          ),
-          const SizedBox(width: 8),
-        ],
+    final colors = context.moniaryColors;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: colors.background,
+        systemNavigationBarDividerColor: colors.outline,
       ),
-      body: RefreshIndicator(
-        onRefresh: () => _refresh(ref),
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 36),
-          children: [
-            _FriendsHero(
-              actionLoading: action.isLoading,
-              onAdd: () => context.push(AddFriendScreen.routePath),
-              onShare: () => _shareInviteLink(context, ref),
-            ),
-            const SizedBox(height: 22),
-            incomingAsync.when(
-              loading: () => const _SectionLoading(),
-              error: (error, stackTrace) {
-                AppLogger.error(
-                  'Failed to load incoming friend requests',
-                  error,
-                  stackTrace,
-                );
-                return _SectionError(onRetry: () => _refresh(ref));
-              },
-              data: (requests) => requests.isEmpty
-                  ? const SizedBox.shrink()
-                  : _RequestSection(
-                      title: context.l10n.friendIncomingRequests,
-                      requests: requests,
-                      actionLoading: action.isLoading,
-                      onAccept: (request) => _accept(context, ref, request),
-                      onDecline: (request) => _decline(context, ref, request),
+      child: Scaffold(
+        backgroundColor: colors.background,
+        body: SafeArea(
+          bottom: false,
+          child: RefreshIndicator(
+            onRefresh: () => _refresh(ref),
+            color: colors.button,
+            backgroundColor: colors.surface,
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(14, 16, 14, 120),
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                _FriendsTopBar(
+                  onBack: _canPop(context)
+                      ? () => Navigator.of(context).maybePop()
+                      : null,
+                  onAdd: () => context.push(AddFriendScreen.routePath),
+                ),
+                const SizedBox(height: 22),
+                _SearchField(
+                  controller: _searchController,
+                  onChanged: (value) => setState(() => _query = value),
+                ),
+                const SizedBox(height: 22),
+                incomingAsync.when(
+                  loading: () => const SizedBox.shrink(),
+                  error: (error, stackTrace) {
+                    AppLogger.error(
+                      'Failed to load incoming friend requests',
+                      error,
+                      stackTrace,
+                    );
+                    return _SectionError(onRetry: () => _refresh(ref));
+                  },
+                  data: (requests) => requests.isEmpty
+                      ? const SizedBox.shrink()
+                      : _RequestSection(
+                          title: context.l10n.friendIncomingRequests,
+                          requests: requests,
+                          actionLoading: action.isLoading,
+                          onAccept: (request) => _accept(context, ref, request),
+                          onDecline: (request) =>
+                              _decline(context, ref, request),
+                        ),
+                ),
+                outgoingAsync.when(
+                  loading: () => const SizedBox.shrink(),
+                  error: (error, stackTrace) {
+                    AppLogger.error(
+                      'Failed to load outgoing friend requests',
+                      error,
+                      stackTrace,
+                    );
+                    return _SectionError(onRetry: () => _refresh(ref));
+                  },
+                  data: (requests) => requests.isEmpty
+                      ? const SizedBox.shrink()
+                      : _OutgoingRequestSection(
+                          requests: requests,
+                          actionLoading: action.isLoading,
+                          onCancel: (request) => _cancel(context, ref, request),
+                        ),
+                ),
+                friendsAsync.when(
+                  loading: () => const _SectionLoading(),
+                  error: (error, stackTrace) {
+                    AppLogger.error(
+                      'Failed to load friends',
+                      error,
+                      stackTrace,
+                    );
+                    return _SectionError(onRetry: () => _refresh(ref));
+                  },
+                  data: (friends) => _FriendsSection(
+                    friends: _filteredFriends(friends),
+                    totalCount: friends.length,
+                    searchQuery: _query.trim(),
+                    actionLoading: action.isLoading,
+                    onAdd: () => context.push(AddFriendScreen.routePath),
+                    onShare: () => _shareInviteLink(context, ref),
+                    onRemove: (friend) => _showFriendActions(
+                      context: context,
+                      friend: friend,
+                      onRemove: () => _confirmRemove(context, ref, friend),
                     ),
+                  ),
+                ),
+              ],
             ),
-            outgoingAsync.when(
-              loading: () => const SizedBox.shrink(),
-              error: (error, stackTrace) {
-                AppLogger.error(
-                  'Failed to load outgoing friend requests',
-                  error,
-                  stackTrace,
-                );
-                return _SectionError(onRetry: () => _refresh(ref));
-              },
-              data: (requests) => requests.isEmpty
-                  ? const SizedBox.shrink()
-                  : _OutgoingRequestSection(
-                      requests: requests,
-                      actionLoading: action.isLoading,
-                      onCancel: (request) => _cancel(context, ref, request),
-                    ),
-            ),
-            friendsAsync.when(
-              loading: () => const _SectionLoading(),
-              error: (error, stackTrace) {
-                AppLogger.error('Failed to load friends', error, stackTrace);
-                return _SectionError(onRetry: () => _refresh(ref));
-              },
-              data: (friends) => _FriendsSection(
-                friends: friends,
-                actionLoading: action.isLoading,
-                onRemove: (friend) => _confirmRemove(context, ref, friend),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  List<FriendProfile> _filteredFriends(List<FriendProfile> friends) {
+    final query = _query.trim().toLowerCase();
+    if (query.isEmpty) return friends;
+    return friends
+        .where((friend) {
+          return friend.displayName.toLowerCase().contains(query) ||
+              friend.displayUsername.toLowerCase().contains(query);
+        })
+        .toList(growable: false);
+  }
+
+  bool _canPop(BuildContext context) {
+    return Navigator.of(context).canPop() ||
+        (GoRouter.maybeOf(context)?.canPop() ?? false);
   }
 
   Future<void> _refresh(WidgetRef ref) async {
@@ -187,6 +240,51 @@ class FriendsScreen extends ConsumerWidget {
     );
   }
 
+  Future<void> _showFriendActions({
+    required BuildContext context,
+    required FriendProfile friend,
+    required VoidCallback onRemove,
+  }) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: context.moniaryColors.surface,
+      showDragHandle: true,
+      builder: (context) {
+        final colors = context.moniaryColors;
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  friend.displayName,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    onRemove();
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: colors.danger,
+                    side: BorderSide(
+                      color: colors.danger.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  icon: const Icon(Icons.person_remove_alt_1_outlined),
+                  label: Text(context.l10n.friendRemove),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _confirmRemove(
     BuildContext context,
     WidgetRef ref,
@@ -221,39 +319,340 @@ class FriendsScreen extends ConsumerWidget {
   }
 }
 
+class _FriendsTopBar extends StatelessWidget {
+  const _FriendsTopBar({required this.onAdd, this.onBack});
+
+  final VoidCallback? onBack;
+  final VoidCallback onAdd;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return SizedBox(
+      height: 84,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: _IconSquareButton(
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              onPressed: onBack,
+              icon: Icons.arrow_back_ios_new_rounded,
+            ),
+          ),
+          Text(
+            context.l10n.friendsTitle,
+            style: context.moniaryTypography.displaySmall.copyWith(
+              fontSize: 22,
+              color: colors.textPrimary,
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: _IconSquareButton(
+              tooltip: context.l10n.friendAdd,
+              onPressed: onAdd,
+              icon: Icons.person_add_alt_1_rounded,
+              filled: true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IconSquareButton extends StatelessWidget {
+  const _IconSquareButton({
+    required this.tooltip,
+    required this.onPressed,
+    required this.icon,
+    this.filled = false,
+  });
+
+  final String tooltip;
+  final VoidCallback? onPressed;
+  final IconData icon;
+  final bool filled;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final background = filled ? colors.button : colors.surface;
+    final foreground = filled ? colors.surface : colors.icon;
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: background,
+        borderRadius: BorderRadius.circular(13),
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(13),
+          child: Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(13),
+              border: filled ? null : Border.all(color: colors.outline),
+            ),
+            child: Icon(icon, size: 21, color: foreground),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SearchField extends StatelessWidget {
+  const _SearchField({required this.controller, required this.onChanged});
+
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return TextField(
+      controller: controller,
+      onChanged: onChanged,
+      textInputAction: TextInputAction.search,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: colors.textPrimary,
+        fontWeight: FontWeight.w700,
+      ),
+      decoration: InputDecoration(
+        hintText: context.l10n.friendSearchPlaceholder,
+        prefixIcon: Icon(Icons.search_rounded, color: colors.textDim, size: 22),
+        filled: true,
+        fillColor: colors.surface.withValues(alpha: 0.72),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: colors.outline),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: colors.button, width: 1.2),
+        ),
+      ),
+    );
+  }
+}
+
 class _FriendsSection extends StatelessWidget {
   const _FriendsSection({
     required this.friends,
+    required this.totalCount,
+    required this.searchQuery,
     required this.actionLoading,
+    required this.onAdd,
+    required this.onShare,
     required this.onRemove,
   });
 
   final List<FriendProfile> friends;
+  final int totalCount;
+  final String searchQuery;
   final bool actionLoading;
+  final VoidCallback onAdd;
+  final VoidCallback onShare;
   final ValueChanged<FriendProfile> onRemove;
 
   @override
   Widget build(BuildContext context) {
-    if (friends.isEmpty) {
+    if (totalCount == 0) {
       return _EmptyFriendsState(
-        onAdd: () => context.push(AddFriendScreen.routePath),
+        onAdd: onAdd,
+        onShare: actionLoading ? null : onShare,
       );
     }
-    return _SectionCard(
-      title: context.l10n.friendsTitle,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (final friend in friends) ...[
-          FriendProfileTile(
-            profile: friend,
-            trailing: IconButton(
-              tooltip: context.l10n.friendRemove,
-              onPressed: actionLoading ? null : () => onRemove(friend),
-              icon: const Icon(Icons.person_remove_alt_1_outlined),
+        _SectionLabel(context.l10n.friendListSection(totalCount)),
+        const SizedBox(height: 5),
+        if (friends.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 34),
+            child: Text(
+              context.l10n.friendSearchEmpty(searchQuery),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          )
+        else
+          for (var index = 0; index < friends.length; index++)
+            _FriendRow(
+              friend: friends[index],
+              showDivider: index != friends.length - 1,
+              onTap: actionLoading ? null : () => onRemove(friends[index]),
+            ),
+      ],
+    );
+  }
+}
+
+class _FriendRow extends StatelessWidget {
+  const _FriendRow({
+    required this.friend,
+    required this.showDivider,
+    required this.onTap,
+  });
+
+  final FriendProfile friend;
+  final bool showDivider;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 70),
+          decoration: BoxDecoration(
+            border: showDivider
+                ? Border(
+                    bottom: BorderSide(
+                      color: colors.outline.withValues(alpha: 0.55),
+                    ),
+                  )
+                : null,
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 13),
+          child: Row(
+            children: [
+              ClipOval(
+                child: SupabaseImage(
+                  imagePath: friend.avatarPath,
+                  width: 48,
+                  height: 48,
+                  fallbackIcon: Icons.person_outline_rounded,
+                  fallbackBuilder: (context) => _AvatarFallback(friend: friend),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      friend.displayName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      context.l10n
+                          .friendSharedGroups(friend.sharedGroupCount)
+                          .toUpperCase(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.moniaryTypography.metadata.copyWith(
+                        color: colors.textDim,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              _FriendBalance(profile: friend),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AvatarFallback extends StatelessWidget {
+  const _AvatarFallback({required this.friend});
+
+  final FriendProfile friend;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final letter = friend.displayName.trim().isEmpty
+        ? '?'
+        : friend.displayName.trim().characters.first.toUpperCase();
+    return Container(
+      width: 48,
+      height: 48,
+      color: colors.secondary.withValues(alpha: 0.5),
+      alignment: Alignment.center,
+      child: Text(
+        letter,
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          color: colors.textPrimary,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+}
+
+class _FriendBalance extends StatelessWidget {
+  const _FriendBalance({required this.profile});
+
+  final FriendProfile profile;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final balance = profile.currentUserBalance;
+    final isSettled = balance == 0;
+    final color = balance > 0
+        ? colors.success
+        : balance < 0
+        ? colors.danger
+        : colors.textDim;
+    final label = balance > 0
+        ? context.l10n.friendOwesYou
+        : balance < 0
+        ? context.l10n.friendYouOwe
+        : context.l10n.friendBalanceSettled;
+    final amount = isSettled
+        ? formatVnd(0)
+        : '${balance > 0 ? '+' : '-'}${formatVnd(balance.abs())}';
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 82, maxWidth: 108),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            amount,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.moniaryTypography.metadataStrong.copyWith(
+              fontSize: 12,
+              color: color,
             ),
           ),
-          if (friend != friends.last) const SizedBox(height: 10),
+          const SizedBox(height: 4),
+          Text(
+            label.toUpperCase(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.moniaryTypography.metadata.copyWith(
+              color: colors.textDim,
+            ),
+          ),
         ],
-      ],
+      ),
     );
   }
 }
@@ -275,30 +674,28 @@ class _RequestSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _SectionCard(
+    return _CompactSection(
       title: title,
       children: [
-        for (final request in requests) ...[
-          FriendProfileTile(
-            profile: request.otherProfile,
+        for (final request in requests)
+          _RequestRow(
+            request: request,
             trailing: Wrap(
               spacing: 8,
               children: [
-                IconButton.filledTonal(
+                IconButton(
                   tooltip: context.l10n.friendDecline,
                   onPressed: actionLoading ? null : () => onDecline(request),
-                  icon: const Icon(Icons.close_outlined),
+                  icon: const Icon(Icons.close_rounded),
                 ),
                 IconButton.filled(
                   tooltip: context.l10n.friendAccept,
                   onPressed: actionLoading ? null : () => onAccept(request),
-                  icon: const Icon(Icons.check_outlined),
+                  icon: const Icon(Icons.check_rounded),
                 ),
               ],
             ),
           ),
-          if (request != requests.last) const SizedBox(height: 10),
-        ],
       ],
     );
   }
@@ -317,27 +714,81 @@ class _OutgoingRequestSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _SectionCard(
+    return _CompactSection(
       title: context.l10n.friendOutgoingRequests,
       children: [
-        for (final request in requests) ...[
-          FriendProfileTile(
-            profile: request.otherProfile,
+        for (final request in requests)
+          _RequestRow(
+            request: request,
             subtitle: context.l10n.friendRequestPending,
             trailing: TextButton(
               onPressed: actionLoading ? null : () => onCancel(request),
               child: Text(context.l10n.friendCancel),
             ),
           ),
-          if (request != requests.last) const SizedBox(height: 10),
-        ],
       ],
     );
   }
 }
 
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.title, required this.children});
+class _RequestRow extends StatelessWidget {
+  const _RequestRow({
+    required this.request,
+    required this.trailing,
+    this.subtitle,
+  });
+
+  final FriendRequest request;
+  final Widget trailing;
+  final String? subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final friend = request.otherProfile;
+    final colors = context.moniaryColors;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          ClipOval(
+            child: SupabaseImage(
+              imagePath: friend.avatarPath,
+              width: 42,
+              height: 42,
+              fallbackBuilder: (context) => _AvatarFallback(friend: friend),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  friend.displayName,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  subtitle ?? friend.displayUsername,
+                  style: context.moniaryTypography.metadata.copyWith(
+                    color: colors.textDim,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          trailing,
+        ],
+      ),
+    );
+  }
+}
+
+class _CompactSection extends StatelessWidget {
+  const _CompactSection({required this.title, required this.children});
 
   final String title;
   final List<Widget> children;
@@ -345,18 +796,19 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 4),
+      decoration: BoxDecoration(
+        color: colors.surface.withValues(alpha: 0.64),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: colors.outline),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: context.moniaryTypography.metadataStrong.copyWith(
-              color: colors.textDim,
-            ),
-          ),
-          const SizedBox(height: 12),
+          _SectionLabel(title, uppercase: false),
+          const SizedBox(height: 10),
           ...children,
         ],
       ),
@@ -364,103 +816,70 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-class _EmptyFriendsState extends StatelessWidget {
-  const _EmptyFriendsState({required this.onAdd});
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.text, {this.uppercase = true});
 
-  final VoidCallback onAdd;
+  final String text;
+  final bool uppercase;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.moniaryColors;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 72),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.people_outline, size: 72, color: colors.secondary),
-            const SizedBox(height: 16),
-            Text(
-              context.l10n.friendNoFriends,
-              textAlign: TextAlign.center,
-              style: context.moniaryTypography.displaySmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              context.l10n.friendNoFriendsSubtitle,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            FilledButton.icon(
-              onPressed: onAdd,
-              icon: const Icon(Icons.person_add_alt_1_outlined),
-              label: Text(context.l10n.friendAdd),
-            ),
-          ],
-        ),
+    return Text(
+      uppercase ? text.toUpperCase() : text,
+      style: context.moniaryTypography.metadataStrong.copyWith(
+        color: context.moniaryColors.textDim,
       ),
     );
   }
 }
 
-class _FriendsHero extends StatelessWidget {
-  const _FriendsHero({
-    required this.actionLoading,
-    required this.onAdd,
-    required this.onShare,
-  });
+class _EmptyFriendsState extends StatelessWidget {
+  const _EmptyFriendsState({required this.onAdd, required this.onShare});
 
-  final bool actionLoading;
   final VoidCallback onAdd;
-  final VoidCallback onShare;
+  final VoidCallback? onShare;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
-    final typography = context.moniaryTypography;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: colors.outline),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              context.l10n.appName.toUpperCase(),
-              style: typography.metadataStrong,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 64),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.people_outline_rounded, size: 56, color: colors.textDim),
+          const SizedBox(height: 16),
+          Text(
+            context.l10n.friendNoFriends,
+            textAlign: TextAlign.center,
+            style: context.moniaryTypography.displaySmall.copyWith(
+              color: colors.textPrimary,
             ),
-            const SizedBox(height: 8),
-            Text(context.l10n.friendsTitle, style: typography.displayMedium),
-            const SizedBox(height: 8),
-            Text(
-              context.l10n.friendsProfileSubtitle,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
-            ),
-            const SizedBox(height: 18),
-            Row(
-              children: [
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: onAdd,
-                    icon: const Icon(Icons.person_add_alt_1_outlined),
-                    label: Text(context.l10n.friendAdd),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                IconButton.filledTonal(
-                  onPressed: actionLoading ? null : onShare,
-                  icon: const Icon(Icons.ios_share_outlined),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            context.l10n.friendNoFriendsSubtitle,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FilledButton.icon(
+                onPressed: onAdd,
+                icon: const Icon(Icons.person_add_alt_1_rounded),
+                label: Text(context.l10n.friendAdd),
+              ),
+              const SizedBox(width: 10),
+              IconButton.outlined(
+                tooltip: context.l10n.friendShareInviteLink,
+                onPressed: onShare,
+                icon: const Icon(Icons.ios_share_rounded),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -486,7 +905,7 @@ class _SectionError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 36),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: [
           Text(context.l10n.friendLoadError),

@@ -19,7 +19,10 @@ final friendRepositoryProvider = Provider<FriendRepository>((ref) {
   return FriendRepositoryImpl(
     client,
     useMockData: useMockData,
-    mockDataSource: FriendMockDataSource(currentUserId: currentUserId),
+    mockDataSource: FriendMockDataSource(
+      currentUserId: currentUserId,
+      seedDemoData: useMockData && currentUserId == 'mock-user-id',
+    ),
   );
 });
 
