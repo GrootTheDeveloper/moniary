@@ -48,6 +48,7 @@ flutter:
   assets:
     - logo.png
     - assets/demo_transactions/
+    - assets/demo_avatars/
     - assets/fonts/OFL-Manrope.txt
     - assets/fonts/OFL-InstrumentSerif.txt
     - assets/fonts/OFL-JetBrainsMono.txt

@@ -89,7 +89,7 @@ class _GroupListContent extends StatelessWidget {
               slivers: [
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(30, 18, 30, 0),
+                    padding: const EdgeInsets.fromLTRB(14, 18, 14, 0),
                     child: _GroupsHeader(
                       pendingInviteCount: pendingInviteCount,
                       onCreate: onCreate,
@@ -100,20 +100,20 @@ class _GroupListContent extends StatelessWidget {
                   SliverFillRemaining(
                     hasScrollBody: false,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 28, 30, 120),
+                      padding: const EdgeInsets.fromLTRB(14, 28, 14, 120),
                       child: _GroupEmptyState(onCreate: onCreate),
                     ),
                   )
                 else ...[
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 20, 30, 18),
+                      padding: const EdgeInsets.fromLTRB(14, 20, 14, 18),
                       child: _GroupBalanceOverview(groups: groups),
                     ),
                   ),
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(30, 0, 30, 12),
+                      padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
                       child: Text(
                         context.l10n
                             .groupListSection(groups.length)
@@ -128,7 +128,7 @@ class _GroupListContent extends StatelessWidget {
                     ),
                   ),
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(30, 0, 30, 132),
+                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 132),
                     sliver: SliverList.separated(
                       itemCount: groups.length,
                       separatorBuilder: (_, _) => const SizedBox(height: 10),
@@ -313,6 +313,7 @@ class _GroupBalanceOverview extends StatelessWidget {
         Expanded(
           child: _BalanceSummaryTile(
             label: context.l10n.groupBalanceReceiveShort,
+            summaryLabel: context.l10n.groupBalanceReceiveSummary,
             value: '+${formatVnd(toReceive)}',
             color: context.moniaryColors.success,
           ),
@@ -321,6 +322,7 @@ class _GroupBalanceOverview extends StatelessWidget {
         Expanded(
           child: _BalanceSummaryTile(
             label: context.l10n.groupBalancePayShort,
+            summaryLabel: context.l10n.groupBalancePaySummary,
             value: '-${formatVnd(toPay)}',
             color: context.moniaryColors.danger,
           ),
@@ -333,19 +335,21 @@ class _GroupBalanceOverview extends StatelessWidget {
 class _BalanceSummaryTile extends StatelessWidget {
   const _BalanceSummaryTile({
     required this.label,
+    required this.summaryLabel,
     required this.value,
     required this.color,
   });
 
   final String label;
+  final String summaryLabel;
   final String value;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 68,
-      padding: const EdgeInsets.fromLTRB(14, 13, 12, 11),
+      height: 78,
+      padding: const EdgeInsets.fromLTRB(16, 13, 12, 12),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(12),
@@ -356,7 +360,7 @@ class _BalanceSummaryTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            label.toUpperCase(),
+            summaryLabel.toUpperCase(),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: context.moniaryTypography.metadataStrong.copyWith(
@@ -415,14 +419,13 @@ class _ReferenceGroupCard extends StatelessWidget {
         ? context.l10n.groupBalanceReceiveShort
         : context.l10n.groupBalancePayShort;
     final showSettlementAction = group.hasUnresolvedSettlements && balance < 0;
-    final accent = _groupAccent(index, group.type ?? group.description);
 
     return Material(
       color: Colors.transparent,
       child: Ink(
         decoration: BoxDecoration(
           color: colors.surface.withValues(alpha: 0.72),
-          borderRadius: BorderRadius.circular(13),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: colors.outline.withValues(alpha: 0.75)),
           boxShadow: [
             BoxShadow(
@@ -434,7 +437,7 @@ class _ReferenceGroupCard extends StatelessWidget {
         ),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(13),
+          borderRadius: BorderRadius.circular(14),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(14, 14, 14, 13),
             child: Column(
@@ -449,7 +452,7 @@ class _ReferenceGroupCard extends StatelessWidget {
                           imagePath: group.avatarPath,
                           fit: BoxFit.cover,
                           fallbackBuilder: (context) =>
-                              ColoredBox(color: accent),
+                              const _GroupImageFallback(),
                         ),
                       ),
                     ),
@@ -523,7 +526,6 @@ class _ReferenceGroupCard extends StatelessWidget {
                       _MemberDotStack(
                         count: group.memberCount,
                         avatarPaths: group.memberAvatarPaths,
-                        paletteOffset: index,
                       ),
                       const Spacer(),
                       Text(
@@ -545,42 +547,16 @@ class _ReferenceGroupCard extends StatelessWidget {
       ),
     );
   }
-
-  Color _groupAccent(int index, String? type) {
-    if (type == 'travel') return const Color(0xFF8796A8);
-    if (type == 'home') return const Color(0xFF91A092);
-    if (type == 'cafe') return const Color(0xFFB58F93);
-    const palette = [
-      Color(0xFF8796A8),
-      Color(0xFF91A092),
-      Color(0xFFB58F93),
-      Color(0xFFC2A98C),
-      Color(0xFF9F91A8),
-    ];
-    return palette[index % palette.length];
-  }
 }
 
 class _MemberDotStack extends StatelessWidget {
-  const _MemberDotStack({
-    required this.count,
-    required this.avatarPaths,
-    required this.paletteOffset,
-  });
+  const _MemberDotStack({required this.count, required this.avatarPaths});
 
   final int count;
   final List<String?> avatarPaths;
-  final int paletteOffset;
 
   @override
   Widget build(BuildContext context) {
-    const palette = [
-      Color(0xFFC2A98C),
-      Color(0xFF91A092),
-      Color(0xFF8796A8),
-      Color(0xFFB58F93),
-      Color(0xFFD0B894),
-    ];
     final visible = count.clamp(1, 5);
     return SizedBox(
       width: 15 + (visible - 1) * 13,
@@ -606,15 +582,39 @@ class _MemberDotStack extends StatelessWidget {
                         ? avatarPaths[index]
                         : null,
                     fit: BoxFit.cover,
-                    fallbackBuilder: (context) => ColoredBox(
-                      color: palette[(index + paletteOffset) % palette.length],
-                    ),
+                    fallbackBuilder: (context) => const _MemberAvatarFallback(),
                   ),
                 ),
               ),
             ),
         ],
       ),
+    );
+  }
+}
+
+class _GroupImageFallback extends StatelessWidget {
+  const _GroupImageFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return ColoredBox(
+      color: colors.backgroundSoft,
+      child: Icon(Icons.groups_2_outlined, size: 20, color: colors.textDim),
+    );
+  }
+}
+
+class _MemberAvatarFallback extends StatelessWidget {
+  const _MemberAvatarFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return ColoredBox(
+      color: colors.surface,
+      child: Icon(Icons.person_outline, size: 12, color: colors.textDim),
     );
   }
 }

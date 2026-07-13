@@ -1434,6 +1434,8 @@
   "@groupBalanceReceives": {"placeholders": {"amount": {"type": "String"}}},
   "groupBalanceReceiveShort": "Được nhận",
   "groupBalancePayShort": "Cần trả",
+  "groupBalanceReceiveSummary": "Bạn được nhận",
+  "groupBalancePaySummary": "Bạn cần trả",
   "groupSettleAction": "Tất toán",
   "groupUnresolvedBadge": "Chưa xử lý",
   "groupOverviewTitle": "Tổng quan",

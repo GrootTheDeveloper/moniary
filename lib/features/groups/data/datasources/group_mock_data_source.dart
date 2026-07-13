@@ -146,7 +146,7 @@ class GroupMockDataSource {
           'Minh Anh',
           GroupRole.owner,
           now,
-          'asset://assets/demo_transactions/salary.png',
+          'asset://assets/demo_avatars/minh-anh.png',
         ),
         for (var index = 1; index < seed.memberCount; index++)
           _demoMember(
@@ -186,11 +186,11 @@ class GroupMockDataSource {
 
   String _demoMemberAvatar(int index) {
     const avatars = [
-      'asset://assets/demo_transactions/cafe.png',
-      'asset://assets/demo_transactions/lunch.png',
-      'asset://assets/demo_transactions/shopping.png',
-      'asset://assets/demo_transactions/market.png',
-      'asset://assets/demo_transactions/transport.png',
+      'asset://assets/demo_avatars/hoang-nam.png',
+      'asset://assets/demo_avatars/bao-chau.png',
+      'asset://assets/demo_avatars/linh.png',
+      'asset://assets/demo_avatars/khoa.png',
+      'asset://assets/demo_avatars/minh-anh.png',
     ];
     return avatars[index % avatars.length];
   }

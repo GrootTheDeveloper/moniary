@@ -1434,6 +1434,8 @@
   "@groupBalanceReceives": {"placeholders": {"amount": {"type": "String"}}},
   "groupBalanceReceiveShort": "To receive",
   "groupBalancePayShort": "To pay",
+  "groupBalanceReceiveSummary": "You receive",
+  "groupBalancePaySummary": "You pay",
   "groupSettleAction": "Settle",
   "groupUnresolvedBadge": "Unresolved",
   "groupOverviewTitle": "Overview",

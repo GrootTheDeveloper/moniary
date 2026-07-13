@@ -3444,6 +3444,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupBalancePayShort => 'To pay';
 
   @override
+  String get groupBalanceReceiveSummary => 'You receive';
+
+  @override
+  String get groupBalancePaySummary => 'You pay';
+
+  @override
   String get groupSettleAction => 'Settle';
 
   @override

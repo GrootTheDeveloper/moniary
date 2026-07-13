@@ -6212,6 +6212,18 @@ abstract class AppLocalizations {
   /// **'Cần trả'**
   String get groupBalancePayShort;
 
+  /// No description provided for @groupBalanceReceiveSummary.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn được nhận'**
+  String get groupBalanceReceiveSummary;
+
+  /// No description provided for @groupBalancePaySummary.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn cần trả'**
+  String get groupBalancePaySummary;
+
   /// No description provided for @groupSettleAction.
   ///
   /// In vi, this message translates to:

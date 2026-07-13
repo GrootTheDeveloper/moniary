@@ -3444,6 +3444,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupBalancePayShort => 'Cần trả';
 
   @override
+  String get groupBalanceReceiveSummary => 'Bạn được nhận';
+
+  @override
+  String get groupBalancePaySummary => 'Bạn cần trả';
+
+  @override
   String get groupSettleAction => 'Tất toán';
 
   @override
