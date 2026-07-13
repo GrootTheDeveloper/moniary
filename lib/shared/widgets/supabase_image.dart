@@ -30,8 +30,8 @@ class SupabaseImage extends ConsumerWidget {
       return _buildFallback(context);
     }
 
-    if (imagePath!.startsWith('asset://')) {
-      final assetPath = imagePath!.substring('asset://'.length);
+    final assetPath = _assetPathFrom(imagePath!);
+    if (assetPath != null) {
       return ClipRRect(
         borderRadius: borderRadius ?? BorderRadius.zero,
         child: Image.asset(
@@ -119,6 +119,16 @@ class SupabaseImage extends ConsumerWidget {
         error: (err, stack) => _buildFallback(context),
       ),
     );
+  }
+
+  String? _assetPathFrom(String path) {
+    if (path.startsWith('asset://')) {
+      return path.substring('asset://'.length);
+    }
+    if (path.startsWith('assets/')) {
+      return path;
+    }
+    return null;
   }
 
   Widget _buildFallback(BuildContext context) {

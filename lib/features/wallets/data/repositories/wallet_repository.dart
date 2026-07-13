@@ -30,10 +30,32 @@ class WalletRepository {
       type: WalletType.cash,
       icon: 'wallet',
       color: '#44D884',
-      initialBalance: 2000000,
+      initialBalance: 4230000,
       isDefault: true,
       isActive: true,
       createdAt: DateTime.now().subtract(const Duration(days: 30)),
+    ),
+    Wallet(
+      id: 'mock-wallet-vietcombank',
+      name: 'Vietcombank',
+      type: WalletType.bank,
+      icon: 'bank',
+      color: '#8FA0B6',
+      initialBalance: 6850000,
+      isDefault: false,
+      isActive: true,
+      createdAt: DateTime.now().subtract(const Duration(days: 28)),
+    ),
+    Wallet(
+      id: 'mock-wallet-old-fun',
+      name: 'Ví ăn chơi cũ',
+      type: WalletType.ewallet,
+      icon: 'payment',
+      color: '#D99A80',
+      initialBalance: 0,
+      isDefault: false,
+      isActive: false,
+      createdAt: DateTime.now().subtract(const Duration(days: 26)),
     ),
     Wallet(
       id: 'mock-wallet-momo',
@@ -41,7 +63,7 @@ class WalletRepository {
       type: WalletType.ewallet,
       icon: 'payment',
       color: '#E45CA6',
-      initialBalance: 1000000,
+      initialBalance: 1400000,
       isDefault: false,
       isActive: true,
       createdAt: DateTime.now().subtract(const Duration(days: 30)),
@@ -54,7 +76,7 @@ class WalletRepository {
 
   Future<List<Wallet>> fetchWallets() async {
     if (_useMockData) {
-      return _mockWallets.where((w) => w.isActive).toList();
+      return List<Wallet>.unmodifiable(_mockWallets);
     }
     final session = _client.auth.currentSession;
     if (session == null) return [];

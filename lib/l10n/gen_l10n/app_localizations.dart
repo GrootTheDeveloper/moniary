@@ -2690,6 +2690,24 @@ abstract class AppLocalizations {
   /// **'Quản lý dữ liệu'**
   String get manageDataTitle;
 
+  /// No description provided for @manageDataWalletTab.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví'**
+  String get manageDataWalletTab;
+
+  /// No description provided for @manageDataWalletCountLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'ví'**
+  String get manageDataWalletCountLabel;
+
+  /// No description provided for @manageDataCategoryCountLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'danh mục'**
+  String get manageDataCategoryCountLabel;
+
   /// No description provided for @cameraTakePhoto.
   ///
   /// In vi, this message translates to:

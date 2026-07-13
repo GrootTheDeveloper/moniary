@@ -174,10 +174,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }
 
   Future<void> _openManager(BuildContext context) {
+    final colors = context.moniaryColors;
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
+      useRootNavigator: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: colors.background,
       builder: (context) => const ManageDataSheet(),
     );
   }

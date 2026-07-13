@@ -1417,6 +1417,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get manageDataTitle => 'Quản lý dữ liệu';
 
   @override
+  String get manageDataWalletTab => 'Ví';
+
+  @override
+  String get manageDataWalletCountLabel => 'ví';
+
+  @override
+  String get manageDataCategoryCountLabel => 'danh mục';
+
+  @override
   String get cameraTakePhoto => 'Chụp';
 
   @override

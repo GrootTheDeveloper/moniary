@@ -1419,6 +1419,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageDataTitle => 'Manage data';
 
   @override
+  String get manageDataWalletTab => 'Wallets';
+
+  @override
+  String get manageDataWalletCountLabel => 'wallets';
+
+  @override
+  String get manageDataCategoryCountLabel => 'categories';
+
+  @override
   String get cameraTakePhoto => 'Capture';
 
   @override

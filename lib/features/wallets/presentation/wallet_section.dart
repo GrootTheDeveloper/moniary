@@ -26,90 +26,90 @@ class WalletSection extends ConsumerWidget {
     );
     final amountSuffix = context.l10n.transactionAmountSuffix;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surface.withValues(alpha: 0.72),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: colors.outline),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      context.l10n.walletTitle,
-                      style: context.moniaryTypography.displaySmall,
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () => _showWalletForm(context, ref),
-                    icon: const Icon(Icons.add),
-                    label: Text(context.l10n.commonAdd),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
+    return walletsAsync.when(
+      data: (wallets) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SectionToolbar(
+              countLabel:
+                  '${wallets.length} ${context.l10n.manageDataWalletCountLabel}',
+              onAdd: () => _showWalletForm(context, ref),
+            ),
+            const SizedBox(height: 10),
+            if (wallets.isEmpty)
               Text(
-                context.l10n.walletDescription,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
-              ),
-              const SizedBox(height: 16),
-              walletsAsync.when(
-                data: (wallets) {
-                  if (wallets.isEmpty) {
-                    return Text(
-                      context.l10n.walletEmpty,
-                      style: TextStyle(color: colors.textDim),
-                    );
-                  }
-
-                  return Column(
-                    children: wallets
-                        .map(
-                          (wallet) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _WalletTile(
-                              wallet: wallet,
-                              balanceLabel:
-                                  '${currency.format(wallet.initialBalance).trim()}$amountSuffix',
-                              onEdit: () =>
-                                  _showWalletForm(context, ref, wallet: wallet),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  );
-                },
-                error: (error, stackTrace) {
-                  AppLogger.error(
-                    'Failed to load wallets section',
-                    error,
-                    stackTrace,
-                  );
-                  return Text(
-                    context.l10n.walletError(
-                      userFriendlyMessage(context, error),
-                    ),
-                    style: TextStyle(color: colors.danger),
-                  );
-                },
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: LinearProgressIndicator(),
+                context.l10n.walletEmpty,
+                style: TextStyle(color: colors.textDim),
+              )
+            else
+              ...wallets.map(
+                (wallet) => Padding(
+                  padding: const EdgeInsets.only(bottom: 9),
+                  child: _WalletTile(
+                    wallet: wallet,
+                    balanceLabel:
+                        '${currency.format(wallet.initialBalance).trim()}$amountSuffix',
+                    onEdit: () => _showWalletForm(context, ref, wallet: wallet),
+                  ),
                 ),
               ),
-            ],
+          ],
+        );
+      },
+      error: (error, stackTrace) {
+        AppLogger.error('Failed to load wallets section', error, stackTrace);
+        return Text(
+          context.l10n.walletError(userFriendlyMessage(context, error)),
+          style: TextStyle(color: colors.danger),
+        );
+      },
+      loading: () => LinearProgressIndicator(
+        minHeight: 2,
+        color: colors.primary,
+        backgroundColor: colors.outline.withValues(alpha: 0.35),
+      ),
+    );
+  }
+}
+
+class _SectionToolbar extends StatelessWidget {
+  const _SectionToolbar({required this.countLabel, required this.onAdd});
+
+  final String countLabel;
+  final VoidCallback onAdd;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            countLabel.toUpperCase(),
+            style: context.moniaryTypography.metadataStrong.copyWith(
+              color: colors.textDim,
+              fontSize: 9,
+              letterSpacing: 1.4,
+            ),
           ),
         ),
-      ),
+        InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: onAdd,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+            child: Text(
+              '+ ${context.l10n.commonAdd}',
+              style: context.moniaryTypography.metadataStrong.copyWith(
+                color: colors.primary,
+                fontSize: 11,
+                letterSpacing: 0,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -131,53 +131,105 @@ class _WalletTile extends StatelessWidget {
     final color = AppColor.fromHex(wallet.color, fallback: colors.primary);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      constraints: const BoxConstraints(minHeight: 72),
       decoration: BoxDecoration(
-        color: colors.surfaceRaised.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(18),
+        color: colors.surfaceRaised.withValues(alpha: 0.48),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: colors.outline),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: CircleAvatar(
-          backgroundColor: color.withValues(alpha: 0.14),
-          foregroundColor: color,
-          child: const Icon(Icons.account_balance_wallet_outlined),
-        ),
-        title: Row(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 13, 9, 13),
+        child: Row(
           children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(_walletIconData(wallet.icon), color: color, size: 18),
+            ),
+            const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                wallet.name,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(color: colors.textPrimary),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          wallet.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: colors.textPrimary,
+                                fontWeight: FontWeight.w800,
+                                height: 1.05,
+                              ),
+                        ),
+                      ),
+                      if (wallet.isDefault) ...[
+                        const SizedBox(width: 8),
+                        _DefaultBadge(label: context.l10n.walletDefault),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 7),
+                  DefaultTextStyle.merge(
+                    style: context.moniaryTypography.metadata.copyWith(
+                      color: colors.textDim,
+                      fontSize: 8.5,
+                      letterSpacing: 1.1,
+                      height: 1.25,
+                    ),
+                    child: ObscurableAmountText(
+                      prefixText:
+                          '${_walletTypeLabel(context, wallet.type).toUpperCase()} · ',
+                      amountText: balanceLabel,
+                      suffixText:
+                          ' · ${(wallet.isActive ? context.l10n.walletActive : context.l10n.walletInactive).toUpperCase()}',
+                    ),
+                  ),
+                ],
               ),
             ),
-            if (wallet.isDefault)
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Chip(label: Text(context.l10n.walletDefault)),
-              ),
+            IconButton(
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit_outlined),
+              color: colors.textSecondary,
+              iconSize: 18,
+              visualDensity: VisualDensity.compact,
+              tooltip: context.l10n.walletEditTitle,
+            ),
           ],
         ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: DefaultTextStyle.merge(
-            style: context.moniaryTypography.metadata.copyWith(
-              color: colors.textDim,
-            ),
-            child: ObscurableAmountText(
-              prefixText: '${_walletTypeLabel(context, wallet.type)} · ',
-              amountText: balanceLabel,
-              suffixText:
-                  ' · ${wallet.isActive ? context.l10n.walletActive : context.l10n.walletInactive}',
-            ),
-          ),
-        ),
-        trailing: IconButton(
-          onPressed: onEdit,
-          icon: const Icon(Icons.edit_outlined),
+      ),
+    );
+  }
+}
+
+class _DefaultBadge extends StatelessWidget {
+  const _DefaultBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: colors.success.withValues(alpha: 0.11),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label.toUpperCase(),
+        style: context.moniaryTypography.metadataStrong.copyWith(
+          color: colors.success,
+          fontSize: 7,
+          letterSpacing: 0.5,
         ),
       ),
     );
@@ -368,5 +420,14 @@ String _walletTypeLabel(BuildContext context, WalletType type) {
     WalletType.ewallet => context.l10n.walletTypeEwallet,
     WalletType.credit => context.l10n.walletTypeCredit,
     WalletType.other => context.l10n.walletTypeOther,
+  };
+}
+
+IconData _walletIconData(String? name) {
+  return switch (name) {
+    'payment' => Icons.payments_outlined,
+    'bank' => Icons.account_balance_outlined,
+    'card' => Icons.credit_card_outlined,
+    _ => Icons.account_balance_wallet_outlined,
   };
 }
