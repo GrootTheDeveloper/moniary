@@ -333,6 +333,30 @@ class GroupSupabaseDataSource {
         .eq('id', transactionId);
   }
 
+  Future<Map<String, dynamic>?> fetchGroupBudget(String groupId) async {
+    final rows = await client
+        .from('group_budgets')
+        .select()
+        .eq('group_id', groupId);
+    if (rows.isEmpty) return null;
+    return rows.first as Map<String, dynamic>?;
+  }
+
+  Future<void> upsertGroupBudget({
+    required String groupId,
+    required int monthlyLimit,
+    required int warningThresholdPercent,
+  }) {
+    return client.from('group_budgets').upsert(
+      {
+        'group_id': groupId,
+        'monthly_limit': monthlyLimit,
+        'warning_threshold_percent': warningThresholdPercent,
+      },
+      onConflict: 'group_id',
+    );
+  }
+
   Future<void> _uploadCompressed({
     required String path,
     required String filePath,

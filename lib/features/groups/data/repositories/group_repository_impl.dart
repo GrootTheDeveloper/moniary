@@ -7,6 +7,7 @@ import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_invite.dart';
+import '../../domain/entities/group_roadmap.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
@@ -496,6 +497,54 @@ class GroupRepositoryImpl implements GroupRepository {
     return _guard(
       'add group transaction comment',
       () => _remote.addComment(transactionId: transactionId, content: content),
+    );
+  }
+
+  @override
+  Future<GroupBudget?> fetchGroupBudget(String groupId) {
+    if (_useMockData) {
+      return _mock.fetchGroupBudget(groupId).then((row) {
+        if (row == null) return null;
+        return GroupBudget(
+          groupId: row['group_id'] as String,
+          monthlyLimit: (row['monthly_limit'] as num).toInt(),
+          warningThresholdPercent:
+              (row['warning_threshold_percent'] as num).toInt(),
+        );
+      });
+    }
+    return _guard('fetch group budget', () async {
+      final row = await _remote.fetchGroupBudget(groupId);
+      if (row == null) return null;
+      return GroupBudget(
+        groupId: row['group_id'] as String,
+        monthlyLimit: (row['monthly_limit'] as num).toInt(),
+        warningThresholdPercent:
+            (row['warning_threshold_percent'] as num).toInt(),
+      );
+    });
+  }
+
+  @override
+  Future<void> upsertGroupBudget({
+    required String groupId,
+    required int monthlyLimit,
+    required int warningThresholdPercent,
+  }) {
+    if (_useMockData) {
+      return _mock.upsertGroupBudget(
+        groupId: groupId,
+        monthlyLimit: monthlyLimit,
+        warningThresholdPercent: warningThresholdPercent,
+      );
+    }
+    return _guard(
+      'upsert group budget',
+      () => _remote.upsertGroupBudget(
+        groupId: groupId,
+        monthlyLimit: monthlyLimit,
+        warningThresholdPercent: warningThresholdPercent,
+      ),
     );
   }
 

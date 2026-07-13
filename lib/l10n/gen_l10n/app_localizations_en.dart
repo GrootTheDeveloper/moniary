@@ -45,6 +45,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonRetry => 'Retry';
 
   @override
+  String get commonJustNow => 'Just now';
+
+  @override
+  String commonMinutesAgo(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String commonHoursAgo(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String commonDaysAgo(int count) {
+    return '${count}d ago';
+  }
+
+  @override
   String get commonAdd => 'Add';
 
   @override
@@ -1721,6 +1739,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statsExpenseNoPrevious => 'No previous month data yet';
 
   @override
+  String get statsInsightTitle => 'Smart insights';
+
+  @override
+  String statsInsightSavings(String percent) {
+    return 'You saved $percent% of your income this month.';
+  }
+
+  @override
+  String statsInsightWeekend(String percent) {
+    return 'You spent $percent% of your budget on weekends. Be careful!';
+  }
+
+  @override
+  String statsInsightCategorySurge(String category, String percent) {
+    return '$category spending increased $percent% compared to last month.';
+  }
+
+  @override
+  String get statsInsightPositive =>
+      'You\'re managing your spending well! Keep it up.';
+
+  @override
   String statsBudgetUsed(int percent) {
     return 'Budget · used $percent%';
   }
@@ -1808,6 +1848,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileChangeTimezone => 'Change Timezone';
+
+  @override
+  String get profileLanguage => 'Language';
+
+  @override
+  String get timezonePickerSearch => 'Search timezone';
+
+  @override
+  String get timezonePickerNoResults => 'No timezones found';
+
+  @override
+  String get timezonePickerUseDevice => 'Use device timezone';
 
   @override
   String get profileAnonymousBadge => 'Guest account';
@@ -3709,6 +3761,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupTransactionDetailTitle => 'Group transaction details';
+
+  @override
+  String get groupActivityCenterTitle => 'Group activity';
+
+  @override
+  String get groupActivityTabTimeline => 'Activity';
+
+  @override
+  String get groupActivityTabNotifications => 'Notifications';
+
+  @override
+  String get groupActivityEmpty => 'No activity yet';
+
+  @override
+  String get groupNotificationsEmptyState => 'No notifications yet';
+
+  @override
+  String get groupPhotoAlbumTitle => 'Photo album';
+
+  @override
+  String get groupPhotoAlbumEmpty => 'No photos yet';
+
+  @override
+  String get groupBudgetTitle => 'Group budget';
+
+  @override
+  String get groupBudgetMonthlyLimit => 'Monthly limit';
+
+  @override
+  String get groupBudgetWarningThreshold => 'Warning threshold';
+
+  @override
+  String get groupBudgetNotSet => 'No budget set';
+
+  @override
+  String get groupBudgetSet => 'Set budget';
+
+  @override
+  String get groupBudgetEditTitle => 'Edit group budget';
+
+  @override
+  String get groupBudgetInvalidAmount => 'Amount must be 0 or greater';
+
+  @override
+  String get groupBudgetSaved => 'Budget updated';
+
+  @override
+  String get groupActivityTransactionReacted => 'reacted to a transaction';
+
+  @override
+  String get groupActivityTransactionCommented => 'commented on a transaction';
+
+  @override
+  String get groupActivityMemberJoined => 'joined the group';
+
+  @override
+  String get groupActivityMemberLeft => 'left the group';
+
+  @override
+  String get groupActivityInvitationAccepted => 'accepted a group invite';
+
+  @override
+  String get groupActivityInvitationDeclined => 'declined a group invite';
+
+  @override
+  String get groupNotificationTransactionPosted => 'New transaction posted';
+
+  @override
+  String get groupNotificationMemberAmountRequired =>
+      'Your share amount is needed';
+
+  @override
+  String get groupNotificationDebtSettled => 'A debt was settled';
+
+  @override
+  String get groupNotificationGroupInvite => 'You have a new group invite';
 
   @override
   String get groupTransactionCreator => 'Posted by';

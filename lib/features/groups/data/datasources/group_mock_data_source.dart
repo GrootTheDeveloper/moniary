@@ -24,6 +24,7 @@ class GroupMockDataSource {
   static final Map<String, List<GroupSettlementSuggestion>> _settlements = {};
   static final Map<String, _MockGroupInviteLink> _inviteLinks = {};
   static final Map<String, _MockDirectGroupInvite> _directInvites = {};
+  static final Map<String, Map<String, dynamic>> _budgets = {};
   static var _sequence = 0;
 
   static void resetForTesting() {
@@ -33,6 +34,7 @@ class GroupMockDataSource {
     _settlements.clear();
     _inviteLinks.clear();
     _directInvites.clear();
+    _budgets.clear();
     _sequence = 0;
   }
 
@@ -1099,6 +1101,25 @@ class GroupMockDataSource {
         displayName: 'mock-user',
       ),
     );
+  }
+
+  Future<Map<String, dynamic>?> fetchGroupBudget(String groupId) async {
+    _requireActiveMember(groupId);
+    return _budgets[groupId];
+  }
+
+  Future<void> upsertGroupBudget({
+    required String groupId,
+    required int monthlyLimit,
+    required int warningThresholdPercent,
+  }) async {
+    _requireGroup(groupId);
+    _requireAdmin(groupId);
+    _budgets[groupId] = {
+      'group_id': groupId,
+      'monthly_limit': monthlyLimit,
+      'warning_threshold_percent': warningThresholdPercent,
+    };
   }
 
   void _validatePayerDraft(

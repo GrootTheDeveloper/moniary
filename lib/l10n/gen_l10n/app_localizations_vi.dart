@@ -46,6 +46,24 @@ class AppLocalizationsVi extends AppLocalizations {
   String get commonRetry => 'Thử lại';
 
   @override
+  String get commonJustNow => 'Vừa xong';
+
+  @override
+  String commonMinutesAgo(int count) {
+    return '$count phút trước';
+  }
+
+  @override
+  String commonHoursAgo(int count) {
+    return '$count giờ trước';
+  }
+
+  @override
+  String commonDaysAgo(int count) {
+    return '$count ngày trước';
+  }
+
+  @override
   String get commonAdd => 'Thêm';
 
   @override
@@ -1719,6 +1737,28 @@ class AppLocalizationsVi extends AppLocalizations {
   String get statsExpenseNoPrevious => 'Chưa có dữ liệu tháng trước';
 
   @override
+  String get statsInsightTitle => 'Gợi ý thông minh';
+
+  @override
+  String statsInsightSavings(String percent) {
+    return 'Bạn đã tiết kiệm được $percent% thu nhập trong tháng này.';
+  }
+
+  @override
+  String statsInsightWeekend(String percent) {
+    return 'Bạn chi tiêu $percent% ngân sách vào cuối tuần. Hãy cẩn thận!';
+  }
+
+  @override
+  String statsInsightCategorySurge(String category, String percent) {
+    return 'Chi tiêu $category tăng $percent% so với tháng trước.';
+  }
+
+  @override
+  String get statsInsightPositive =>
+      'Bạn đang quản lý chi tiêu rất tốt! Hãy tiếp tục duy trì nhé.';
+
+  @override
   String statsBudgetUsed(int percent) {
     return 'Ngân sách · đã dùng $percent%';
   }
@@ -1806,6 +1846,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profileChangeTimezone => 'Thay đổi múi giờ';
+
+  @override
+  String get profileLanguage => 'Ngôn ngữ';
+
+  @override
+  String get timezonePickerSearch => 'Tìm múi giờ';
+
+  @override
+  String get timezonePickerNoResults => 'Không tìm thấy múi giờ';
+
+  @override
+  String get timezonePickerUseDevice => 'Dùng múi giờ thiết bị';
 
   @override
   String get profileAnonymousBadge => 'Tài khoản khách';
@@ -3711,6 +3763,84 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupTransactionDetailTitle => 'Chi tiết giao dịch nhóm';
+
+  @override
+  String get groupActivityCenterTitle => 'Hoạt động nhóm';
+
+  @override
+  String get groupActivityTabTimeline => 'Hoạt động';
+
+  @override
+  String get groupActivityTabNotifications => 'Thông báo';
+
+  @override
+  String get groupActivityEmpty => 'Chưa có hoạt động nào';
+
+  @override
+  String get groupNotificationsEmptyState => 'Chưa có thông báo nào';
+
+  @override
+  String get groupPhotoAlbumTitle => 'Album ảnh';
+
+  @override
+  String get groupPhotoAlbumEmpty => 'Chưa có ảnh nào';
+
+  @override
+  String get groupBudgetTitle => 'Ngân sách nhóm';
+
+  @override
+  String get groupBudgetMonthlyLimit => 'Giới hạn hàng tháng';
+
+  @override
+  String get groupBudgetWarningThreshold => 'Ngưỡng cảnh báo';
+
+  @override
+  String get groupBudgetNotSet => 'Chưa đặt ngân sách';
+
+  @override
+  String get groupBudgetSet => 'Đặt ngân sách';
+
+  @override
+  String get groupBudgetEditTitle => 'Chỉnh sửa ngân sách nhóm';
+
+  @override
+  String get groupBudgetInvalidAmount => 'Số tiền phải >= 0';
+
+  @override
+  String get groupBudgetSaved => 'Đã cập nhật ngân sách';
+
+  @override
+  String get groupActivityTransactionReacted =>
+      'đã thả cảm xúc vào một giao dịch';
+
+  @override
+  String get groupActivityTransactionCommented =>
+      'đã bình luận vào một giao dịch';
+
+  @override
+  String get groupActivityMemberJoined => 'đã tham gia nhóm';
+
+  @override
+  String get groupActivityMemberLeft => 'đã rời nhóm';
+
+  @override
+  String get groupActivityInvitationAccepted => 'đã chấp nhận lời mời vào nhóm';
+
+  @override
+  String get groupActivityInvitationDeclined => 'đã từ chối lời mời vào nhóm';
+
+  @override
+  String get groupNotificationTransactionPosted => 'Có giao dịch mới';
+
+  @override
+  String get groupNotificationMemberAmountRequired =>
+      'Cần bạn nhập số tiền của mình';
+
+  @override
+  String get groupNotificationDebtSettled => 'Một khoản nợ đã được tất toán';
+
+  @override
+  String get groupNotificationGroupInvite => 'Bạn có lời mời vào nhóm mới';
 
   @override
   String get groupTransactionCreator => 'Người đăng';

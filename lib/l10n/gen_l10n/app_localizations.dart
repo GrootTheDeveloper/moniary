@@ -170,6 +170,30 @@ abstract class AppLocalizations {
   /// **'Thử lại'**
   String get commonRetry;
 
+  /// No description provided for @commonJustNow.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vừa xong'**
+  String get commonJustNow;
+
+  /// No description provided for @commonMinutesAgo.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} phút trước'**
+  String commonMinutesAgo(int count);
+
+  /// No description provided for @commonHoursAgo.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} giờ trước'**
+  String commonHoursAgo(int count);
+
+  /// No description provided for @commonDaysAgo.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ngày trước'**
+  String commonDaysAgo(int count);
+
   /// No description provided for @commonAdd.
   ///
   /// In vi, this message translates to:
@@ -3212,6 +3236,36 @@ abstract class AppLocalizations {
   /// **'Chưa có dữ liệu tháng trước'**
   String get statsExpenseNoPrevious;
 
+  /// No description provided for @statsInsightTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gợi ý thông minh'**
+  String get statsInsightTitle;
+
+  /// No description provided for @statsInsightSavings.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã tiết kiệm được {percent}% thu nhập trong tháng này.'**
+  String statsInsightSavings(String percent);
+
+  /// No description provided for @statsInsightWeekend.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chi tiêu {percent}% ngân sách vào cuối tuần. Hãy cẩn thận!'**
+  String statsInsightWeekend(String percent);
+
+  /// No description provided for @statsInsightCategorySurge.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu {category} tăng {percent}% so với tháng trước.'**
+  String statsInsightCategorySurge(String category, String percent);
+
+  /// No description provided for @statsInsightPositive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đang quản lý chi tiêu rất tốt! Hãy tiếp tục duy trì nhé.'**
+  String get statsInsightPositive;
+
   /// No description provided for @statsBudgetUsed.
   ///
   /// In vi, this message translates to:
@@ -3361,6 +3415,30 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thay đổi múi giờ'**
   String get profileChangeTimezone;
+
+  /// No description provided for @profileLanguage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngôn ngữ'**
+  String get profileLanguage;
+
+  /// No description provided for @timezonePickerSearch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm múi giờ'**
+  String get timezonePickerSearch;
+
+  /// No description provided for @timezonePickerNoResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy múi giờ'**
+  String get timezonePickerNoResults;
+
+  /// No description provided for @timezonePickerUseDevice.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng múi giờ thiết bị'**
+  String get timezonePickerUseDevice;
 
   /// No description provided for @profileAnonymousBadge.
   ///
@@ -6709,6 +6787,156 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chi tiết giao dịch nhóm'**
   String get groupTransactionDetailTitle;
+
+  /// No description provided for @groupActivityCenterTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoạt động nhóm'**
+  String get groupActivityCenterTitle;
+
+  /// No description provided for @groupActivityTabTimeline.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoạt động'**
+  String get groupActivityTabTimeline;
+
+  /// No description provided for @groupActivityTabNotifications.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo'**
+  String get groupActivityTabNotifications;
+
+  /// No description provided for @groupActivityEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có hoạt động nào'**
+  String get groupActivityEmpty;
+
+  /// No description provided for @groupNotificationsEmptyState.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có thông báo nào'**
+  String get groupNotificationsEmptyState;
+
+  /// No description provided for @groupPhotoAlbumTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Album ảnh'**
+  String get groupPhotoAlbumTitle;
+
+  /// No description provided for @groupPhotoAlbumEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có ảnh nào'**
+  String get groupPhotoAlbumEmpty;
+
+  /// No description provided for @groupBudgetTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngân sách nhóm'**
+  String get groupBudgetTitle;
+
+  /// No description provided for @groupBudgetMonthlyLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giới hạn hàng tháng'**
+  String get groupBudgetMonthlyLimit;
+
+  /// No description provided for @groupBudgetWarningThreshold.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngưỡng cảnh báo'**
+  String get groupBudgetWarningThreshold;
+
+  /// No description provided for @groupBudgetNotSet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa đặt ngân sách'**
+  String get groupBudgetNotSet;
+
+  /// No description provided for @groupBudgetSet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt ngân sách'**
+  String get groupBudgetSet;
+
+  /// No description provided for @groupBudgetEditTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉnh sửa ngân sách nhóm'**
+  String get groupBudgetEditTitle;
+
+  /// No description provided for @groupBudgetInvalidAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền phải >= 0'**
+  String get groupBudgetInvalidAmount;
+
+  /// No description provided for @groupBudgetSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã cập nhật ngân sách'**
+  String get groupBudgetSaved;
+
+  /// No description provided for @groupActivityTransactionReacted.
+  ///
+  /// In vi, this message translates to:
+  /// **'đã thả cảm xúc vào một giao dịch'**
+  String get groupActivityTransactionReacted;
+
+  /// No description provided for @groupActivityTransactionCommented.
+  ///
+  /// In vi, this message translates to:
+  /// **'đã bình luận vào một giao dịch'**
+  String get groupActivityTransactionCommented;
+
+  /// No description provided for @groupActivityMemberJoined.
+  ///
+  /// In vi, this message translates to:
+  /// **'đã tham gia nhóm'**
+  String get groupActivityMemberJoined;
+
+  /// No description provided for @groupActivityMemberLeft.
+  ///
+  /// In vi, this message translates to:
+  /// **'đã rời nhóm'**
+  String get groupActivityMemberLeft;
+
+  /// No description provided for @groupActivityInvitationAccepted.
+  ///
+  /// In vi, this message translates to:
+  /// **'đã chấp nhận lời mời vào nhóm'**
+  String get groupActivityInvitationAccepted;
+
+  /// No description provided for @groupActivityInvitationDeclined.
+  ///
+  /// In vi, this message translates to:
+  /// **'đã từ chối lời mời vào nhóm'**
+  String get groupActivityInvitationDeclined;
+
+  /// No description provided for @groupNotificationTransactionPosted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có giao dịch mới'**
+  String get groupNotificationTransactionPosted;
+
+  /// No description provided for @groupNotificationMemberAmountRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần bạn nhập số tiền của mình'**
+  String get groupNotificationMemberAmountRequired;
+
+  /// No description provided for @groupNotificationDebtSettled.
+  ///
+  /// In vi, this message translates to:
+  /// **'Một khoản nợ đã được tất toán'**
+  String get groupNotificationDebtSettled;
+
+  /// No description provided for @groupNotificationGroupInvite.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có lời mời vào nhóm mới'**
+  String get groupNotificationGroupInvite;
 
   /// No description provided for @groupTransactionCreator.
   ///

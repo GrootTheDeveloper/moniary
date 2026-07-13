@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/utils/app_logger.dart';
 import '../data/repositories/group_repository_impl.dart';
+import '../domain/entities/group_roadmap.dart';
 import '../domain/entities/group_settlement.dart';
 import '../domain/entities/group_transaction.dart';
 import '../domain/entities/group_invite.dart';
@@ -36,6 +37,11 @@ final groupSettlementOverviewProvider =
       return ref
           .watch(groupRepositoryProvider)
           .fetchSettlementOverview(groupId);
+    });
+
+final groupBudgetProvider =
+    FutureProvider.family<GroupBudget?, String>((ref, groupId) {
+      return ref.watch(groupRepositoryProvider).fetchGroupBudget(groupId);
     });
 
 final groupInvitePreviewProvider = FutureProvider.autoDispose
@@ -263,6 +269,24 @@ class GroupActionController extends AsyncNotifier<void> {
     });
   }
 
+  Future<void> upsertGroupBudget({
+    required String groupId,
+    required int monthlyLimit,
+    required int warningThresholdPercent,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .upsertGroupBudget(
+            groupId: groupId,
+            monthlyLimit: monthlyLimit,
+            warningThresholdPercent: warningThresholdPercent,
+          );
+      ref.invalidate(groupBudgetProvider(groupId));
+      _invalidateGroup(groupId);
+    });
+  }
+
   Future<T> _run<T>(Future<T> Function() action) async {
     state = const AsyncLoading();
     try {
@@ -281,5 +305,6 @@ class GroupActionController extends AsyncNotifier<void> {
     ref.invalidate(groupDetailProvider(groupId));
     ref.invalidate(groupTransactionsProvider(groupId));
     ref.invalidate(groupSettlementOverviewProvider(groupId));
+    ref.invalidate(groupBudgetProvider(groupId));
   }
 }
