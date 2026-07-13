@@ -152,7 +152,7 @@ class GroupMockDataSource {
           _demoMember(
             seed.id,
             'mock-friend-$index',
-            'Bạn $index',
+            _demoMemberName(index),
             GroupRole.member,
             now.subtract(Duration(days: index)),
             _demoMemberAvatar(index),
@@ -192,7 +192,12 @@ class GroupMockDataSource {
       'asset://assets/demo_avatars/khoa.png',
       'asset://assets/demo_avatars/minh-anh.png',
     ];
-    return avatars[index % avatars.length];
+    return avatars[(index - 1) % avatars.length];
+  }
+
+  String _demoMemberName(int index) {
+    const names = ['Hoàng Nam', 'Bảo Châu', 'Linh', 'Khoa', 'Minh Anh'];
+    return names[(index - 1) % names.length];
   }
 
   void _seedDemoTransactions(_DemoGroupSeed seed, DateTime now) {
@@ -203,7 +208,11 @@ class GroupMockDataSource {
           id: '${seed.id}-tx-main',
           totalAmount: 450000,
           paidAmounts: {currentUserId: 450000},
-          shareAmounts: {currentUserId: 130000, 'mock-friend-1': 320000},
+          shareAmounts: {
+            currentUserId: 130000,
+            'mock-friend-1': 140000,
+            'mock-friend-2': 180000,
+          },
           date: now.subtract(const Duration(days: 2)),
           caption: 'Xăng xe đi Đà Lạt',
           categoryName: 'Di chuyển',

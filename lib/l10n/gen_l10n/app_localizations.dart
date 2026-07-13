@@ -6242,6 +6242,30 @@ abstract class AppLocalizations {
   /// **'Tất toán'**
   String get groupSettleAction;
 
+  /// No description provided for @groupSettlementYou.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn'**
+  String get groupSettlementYou;
+
+  /// No description provided for @groupSettlementConfirmAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận đã tất toán'**
+  String get groupSettlementConfirmAll;
+
+  /// No description provided for @groupSettlementWaitingForPayers.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ người trả đánh dấu đã thanh toán trước.'**
+  String get groupSettlementWaitingForPayers;
+
+  /// No description provided for @groupSettlementOptimizedSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'{groupName} · Tối ưu {count} giao dịch'**
+  String groupSettlementOptimizedSubtitle(String groupName, int count);
+
   /// No description provided for @groupUnresolvedBadge.
   ///
   /// In vi, this message translates to:

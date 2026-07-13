@@ -3459,6 +3459,21 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupSettleAction => 'Tất toán';
 
   @override
+  String get groupSettlementYou => 'Bạn';
+
+  @override
+  String get groupSettlementConfirmAll => 'Xác nhận đã tất toán';
+
+  @override
+  String get groupSettlementWaitingForPayers =>
+      'Chờ người trả đánh dấu đã thanh toán trước.';
+
+  @override
+  String groupSettlementOptimizedSubtitle(String groupName, int count) {
+    return '$groupName · Tối ưu $count giao dịch';
+  }
+
+  @override
   String get groupUnresolvedBadge => 'Chưa xử lý';
 
   @override

@@ -3459,6 +3459,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupSettleAction => 'Settle';
 
   @override
+  String get groupSettlementYou => 'You';
+
+  @override
+  String get groupSettlementConfirmAll => 'Confirm settled';
+
+  @override
+  String get groupSettlementWaitingForPayers =>
+      'Waiting for payers to mark their payments first.';
+
+  @override
+  String groupSettlementOptimizedSubtitle(String groupName, int count) {
+    return '$groupName · Optimized $count transactions';
+  }
+
+  @override
   String get groupUnresolvedBadge => 'Unresolved';
 
   @override
