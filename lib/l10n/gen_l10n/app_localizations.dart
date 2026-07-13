@@ -7720,6 +7720,12 @@ abstract class AppLocalizations {
   /// **'Chuỗi ghi chép'**
   String get journalStreakTitle;
 
+  /// No description provided for @journalStreakBreadcrumb.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trang chủ — chuỗi ghi chép'**
+  String get journalStreakBreadcrumb;
+
   /// No description provided for @journalStreakDays.
   ///
   /// In vi, this message translates to:

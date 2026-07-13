@@ -1803,6 +1803,7 @@
   "journalChooseTransaction": "Choose a transaction",
   "journalCollectionNoTransactions": "This collection has no transactions yet.",
   "journalStreakTitle": "Recording streak",
+  "journalStreakBreadcrumb": "Home — recording streak",
   "journalStreakDays": "{count} days in a row",
   "@journalStreakDays": {"placeholders": {"count": {"type": "int"}}},
   "journalStreakBody": "You have recorded spending every day for the past {count} days.",

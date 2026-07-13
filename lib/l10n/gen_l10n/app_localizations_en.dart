@@ -4293,6 +4293,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get journalStreakTitle => 'Recording streak';
 
   @override
+  String get journalStreakBreadcrumb => 'Home — recording streak';
+
+  @override
   String journalStreakDays(int count) {
     return '$count days in a row';
   }

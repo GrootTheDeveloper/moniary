@@ -4295,6 +4295,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get journalStreakTitle => 'Chuỗi ghi chép';
 
   @override
+  String get journalStreakBreadcrumb => 'Trang chủ — chuỗi ghi chép';
+
+  @override
   String journalStreakDays(int count) {
     return '$count ngày liên tiếp';
   }

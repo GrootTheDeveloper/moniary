@@ -1803,6 +1803,7 @@
   "journalChooseTransaction": "Chọn giao dịch",
   "journalCollectionNoTransactions": "Bộ sưu tập này chưa có giao dịch.",
   "journalStreakTitle": "Chuỗi ghi chép",
+  "journalStreakBreadcrumb": "Trang chủ — chuỗi ghi chép",
   "journalStreakDays": "{count} ngày liên tiếp",
   "@journalStreakDays": {"placeholders": {"count": {"type": "int"}}},
   "journalStreakBody": "Bạn đã ghi lại chi tiêu mỗi ngày trong {count} ngày gần đây.",
