@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
@@ -33,107 +33,81 @@ class GroupDetailScreen extends ConsumerWidget {
     final settlementsAsync = ref.watch(
       groupSettlementOverviewProvider(groupId),
     );
+    final colors = context.moniaryColors;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.groupDetailTitle)),
-      body: detailAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => _ErrorState(
-          message: userFriendlyMessage(context, error),
-          onRetry: () => ref.invalidate(groupDetailProvider(groupId)),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: colors.backgroundSoft,
+        systemNavigationBarDividerColor: Colors.transparent,
+      ),
+      child: Scaffold(
+        backgroundColor: colors.backgroundSoft,
+        body: detailAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => _ErrorState(
+            message: userFriendlyMessage(context, error),
+            onRetry: () => ref.invalidate(groupDetailProvider(groupId)),
+          ),
+          data: (detail) => _GroupDetailContent(
+            detail: detail,
+            transactionsAsync: transactionsAsync,
+            settlementsAsync: settlementsAsync,
+            onRefresh: () async {
+              ref.invalidate(groupDetailProvider(groupId));
+              ref.invalidate(groupTransactionsProvider(groupId));
+              ref.invalidate(groupSettlementOverviewProvider(groupId));
+            },
+            onActions: () => _showGroupActions(context, ref, detail),
+            onSettle: () =>
+                context.push(DebtSettlementScreen.routePath, extra: groupId),
+            onAddTransaction: detail.activeMembers.isEmpty
+                ? null
+                : () => context.push(
+                    AddGroupTransactionScreen.routePath,
+                    extra: AddGroupTransactionArgs(groupId: groupId),
+                  ),
+          ),
         ),
-        data: (detail) => RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(groupDetailProvider(groupId));
-            ref.invalidate(groupTransactionsProvider(groupId));
-            ref.invalidate(groupSettlementOverviewProvider(groupId));
-          },
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(24, 4, 24, 40),
+      ),
+    );
+  }
+
+  Future<void> _showGroupActions(
+    BuildContext context,
+    WidgetRef ref,
+    SpendingGroupDetail detail,
+  ) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              _GroupHero(
-                detail: detail,
-                transactionsAsync: transactionsAsync,
-                onSettle: () => context.push(
-                  DebtSettlementScreen.routePath,
-                  extra: groupId,
-                ),
+              Text(
+                detail.group.name,
+                style: context.moniaryTypography.displaySmall,
               ),
-              MoniarySectionLabel(context.l10n.groupBalanceTableTitle),
-              settlementsAsync.when(
-                loading: () => const LinearProgressIndicator(),
-                error: (_, _) => _InlineNotice(
-                  text: context.l10n.debtLoadError,
-                  color: context.moniaryColors.danger,
+              const SizedBox(height: 16),
+              if (detail.canInvite)
+                ListTile(
+                  leading: const Icon(Icons.person_add_outlined),
+                  title: Text(context.l10n.groupInviteTitle),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    context.push(InviteMemberScreen.routePath, extra: groupId);
+                  },
                 ),
-                data: (overview) => _MemberBalances(
-                  overview: overview,
-                  members: detail.members,
-                ),
-              ),
-              MoniarySectionLabel(context.l10n.groupTransactionsTitle),
-              transactionsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (_, _) => _InlineNotice(
-                  text: context.l10n.groupTransactionLoadError,
-                  color: context.moniaryColors.danger,
-                ),
-                data: (transactions) {
-                  if (transactions.isEmpty) {
-                    return _InlineNotice(
-                      text: context.l10n.groupTransactionNoData,
-                      color: context.moniaryColors.secondary,
-                    );
-                  }
-                  return Column(
-                    children: [
-                      for (var index = 0; index < transactions.length; index++)
-                        _TransactionRow(
-                          transaction: transactions[index],
-                          showTopDivider: index == 0,
-                          onTap: () => context.push(
-                            GroupTransactionDetailScreen.routePath,
-                            extra: transactions[index].id,
-                          ),
-                        ),
-                    ],
-                  );
+              ListTile(
+                leading: const Icon(Icons.logout_outlined),
+                title: Text(context.l10n.groupLeave),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _leaveGroup(context, ref);
                 },
-              ),
-              const SizedBox(height: 20),
-              FilledButton.icon(
-                onPressed: detail.activeMembers.isEmpty
-                    ? null
-                    : () => context.push(
-                        AddGroupTransactionScreen.routePath,
-                        extra: AddGroupTransactionArgs(groupId: groupId),
-                      ),
-                icon: const Icon(Icons.add),
-                label: Text(context.l10n.groupAddTransaction),
-              ),
-              MoniarySectionLabel(
-                context.l10n.groupMembersHeader,
-                trailing: detail.canInvite
-                    ? TextButton.icon(
-                        onPressed: () => context.push(
-                          InviteMemberScreen.routePath,
-                          extra: groupId,
-                        ),
-                        icon: const Icon(Icons.person_add_outlined, size: 18),
-                        label: Text(context.l10n.groupInviteTitle),
-                      )
-                    : null,
-              ),
-              for (var index = 0; index < detail.members.length; index++)
-                _MemberRow(
-                  member: detail.members[index],
-                  showTopDivider: index == 0,
-                ),
-              const SizedBox(height: 24),
-              OutlinedButton.icon(
-                onPressed: () => _leaveGroup(context, ref),
-                icon: const Icon(Icons.logout_outlined),
-                label: Text(context.l10n.groupLeave),
               ),
             ],
           ),
@@ -175,6 +149,189 @@ class GroupDetailScreen extends ConsumerWidget {
   }
 }
 
+class _GroupDetailContent extends StatelessWidget {
+  const _GroupDetailContent({
+    required this.detail,
+    required this.transactionsAsync,
+    required this.settlementsAsync,
+    required this.onRefresh,
+    required this.onActions,
+    required this.onSettle,
+    required this.onAddTransaction,
+  });
+
+  final SpendingGroupDetail detail;
+  final AsyncValue<List<GroupTransaction>> transactionsAsync;
+  final AsyncValue<GroupSettlementOverview> settlementsAsync;
+  final Future<void> Function() onRefresh;
+  final VoidCallback onActions;
+  final VoidCallback onSettle;
+  final VoidCallback? onAddTransaction;
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+    return Stack(
+      children: [
+        SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 393),
+              child: RefreshIndicator(
+                color: context.moniaryColors.primary,
+                backgroundColor: context.moniaryColors.backgroundSoft,
+                onRefresh: onRefresh,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(30, 12, 30, 126),
+                  children: [
+                    _DetailTopBar(onActions: onActions),
+                    const SizedBox(height: 16),
+                    _GroupHero(
+                      detail: detail,
+                      transactionsAsync: transactionsAsync,
+                      onSettle: onSettle,
+                    ),
+                    MoniarySectionLabel(
+                      context.l10n.groupMemberBalanceTitle,
+                      padding: const EdgeInsets.only(top: 25, bottom: 10),
+                    ),
+                    settlementsAsync.when(
+                      loading: () => const LinearProgressIndicator(),
+                      error: (_, _) => _InlineNotice(
+                        text: context.l10n.debtLoadError,
+                        color: context.moniaryColors.danger,
+                      ),
+                      data: (overview) => _MemberBalances(
+                        overview: overview,
+                        members: detail.members,
+                      ),
+                    ),
+                    MoniarySectionLabel(
+                      context.l10n.groupTransactionsTitle,
+                      padding: const EdgeInsets.only(top: 28, bottom: 10),
+                    ),
+                    transactionsAsync.when(
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (_, _) => _InlineNotice(
+                        text: context.l10n.groupTransactionLoadError,
+                        color: context.moniaryColors.danger,
+                      ),
+                      data: (transactions) => _TransactionHistory(
+                        transactions: transactions,
+                        memberCount: detail.activeMembers.length,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 30,
+          right: 30,
+          bottom: bottomInset + 18,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 333),
+              child: SizedBox(
+                height: 50,
+                child: FilledButton.icon(
+                  onPressed: onAddTransaction,
+                  icon: const Icon(Icons.add_rounded, size: 20),
+                  label: Text(context.l10n.groupAddTransaction),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DetailTopBar extends StatelessWidget {
+  const _DetailTopBar({required this.onActions});
+
+  final VoidCallback onActions;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 44,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: _TopIconButton(
+              icon: Icons.chevron_left_rounded,
+              label: MaterialLocalizations.of(context).backButtonTooltip,
+              onTap: () => context.pop(),
+            ),
+          ),
+          Text(
+            context.l10n.groupDetailKindLabel.toUpperCase(),
+            style: context.moniaryTypography.metadataStrong.copyWith(
+              color: context.moniaryColors.textDim,
+              fontSize: 9,
+              letterSpacing: 3.2,
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: _TopIconButton(
+              icon: Icons.more_vert_rounded,
+              label: context.l10n.groupMoreActions,
+              onTap: onActions,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TopIconButton extends StatelessWidget {
+  const _TopIconButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Semantics(
+      button: true,
+      label: label,
+      child: Material(
+        color: colors.surface.withValues(alpha: 0.54),
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: colors.outline.withValues(alpha: 0.8)),
+            ),
+            child: Icon(icon, size: 22, color: colors.textPrimary),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _GroupHero extends StatelessWidget {
   const _GroupHero({
     required this.detail,
@@ -191,114 +348,99 @@ class _GroupHero extends StatelessWidget {
     final colors = context.moniaryColors;
     final group = detail.group;
     final balance = group.currentUserBalance;
-    final balanceColor = balance == 0
+    final isSettled = balance == 0;
+    final balanceColor = isSettled
         ? colors.success
         : balance > 0
         ? colors.danger
         : colors.success;
-    final transactionCount = transactionsAsync.asData?.value.length;
-    final total = transactionsAsync.asData?.value.fold<int>(
-      0,
-      (sum, item) => item.splitStatus == GroupSplitStatus.posted
-          ? sum + item.totalAmount
-          : sum,
-    );
+    final balanceLabel = isSettled
+        ? context.l10n.groupBalanceSettled
+        : balance > 0
+        ? context.l10n.groupDetailYouPay
+        : context.l10n.groupDetailReceiveBack;
+    final transactions = transactionsAsync.asData?.value;
+    final total = transactions
+        ?.where((item) => item.splitStatus == GroupSplitStatus.posted)
+        .fold<int>(0, (sum, item) => sum + item.totalAmount);
+    final transactionCount = transactions?.length ?? group.transactionCount;
+    final totalText = formatVnd(total ?? group.totalSpent);
 
-    return MoniaryEditorialCard(
-      padding: const EdgeInsets.all(20),
-      radius: 22,
-      backgroundColor: colors.surface.withValues(alpha: 0.9),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      children: [
+        SupabaseImage(
+          imagePath: group.avatarPath,
+          width: 58,
+          height: 58,
+          borderRadius: BorderRadius.circular(17),
+          fallbackBuilder: (_) => const _GroupImageFallback(),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          group.name,
+          textAlign: TextAlign.center,
+          style: context.moniaryTypography.displayMedium.copyWith(
+            fontSize: 26,
+            height: 1.03,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          [
+            context.l10n.groupMemberCount(detail.activeMembers.length),
+            context.l10n.groupTransactionCount(transactionCount),
+            totalText,
+          ].join(' · ').toUpperCase(),
+          textAlign: TextAlign.center,
+          style: context.moniaryTypography.metadata.copyWith(
+            color: colors.textDim,
+            letterSpacing: 2.2,
+          ),
+        ),
+        const SizedBox(height: 20),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(16, 15, 16, 17),
+          decoration: BoxDecoration(
+            color: balanceColor.withValues(alpha: 0.07),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: balanceColor.withValues(alpha: 0.34)),
+          ),
+          child: Row(
             children: [
-              SupabaseImage(
-                imagePath: group.avatarPath,
-                width: 58,
-                height: 58,
-                borderRadius: BorderRadius.circular(18),
-                fallbackIcon: Icons.groups_2_outlined,
-              ),
-              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      group.name,
-                      style: context.moniaryTypography.displayMedium,
+                      balanceLabel.toUpperCase(),
+                      style: context.moniaryTypography.metadataStrong.copyWith(
+                        color: balanceColor,
+                        fontSize: 9,
+                        letterSpacing: 2,
+                      ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Text(
-                      [
-                        context.l10n.groupMemberCount(
-                          detail.activeMembers.length,
-                        ),
-                        if (transactionCount != null)
-                          context.l10n.transactionCount(transactionCount),
-                        if (total != null) formatVnd(total),
-                      ].join(' · ').toUpperCase(),
-                      style: context.moniaryTypography.metadata,
+                      formatVnd(balance.abs()),
+                      style: context.moniaryTypography.displaySmall.copyWith(
+                        color: balanceColor,
+                        fontSize: 24,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
                     ),
                   ],
                 ),
               ),
+              if (!isSettled)
+                TextButton(
+                  onPressed: onSettle,
+                  child: Text('${context.l10n.groupSettleAction} →'),
+                ),
             ],
           ),
-          if (group.description?.trim().isNotEmpty == true) ...[
-            const SizedBox(height: 16),
-            Text(group.description!),
-          ],
-          const SizedBox(height: 22),
-          Container(
-            padding: const EdgeInsets.only(top: 16),
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: colors.textPrimary.withValues(alpha: 0.12),
-                ),
-              ),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        balance > 0
-                            ? context.l10n.groupYouNeedPay
-                            : balance < 0
-                            ? context.l10n.groupOthersNeedPayYou
-                            : context.l10n.groupBalanceSettled,
-                        style: context.moniaryTypography.metadataStrong
-                            .copyWith(color: balanceColor),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        formatVnd(balance.abs()),
-                        style: context.moniaryTypography.displayMedium.copyWith(
-                          color: balanceColor,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: onSettle,
-                  iconAlignment: IconAlignment.end,
-                  icon: const Icon(Icons.arrow_forward, size: 18),
-                  label: Text(context.l10n.groupSettlementTitle),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -357,33 +499,93 @@ class _BalanceRow extends StatelessWidget {
         : balance.balance > 0
         ? colors.danger
         : colors.success;
+    final valueText = balance.balance == 0
+        ? formatVnd(0)
+        : '${balance.balance > 0 ? '-' : '+'}${formatVnd(balance.balance.abs())}';
 
-    return MoniaryHairlineTile(
-      showTopDivider: showTopDivider,
-      leading: SupabaseImage(
-        imagePath: avatarPath,
-        width: 34,
-        height: 34,
-        borderRadius: BorderRadius.circular(17),
-        fallbackIcon: Icons.person_outline,
-      ),
-      title: Text(balance.displayName ?? context.l10n.groupUnknownMember),
-      subtitle: Text(
-        context.l10n.groupSharePaidBalance(
-          formatVnd(balance.totalShareAmount),
-          formatVnd(balance.totalPaidAmount),
-          formatVnd(balance.balance),
+    return Container(
+      constraints: const BoxConstraints(minHeight: 62),
+      padding: const EdgeInsets.symmetric(vertical: 11),
+      decoration: BoxDecoration(
+        border: Border(
+          top: showTopDivider
+              ? BorderSide(
+                  color: colors.textPrimary.withValues(alpha: 0.11),
+                  width: 0.8,
+                )
+              : BorderSide.none,
+          bottom: BorderSide(
+            color: colors.textPrimary.withValues(alpha: 0.11),
+            width: 0.8,
+          ),
         ),
       ),
-      trailing: Text(
-        balance.balance == 0
-            ? context.l10n.groupBalanceSettled
-            : '${balance.balance > 0 ? '−' : '+'}${formatVnd(balance.balance.abs())}',
-        style: context.moniaryTypography.metadataStrong.copyWith(
-          color: valueColor,
-          fontFeatures: const [FontFeature.tabularFigures()],
-        ),
+      child: Row(
+        children: [
+          SupabaseImage(
+            imagePath: avatarPath,
+            width: 37,
+            height: 37,
+            borderRadius: BorderRadius.circular(20),
+            fallbackBuilder: (_) => const _MemberAvatarFallback(),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              balance.displayName ?? context.l10n.groupUnknownMember,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            valueText,
+            style: context.moniaryTypography.metadataStrong.copyWith(
+              color: valueColor,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class _TransactionHistory extends StatelessWidget {
+  const _TransactionHistory({
+    required this.transactions,
+    required this.memberCount,
+  });
+
+  final List<GroupTransaction> transactions;
+  final int memberCount;
+
+  @override
+  Widget build(BuildContext context) {
+    if (transactions.isEmpty) {
+      return _InlineNotice(
+        text: context.l10n.groupTransactionNoData,
+        color: context.moniaryColors.secondary,
+      );
+    }
+
+    return Column(
+      children: [
+        for (var index = 0; index < transactions.length; index++)
+          _TransactionRow(
+            transaction: transactions[index],
+            memberCount: memberCount,
+            showTopDivider: index == 0,
+            onTap: () => context.push(
+              GroupTransactionDetailScreen.routePath,
+              extra: transactions[index].id,
+            ),
+          ),
+      ],
     );
   }
 }
@@ -391,80 +593,143 @@ class _BalanceRow extends StatelessWidget {
 class _TransactionRow extends StatelessWidget {
   const _TransactionRow({
     required this.transaction,
+    required this.memberCount,
     required this.onTap,
     required this.showTopDivider,
   });
 
   final GroupTransaction transaction;
+  final int memberCount;
   final VoidCallback onTap;
   final bool showTopDivider;
 
   @override
   Widget build(BuildContext context) {
-    final status = switch (transaction.splitStatus) {
-      GroupSplitStatus.posted => context.l10n.groupTransactionPostedStatus,
-      GroupSplitStatus.amountMismatch =>
-        context.l10n.groupTransactionMismatchStatus,
-      _ => context.l10n.groupTransactionPendingStatus,
-    };
+    final colors = context.moniaryColors;
+    final payerName = transaction.creatorName?.trim().isNotEmpty == true
+        ? transaction.creatorName!
+        : context.l10n.groupUnknownMember;
 
-    return MoniaryHairlineTile(
-      showTopDivider: showTopDivider,
-      contentPadding: const EdgeInsets.symmetric(vertical: 12),
-      onTap: onTap,
-      leading: SupabaseImage(
-        imagePath: transaction.imagePath,
-        width: 42,
-        height: 42,
-        borderRadius: BorderRadius.circular(12),
-        fallbackIcon: Icons.receipt_long_outlined,
-      ),
-      title: Text(
-        transaction.caption?.trim().isNotEmpty == true
-            ? transaction.caption!
-            : transaction.categoryName ?? context.l10n.groupNoCategory,
-      ),
-      subtitle: Text(
-        '$status · ${DateFormat('dd/MM/yyyy').format(transaction.transactionDate)}',
-      ),
-      trailing: Text(
-        formatVnd(transaction.totalAmount),
-        style: context.moniaryTypography.metadataStrong.copyWith(
-          color: context.moniaryColors.textPrimary,
-          fontFeatures: const [FontFeature.tabularFigures()],
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 62),
+          padding: const EdgeInsets.symmetric(vertical: 11),
+          decoration: BoxDecoration(
+            border: Border(
+              top: showTopDivider
+                  ? BorderSide(
+                      color: colors.textPrimary.withValues(alpha: 0.11),
+                      width: 0.8,
+                    )
+                  : BorderSide.none,
+              bottom: BorderSide(
+                color: colors.textPrimary.withValues(alpha: 0.11),
+                width: 0.8,
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              SupabaseImage(
+                imagePath: transaction.imagePath,
+                width: 42,
+                height: 42,
+                borderRadius: BorderRadius.circular(10),
+                fallbackBuilder: (_) => const _ReceiptImageFallback(),
+              ),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      transaction.caption?.trim().isNotEmpty == true
+                          ? transaction.caption!
+                          : transaction.categoryName ??
+                                context.l10n.groupNoCategory,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: colors.textPrimary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        height: 1.05,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      context.l10n.groupTransactionHistorySubtitle(
+                        payerName,
+                        memberCount,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.moniaryTypography.metadata.copyWith(
+                        color: colors.textDim,
+                        fontSize: 8.5,
+                        letterSpacing: 1.1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                formatVnd(transaction.totalAmount),
+                style: context.moniaryTypography.metadataStrong.copyWith(
+                  color: colors.textPrimary,
+                  fontSize: 11,
+                  letterSpacing: 0,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _MemberRow extends StatelessWidget {
-  const _MemberRow({required this.member, required this.showTopDivider});
-
-  final SpendingGroupMember member;
-  final bool showTopDivider;
+class _GroupImageFallback extends StatelessWidget {
+  const _GroupImageFallback();
 
   @override
   Widget build(BuildContext context) {
-    return MoniaryHairlineTile(
-      showTopDivider: showTopDivider,
-      leading: SupabaseImage(
-        imagePath: member.avatarPath,
-        width: 34,
-        height: 34,
-        borderRadius: BorderRadius.circular(17),
-        fallbackIcon: Icons.person_outline,
-      ),
-      title: Text(member.resolvedName),
-      subtitle: Text(
-        member.status == GroupMemberStatus.active
-            ? context.l10n.groupMemberActive
-            : context.l10n.groupMemberInvited,
-      ),
-      trailing: Text(
-        member.role.value.toUpperCase(),
-        style: context.moniaryTypography.metadata,
-      ),
+    final colors = context.moniaryColors;
+    return ColoredBox(
+      color: colors.backgroundSoft,
+      child: Icon(Icons.groups_2_outlined, size: 24, color: colors.textDim),
+    );
+  }
+}
+
+class _MemberAvatarFallback extends StatelessWidget {
+  const _MemberAvatarFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return ColoredBox(
+      color: colors.surface,
+      child: Icon(Icons.person_outline, size: 16, color: colors.textDim),
+    );
+  }
+}
+
+class _ReceiptImageFallback extends StatelessWidget {
+  const _ReceiptImageFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return ColoredBox(
+      color: colors.surface,
+      child: Icon(Icons.receipt_long_outlined, size: 20, color: colors.textDim),
     );
   }
 }

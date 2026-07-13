@@ -1724,6 +1724,18 @@ abstract class AppLocalizations {
   /// **'{count} thành viên'**
   String groupMemberCount(int count);
 
+  /// No description provided for @groupDetailKindLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhóm'**
+  String get groupDetailKindLabel;
+
+  /// No description provided for @groupMoreActions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tác vụ nhóm'**
+  String get groupMoreActions;
+
   /// No description provided for @groupTransactionCount.
   ///
   /// In vi, this message translates to:
@@ -6479,7 +6491,7 @@ abstract class AppLocalizations {
   /// No description provided for @groupAddTransaction.
   ///
   /// In vi, this message translates to:
-  /// **'Thêm giao dịch nhóm'**
+  /// **'Thêm khoản chi nhóm'**
   String get groupAddTransaction;
 
   /// No description provided for @groupTransactionCaption.
@@ -6662,6 +6674,12 @@ abstract class AppLocalizations {
   /// **'Không tải được giao dịch nhóm.'**
   String get groupTransactionLoadError;
 
+  /// No description provided for @groupTransactionHistorySubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'{payer} trả · Chia {count} người'**
+  String groupTransactionHistorySubtitle(String payer, int count);
+
   /// No description provided for @groupTransactionDetailTitle.
   ///
   /// In vi, this message translates to:
@@ -6740,6 +6758,12 @@ abstract class AppLocalizations {
   /// **'Bảng công nợ'**
   String get groupBalanceTableTitle;
 
+  /// No description provided for @groupMemberBalanceTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số dư thành viên'**
+  String get groupMemberBalanceTitle;
+
   /// No description provided for @groupYouNeedPay.
   ///
   /// In vi, this message translates to:
@@ -6751,6 +6775,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Người khác cần trả cho bạn'**
   String get groupOthersNeedPayYou;
+
+  /// No description provided for @groupDetailReceiveBack.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn được nhận lại'**
+  String get groupDetailReceiveBack;
+
+  /// No description provided for @groupDetailYouPay.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn cần trả'**
+  String get groupDetailYouPay;
 
   /// No description provided for @groupMarkPaid.
   ///

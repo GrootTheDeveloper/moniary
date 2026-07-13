@@ -885,6 +885,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get groupDetailKindLabel => 'Group';
+
+  @override
+  String get groupMoreActions => 'Group actions';
+
+  @override
   String groupTransactionCount(int count) {
     return '$count expenses';
   }
@@ -3583,7 +3589,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupMemberActive => 'Active';
 
   @override
-  String get groupAddTransaction => 'Add group transaction';
+  String get groupAddTransaction => 'Add group expense';
 
   @override
   String get groupTransactionCaption => 'Caption';
@@ -3682,6 +3688,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupTransactionLoadError => 'Could not load group transactions.';
 
   @override
+  String groupTransactionHistorySubtitle(String payer, int count) {
+    return '$payer paid · Split $count people';
+  }
+
+  @override
   String get groupTransactionDetailTitle => 'Group transaction details';
 
   @override
@@ -3723,10 +3734,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupBalanceTableTitle => 'Balance table';
 
   @override
+  String get groupMemberBalanceTitle => 'Member balances';
+
+  @override
   String get groupYouNeedPay => 'You need to pay';
 
   @override
   String get groupOthersNeedPayYou => 'Others need to pay you';
+
+  @override
+  String get groupDetailReceiveBack => 'You receive back';
+
+  @override
+  String get groupDetailYouPay => 'You need to pay';
 
   @override
   String get groupMarkPaid => 'Mark as paid';

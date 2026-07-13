@@ -884,6 +884,12 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get groupDetailKindLabel => 'Nhóm';
+
+  @override
+  String get groupMoreActions => 'Tác vụ nhóm';
+
+  @override
   String groupTransactionCount(int count) {
     return '$count khoản';
   }
@@ -3583,7 +3589,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupMemberActive => 'Đang tham gia';
 
   @override
-  String get groupAddTransaction => 'Thêm giao dịch nhóm';
+  String get groupAddTransaction => 'Thêm khoản chi nhóm';
 
   @override
   String get groupTransactionCaption => 'Caption';
@@ -3684,6 +3690,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupTransactionLoadError => 'Không tải được giao dịch nhóm.';
 
   @override
+  String groupTransactionHistorySubtitle(String payer, int count) {
+    return '$payer trả · Chia $count người';
+  }
+
+  @override
   String get groupTransactionDetailTitle => 'Chi tiết giao dịch nhóm';
 
   @override
@@ -3725,10 +3736,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupBalanceTableTitle => 'Bảng công nợ';
 
   @override
+  String get groupMemberBalanceTitle => 'Số dư thành viên';
+
+  @override
   String get groupYouNeedPay => 'Bạn cần trả';
 
   @override
   String get groupOthersNeedPayYou => 'Người khác cần trả cho bạn';
+
+  @override
+  String get groupDetailReceiveBack => 'Bạn được nhận lại';
+
+  @override
+  String get groupDetailYouPay => 'Bạn cần trả';
 
   @override
   String get groupMarkPaid => 'Đã trả nợ';

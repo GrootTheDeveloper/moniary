@@ -201,17 +201,47 @@ class GroupMockDataSource {
         _addDemoTransaction(
           groupId: seed.id,
           id: '${seed.id}-tx-main',
-          totalAmount: 640000,
-          paidAmounts: {currentUserId: 640000},
-          shareAmounts: {currentUserId: 320000, 'mock-friend-1': 320000},
+          totalAmount: 450000,
+          paidAmounts: {currentUserId: 450000},
+          shareAmounts: {currentUserId: 130000, 'mock-friend-1': 320000},
           date: now.subtract(const Duration(days: 2)),
+          caption: 'Xăng xe đi Đà Lạt',
+          categoryName: 'Di chuyển',
+          imagePath: 'asset://assets/demo_transactions/transport.png',
+          creatorName: 'Minh Anh',
         );
-        for (var index = 0; index < seed.transactionCount - 1; index++) {
+        _addBalancedDemoTransaction(
+          groupId: seed.id,
+          id: '${seed.id}-tx-dinner',
+          totalAmount: 1250000,
+          date: now.subtract(const Duration(days: 3)),
+          caption: 'Ăn tối nhà hàng',
+          categoryName: 'Ăn uống',
+          imagePath: 'asset://assets/demo_transactions/lunch.png',
+        );
+        const remainingTotals = [
+          420000,
+          320000,
+          280000,
+          260000,
+          250000,
+          240000,
+          230000,
+          220000,
+          210000,
+          200000,
+          175000,
+          175000,
+        ];
+        for (var index = 0; index < remainingTotals.length; index++) {
           _addBalancedDemoTransaction(
             groupId: seed.id,
             id: '${seed.id}-tx-$index',
-            totalAmount: 200000,
-            date: now.subtract(Duration(days: 3 + index)),
+            totalAmount: remainingTotals[index],
+            date: now.subtract(Duration(days: 4 + index)),
+            caption: _demoCaption(index),
+            categoryName: 'Du lịch',
+            imagePath: _demoTransactionImage(index),
           );
         }
       case _DemoBalanceMode.pay:
@@ -248,6 +278,9 @@ class GroupMockDataSource {
     required String id,
     required int totalAmount,
     required DateTime date,
+    String? caption,
+    String? categoryName,
+    String? imagePath,
   }) {
     final members = _activeMembers(groupId).take(2).toList();
     final first = members.first.userId;
@@ -261,6 +294,9 @@ class GroupMockDataSource {
       paidAmounts: {first: firstShare, second: secondShare},
       shareAmounts: {first: firstShare, second: secondShare},
       date: date,
+      caption: caption,
+      categoryName: categoryName,
+      imagePath: imagePath,
     );
   }
 
@@ -271,6 +307,10 @@ class GroupMockDataSource {
     required Map<String, int> paidAmounts,
     required Map<String, int> shareAmounts,
     required DateTime date,
+    String? caption,
+    String? categoryName,
+    String? imagePath,
+    String? creatorName,
   }) {
     _transactions[id] = _MockTransactionRecord(
       transaction: GroupTransaction(
@@ -278,8 +318,9 @@ class GroupMockDataSource {
         groupId: groupId,
         createdBy: currentUserId,
         totalAmount: totalAmount,
-        categoryName: 'Demo',
-        caption: 'Demo',
+        categoryName: categoryName ?? 'Nhóm',
+        caption: caption ?? 'Khoản chi nhóm',
+        imagePath: imagePath ?? 'asset://assets/demo_transactions/market.png',
         imageUploadStatus: GroupImageUploadStatus.pending,
         splitMode: GroupSplitMode.equal,
         paymentMode: GroupPaymentMode.multiplePayers,
@@ -287,7 +328,7 @@ class GroupMockDataSource {
         transactionDate: date,
         createdAt: date,
         updatedAt: date,
-        creatorName: 'Minh Anh',
+        creatorName: creatorName ?? 'Minh Anh',
       ),
       payers: _payers(id, paidAmounts, date),
       shares: _shares(
@@ -298,6 +339,35 @@ class GroupMockDataSource {
       ),
       comments: [],
     );
+  }
+
+  String _demoCaption(int index) {
+    const captions = [
+      'Vé tham quan',
+      'Cà phê sáng',
+      'Mua đồ picnic',
+      'Gửi xe',
+      'Bữa trưa',
+      'Nước uống',
+      'Thuê áo khoác',
+      'Đồ ăn vặt',
+      'Taxi về homestay',
+      'Bánh mì đêm',
+      'Phụ thu phòng',
+      'Quà địa phương',
+    ];
+    return captions[index % captions.length];
+  }
+
+  String _demoTransactionImage(int index) {
+    const images = [
+      'asset://assets/demo_transactions/shopping.png',
+      'asset://assets/demo_transactions/cafe.png',
+      'asset://assets/demo_transactions/market.png',
+      'asset://assets/demo_transactions/transport.png',
+      'asset://assets/demo_transactions/lunch.png',
+    ];
+    return images[index % images.length];
   }
 
   Future<SpendingGroupDetail> fetchGroupDetail(String groupId) async {
@@ -313,8 +383,37 @@ class GroupMockDataSource {
     if (current.isEmpty) {
       throw const AppException('Group not found', code: 'NOT_FOUND');
     }
+    final groupTransactions = _recordsForGroup(groupId);
     return SpendingGroupDetail(
-      group: group.copyWith(memberCount: _activeMembers(groupId).length),
+      group: group.copyWith(
+        memberCount: _activeMembers(groupId).length,
+        memberAvatarPaths: _activeMembers(
+          groupId,
+        ).map((member) => member.avatarPath).take(5).toList(growable: false),
+        transactionCount: groupTransactions
+            .where(
+              (record) =>
+                  record.transaction.splitStatus == GroupSplitStatus.posted,
+            )
+            .length,
+        totalSpent: groupTransactions
+            .where(
+              (record) =>
+                  record.transaction.splitStatus == GroupSplitStatus.posted,
+            )
+            .fold<int>(
+              0,
+              (sum, record) => sum + record.transaction.totalAmount,
+            ),
+        currentUserBalance: _groupBalances(groupId)[currentUserId] ?? 0,
+        hasUnresolvedSettlements:
+            _settlements[groupId]?.any(
+              (item) =>
+                  item.status == GroupSettlementStatus.pending ||
+                  item.status == GroupSettlementStatus.payerMarkedPaid,
+            ) ??
+            false,
+      ),
       members: members,
       currentUserRole: current.first.role,
     );
