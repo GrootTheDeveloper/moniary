@@ -4346,6 +4346,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get journalExportCustomRange => 'Tùy chọn ngày';
 
   @override
+  String get journalExportNoTransactions =>
+      'Chưa có giao dịch trong khoảng này';
+
+  @override
   String get journalCollectionsTitle => 'Bộ sưu tập';
 
   @override

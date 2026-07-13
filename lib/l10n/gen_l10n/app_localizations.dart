@@ -7804,6 +7804,12 @@ abstract class AppLocalizations {
   /// **'Tùy chọn ngày'**
   String get journalExportCustomRange;
 
+  /// No description provided for @journalExportNoTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có giao dịch trong khoảng này'**
+  String get journalExportNoTransactions;
+
   /// No description provided for @journalCollectionsTitle.
   ///
   /// In vi, this message translates to:

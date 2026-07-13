@@ -1817,6 +1817,7 @@
   "journalExportWholeMonth": "Whole month",
   "journalExportToday": "Today",
   "journalExportCustomRange": "Custom range",
+  "journalExportNoTransactions": "No transactions in this range",
   "journalCollectionsTitle": "Collections",
   "journalCreateCollection": "Create a new collection",
   "journalCollectionName": "Collection name",

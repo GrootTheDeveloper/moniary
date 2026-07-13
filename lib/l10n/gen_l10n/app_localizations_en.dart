@@ -4344,6 +4344,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get journalExportCustomRange => 'Custom range';
 
   @override
+  String get journalExportNoTransactions => 'No transactions in this range';
+
+  @override
   String get journalCollectionsTitle => 'Collections';
 
   @override

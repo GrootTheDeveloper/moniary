@@ -1817,6 +1817,7 @@
   "journalExportWholeMonth": "Cả tháng",
   "journalExportToday": "Hôm nay",
   "journalExportCustomRange": "Tùy chọn ngày",
+  "journalExportNoTransactions": "Chưa có giao dịch trong khoảng này",
   "journalCollectionsTitle": "Bộ sưu tập",
   "journalCreateCollection": "Tạo bộ sưu tập mới",
   "journalCollectionName": "Tên bộ sưu tập",
