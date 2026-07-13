@@ -246,12 +246,16 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         initialValue: _currency,
+                        isExpanded: true,
                         decoration: const InputDecoration(),
                         items: supportedCurrencies
                             .map(
                               (info) => DropdownMenuItem(
                                 value: info.code,
-                                child: Text('${info.code} (${info.symbol})'),
+                                child: Text(
+                                  '${info.code} (${info.symbol})',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             )
                             .toList(),

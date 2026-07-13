@@ -302,6 +302,7 @@ class _CategoryFormSheetState extends ConsumerState<_CategoryFormSheet> {
             const SizedBox(height: 12),
             DropdownButtonFormField<TransactionType>(
               initialValue: _selectedType,
+              isExpanded: true,
               items: TransactionType.values
                   .map(
                     (type) => DropdownMenuItem(

@@ -126,11 +126,12 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
             initialValue: wallets.any((wallet) => wallet.id == _walletId)
                 ? _walletId
                 : null,
+            isExpanded: true,
             items: wallets
                 .map(
                   (wallet) => DropdownMenuItem(
                     value: wallet.id,
-                    child: Text(wallet.name),
+                    child: Text(wallet.name, overflow: TextOverflow.ellipsis),
                   ),
                 )
                 .toList(),
@@ -148,11 +149,12 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
                 categories.any((category) => category.id == _categoryId)
                 ? _categoryId
                 : null,
+            isExpanded: true,
             items: categories
                 .map(
                   (category) => DropdownMenuItem(
                     value: category.id,
-                    child: Text(category.name),
+                    child: Text(category.name, overflow: TextOverflow.ellipsis),
                   ),
                 )
                 .toList(),
