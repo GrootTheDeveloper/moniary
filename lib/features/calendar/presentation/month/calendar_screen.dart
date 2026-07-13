@@ -1137,7 +1137,7 @@ class _CalendarDayCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
     final dominant = _DominantDayCategory.from(day.transactions, colors);
-    final imageTransactions = day.transactions.reversed.toList();
+    final imageTransactions = _calendarImageTransactions(day.transactions);
     final transactionCount = day.transactions.length;
     final hasTransactions = transactionCount > 0;
 
@@ -1371,10 +1371,117 @@ class _PhotoFrame extends StatelessWidget {
               height: size,
               borderRadius: radius,
               fallbackIcon: Icons.receipt_long_outlined,
+              fallbackBuilder: (context) => _CalendarReceiptFallback(
+                size: size,
+                accentColor: borderColor,
+              ),
             ),
             ?child,
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CalendarReceiptFallback extends StatelessWidget {
+  const _CalendarReceiptFallback({
+    required this.size,
+    required this.accentColor,
+  });
+
+  final double size;
+  final Color accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppTheme.surfaceRaised,
+            Color.lerp(AppTheme.surfaceRaised, accentColor, 0.12)!,
+          ],
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            left: 8,
+            top: 8,
+            right: 8,
+            bottom: 7,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: colors.backgroundSoft.withValues(alpha: 0.9),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  color: accentColor.withValues(alpha: 0.28),
+                  width: 0.8,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 11,
+            right: 11,
+            top: 12,
+            child: Container(
+              height: 4,
+              decoration: BoxDecoration(
+                color: accentColor.withValues(alpha: 0.78),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 11,
+            right: 15,
+            top: 20,
+            child: _ReceiptFallbackLine(
+              color: colors.textPrimary.withValues(alpha: 0.32),
+            ),
+          ),
+          Positioned(
+            left: 11,
+            right: 18,
+            top: 26,
+            child: _ReceiptFallbackLine(
+              color: colors.textPrimary.withValues(alpha: 0.2),
+            ),
+          ),
+          Positioned(
+            left: 11,
+            width: 12,
+            bottom: 10,
+            child: _ReceiptFallbackLine(
+              color: accentColor.withValues(alpha: 0.64),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReceiptFallbackLine extends StatelessWidget {
+  const _ReceiptFallbackLine({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 2,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(999),
       ),
     );
   }
@@ -1429,6 +1536,26 @@ class _DominantDayCategory {
     final index = value.hashCode.abs() % _fallbackPalette.length;
     return _fallbackPalette[index];
   }
+}
+
+List<TransactionEntry> _calendarImageTransactions(
+  List<TransactionEntry> transactions,
+) {
+  final sorted = List<TransactionEntry>.from(transactions);
+  sorted.sort((a, b) {
+    final imageComparison = _calendarImagePriority(
+      a,
+    ).compareTo(_calendarImagePriority(b));
+    if (imageComparison != 0) return imageComparison;
+    if (a.isImportant != b.isImportant) return b.isImportant ? 1 : -1;
+    return b.transactionDate.compareTo(a.transactionDate);
+  });
+  return sorted;
+}
+
+int _calendarImagePriority(TransactionEntry transaction) {
+  final imagePath = transaction.imagePath?.trim();
+  return imagePath == null || imagePath.isEmpty ? 1 : 0;
 }
 
 Color _readableTextColor(Color color) {
