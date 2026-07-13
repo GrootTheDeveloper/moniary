@@ -7,6 +7,8 @@ import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/currency_formatter.dart';
 import '../../../shared/utils/error_helpers.dart';
+import '../../../shared/widgets/supabase_image.dart';
+import '../../transactions/presentation/utils/transaction_image_source.dart';
 import '../application/journal_controller.dart';
 import '../domain/journal_models.dart';
 import 'journal_collection_detail_screen.dart';
@@ -31,6 +33,7 @@ class JournalCollectionsScreen extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(28, 18, 28, 18),
                   child: _CollectionsHeader(
+                    onBack: () => Navigator.of(context).maybePop(),
                     onCreate: () => _createCollection(context, ref),
                   ),
                 ),
@@ -126,8 +129,9 @@ class JournalCollectionsScreen extends ConsumerWidget {
 }
 
 class _CollectionsHeader extends StatelessWidget {
-  const _CollectionsHeader({required this.onCreate});
+  const _CollectionsHeader({required this.onBack, required this.onCreate});
 
+  final VoidCallback onBack;
   final VoidCallback onCreate;
 
   @override
@@ -136,6 +140,31 @@ class _CollectionsHeader extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Semantics(
+          button: true,
+          label: MaterialLocalizations.of(context).backButtonTooltip,
+          child: Material(
+            color: colors.surface.withValues(alpha: 0.58),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: colors.outline.withValues(alpha: 0.78)),
+            ),
+            child: InkWell(
+              onTap: onBack,
+              borderRadius: BorderRadius.circular(10),
+              child: SizedBox(
+                width: 36,
+                height: 36,
+                child: Icon(
+                  Icons.chevron_left_rounded,
+                  size: 25,
+                  color: colors.textPrimary.withValues(alpha: 0.64),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -305,6 +334,7 @@ class _CollectionMosaic extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
     final palette = _paletteFor(collection);
+    final transactions = collection.transactions.take(4).toList();
     final overflow = collection.transactions.length - 4;
 
     return SizedBox(
@@ -312,41 +342,70 @@ class _CollectionMosaic extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: List.generate(4, (index) {
+          final transaction = index < transactions.length
+              ? transactions[index]
+              : null;
           final color = palette[index];
           return Expanded(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: color,
-                border: Border(
-                  right: index == 3
-                      ? BorderSide.none
-                      : BorderSide(
-                          color: colors.backgroundSoft.withValues(alpha: 0.82),
-                          width: 1.2,
-                        ),
-                ),
-              ),
-              child: index == 3 && overflow > 0
-                  ? Center(
-                      child: Text(
-                        '+$overflow',
-                        style: context.moniaryTypography.metadataStrong
-                            .copyWith(
-                              color: AppTheme.surfaceRaised,
-                              fontSize: 10,
-                              letterSpacing: 0,
-                              shadows: [
-                                Shadow(
-                                  color: colors.textPrimary.withValues(
-                                    alpha: 0.2,
-                                  ),
-                                  blurRadius: 4,
-                                ),
-                              ],
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (transaction == null)
+                  ColoredBox(color: color)
+                else
+                  SupabaseImage(
+                    imagePath: transactionImagePathForDisplay(transaction),
+                    fit: BoxFit.cover,
+                    fallbackBuilder: (context) => ColoredBox(color: color),
+                  ),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.22),
+                    border: Border(
+                      right: index == 3
+                          ? BorderSide.none
+                          : BorderSide(
+                              color: colors.backgroundSoft.withValues(
+                                alpha: 0.82,
+                              ),
+                              width: 1.2,
                             ),
+                    ),
+                  ),
+                ),
+                if (index == 3 && overflow > 0)
+                  Center(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colors.textPrimary.withValues(alpha: 0.18),
+                        borderRadius: BorderRadius.circular(999),
                       ),
-                    )
-                  : null,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 4,
+                        ),
+                        child: Text(
+                          '+$overflow',
+                          style: context.moniaryTypography.metadataStrong
+                              .copyWith(
+                                color: AppTheme.surfaceRaised,
+                                fontSize: 11,
+                                letterSpacing: 0,
+                                shadows: [
+                                  Shadow(
+                                    color: colors.textPrimary.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           );
         }),
