@@ -190,8 +190,10 @@ class TransactionComposerController extends AsyncNotifier<void> {
 
   void _triggerUpdates() {
     ref.invalidate(walletsControllerProvider);
-    // Keep the search browse-all view in sync — it caches results per filter
-    // and would otherwise still show a transaction that was just deleted.
+    // Refresh every list that shows transactions so a create/update/delete is
+    // reflected immediately, not only on the screen that triggered it.
+    ref.invalidate(calendarMonthProvider);
+    ref.invalidate(transactionsForDayProvider);
     ref.invalidate(transactionSearchProvider);
     ref.read(widgetUpdateServiceProvider).updateWidget().ignore();
   }

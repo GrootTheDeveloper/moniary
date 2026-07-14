@@ -33,6 +33,7 @@ class _RecurringAutoPostRunnerState
     if (posted == 0 || !mounted) return;
     ref.invalidate(recurringControllerProvider);
     ref.invalidate(calendarMonthProvider);
+    ref.invalidate(transactionsForDayProvider);
     ref.invalidate(statisticsMonthProvider);
     ref.invalidate(transactionSearchProvider);
   }

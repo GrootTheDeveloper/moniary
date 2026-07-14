@@ -146,6 +146,23 @@ void main() {
     );
   });
 
+  test('searchTransactions filters by subscription facet', () async {
+    // Seeded transactions have no recurring link.
+    final subs = await repository.searchTransactions(
+      const TransactionSearchFilter(
+        subscription: TransactionSubscriptionFilter.subscription,
+      ),
+    );
+    final nonSubs = await repository.searchTransactions(
+      const TransactionSearchFilter(
+        subscription: TransactionSubscriptionFilter.nonSubscription,
+      ),
+    );
+
+    expect(subs, isEmpty);
+    expect(nonSubs, hasLength(3));
+  });
+
   test('searchTransactions filters by date range', () async {
     final results = await repository.searchTransactions(
       TransactionSearchFilter(

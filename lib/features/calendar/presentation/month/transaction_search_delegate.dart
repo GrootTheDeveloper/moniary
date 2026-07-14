@@ -35,6 +35,7 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
 
   TransactionType? _type;
   TransactionImportanceFilter? _importance;
+  TransactionSubscriptionFilter? _subscription;
   String? _categoryId;
   String? _categoryName;
   DateTime? _dateFrom;
@@ -46,6 +47,7 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
     query: query,
     type: _type,
     importance: _importance,
+    subscription: _subscription,
     categoryId: _categoryId,
     dateFrom: _dateFrom,
     dateTo: _dateTo,
@@ -252,6 +254,26 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
               _bump();
             },
           ),
+          const SizedBox(height: 10),
+          _SegmentedFilter<TransactionSubscriptionFilter?>(
+            label: context.l10n.searchFilterSubscription,
+            value: _subscription,
+            options: [
+              _SegOption(context.l10n.searchFilterAll, null),
+              _SegOption(
+                context.l10n.searchSubscriptionYes,
+                TransactionSubscriptionFilter.subscription,
+              ),
+              _SegOption(
+                context.l10n.searchSubscriptionNo,
+                TransactionSubscriptionFilter.nonSubscription,
+              ),
+            ],
+            onChanged: (value) {
+              _subscription = value;
+              _bump();
+            },
+          ),
           if (query.trim().isEmpty)
             _RecentSearchesStrip(
               onSelected: (value) {
@@ -384,6 +406,7 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
   void _clearFilters() {
     _type = null;
     _importance = null;
+    _subscription = null;
     _categoryId = null;
     _categoryName = null;
     _dateFrom = null;

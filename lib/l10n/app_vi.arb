@@ -825,6 +825,9 @@
   "searchFilterImportance": "Ưu tiên",
   "searchImportanceImportant": "Quan trọng",
   "searchImportanceNotImportant": "Không quan trọng",
+  "searchFilterSubscription": "Đăng ký",
+  "searchSubscriptionYes": "Từ đăng ký",
+  "searchSubscriptionNo": "Không đăng ký",
   "searchAmountRangeError": "Số tiền tối đa phải lớn hơn tối thiểu",
   "searchRecentClear": "Xóa",
   "recurringTitle": "Định kỳ & đăng ký",
@@ -867,8 +870,8 @@
   "recurringAmountRequired": "Nhập số tiền lớn hơn 0",
   "recurringNoWallets": "Hãy tạo ví trước khi thêm khoản định kỳ",
   "recurringNoCategories": "Hãy tạo danh mục phù hợp trước",
-  "recurringApplyTitle": "Áp dụng thay đổi cho giao dịch đã tạo?",
-  "recurringApplyMessage": "Đăng ký này đã tạo {count} giao dịch.",
+  "recurringApplyTitle": "Cập nhật đăng ký?",
+  "recurringApplyMessage": "Lưu thay đổi sẽ xóa {count} giao dịch mà đăng ký này đã tạo và tạo lại theo thông tin mới.",
   "@recurringApplyMessage": {
     "placeholders": { "count": { "type": "int" } }
   },

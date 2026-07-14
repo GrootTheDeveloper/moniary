@@ -98,23 +98,23 @@ class RecurringTransactionsScreen extends ConsumerWidget {
     if (generatedCount > 0) {
       deleteGenerated = await showDialog<bool>(
         context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: Text(dialogContext.l10n.recurringDeleteTitle),
-          content: Text(
-            dialogContext.l10n.recurringDeleteGeneratedMessage(generatedCount),
+        builder: (dialogContext) => _ActionDialog<bool>(
+          icon: Icons.delete_outline_rounded,
+          iconColor: dialogContext.moniaryColors.danger,
+          title: dialogContext.l10n.recurringDeleteTitle,
+          message: dialogContext.l10n.recurringDeleteGeneratedMessage(
+            generatedCount,
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(dialogContext.l10n.commonCancel),
+            _DialogAction(
+              dialogContext.l10n.recurringDeleteKeepTx,
+              false,
+              style: _DialogActionStyle.neutral,
             ),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text(dialogContext.l10n.recurringDeleteKeepTx),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              child: Text(dialogContext.l10n.recurringDeleteRemoveTx),
+            _DialogAction(
+              dialogContext.l10n.recurringDeleteRemoveTx,
+              true,
+              style: _DialogActionStyle.danger,
             ),
           ],
         ),
@@ -123,17 +123,16 @@ class RecurringTransactionsScreen extends ConsumerWidget {
     } else {
       final confirmed = await showDialog<bool>(
         context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: Text(dialogContext.l10n.recurringDeleteTitle),
-          content: Text(dialogContext.l10n.recurringDeleteMessage),
+        builder: (dialogContext) => _ActionDialog<bool>(
+          icon: Icons.delete_outline_rounded,
+          iconColor: dialogContext.moniaryColors.danger,
+          title: dialogContext.l10n.recurringDeleteTitle,
+          message: dialogContext.l10n.recurringDeleteMessage,
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text(dialogContext.l10n.commonCancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              child: Text(dialogContext.l10n.commonDelete),
+            _DialogAction(
+              dialogContext.l10n.commonDelete,
+              true,
+              style: _DialogActionStyle.danger,
             ),
           ],
         ),
@@ -151,6 +150,7 @@ class RecurringTransactionsScreen extends ConsumerWidget {
       if (deleteGenerated) {
         // Transactions were removed — refresh the views that show them.
         ref.invalidate(calendarMonthProvider);
+        ref.invalidate(transactionsForDayProvider);
         ref.invalidate(statisticsMonthProvider);
         ref.invalidate(transactionSearchProvider);
       }
@@ -267,7 +267,6 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
   late TransactionType _type;
   late RecurringFrequency _frequency;
   late DateTime _startDate;
-  late DateTime _nextRunDate;
   DateTime? _endDate;
   late bool _autoPost;
   late bool _isActive;
@@ -289,7 +288,6 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
     _type = item?.type ?? TransactionType.expense;
     _frequency = item?.frequency ?? RecurringFrequency.monthly;
     _startDate = item?.startDate ?? DateTime.now();
-    _nextRunDate = item?.nextRunDate ?? DateTime.now();
     _endDate = item?.endDate;
     _autoPost = item?.autoPost ?? false;
     _isActive = item?.isActive ?? true;
@@ -490,14 +488,10 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
           value: _startDate,
           onPick: (picked) => setState(() {
             _startDate = picked;
-            if (_nextRunDate.isBefore(picked)) _nextRunDate = picked;
+            if (_endDate != null && _endDate!.isBefore(picked)) {
+              _endDate = null;
+            }
           }),
-        ),
-        _DateTile(
-          label: context.l10n.recurringNextRun,
-          value: _nextRunDate,
-          firstDate: _startDate,
-          onPick: (picked) => setState(() => _nextRunDate = picked),
         ),
         _DateTile(
           label: context.l10n.recurringEndDate,
@@ -556,65 +550,19 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
     );
   }
 
-  Future<RecurringApplyMode?> _askApplyMode(
-    BuildContext context,
-    int count,
-  ) {
-    return showDialog<RecurringApplyMode>(
+  Future<bool> _confirmRegenerate(BuildContext context, int count) async {
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(dialogContext.l10n.recurringApplyTitle),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(dialogContext.l10n.recurringApplyMessage(count)),
-              const SizedBox(height: 8),
-              _applyModeTile(
-                dialogContext,
-                Icons.schedule_outlined,
-                dialogContext.l10n.recurringApplyFutureOnly,
-                RecurringApplyMode.futureOnly,
-              ),
-              _applyModeTile(
-                dialogContext,
-                Icons.edit_outlined,
-                dialogContext.l10n.recurringApplyUpdate,
-                RecurringApplyMode.updateExisting,
-              ),
-              _applyModeTile(
-                dialogContext,
-                Icons.delete_sweep_outlined,
-                dialogContext.l10n.recurringApplyDelete,
-                RecurringApplyMode.deleteAndRegenerate,
-              ),
-            ],
-          ),
-        ),
+      builder: (dialogContext) => _ActionDialog<bool>(
+        icon: Icons.autorenew,
+        title: dialogContext.l10n.recurringApplyTitle,
+        message: dialogContext.l10n.recurringApplyMessage(count),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(dialogContext.l10n.commonCancel),
-          ),
+          _DialogAction(dialogContext.l10n.recurringApplyDelete, true),
         ],
       ),
     );
-  }
-
-  Widget _applyModeTile(
-    BuildContext context,
-    IconData icon,
-    String label,
-    RecurringApplyMode mode,
-  ) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: context.moniaryColors.primary),
-      title: Text(label),
-      onTap: () => Navigator.pop(context, mode),
-    );
+    return confirmed ?? false;
   }
 
   Future<void> _submit() async {
@@ -648,12 +596,12 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
         }
         if (!mounted) return;
         if (generatedCount > 0) {
-          final chosen = await _askApplyMode(context, generatedCount);
-          if (chosen == null) {
+          final confirmed = await _confirmRegenerate(context, generatedCount);
+          if (!confirmed) {
             setState(() => _submitting = false);
             return;
           }
-          applyMode = chosen;
+          applyMode = RecurringApplyMode.deleteAndRegenerate;
         }
         transactionsTouched = applyMode != RecurringApplyMode.futureOnly;
         await notifier.updateRecurring(
@@ -665,7 +613,7 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
           frequency: _frequency,
           interval: safeInterval,
           startDate: _startDate,
-          nextRunDate: _nextRunDate,
+          nextRunDate: _startDate,
           isActive: _isActive,
           endDate: _endDate,
           note: note,
@@ -681,7 +629,7 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
           frequency: _frequency,
           interval: safeInterval,
           startDate: _startDate,
-          nextRunDate: _nextRunDate,
+          nextRunDate: _startDate,
           endDate: _endDate,
           note: note,
           autoPost: _autoPost,
@@ -698,6 +646,7 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
       if (transactionsTouched) {
         await notifier.refresh();
         ref.invalidate(calendarMonthProvider);
+        ref.invalidate(transactionsForDayProvider);
         ref.invalidate(statisticsMonthProvider);
         ref.invalidate(transactionSearchProvider);
       }
@@ -797,4 +746,98 @@ class _Message extends StatelessWidget {
       ),
     ),
   );
+}
+
+enum _DialogActionStyle { primary, danger, neutral }
+
+class _DialogAction<T> {
+  const _DialogAction(this.label, this.value, {this.style = _DialogActionStyle.primary});
+
+  final String label;
+  final T value;
+  final _DialogActionStyle style;
+}
+
+/// Centered icon + title + message with full-width stacked action buttons and
+/// a trailing Cancel. Pops with the chosen action's value, or null on cancel.
+class _ActionDialog<T> extends StatelessWidget {
+  const _ActionDialog({
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.actions,
+    this.iconColor,
+  });
+
+  final IconData icon;
+  final Color? iconColor;
+  final String title;
+  final String message;
+  final List<_DialogAction<T>> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final accent = iconColor ?? colors.primary;
+    return AlertDialog(
+      backgroundColor: colors.surface,
+      icon: Container(
+        width: 52,
+        height: 52,
+        decoration: BoxDecoration(
+          color: accent.withValues(alpha: 0.12),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: accent),
+      ),
+      title: Text(title, textAlign: TextAlign.center),
+      content: Text(
+        message,
+        textAlign: TextAlign.center,
+        style: TextStyle(color: colors.textDim, height: 1.4),
+      ),
+      actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+      actions: [
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final action in actions) ...[
+              SizedBox(
+                width: double.infinity,
+                child: _button(context, action),
+              ),
+              const SizedBox(height: 8),
+            ],
+            SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(context.l10n.commonCancel),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _button(BuildContext context, _DialogAction<T> action) {
+    final colors = context.moniaryColors;
+    void onPressed() => Navigator.pop(context, action.value);
+    return switch (action.style) {
+      _DialogActionStyle.primary => FilledButton(
+        onPressed: onPressed,
+        child: Text(action.label),
+      ),
+      _DialogActionStyle.danger => FilledButton(
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(backgroundColor: colors.danger),
+        child: Text(action.label),
+      ),
+      _DialogActionStyle.neutral => OutlinedButton(
+        onPressed: onPressed,
+        child: Text(action.label),
+      ),
+    };
+  }
 }

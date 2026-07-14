@@ -3392,6 +3392,24 @@ abstract class AppLocalizations {
   /// **'Không quan trọng'**
   String get searchImportanceNotImportant;
 
+  /// No description provided for @searchFilterSubscription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ký'**
+  String get searchFilterSubscription;
+
+  /// No description provided for @searchSubscriptionYes.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ đăng ký'**
+  String get searchSubscriptionYes;
+
+  /// No description provided for @searchSubscriptionNo.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không đăng ký'**
+  String get searchSubscriptionNo;
+
   /// No description provided for @searchAmountRangeError.
   ///
   /// In vi, this message translates to:
@@ -3611,13 +3629,13 @@ abstract class AppLocalizations {
   /// No description provided for @recurringApplyTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Áp dụng thay đổi cho giao dịch đã tạo?'**
+  /// **'Cập nhật đăng ký?'**
   String get recurringApplyTitle;
 
   /// No description provided for @recurringApplyMessage.
   ///
   /// In vi, this message translates to:
-  /// **'Đăng ký này đã tạo {count} giao dịch.'**
+  /// **'Lưu thay đổi sẽ xóa {count} giao dịch mà đăng ký này đã tạo và tạo lại theo thông tin mới.'**
   String recurringApplyMessage(int count);
 
   /// No description provided for @recurringApplyFutureOnly.

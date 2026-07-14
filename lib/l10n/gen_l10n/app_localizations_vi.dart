@@ -1816,6 +1816,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get searchImportanceNotImportant => 'Không quan trọng';
 
   @override
+  String get searchFilterSubscription => 'Đăng ký';
+
+  @override
+  String get searchSubscriptionYes => 'Từ đăng ký';
+
+  @override
+  String get searchSubscriptionNo => 'Không đăng ký';
+
+  @override
   String get searchAmountRangeError => 'Số tiền tối đa phải lớn hơn tối thiểu';
 
   @override
@@ -1928,11 +1937,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get recurringNoCategories => 'Hãy tạo danh mục phù hợp trước';
 
   @override
-  String get recurringApplyTitle => 'Áp dụng thay đổi cho giao dịch đã tạo?';
+  String get recurringApplyTitle => 'Cập nhật đăng ký?';
 
   @override
   String recurringApplyMessage(int count) {
-    return 'Đăng ký này đã tạo $count giao dịch.';
+    return 'Lưu thay đổi sẽ xóa $count giao dịch mà đăng ký này đã tạo và tạo lại theo thông tin mới.';
   }
 
   @override

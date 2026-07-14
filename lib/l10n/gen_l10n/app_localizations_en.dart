@@ -1818,6 +1818,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchImportanceNotImportant => 'Not important';
 
   @override
+  String get searchFilterSubscription => 'Subscription';
+
+  @override
+  String get searchSubscriptionYes => 'Subscriptions';
+
+  @override
+  String get searchSubscriptionNo => 'Non-subscription';
+
+  @override
   String get searchAmountRangeError =>
       'Max amount must be greater than the minimum';
 
@@ -1933,11 +1942,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recurringNoCategories => 'Create a matching category first';
 
   @override
-  String get recurringApplyTitle => 'Apply changes to created transactions?';
+  String get recurringApplyTitle => 'Update subscription?';
 
   @override
   String recurringApplyMessage(int count) {
-    return 'This subscription has already created $count transaction(s).';
+    return 'Saving will delete the $count transaction(s) already created by this subscription and re-create them with the new details.';
   }
 
   @override

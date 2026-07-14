@@ -465,6 +465,11 @@ class TransactionRepository {
           filter.importance == TransactionImportanceFilter.important,
         );
       }
+      if (filter.subscription != null) {
+        query = filter.subscription == TransactionSubscriptionFilter.subscription
+            ? query.not('recurring_transaction_id', 'is', null)
+            : query.isFilter('recurring_transaction_id', null);
+      }
       if (filter.dateFrom != null) {
         query = query.gte(
           'transaction_date',
@@ -1132,6 +1137,7 @@ class TransactionRepository {
           image_path,
           transaction_date,
           is_important,
+          recurring_transaction_id,
           wallet:wallets!inner(id,name,color),
           category:categories!inner(id,name,color)
         ''');
@@ -1160,6 +1166,14 @@ class TransactionRepository {
     }
     if (filter.importance == TransactionImportanceFilter.notImportant &&
         transaction.isImportant) {
+      return false;
+    }
+    if (filter.subscription == TransactionSubscriptionFilter.subscription &&
+        transaction.recurringTransactionId == null) {
+      return false;
+    }
+    if (filter.subscription == TransactionSubscriptionFilter.nonSubscription &&
+        transaction.recurringTransactionId != null) {
       return false;
     }
     if (filter.dateFrom != null &&
