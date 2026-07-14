@@ -14,6 +14,7 @@ import '../../../categories/domain/models/category.dart';
 import '../../../wallets/data/repositories/wallet_repository.dart';
 import '../../../wallets/domain/models/wallet.dart';
 import '../../domain/models/transaction_entry.dart';
+import '../../domain/models/transaction_search_filter.dart';
 
 final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
   return TransactionRepository(
@@ -436,23 +437,64 @@ class TransactionRepository {
     }
   }
 
-  Future<List<TransactionEntry>> searchTransactions(String queryText) async {
-    final normalizedQuery = queryText.trim().toLowerCase();
-    if (normalizedQuery.isEmpty) {
-      return const [];
-    }
+  Future<List<TransactionEntry>> searchTransactions(
+    TransactionSearchFilter filter,
+  ) async {
+    final normalizedQuery = filter.query.trim().toLowerCase();
 
     if (_useMockData) {
-      return _filterTransactions(_mockTransactions, normalizedQuery);
+      final results = _mockTransactions
+          .where((tx) => _matchesFilter(tx, filter, normalizedQuery))
+          .toList();
+      _sortStarredThenDate(results);
+      return results;
     }
     try {
       final uid = _userId;
 
-      final rows = await _baseSelect()
-          .eq('user_id', uid)
-          .order('transaction_date', ascending: false);
+      var query = _baseSelect().eq('user_id', uid);
+      if (filter.type != null) {
+        query = query.eq('type', filter.type!.value);
+      }
+      if (filter.categoryId != null) {
+        query = query.eq('category_id', filter.categoryId!);
+      }
+      if (filter.importance != null) {
+        query = query.eq(
+          'is_important',
+          filter.importance == TransactionImportanceFilter.important,
+        );
+      }
+      if (filter.dateFrom != null) {
+        query = query.gte(
+          'transaction_date',
+          _startOfDay(filter.dateFrom!).toUtc().toIso8601String(),
+        );
+      }
+      if (filter.dateTo != null) {
+        query = query.lt(
+          'transaction_date',
+          _startOfDay(
+            filter.dateTo!,
+          ).add(const Duration(days: 1)).toUtc().toIso8601String(),
+        );
+      }
+      if (filter.minAmount != null) {
+        query = query.gte('amount', filter.minAmount!);
+      }
+      if (filter.maxAmount != null) {
+        query = query.lte('amount', filter.maxAmount!);
+      }
 
-      return _filterTransactions(_mapList(rows), normalizedQuery);
+      final rows = await query.order('transaction_date', ascending: false);
+      var results = _mapList(rows);
+      if (normalizedQuery.isNotEmpty) {
+        results = results
+            .where((tx) => _matchesSearchQuery(tx, normalizedQuery))
+            .toList();
+      }
+      _sortStarredThenDate(results);
+      return results;
     } on PostgrestException catch (e, st) {
       AppLogger.error('Search transactions failed', e, st);
       throw AppException(e.message, code: e.code);
@@ -961,18 +1003,58 @@ class TransactionRepository {
         .toList();
   }
 
-  List<TransactionEntry> _filterTransactions(
-    Iterable<TransactionEntry> transactions,
+  bool _matchesFilter(
+    TransactionEntry transaction,
+    TransactionSearchFilter filter,
     String normalizedQuery,
   ) {
-    final filtered = transactions
-        .where(
-          (transaction) => _matchesSearchQuery(transaction, normalizedQuery),
-        )
-        .toList();
-    filtered.sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
-    return filtered;
+    if (filter.type != null && transaction.type != filter.type) return false;
+    if (filter.categoryId != null &&
+        transaction.categoryId != filter.categoryId) {
+      return false;
+    }
+    if (filter.importance == TransactionImportanceFilter.important &&
+        !transaction.isImportant) {
+      return false;
+    }
+    if (filter.importance == TransactionImportanceFilter.notImportant &&
+        transaction.isImportant) {
+      return false;
+    }
+    if (filter.dateFrom != null &&
+        transaction.transactionDate.isBefore(_startOfDay(filter.dateFrom!))) {
+      return false;
+    }
+    if (filter.dateTo != null &&
+        !transaction.transactionDate.isBefore(
+          _startOfDay(filter.dateTo!).add(const Duration(days: 1)),
+        )) {
+      return false;
+    }
+    if (filter.minAmount != null && transaction.amount < filter.minAmount!) {
+      return false;
+    }
+    if (filter.maxAmount != null && transaction.amount > filter.maxAmount!) {
+      return false;
+    }
+    if (normalizedQuery.isNotEmpty &&
+        !_matchesSearchQuery(transaction, normalizedQuery)) {
+      return false;
+    }
+    return true;
   }
+
+  void _sortStarredThenDate(List<TransactionEntry> list) {
+    list.sort((a, b) {
+      if (a.isImportant != b.isImportant) {
+        return b.isImportant ? 1 : -1;
+      }
+      return b.transactionDate.compareTo(a.transactionDate);
+    });
+  }
+
+  DateTime _startOfDay(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
 
   bool _matchesSearchQuery(
     TransactionEntry transaction,
@@ -983,6 +1065,14 @@ class TransactionRepository {
     final categoryMatch = transaction.categoryName.toLowerCase().contains(
       normalizedQuery,
     );
-    return noteMatch || categoryMatch;
+    final walletMatch = transaction.walletName.toLowerCase().contains(
+      normalizedQuery,
+    );
+    // Digits in the query are matched against the whole-number amount, so
+    // typing "45000" finds a 45,000 transaction.
+    final amountMatch = transaction.amount.toStringAsFixed(0).contains(
+      normalizedQuery,
+    );
+    return noteMatch || categoryMatch || walletMatch || amountMatch;
   }
 }

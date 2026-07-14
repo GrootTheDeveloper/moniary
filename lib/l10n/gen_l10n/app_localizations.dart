@@ -3302,6 +3302,108 @@ abstract class AppLocalizations {
   /// **'Giao dịch quan trọng'**
   String get starredTransactionsTitle;
 
+  /// No description provided for @searchFilterType.
+  ///
+  /// In vi, this message translates to:
+  /// **'Loại'**
+  String get searchFilterType;
+
+  /// No description provided for @searchFilterAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả'**
+  String get searchFilterAll;
+
+  /// No description provided for @searchFilterIncome.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thu nhập'**
+  String get searchFilterIncome;
+
+  /// No description provided for @searchFilterExpense.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu'**
+  String get searchFilterExpense;
+
+  /// No description provided for @searchFilterCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Danh mục'**
+  String get searchFilterCategory;
+
+  /// No description provided for @searchFilterAllCategories.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả danh mục'**
+  String get searchFilterAllCategories;
+
+  /// No description provided for @searchFilterDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày'**
+  String get searchFilterDate;
+
+  /// No description provided for @searchFilterAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền'**
+  String get searchFilterAmount;
+
+  /// No description provided for @searchFilterAmountMin.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tối thiểu'**
+  String get searchFilterAmountMin;
+
+  /// No description provided for @searchFilterAmountMax.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tối đa'**
+  String get searchFilterAmountMax;
+
+  /// No description provided for @searchFilterApply.
+  ///
+  /// In vi, this message translates to:
+  /// **'Áp dụng'**
+  String get searchFilterApply;
+
+  /// No description provided for @searchFilterClearAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa bộ lọc'**
+  String get searchFilterClearAll;
+
+  /// No description provided for @searchFilterImportance.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ưu tiên'**
+  String get searchFilterImportance;
+
+  /// No description provided for @searchImportanceImportant.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quan trọng'**
+  String get searchImportanceImportant;
+
+  /// No description provided for @searchImportanceNotImportant.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không quan trọng'**
+  String get searchImportanceNotImportant;
+
+  /// No description provided for @searchAmountRangeError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền tối đa phải lớn hơn tối thiểu'**
+  String get searchAmountRangeError;
+
+  /// No description provided for @searchRecentClear.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa'**
+  String get searchRecentClear;
+
   /// No description provided for @recurringTitle.
   ///
   /// In vi, this message translates to:

@@ -1771,6 +1771,57 @@ class AppLocalizationsVi extends AppLocalizations {
   String get starredTransactionsTitle => 'Giao dịch quan trọng';
 
   @override
+  String get searchFilterType => 'Loại';
+
+  @override
+  String get searchFilterAll => 'Tất cả';
+
+  @override
+  String get searchFilterIncome => 'Thu nhập';
+
+  @override
+  String get searchFilterExpense => 'Chi tiêu';
+
+  @override
+  String get searchFilterCategory => 'Danh mục';
+
+  @override
+  String get searchFilterAllCategories => 'Tất cả danh mục';
+
+  @override
+  String get searchFilterDate => 'Ngày';
+
+  @override
+  String get searchFilterAmount => 'Số tiền';
+
+  @override
+  String get searchFilterAmountMin => 'Tối thiểu';
+
+  @override
+  String get searchFilterAmountMax => 'Tối đa';
+
+  @override
+  String get searchFilterApply => 'Áp dụng';
+
+  @override
+  String get searchFilterClearAll => 'Xóa bộ lọc';
+
+  @override
+  String get searchFilterImportance => 'Ưu tiên';
+
+  @override
+  String get searchImportanceImportant => 'Quan trọng';
+
+  @override
+  String get searchImportanceNotImportant => 'Không quan trọng';
+
+  @override
+  String get searchAmountRangeError => 'Số tiền tối đa phải lớn hơn tối thiểu';
+
+  @override
+  String get searchRecentClear => 'Xóa';
+
+  @override
   String get recurringTitle => 'Định kỳ & đăng ký';
 
   @override

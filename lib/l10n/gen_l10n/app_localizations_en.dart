@@ -1773,6 +1773,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get starredTransactionsTitle => 'Starred Transactions';
 
   @override
+  String get searchFilterType => 'Type';
+
+  @override
+  String get searchFilterAll => 'All';
+
+  @override
+  String get searchFilterIncome => 'Income';
+
+  @override
+  String get searchFilterExpense => 'Expense';
+
+  @override
+  String get searchFilterCategory => 'Category';
+
+  @override
+  String get searchFilterAllCategories => 'All categories';
+
+  @override
+  String get searchFilterDate => 'Date';
+
+  @override
+  String get searchFilterAmount => 'Amount';
+
+  @override
+  String get searchFilterAmountMin => 'Min';
+
+  @override
+  String get searchFilterAmountMax => 'Max';
+
+  @override
+  String get searchFilterApply => 'Apply';
+
+  @override
+  String get searchFilterClearAll => 'Clear filters';
+
+  @override
+  String get searchFilterImportance => 'Priority';
+
+  @override
+  String get searchImportanceImportant => 'Important';
+
+  @override
+  String get searchImportanceNotImportant => 'Not important';
+
+  @override
+  String get searchAmountRangeError =>
+      'Max amount must be greater than the minimum';
+
+  @override
+  String get searchRecentClear => 'Clear';
+
+  @override
   String get recurringTitle => 'Recurring & subscriptions';
 
   @override
