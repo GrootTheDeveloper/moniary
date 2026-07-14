@@ -6962,6 +6962,48 @@ abstract class AppLocalizations {
   /// **'Nhập giới hạn hợp lệ, không âm.'**
   String get groupBudgetInvalidLimit;
 
+  /// No description provided for @groupNotificationPreferencesTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tuỳ chọn thông báo'**
+  String get groupNotificationPreferencesTitle;
+
+  /// No description provided for @groupNotificationPreferencesSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn loại sự kiện nhóm bạn muốn nhận thông báo.'**
+  String get groupNotificationPreferencesSubtitle;
+
+  /// No description provided for @groupNotificationMuteAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tắt tất cả thông báo'**
+  String get groupNotificationMuteAll;
+
+  /// No description provided for @groupNotificationTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật giao dịch'**
+  String get groupNotificationTransactions;
+
+  /// No description provided for @groupNotificationDebts.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật nợ và tất toán'**
+  String get groupNotificationDebts;
+
+  /// No description provided for @groupNotificationInvites.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời'**
+  String get groupNotificationInvites;
+
+  /// No description provided for @groupNotificationMentions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lượt nhắc tên'**
+  String get groupNotificationMentions;
+
   /// No description provided for @groupActivityTransactionReacted.
   ///
   /// In vi, this message translates to:

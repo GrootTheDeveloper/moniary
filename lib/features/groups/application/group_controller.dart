@@ -33,6 +33,13 @@ final groupBudgetProvider = FutureProvider.family<GroupBudget, String>((
   return ref.watch(groupRepositoryProvider).fetchBudget(groupId);
 });
 
+final groupNotificationPreferenceProvider =
+    FutureProvider.family<GroupNotificationPreference, String>((ref, groupId) {
+      return ref
+          .watch(groupRepositoryProvider)
+          .fetchNotificationPreference(groupId);
+    });
+
 final groupTransactionDetailProvider =
     FutureProvider.family<GroupTransactionDetail, String>((ref, transactionId) {
       return ref
@@ -127,6 +134,17 @@ class GroupActionController extends AsyncNotifier<void> {
     return _run(() async {
       await ref.read(groupRepositoryProvider).saveBudget(budget);
       ref.invalidate(groupBudgetProvider(budget.groupId));
+    });
+  }
+
+  Future<void> saveNotificationPreference(
+    GroupNotificationPreference preference,
+  ) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .saveNotificationPreference(preference);
+      ref.invalidate(groupNotificationPreferenceProvider(preference.groupId));
     });
   }
 

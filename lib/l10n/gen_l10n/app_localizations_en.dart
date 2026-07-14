@@ -3852,6 +3852,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupBudgetInvalidLimit => 'Enter a valid non-negative limit.';
 
   @override
+  String get groupNotificationPreferencesTitle => 'Notification preferences';
+
+  @override
+  String get groupNotificationPreferencesSubtitle =>
+      'Choose which group events should notify you.';
+
+  @override
+  String get groupNotificationMuteAll => 'Mute all notifications';
+
+  @override
+  String get groupNotificationTransactions => 'Transaction updates';
+
+  @override
+  String get groupNotificationDebts => 'Debt and settlement updates';
+
+  @override
+  String get groupNotificationInvites => 'Invitations';
+
+  @override
+  String get groupNotificationMentions => 'Mentions';
+
+  @override
   String get groupActivityTransactionReacted => 'reacted to a transaction';
 
   @override

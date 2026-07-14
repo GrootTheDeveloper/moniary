@@ -3854,6 +3854,28 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupBudgetInvalidLimit => 'Nhập giới hạn hợp lệ, không âm.';
 
   @override
+  String get groupNotificationPreferencesTitle => 'Tuỳ chọn thông báo';
+
+  @override
+  String get groupNotificationPreferencesSubtitle =>
+      'Chọn loại sự kiện nhóm bạn muốn nhận thông báo.';
+
+  @override
+  String get groupNotificationMuteAll => 'Tắt tất cả thông báo';
+
+  @override
+  String get groupNotificationTransactions => 'Cập nhật giao dịch';
+
+  @override
+  String get groupNotificationDebts => 'Cập nhật nợ và tất toán';
+
+  @override
+  String get groupNotificationInvites => 'Lời mời';
+
+  @override
+  String get groupNotificationMentions => 'Lượt nhắc tên';
+
+  @override
   String get groupActivityTransactionReacted =>
       'đã thả cảm xúc vào một giao dịch';
 

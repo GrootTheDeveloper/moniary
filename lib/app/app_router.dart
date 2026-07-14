@@ -28,6 +28,7 @@ import '../features/groups/presentation/screens/debt_settlement_screen.dart';
 import '../features/groups/presentation/screens/group_activity_center_screen.dart';
 import '../features/groups/presentation/screens/group_photo_album_screen.dart';
 import '../features/groups/presentation/screens/group_budget_screen.dart';
+import '../features/groups/presentation/screens/group_notification_preferences_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
 import '../features/groups/presentation/screens/group_invite_accept_screen.dart';
 import '../features/groups/presentation/screens/group_invitations_screen.dart';
@@ -452,6 +453,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final child = groupId == null
               ? const GroupsScreen()
               : GroupBudgetScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupNotificationPreferencesScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupNotificationPreferencesScreen(groupId: groupId);
           return buildSlideTransitionPage(state: state, child: child);
         },
       ),

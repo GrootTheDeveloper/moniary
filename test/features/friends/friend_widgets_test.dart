@@ -803,6 +803,16 @@ class FakeGroupRepository implements GroupRepository {
   Future<void> saveBudget(GroupBudget budget) async {}
 
   @override
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  ) async => GroupNotificationPreference.defaults(groupId);
+
+  @override
+  Future<void> saveNotificationPreference(
+    GroupNotificationPreference preference,
+  ) async {}
+
+  @override
   String get currentUserId => 'mock-user-id';
 
   @override

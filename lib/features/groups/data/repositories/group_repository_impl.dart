@@ -580,6 +580,45 @@ class GroupRepositoryImpl implements GroupRepository {
     return _guard('save group budget', () => _remote.saveBudget(budget));
   }
 
+  @override
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  ) async {
+    if (_useMockData) return GroupNotificationPreference.defaults(groupId);
+    return _guard('fetch group notification preference', () async {
+      final row = await _remote.fetchNotificationPreference(
+        groupId: groupId,
+        userId: currentUserId,
+      );
+      if (row == null) return GroupNotificationPreference.defaults(groupId);
+      return GroupNotificationPreference(
+        groupId: groupId,
+        muteAll: row['mute_all'] as bool,
+        transactionNotifications: row['transaction_notifications'] as bool,
+        debtNotifications: row['debt_notifications'] as bool,
+        inviteNotifications: row['invite_notifications'] as bool,
+        mentionNotifications: row['mention_notifications'] as bool,
+        quietHoursStart: (row['quiet_hours_start'] as num?)?.toInt(),
+        quietHoursEnd: (row['quiet_hours_end'] as num?)?.toInt(),
+      );
+    });
+  }
+
+  @override
+  Future<void> saveNotificationPreference(
+    GroupNotificationPreference preference,
+  ) {
+    if (_useMockData) return Future.value();
+    return _guard(
+      'save group notification preference',
+      () => _remote.saveNotificationPreference(
+        groupId: preference.groupId,
+        userId: currentUserId,
+        preference: preference,
+      ),
+    );
+  }
+
   Future<T> _guard<T>(String operation, Future<T> Function() action) async {
     try {
       return await action();

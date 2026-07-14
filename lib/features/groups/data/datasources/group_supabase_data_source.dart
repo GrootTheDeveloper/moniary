@@ -356,6 +356,37 @@ class GroupSupabaseDataSource {
     }, onConflict: 'group_id');
   }
 
+  Future<Map<String, dynamic>?> fetchNotificationPreference({
+    required String groupId,
+    required String userId,
+  }) async {
+    final rows = await client
+        .from('group_notification_preferences')
+        .select()
+        .eq('group_id', groupId)
+        .eq('user_id', userId);
+    final values = _rows(rows);
+    return values.isEmpty ? null : values.first;
+  }
+
+  Future<void> saveNotificationPreference({
+    required String groupId,
+    required String userId,
+    required GroupNotificationPreference preference,
+  }) {
+    return client.from('group_notification_preferences').upsert({
+      'group_id': groupId,
+      'user_id': userId,
+      'mute_all': preference.muteAll,
+      'transaction_notifications': preference.transactionNotifications,
+      'debt_notifications': preference.debtNotifications,
+      'invite_notifications': preference.inviteNotifications,
+      'mention_notifications': preference.mentionNotifications,
+      'quiet_hours_start': preference.quietHoursStart,
+      'quiet_hours_end': preference.quietHoursEnd,
+    }, onConflict: 'group_id,user_id');
+  }
+
   Future<String> uploadGroupAvatar({
     required String groupId,
     required String filePath,
