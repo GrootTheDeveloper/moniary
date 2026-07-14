@@ -277,12 +277,47 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> requestPasswordReset(String email) async {
+  Future<bool> requestPasswordReset(String email) async {
+    if (_isProcessing) return false;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      final opensRecoveryLocally = await ref
+          .read(authRepositoryProvider)
+          .requestPasswordReset(email);
+      state = const AsyncData(null);
+      return opensRecoveryLocally;
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> completePasswordRecovery(String password) async {
     if (_isProcessing) return;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      await ref.read(authRepositoryProvider).requestPasswordReset(email);
+      await ref.read(authRepositoryProvider).updatePassword(password);
+      ref.read(mockSessionProvider.notifier).setSession(null);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> cancelPasswordRecovery() async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      await ref.read(authRepositoryProvider).cancelPasswordRecovery();
+      ref.read(mockSessionProvider.notifier).setSession(null);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);

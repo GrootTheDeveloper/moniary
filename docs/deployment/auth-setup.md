@@ -97,6 +97,8 @@ Facebook is intentionally hidden until all of the following are complete:
 Test each path from a fresh install or after signing out:
 
 - email signup, confirmation link, and email/password sign-in;
+- password-reset email, cold/warm callback, new-password confirmation, and
+  sign-in with the new password;
 - Google browser launch, consent, callback, and authenticated home screen;
 - cold-start callback while the app is terminated;
 - cancelled OAuth and a second attempt, which must not fail with a stale PKCE

@@ -51,6 +51,7 @@ floating global action that pushes `/assistant`; it is not a fifth shell tab.
 | `/` | `SplashScreen` | Initial decision screen |
 | `/onboarding` | `OnboardingScreen` | Public |
 | `/login` | `LoginScreen` | Public |
+| `/reset-password` | `PasswordResetScreen` | Public recovery form opened by the Supabase `passwordRecovery` auth event |
 | `/profile-setup` | `ProfileSetupScreen` | Public; `?mode=edit` enables edit mode |
 | `/profile-survey` | `ProfileSurveyScreen` | Public setup step |
 | `/app-lock` | `AppLockScreen` | Biometric gate |

@@ -227,6 +227,26 @@ class AppLocalizationsEn extends AppLocalizations {
       'Password reset instructions were sent by email.';
 
   @override
+  String get passwordResetTitle => 'Set a new password';
+
+  @override
+  String get passwordResetSubtitle =>
+      'Choose a new password for your Moniary account.';
+
+  @override
+  String get passwordResetSubmit => 'Update password';
+
+  @override
+  String get passwordResetSuccess =>
+      'Your password was updated. Sign in with the new password.';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm password';
+
+  @override
+  String get validationPasswordsMismatch => 'Passwords do not match';
+
+  @override
   String get splashLoading => 'Loading app...';
 
   @override
@@ -5742,24 +5762,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginNeedAccount => 'Need an account? Sign up';
-
-  @override
-  String get resetPasswordTitle => 'Set a new password';
-
-  @override
-  String get resetPasswordSubtitle => 'Enter a new password for your account.';
-
-  @override
-  String get resetPasswordConfirmLabel => 'Confirm new password';
-
-  @override
-  String get resetPasswordMismatch => 'Passwords do not match';
-
-  @override
-  String get resetPasswordSubmit => 'Reset password';
-
-  @override
-  String get resetPasswordSuccess => 'Your password has been updated.';
 
   @override
   String get authErrorUserBanned => 'This account has been suspended.';

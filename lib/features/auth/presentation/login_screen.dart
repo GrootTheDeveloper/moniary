@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/preferences/preferences_providers.dart';
 
@@ -23,7 +22,7 @@ import '../../settings/domain/account/account_deletion_status.dart';
 import '../application/account_status_controller.dart';
 import '../application/auth_controller.dart';
 import '../application/post_auth_decision_provider.dart';
-import 'reset_password_screen.dart';
+import 'password_reset_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -476,10 +475,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     try {
-      await ref
+      final opensRecoveryLocally = await ref
           .read(authControllerProvider.notifier)
           .requestPasswordReset(email);
       if (!mounted) return;
+      if (opensRecoveryLocally) {
+        context.go(PasswordResetScreen.routePath);
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.loginPasswordResetSent)),
       );
@@ -512,16 +515,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (_isResolvingPostAuth) return;
     _isResolvingPostAuth = true;
     if (mounted) setState(() {});
-
-    if (AppConstants.hasSupabaseConfig) {
-      final latestEvent = ref.read(authStateChangesProvider).value?.event;
-      if (latestEvent == AuthChangeEvent.passwordRecovery) {
-        _isResolvingPostAuth = false;
-        if (mounted) setState(() {});
-        context.go(ResetPasswordScreen.routePath);
-        return;
-      }
-    }
 
     late final PostAuthDecision decision;
     try {

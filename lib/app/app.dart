@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/constants/app_constants.dart';
 import '../core/preferences/preferences_providers.dart';
@@ -13,6 +14,7 @@ import '../core/deeplinks/pending_deep_link_controller.dart';
 import '../core/notifications/notification_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
+import '../features/auth/presentation/password_reset_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/friends/presentation/widgets/friend_invite_prompt_host.dart';
 import '../features/settings/presentation/privacy/app_lock_screen.dart';
@@ -76,6 +78,16 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(authStateChangesProvider, (previous, next) {
+      next.whenData((authState) {
+        if (authState.event != AuthChangeEvent.passwordRecovery) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          ref.read(appRouterProvider).go(PasswordResetScreen.routePath);
+        });
+      });
+    });
+
     return MaterialApp.router(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,

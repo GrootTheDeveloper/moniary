@@ -9,7 +9,7 @@ Supabase Auth is initialized with PKCE when real configuration is present.
 `AuthRepository` supports:
 
 - email/password sign-in and sign-up;
-- password-reset request;
+- password-reset request and recovery completion with a new password;
 - Google and Facebook OAuth;
 - anonymous Supabase sign-in;
 - explicit guest/mock session;
@@ -36,6 +36,11 @@ In mock/guest mode these flows return or maintain a synthetic
   legacy `moniary://groups/invite/<token>` is still parsed.
 - Supabase OAuth callback: `io.supabase.moniary://login-callback`.
 - Password reset callback: `io.supabase.moniary://reset-password`.
+
+Supabase Flutter consumes the PKCE recovery callback and emits
+`AuthChangeEvent.passwordRecovery`. The app routes that event to the public
+`/reset-password` form, updates the password, and clears the temporary recovery
+session before returning to login. Mock mode opens the same form directly.
 
 Platform intent/URL registration and provider dashboard redirect allowlists must
 remain aligned with these values.

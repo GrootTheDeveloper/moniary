@@ -227,6 +227,26 @@ class AppLocalizationsVi extends AppLocalizations {
       'Đã gửi hướng dẫn đặt lại mật khẩu qua email.';
 
   @override
+  String get passwordResetTitle => 'Đặt mật khẩu mới';
+
+  @override
+  String get passwordResetSubtitle =>
+      'Chọn mật khẩu mới cho tài khoản Moniary của bạn.';
+
+  @override
+  String get passwordResetSubmit => 'Cập nhật mật khẩu';
+
+  @override
+  String get passwordResetSuccess =>
+      'Đã cập nhật mật khẩu. Hãy đăng nhập bằng mật khẩu mới.';
+
+  @override
+  String get confirmPasswordLabel => 'Xác nhận mật khẩu';
+
+  @override
+  String get validationPasswordsMismatch => 'Mật khẩu xác nhận không khớp';
+
+  @override
   String get splashLoading => 'Đang tải ứng dụng...';
 
   @override
@@ -5742,25 +5762,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get loginNeedAccount => 'Chưa có tài khoản? Đăng ký';
-
-  @override
-  String get resetPasswordTitle => 'Đặt mật khẩu mới';
-
-  @override
-  String get resetPasswordSubtitle =>
-      'Nhập mật khẩu mới cho tài khoản của bạn.';
-
-  @override
-  String get resetPasswordConfirmLabel => 'Xác nhận mật khẩu mới';
-
-  @override
-  String get resetPasswordMismatch => 'Mật khẩu xác nhận không khớp';
-
-  @override
-  String get resetPasswordSubmit => 'Đặt lại mật khẩu';
-
-  @override
-  String get resetPasswordSuccess => 'Mật khẩu của bạn đã được cập nhật.';
 
   @override
   String get authErrorUserBanned => 'Tài khoản này đã bị tạm khóa.';

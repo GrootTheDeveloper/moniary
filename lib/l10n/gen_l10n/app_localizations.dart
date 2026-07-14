@@ -494,6 +494,42 @@ abstract class AppLocalizations {
   /// **'Đã gửi hướng dẫn đặt lại mật khẩu qua email.'**
   String get loginPasswordResetSent;
 
+  /// No description provided for @passwordResetTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt mật khẩu mới'**
+  String get passwordResetTitle;
+
+  /// No description provided for @passwordResetSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn mật khẩu mới cho tài khoản Moniary của bạn.'**
+  String get passwordResetSubtitle;
+
+  /// No description provided for @passwordResetSubmit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật mật khẩu'**
+  String get passwordResetSubmit;
+
+  /// No description provided for @passwordResetSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã cập nhật mật khẩu. Hãy đăng nhập bằng mật khẩu mới.'**
+  String get passwordResetSuccess;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận mật khẩu'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @validationPasswordsMismatch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mật khẩu xác nhận không khớp'**
+  String get validationPasswordsMismatch;
+
   /// No description provided for @splashLoading.
   ///
   /// In vi, this message translates to:
@@ -10261,42 +10297,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa có tài khoản? Đăng ký'**
   String get loginNeedAccount;
-
-  /// No description provided for @resetPasswordTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Đặt mật khẩu mới'**
-  String get resetPasswordTitle;
-
-  /// No description provided for @resetPasswordSubtitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Nhập mật khẩu mới cho tài khoản của bạn.'**
-  String get resetPasswordSubtitle;
-
-  /// No description provided for @resetPasswordConfirmLabel.
-  ///
-  /// In vi, this message translates to:
-  /// **'Xác nhận mật khẩu mới'**
-  String get resetPasswordConfirmLabel;
-
-  /// No description provided for @resetPasswordMismatch.
-  ///
-  /// In vi, this message translates to:
-  /// **'Mật khẩu xác nhận không khớp'**
-  String get resetPasswordMismatch;
-
-  /// No description provided for @resetPasswordSubmit.
-  ///
-  /// In vi, this message translates to:
-  /// **'Đặt lại mật khẩu'**
-  String get resetPasswordSubmit;
-
-  /// No description provided for @resetPasswordSuccess.
-  ///
-  /// In vi, this message translates to:
-  /// **'Mật khẩu của bạn đã được cập nhật.'**
-  String get resetPasswordSuccess;
 
   /// No description provided for @authErrorUserBanned.
   ///

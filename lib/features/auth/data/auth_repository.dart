@@ -230,8 +230,8 @@ class AuthRepository {
     }
   }
 
-  Future<void> requestPasswordReset(String email) async {
-    if (_useMockData) return;
+  Future<bool> requestPasswordReset(String email) async {
+    if (_useMockData) return true;
     try {
       await _requiredClient.auth.resetPasswordForEmail(
         email,
@@ -239,6 +239,7 @@ class AuthRepository {
             ? null
             : AppConstants.supabasePasswordResetCallbackUrl,
       );
+      return false;
     } on AuthException catch (e, st) {
       AppLogger.error('Password reset request failed', e, st);
       throw _mapAuthException(e);
@@ -254,12 +255,12 @@ class AuthRepository {
     }
   }
 
-  Future<void> updatePassword(String newPassword) async {
+  Future<void> updatePassword(String password) async {
     if (_useMockData) return;
+
     try {
-      await _requiredClient.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
+      await _requiredClient.auth.updateUser(UserAttributes(password: password));
+      await _requiredClient.auth.signOut(scope: SignOutScope.local);
     } on AuthException catch (e, st) {
       AppLogger.error('Password update failed', e, st);
       throw _mapAuthException(e);
@@ -271,6 +272,21 @@ class AuthRepository {
       throw const AppException(
         'errorGeneric',
         code: 'AUTH_PASSWORD_UPDATE_FAILED',
+      );
+    }
+  }
+
+  Future<void> cancelPasswordRecovery() async {
+    if (_useMockData) return;
+
+    try {
+      await _requiredClient.auth.signOut(scope: SignOutScope.local);
+    } catch (e, st) {
+      AppLogger.error('Password recovery cancellation failed', e, st);
+      if (e is AppException) rethrow;
+      throw const AppException(
+        'errorGeneric',
+        code: 'AUTH_PASSWORD_RECOVERY_CANCEL_FAILED',
       );
     }
   }

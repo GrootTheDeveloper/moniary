@@ -33,13 +33,17 @@ class FakeAuthRepository extends AuthRepository {
     this.signUpSession,
     this.googleSession,
     this.facebookSession,
+    this.opensRecoveryLocally = false,
   }) : super(null, useMockData: true);
 
   final Session? emailSession;
   final Session? signUpSession;
   final Session? googleSession;
   final Session? facebookSession;
+  final bool opensRecoveryLocally;
   var signOutCount = 0;
+  var cancelPasswordRecoveryCount = 0;
+  String? updatedPassword;
 
   @override
   Future<void> signOut() async {
@@ -70,6 +74,21 @@ class FakeAuthRepository extends AuthRepository {
   @override
   Future<Session?> signInWithFacebook() async {
     return facebookSession;
+  }
+
+  @override
+  Future<bool> requestPasswordReset(String email) async {
+    return opensRecoveryLocally;
+  }
+
+  @override
+  Future<void> updatePassword(String password) async {
+    updatedPassword = password;
+  }
+
+  @override
+  Future<void> cancelPasswordRecovery() async {
+    cancelPasswordRecoveryCount++;
   }
 }
 
@@ -310,5 +329,56 @@ void main() {
     );
     expect((await repository.signInWithGoogle())?.user.id, 'mock-user-id');
     expect((await repository.signInWithFacebook())?.user.id, 'mock-user-id');
+  });
+
+  test('requestPasswordReset reports mock recovery navigation', () async {
+    final repository = FakeAuthRepository(opensRecoveryLocally: true);
+    final container = ProviderContainer(
+      overrides: [authRepositoryProvider.overrideWithValue(repository)],
+    );
+    addTearDown(container.dispose);
+
+    final opensRecoveryLocally = await container
+        .read(authControllerProvider.notifier)
+        .requestPasswordReset('bee@moniary.app');
+
+    expect(opensRecoveryLocally, isTrue);
+    expect(container.read(authControllerProvider).hasError, isFalse);
+  });
+
+  test(
+    'completePasswordRecovery updates password and clears mock session',
+    () async {
+      final repository = FakeAuthRepository();
+      final container = ProviderContainer(
+        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(container.dispose);
+      container.read(mockSessionProvider.notifier).setSession(_mockSession());
+
+      await container
+          .read(authControllerProvider.notifier)
+          .completePasswordRecovery('new-password-123');
+
+      expect(repository.updatedPassword, 'new-password-123');
+      expect(container.read(mockSessionProvider), isNull);
+      expect(container.read(authControllerProvider).hasError, isFalse);
+    },
+  );
+
+  test('cancelPasswordRecovery clears recovery session', () async {
+    final repository = FakeAuthRepository();
+    final container = ProviderContainer(
+      overrides: [authRepositoryProvider.overrideWithValue(repository)],
+    );
+    addTearDown(container.dispose);
+    container.read(mockSessionProvider.notifier).setSession(_mockSession());
+
+    await container
+        .read(authControllerProvider.notifier)
+        .cancelPasswordRecovery();
+
+    expect(repository.cancelPasswordRecoveryCount, 1);
+    expect(container.read(mockSessionProvider), isNull);
   });
 }
