@@ -8,6 +8,7 @@ import '../domain/entities/group_settlement.dart';
 import '../domain/entities/group_transaction.dart';
 import '../domain/entities/group_invite.dart';
 import '../domain/entities/spending_group.dart';
+import '../domain/services/group_split_calculator.dart';
 
 final groupsControllerProvider =
     AsyncNotifierProvider<GroupsController, List<SpendingGroup>>(
@@ -329,6 +330,7 @@ class GroupActionController extends AsyncNotifier<void> {
 
   Future<String> createTransaction(GroupTransactionDraft draft) {
     return _run(() async {
+      await _validateTransactionDraft(draft);
       final id = await ref
           .read(groupRepositoryProvider)
           .createTransaction(draft);
@@ -342,6 +344,7 @@ class GroupActionController extends AsyncNotifier<void> {
     required GroupTransactionDraft draft,
   }) {
     return _run(() async {
+      await _validateTransactionDraft(draft);
       await ref
           .read(groupRepositoryProvider)
           .updateTransaction(transactionId: transactionId, draft: draft);
@@ -397,6 +400,40 @@ class GroupActionController extends AsyncNotifier<void> {
       await ref
           .read(groupRepositoryProvider)
           .confirmSettlementReceived(settlementId);
+      _invalidateGroup(groupId);
+    });
+  }
+
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String groupId,
+    required String reason,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .disputeSettlement(settlementId: settlementId, reason: reason);
+      _invalidateGroup(groupId);
+    });
+  }
+
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .transferOwnership(groupId: groupId, newOwnerUserId: newOwnerUserId);
+      _invalidateGroup(groupId);
+    });
+  }
+
+  Future<void> removeMember({required String groupId, required String userId}) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .removeMember(groupId: groupId, userId: userId);
       _invalidateGroup(groupId);
     });
   }
@@ -461,5 +498,22 @@ class GroupActionController extends AsyncNotifier<void> {
     ref.invalidate(groupDetailProvider(groupId));
     ref.invalidate(groupTransactionsProvider(groupId));
     ref.invalidate(groupSettlementOverviewProvider(groupId));
+  }
+
+  Future<void> _validateTransactionDraft(GroupTransactionDraft draft) async {
+    final detail = await ref.read(groupDetailProvider(draft.groupId).future);
+    const GroupSplitCalculator().validateDraft(
+      totalAmount: draft.totalAmount,
+      activeMemberIds: detail.activeMembers
+          .map((member) => member.userId)
+          .toList(growable: false),
+      splitMode: draft.splitMode,
+      paymentMode: draft.paymentMode,
+      participantIds: draft.participantIds.isEmpty
+          ? null
+          : draft.participantIds,
+      shareAmounts: draft.shareAmounts,
+      payerAmounts: draft.payerAmounts,
+    );
   }
 }

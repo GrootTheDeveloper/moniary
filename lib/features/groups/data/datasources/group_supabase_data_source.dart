@@ -206,6 +206,8 @@ class GroupSupabaseDataSource {
         'p_split_mode': draft.splitMode.value,
         'p_payment_mode': draft.paymentMode.value,
         'p_payer_amounts': draft.payerAmounts,
+        'p_participant_ids': draft.participantIds,
+        'p_share_amounts': draft.shareAmounts,
       },
     );
     return result as String;
@@ -227,6 +229,8 @@ class GroupSupabaseDataSource {
         'p_split_mode': draft.splitMode.value,
         'p_payment_mode': draft.paymentMode.value,
         'p_payer_amounts': draft.payerAmounts,
+        'p_participant_ids': draft.participantIds,
+        'p_share_amounts': draft.shareAmounts,
       },
     );
   }
@@ -262,6 +266,33 @@ class GroupSupabaseDataSource {
     return client.rpc(
       'confirm_group_settlement_received',
       params: {'p_settlement_id': settlementId},
+    );
+  }
+
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String reason,
+  }) {
+    return client.rpc(
+      'dispute_group_settlement',
+      params: {'p_settlement_id': settlementId, 'p_reason': reason},
+    );
+  }
+
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) {
+    return client.rpc(
+      'transfer_group_ownership',
+      params: {'p_group_id': groupId, 'p_new_owner_user_id': newOwnerUserId},
+    );
+  }
+
+  Future<void> removeMember({required String groupId, required String userId}) {
+    return client.rpc(
+      'remove_group_member',
+      params: {'p_group_id': groupId, 'p_user_id': userId},
     );
   }
 

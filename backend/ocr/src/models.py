@@ -23,6 +23,7 @@ class ReceiptData(BaseModel):
     total: float = 0.0
     currency: str = "VND"
     payment_method: str | None = None
+    suggested_category: str | None = None
 
 
 class ReceiptResponse(BaseModel):
@@ -31,5 +32,6 @@ class ReceiptResponse(BaseModel):
     raw_text: str | None = None
     validation_issues: list[str] = Field(default_factory=list)
     confidence: float = 0.0
+    field_confidence: dict[str, float] = Field(default_factory=dict)
+    processing_ms: int = 0
     error: str | None = None
-

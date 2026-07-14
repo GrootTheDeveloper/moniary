@@ -480,6 +480,55 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String reason,
+  }) {
+    if (_useMockData) {
+      return _mock.disputeSettlement(
+        settlementId: settlementId,
+        reason: reason,
+      );
+    }
+    return _guard(
+      'dispute group settlement',
+      () =>
+          _remote.disputeSettlement(settlementId: settlementId, reason: reason),
+    );
+  }
+
+  @override
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) {
+    if (_useMockData) {
+      return _mock.transferOwnership(
+        groupId: groupId,
+        newOwnerUserId: newOwnerUserId,
+      );
+    }
+    return _guard(
+      'transfer group ownership',
+      () => _remote.transferOwnership(
+        groupId: groupId,
+        newOwnerUserId: newOwnerUserId,
+      ),
+    );
+  }
+
+  @override
+  Future<void> removeMember({required String groupId, required String userId}) {
+    if (_useMockData) {
+      return _mock.removeMember(groupId: groupId, userId: userId);
+    }
+    return _guard(
+      'remove group member',
+      () => _remote.removeMember(groupId: groupId, userId: userId),
+    );
+  }
+
+  @override
   Future<void> leaveGroup(String groupId) {
     if (_useMockData) {
       return _mock.leaveGroup(groupId);

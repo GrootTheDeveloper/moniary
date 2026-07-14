@@ -4933,4 +4933,79 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get cameraFallbackGenericError =>
       'Không thể mở camera. Bạn có thể nhập giao dịch thủ công.';
+
+  @override
+  String get scanSuggestionNotice =>
+      'Các trường có nhãn AI đề xuất được điền từ hóa đơn. Hãy kiểm tra trước khi lưu.';
+
+  @override
+  String get scanAiSuggestion => 'AI đề xuất';
+
+  @override
+  String get scanSuggestionNeedsReview => 'AI đề xuất - nên kiểm tra lại';
+
+  @override
+  String get friendQrTitle => 'QR kết bạn';
+
+  @override
+  String get friendQrMyCode => 'Mã của tôi';
+
+  @override
+  String get friendQrScan => 'Quét mã';
+
+  @override
+  String get friendQrRetry => 'Thử lại';
+
+  @override
+  String get friendQrShare => 'Chia sẻ mã';
+
+  @override
+  String get friendQrLoadError => 'Không thể khởi động camera.';
+
+  @override
+  String get friendQrTorch => 'Bật hoặc tắt đèn pin';
+
+  @override
+  String get friendQrSwitchCamera => 'Đổi camera';
+
+  @override
+  String get friendQrInvalid => 'Đây không phải mã QR kết bạn Moniary hợp lệ.';
+
+  @override
+  String get friendRateLimited =>
+      'Bạn đã gửi quá nhiều lời mời kết bạn. Vui lòng thử lại sau.';
+
+  @override
+  String get groupSplitExact => 'Số tiền cụ thể';
+
+  @override
+  String get groupParticipantsTitle => 'Người tham gia khoản chi';
+
+  @override
+  String get groupSettlementDisputeTitle => 'Báo cáo vấn đề thanh toán';
+
+  @override
+  String get groupSettlementDisputeReasonHint =>
+      'Mô tả thông tin chưa chính xác';
+
+  @override
+  String get groupSettlementDisputeReasonRequired =>
+      'Vui lòng nhập lý do tranh chấp.';
+
+  @override
+  String get groupSettlementDisputeAction => 'Tranh chấp';
+
+  @override
+  String get groupTransferOwnershipAction => 'Chuyển quyền chủ nhóm';
+
+  @override
+  String get groupRemoveMemberAction => 'Xóa thành viên';
+
+  @override
+  String get groupMemberRemoveUnresolved =>
+      'Thành viên này vẫn còn số dư chưa quyết toán nên chưa thể xóa.';
+
+  @override
+  String get groupMemberActionForbidden =>
+      'Bạn không có quyền quản lý thành viên này.';
 }

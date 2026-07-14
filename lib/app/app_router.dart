@@ -20,6 +20,7 @@ import '../features/budgets/presentation/budget_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/friends/presentation/screens/add_friend_screen.dart';
 import '../features/friends/presentation/screens/friend_invite_accept_screen.dart';
+import '../features/friends/presentation/screens/friend_qr_screen.dart';
 import '../features/friends/presentation/screens/friends_screen.dart';
 import '../features/groups/presentation/groups_screen.dart';
 import '../features/groups/presentation/screens/add_group_transaction_screen.dart';
@@ -512,6 +513,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => buildSlideUpTransitionPage(
           state: state,
           child: const AddFriendScreen(),
+        ),
+      ),
+      GoRoute(
+        path: FriendQrScreen.routePath,
+        pageBuilder: (context, state) => buildSlideUpTransitionPage(
+          state: state,
+          child: const FriendQrScreen(),
         ),
       ),
       GoRoute(

@@ -752,25 +752,37 @@ class GroupMockDataSource {
     final memberIds = _activeMembers(
       draft.groupId,
     ).map((member) => member.userId).toList();
+    final participantIds = draft.participantIds.isEmpty
+        ? memberIds
+        : draft.participantIds;
     final now = DateTime.now();
     final id = _id('transaction');
     late final Map<String, int> shares;
     late final Map<String, int> paidAmounts;
     late final GroupSplitStatus splitStatus;
-    if (draft.splitMode == GroupSplitMode.equal) {
+    if (draft.splitMode != GroupSplitMode.unequal) {
       final result = _splitCalculator.calculate(
         totalAmount: draft.totalAmount,
         activeMemberIds: memberIds,
+        participantIds: participantIds,
         splitMode: draft.splitMode,
         paymentMode: draft.paymentMode,
+        unequalShares: draft.shareAmounts,
         payerAmounts: draft.payerAmounts,
       );
       shares = result.shares;
       paidAmounts = result.paidAmounts;
       splitStatus = GroupSplitStatus.posted;
     } else {
-      _validatePayerDraft(draft, memberIds);
-      shares = {for (final id in memberIds) id: 0};
+      _splitCalculator.validateDraft(
+        totalAmount: draft.totalAmount,
+        activeMemberIds: memberIds,
+        participantIds: participantIds,
+        splitMode: draft.splitMode,
+        paymentMode: draft.paymentMode,
+        payerAmounts: draft.payerAmounts,
+      );
+      shares = {for (final id in participantIds) id: 0};
       paidAmounts = draft.paymentMode == GroupPaymentMode.everyonePaid
           ? {for (final id in memberIds) id: 0}
           : {for (final id in memberIds) id: draft.payerAmounts[id] ?? 0};
@@ -805,8 +817,8 @@ class GroupMockDataSource {
         id,
         shares,
         now,
-        submitted: draft.splitMode == GroupSplitMode.equal
-            ? memberIds.toSet()
+        submitted: draft.splitMode != GroupSplitMode.unequal
+            ? participantIds.toSet()
             : {},
       ),
       comments: [],
@@ -1034,6 +1046,141 @@ class GroupMockDataSource {
     _refreshSettlements(match.item.groupId);
   }
 
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String reason,
+  }) async {
+    final match = _findSettlement(settlementId);
+    final isParticipant =
+        match.item.fromUserId == currentUserId ||
+        match.item.toUserId == currentUserId;
+    if (!isParticipant ||
+        match.item.status == GroupSettlementStatus.completed ||
+        match.item.status == GroupSettlementStatus.disputed ||
+        reason.trim().isEmpty) {
+      throw const AppException(
+        'Settlement cannot be disputed',
+        code: 'GROUP_SETTLEMENT_FORBIDDEN',
+      );
+    }
+    match.list[match.index] = _copySettlement(
+      match.item,
+      status: GroupSettlementStatus.disputed,
+    );
+    _logActivity(
+      groupId: match.item.groupId,
+      type: 'settlement_disputed',
+      metadata: {'settlement_id': settlementId, 'reason': reason.trim()},
+    );
+  }
+
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) async {
+    final members = _members[groupId];
+    if (members == null) {
+      throw const AppException('Group not found', code: 'NOT_FOUND');
+    }
+    final currentIndex = members.indexWhere(
+      (member) =>
+          member.userId == currentUserId &&
+          member.status == GroupMemberStatus.active,
+    );
+    final targetIndex = members.indexWhere(
+      (member) =>
+          member.userId == newOwnerUserId &&
+          member.status == GroupMemberStatus.active,
+    );
+    if (currentIndex < 0 || members[currentIndex].role != GroupRole.owner) {
+      throw const AppException(
+        'Owner role required',
+        code: 'GROUP_OWNER_REQUIRED',
+      );
+    }
+    if (targetIndex < 0 || targetIndex == currentIndex) {
+      throw const AppException(
+        'Invalid ownership target',
+        code: 'GROUP_OWNER_TARGET_INVALID',
+      );
+    }
+    members[currentIndex] = _memberWith(
+      members[currentIndex],
+      role: GroupRole.member,
+    );
+    members[targetIndex] = _memberWith(
+      members[targetIndex],
+      role: GroupRole.owner,
+    );
+    _logActivity(
+      groupId: groupId,
+      type: 'owner_transferred',
+      metadata: {'new_owner_user_id': newOwnerUserId},
+    );
+  }
+
+  Future<void> removeMember({
+    required String groupId,
+    required String userId,
+  }) async {
+    final members = _members[groupId];
+    if (members == null || userId == currentUserId) {
+      throw const AppException(
+        'Member cannot be removed',
+        code: 'GROUP_MEMBER_REMOVE_FORBIDDEN',
+      );
+    }
+    final actorIndex = members.indexWhere(
+      (member) =>
+          member.userId == currentUserId &&
+          member.status == GroupMemberStatus.active,
+    );
+    final targetIndex = members.indexWhere(
+      (member) =>
+          member.userId == userId &&
+          (member.status == GroupMemberStatus.active ||
+              member.status == GroupMemberStatus.invited),
+    );
+    if (actorIndex < 0 || targetIndex < 0) {
+      throw const AppException('Member not found', code: 'NOT_FOUND');
+    }
+    final actor = members[actorIndex];
+    final target = members[targetIndex];
+    final canRemove =
+        actor.role == GroupRole.owner ||
+        (actor.role == GroupRole.admin && target.role == GroupRole.member);
+    if (!canRemove || target.role == GroupRole.owner) {
+      throw const AppException(
+        'Member cannot be removed',
+        code: 'GROUP_MEMBER_REMOVE_FORBIDDEN',
+      );
+    }
+    final unresolved =
+        _settlements[groupId]?.any(
+          (settlement) =>
+              (settlement.fromUserId == userId ||
+                  settlement.toUserId == userId) &&
+              settlement.status != GroupSettlementStatus.completed,
+        ) ??
+        false;
+    if ((_groupBalances(groupId)[userId] ?? 0) != 0 || unresolved) {
+      throw const AppException(
+        'Member has unresolved group balance',
+        code: 'GROUP_MEMBER_REMOVE_UNRESOLVED',
+      );
+    }
+    members[targetIndex] = _memberWith(
+      target,
+      status: GroupMemberStatus.removed,
+      leftAt: DateTime.now(),
+    );
+    _logActivity(
+      groupId: groupId,
+      type: 'member_removed',
+      metadata: {'removed_user_id': userId},
+    );
+  }
+
   Future<void> leaveGroup(String groupId) async {
     final detail = await fetchGroupDetail(groupId);
     final balance = _groupBalances(groupId)[currentUserId] ?? 0;
@@ -1221,29 +1368,12 @@ class GroupMockDataSource {
       GroupNotification(
         id: _id('notification'),
         groupId: 'mock-group-cafe-weekend',
-        groupName:
-            _groups['mock-group-cafe-weekend']?.name ?? 'Cafe cuối tuần',
+        groupName: _groups['mock-group-cafe-weekend']?.name ?? 'Cafe cuối tuần',
         type: 'debt_settled',
         isRead: true,
         createdAt: now.subtract(const Duration(days: 3)),
       ),
     ]);
-  }
-
-  void _validatePayerDraft(
-    GroupTransactionDraft draft,
-    List<String> memberIds,
-  ) {
-    if (draft.paymentMode == GroupPaymentMode.everyonePaid) {
-      return;
-    }
-    _splitCalculator.calculate(
-      totalAmount: draft.totalAmount,
-      activeMemberIds: memberIds,
-      splitMode: GroupSplitMode.equal,
-      paymentMode: draft.paymentMode,
-      payerAmounts: draft.payerAmounts,
-    );
   }
 
   void _refreshSettlements(String groupId) {
@@ -1529,6 +1659,26 @@ class GroupMockDataSource {
       updatedAt: DateTime.now(),
       fromDisplayName: value.fromDisplayName,
       toDisplayName: value.toDisplayName,
+    );
+  }
+
+  SpendingGroupMember _memberWith(
+    SpendingGroupMember value, {
+    GroupRole? role,
+    GroupMemberStatus? status,
+    DateTime? leftAt,
+  }) {
+    return SpendingGroupMember(
+      id: value.id,
+      groupId: value.groupId,
+      userId: value.userId,
+      role: role ?? value.role,
+      status: status ?? value.status,
+      joinedAt: value.joinedAt,
+      leftAt: leftAt ?? value.leftAt,
+      displayName: value.displayName,
+      username: value.username,
+      avatarPath: value.avatarPath,
     );
   }
 

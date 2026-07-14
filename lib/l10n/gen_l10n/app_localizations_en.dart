@@ -4929,4 +4929,78 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cameraFallbackGenericError =>
       'Could not open camera. You can enter the transaction manually.';
+
+  @override
+  String get scanSuggestionNotice =>
+      'Fields marked as AI suggestions were filled from the receipt. Review them before saving.';
+
+  @override
+  String get scanAiSuggestion => 'AI suggestion';
+
+  @override
+  String get scanSuggestionNeedsReview => 'AI suggestion - review recommended';
+
+  @override
+  String get friendQrTitle => 'Friend QR';
+
+  @override
+  String get friendQrMyCode => 'My code';
+
+  @override
+  String get friendQrScan => 'Scan';
+
+  @override
+  String get friendQrRetry => 'Try again';
+
+  @override
+  String get friendQrShare => 'Share code';
+
+  @override
+  String get friendQrLoadError => 'The camera could not be started.';
+
+  @override
+  String get friendQrTorch => 'Toggle flashlight';
+
+  @override
+  String get friendQrSwitchCamera => 'Switch camera';
+
+  @override
+  String get friendQrInvalid => 'This is not a valid Moniary friend QR code.';
+
+  @override
+  String get friendRateLimited =>
+      'Too many friend requests. Please try again later.';
+
+  @override
+  String get groupSplitExact => 'Exact amounts';
+
+  @override
+  String get groupParticipantsTitle => 'Participants in this expense';
+
+  @override
+  String get groupSettlementDisputeTitle => 'Report a settlement issue';
+
+  @override
+  String get groupSettlementDisputeReasonHint => 'Describe what is incorrect';
+
+  @override
+  String get groupSettlementDisputeReasonRequired =>
+      'Enter a reason for the dispute.';
+
+  @override
+  String get groupSettlementDisputeAction => 'Dispute';
+
+  @override
+  String get groupTransferOwnershipAction => 'Transfer ownership';
+
+  @override
+  String get groupRemoveMemberAction => 'Remove member';
+
+  @override
+  String get groupMemberRemoveUnresolved =>
+      'This member still has an unsettled balance and cannot be removed.';
+
+  @override
+  String get groupMemberActionForbidden =>
+      'You do not have permission to manage this member.';
 }

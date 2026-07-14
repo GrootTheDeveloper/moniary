@@ -99,9 +99,11 @@ class _GroupTransactionDetailScreenState
               ),
               _InfoRow(
                 label: context.l10n.groupSplitModeTitle,
-                value: transaction.splitMode == GroupSplitMode.equal
-                    ? context.l10n.groupSplitEqual
-                    : context.l10n.groupSplitUnequal,
+                value: switch (transaction.splitMode) {
+                  GroupSplitMode.equal => context.l10n.groupSplitEqual,
+                  GroupSplitMode.exact => context.l10n.groupSplitExact,
+                  GroupSplitMode.unequal => context.l10n.groupSplitUnequal,
+                },
               ),
               _InfoRow(
                 label: context.l10n.groupPaymentModeTitle,
@@ -432,9 +434,8 @@ class _AddReactionButton extends ConsumerWidget {
     final emoji = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => _EmojiPickerSheet(
-        emojis: _ReactionRow._quickEmojis,
-      ),
+      builder: (context) =>
+          _EmojiPickerSheet(emojis: _ReactionRow._quickEmojis),
     );
     if (emoji == null) return;
     if (!context.mounted) return;

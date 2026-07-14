@@ -58,6 +58,19 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupPayerAmountPositive;
       case 'GROUP_PAID_TOTAL_MISMATCH':
         return l10n.groupPaidTotalMismatch;
+      case 'GROUP_PARTICIPANT_NOT_ACTIVE':
+      case 'GROUP_NO_PARTICIPANTS':
+        return l10n.groupNoMembers;
+      case 'GROUP_SHARE_TOTAL_MISMATCH':
+        return l10n.groupTransactionAmountMismatch;
+      case 'GROUP_DISPUTE_REASON_REQUIRED':
+        return l10n.groupSettlementDisputeReasonRequired;
+      case 'GROUP_MEMBER_REMOVE_UNRESOLVED':
+        return l10n.groupMemberRemoveUnresolved;
+      case 'GROUP_MEMBER_REMOVE_FORBIDDEN':
+      case 'GROUP_OWNER_REQUIRED':
+      case 'GROUP_OWNER_TARGET_INVALID':
+        return l10n.groupMemberActionForbidden;
       case 'GROUP_LEAVE_UNRESOLVED':
         return l10n.groupLeaveBlocked;
       case 'GROUP_OWNER_TRANSFER_REQUIRED':
@@ -76,6 +89,8 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.friendRequestAlreadyPending;
       case 'FRIEND_REQUEST_NOT_FOUND':
         return l10n.friendRequestNotFound;
+      case 'FRIEND_RATE_LIMITED':
+        return l10n.friendRateLimited;
       case 'FRIEND_NOT_FOUND':
         return l10n.friendNotFound;
       case 'FRIEND_INVITE_INVALID':

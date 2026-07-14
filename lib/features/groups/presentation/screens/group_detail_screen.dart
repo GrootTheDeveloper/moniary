@@ -25,6 +25,8 @@ import 'group_recurring_transactions_screen.dart';
 import 'group_transaction_detail_screen.dart';
 import 'invite_member_screen.dart';
 
+enum _MemberAction { transferOwnership, remove }
+
 class GroupDetailScreen extends ConsumerWidget {
   const GroupDetailScreen({required this.groupId, super.key});
 
@@ -109,6 +111,15 @@ class GroupDetailScreen extends ConsumerWidget {
                         InviteMemberScreen.routePath,
                         extra: groupId,
                       );
+                    },
+                  ),
+                if (detail.canInvite)
+                  ListTile(
+                    leading: const Icon(Icons.manage_accounts_outlined),
+                    title: Text(context.l10n.groupMembersHeader),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      _manageMembers(context, ref, detail);
                     },
                   ),
                 ListTile(
@@ -221,6 +232,166 @@ class GroupDetailScreen extends ConsumerWidget {
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+
+  Future<void> _manageMembers(
+    BuildContext context,
+    WidgetRef ref,
+    SpendingGroupDetail detail,
+  ) async {
+    final currentUserId = ref.read(currentGroupUserIdProvider);
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: SizedBox(
+          height: MediaQuery.sizeOf(sheetContext).height * 0.7,
+          child: Column(
+            children: [
+              ListTile(
+                title: Text(
+                  context.l10n.groupMembersHeader,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  children: [
+                    for (final member in detail.activeMembers)
+                      ListTile(
+                        leading: const Icon(Icons.person_outline),
+                        title: Text(member.resolvedName),
+                        subtitle: Text(member.role.value.toUpperCase()),
+                        trailing:
+                            !_canManageMember(detail, member, currentUserId)
+                            ? null
+                            : PopupMenuButton<_MemberAction>(
+                                onSelected: (action) {
+                                  Navigator.pop(sheetContext);
+                                  if (action ==
+                                      _MemberAction.transferOwnership) {
+                                    _transferOwnership(context, ref, member);
+                                  } else {
+                                    _removeMember(context, ref, member);
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  if (detail.currentUserRole == GroupRole.owner)
+                                    PopupMenuItem(
+                                      value: _MemberAction.transferOwnership,
+                                      child: Text(
+                                        context
+                                            .l10n
+                                            .groupTransferOwnershipAction,
+                                      ),
+                                    ),
+                                  if (detail.currentUserRole ==
+                                          GroupRole.owner ||
+                                      (detail.currentUserRole ==
+                                              GroupRole.admin &&
+                                          member.role == GroupRole.member))
+                                    PopupMenuItem(
+                                      value: _MemberAction.remove,
+                                      child: Text(
+                                        context.l10n.groupRemoveMemberAction,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _transferOwnership(
+    BuildContext context,
+    WidgetRef ref,
+    SpendingGroupMember member,
+  ) async {
+    final confirmed = await _confirmMemberAction(
+      context,
+      title: context.l10n.groupTransferOwnershipAction,
+      member: member,
+    );
+    if (!confirmed || !context.mounted) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .transferOwnership(groupId: groupId, newOwnerUserId: member.userId);
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
+  }
+
+  bool _canManageMember(
+    SpendingGroupDetail detail,
+    SpendingGroupMember member,
+    String currentUserId,
+  ) {
+    if (member.userId == currentUserId || member.role == GroupRole.owner) {
+      return false;
+    }
+    return detail.currentUserRole == GroupRole.owner ||
+        (detail.currentUserRole == GroupRole.admin &&
+            member.role == GroupRole.member);
+  }
+
+  Future<void> _removeMember(
+    BuildContext context,
+    WidgetRef ref,
+    SpendingGroupMember member,
+  ) async {
+    final confirmed = await _confirmMemberAction(
+      context,
+      title: context.l10n.groupRemoveMemberConfirm,
+      member: member,
+    );
+    if (!confirmed || !context.mounted) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .removeMember(groupId: groupId, userId: member.userId);
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
+  }
+
+  Future<bool> _confirmMemberAction(
+    BuildContext context, {
+    required String title,
+    required SpendingGroupMember member,
+  }) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(title),
+            content: Text(member.resolvedName),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(context.l10n.commonCancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(context.l10n.commonConfirm),
+              ),
+            ],
+          ),
+        ) ??
+        false;
   }
 }
 

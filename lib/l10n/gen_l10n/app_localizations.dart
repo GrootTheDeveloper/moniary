@@ -8847,6 +8847,144 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Không thể mở camera. Bạn có thể nhập giao dịch thủ công.'**
   String get cameraFallbackGenericError;
+
+  /// No description provided for @scanSuggestionNotice.
+  ///
+  /// In vi, this message translates to:
+  /// **'Các trường có nhãn AI đề xuất được điền từ hóa đơn. Hãy kiểm tra trước khi lưu.'**
+  String get scanSuggestionNotice;
+
+  /// No description provided for @scanAiSuggestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'AI đề xuất'**
+  String get scanAiSuggestion;
+
+  /// No description provided for @scanSuggestionNeedsReview.
+  ///
+  /// In vi, this message translates to:
+  /// **'AI đề xuất - nên kiểm tra lại'**
+  String get scanSuggestionNeedsReview;
+
+  /// No description provided for @friendQrTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'QR kết bạn'**
+  String get friendQrTitle;
+
+  /// No description provided for @friendQrMyCode.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mã của tôi'**
+  String get friendQrMyCode;
+
+  /// No description provided for @friendQrScan.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quét mã'**
+  String get friendQrScan;
+
+  /// No description provided for @friendQrRetry.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử lại'**
+  String get friendQrRetry;
+
+  /// No description provided for @friendQrShare.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ mã'**
+  String get friendQrShare;
+
+  /// No description provided for @friendQrLoadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể khởi động camera.'**
+  String get friendQrLoadError;
+
+  /// No description provided for @friendQrTorch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bật hoặc tắt đèn pin'**
+  String get friendQrTorch;
+
+  /// No description provided for @friendQrSwitchCamera.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đổi camera'**
+  String get friendQrSwitchCamera;
+
+  /// No description provided for @friendQrInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đây không phải mã QR kết bạn Moniary hợp lệ.'**
+  String get friendQrInvalid;
+
+  /// No description provided for @friendRateLimited.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã gửi quá nhiều lời mời kết bạn. Vui lòng thử lại sau.'**
+  String get friendRateLimited;
+
+  /// No description provided for @groupSplitExact.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền cụ thể'**
+  String get groupSplitExact;
+
+  /// No description provided for @groupParticipantsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người tham gia khoản chi'**
+  String get groupParticipantsTitle;
+
+  /// No description provided for @groupSettlementDisputeTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo vấn đề thanh toán'**
+  String get groupSettlementDisputeTitle;
+
+  /// No description provided for @groupSettlementDisputeReasonHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mô tả thông tin chưa chính xác'**
+  String get groupSettlementDisputeReasonHint;
+
+  /// No description provided for @groupSettlementDisputeReasonRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập lý do tranh chấp.'**
+  String get groupSettlementDisputeReasonRequired;
+
+  /// No description provided for @groupSettlementDisputeAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tranh chấp'**
+  String get groupSettlementDisputeAction;
+
+  /// No description provided for @groupTransferOwnershipAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển quyền chủ nhóm'**
+  String get groupTransferOwnershipAction;
+
+  /// No description provided for @groupRemoveMemberAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa thành viên'**
+  String get groupRemoveMemberAction;
+
+  /// No description provided for @groupMemberRemoveUnresolved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành viên này vẫn còn số dư chưa quyết toán nên chưa thể xóa.'**
+  String get groupMemberRemoveUnresolved;
+
+  /// No description provided for @groupMemberActionForbidden.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không có quyền quản lý thành viên này.'**
+  String get groupMemberActionForbidden;
 }
 
 class _AppLocalizationsDelegate

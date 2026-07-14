@@ -129,6 +129,8 @@ class GroupTransactionDraft {
     required this.splitMode,
     required this.paymentMode,
     required this.payerAmounts,
+    this.participantIds = const [],
+    this.shareAmounts = const {},
     this.categoryId,
     this.categoryName,
     this.caption,
@@ -146,4 +148,6 @@ class GroupTransactionDraft {
   final GroupSplitMode splitMode;
   final GroupPaymentMode paymentMode;
   final Map<String, int> payerAmounts;
+  final List<String> participantIds;
+  final Map<String, int> shareAmounts;
 }

@@ -7,6 +7,19 @@ void main() {
   const members = ['a', 'b', 'c'];
 
   group('GroupSplitCalculator equal split', () {
+    test('chia đều chỉ cho thành viên được chọn', () {
+      final result = calculator.calculate(
+        totalAmount: 200,
+        activeMemberIds: members,
+        participantIds: const ['a', 'b'],
+        splitMode: GroupSplitMode.equal,
+        paymentMode: GroupPaymentMode.singlePayer,
+        payerAmounts: const {'c': 200},
+      );
+
+      expect(result.shares, {'a': 100, 'b': 100});
+      expect(result.balances, {'a': 100, 'b': 100, 'c': -200});
+    });
     test('chia đều không dư', () {
       final shares = calculator.calculateEqualShares(
         totalAmount: 300,
@@ -189,6 +202,62 @@ void main() {
             (error) => error.error,
             'error',
             GroupSplitError.noActiveMembers,
+          ),
+        ),
+      );
+    });
+  });
+
+  group('GroupSplitCalculator exact split', () {
+    test('chấp nhận số tiền cụ thể có tổng khớp', () {
+      final result = calculator.calculate(
+        totalAmount: 300,
+        activeMemberIds: members,
+        participantIds: const ['a', 'b'],
+        splitMode: GroupSplitMode.exact,
+        paymentMode: GroupPaymentMode.singlePayer,
+        unequalShares: const {'a': 120, 'b': 180},
+        payerAmounts: const {'c': 300},
+      );
+
+      expect(result.shares, {'a': 120, 'b': 180});
+      expect(result.balances, {'a': 120, 'b': 180, 'c': -300});
+    });
+
+    test('từ chối số tiền cụ thể có tổng sai', () {
+      expect(
+        () => calculator.validateDraft(
+          totalAmount: 300,
+          activeMemberIds: members,
+          participantIds: const ['a', 'b'],
+          splitMode: GroupSplitMode.exact,
+          paymentMode: GroupPaymentMode.everyonePaid,
+          shareAmounts: const {'a': 100, 'b': 100},
+        ),
+        throwsA(
+          isA<GroupSplitException>().having(
+            (error) => error.error,
+            'error',
+            GroupSplitError.shareTotalMismatch,
+          ),
+        ),
+      );
+    });
+
+    test('từ chối participant không còn active', () {
+      expect(
+        () => calculator.validateDraft(
+          totalAmount: 300,
+          activeMemberIds: members,
+          participantIds: const ['a', 'removed'],
+          splitMode: GroupSplitMode.equal,
+          paymentMode: GroupPaymentMode.everyonePaid,
+        ),
+        throwsA(
+          isA<GroupSplitException>().having(
+            (error) => error.error,
+            'error',
+            GroupSplitError.participantNotActive,
           ),
         ),
       );

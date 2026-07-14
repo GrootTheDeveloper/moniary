@@ -13,6 +13,7 @@ import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/friend_controller.dart';
 import '../../domain/entities/friend_profile.dart';
 import 'add_friend_screen.dart';
+import 'friend_qr_screen.dart';
 
 class FriendsScreen extends ConsumerStatefulWidget {
   const FriendsScreen({super.key});
@@ -83,6 +84,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                       ? () => Navigator.of(context).maybePop()
                       : null,
                   onAdd: () => context.push(AddFriendScreen.routePath),
+                  onQr: () => context.push(FriendQrScreen.routePath),
                   onRequests: () => _showFriendRequestsSheet(context),
                   pendingRequestCount: pendingIncomingCount,
                 ),
@@ -410,6 +412,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
 class _FriendsTopBar extends StatelessWidget {
   const _FriendsTopBar({
     required this.onAdd,
+    required this.onQr,
     required this.onRequests,
     required this.pendingRequestCount,
     this.onBack,
@@ -417,6 +420,7 @@ class _FriendsTopBar extends StatelessWidget {
 
   final VoidCallback? onBack;
   final VoidCallback onAdd;
+  final VoidCallback onQr;
   final VoidCallback onRequests;
   final int pendingRequestCount;
 
@@ -444,6 +448,12 @@ class _FriendsTopBar extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                _IconSquareButton(
+                  tooltip: context.l10n.friendQrTitle,
+                  onPressed: onQr,
+                  icon: Icons.qr_code_scanner_outlined,
+                ),
+                const SizedBox(width: 8),
                 _IconSquareButton(
                   tooltip: context.l10n.friendIncomingRequests,
                   onPressed: onRequests,

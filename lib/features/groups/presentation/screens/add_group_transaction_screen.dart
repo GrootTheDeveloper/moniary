@@ -8,9 +8,12 @@ import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../categories/application/categories_controller.dart';
 import '../../../categories/domain/models/category.dart';
+import '../../../scanning/application/scanning_controller.dart';
+import '../../../scanning/domain/ocr_result.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_transaction.dart';
@@ -19,6 +22,7 @@ import '../../domain/services/group_split_calculator.dart';
 import '../widgets/group_confirmation_dialog.dart';
 import '../widgets/payer_amount_input_list.dart';
 import '../widgets/payment_mode_selector.dart';
+import '../widgets/participant_selector.dart';
 import '../widgets/split_mode_selector.dart';
 
 class AddGroupTransactionArgs {
@@ -46,12 +50,19 @@ class _AddGroupTransactionScreenState
   final _captionController = TextEditingController();
   final _noteController = TextEditingController();
   final Map<String, TextEditingController> _payerControllers = {};
+  final Map<String, TextEditingController> _shareControllers = {};
   final Set<String> _selectedPayerIds = {};
+  final Set<String> _selectedParticipantIds = {};
   GroupSplitMode _splitMode = GroupSplitMode.equal;
   GroupPaymentMode _paymentMode = GroupPaymentMode.everyonePaid;
   String? _categoryId;
   String? _categoryName;
   String? _imageFilePath;
+  List<OcrLineItem> _ocrItems = const [];
+  String? _ocrCategoryKey;
+  bool _participantsInitialized = false;
+  bool _ocrLoading = false;
+  bool _hasOcrSuggestions = false;
 
   bool get _editing => widget.args.initialDetail != null;
 
@@ -74,6 +85,13 @@ class _AddGroupTransactionScreenState
           text: payer.paidAmount.toString(),
         );
       }
+      for (final share in initial.shares) {
+        _selectedParticipantIds.add(share.userId);
+        _shareControllers[share.userId] = TextEditingController(
+          text: share.shareAmount.toString(),
+        );
+      }
+      _participantsInitialized = true;
     }
   }
 
@@ -83,6 +101,9 @@ class _AddGroupTransactionScreenState
     _captionController.dispose();
     _noteController.dispose();
     for (final controller in _payerControllers.values) {
+      controller.dispose();
+    }
+    for (final controller in _shareControllers.values) {
       controller.dispose();
     }
     super.dispose();
@@ -106,7 +127,8 @@ class _AddGroupTransactionScreenState
         error: (error, _) =>
             Center(child: Text(userFriendlyMessage(context, error))),
         data: (detail) {
-          _ensurePayerControllers(detail.activeMembers);
+          _ensureMemberControllers(detail.activeMembers);
+          _resolveOcrCategory(categoriesAsync.asData?.value ?? const []);
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 36),
             children: [
@@ -121,6 +143,19 @@ class _AddGroupTransactionScreenState
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
+              if (_ocrLoading) ...[
+                const SizedBox(height: 10),
+                const LinearProgressIndicator(),
+              ] else if (_hasOcrSuggestions) ...[
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    const Icon(Icons.auto_awesome_outlined, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(context.l10n.scanSuggestionNotice)),
+                  ],
+                ),
+              ],
               const SizedBox(height: 18),
               TextField(
                 controller: _amountController,
@@ -193,6 +228,20 @@ class _AddGroupTransactionScreenState
                 ),
               ),
               const SizedBox(height: 24),
+              ParticipantSelector(
+                members: detail.activeMembers,
+                selectedIds: _selectedParticipantIds,
+                onChanged: (userId, selected) {
+                  setState(() {
+                    if (selected) {
+                      _selectedParticipantIds.add(userId);
+                    } else {
+                      _selectedParticipantIds.remove(userId);
+                    }
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
               Text(
                 context.l10n.groupSplitModeTitle,
                 style: Theme.of(context).textTheme.titleMedium,
@@ -202,6 +251,29 @@ class _AddGroupTransactionScreenState
                 value: _splitMode,
                 onChanged: (value) => setState(() => _splitMode = value),
               ),
+              if (_splitMode == GroupSplitMode.exact) ...[
+                const SizedBox(height: 18),
+                ExactShareInputList(
+                  members: detail.activeMembers,
+                  selectedIds: _selectedParticipantIds,
+                  controllers: _shareControllers,
+                ),
+              ],
+              if (_ocrItems.isNotEmpty) ...[
+                const SizedBox(height: 18),
+                Text(
+                  context.l10n.scanItemsTitle,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                for (final item in _ocrItems)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(item.name),
+                    trailing: item.price == null
+                        ? null
+                        : Text(ref.formatAmount(item.price!)),
+                  ),
+              ],
               const SizedBox(height: 24),
               Text(
                 context.l10n.groupPaymentModeTitle,
@@ -259,19 +331,104 @@ class _AddGroupTransactionScreenState
     );
   }
 
-  void _ensurePayerControllers(List<SpendingGroupMember> members) {
+  void _ensureMemberControllers(List<SpendingGroupMember> members) {
     for (final member in members) {
       _payerControllers.putIfAbsent(member.userId, TextEditingController.new);
+      _shareControllers.putIfAbsent(member.userId, TextEditingController.new);
+    }
+    if (!_participantsInitialized) {
+      _selectedParticipantIds.addAll(members.map((member) => member.userId));
+      _participantsInitialized = true;
     }
   }
 
   Future<void> _pickImage() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: Text(context.l10n.scanTakePhoto),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text(context.l10n.scanChooseGallery),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null || !mounted) return;
     final image = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 95,
+      source: source,
+      maxWidth: 1600,
+      maxHeight: 1600,
+      imageQuality: 72,
     );
     if (image != null && mounted) {
       setState(() => _imageFilePath = image.path);
+      await _runOcr(image.path);
+    }
+  }
+
+  Future<void> _runOcr(String imagePath) async {
+    setState(() => _ocrLoading = true);
+    try {
+      final result = await ref
+          .read(ocrExtractionControllerProvider)
+          .extractFromImage(imagePath);
+      if (!mounted) return;
+      setState(() {
+        final total = result.totalSuggestion;
+        final merchant = result.merchantSuggestion;
+        if (total != null && !total.needsReview) {
+          _amountController.text = total.value.toString();
+        }
+        if (merchant != null && !merchant.needsReview) {
+          _captionController.text = merchant.value;
+        }
+        _ocrItems = result.items;
+        _ocrCategoryKey = result.categorySuggestion?.needsReview == false
+            ? result.categoryKey
+            : null;
+        _hasOcrSuggestions =
+            total != null || merchant != null || result.items.isNotEmpty;
+      });
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to apply OCR to group transaction',
+        error,
+        stackTrace,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.scanReadError)));
+      }
+    } finally {
+      if (mounted) setState(() => _ocrLoading = false);
+    }
+  }
+
+  void _resolveOcrCategory(List<Category> categories) {
+    if (_categoryId != null || _ocrCategoryKey == null) return;
+    final expectedIcon = switch (_ocrCategoryKey) {
+      'food' => 'restaurant',
+      'transport' => 'directions_car',
+      'shopping' => 'shopping_bag',
+      _ => null,
+    };
+    if (expectedIcon == null) return;
+    for (final category in categories) {
+      if (category.icon == expectedIcon) {
+        _categoryId = category.id;
+        _categoryName = category.name;
+        return;
+      }
     }
   }
 
@@ -283,11 +440,13 @@ class _AddGroupTransactionScreenState
     }
     final payerAmounts = _payerAmounts(totalAmount);
     try {
-      const GroupSplitCalculator().calculate(
+      const GroupSplitCalculator().validateDraft(
         totalAmount: totalAmount,
         activeMemberIds: activeMembers.map((member) => member.userId).toList(),
-        splitMode: GroupSplitMode.equal,
+        participantIds: _selectedParticipantIds.toList(growable: false),
+        splitMode: _splitMode,
         paymentMode: _paymentMode,
+        shareAmounts: _shareAmounts(),
         payerAmounts: payerAmounts,
       );
     } on GroupSplitException catch (error) {
@@ -319,6 +478,10 @@ class _AddGroupTransactionScreenState
       splitMode: _splitMode,
       paymentMode: _paymentMode,
       payerAmounts: payerAmounts,
+      participantIds: _selectedParticipantIds.toList(growable: false),
+      shareAmounts: _splitMode == GroupSplitMode.exact
+          ? _shareAmounts()
+          : const {},
     );
     try {
       if (_editing) {
@@ -360,6 +523,11 @@ class _AddGroupTransactionScreenState
     };
   }
 
+  Map<String, int> _shareAmounts() => {
+    for (final id in _selectedParticipantIds)
+      id: _parseMoney(_shareControllers[id]?.text ?? ''),
+  };
+
   int _parseMoney(String input) =>
       int.tryParse(input.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
 
@@ -371,6 +539,10 @@ class _AddGroupTransactionScreenState
     GroupSplitError.payerAmountNotPositive =>
       context.l10n.groupPayerAmountPositive,
     GroupSplitError.paidTotalMismatch => context.l10n.groupPaidTotalMismatch,
+    GroupSplitError.noActiveMembers => context.l10n.groupNoMembers,
+    GroupSplitError.participantNotActive => context.l10n.groupNoMembers,
+    GroupSplitError.shareTotalMismatch =>
+      context.l10n.groupTransactionAmountMismatch,
     _ => context.l10n.groupActionFailed,
   };
 

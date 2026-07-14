@@ -67,6 +67,18 @@ abstract interface class GroupRepository {
 
   Future<void> confirmSettlementReceived(String settlementId);
 
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String reason,
+  });
+
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  });
+
+  Future<void> removeMember({required String groupId, required String userId});
+
   Future<void> leaveGroup(String groupId);
 
   Future<void> addComment({

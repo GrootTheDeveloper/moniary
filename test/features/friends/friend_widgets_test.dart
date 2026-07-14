@@ -1020,6 +1020,27 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String reason,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> removeMember({required String groupId, required String userId}) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<void> leaveGroup(String groupId) {
     throw UnimplementedError();
   }

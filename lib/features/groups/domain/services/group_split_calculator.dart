@@ -11,6 +11,7 @@ enum GroupSplitError {
   payerAmountNotPositive,
   paidTotalMismatch,
   payerNotActive,
+  participantNotActive,
 }
 
 class GroupSplitException implements Exception {
@@ -34,6 +35,42 @@ class GroupSplitResult {
 class GroupSplitCalculator {
   const GroupSplitCalculator();
 
+  void validateDraft({
+    required int totalAmount,
+    required List<String> activeMemberIds,
+    required GroupSplitMode splitMode,
+    required GroupPaymentMode paymentMode,
+    List<String>? participantIds,
+    Map<String, int> shareAmounts = const {},
+    Map<String, int> payerAmounts = const {},
+  }) {
+    final participants = participantIds?.toSet().toList() ?? activeMemberIds;
+    _validateParticipants(
+      totalAmount: totalAmount,
+      activeMemberIds: activeMemberIds,
+      participantIds: participants,
+    );
+    if (splitMode != GroupSplitMode.unequal) {
+      calculate(
+        totalAmount: totalAmount,
+        activeMemberIds: activeMemberIds,
+        participantIds: participants,
+        splitMode: splitMode,
+        paymentMode: paymentMode,
+        unequalShares: shareAmounts,
+        payerAmounts: payerAmounts,
+      );
+      return;
+    }
+    _calculatePaidAmounts(
+      totalAmount: totalAmount,
+      shares: {for (final memberId in activeMemberIds) memberId: 0},
+      activeMembers: activeMemberIds.toSet(),
+      paymentMode: paymentMode,
+      payerAmounts: payerAmounts,
+    );
+  }
+
   Map<String, int> calculateEqualShares({
     required int totalAmount,
     required List<String> activeMemberIds,
@@ -53,20 +90,31 @@ class GroupSplitCalculator {
     required List<String> activeMemberIds,
     required GroupSplitMode splitMode,
     required GroupPaymentMode paymentMode,
+    List<String>? participantIds,
     Map<String, int>? unequalShares,
     Set<String>? submittedMemberIds,
     Map<String, int> payerAmounts = const {},
   }) {
-    _validateBase(totalAmount, activeMemberIds);
+    final participants = participantIds?.toSet().toList() ?? activeMemberIds;
+    _validateParticipants(
+      totalAmount: totalAmount,
+      activeMemberIds: activeMemberIds,
+      participantIds: participants,
+    );
     final activeMembers = activeMemberIds.toSet();
     final shares = switch (splitMode) {
       GroupSplitMode.equal => calculateEqualShares(
         totalAmount: totalAmount,
-        activeMemberIds: activeMemberIds,
+        activeMemberIds: participants,
+      ),
+      GroupSplitMode.exact => _validateExactShares(
+        totalAmount: totalAmount,
+        participantIds: participants,
+        shares: unequalShares,
       ),
       GroupSplitMode.unequal => _validateUnequalShares(
         totalAmount: totalAmount,
-        activeMemberIds: activeMemberIds,
+        activeMemberIds: participants,
         unequalShares: unequalShares,
         submittedMemberIds: submittedMemberIds,
       ),
@@ -81,7 +129,7 @@ class GroupSplitCalculator {
     );
     final balances = {
       for (final memberId in activeMemberIds)
-        memberId: shares[memberId]! - paidAmounts[memberId]!,
+        memberId: (shares[memberId] ?? 0) - paidAmounts[memberId]!,
     };
 
     return GroupSplitResult(
@@ -98,6 +146,36 @@ class GroupSplitCalculator {
     if (activeMemberIds.isEmpty) {
       throw const GroupSplitException(GroupSplitError.noActiveMembers);
     }
+  }
+
+  void _validateParticipants({
+    required int totalAmount,
+    required List<String> activeMemberIds,
+    required List<String> participantIds,
+  }) {
+    _validateBase(totalAmount, participantIds);
+    final active = activeMemberIds.toSet();
+    if (participantIds.any((id) => !active.contains(id))) {
+      throw const GroupSplitException(GroupSplitError.participantNotActive);
+    }
+  }
+
+  Map<String, int> _validateExactShares({
+    required int totalAmount,
+    required List<String> participantIds,
+    required Map<String, int>? shares,
+  }) {
+    final exactShares = {
+      for (final participantId in participantIds)
+        participantId: shares?[participantId] ?? -1,
+    };
+    if (exactShares.values.any((amount) => amount < 0) ||
+        exactShares.values.fold<int>(0, (sum, amount) => sum + amount) !=
+            totalAmount ||
+        shares?.keys.any((id) => !exactShares.containsKey(id)) == true) {
+      throw const GroupSplitException(GroupSplitError.shareTotalMismatch);
+    }
+    return exactShares;
   }
 
   Map<String, int> _validateUnequalShares({
@@ -130,7 +208,9 @@ class GroupSplitCalculator {
     required Map<String, int> payerAmounts,
   }) {
     if (paymentMode == GroupPaymentMode.everyonePaid) {
-      return Map<String, int>.from(shares);
+      return {
+        for (final memberId in activeMembers) memberId: shares[memberId] ?? 0,
+      };
     }
     if (payerAmounts.keys.any((id) => !activeMembers.contains(id))) {
       throw const GroupSplitException(GroupSplitError.payerNotActive);
