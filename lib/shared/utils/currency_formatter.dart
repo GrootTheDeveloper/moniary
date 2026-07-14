@@ -14,7 +14,11 @@ String currencySymbolFor({
   required String locale,
 }) {
   final normalized = currencyCode.trim().toUpperCase();
-  if (normalized.isEmpty || normalized == 'VND') return '₫';
+  if (normalized.isEmpty) return '₫';
+  
+  final info = _catalog[normalized];
+  if (info != null) return info.symbol;
+
   final symbol = NumberFormat.simpleCurrency(
     locale: locale,
     name: normalized,
@@ -29,13 +33,23 @@ String formatCurrency(
   required String locale,
 }) {
   final normalized = currencyCode.trim().toUpperCase();
-  if (normalized.isEmpty || normalized == 'VND') {
+  if (normalized.isEmpty) {
     return NumberFormat.currency(
       locale: locale,
       symbol: '₫',
       decimalDigits: 0,
     ).format(amount);
   }
+
+  final info = _catalog[normalized];
+  if (info != null) {
+    return NumberFormat.currency(
+      locale: locale,
+      symbol: info.symbol,
+      decimalDigits: info.decimalDigits,
+    ).format(amount);
+  }
+
   return NumberFormat.simpleCurrency(
     locale: locale,
     name: normalized,
