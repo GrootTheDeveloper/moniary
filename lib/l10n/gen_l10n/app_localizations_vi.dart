@@ -598,6 +598,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get transactionAddForDay => 'Thêm khoản cho ngày này';
 
   @override
+  String get transactionDayGridView => 'Ảnh';
+
+  @override
+  String get transactionDayListView => 'Danh sách';
+
+  @override
   String transactionLoadDetailError(String error) {
     return 'Không tải được chi tiết giao dịch.\n$error';
   }
@@ -4417,12 +4423,20 @@ class AppLocalizationsVi extends AppLocalizations {
       'Không thể phân tích lúc này. Hãy thử lại sau.';
 
   @override
-  String get journalRecapTitle => 'Tổng kết tháng';
+  String get journalRecapTitle => 'Money Story';
 
   @override
   String journalRecapMonth(String month) {
-    return 'Tổng kết $month';
+    return 'Money Story $month';
   }
+
+  @override
+  String journalMoneyStoryMonth(String month) {
+    return 'Tháng $month';
+  }
+
+  @override
+  String get journalMoneyStoryExpenseLabel => 'Tổng chi tháng này';
 
   @override
   String journalRecordedCount(int count) {
@@ -4455,10 +4469,96 @@ class AppLocalizationsVi extends AppLocalizations {
   String get journalTopCategories => 'Top danh mục';
 
   @override
-  String get journalShareRecap => 'Chia sẻ tổng kết';
+  String get journalShareRecap => 'Chia sẻ story';
 
   @override
-  String get journalExportTitle => 'Xuất nhật ký';
+  String get journalMoneyStoryCashFlow => 'Dòng tiền tháng này';
+
+  @override
+  String get journalMoneyStoryIncome => 'Thu vào';
+
+  @override
+  String get journalMoneyStoryExpense => 'Chi ra';
+
+  @override
+  String get journalMoneyStoryNet => 'Còn lại';
+
+  @override
+  String get journalMoneyStoryAverageDay => 'Trung bình / ngày ghi';
+
+  @override
+  String journalMoneyStoryActiveDays(int count) {
+    return '$count ngày có ghi chép';
+  }
+
+  @override
+  String journalMoneyStoryCategoryShare(String category, int percent) {
+    return '$category chiếm $percent%';
+  }
+
+  @override
+  String journalMoneyStoryCategoryPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String get journalMoneyStoryHighestDayEmpty =>
+      'Chưa có ngày chi nổi bật trong tháng này.';
+
+  @override
+  String journalMoneyStoryHighestDayTransactions(int count) {
+    return '$count khoản trong ngày này';
+  }
+
+  @override
+  String get journalMoneyStoryInsightsTitle => 'Những điều tháng này kể lại';
+
+  @override
+  String journalMoneyStoryInsightSpendingDown(int percent) {
+    return 'Bạn chi ít hơn $percent% so với tháng trước.';
+  }
+
+  @override
+  String journalMoneyStoryInsightSpendingUp(int percent) {
+    return 'Chi tiêu tăng $percent% so với tháng trước.';
+  }
+
+  @override
+  String journalMoneyStoryInsightTopCategory(String category, int percent) {
+    return '$category là điểm rơi lớn nhất, chiếm $percent% tổng chi.';
+  }
+
+  @override
+  String journalMoneyStoryInsightWeekend(int percent) {
+    return 'Cuối tuần chiếm $percent% chi tiêu của tháng.';
+  }
+
+  @override
+  String journalMoneyStoryInsightRecording(int count) {
+    return 'Bạn ghi chép trong $count ngày, đủ đều để nhìn ra thói quen.';
+  }
+
+  @override
+  String get journalMoneyStoryInsightQuiet =>
+      'Tháng này còn khá yên ắng. Ghi thêm vài khoản để story kể được nhiều hơn.';
+
+  @override
+  String get journalMoneyStoryShareTitle => 'Sẵn sàng lưu lại tháng này';
+
+  @override
+  String get journalMoneyStoryShareBody =>
+      'Tạo poster gọn đẹp để chia sẻ hoặc giữ riêng trong máy.';
+
+  @override
+  String get journalMoneyStoryNoTransactionsTitle =>
+      'Story tháng này còn trống';
+
+  @override
+  String get journalMoneyStoryNoTransactionsBody =>
+      'Ghi vài khoản chi để Moniary kể lại tháng của bạn bằng số liệu và hình ảnh.';
+
+  @override
+  String get journalExportTitle => 'Xuất Money Story';
 
   @override
   String get journalExportPost => 'Đăng';
@@ -4467,10 +4567,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get journalExportSave => 'Lưu ảnh về máy';
 
   @override
-  String get journalExportBrand => 'Moniary · Nhật ký chi tiêu';
+  String get journalExportBrand => 'Moniary · Money Story';
 
   @override
-  String get journalExportSaved => 'Đã tạo ảnh nhật ký để bạn chia sẻ.';
+  String get journalExportSaved => 'Đã tạo ảnh Money Story để bạn chia sẻ.';
 
   @override
   String get journalExportWholeMonth => 'Cả tháng';

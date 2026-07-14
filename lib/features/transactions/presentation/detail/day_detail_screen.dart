@@ -68,14 +68,25 @@ class DayDetailScreen extends ConsumerWidget {
   }
 }
 
-class _DayDetailBody extends ConsumerWidget {
+enum _DayDetailViewMode { grid, list }
+
+class _DayDetailBody extends ConsumerStatefulWidget {
   const _DayDetailBody({required this.date, required this.transactions});
 
   final DateTime date;
   final List<TransactionEntry> transactions;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_DayDetailBody> createState() => _DayDetailBodyState();
+}
+
+class _DayDetailBodyState extends ConsumerState<_DayDetailBody> {
+  _DayDetailViewMode _viewMode = _DayDetailViewMode.grid;
+
+  @override
+  Widget build(BuildContext context) {
+    final date = widget.date;
+    final transactions = widget.transactions;
     final income = transactions
         .where((transaction) => transaction.isIncome)
         .fold<double>(0, (sum, item) => sum + item.amount);
@@ -176,6 +187,17 @@ class _DayDetailBody extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 30),
+                    if (transactions.isNotEmpty) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: _DayViewSwitcher(
+                          selected: _viewMode,
+                          onChanged: (value) =>
+                              setState(() => _viewMode = value),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                    ],
                   ],
                 ),
               ),
@@ -190,6 +212,36 @@ class _DayDetailBody extends ConsumerWidget {
                         color: colors.textSecondary,
                       ),
                     ),
+                  ),
+                )
+              else if (_viewMode == _DayDetailViewMode.grid)
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                  sliver: SliverGrid.builder(
+                    itemCount: transactions.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 7,
+                          mainAxisSpacing: 6,
+                          crossAxisSpacing: 6,
+                          childAspectRatio: 0.72,
+                        ),
+                    itemBuilder: (context, index) {
+                      final transaction = transactions[index];
+                      return TransactionGridTile(
+                            transaction: transaction,
+                            onTap: () =>
+                                _openTransactionDetail(context, transaction),
+                          )
+                          .animate(delay: (22 * index).ms)
+                          .fade()
+                          .scale(
+                            begin: const Offset(0.96, 0.96),
+                            end: const Offset(1, 1),
+                            curve: Curves.easeOutQuad,
+                            duration: 240.ms,
+                          );
+                    },
                   ),
                 )
               else
@@ -208,18 +260,8 @@ class _DayDetailBody extends ConsumerWidget {
                       final transaction = transactions[index];
                       return _DayTransactionRow(
                             transaction: transaction,
-                            onTap: () async {
-                              final result = await context
-                                  .push<TransactionMutationResult>(
-                                    TransactionDetailScreen.routePath,
-                                    extra: TransactionDetailRouteArgs(
-                                      transaction: transaction,
-                                      day: date,
-                                    ),
-                                  );
-                              if (result == null || !context.mounted) return;
-                              _applyMutation(ref, result);
-                            },
+                            onTap: () =>
+                                _openTransactionDetail(context, transaction),
                           )
                           .animate(delay: (26 * index).ms)
                           .fade()
@@ -253,6 +295,21 @@ class _DayDetailBody extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _openTransactionDetail(
+    BuildContext context,
+    TransactionEntry transaction,
+  ) async {
+    final result = await context.push<TransactionMutationResult>(
+      TransactionDetailScreen.routePath,
+      extra: TransactionDetailRouteArgs(
+        transaction: transaction,
+        day: widget.date,
+      ),
+    );
+    if (result == null || !context.mounted) return;
+    _applyMutation(ref, result);
   }
 }
 
@@ -292,6 +349,96 @@ class _DayTopButton extends StatelessWidget {
   }
 }
 
+class _DayViewSwitcher extends StatelessWidget {
+  const _DayViewSwitcher({required this.selected, required this.onChanged});
+
+  final _DayDetailViewMode selected;
+  final ValueChanged<_DayDetailViewMode> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Container(
+      height: 48,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: colors.surface.withValues(alpha: 0.68),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.outline.withValues(alpha: 0.82)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _DayViewSegment(
+              icon: Icons.grid_view_rounded,
+              label: context.l10n.transactionDayGridView,
+              selected: selected == _DayDetailViewMode.grid,
+              onTap: () => onChanged(_DayDetailViewMode.grid),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: _DayViewSegment(
+              icon: Icons.view_agenda_outlined,
+              label: context.l10n.transactionDayListView,
+              selected: selected == _DayDetailViewMode.list,
+              onTap: () => onChanged(_DayDetailViewMode.list),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DayViewSegment extends StatelessWidget {
+  const _DayViewSegment({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final foreground = selected ? colors.background : colors.textSecondary;
+    return Material(
+      color: selected ? colors.textPrimary : Colors.transparent,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 18, color: foreground),
+              const SizedBox(width: 7),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: foreground,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _AddForDayButton extends StatelessWidget {
   const _AddForDayButton({required this.onPressed});
 
@@ -309,20 +456,27 @@ class _AddForDayButton extends StatelessWidget {
           onTap: onPressed,
           child: SizedBox(
             height: 54,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.add_rounded, size: 20, color: colors.primary),
-                const SizedBox(width: 8),
-                Text(
-                  context.l10n.transactionAddForDay,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: colors.textPrimary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add_rounded, size: 20, color: colors.primary),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      context.l10n.transactionAddForDay,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: colors.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -537,123 +691,139 @@ class TransactionGridTile extends ConsumerWidget {
       fallback: transaction.isIncome ? AppTheme.success : AppTheme.amber,
     );
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [accent, accent.withValues(alpha: 0.42)],
-                ),
-                boxShadow: transaction.isImportant
-                    ? [
-                        BoxShadow(
-                          color: AppTheme.amber.withValues(alpha: 0.2),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                        ),
-                      ]
-                    : null,
-              ),
-              child: Hero(
-                tag: 'tx_image_${transaction.id}',
-                child: SupabaseImage(
-                  imagePath: transaction.imagePath,
-                  width: double.infinity,
-                  height: double.infinity,
-                  fit: BoxFit.cover,
-                  fallbackIcon: Icons.receipt_long_outlined,
-                ),
-              ),
-            ),
-            Positioned(
-              top: 6,
-              left: 6,
-              right: 6,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GridTag(label: transaction.categoryName),
-                  const SizedBox(height: 4),
-                  GridTag(label: transaction.walletName),
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Colors.black87,
-                      Colors.black54,
-                      Colors.transparent,
-                    ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 70;
+        final radius = compact ? 9.0 : 16.0;
+        return InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(radius),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(radius),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [accent, accent.withValues(alpha: 0.42)],
+                    ),
+                    boxShadow: transaction.isImportant && !compact
+                        ? [
+                            BoxShadow(
+                              color: AppTheme.amber.withValues(alpha: 0.2),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Hero(
+                    tag: 'tx_image_${transaction.id}',
+                    child: SupabaseImage(
+                      imagePath: transaction.imagePath,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      fallbackIcon: Icons.receipt_long_outlined,
+                    ),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '${transaction.isIncome ? '+' : '-'}${ref.formatAmount(transaction.amount)}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                if (!compact)
+                  Positioned(
+                    top: 6,
+                    left: 6,
+                    right: 6,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GridTag(label: transaction.categoryName),
+                        const SizedBox(height: 4),
+                        GridTag(label: transaction.walletName),
+                      ],
+                    ),
+                  ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: compact ? 3 : 8,
+                      vertical: compact ? 4 : 8,
+                    ),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [
+                          Colors.black87,
+                          Colors.black54,
+                          Colors.transparent,
+                        ],
                       ),
                     ),
-                    if (transaction.isImportant) ...[
-                      const SizedBox(width: 4),
-                      const Icon(Icons.star, color: AppTheme.amber, size: 16)
-                          .animate(
-                            onPlay: (controller) =>
-                                controller.repeat(reverse: true),
-                          )
-                          .scale(
-                            begin: const Offset(1, 1),
-                            end: const Offset(1.2, 1.2),
-                            duration: 1000.ms,
-                            curve: Curves.easeInOut,
-                          )
-                          .custom(
-                            builder: (context, value, child) => Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppTheme.amber.withValues(
-                                      alpha: 0.3 * value,
-                                    ),
-                                    blurRadius: 8 * value,
-                                    spreadRadius: 2 * value,
-                                  ),
-                                ],
-                              ),
-                              child: child,
-                            ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${transaction.isIncome ? '+' : '-'}${ref.formatAmount(transaction.amount)}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontSize: compact ? 8 : null,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
-                    ],
-                  ],
+                        ),
+                        if (transaction.isImportant) ...[
+                          SizedBox(width: compact ? 1 : 4),
+                          Icon(
+                                Icons.star,
+                                color: AppTheme.amber,
+                                size: compact ? 10 : 16,
+                              )
+                              .animate(
+                                onPlay: (controller) =>
+                                    controller.repeat(reverse: true),
+                              )
+                              .scale(
+                                begin: const Offset(1, 1),
+                                end: const Offset(1.2, 1.2),
+                                duration: 1000.ms,
+                                curve: Curves.easeInOut,
+                              )
+                              .custom(
+                                builder: (context, value, child) => Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppTheme.amber.withValues(
+                                          alpha: 0.3 * value,
+                                        ),
+                                        blurRadius: (compact ? 4 : 8) * value,
+                                        spreadRadius: (compact ? 1 : 2) * value,
+                                      ),
+                                    ],
+                                  ),
+                                  child: child,
+                                ),
+                              ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

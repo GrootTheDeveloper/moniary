@@ -598,6 +598,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionAddForDay => 'Add an entry for this day';
 
   @override
+  String get transactionDayGridView => 'Grid';
+
+  @override
+  String get transactionDayListView => 'List';
+
+  @override
   String transactionLoadDetailError(String error) {
     return 'Could not load transaction details.\n$error';
   }
@@ -4413,12 +4419,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Analysis is unavailable right now. Please try again later.';
 
   @override
-  String get journalRecapTitle => 'Monthly recap';
+  String get journalRecapTitle => 'Money Story';
 
   @override
   String journalRecapMonth(String month) {
-    return '$month recap';
+    return '$month Money Story';
   }
+
+  @override
+  String journalMoneyStoryMonth(String month) {
+    return '$month';
+  }
+
+  @override
+  String get journalMoneyStoryExpenseLabel => 'This month\'s spending';
 
   @override
   String journalRecordedCount(int count) {
@@ -4451,10 +4465,96 @@ class AppLocalizationsEn extends AppLocalizations {
   String get journalTopCategories => 'Top categories';
 
   @override
-  String get journalShareRecap => 'Share recap';
+  String get journalShareRecap => 'Share story';
 
   @override
-  String get journalExportTitle => 'Export journal';
+  String get journalMoneyStoryCashFlow => 'This month\'s cash flow';
+
+  @override
+  String get journalMoneyStoryIncome => 'Income';
+
+  @override
+  String get journalMoneyStoryExpense => 'Expense';
+
+  @override
+  String get journalMoneyStoryNet => 'Left over';
+
+  @override
+  String get journalMoneyStoryAverageDay => 'Average / recording day';
+
+  @override
+  String journalMoneyStoryActiveDays(int count) {
+    return '$count recording days';
+  }
+
+  @override
+  String journalMoneyStoryCategoryShare(String category, int percent) {
+    return '$category took $percent%';
+  }
+
+  @override
+  String journalMoneyStoryCategoryPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String get journalMoneyStoryHighestDayEmpty =>
+      'No standout spending day yet this month.';
+
+  @override
+  String journalMoneyStoryHighestDayTransactions(int count) {
+    return '$count entries on this day';
+  }
+
+  @override
+  String get journalMoneyStoryInsightsTitle => 'What this month tells you';
+
+  @override
+  String journalMoneyStoryInsightSpendingDown(int percent) {
+    return 'You spent $percent% less than last month.';
+  }
+
+  @override
+  String journalMoneyStoryInsightSpendingUp(int percent) {
+    return 'Spending rose $percent% compared with last month.';
+  }
+
+  @override
+  String journalMoneyStoryInsightTopCategory(String category, int percent) {
+    return '$category was the biggest theme at $percent% of spending.';
+  }
+
+  @override
+  String journalMoneyStoryInsightWeekend(int percent) {
+    return 'Weekends made up $percent% of this month\'s spending.';
+  }
+
+  @override
+  String journalMoneyStoryInsightRecording(int count) {
+    return 'You recorded spending on $count days, enough rhythm to see patterns.';
+  }
+
+  @override
+  String get journalMoneyStoryInsightQuiet =>
+      'This month is still quiet. Add a few more entries so the story has more to tell.';
+
+  @override
+  String get journalMoneyStoryShareTitle => 'Ready to keep this month';
+
+  @override
+  String get journalMoneyStoryShareBody =>
+      'Create a polished poster to share or save privately.';
+
+  @override
+  String get journalMoneyStoryNoTransactionsTitle =>
+      'This month\'s story is empty';
+
+  @override
+  String get journalMoneyStoryNoTransactionsBody =>
+      'Record a few expenses so Moniary can tell your month through numbers and images.';
+
+  @override
+  String get journalExportTitle => 'Export Money Story';
 
   @override
   String get journalExportPost => 'Post';
@@ -4463,10 +4563,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get journalExportSave => 'Save image';
 
   @override
-  String get journalExportBrand => 'Moniary · Spending journal';
+  String get journalExportBrand => 'Moniary · Money Story';
 
   @override
-  String get journalExportSaved => 'Your journal image is ready to share.';
+  String get journalExportSaved => 'Your Money Story image is ready to share.';
 
   @override
   String get journalExportWholeMonth => 'Whole month';
