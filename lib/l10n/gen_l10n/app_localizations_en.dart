@@ -1774,6 +1774,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timezonePickerNoResults => 'No timezones found';
 
   @override
+  String get currencyPickerTitle => 'Select Currency';
+
+  @override
+  String get currencyPickerSearch => 'Search currency...';
+
+  @override
+  String get currencyPickerNoResults => 'No currencies found';
+
+  @override
+  String get currencyPickerPopular => 'Popular Currencies';
+
+  @override
+  String get currencyPickerAll => 'All Currencies';
+
+  @override
   String get profileLanguageLabel => 'Language';
 
   @override

@@ -1772,6 +1772,21 @@ class AppLocalizationsVi extends AppLocalizations {
   String get timezonePickerNoResults => 'Không tìm thấy múi giờ';
 
   @override
+  String get currencyPickerTitle => 'Chọn tiền tệ';
+
+  @override
+  String get currencyPickerSearch => 'Tìm tiền tệ...';
+
+  @override
+  String get currencyPickerNoResults => 'Không tìm thấy tiền tệ';
+
+  @override
+  String get currencyPickerPopular => 'Tiền tệ phổ biến';
+
+  @override
+  String get currencyPickerAll => 'Tất cả tiền tệ';
+
+  @override
   String get profileLanguageLabel => 'Ngôn ngữ';
 
   @override

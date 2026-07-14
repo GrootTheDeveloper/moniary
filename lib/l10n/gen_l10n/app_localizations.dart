@@ -3308,6 +3308,36 @@ abstract class AppLocalizations {
   /// **'Không tìm thấy múi giờ'**
   String get timezonePickerNoResults;
 
+  /// No description provided for @currencyPickerTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn tiền tệ'**
+  String get currencyPickerTitle;
+
+  /// No description provided for @currencyPickerSearch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm tiền tệ...'**
+  String get currencyPickerSearch;
+
+  /// No description provided for @currencyPickerNoResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy tiền tệ'**
+  String get currencyPickerNoResults;
+
+  /// No description provided for @currencyPickerPopular.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiền tệ phổ biến'**
+  String get currencyPickerPopular;
+
+  /// No description provided for @currencyPickerAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả tiền tệ'**
+  String get currencyPickerAll;
+
   /// No description provided for @profileLanguageLabel.
   ///
   /// In vi, this message translates to:

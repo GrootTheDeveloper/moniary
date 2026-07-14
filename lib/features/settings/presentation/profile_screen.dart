@@ -19,6 +19,8 @@ import '../../journal/presentation/recording_streak_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../../profile/presentation/timezone_picker_screen.dart';
+import '../../profile/presentation/currency_picker_screen.dart';
+import '../../profile/domain/currency_data.dart';
 import '../../../shared/utils/timezone_utils.dart';
 import '../application/account/account_actions_controller.dart';
 import '../application/privacy_controller.dart';
@@ -530,6 +532,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 : context.l10n.profileLanguageVi,
                             onTap: () =>
                                 _showLanguageSheet(locale.languageCode),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.currency_exchange_outlined,
+                            title: context.l10n.profileSetupCurrency,
+                            subtitle: () {
+                              final currencyCode = ref.watch(
+                                preferredCurrencyProvider,
+                              );
+                              final info = currencyInfoFor(currencyCode);
+                              return '${info.flag}  ${info.name} (${info.code})';
+                            }(),
+                            onTap: () =>
+                                context.push(CurrencyPickerScreen.routePath),
                           ),
                           _SettingsTile(
                             icon: Icons.schedule_outlined,

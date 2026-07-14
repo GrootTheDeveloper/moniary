@@ -1,6 +1,10 @@
 /// On-device daily reminder preferences (persisted locally, not in Supabase).
 class ReminderSettings {
-  const ReminderSettings({this.enabled = false, this.hour = 20, this.minute = 0});
+  const ReminderSettings({
+    this.enabled = false,
+    this.hour = 20,
+    this.minute = 0,
+  });
 
   final bool enabled;
   final int hour;
