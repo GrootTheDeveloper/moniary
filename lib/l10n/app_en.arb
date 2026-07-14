@@ -2128,6 +2128,7 @@
   "friendInviteAcceptSubtitle": "{name} wants to add you on Moniary.",
   "@friendInviteAcceptSubtitle": {"placeholders": {"name": {"type": "String"}}},
   "friendInviteAcceptButton": "Add friend",
+  "friendInviteAgreeButton": "Accept",
   "friendInviteAccepted": "Friend added.",
   "friendInviteLoading": "Loading invite...",
   "friendInvitePreviewError": "Could not load the friend invite.",

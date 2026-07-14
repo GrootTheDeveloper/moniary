@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'app_navigation.dart';
 import 'main_shell_screen.dart';
+import '../core/deeplinks/app_deep_link.dart';
+import '../core/deeplinks/pending_deep_link_controller.dart';
 import '../l10n/l10n_extension.dart';
 import '../core/preferences/preferences_providers.dart';
 import '../core/supabase/supabase_providers.dart';
@@ -114,29 +117,63 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   ref.onDispose(authRefreshListenable.dispose);
 
   final router = GoRouter(
+    navigatorKey: appRootNavigatorKey,
     initialLocation: SplashScreen.routePath,
-    overridePlatformDefaultLocation: true,
+    overridePlatformDefaultLocation: false,
     refreshListenable: authRefreshListenable,
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(context.l10n.routeNotFound),
-            const SizedBox(height: 16),
-            FilledButton(
-              onPressed: () => context.go('/'),
-              child: Text(context.l10n.routeGoBack),
-            ),
-          ],
+    errorBuilder: (context, state) {
+      final routeLocation = pendingDeepLinkRouteLocation(state.uri);
+      if (routeLocation != null) {
+        return _DeepLinkRedirectScreen(routeLocation: routeLocation);
+      }
+
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(context.l10n.routeNotFound),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () => context.go('/'),
+                child: Text(context.l10n.routeGoBack),
+              ),
+            ],
+          ),
         ),
-      ),
-    ),
+      );
+    },
     redirect: (context, state) {
+      final routeLocation = pendingDeepLinkRouteLocation(state.uri);
       final session = ref.read(currentSessionProvider);
       final onboardingSeen = ref.read(onboardingSeenProvider);
       final privacyState = ref.read(privacyControllerProvider);
       final location = state.matchedLocation;
+
+      if (routeLocation != null) {
+        if (session == null) {
+          ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
+          return LoginScreen.routePath;
+        }
+        if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
+          ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
+          return AppLockScreen.routePath;
+        }
+        final friendInviteToken = friendInviteTokenFromRouteLocation(
+          routeLocation,
+        );
+        if (friendInviteToken != null) {
+          ref
+              .read(pendingFriendInvitePromptProvider.notifier)
+              .set(friendInviteToken);
+          return location == CalendarScreen.routePath
+              ? null
+              : CalendarScreen.routePath;
+        }
+        if (!_isSameRoutePath(state.uri, routeLocation)) {
+          return routeLocation;
+        }
+      }
 
       const publicRoutes = {
         SplashScreen.routePath,
@@ -161,16 +198,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           location != SplashScreen.routePath &&
           location != OnboardingScreen.routePath &&
           !isPublicRoute) {
+        if (routeLocation != null) {
+          ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
+        }
         return OnboardingScreen.routePath;
       }
 
       if (session == null && !isPublicRoute) {
+        if (routeLocation != null) {
+          ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
+        }
         return LoginScreen.routePath;
       }
 
       // App lock check
       if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
         if (location != AppLockScreen.routePath && !isPublicRoute) {
+          if (routeLocation != null) {
+            ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
+          }
           return AppLockScreen.routePath;
         }
       } else {
@@ -906,6 +952,81 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return router;
 });
+
+String? pendingDeepLinkRouteLocation(Uri uri) {
+  final deepLink = AppDeepLink.parse(uri);
+  if (deepLink != null) return deepLink.routeLocation;
+
+  final path = uri.path;
+  if (_isInviteRoute(path)) {
+    final value = uri.toString();
+    return value.isEmpty ? path : value;
+  }
+
+  return null;
+}
+
+bool _isInviteRoute(String path) {
+  return path.startsWith('/friends/invite/') ||
+      path.startsWith('/groups/invite/');
+}
+
+bool _isSameRoutePath(Uri uri, String routeLocation) {
+  final target = Uri.tryParse(routeLocation);
+  if (target == null) return uri.toString() == routeLocation;
+  return uri.path == target.path;
+}
+
+class _DeepLinkRedirectScreen extends ConsumerStatefulWidget {
+  const _DeepLinkRedirectScreen({required this.routeLocation});
+
+  final String routeLocation;
+
+  @override
+  ConsumerState<_DeepLinkRedirectScreen> createState() =>
+      _DeepLinkRedirectScreenState();
+}
+
+class _DeepLinkRedirectScreenState
+    extends ConsumerState<_DeepLinkRedirectScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _redirect());
+  }
+
+  void _redirect() {
+    if (!mounted) return;
+    final session = ref.read(currentSessionProvider);
+    final privacyState = ref.read(privacyControllerProvider);
+    if (session == null) {
+      ref.read(pendingDeepLinkProvider.notifier).set(widget.routeLocation);
+      context.go(LoginScreen.routePath);
+      return;
+    }
+    if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
+      ref.read(pendingDeepLinkProvider.notifier).set(widget.routeLocation);
+      context.go(AppLockScreen.routePath);
+      return;
+    }
+    final friendInviteToken = friendInviteTokenFromRouteLocation(
+      widget.routeLocation,
+    );
+    if (friendInviteToken != null) {
+      ref
+          .read(pendingFriendInvitePromptProvider.notifier)
+          .set(friendInviteToken);
+      context.go(CalendarScreen.routePath);
+      return;
+    }
+    context.go(widget.routeLocation);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+  }
+}
 
 CustomTransitionPage<void> buildSlideTransitionPage({
   required GoRouterState state,

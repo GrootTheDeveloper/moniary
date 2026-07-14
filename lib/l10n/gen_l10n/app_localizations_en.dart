@@ -5096,6 +5096,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendInviteAcceptButton => 'Add friend';
 
   @override
+  String get friendInviteAgreeButton => 'Accept';
+
+  @override
   String get friendInviteAccepted => 'Friend added.';
 
   @override

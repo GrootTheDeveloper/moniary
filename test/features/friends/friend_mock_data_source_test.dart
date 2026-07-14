@@ -182,6 +182,31 @@ void main() {
     },
   );
 
+  test('demo seeded invite thêm bạn mock mới cho tài khoản demo', () async {
+    final demo = FriendMockDataSource(
+      currentUserId: 'mock-user-id',
+      seedDemoData: true,
+    );
+    const token = FriendMockDataSource.demoFriendInviteToken;
+
+    final preview = await demo.fetchInvitePreview(token);
+
+    expect(preview.status, FriendInviteStatus.active);
+    expect(preview.inviter?.username, 'le_gia_nhi');
+
+    final result = await demo.acceptInvite(token);
+
+    expect(result.status, FriendInviteAcceptStatus.accepted);
+    expect(
+      (await demo.fetchFriends()).map((friend) => friend.userId),
+      contains('demo-friend-nhi'),
+    );
+    expect(
+      (await demo.fetchInvitePreview(token)).status,
+      FriendInviteStatus.used,
+    );
+  });
+
   test('không cho dùng link kết bạn của chính mình', () async {
     final creator = source('mock-user-id');
     final invite = await creator.createInviteLink();

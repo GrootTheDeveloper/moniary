@@ -491,6 +491,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         final pendingRoute = ref
             .read(pendingDeepLinkProvider.notifier)
             .consume();
+        final friendInviteToken = friendInviteTokenFromRouteLocation(
+          pendingRoute,
+        );
+        if (friendInviteToken != null) {
+          ref
+              .read(pendingFriendInvitePromptProvider.notifier)
+              .set(friendInviteToken);
+          context.go(CalendarScreen.routePath);
+          return;
+        }
         context.go(pendingRoute ?? CalendarScreen.routePath);
       case PostAuthDestination.pendingDeletion:
         await _showRecoverySheet(decision.deletionStatus!);

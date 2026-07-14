@@ -5100,6 +5100,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendInviteAcceptButton => 'Kết bạn';
 
   @override
+  String get friendInviteAgreeButton => 'Đồng ý';
+
+  @override
   String get friendInviteAccepted => 'Đã kết bạn thành công.';
 
   @override

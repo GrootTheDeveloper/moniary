@@ -8,7 +8,6 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/friend_controller.dart';
-import '../../domain/entities/friend_profile.dart';
 import '../../domain/friend_qr_payload.dart';
 import 'friend_invite_accept_screen.dart';
 
@@ -27,24 +26,14 @@ class _FriendQrScreenState extends ConsumerState<FriendQrScreen> {
   final MobileScannerController _scannerController = MobileScannerController(
     formats: const [BarcodeFormat.qrCode],
   );
-  late Future<FriendInviteLink> _inviteFuture;
   _FriendQrMode _mode = _FriendQrMode.myCode;
   bool _handlingScan = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _inviteFuture = _createInvite();
-  }
 
   @override
   void dispose() {
     _scannerController.dispose();
     super.dispose();
   }
-
-  Future<FriendInviteLink> _createInvite() =>
-      ref.read(friendActionControllerProvider.notifier).createInviteLink();
 
   @override
   Widget build(BuildContext context) {
@@ -87,35 +76,26 @@ class _FriendQrScreenState extends ConsumerState<FriendQrScreen> {
   }
 
   Widget _buildMyCode() {
-    return FutureBuilder<FriendInviteLink>(
-      future: _inviteFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError || snapshot.data == null) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  snapshot.error == null
-                      ? context.l10n.errorGeneric
-                      : userFriendlyMessage(context, snapshot.error!),
-                ),
-                const SizedBox(height: 12),
-                FilledButton.icon(
-                  onPressed: () => setState(() {
-                    _inviteFuture = _createInvite();
-                  }),
-                  icon: const Icon(Icons.refresh_outlined),
-                  label: Text(context.l10n.friendQrRetry),
-                ),
-              ],
-            ),
-          );
-        }
-        final invite = snapshot.data!;
+    final inviteAsync = ref.watch(friendInviteLinkProvider);
+    return inviteAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) {
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(userFriendlyMessage(context, error)),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: () => ref.invalidate(friendInviteLinkProvider),
+                icon: const Icon(Icons.refresh_outlined),
+                label: Text(context.l10n.friendQrRetry),
+              ),
+            ],
+          ),
+        );
+      },
+      data: (invite) {
         return Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),

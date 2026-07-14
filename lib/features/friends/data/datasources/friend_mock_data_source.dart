@@ -8,6 +8,8 @@ class FriendMockDataSource {
     this.seedDemoData = false,
   });
 
+  static const demoFriendInviteToken = 'demo-friend-invite-nhi';
+
   final String currentUserId;
   final bool seedDemoData;
 
@@ -56,6 +58,12 @@ class FriendMockDataSource {
       username: 'do_minh_khue',
       avatarPath: 'asset://assets/demo_avatars/khoa.png',
       sharedGroupCount: 1,
+    ),
+    'demo-friend-nhi': const FriendProfile(
+      userId: 'demo-friend-nhi',
+      fullName: 'Lê Gia Nhi',
+      username: 'le_gia_nhi',
+      sharedGroupCount: 0,
     ),
   };
 
@@ -154,6 +162,7 @@ class FriendMockDataSource {
   }
 
   Future<FriendInvitePreview> fetchInvitePreview(String token) async {
+    _seedDemoInviteIfNeeded();
     final invite = _invites[token.trim()];
     if (invite == null) {
       return const FriendInvitePreview(
@@ -171,6 +180,7 @@ class FriendMockDataSource {
   }
 
   Future<FriendInviteAcceptResult> acceptInvite(String token) async {
+    _seedDemoInviteIfNeeded();
     final invite = _invites[token.trim()];
     if (invite == null) {
       throw const AppException(
@@ -430,6 +440,19 @@ class FriendMockDataSource {
     for (final id in ids) {
       _friendships.putIfAbsent(id, () => <String>{}).add(currentUserId);
     }
+  }
+
+  void _seedDemoInviteIfNeeded() {
+    if (!seedDemoData || currentUserId != 'mock-user-id') return;
+    _invites.putIfAbsent(
+      demoFriendInviteToken,
+      () => _MockFriendInvite(
+        token: demoFriendInviteToken,
+        creatorUserId: 'demo-friend-nhi',
+        status: FriendInviteStatus.active,
+        expiresAt: DateTime.now().add(const Duration(days: 30)),
+      ),
+    );
   }
 
   int _demoSortIndex(String userId) {

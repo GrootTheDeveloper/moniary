@@ -41,6 +41,12 @@ final friendInvitePreviewProvider = FutureProvider.autoDispose
       return ref.watch(friendRepositoryProvider).fetchInvitePreview(token);
     });
 
+final friendInviteLinkProvider = FutureProvider.autoDispose<FriendInviteLink>((
+  ref,
+) {
+  return ref.watch(friendRepositoryProvider).createInviteLink();
+});
+
 final friendActionControllerProvider =
     AsyncNotifierProvider<FriendActionController, void>(
       FriendActionController.new,

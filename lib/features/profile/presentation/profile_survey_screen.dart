@@ -215,6 +215,14 @@ class _ProfileSurveyScreenState extends ConsumerState<ProfileSurveyScreen> {
     }
 
     final pendingRoute = ref.read(pendingDeepLinkProvider.notifier).consume();
+    final friendInviteToken = friendInviteTokenFromRouteLocation(pendingRoute);
+    if (friendInviteToken != null) {
+      ref
+          .read(pendingFriendInvitePromptProvider.notifier)
+          .set(friendInviteToken);
+      context.go(CalendarScreen.routePath);
+      return;
+    }
     context.go(pendingRoute ?? CalendarScreen.routePath);
   }
 }

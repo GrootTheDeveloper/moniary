@@ -3,13 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:moniary/core/deeplinks/pending_deep_link_controller.dart';
 import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/features/friends/data/repositories/friend_repository_impl.dart';
 import 'package:moniary/features/friends/domain/entities/friend_profile.dart';
 import 'package:moniary/features/friends/domain/repositories/friend_repository.dart';
 import 'package:moniary/features/friends/presentation/screens/add_friend_screen.dart';
 import 'package:moniary/features/friends/presentation/screens/friend_invite_accept_screen.dart';
+import 'package:moniary/features/friends/presentation/screens/friend_qr_screen.dart';
 import 'package:moniary/features/friends/presentation/screens/friends_screen.dart';
+import 'package:moniary/features/friends/presentation/widgets/friend_invite_prompt_host.dart';
 import 'package:moniary/features/groups/data/repositories/group_repository_impl.dart';
 import 'package:moniary/features/groups/domain/entities/group_community.dart';
 import 'package:moniary/features/groups/domain/entities/group_enums.dart';
@@ -62,6 +65,14 @@ void main() {
     final router = GoRouter(
       initialLocation: initialLocation,
       routes: [
+        GoRoute(
+          path: AddFriendScreen.routePath,
+          builder: (context, state) => const AddFriendScreen(),
+        ),
+        GoRoute(
+          path: FriendQrScreen.routePath,
+          builder: (context, state) => const FriendQrScreen(),
+        ),
         GoRoute(
           path: FriendInviteAcceptScreen.routePath,
           builder: (context, state) => FriendInviteAcceptScreen(
@@ -243,6 +254,25 @@ void main() {
       find.text('Gửi link cho người khác để họ kết bạn với bạn nhanh hơn.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('AddFriendScreen bấm QR mở màn QR kết bạn', (tester) async {
+    final repository = FakeFriendRepository();
+
+    await tester.pumpWidget(
+      routerApp(
+        friendRepository: repository,
+        initialLocation: AddFriendScreen.routePath,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(OutlinedButton, 'QR kết bạn'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Mã của tôi'), findsOneWidget);
+    expect(find.text('Quét mã'), findsOneWidget);
+    expect(find.text('Chia sẻ mã'), findsOneWidget);
   });
 
   testWidgets('FriendsScreen chấp nhận incoming request', (tester) async {
@@ -659,6 +689,68 @@ void main() {
     expect(find.text('Bạn bè'), findsWidgets);
     expect(find.text('An Nguyen'), findsOneWidget);
   });
+
+  testWidgets('FriendInvitePromptHost hiện popup và accept invite', (
+    tester,
+  ) async {
+    final repository = FakeFriendRepository(
+      invitePreview: const FriendInvitePreview(
+        status: FriendInviteStatus.active,
+        relationStatus: FriendRelationStatus.none,
+        inviter: FriendProfile(
+          userId: 'user-an',
+          fullName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(
+      app(
+        const _PromptSeed(
+          token: 'token-1',
+          child: FriendInvitePromptHost(
+            child: Scaffold(body: Text('calendar surface')),
+          ),
+        ),
+        friendRepository: repository,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('calendar surface'), findsOneWidget);
+    expect(find.text('An Nguyen'), findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, 'Từ chối'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Đồng ý'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Đồng ý'));
+    await tester.pumpAndSettle();
+
+    expect(repository.acceptedInviteTokens, ['token-1']);
+  });
+}
+
+class _PromptSeed extends ConsumerStatefulWidget {
+  const _PromptSeed({required this.token, required this.child});
+
+  final String token;
+  final Widget child;
+
+  @override
+  ConsumerState<_PromptSeed> createState() => _PromptSeedState();
+}
+
+class _PromptSeedState extends ConsumerState<_PromptSeed> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(pendingFriendInvitePromptProvider.notifier).set(widget.token);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class FakeFriendRepository implements FriendRepository {
@@ -895,10 +987,13 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
-  Future<List<GroupTransaction>> fetchTransactions(String groupId) async => const [];
+  Future<List<GroupTransaction>> fetchTransactions(String groupId) async =>
+      const [];
 
   @override
-  Future<GroupTransactionDetail> fetchTransactionDetail(String transactionId) async {
+  Future<GroupTransactionDetail> fetchTransactionDetail(
+    String transactionId,
+  ) async {
     throw UnimplementedError();
   }
 
@@ -923,7 +1018,9 @@ class FakeGroupRepository implements GroupRepository {
   }) async {}
 
   @override
-  Future<GroupSettlementOverview> fetchSettlementOverview(String groupId) async {
+  Future<GroupSettlementOverview> fetchSettlementOverview(
+    String groupId,
+  ) async {
     return GroupSettlementOverview(
       balances: [
         GroupBalance(
@@ -1065,7 +1162,10 @@ class FakeGroupRepository implements GroupRepository {
   Future<void> resetDisputedSettlement(String settlementId) async {}
 
   @override
-  Future<void> removeMember({required String groupId, required String userId}) async {}
+  Future<void> removeMember({
+    required String groupId,
+    required String userId,
+  }) async {}
 
   @override
   Future<void> leaveGroup(String groupId) async {}
@@ -1083,7 +1183,9 @@ class FakeGroupRepository implements GroupRepository {
   }) async {}
 
   @override
-  Future<List<GroupReactionSummary>> fetchReactions(String transactionId) async {
+  Future<List<GroupReactionSummary>> fetchReactions(
+    String transactionId,
+  ) async {
     return const [];
   }
 

@@ -359,7 +359,8 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('login_guest_button')));
     await tester.pumpAndSettle();
 
-    expect(find.text('invite token-1'), findsOneWidget);
+    expect(find.text('calendar target'), findsOneWidget);
+    expect(container.read(pendingFriendInvitePromptProvider), 'token-1');
     expect(container.read(pendingDeepLinkProvider), isNull);
   });
 
@@ -416,7 +417,8 @@ void main() {
     await tester.tap(find.byType(FilledButton));
     await tester.pumpAndSettle();
 
-    expect(find.text('invite token-2'), findsOneWidget);
+    expect(find.text('calendar target'), findsOneWidget);
+    expect(container.read(pendingFriendInvitePromptProvider), 'token-2');
     expect(container.read(pendingDeepLinkProvider), isNull);
   });
 

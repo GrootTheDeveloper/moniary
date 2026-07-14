@@ -7,6 +7,12 @@ void main() {
       FriendQrPayload.inviteToken('moniary://friends/invite/token-123'),
       'token-123',
     );
+    expect(
+      FriendQrPayload.inviteToken(
+        'https://go.vuivethoima.id.vn/friends/invite/token-123',
+      ),
+      'token-123',
+    );
   });
 
   test('rejects unrelated and malformed QR payloads', () {

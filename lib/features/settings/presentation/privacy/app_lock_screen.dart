@@ -38,6 +38,16 @@ class _AppLockScreenState extends ConsumerState<AppLockScreen> {
       if (!mounted || !didAuthenticate) return;
 
       final pendingRoute = ref.read(pendingDeepLinkProvider.notifier).consume();
+      final friendInviteToken = friendInviteTokenFromRouteLocation(
+        pendingRoute,
+      );
+      if (friendInviteToken != null) {
+        ref
+            .read(pendingFriendInvitePromptProvider.notifier)
+            .set(friendInviteToken);
+        context.go(CalendarScreen.routePath);
+        return;
+      }
       context.go(pendingRoute ?? CalendarScreen.routePath);
     } catch (error, stackTrace) {
       AppLogger.error('Failed to unlock app', error, stackTrace);

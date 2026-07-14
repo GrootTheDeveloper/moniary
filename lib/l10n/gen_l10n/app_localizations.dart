@@ -9104,6 +9104,12 @@ abstract class AppLocalizations {
   /// **'Kết bạn'**
   String get friendInviteAcceptButton;
 
+  /// No description provided for @friendInviteAgreeButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng ý'**
+  String get friendInviteAgreeButton;
+
   /// No description provided for @friendInviteAccepted.
   ///
   /// In vi, this message translates to:

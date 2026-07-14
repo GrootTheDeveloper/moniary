@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 
 import '../core/constants/app_constants.dart';
 import '../core/preferences/preferences_providers.dart';
@@ -10,7 +11,10 @@ import '../core/deeplinks/app_deep_link.dart';
 import '../core/deeplinks/pending_deep_link_controller.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
+import '../features/calendar/presentation/month/calendar_screen.dart';
+import '../features/friends/presentation/widgets/friend_invite_prompt_host.dart';
 import '../features/settings/presentation/privacy/app_lock_screen.dart';
+import '../features/splash/presentation/splash_screen.dart';
 import '../l10n/gen_l10n/app_localizations.dart';
 import '../shared/utils/app_logger.dart';
 import 'app_router.dart';
@@ -26,8 +30,12 @@ class MoniaryApp extends ConsumerStatefulWidget {
 
 class _MoniaryAppState extends ConsumerState<MoniaryApp>
     with WidgetsBindingObserver {
+  static const _nativeDeepLinks = MethodChannel('moniary/deep_links');
+
   final _appLinks = AppLinks();
   StreamSubscription<Uri>? _linkSubscription;
+  Uri? _lastHandledDeepLink;
+  DateTime? _lastHandledDeepLinkAt;
 
   @override
   void initState() {
@@ -41,6 +49,7 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
   @override
   void dispose() {
     _linkSubscription?.cancel();
+    _nativeDeepLinks.setMethodCallHandler(null);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -63,18 +72,17 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
       locale: Locale(ref.watch(preferredLocaleProvider)),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      builder: (context, child) =>
+          FriendInvitePromptHost(child: child ?? const SizedBox.shrink()),
     );
   }
 
   Future<void> _initializeDeepLinks() async {
-    try {
-      final initialLink = await _appLinks.getInitialLink();
-      if (initialLink != null) {
-        _handleDeepLink(initialLink);
+    _nativeDeepLinks.setMethodCallHandler((call) async {
+      if (call.method == 'onDeepLink') {
+        _handleDeepLinkValue(call.arguments);
       }
-    } catch (error, stackTrace) {
-      AppLogger.error('Failed to read initial app link', error, stackTrace);
-    }
+    });
 
     _linkSubscription = _appLinks.uriLinkStream.listen(
       _handleDeepLink,
@@ -82,9 +90,40 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
         AppLogger.error('Failed to handle app link', error, stackTrace);
       },
     );
+
+    try {
+      await _handleNativeDeepLinkMethod('getInitialLink');
+      final initialLink = await _appLinks.getInitialLink();
+      if (initialLink != null) {
+        _handleDeepLink(initialLink);
+      }
+      await _handleNativeDeepLinkMethod('getLatestLink');
+      final latestLink = await _appLinks.getLatestLink();
+      if (latestLink != null) {
+        _handleDeepLink(latestLink);
+      }
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to read initial app link', error, stackTrace);
+    }
+  }
+
+  Future<void> _handleNativeDeepLinkMethod(String method) async {
+    try {
+      final link = await _nativeDeepLinks.invokeMethod<String>(method);
+      _handleDeepLinkValue(link);
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to read native deep link', error, stackTrace);
+    }
+  }
+
+  void _handleDeepLinkValue(Object? value) {
+    if (value is! String || value.trim().isEmpty) return;
+    final uri = Uri.tryParse(value.trim());
+    if (uri != null) _handleDeepLink(uri);
   }
 
   void _handleDeepLink(Uri uri) {
+    if (_isDuplicateDeepLink(uri)) return;
     final deepLink = AppDeepLink.parse(uri);
     if (deepLink == null) return;
 
@@ -99,11 +138,41 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
         return;
       }
 
+      if (deepLink is FriendInviteDeepLink) {
+        ref
+            .read(pendingFriendInvitePromptProvider.notifier)
+            .set(deepLink.token);
+        final currentPath = router.routeInformationProvider.value.uri.path;
+        if (_isAuthOrSetupPath(currentPath)) {
+          router.go(CalendarScreen.routePath);
+        }
+        return;
+      }
+
       router.go(routeLocation);
       return;
     }
 
     ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
     router.go(LoginScreen.routePath);
+  }
+
+  bool _isDuplicateDeepLink(Uri uri) {
+    final now = DateTime.now();
+    final lastUri = _lastHandledDeepLink;
+    final lastHandledAt = _lastHandledDeepLinkAt;
+    _lastHandledDeepLink = uri;
+    _lastHandledDeepLinkAt = now;
+    return lastUri?.toString() == uri.toString() &&
+        lastHandledAt != null &&
+        now.difference(lastHandledAt) < const Duration(seconds: 1);
+  }
+
+  bool _isAuthOrSetupPath(String path) {
+    return path == SplashScreen.routePath ||
+        path == LoginScreen.routePath ||
+        path == '/onboarding' ||
+        path == '/profile-setup' ||
+        path == '/profile-survey';
   }
 }

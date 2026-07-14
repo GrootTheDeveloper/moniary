@@ -1,4 +1,4 @@
-# Android App Links for Moniary invites
+# Mobile App Links for Moniary invites
 
 Moniary invite links should use the HTTPS host:
 
@@ -7,7 +7,7 @@ https://go.vuivethoima.id.vn/friends/invite/<token>
 https://go.vuivethoima.id.vn/groups/invite/<token>
 ```
 
-The Android app also keeps legacy custom scheme support:
+The apps also keep legacy custom scheme support:
 
 ```text
 moniary://friends/invite/<token>
@@ -34,10 +34,12 @@ Vercel project:
 grootthedevelopers-projects/go.vuivethoima.id.vn
 ```
 
-The important verification file must be reachable at exactly:
+The important verification files must be reachable at exactly:
 
 ```text
 https://go.vuivethoima.id.vn/.well-known/assetlinks.json
+https://go.vuivethoima.id.vn/.well-known/apple-app-site-association
+https://go.vuivethoima.id.vn/apple-app-site-association
 ```
 
 The fallback invite paths should also return HTML:
@@ -67,6 +69,42 @@ When Moniary is published through Google Play, add the Play Console **App
 signing certificate** SHA-256 fingerprint to the same array. Without the Play
 fingerprint, installed Play builds will open the HTTPS link in the browser
 fallback instead of directly in the app.
+
+## iOS Universal Links
+
+The Runner app target must include this entitlement:
+
+```text
+applinks:go.vuivethoima.id.vn
+```
+
+The checked-in `apple-app-site-association` files include:
+
+```text
+FLHU923LV8.com.moniary.moniary
+```
+
+If the Apple Team ID or iOS bundle ID changes, update both:
+
+- `ios/Runner/Runner.entitlements`
+- `deploy/app-links/go.vuivethoima.id.vn/apple-app-site-association`
+- `deploy/app-links/go.vuivethoima.id.vn/.well-known/apple-app-site-association`
+
+After deploying the Vercel app-link host, verify the AASA response has no
+redirect and uses JSON content:
+
+```powershell
+Invoke-WebRequest "https://go.vuivethoima.id.vn/.well-known/apple-app-site-association" -UseBasicParsing
+```
+
+On a physical iOS device or simulator with the signed app installed, opening:
+
+```text
+https://go.vuivethoima.id.vn/friends/invite/test-token
+```
+
+should launch Moniary. If Safari opens the fallback page, reinstall the app
+after the AASA file is deployed; iOS caches Universal Link association data.
 
 ## Local Android test
 
