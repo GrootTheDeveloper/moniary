@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../calendar/application/month/calendar_month_provider.dart';
 import '../../statistics/presentation/statistics_view.dart';
+import '../../transactions/application/queries/transaction_queries.dart';
 import '../application/recurring_controller.dart';
 import '../application/recurring_materialization_service.dart';
 
@@ -33,6 +34,7 @@ class _RecurringAutoPostRunnerState
     ref.invalidate(recurringControllerProvider);
     ref.invalidate(calendarMonthProvider);
     ref.invalidate(statisticsMonthProvider);
+    ref.invalidate(transactionSearchProvider);
   }
 
   @override

@@ -11,6 +11,7 @@ import '../../calendar/application/month/calendar_month_provider.dart';
 import '../../categories/application/categories_controller.dart';
 import '../../categories/domain/models/category.dart';
 import '../../statistics/presentation/statistics_view.dart';
+import '../../transactions/application/queries/transaction_queries.dart';
 import '../../wallets/application/wallets_controller.dart';
 import '../../wallets/domain/models/wallet.dart';
 import '../application/recurring_controller.dart';
@@ -147,6 +148,12 @@ class RecurringTransactionsScreen extends ConsumerWidget {
         item.id,
         deleteGeneratedTransactions: deleteGenerated,
       );
+      if (deleteGenerated) {
+        // Transactions were removed — refresh the views that show them.
+        ref.invalidate(calendarMonthProvider);
+        ref.invalidate(statisticsMonthProvider);
+        ref.invalidate(transactionSearchProvider);
+      }
     } catch (error) {
       if (!context.mounted) return;
       messenger.showSnackBar(
@@ -629,6 +636,7 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
 
     try {
       final notifier = ref.read(recurringControllerProvider.notifier);
+      var transactionsTouched = false;
       if (_editing) {
         final id = widget.item!.id;
         var applyMode = RecurringApplyMode.futureOnly;
@@ -647,6 +655,7 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
           }
           applyMode = chosen;
         }
+        transactionsTouched = applyMode != RecurringApplyMode.futureOnly;
         await notifier.updateRecurring(
           id: id,
           amount: amount,
@@ -684,11 +693,13 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
         final posted = await ref
             .read(recurringMaterializationServiceProvider)
             .run();
-        if (posted > 0) {
-          await notifier.refresh();
-          ref.invalidate(calendarMonthProvider);
-          ref.invalidate(statisticsMonthProvider);
-        }
+        if (posted > 0) transactionsTouched = true;
+      }
+      if (transactionsTouched) {
+        await notifier.refresh();
+        ref.invalidate(calendarMonthProvider);
+        ref.invalidate(statisticsMonthProvider);
+        ref.invalidate(transactionSearchProvider);
       }
       if (!mounted) return;
       Navigator.pop(context);
