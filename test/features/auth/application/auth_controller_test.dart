@@ -7,6 +7,8 @@ import 'package:moniary/features/auth/application/auth_controller.dart';
 import 'package:moniary/features/auth/data/auth_repository.dart';
 import 'package:moniary/features/auth/domain/email_account_link.dart';
 import 'package:moniary/features/auth/application/pending_email_link_controller.dart';
+import 'package:moniary/features/auth/application/pending_google_link_controller.dart';
+import 'package:moniary/features/auth/domain/google_account_link.dart';
 import 'package:moniary/features/profile/application/profile_setup_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -29,6 +31,33 @@ Session _mockSession() {
   );
 }
 
+Session _googleLinkedSession() {
+  const identity = UserIdentity(
+    id: 'google-identity-id',
+    userId: 'mock-user-id',
+    identityData: {'email': 'bee@gmail.com'},
+    identityId: 'google-subject-id',
+    provider: 'google',
+    createdAt: '2026-07-15T00:00:00Z',
+    lastSignInAt: '2026-07-15T00:00:00Z',
+  );
+  const user = User(
+    id: 'mock-user-id',
+    appMetadata: {'provider': 'google'},
+    userMetadata: {},
+    aud: 'authenticated',
+    email: 'bee@gmail.com',
+    identities: [identity],
+    createdAt: '2026-05-28T00:00:00Z',
+  );
+  return Session(
+    accessToken: 'mockAccessToken',
+    tokenType: 'bearer',
+    expiresIn: 3600,
+    user: user,
+  );
+}
+
 class FakeAuthRepository extends AuthRepository {
   FakeAuthRepository({
     this.emailSession,
@@ -38,6 +67,7 @@ class FakeAuthRepository extends AuthRepository {
     this.opensRecoveryLocally = false,
     this.emailLinkStatus = EmailAccountLinkStatus.confirmationRequired,
     this.emailLinkUsesMockProfile = false,
+    this.googleLinkStatus = GoogleAccountLinkStatus.browserOpened,
   }) : super(null, useMockData: true);
 
   final Session? emailSession;
@@ -47,11 +77,13 @@ class FakeAuthRepository extends AuthRepository {
   final bool opensRecoveryLocally;
   final EmailAccountLinkStatus emailLinkStatus;
   final bool emailLinkUsesMockProfile;
+  final GoogleAccountLinkStatus googleLinkStatus;
   var signOutCount = 0;
   var cancelPasswordRecoveryCount = 0;
   String? updatedPassword;
   String? linkedEmail;
   String? linkedEmailPassword;
+  var completeGoogleLinkCount = 0;
 
   @override
   Future<void> signOut() async {
@@ -112,6 +144,17 @@ class FakeAuthRepository extends AuthRepository {
     linkedEmailPassword = password;
     return emailLinkUsesMockProfile;
   }
+
+  @override
+  Future<GoogleAccountLinkStatus> beginGoogleAccountLink() async {
+    return googleLinkStatus;
+  }
+
+  @override
+  Future<bool> completeGoogleAccountLink() async {
+    completeGoogleLinkCount++;
+    return false;
+  }
 }
 
 void main() {
@@ -143,6 +186,23 @@ void main() {
         email: 'bee@moniary.app',
         isAnonymous: true,
       ),
+      isFalse,
+    );
+  });
+
+  test('pending Google link requires the originating user and identity', () {
+    const pending = PendingGoogleAccountLink(userId: 'anonymous-user-id');
+
+    expect(
+      pending.matches(userId: 'anonymous-user-id', hasGoogleIdentity: true),
+      isTrue,
+    );
+    expect(
+      pending.matches(userId: 'different-user-id', hasGoogleIdentity: true),
+      isFalse,
+    );
+    expect(
+      pending.matches(userId: 'anonymous-user-id', hasGoogleIdentity: false),
       isFalse,
     );
   });
@@ -475,4 +535,70 @@ void main() {
       expect(prefs.getString('pending_email_account_link_email'), isNull);
     },
   );
+
+  test(
+    'Google linking waits for callback identity before completion',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final repository = FakeAuthRepository();
+      final container = ProviderContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+        ],
+      );
+      addTearDown(container.dispose);
+      container.read(mockSessionProvider.notifier).setSession(_mockSession());
+
+      final status = await container
+          .read(authControllerProvider.notifier)
+          .beginGoogleAccountLink();
+
+      expect(status, GoogleAccountLinkStatus.browserOpened);
+      expect(
+        container.read(pendingGoogleAccountLinkProvider)?.userId,
+        'mock-user-id',
+      );
+      expect(repository.completeGoogleLinkCount, 0);
+
+      container
+          .read(mockSessionProvider.notifier)
+          .setSession(_googleLinkedSession());
+      await container
+          .read(authControllerProvider.notifier)
+          .completePendingGoogleAccountLink();
+
+      expect(repository.completeGoogleLinkCount, 1);
+      expect(container.read(pendingGoogleAccountLinkProvider), isNull);
+      expect(
+        container.read(accountLinkNoticeProvider),
+        AccountLinkNotice.googleSuccess,
+      );
+    },
+  );
+
+  test('Google linking completes immediately in mock mode', () async {
+    final repository = FakeAuthRepository(
+      googleLinkStatus: GoogleAccountLinkStatus.completed,
+    );
+    final container = ProviderContainer(
+      overrides: [
+        authRepositoryProvider.overrideWithValue(repository),
+        supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.read(mockSessionProvider.notifier).setSession(_mockSession());
+
+    final status = await container
+        .read(authControllerProvider.notifier)
+        .beginGoogleAccountLink();
+
+    expect(status, GoogleAccountLinkStatus.completed);
+    expect(
+      container.read(accountLinkNoticeProvider),
+      AccountLinkNotice.googleSuccess,
+    );
+  });
 }

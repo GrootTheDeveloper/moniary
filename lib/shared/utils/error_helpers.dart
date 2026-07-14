@@ -49,6 +49,8 @@ String userFriendlyMessage(BuildContext context, Object error) {
       case 'AUTH_LINK_EMAIL_NOT_CONFIRMED':
       case 'AUTH_LINK_EMAIL_NOT_PENDING':
         return l10n.emailLinkNotConfirmed;
+      case 'AUTH_LINK_GOOGLE_NOT_COMPLETED':
+        return l10n.authErrorGoogleLinkIncomplete;
       case 'GROUP_NAME_REQUIRED':
         return l10n.groupNameRequired;
       case 'GROUP_USER_NOT_FOUND':

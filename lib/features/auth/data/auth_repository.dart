@@ -7,6 +7,7 @@ import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../domain/email_account_link.dart';
+import '../domain/google_account_link.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final client = AppConstants.hasSupabaseConfig
@@ -126,20 +127,68 @@ class AuthRepository {
     }
   }
 
-  Future<bool> linkGoogleAccount() async {
+  Future<GoogleAccountLinkStatus> beginGoogleAccountLink() async {
     if (_useMockData) {
-      return true;
+      return GoogleAccountLinkStatus.completed;
     }
 
     try {
-      await _requiredClient.auth.linkIdentity(OAuthProvider.google);
-      // Wait a moment for identity to be linked and metadata updated
-      await Future.delayed(const Duration(seconds: 1));
-      await _initializeUserIfPossible();
-      return false;
+      final launched = await _requiredClient.auth.linkIdentity(
+        OAuthProvider.google,
+        redirectTo: kIsWeb ? null : AppConstants.supabaseLoginCallbackUrl,
+        authScreenLaunchMode: kIsWeb
+            ? LaunchMode.platformDefault
+            : LaunchMode.externalApplication,
+      );
+      if (!launched) {
+        throw const AppException(
+          'OAuth browser could not be opened',
+          code: 'AUTH_OAUTH_LAUNCH_FAILED',
+        );
+      }
+      return GoogleAccountLinkStatus.browserOpened;
+    } on AuthException catch (e, st) {
+      AppLogger.error('Starting Google account linking failed', e, st);
+      throw _mapAuthException(e);
+    } on AppException {
+      rethrow;
     } catch (e, st) {
-      AppLogger.error('Google account linking failed', e, st);
-      if (e is AppException) rethrow;
+      AppLogger.error('Starting Google account linking failed', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
+      throw const AppException('errorGeneric', code: 'AUTH_LINK_GOOGLE_FAILED');
+    }
+  }
+
+  Future<bool> completeGoogleAccountLink() async {
+    if (_useMockData) return true;
+
+    try {
+      final user = (await _requiredClient.auth.getUser()).user;
+      final hasGoogleIdentity =
+          user?.identities?.any((identity) => identity.provider == 'google') ??
+          false;
+      final email = user?.email?.trim();
+      if (!hasGoogleIdentity || email == null || email.isEmpty) {
+        throw const AppException(
+          'Google identity linking has not completed',
+          code: 'AUTH_LINK_GOOGLE_NOT_COMPLETED',
+        );
+      }
+      await _initializeUserIfPossible();
+      await _updateProfileLoginProvider(email: email, loginProvider: 'google');
+      return false;
+    } on AuthException catch (e, st) {
+      AppLogger.error('Completing Google account linking failed', e, st);
+      throw _mapAuthException(e);
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      AppLogger.error('Completing Google account linking failed', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
       throw const AppException('errorGeneric', code: 'AUTH_LINK_GOOGLE_FAILED');
     }
   }

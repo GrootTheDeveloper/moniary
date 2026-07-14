@@ -2098,6 +2098,18 @@ class AppLocalizationsVi extends AppLocalizations {
       'Hoàn tất liên kết Facebook trong trình duyệt để quay lại Moniary.';
 
   @override
+  String get profileLinkGoogleSuccess =>
+      'Đã liên kết tài khoản Google thành công.';
+
+  @override
+  String get profileLinkGoogleCompletionError =>
+      'Google đã quay lại Moniary nhưng chưa thể hoàn tất liên kết. Hãy nhấn Liên kết ngay để thử lại.';
+
+  @override
+  String get authErrorGoogleLinkIncomplete =>
+      'Hãy hoàn tất xác thực Google trước khi liên kết tài khoản.';
+
+  @override
   String profileLinkGoogleError(String error) {
     return 'Lỗi liên kết Google: $error';
   }

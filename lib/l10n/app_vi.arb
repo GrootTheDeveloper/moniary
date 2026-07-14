@@ -945,6 +945,9 @@
   "profileLinkSuccess": "Liên kết tài khoản email thành công!",
   "profileLinkGoogleBrowser": "Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.",
   "profileLinkFacebookBrowser": "Hoàn tất liên kết Facebook trong trình duyệt để quay lại Moniary.",
+  "profileLinkGoogleSuccess": "Đã liên kết tài khoản Google thành công.",
+  "profileLinkGoogleCompletionError": "Google đã quay lại Moniary nhưng chưa thể hoàn tất liên kết. Hãy nhấn Liên kết ngay để thử lại.",
+  "authErrorGoogleLinkIncomplete": "Hãy hoàn tất xác thực Google trước khi liên kết tài khoản.",
   "profileLinkGoogleError": "Lỗi liên kết Google: {error}",
   "profileLinkFacebookError": "Lỗi liên kết Facebook: {error}",
   "@profileLinkGoogleError": {

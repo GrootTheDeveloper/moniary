@@ -14,7 +14,9 @@ import '../../../shared/widgets/supabase_image.dart';
 import '../../profile/presentation/timezone_picker_screen.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/application/pending_email_link_controller.dart';
+import '../../auth/application/pending_google_link_controller.dart';
 import '../../auth/domain/email_account_link.dart';
+import '../../auth/domain/google_account_link.dart';
 import '../../auth/presentation/email_account_link_completion_screen.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
@@ -56,6 +58,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLinkingLoading = false;
+  bool _accountLinkNoticeScheduled = false;
 
   @override
   void dispose() {
@@ -108,13 +111,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
-  Future<void> _linkGoogleAccount(VoidCallback refreshSheet) async {
+  Future<GoogleAccountLinkStatus?> _linkGoogleAccount(
+    VoidCallback refreshSheet,
+  ) async {
     _setLinkingLoading(true, refreshSheet);
     final messenger = ScaffoldMessenger.of(context);
 
     try {
-      await ref.read(authControllerProvider.notifier).linkGoogleAccount();
-      if (mounted) {
+      final result = await ref
+          .read(authControllerProvider.notifier)
+          .beginGoogleAccountLink();
+      if (mounted && result == GoogleAccountLinkStatus.browserOpened) {
         messenger.showSnackBar(
           SnackBar(
             content: Text(context.l10n.profileLinkGoogleBrowser),
@@ -122,6 +129,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
+      return result;
     } catch (e, st) {
       AppLogger.error('Failed to link Google account from profile', e, st);
       if (mounted) {
@@ -136,6 +144,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
+      return null;
     } finally {
       _setLinkingLoading(false, refreshSheet);
     }
@@ -189,6 +198,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
     if (pendingLink != null && pendingLink.userId == user?.id) {
       _emailController.text = pendingLink.email;
+    }
+
+    final pendingGoogleLink = ref.read(pendingGoogleAccountLinkProvider);
+    final hasGoogleIdentity =
+        user?.identities?.any((identity) => identity.provider == 'google') ??
+        false;
+    if (pendingGoogleLink != null &&
+        user != null &&
+        pendingGoogleLink.matches(
+          userId: user.id,
+          hasGoogleIdentity: hasGoogleIdentity,
+        )) {
+      _retryPendingGoogleLink();
+      return;
     }
 
     showModalBottomSheet(
@@ -314,7 +337,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         onPressed: () async {
-                          await _linkGoogleAccount(refreshSheet);
+                          final result = await _linkGoogleAccount(refreshSheet);
+                          if (result != null && context.mounted) {
+                            Navigator.pop(context);
+                          }
                         },
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -324,7 +350,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           side: const BorderSide(color: AppTheme.outline),
                         ),
                         icon: const Icon(
-                          Icons.g_mobiledata,
+                          Icons.g_mobiledata_outlined,
                           size: 28,
                           color: Colors.white,
                         ),
@@ -383,6 +409,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final pendingFriendRequestCount = ref.watch(
       pendingIncomingFriendRequestCountProvider,
     );
+    final accountLinkNotice = ref.watch(accountLinkNoticeProvider);
+    _scheduleAccountLinkNotice(accountLinkNotice);
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -728,6 +756,37 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _retryPendingGoogleLink() async {
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .completePendingGoogleAccountLink();
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to retry pending Google link', error, stackTrace);
+    }
+  }
+
+  void _scheduleAccountLinkNotice(AccountLinkNotice? notice) {
+    if (notice == null || _accountLinkNoticeScheduled) return;
+    _accountLinkNoticeScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final isSuccess = notice == AccountLinkNotice.googleSuccess;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isSuccess
+                ? context.l10n.profileLinkGoogleSuccess
+                : context.l10n.profileLinkGoogleCompletionError,
+          ),
+          backgroundColor: isSuccess ? AppTheme.success : AppTheme.danger,
+        ),
+      );
+      ref.read(accountLinkNoticeProvider.notifier).clear();
+      _accountLinkNoticeScheduled = false;
+    });
   }
 
   void _showMoniarySetupSheet() {

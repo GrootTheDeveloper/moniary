@@ -25,6 +25,12 @@ Supabase confirms the email and returns the same user, the app opens a separate
 password step, then updates the profile provider. It never reports a completed
 email link before both phases succeed.
 
+Google identity linking is also callback-driven. The repository supplies the
+mobile redirect and checks that the external browser launched. A persisted
+pending record is bound to the originating user ID; after callback, the app
+verifies that the same user now has a Google identity before updating the
+profile and showing success. No fixed delay is used as a completion signal.
+
 ## Session and route security
 
 - Supabase auth changes are exposed as a `StreamProvider`.

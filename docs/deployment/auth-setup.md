@@ -55,6 +55,9 @@ io.supabase.moniary://reset-password
 Set Site URL to the real production web URL if the product has one. Do not use
 localhost as the production Site URL.
 
+Keep **Allow manual linking** enabled. Anonymous-to-Google account upgrades use
+Supabase identity linking and will be rejected when this setting is disabled.
+
 ## 3. Email signup
 
 Email signup is enabled and email confirmation is required. Configure hosted
@@ -102,6 +105,8 @@ Test each path from a fresh install or after signing out:
 - anonymous-to-email upgrade, email callback on the same device, password
   creation, and subsequent email/password sign-in;
 - Google browser launch, consent, callback, and authenticated home screen;
+- anonymous-to-Google linking, warm/cold callback, identity verification, and
+  the final success notification;
 - cold-start callback while the app is terminated;
 - cancelled OAuth and a second attempt, which must not fail with a stale PKCE
   verifier;

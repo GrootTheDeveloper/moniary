@@ -945,6 +945,9 @@
   "profileLinkSuccess": "Linked account successfully!",
   "profileLinkGoogleBrowser": "Complete Google linking in browser to return to Moniary.",
   "profileLinkFacebookBrowser": "Complete Facebook linking in browser to return to Moniary.",
+  "profileLinkGoogleSuccess": "Google account linked successfully.",
+  "profileLinkGoogleCompletionError": "Google returned to Moniary, but account linking could not be completed. Tap Link now to retry.",
+  "authErrorGoogleLinkIncomplete": "Complete Google authorization before linking the account.",
   "profileLinkGoogleError": "Google linking error: {error}",
   "profileLinkFacebookError": "Facebook linking error: {error}",
   "@profileLinkGoogleError": {

@@ -4,6 +4,7 @@ import 'package:moniary/core/constants/app_constants.dart';
 import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/features/auth/data/auth_repository.dart';
 import 'package:moniary/features/auth/domain/email_account_link.dart';
+import 'package:moniary/features/auth/domain/google_account_link.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -95,7 +96,7 @@ void main() {
     expect(usesMockProfile, isTrue);
   });
 
-  test('linkGoogleAccount reports mock profile update in mock mode', () async {
+  test('Google account linking completes immediately in mock mode', () async {
     if (AppConstants.hasSupabaseConfig) {
       markTestSkipped('Mock mode test requires missing Supabase config.');
       return;
@@ -104,8 +105,10 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final repository = AuthRepository(FakeSupabaseClient());
 
-    final usesMockProfile = await repository.linkGoogleAccount();
+    final status = await repository.beginGoogleAccountLink();
+    final usesMockProfile = await repository.completeGoogleAccountLink();
 
+    expect(status, GoogleAccountLinkStatus.completed);
     expect(usesMockProfile, isTrue);
   });
 

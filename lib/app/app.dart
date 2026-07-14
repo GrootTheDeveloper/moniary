@@ -16,10 +16,13 @@ import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/password_reset_screen.dart';
 import '../features/auth/application/pending_email_link_controller.dart';
+import '../features/auth/application/auth_controller.dart';
+import '../features/auth/application/pending_google_link_controller.dart';
 import '../features/auth/presentation/email_account_link_completion_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/friends/presentation/widgets/friend_invite_prompt_host.dart';
 import '../features/settings/presentation/privacy/app_lock_screen.dart';
+import '../features/settings/presentation/profile_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
 import '../l10n/gen_l10n/app_localizations.dart';
 import '../shared/utils/app_logger.dart';
@@ -44,6 +47,7 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
   Uri? _lastHandledDeepLink;
   DateTime? _lastHandledDeepLinkAt;
   ProviderSubscription? _sessionSubscription;
+  bool _isCompletingGoogleLink = false;
 
   @override
   void initState() {
@@ -92,6 +96,24 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
 
     ref.listen(authStateChangesProvider, (previous, next) {
       next.whenData((authState) {
+        final pendingLink = ref.read(pendingGoogleAccountLinkProvider);
+        final user = authState.session?.user;
+        if (pendingLink == null || user == null) return;
+        final hasGoogleIdentity =
+            user.identities?.any((identity) => identity.provider == 'google') ??
+            false;
+        if (!pendingLink.matches(
+          userId: user.id,
+          hasGoogleIdentity: hasGoogleIdentity,
+        )) {
+          return;
+        }
+        unawaited(_completePendingGoogleLink());
+      });
+    });
+
+    ref.listen(authStateChangesProvider, (previous, next) {
+      next.whenData((authState) {
         final pendingLink = ref.read(pendingEmailAccountLinkProvider);
         final user = authState.session?.user;
         if (pendingLink == null || user == null) return;
@@ -122,6 +144,26 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
       builder: (context, child) =>
           FriendInvitePromptHost(child: child ?? const SizedBox.shrink()),
     );
+  }
+
+  Future<void> _completePendingGoogleLink() async {
+    if (_isCompletingGoogleLink) return;
+    _isCompletingGoogleLink = true;
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .completePendingGoogleAccountLink();
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to complete Google account link',
+        error,
+        stackTrace,
+      );
+    } finally {
+      _isCompletingGoogleLink = false;
+    }
+    if (!mounted) return;
+    ref.read(appRouterProvider).go(ProfileScreen.routePath);
   }
 
   Future<void> _initializeDeepLinks() async {

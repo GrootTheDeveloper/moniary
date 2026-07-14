@@ -2104,6 +2104,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Complete Facebook linking in browser to return to Moniary.';
 
   @override
+  String get profileLinkGoogleSuccess => 'Google account linked successfully.';
+
+  @override
+  String get profileLinkGoogleCompletionError =>
+      'Google returned to Moniary, but account linking could not be completed. Tap Link now to retry.';
+
+  @override
+  String get authErrorGoogleLinkIncomplete =>
+      'Complete Google authorization before linking the account.';
+
+  @override
   String profileLinkGoogleError(String error) {
     return 'Google linking error: $error';
   }

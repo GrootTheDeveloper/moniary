@@ -3896,6 +3896,24 @@ abstract class AppLocalizations {
   /// **'Hoàn tất liên kết Facebook trong trình duyệt để quay lại Moniary.'**
   String get profileLinkFacebookBrowser;
 
+  /// No description provided for @profileLinkGoogleSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã liên kết tài khoản Google thành công.'**
+  String get profileLinkGoogleSuccess;
+
+  /// No description provided for @profileLinkGoogleCompletionError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Google đã quay lại Moniary nhưng chưa thể hoàn tất liên kết. Hãy nhấn Liên kết ngay để thử lại.'**
+  String get profileLinkGoogleCompletionError;
+
+  /// No description provided for @authErrorGoogleLinkIncomplete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy hoàn tất xác thực Google trước khi liên kết tài khoản.'**
+  String get authErrorGoogleLinkIncomplete;
+
   /// No description provided for @profileLinkGoogleError.
   ///
   /// In vi, this message translates to:

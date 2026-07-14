@@ -7,7 +7,9 @@ import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../data/auth_repository.dart';
 import '../domain/email_account_link.dart';
+import '../domain/google_account_link.dart';
 import 'pending_email_link_controller.dart';
+import 'pending_google_link_controller.dart';
 import '../../profile/data/profile_repository.dart';
 import '../../profile/application/profile_setup_controller.dart';
 
@@ -181,29 +183,81 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> linkGoogleAccount() async {
-    if (_isProcessing) return;
+  Future<GoogleAccountLinkStatus> beginGoogleAccountLink() async {
+    if (_isProcessing) return GoogleAccountLinkStatus.browserOpened;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      final usesMockProfile = await ref
+      final session = ref.read(currentSessionProvider);
+      if (session == null) {
+        throw const AppException('errorNotLoggedIn', code: 'AUTH_REQUIRED');
+      }
+      final result = await ref
           .read(authRepositoryProvider)
-          .linkGoogleAccount();
-
-      // Always invalidate to catch the new login_provider value
-      ref.invalidate(currentProfileProvider);
-
-      if (usesMockProfile) {
+          .beginGoogleAccountLink();
+      if (result == GoogleAccountLinkStatus.completed) {
         ref
             .read(profileRepositoryProvider)
             .setMockEmailAndProvider(
               email: 'mock-google@gmail.com',
               loginProvider: 'google',
             );
+        ref.invalidate(currentProfileProvider);
+        ref
+            .read(accountLinkNoticeProvider.notifier)
+            .show(AccountLinkNotice.googleSuccess);
+      } else {
+        await ref
+            .read(pendingGoogleAccountLinkProvider.notifier)
+            .save(session.user.id);
       }
       state = const AsyncData(null);
+      return result;
     } catch (e, st) {
-      AppLogger.error('linkGoogleAccount failed', e, st);
+      AppLogger.error('beginGoogleAccountLink failed', e, st);
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> completePendingGoogleAccountLink() async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      final pendingLink = ref.read(pendingGoogleAccountLinkProvider);
+      final session = ref.read(currentSessionProvider);
+      final hasGoogleIdentity =
+          session?.user.identities?.any(
+            (identity) => identity.provider == 'google',
+          ) ??
+          false;
+      if (pendingLink == null ||
+          session == null ||
+          !pendingLink.matches(
+            userId: session.user.id,
+            hasGoogleIdentity: hasGoogleIdentity,
+          )) {
+        throw const AppException(
+          'Google identity linking has not completed',
+          code: 'AUTH_LINK_GOOGLE_NOT_COMPLETED',
+        );
+      }
+
+      await ref.read(authRepositoryProvider).completeGoogleAccountLink();
+      await ref.read(pendingGoogleAccountLinkProvider.notifier).clear();
+      ref.invalidate(currentProfileProvider);
+      ref
+          .read(accountLinkNoticeProvider.notifier)
+          .show(AccountLinkNotice.googleSuccess);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      AppLogger.error('completePendingGoogleAccountLink failed', e, st);
+      ref
+          .read(accountLinkNoticeProvider.notifier)
+          .show(AccountLinkNotice.googleFailure);
       state = AsyncError(e, st);
       rethrow;
     } finally {

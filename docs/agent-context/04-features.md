@@ -208,7 +208,8 @@
   OAuth, anonymous sign-in, and explicit guest/mock session.
 - **Account linking**: email upgrade sends confirmation first, persists the
   originating user/email pair, and only sets a password after the callback;
-  Google identity linking is also available to an already signed-in account.
+  Google identity linking persists the originating user, verifies the returned
+  Google identity, and only then updates the profile provider.
 - **Boundary**: controllers manage Riverpod state; `AuthRepository` owns
   Supabase Auth, `initialize_user`, and profile-provider updates.
 - **Routing**: splash/post-auth decisions account for onboarding, session,
