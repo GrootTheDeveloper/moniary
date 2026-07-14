@@ -930,8 +930,13 @@ class TransactionRepository {
           .eq('user_id', uid)
           .limit(1);
       return (rows as List).isNotEmpty;
-    } catch (_) {
-      return false;
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Check transactions existence failed', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Check transactions existence failed', e, st);
+      throw const AppException('errorConnection');
     }
   }
 
