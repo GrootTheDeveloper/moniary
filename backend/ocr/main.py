@@ -1,4 +1,4 @@
-"""FastAPI entrypoint for rule-based Tesseract receipt OCR."""
+"""FastAPI entrypoint for modular server-side receipt OCR."""
 
 import base64
 import binascii
@@ -12,9 +12,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from src.extractor import extract_receipt
+from src.extractor import extract_receipt_with_metadata
 from src.models import ReceiptResponse
-from src.ocr import tesseract_info
+from src.ocr import ocr_health
 from src.validator import validate
 
 
@@ -28,7 +28,7 @@ MIME_EXTENSIONS = {
 
 app = FastAPI(
     title="Receipt OCR API",
-    description="Rule-based receipt extraction using Tesseract and regex",
+    description="Receipt extraction using a configurable OCR engine and regex",
     version="2.0.0",
 )
 app.add_middleware(
@@ -86,12 +86,14 @@ def _mime_from_payload(payload: str, filename: str) -> tuple[str, str]:
 
 
 def _process_image(image_path: Path, debug: bool) -> ReceiptResponse:
-    data, raw_text = extract_receipt(str(image_path))
-    validated, issues, confidence = validate(data)
+    extracted = extract_receipt_with_metadata(str(image_path))
+    validated, issues, confidence = validate(extracted.data)
     return ReceiptResponse(
         success=True,
         data=validated,
-        raw_text=raw_text if debug else None,
+        raw_text=extracted.raw_text if debug else None,
+        ocr_engine=extracted.ocr_engine,
+        ocr_lines=extracted.ocr_lines if debug else None,
         validation_issues=issues,
         confidence=confidence,
     )
@@ -99,25 +101,7 @@ def _process_image(image_path: Path, debug: bool) -> ReceiptResponse:
 
 @app.get("/health")
 def health() -> dict[str, object]:
-    try:
-        version, languages = tesseract_info()
-        required_languages = {"eng", "vie"}
-        return {
-            "status": "ok"
-            if required_languages.issubset(set(languages))
-            else "degraded",
-            "tesseract_version": version,
-            "languages": languages,
-            "ocr_engine": "tesseract",
-        }
-    except RuntimeError as exc:
-        return {
-            "status": "unavailable",
-            "tesseract_version": None,
-            "languages": [],
-            "ocr_engine": "tesseract",
-            "error": str(exc),
-        }
+    return ocr_health()
 
 
 @app.post("/extract", response_model=ReceiptResponse)
@@ -180,4 +164,3 @@ async def extract_base64(
     finally:
         if temp_path:
             temp_path.unlink(missing_ok=True)
-

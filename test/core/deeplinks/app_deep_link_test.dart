@@ -75,4 +75,16 @@ void main() {
 
     expect(deepLink, isNull);
   });
+
+  test('parse slash-style moniary group invite link', () {
+    final deepLink = AppDeepLink.parse(
+      Uri.parse('moniary:///groups/invite/group-token'),
+    );
+
+    expect(deepLink, isA<GroupInviteDeepLink>());
+    expect(
+      (deepLink as GroupInviteDeepLink).routeLocation,
+      '/groups/invite/group-token',
+    );
+  });
 }

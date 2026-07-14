@@ -39,3 +39,21 @@ class GroupActivity {
   final Map<String, dynamic> metadata;
   final DateTime createdAt;
 }
+
+class GroupStatsOverview {
+  const GroupStatsOverview({
+    required this.totalSpent,
+    required this.transactionCount,
+    required this.pendingTransactionCount,
+    required this.pendingSettlementCount,
+    required this.memberCount,
+    required this.currentUserBalance,
+  });
+
+  final int totalSpent;
+  final int transactionCount;
+  final int pendingTransactionCount;
+  final int pendingSettlementCount;
+  final int memberCount;
+  final int currentUserBalance;
+}

@@ -3,6 +3,12 @@
 from pydantic import BaseModel, Field
 
 
+class OCRTextLine(BaseModel):
+    text: str
+    confidence: float | None = None
+    bbox: list[list[float]] | None = None
+
+
 class ReceiptItem(BaseModel):
     name: str
     qty: float = 1.0
@@ -29,7 +35,8 @@ class ReceiptResponse(BaseModel):
     success: bool
     data: ReceiptData | None = None
     raw_text: str | None = None
+    ocr_engine: str | None = None
+    ocr_lines: list[OCRTextLine] | None = None
     validation_issues: list[str] = Field(default_factory=list)
     confidence: float = 0.0
     error: str | None = None
-

@@ -33,6 +33,8 @@ abstract interface class GroupRepository {
 
   Future<void> declineDirectInvite(String inviteId);
 
+  Future<void> declineInvite(String token);
+
   Future<void> inviteByUsername({
     required String groupId,
     required String username,
@@ -63,11 +65,86 @@ abstract interface class GroupRepository {
 
   Future<GroupSettlementOverview> fetchSettlementOverview(String groupId);
 
+  Future<GroupStatsOverview> fetchStats(String groupId);
+
+  Future<List<GroupNotification>> fetchNotifications();
+
+  Future<void> markNotificationRead(String notificationId);
+
+  Future<List<GroupActivity>> fetchActivities(String groupId);
+
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  );
+
+  Future<void> updateNotificationPreference(
+    GroupNotificationPreference preference,
+  );
+
+  Future<List<GroupReactionSummary>> fetchReactionSummaries(
+    String transactionId,
+  );
+
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  });
+
+  Future<GroupMonthlyStats> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  });
+
+  Future<GroupBudget> fetchBudget(String groupId);
+
+  Future<void> updateBudget(GroupBudget budget);
+
+  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
+    String groupId,
+  );
+
+  Future<String> buildGroupReportCsv(String groupId);
+
+  Future<List<GroupFeedItem>> fetchFeed(String groupId);
+
+  Future<List<GroupPhotoItem>> fetchPhotoAlbum(String groupId);
+
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  );
+
+  Future<void> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  });
+
+  Future<void> updateRecurringTransactionActive({
+    required String recurringTransactionId,
+    required bool isActive,
+  });
+
+  Future<GroupPublicProfile> fetchPublicProfile(String groupId);
+
+  Future<void> updatePublicProfile(GroupPublicProfile profile);
+
   Future<void> markSettlementPaid(String settlementId);
 
   Future<void> confirmSettlementReceived(String settlementId);
 
+  Future<void> disputeSettlement(String settlementId);
+
+  Future<void> resetDisputedSettlement(String settlementId);
+
   Future<void> leaveGroup(String groupId);
+
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  });
 
   Future<void> addComment({
     required String transactionId,
@@ -76,14 +153,14 @@ abstract interface class GroupRepository {
 
   Future<List<GroupReactionSummary>> fetchReactions(String transactionId);
 
-  Future<void> toggleReaction({
+  Future<void> updateComment({
+    required String commentId,
     required String transactionId,
-    required String emoji,
+    required String content,
   });
 
-  Future<List<GroupActivity>> fetchActivities(String groupId);
-
-  Future<List<GroupNotification>> fetchNotifications();
-
-  Future<void> markNotificationRead(String notificationId);
+  Future<void> deleteComment({
+    required String commentId,
+    required String transactionId,
+  });
 }
