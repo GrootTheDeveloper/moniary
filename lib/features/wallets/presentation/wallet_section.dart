@@ -306,11 +306,15 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
             const SizedBox(height: 12),
             DropdownButtonFormField<WalletType>(
               initialValue: _selectedType,
+              isExpanded: true,
               items: WalletType.values
                   .map(
                     (type) => DropdownMenuItem(
                       value: type,
-                      child: Text(_walletTypeLabel(context, type)),
+                      child: Text(
+                        _walletTypeLabel(context, type),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   )
                   .toList(),

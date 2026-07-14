@@ -17,6 +17,10 @@ import '../../domain/entities/spending_group.dart';
 import 'add_group_transaction_screen.dart';
 import 'debt_settlement_screen.dart';
 import 'group_activity_center_screen.dart';
+import 'group_budget_screen.dart';
+import 'group_notification_preferences_screen.dart';
+import 'group_photo_album_screen.dart';
+import 'group_public_profile_screen.dart';
 import 'group_transaction_detail_screen.dart';
 import 'invite_member_screen.dart';
 
@@ -109,6 +113,44 @@ class GroupDetailScreen extends ConsumerWidget {
                   Navigator.pop(sheetContext);
                   context.push(
                     GroupActivityCenterScreen.routePath,
+                    extra: groupId,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: Text(context.l10n.groupPhotoAlbumTitle),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  context.push(GroupPhotoAlbumScreen.routePath, extra: groupId);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.savings_outlined),
+                title: Text(context.l10n.groupBudgetTitle),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  context.push(GroupBudgetScreen.routePath, extra: groupId);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.notifications_outlined),
+                title: Text(context.l10n.groupNotificationPrefsTitle),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  context.push(
+                    GroupNotificationPreferencesScreen.routePath,
+                    extra: groupId,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.public_outlined),
+                title: Text(context.l10n.groupPublicProfileTitle),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  context.push(
+                    GroupPublicProfileScreen.routePath,
                     extra: groupId,
                   );
                 },

@@ -231,6 +231,42 @@ class GroupRecurringTransaction {
   final int notifyDaysBefore;
   final bool isActive;
   final DateTime createdAt;
+
+  GroupRecurringTransaction copyWith({
+    int? amount,
+    String? frequency,
+    DateTime? nextRunAt,
+    int? notifyDaysBefore,
+    bool? isActive,
+  }) {
+    return GroupRecurringTransaction(
+      id: id,
+      groupId: groupId,
+      createdBy: createdBy,
+      title: title,
+      amount: amount ?? this.amount,
+      frequency: frequency ?? this.frequency,
+      nextRunAt: nextRunAt ?? this.nextRunAt,
+      notifyDaysBefore: notifyDaysBefore ?? this.notifyDaysBefore,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt,
+    );
+  }
+
+  static GroupRecurringTransaction defaults(String groupId, String createdBy) {
+    return GroupRecurringTransaction(
+      id: '',
+      groupId: groupId,
+      createdBy: createdBy,
+      title: '',
+      amount: 0,
+      frequency: 'monthly',
+      nextRunAt: DateTime.now().add(const Duration(days: 30)),
+      notifyDaysBefore: 1,
+      isActive: true,
+      createdAt: DateTime.now(),
+    );
+  }
 }
 
 class GroupPublicProfile {

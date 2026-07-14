@@ -1960,7 +1960,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyFaqHeroBody =>
-      'Các câu hỏi thường gặp về dữ liệu cá nhân, export, xóa tài khoản và yêu cầu privacy.';
+      'Các câu hỏi thường gặp về dữ liệu cá nhân, xuất dữ liệu, xóa tài khoản và yêu cầu quyền riêng tư.';
 
   @override
   String get privacyFaqStoredDataQuestion => 'Moniary lưu những dữ liệu nào?';
@@ -1983,7 +1983,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyFaqDeletionImagesAnswer =>
-      'Luồng xóa tài khoản được thiết kế để xóa dữ liệu app và ảnh giao dịch gắn với user hiện tại.';
+      'Luồng xóa tài khoản được thiết kế để xóa dữ liệu app và ảnh giao dịch gắn với người dùng hiện tại.';
 
   @override
   String get privacyFaqDeletionFailQuestion =>
@@ -1991,14 +1991,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyFaqDeletionFailAnswer =>
-      'Bạn có thể tạo file yêu cầu xóa dữ liệu thủ công và gửi cho kênh hỗ trợ privacy.';
+      'Bạn có thể tạo file yêu cầu xóa dữ liệu thủ công và gửi cho kênh hỗ trợ quyền riêng tư.';
 
   @override
-  String get privacyFaqExportLocationQuestion => 'File export nằm ở đâu?';
+  String get privacyFaqExportLocationQuestion => 'File xuất dữ liệu nằm ở đâu?';
 
   @override
   String get privacyFaqExportLocationAnswer =>
-      'File export được lưu trong thư mục tài liệu của app trên thiết bị và có thể mở/chia sẻ từ lịch sử export.';
+      'File xuất dữ liệu được lưu trong thư mục tài liệu của app trên thiết bị và có thể mở hoặc chia sẻ từ lịch sử xuất dữ liệu.';
 
   @override
   String get privacyCenter => 'Trung tâm riêng tư';
@@ -3899,6 +3899,108 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupNotificationsEmptyState => 'Chưa có thông báo nào';
+
+  @override
+  String get groupPhotoAlbumTitle => 'Album ảnh';
+
+  @override
+  String get groupPhotoAlbumEmpty => 'Chưa có ảnh nào';
+
+  @override
+  String get groupBudgetTitle => 'Ngân sách nhóm';
+
+  @override
+  String get groupBudgetMonthlyLimit => 'Giới hạn hàng tháng';
+
+  @override
+  String get groupBudgetWarningThreshold => 'Ngưỡng cảnh báo';
+
+  @override
+  String get groupBudgetNotSet => 'Chưa đặt ngân sách';
+
+  @override
+  String get groupBudgetSet => 'Đặt ngân sách';
+
+  @override
+  String get groupBudgetEditTitle => 'Chỉnh sửa ngân sách nhóm';
+
+  @override
+  String get groupBudgetInvalidAmount => 'Số tiền phải >= 0';
+
+  @override
+  String get groupBudgetSaved => 'Đã cập nhật ngân sách';
+
+  @override
+  String get groupNotificationPrefsTitle => 'Cài đặt thông báo';
+
+  @override
+  String get groupNotificationPrefsMuteAll => 'Tắt tất cả';
+
+  @override
+  String get groupNotificationPrefsMuteAllHelp =>
+      'Tắt mọi thông báo từ nhóm này';
+
+  @override
+  String get groupNotificationPrefsTransactions => 'Giao dịch mới';
+
+  @override
+  String get groupNotificationPrefsDebts => 'Nợ và tất toán';
+
+  @override
+  String get groupNotificationPrefsInvites => 'Lời mời';
+
+  @override
+  String get groupNotificationPrefsMentions => 'Nhắc đến';
+
+  @override
+  String get groupNotificationPrefsQuietHours => 'Giờ yên lặng';
+
+  @override
+  String get groupNotificationPrefsQuietHoursHelp =>
+      'Tắt thông báo trong khoảng giờ này';
+
+  @override
+  String get groupNotificationPrefsFrom => 'Từ';
+
+  @override
+  String get groupNotificationPrefsTo => 'Đến';
+
+  @override
+  String get groupNotificationPrefsSaved => 'Đã lưu cài đặt thông báo';
+
+  @override
+  String get groupPublicProfileTitle => 'Trang công khai';
+
+  @override
+  String get groupPublicProfileComingSoon =>
+      'Chia sẻ công khai chưa hoạt động. Các cài đặt này sẽ được lưu để dùng khi tính năng ra mắt.';
+
+  @override
+  String get groupPublicProfileEnable => 'Bật trang công khai';
+
+  @override
+  String get groupPublicProfileEnableHelp =>
+      'Cho phép nhóm có một trang công khai để chia sẻ';
+
+  @override
+  String get groupPublicProfileShowStats => 'Hiển thị thống kê nhóm';
+
+  @override
+  String get groupPublicProfileShowStatsHelp =>
+      'Bao gồm thống kê chi tiêu trên trang công khai';
+
+  @override
+  String get groupPublicProfileSlug => 'Liên kết tùy chỉnh';
+
+  @override
+  String get groupPublicProfileSlugHint => 'ten-nhom-cua-toi';
+
+  @override
+  String get groupPublicProfileSlugInvalid =>
+      'Liên kết phải 3-80 ký tự: chữ thường, số, dấu gạch ngang';
+
+  @override
+  String get groupPublicProfileSaved => 'Đã cập nhật trang công khai';
 
   @override
   String get groupActivityTransactionReacted =>

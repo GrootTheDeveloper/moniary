@@ -553,5 +553,6 @@ class GroupActionController extends AsyncNotifier<void> {
     ref.invalidate(groupActivitiesProvider(groupId));
     ref.invalidate(groupFeedProvider(groupId));
     ref.invalidate(groupPhotoAlbumProvider(groupId));
+    ref.invalidate(groupBudgetProvider(groupId));
   }
 }

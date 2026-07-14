@@ -203,11 +203,15 @@ class _CreateTransactionSheetState
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
                 initialValue: _selectedWalletId,
+                isExpanded: true,
                 items: wallets
                     .map(
                       (wallet) => DropdownMenuItem(
                         value: wallet.id,
-                        child: Text(wallet.name),
+                        child: Text(
+                          wallet.name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     )
                     .toList(),
@@ -222,11 +226,15 @@ class _CreateTransactionSheetState
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
                 initialValue: _selectedCategoryId,
+                isExpanded: true,
                 items: categories
                     .map(
                       (category) => DropdownMenuItem(
                         value: category.id,
-                        child: Text(category.name),
+                        child: Text(
+                          category.name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     )
                     .toList(),

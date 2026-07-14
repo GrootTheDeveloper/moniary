@@ -3633,7 +3633,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyFaqHeroBody.
   ///
   /// In vi, this message translates to:
-  /// **'Các câu hỏi thường gặp về dữ liệu cá nhân, export, xóa tài khoản và yêu cầu privacy.'**
+  /// **'Các câu hỏi thường gặp về dữ liệu cá nhân, xuất dữ liệu, xóa tài khoản và yêu cầu quyền riêng tư.'**
   String get privacyFaqHeroBody;
 
   /// No description provided for @privacyFaqStoredDataQuestion.
@@ -3669,7 +3669,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyFaqDeletionImagesAnswer.
   ///
   /// In vi, this message translates to:
-  /// **'Luồng xóa tài khoản được thiết kế để xóa dữ liệu app và ảnh giao dịch gắn với user hiện tại.'**
+  /// **'Luồng xóa tài khoản được thiết kế để xóa dữ liệu app và ảnh giao dịch gắn với người dùng hiện tại.'**
   String get privacyFaqDeletionImagesAnswer;
 
   /// No description provided for @privacyFaqDeletionFailQuestion.
@@ -3681,19 +3681,19 @@ abstract class AppLocalizations {
   /// No description provided for @privacyFaqDeletionFailAnswer.
   ///
   /// In vi, this message translates to:
-  /// **'Bạn có thể tạo file yêu cầu xóa dữ liệu thủ công và gửi cho kênh hỗ trợ privacy.'**
+  /// **'Bạn có thể tạo file yêu cầu xóa dữ liệu thủ công và gửi cho kênh hỗ trợ quyền riêng tư.'**
   String get privacyFaqDeletionFailAnswer;
 
   /// No description provided for @privacyFaqExportLocationQuestion.
   ///
   /// In vi, this message translates to:
-  /// **'File export nằm ở đâu?'**
+  /// **'File xuất dữ liệu nằm ở đâu?'**
   String get privacyFaqExportLocationQuestion;
 
   /// No description provided for @privacyFaqExportLocationAnswer.
   ///
   /// In vi, this message translates to:
-  /// **'File export được lưu trong thư mục tài liệu của app trên thiết bị và có thể mở/chia sẻ từ lịch sử export.'**
+  /// **'File xuất dữ liệu được lưu trong thư mục tài liệu của app trên thiết bị và có thể mở hoặc chia sẻ từ lịch sử xuất dữ liệu.'**
   String get privacyFaqExportLocationAnswer;
 
   /// No description provided for @privacyCenter.
@@ -7013,6 +7013,198 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa có thông báo nào'**
   String get groupNotificationsEmptyState;
+
+  /// No description provided for @groupPhotoAlbumTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Album ảnh'**
+  String get groupPhotoAlbumTitle;
+
+  /// No description provided for @groupPhotoAlbumEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có ảnh nào'**
+  String get groupPhotoAlbumEmpty;
+
+  /// No description provided for @groupBudgetTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngân sách nhóm'**
+  String get groupBudgetTitle;
+
+  /// No description provided for @groupBudgetMonthlyLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giới hạn hàng tháng'**
+  String get groupBudgetMonthlyLimit;
+
+  /// No description provided for @groupBudgetWarningThreshold.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngưỡng cảnh báo'**
+  String get groupBudgetWarningThreshold;
+
+  /// No description provided for @groupBudgetNotSet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa đặt ngân sách'**
+  String get groupBudgetNotSet;
+
+  /// No description provided for @groupBudgetSet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt ngân sách'**
+  String get groupBudgetSet;
+
+  /// No description provided for @groupBudgetEditTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉnh sửa ngân sách nhóm'**
+  String get groupBudgetEditTitle;
+
+  /// No description provided for @groupBudgetInvalidAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền phải >= 0'**
+  String get groupBudgetInvalidAmount;
+
+  /// No description provided for @groupBudgetSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã cập nhật ngân sách'**
+  String get groupBudgetSaved;
+
+  /// No description provided for @groupNotificationPrefsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cài đặt thông báo'**
+  String get groupNotificationPrefsTitle;
+
+  /// No description provided for @groupNotificationPrefsMuteAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tắt tất cả'**
+  String get groupNotificationPrefsMuteAll;
+
+  /// No description provided for @groupNotificationPrefsMuteAllHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tắt mọi thông báo từ nhóm này'**
+  String get groupNotificationPrefsMuteAllHelp;
+
+  /// No description provided for @groupNotificationPrefsTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch mới'**
+  String get groupNotificationPrefsTransactions;
+
+  /// No description provided for @groupNotificationPrefsDebts.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nợ và tất toán'**
+  String get groupNotificationPrefsDebts;
+
+  /// No description provided for @groupNotificationPrefsInvites.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời'**
+  String get groupNotificationPrefsInvites;
+
+  /// No description provided for @groupNotificationPrefsMentions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhắc đến'**
+  String get groupNotificationPrefsMentions;
+
+  /// No description provided for @groupNotificationPrefsQuietHours.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giờ yên lặng'**
+  String get groupNotificationPrefsQuietHours;
+
+  /// No description provided for @groupNotificationPrefsQuietHoursHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tắt thông báo trong khoảng giờ này'**
+  String get groupNotificationPrefsQuietHoursHelp;
+
+  /// No description provided for @groupNotificationPrefsFrom.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ'**
+  String get groupNotificationPrefsFrom;
+
+  /// No description provided for @groupNotificationPrefsTo.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đến'**
+  String get groupNotificationPrefsTo;
+
+  /// No description provided for @groupNotificationPrefsSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu cài đặt thông báo'**
+  String get groupNotificationPrefsSaved;
+
+  /// No description provided for @groupPublicProfileTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trang công khai'**
+  String get groupPublicProfileTitle;
+
+  /// No description provided for @groupPublicProfileComingSoon.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ công khai chưa hoạt động. Các cài đặt này sẽ được lưu để dùng khi tính năng ra mắt.'**
+  String get groupPublicProfileComingSoon;
+
+  /// No description provided for @groupPublicProfileEnable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bật trang công khai'**
+  String get groupPublicProfileEnable;
+
+  /// No description provided for @groupPublicProfileEnableHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cho phép nhóm có một trang công khai để chia sẻ'**
+  String get groupPublicProfileEnableHelp;
+
+  /// No description provided for @groupPublicProfileShowStats.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiển thị thống kê nhóm'**
+  String get groupPublicProfileShowStats;
+
+  /// No description provided for @groupPublicProfileShowStatsHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bao gồm thống kê chi tiêu trên trang công khai'**
+  String get groupPublicProfileShowStatsHelp;
+
+  /// No description provided for @groupPublicProfileSlug.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết tùy chỉnh'**
+  String get groupPublicProfileSlug;
+
+  /// No description provided for @groupPublicProfileSlugHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'ten-nhom-cua-toi'**
+  String get groupPublicProfileSlugHint;
+
+  /// No description provided for @groupPublicProfileSlugInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết phải 3-80 ký tự: chữ thường, số, dấu gạch ngang'**
+  String get groupPublicProfileSlugInvalid;
+
+  /// No description provided for @groupPublicProfileSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã cập nhật trang công khai'**
+  String get groupPublicProfileSaved;
 
   /// No description provided for @groupActivityTransactionReacted.
   ///

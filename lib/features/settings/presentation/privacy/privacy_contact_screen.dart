@@ -98,13 +98,17 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: _requestTypeId,
+                  isExpanded: true,
                   decoration: InputDecoration(
                     labelText: context.l10n.privacyContactRequestType,
                   ),
                   items: privacyRequestTypes.map((type) {
                     return DropdownMenuItem(
                       value: type.id,
-                      child: Text(type.label(context)),
+                      child: Text(
+                        type.label(context),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     );
                   }).toList(),
                   onChanged: (value) {

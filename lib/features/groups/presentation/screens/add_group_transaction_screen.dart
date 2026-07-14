@@ -148,11 +148,15 @@ class _AddGroupTransactionScreenState
                         )
                         ? _categoryId
                         : null,
+                    isExpanded: true,
                     items: expenseCategories
                         .map(
                           (category) => DropdownMenuItem(
                             value: category.id,
-                            child: Text(category.name),
+                            child: Text(
+                              category.name,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         )
                         .toList(),
