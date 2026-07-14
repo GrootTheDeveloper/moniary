@@ -44,6 +44,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   context.l10n.privacyPolicyShareItem1,
                   context.l10n.privacyPolicyShareItem2,
                   context.l10n.privacyPolicyShareItem3,
+                  context.l10n.privacyPolicyShareItem4,
                 ],
               ),
               _PolicySection(

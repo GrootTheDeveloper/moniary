@@ -3051,7 +3051,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get thirdPartyServicesSubtitle =>
-      'See how the app uses Supabase, Flutter packages, and device storage.';
+      'See how the app uses Supabase, Google, Meta, Cloudflare, Flutter packages, and device storage.';
 
   @override
   String get thirdPartyHeroBody =>
@@ -3060,6 +3060,27 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get thirdPartySupabaseDescription =>
       'Used for sign-in, database, transaction image storage, and the account-deletion edge function.';
+
+  @override
+  String get thirdPartyGoogleTitle => 'Google';
+
+  @override
+  String get thirdPartyGoogleDescription =>
+      'Used only when you choose Google sign-in. Google may provide your account ID, email, name, and avatar under the permissions you approve.';
+
+  @override
+  String get thirdPartyMetaTitle => 'Facebook (Meta)';
+
+  @override
+  String get thirdPartyMetaDescription =>
+      'Used only when you choose Facebook sign-in. Meta may provide your account ID, email, name, and avatar under the permissions you approve.';
+
+  @override
+  String get thirdPartyCloudflareTitle => 'Cloudflare Turnstile';
+
+  @override
+  String get thirdPartyCloudflareDescription =>
+      'Used to prevent automated abuse of guest sign-in by processing the security signals needed to complete a CAPTCHA challenge.';
 
   @override
   String get thirdPartyFlutterDescription =>
@@ -3510,7 +3531,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dataSafetyPersonalInfoStatus =>
-      'Yes, when logging in with email or Google';
+      'Yes, when logging in with email, Google, or Facebook (Meta)';
 
   @override
   String get dataSafetyPersonalInfoDesc =>
@@ -3713,6 +3734,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Moniary does not automatically read location, contacts, SMS, personal email, or bank data.';
 
   @override
+  String get privacyPolicyShareItem4 =>
+      'When you choose Google or Facebook (Meta) sign-in, that provider and Supabase process authentication data. Cloudflare Turnstile processes security signals for protected guest sign-in.';
+
+  @override
   String get privacyPolicyDeleteTitle => 'Data deletion';
 
   @override
@@ -3732,7 +3757,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySafetyItem1 =>
-      'Personal info: collected only when users log in with email or Google.';
+      'Personal info: processed when users log in with email, Google, or Facebook (Meta).';
 
   @override
   String get privacyPolicySafetyItem2 =>

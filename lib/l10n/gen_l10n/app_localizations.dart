@@ -5577,7 +5577,7 @@ abstract class AppLocalizations {
   /// No description provided for @thirdPartyServicesSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xem app đang dùng Supabase, Flutter/package và bộ nhớ thiết bị như thế nào.'**
+  /// **'Xem app đang dùng Supabase, Google, Meta, Cloudflare, Flutter/package và bộ nhớ thiết bị như thế nào.'**
   String get thirdPartyServicesSubtitle;
 
   /// No description provided for @thirdPartyHeroBody.
@@ -5591,6 +5591,42 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Được dùng cho đăng nhập, cơ sở dữ liệu, storage ảnh giao dịch và edge function xóa tài khoản.'**
   String get thirdPartySupabaseDescription;
+
+  /// No description provided for @thirdPartyGoogleTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Google'**
+  String get thirdPartyGoogleTitle;
+
+  /// No description provided for @thirdPartyGoogleDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ dùng khi bạn chọn đăng nhập bằng Google. Google có thể cung cấp mã tài khoản, email, tên và ảnh đại diện theo các quyền bạn chấp thuận.'**
+  String get thirdPartyGoogleDescription;
+
+  /// No description provided for @thirdPartyMetaTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Facebook (Meta)'**
+  String get thirdPartyMetaTitle;
+
+  /// No description provided for @thirdPartyMetaDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ dùng khi bạn chọn đăng nhập bằng Facebook. Meta có thể cung cấp mã tài khoản, email, tên và ảnh đại diện theo các quyền bạn chấp thuận.'**
+  String get thirdPartyMetaDescription;
+
+  /// No description provided for @thirdPartyCloudflareTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cloudflare Turnstile'**
+  String get thirdPartyCloudflareTitle;
+
+  /// No description provided for @thirdPartyCloudflareDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng để ngăn lạm dụng tự động đối với đăng nhập khách bằng cách xử lý các tín hiệu bảo mật cần thiết cho thử thách CAPTCHA.'**
+  String get thirdPartyCloudflareDescription;
 
   /// No description provided for @thirdPartyFlutterDescription.
   ///
@@ -6345,7 +6381,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataSafetyPersonalInfoStatus.
   ///
   /// In vi, this message translates to:
-  /// **'Có, khi đăng nhập email hoặc Google'**
+  /// **'Có, khi đăng nhập bằng email, Google hoặc Facebook (Meta)'**
   String get dataSafetyPersonalInfoStatus;
 
   /// No description provided for @dataSafetyPersonalInfoDesc.
@@ -6690,6 +6726,12 @@ abstract class AppLocalizations {
   /// **'Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.'**
   String get privacyPolicyShareItem3;
 
+  /// No description provided for @privacyPolicyShareItem4.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khi bạn chọn đăng nhập bằng Google hoặc Facebook (Meta), nhà cung cấp đó và Supabase sẽ xử lý dữ liệu xác thực. Cloudflare Turnstile xử lý tín hiệu bảo mật cho đăng nhập khách được bảo vệ.'**
+  String get privacyPolicyShareItem4;
+
   /// No description provided for @privacyPolicyDeleteTitle.
   ///
   /// In vi, this message translates to:
@@ -6723,7 +6765,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySafetyItem1.
   ///
   /// In vi, this message translates to:
-  /// **'Thông tin cá nhân: chỉ thu thập khi người dùng đăng nhập bằng email hoặc Google.'**
+  /// **'Thông tin cá nhân: được xử lý khi người dùng đăng nhập bằng email, Google hoặc Facebook (Meta).'**
   String get privacyPolicySafetyItem1;
 
   /// No description provided for @privacyPolicySafetyItem2.

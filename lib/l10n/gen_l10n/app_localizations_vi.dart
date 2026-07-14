@@ -3046,7 +3046,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get thirdPartyServicesSubtitle =>
-      'Xem app đang dùng Supabase, Flutter/package và bộ nhớ thiết bị như thế nào.';
+      'Xem app đang dùng Supabase, Google, Meta, Cloudflare, Flutter/package và bộ nhớ thiết bị như thế nào.';
 
   @override
   String get thirdPartyHeroBody =>
@@ -3055,6 +3055,27 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get thirdPartySupabaseDescription =>
       'Được dùng cho đăng nhập, cơ sở dữ liệu, storage ảnh giao dịch và edge function xóa tài khoản.';
+
+  @override
+  String get thirdPartyGoogleTitle => 'Google';
+
+  @override
+  String get thirdPartyGoogleDescription =>
+      'Chỉ dùng khi bạn chọn đăng nhập bằng Google. Google có thể cung cấp mã tài khoản, email, tên và ảnh đại diện theo các quyền bạn chấp thuận.';
+
+  @override
+  String get thirdPartyMetaTitle => 'Facebook (Meta)';
+
+  @override
+  String get thirdPartyMetaDescription =>
+      'Chỉ dùng khi bạn chọn đăng nhập bằng Facebook. Meta có thể cung cấp mã tài khoản, email, tên và ảnh đại diện theo các quyền bạn chấp thuận.';
+
+  @override
+  String get thirdPartyCloudflareTitle => 'Cloudflare Turnstile';
+
+  @override
+  String get thirdPartyCloudflareDescription =>
+      'Dùng để ngăn lạm dụng tự động đối với đăng nhập khách bằng cách xử lý các tín hiệu bảo mật cần thiết cho thử thách CAPTCHA.';
 
   @override
   String get thirdPartyFlutterDescription =>
@@ -3504,7 +3525,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get dataSafetyPersonalInfoStatus =>
-      'Có, khi đăng nhập email hoặc Google';
+      'Có, khi đăng nhập bằng email, Google hoặc Facebook (Meta)';
 
   @override
   String get dataSafetyPersonalInfoDesc =>
@@ -3706,6 +3727,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.';
 
   @override
+  String get privacyPolicyShareItem4 =>
+      'Khi bạn chọn đăng nhập bằng Google hoặc Facebook (Meta), nhà cung cấp đó và Supabase sẽ xử lý dữ liệu xác thực. Cloudflare Turnstile xử lý tín hiệu bảo mật cho đăng nhập khách được bảo vệ.';
+
+  @override
   String get privacyPolicyDeleteTitle => 'Xóa dữ liệu';
 
   @override
@@ -3725,7 +3750,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyPolicySafetyItem1 =>
-      'Thông tin cá nhân: chỉ thu thập khi người dùng đăng nhập bằng email hoặc Google.';
+      'Thông tin cá nhân: được xử lý khi người dùng đăng nhập bằng email, Google hoặc Facebook (Meta).';
 
   @override
   String get privacyPolicySafetyItem2 =>

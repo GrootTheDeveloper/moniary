@@ -24,6 +24,21 @@ class ThirdPartyServicesScreen extends StatelessWidget {
               description: context.l10n.thirdPartySupabaseDescription,
             ),
             _ServiceItem(
+              icon: Icons.g_mobiledata_outlined,
+              title: context.l10n.thirdPartyGoogleTitle,
+              description: context.l10n.thirdPartyGoogleDescription,
+            ),
+            _ServiceItem(
+              icon: Icons.facebook_outlined,
+              title: context.l10n.thirdPartyMetaTitle,
+              description: context.l10n.thirdPartyMetaDescription,
+            ),
+            _ServiceItem(
+              icon: Icons.verified_user_outlined,
+              title: context.l10n.thirdPartyCloudflareTitle,
+              description: context.l10n.thirdPartyCloudflareDescription,
+            ),
+            _ServiceItem(
               icon: Icons.flutter_dash_outlined,
               title: 'Flutter',
               description: context.l10n.thirdPartyFlutterDescription,
