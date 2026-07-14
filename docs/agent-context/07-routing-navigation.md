@@ -79,7 +79,7 @@ floating global action that pushes `/assistant`; it is not a fifth shell tab.
 | `/assistant/questions` | `AssistantQuestionLibraryScreen` | Fixed question catalog |
 | `/budgets` | `BudgetScreen` | Monthly budgets |
 | `/budgets/category` | `BudgetCategoryDetailScreen` | `BudgetCategoryDetailArgs`; falls back to budgets |
-| `/journal/recap` | `MonthlyRecapScreen` | Optional month; defaults to current month |
+| `/journal/recap` | `MonthlyRecapScreen` | Money Story; optional month defaults to current month |
 | `/journal/export` | `JournalExportScreen` | `MonthlyRecap`; falls back to current recap |
 | `/journal/collections` | `JournalCollectionsScreen` | Collection list/create |
 | `/journal/collection` | `JournalCollectionDetailScreen` | Collection ID; falls back to list |

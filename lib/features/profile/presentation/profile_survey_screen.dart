@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/deeplinks/pending_deep_link_controller.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../shared/brand/brand_assets.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/widgets/moniary_design.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
@@ -249,7 +250,7 @@ class _WelcomeStep extends StatelessWidget {
               ],
             ),
             child: Image.asset(
-              'logo.png',
+              BrandAssets.appLogo,
               semanticLabel: context.l10n.loginTitle,
             ),
           ),

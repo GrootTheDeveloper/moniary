@@ -684,8 +684,8 @@ Vui lòng chọn người đã trả tiền.
 
 Example:
 
-Total amount: 1200000  
-Members: A, B, C, D  
+Total amount: 1200000
+Members: A, B, C, D
 A paid all.
 
 | User | Share | Paid | Balance |
@@ -736,8 +736,8 @@ Tổng số tiền đã trả chưa khớp với tổng giá trị giao dịch.
 
 Example:
 
-Total amount: 1200000  
-A paid 700000  
+Total amount: 1200000
+A paid 700000
 B paid 500000
 
 | User | Share | Paid | Balance |
@@ -903,7 +903,7 @@ UI behavior:
 
 Example:
 
-Total: 195000  
+Total: 195000
 A paid all.
 
 | User | Share | Paid | Balance |
@@ -939,7 +939,7 @@ UI behavior:
 
 Example:
 
-Total: 300000  
+Total: 300000
 Used amounts:
 
 | User | Share |

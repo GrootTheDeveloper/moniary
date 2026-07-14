@@ -1202,6 +1202,18 @@ abstract class AppLocalizations {
   /// **'Thêm khoản cho ngày này'**
   String get transactionAddForDay;
 
+  /// No description provided for @transactionDayGridView.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh'**
+  String get transactionDayGridView;
+
+  /// No description provided for @transactionDayListView.
+  ///
+  /// In vi, this message translates to:
+  /// **'Danh sách'**
+  String get transactionDayListView;
+
   /// No description provided for @transactionLoadDetailError.
   ///
   /// In vi, this message translates to:
@@ -8711,14 +8723,26 @@ abstract class AppLocalizations {
   /// No description provided for @journalRecapTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tổng kết tháng'**
+  /// **'Money Story'**
   String get journalRecapTitle;
 
   /// No description provided for @journalRecapMonth.
   ///
   /// In vi, this message translates to:
-  /// **'Tổng kết {month}'**
+  /// **'Money Story {month}'**
   String journalRecapMonth(String month);
+
+  /// No description provided for @journalMoneyStoryMonth.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng {month}'**
+  String journalMoneyStoryMonth(String month);
+
+  /// No description provided for @journalMoneyStoryExpenseLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng chi tháng này'**
+  String get journalMoneyStoryExpenseLabel;
 
   /// No description provided for @journalRecordedCount.
   ///
@@ -8771,13 +8795,139 @@ abstract class AppLocalizations {
   /// No description provided for @journalShareRecap.
   ///
   /// In vi, this message translates to:
-  /// **'Chia sẻ tổng kết'**
+  /// **'Chia sẻ story'**
   String get journalShareRecap;
+
+  /// No description provided for @journalMoneyStoryCashFlow.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dòng tiền tháng này'**
+  String get journalMoneyStoryCashFlow;
+
+  /// No description provided for @journalMoneyStoryIncome.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thu vào'**
+  String get journalMoneyStoryIncome;
+
+  /// No description provided for @journalMoneyStoryExpense.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi ra'**
+  String get journalMoneyStoryExpense;
+
+  /// No description provided for @journalMoneyStoryNet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Còn lại'**
+  String get journalMoneyStoryNet;
+
+  /// No description provided for @journalMoneyStoryAverageDay.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trung bình / ngày ghi'**
+  String get journalMoneyStoryAverageDay;
+
+  /// No description provided for @journalMoneyStoryActiveDays.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ngày có ghi chép'**
+  String journalMoneyStoryActiveDays(int count);
+
+  /// No description provided for @journalMoneyStoryCategoryShare.
+  ///
+  /// In vi, this message translates to:
+  /// **'{category} chiếm {percent}%'**
+  String journalMoneyStoryCategoryShare(String category, int percent);
+
+  /// No description provided for @journalMoneyStoryCategoryPercent.
+  ///
+  /// In vi, this message translates to:
+  /// **'{percent}%'**
+  String journalMoneyStoryCategoryPercent(int percent);
+
+  /// No description provided for @journalMoneyStoryHighestDayEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có ngày chi nổi bật trong tháng này.'**
+  String get journalMoneyStoryHighestDayEmpty;
+
+  /// No description provided for @journalMoneyStoryHighestDayTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} khoản trong ngày này'**
+  String journalMoneyStoryHighestDayTransactions(int count);
+
+  /// No description provided for @journalMoneyStoryInsightsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Những điều tháng này kể lại'**
+  String get journalMoneyStoryInsightsTitle;
+
+  /// No description provided for @journalMoneyStoryInsightSpendingDown.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chi ít hơn {percent}% so với tháng trước.'**
+  String journalMoneyStoryInsightSpendingDown(int percent);
+
+  /// No description provided for @journalMoneyStoryInsightSpendingUp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu tăng {percent}% so với tháng trước.'**
+  String journalMoneyStoryInsightSpendingUp(int percent);
+
+  /// No description provided for @journalMoneyStoryInsightTopCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'{category} là điểm rơi lớn nhất, chiếm {percent}% tổng chi.'**
+  String journalMoneyStoryInsightTopCategory(String category, int percent);
+
+  /// No description provided for @journalMoneyStoryInsightWeekend.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cuối tuần chiếm {percent}% chi tiêu của tháng.'**
+  String journalMoneyStoryInsightWeekend(int percent);
+
+  /// No description provided for @journalMoneyStoryInsightRecording.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn ghi chép trong {count} ngày, đủ đều để nhìn ra thói quen.'**
+  String journalMoneyStoryInsightRecording(int count);
+
+  /// No description provided for @journalMoneyStoryInsightQuiet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng này còn khá yên ắng. Ghi thêm vài khoản để story kể được nhiều hơn.'**
+  String get journalMoneyStoryInsightQuiet;
+
+  /// No description provided for @journalMoneyStoryShareTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sẵn sàng lưu lại tháng này'**
+  String get journalMoneyStoryShareTitle;
+
+  /// No description provided for @journalMoneyStoryShareBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo poster gọn đẹp để chia sẻ hoặc giữ riêng trong máy.'**
+  String get journalMoneyStoryShareBody;
+
+  /// No description provided for @journalMoneyStoryNoTransactionsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Story tháng này còn trống'**
+  String get journalMoneyStoryNoTransactionsTitle;
+
+  /// No description provided for @journalMoneyStoryNoTransactionsBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi vài khoản chi để Moniary kể lại tháng của bạn bằng số liệu và hình ảnh.'**
+  String get journalMoneyStoryNoTransactionsBody;
 
   /// No description provided for @journalExportTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xuất nhật ký'**
+  /// **'Xuất Money Story'**
   String get journalExportTitle;
 
   /// No description provided for @journalExportPost.
@@ -8795,13 +8945,13 @@ abstract class AppLocalizations {
   /// No description provided for @journalExportBrand.
   ///
   /// In vi, this message translates to:
-  /// **'Moniary · Nhật ký chi tiêu'**
+  /// **'Moniary · Money Story'**
   String get journalExportBrand;
 
   /// No description provided for @journalExportSaved.
   ///
   /// In vi, this message translates to:
-  /// **'Đã tạo ảnh nhật ký để bạn chia sẻ.'**
+  /// **'Đã tạo ảnh Money Story để bạn chia sẻ.'**
   String get journalExportSaved;
 
   /// No description provided for @journalExportWholeMonth.

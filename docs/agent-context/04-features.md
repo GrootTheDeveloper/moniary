@@ -43,13 +43,15 @@
 
 ## Journal
 
-- **Purpose**: monthly recap, recording streak, custom transaction collections,
-  and shareable/savable recap images.
+- **Purpose**: Money Story monthly recap, recording streak, custom transaction
+  collections, and shareable/savable recap images.
 - **Layers**: journal query/action providers, `JournalRepository`, repository
   implementation, and Supabase/mock collection data sources.
-- **Data**: recaps and streaks derive from transactions. Collections use
-  `journal_collections` and `journal_collection_transactions` in Supabase
-  mode and process-local records in mock mode.
+- **Data**: recaps and streaks derive from transactions. Money Story combines
+  income, expenses, net amount, active recording days, top categories, highest
+  spend day, and deterministic insight types derived in the repository.
+  Collections use `journal_collections` and `journal_collection_transactions`
+  in Supabase mode and process-local records in mock mode.
 - **Routes**: `/journal/recap`, `/journal/export`,
   `/journal/collections`, `/journal/collection`, and `/journal/streak`.
 

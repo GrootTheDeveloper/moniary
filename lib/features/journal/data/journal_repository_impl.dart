@@ -50,11 +50,18 @@ class JournalRepositoryImpl implements JournalRepository {
       _transactions.fetchTransactionsForMonth(previousMonth),
     ]);
     final transactions = results[0];
+    final previousTransactions = results[1];
     final expenses = transactions
         .where((transaction) => transaction.isExpense)
         .toList();
-    final previousExpense = results[1]
+    final previousExpense = previousTransactions
         .where((transaction) => transaction.isExpense)
+        .fold<double>(0, (sum, transaction) => sum + transaction.amount);
+    final totalIncome = transactions
+        .where((transaction) => transaction.isIncome)
+        .fold<double>(0, (sum, transaction) => sum + transaction.amount);
+    final previousIncome = previousTransactions
+        .where((transaction) => transaction.isIncome)
         .fold<double>(0, (sum, transaction) => sum + transaction.amount);
     final totalExpense = expenses.fold<double>(
       0,
@@ -62,7 +69,16 @@ class JournalRepositoryImpl implements JournalRepository {
     );
 
     final perDay = <DateTime, double>{};
+    final recordedDays = <DateTime>{
+      for (final transaction in transactions)
+        DateTime(
+          transaction.transactionDate.year,
+          transaction.transactionDate.month,
+          transaction.transactionDate.day,
+        ),
+    };
     final perCategory = <String, JournalCategoryTotal>{};
+    var weekendExpense = 0.0;
     for (final transaction in expenses) {
       final day = DateTime(
         transaction.transactionDate.year,
@@ -70,6 +86,10 @@ class JournalRepositoryImpl implements JournalRepository {
         transaction.transactionDate.day,
       );
       perDay[day] = (perDay[day] ?? 0) + transaction.amount;
+      if (transaction.transactionDate.weekday == DateTime.saturday ||
+          transaction.transactionDate.weekday == DateTime.sunday) {
+        weekendExpense += transaction.amount;
+      }
       final current = perCategory[transaction.categoryName];
       perCategory[transaction.categoryName] = JournalCategoryTotal(
         name: transaction.categoryName,
@@ -82,16 +102,102 @@ class JournalRepositoryImpl implements JournalRepository {
         : perDay.entries.reduce((a, b) => a.value >= b.value ? a : b);
     final topCategories = perCategory.values.toList()
       ..sort((a, b) => b.amount.compareTo(a.amount));
+    final insights = _buildInsights(
+      totalExpense: totalExpense,
+      previousExpense: previousExpense,
+      topCategories: topCategories,
+      weekendExpense: weekendExpense,
+      activeRecordingDays: recordedDays.length,
+    );
 
     return MonthlyRecap(
       month: normalizedMonth,
       transactions: transactions,
       totalExpense: totalExpense,
+      totalIncome: totalIncome,
       previousMonthExpense: previousExpense,
+      previousMonthIncome: previousIncome,
       highestSpendDate: highestDay?.key,
       highestDayAmount: highestDay?.value ?? 0,
+      activeRecordingDays: recordedDays.length,
       topCategories: topCategories.take(3).toList(),
+      insights: insights,
     );
+  }
+
+  List<MonthlyRecapInsight> _buildInsights({
+    required double totalExpense,
+    required double previousExpense,
+    required List<JournalCategoryTotal> topCategories,
+    required double weekendExpense,
+    required int activeRecordingDays,
+  }) {
+    final insights = <MonthlyRecapInsight>[];
+
+    if (previousExpense > 0 && totalExpense > 0) {
+      final change = (totalExpense - previousExpense) / previousExpense;
+      if (change <= -0.05) {
+        insights.add(
+          MonthlyRecapInsight(
+            type: MonthlyRecapInsightType.spendingDown,
+            value: change.abs(),
+          ),
+        );
+      } else if (change >= 0.05) {
+        insights.add(
+          MonthlyRecapInsight(
+            type: MonthlyRecapInsightType.spendingUp,
+            value: change,
+          ),
+        );
+      }
+    }
+
+    if (totalExpense > 0 && topCategories.isNotEmpty) {
+      final topCategory = topCategories.first;
+      final share = topCategory.amount / totalExpense;
+      if (share >= 0.25) {
+        insights.add(
+          MonthlyRecapInsight(
+            type: MonthlyRecapInsightType.topCategoryShare,
+            value: share,
+            categoryName: topCategory.name,
+          ),
+        );
+      }
+    }
+
+    if (totalExpense > 0) {
+      final weekendShare = weekendExpense / totalExpense;
+      if (weekendShare >= 0.35) {
+        insights.add(
+          MonthlyRecapInsight(
+            type: MonthlyRecapInsightType.weekendHeavy,
+            value: weekendShare,
+          ),
+        );
+      }
+    }
+
+    if (activeRecordingDays >= 12) {
+      insights.add(
+        MonthlyRecapInsight(
+          type: MonthlyRecapInsightType.recordingRhythm,
+          value: activeRecordingDays.toDouble(),
+        ),
+      );
+    }
+
+    if (insights.isEmpty) {
+      insights.add(
+        MonthlyRecapInsight(
+          type: MonthlyRecapInsightType.quietMonth,
+          value: totalExpense,
+        ),
+      );
+    }
+
+    return insights.take(4).toList();
   }
 
   @override

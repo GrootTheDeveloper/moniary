@@ -18,7 +18,7 @@
 
 | Model | Path | Notes |
 |---|---|---|
-| `MonthlyRecap` | `lib/features/journal/domain/journal_models.dart` | Current/previous expense comparison, highest day, and top categories |
+| `MonthlyRecap`, `MonthlyRecapInsight` | `lib/features/journal/domain/journal_models.dart` | Money Story metrics for income, expense, net, active days, highest day, top categories, and deterministic insight types |
 | `RecordingStreak` | same file | Current/longest streak plus recorded dates |
 | `JournalCollectionSummary` | same file | Collection metadata hydrated with transaction entries |
 | `AssistantAccess` | `lib/features/assistant/domain/assistant_models.dart` | Locally persisted consent/access flags |

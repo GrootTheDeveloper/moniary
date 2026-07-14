@@ -10,7 +10,6 @@ import '../../../shared/utils/app_logger.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/l10n_model_extensions.dart';
 import '../../transactions/domain/models/transaction_mutation_result.dart';
-import '../../transactions/presentation/camera/camera_screen.dart';
 import '../application/scanning_controller.dart';
 import 'ocr_review_screen.dart';
 
@@ -165,8 +164,10 @@ class _ScanningScreenState extends ConsumerState<ScanningScreen> {
   }
 
   Future<void> _openManualEntry(BuildContext context) async {
+    final imagePath = ref.read(scanningControllerProvider).imagePath;
     final mutation = await context.push<TransactionMutationResult>(
-      CameraScreen.routePath,
+      '/transaction-form',
+      extra: imagePath == null ? null : {'imagePath': imagePath},
     );
     if (mutation != null && context.mounted) {
       context.pop(mutation);
