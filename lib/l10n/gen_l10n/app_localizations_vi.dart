@@ -5436,4 +5436,21 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get mascotFunQuote5 => 'Bấm vào heo để nhận lời khuyên nè! 🐷';
+
+  @override
+  String mascotStreakPraise(int days) {
+    return 'Bạn đã ghi chép liên tục $days ngày rồi! Siêu quá heo ơi! 🐷🔥';
+  }
+
+  @override
+  String get widgetTotalBalance => 'Số dư tổng';
+
+  @override
+  String get widgetTodaySpending => 'Chi tiêu hôm nay';
+
+  @override
+  String get widgetQuickAdd => 'Ghi chép';
+
+  @override
+  String get widgetScanReceipt => 'Quét ảnh';
 }

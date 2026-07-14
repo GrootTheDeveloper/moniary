@@ -3,7 +3,15 @@ import SwiftUI
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), balance: "12,500,000 ₫", spend: "250,000 ₫")
+        SimpleEntry(
+            date: Date(),
+            balance: "12,500,000 ₫",
+            spend: "250,000 ₫",
+            labelBalance: "Số dư tổng",
+            labelSpend: "Chi tiêu hôm nay",
+            labelQuickAdd: "Ghi chép",
+            labelScanReceipt: "Quét ảnh"
+        )
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
@@ -21,7 +29,19 @@ struct Provider: TimelineProvider {
         let defaults = UserDefaults(suiteName: "group.com.moniary")
         let balance = defaults?.string(forKey: "total_balance") ?? "0 ₫"
         let spend = defaults?.string(forKey: "today_spending") ?? "0 ₫"
-        return SimpleEntry(date: Date(), balance: balance, spend: spend)
+        let labelBalance = defaults?.string(forKey: "total_balance_label") ?? "Số dư tổng"
+        let labelSpend = defaults?.string(forKey: "today_spending_label") ?? "Chi tiêu hôm nay"
+        let labelQuickAdd = defaults?.string(forKey: "quick_add_label") ?? "Ghi chép"
+        let labelScanReceipt = defaults?.string(forKey: "scan_receipt_label") ?? "Quét ảnh"
+        return SimpleEntry(
+            date: Date(),
+            balance: balance,
+            spend: spend,
+            labelBalance: labelBalance,
+            labelSpend: labelSpend,
+            labelQuickAdd: labelQuickAdd,
+            labelScanReceipt: labelScanReceipt
+        )
     }
 }
 
@@ -29,6 +49,10 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
     let balance: String
     let spend: String
+    let labelBalance: String
+    let labelSpend: String
+    let labelQuickAdd: String
+    let labelScanReceipt: String
 }
 
 struct MoniaryWidgetEntryView : View {
@@ -49,7 +73,7 @@ struct MoniaryWidgetEntryView : View {
             .padding(.bottom, 12)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("Số dư tổng")
+                Text(entry.labelBalance)
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundColor(.gray)
                 Text(entry.balance)
@@ -61,7 +85,7 @@ struct MoniaryWidgetEntryView : View {
             .padding(.bottom, 8)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("Chi tiêu hôm nay")
+                Text(entry.labelSpend)
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundColor(.gray)
                 Text(entry.spend)
@@ -78,7 +102,7 @@ struct MoniaryWidgetEntryView : View {
                         HStack(spacing: 4) {
                             Image(systemName: "plus.circle.fill")
                                 .imageScale(.small)
-                            Text("Ghi chép")
+                            Text(entry.labelQuickAdd)
                                 .font(.system(size: 11, weight: .bold))
                         }
                         .frame(maxWidth: .infinity)
@@ -92,7 +116,7 @@ struct MoniaryWidgetEntryView : View {
                         HStack(spacing: 4) {
                             Image(systemName: "camera.fill")
                                 .imageScale(.small)
-                            Text("Quét ảnh")
+                            Text(entry.labelScanReceipt)
                                 .font(.system(size: 11, weight: .bold))
                         }
                         .frame(maxWidth: .infinity)
@@ -125,11 +149,27 @@ struct MoniaryWidget: Widget {
 #Preview(as: .systemSmall) {
     MoniaryWidget()
 } timeline: {
-    SimpleEntry(date: .now, balance: "12,500,000 ₫", spend: "250,000 ₫")
+    SimpleEntry(
+        date: .now,
+        balance: "12,500,000 ₫",
+        spend: "250,000 ₫",
+        labelBalance: "Số dư tổng",
+        labelSpend: "Chi tiêu hôm nay",
+        labelQuickAdd: "Ghi chép",
+        labelScanReceipt: "Quét ảnh"
+    )
 }
 
 #Preview(as: .systemMedium) {
     MoniaryWidget()
 } timeline: {
-    SimpleEntry(date: .now, balance: "12,500,000 ₫", spend: "250,000 ₫")
+    SimpleEntry(
+        date: .now,
+        balance: "12,500,000 ₫",
+        spend: "250,000 ₫",
+        labelBalance: "Số dư tổng",
+        labelSpend: "Chi tiêu hôm nay",
+        labelQuickAdd: "Ghi chép",
+        labelScanReceipt: "Quét ảnh"
+    )
 }

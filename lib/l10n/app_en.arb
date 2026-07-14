@@ -2247,5 +2247,15 @@
   "mascotFunQuote2": "Listen to piggy, don't buy that! 🐽",
   "mascotFunQuote3": "A penny saved is a penny earned! 💰",
   "mascotFunQuote4": "Feed the piggy bank and go on a trip! 🐖",
-  "mascotFunQuote5": "Tap the pig for some advice! 🐷"
+  "mascotFunQuote5": "Tap the pig for some advice! 🐷",
+  "mascotStreakPraise": "You've logged for {days} days in a row! You're on fire! 🐷🔥",
+  "@mascotStreakPraise": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "widgetTotalBalance": "Total Balance",
+  "widgetTodaySpending": "Today's Spending",
+  "widgetQuickAdd": "Quick Add",
+  "widgetScanReceipt": "Scan Receipt"
 }

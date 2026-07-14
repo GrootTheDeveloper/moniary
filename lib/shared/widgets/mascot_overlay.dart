@@ -15,7 +15,8 @@ const _mascotHeight = 42.0;
 const _mascotAspectRatio = 353 / 291;
 const _walkDuration = Duration(seconds: 6);
 const _frameDuration = Duration(milliseconds: 130);
-const _baseBottom = 0.0; // aligned with the -10.0 bottom offset in the shell stack
+const _baseBottom =
+    0.0; // aligned with the -10.0 bottom offset in the shell stack
 const _buttonWidth = 68.0; // matches _CameraActionButton in bottom_nav_bar.dart
 const _jumpHeight = 24.0; // lifts the mascot's feet up to the button's top edge
 
@@ -83,15 +84,24 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
     );
     _bounceAnimation = TweenSequence<double>([
       TweenSequenceItem(
-        tween: Tween<double>(begin: 0, end: -16).chain(CurveTween(curve: Curves.easeOut)),
+        tween: Tween<double>(
+          begin: 0,
+          end: -16,
+        ).chain(CurveTween(curve: Curves.easeOut)),
         weight: 40,
       ),
       TweenSequenceItem(
-        tween: Tween<double>(begin: -16, end: 4).chain(CurveTween(curve: Curves.easeIn)),
+        tween: Tween<double>(
+          begin: -16,
+          end: 4,
+        ).chain(CurveTween(curve: Curves.easeIn)),
         weight: 30,
       ),
       TweenSequenceItem(
-        tween: Tween<double>(begin: 4, end: 0).chain(CurveTween(curve: Curves.easeOut)),
+        tween: Tween<double>(
+          begin: 4,
+          end: 0,
+        ).chain(CurveTween(curve: Curves.easeOut)),
         weight: 30,
       ),
     ]).animate(_bounceController);
@@ -148,7 +158,10 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
 
     // Return to walking after pause
     _idleExitTimer?.cancel();
-    _idleExitTimer = Timer(const Duration(seconds: _idlePauseSeconds), _exitIdle);
+    _idleExitTimer = Timer(
+      const Duration(seconds: _idlePauseSeconds),
+      _exitIdle,
+    );
   }
 
   void _exitIdle() {
@@ -179,6 +192,7 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
         budgetCategories: data.budgetCategories,
         todayTransactions: data.todayTransactions,
         monthTransactions: data.monthTransactions,
+        streakDays: data.streakDays,
       ),
     );
 
@@ -243,15 +257,16 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
     const mascotWidth = _mascotHeight * _mascotAspectRatio;
     final screenWidth = MediaQuery.sizeOf(context).width;
     const leftBound = 12.0;
-    final rightBound =
-        (screenWidth - mascotWidth - 12.0).clamp(leftBound, double.infinity);
+    final rightBound = (screenWidth - mascotWidth - 12.0).clamp(
+      leftBound,
+      double.infinity,
+    );
 
     return AnimatedBuilder(
       animation: Listenable.merge([_walkController, _bounceController]),
       builder: (context, child) {
         final x = leftBound + _walkController.value * (rightBound - leftBound);
-        final movingLeft =
-            _walkController.status == AnimationStatus.reverse;
+        final movingLeft = _walkController.status == AnimationStatus.reverse;
 
         // Hop over the "+" camera button (centred on screen)
         final mascotCenterX = x + mascotWidth / 2;
@@ -266,14 +281,14 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
             _baseBottom + _jumpHeight * jumpT - _bounceAnimation.value;
 
         // Clamp bubble so it never overflows left or right edge
-        final bubbleLeft =
-            (x + mascotWidth / 2 - _speechBubbleMaxWidth / 2).clamp(
-          8.0,
-          (screenWidth - _speechBubbleMaxWidth - 8.0).clamp(
-            8.0,
-            double.infinity,
-          ),
-        );
+        final bubbleLeft = (x + mascotWidth / 2 - _speechBubbleMaxWidth / 2)
+            .clamp(
+              8.0,
+              (screenWidth - _speechBubbleMaxWidth - 8.0).clamp(
+                8.0,
+                double.infinity,
+              ),
+            );
 
         final bubbleBottom = bottomOffset + _speechBubbleAbove;
 
@@ -301,10 +316,7 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
               child: GestureDetector(
                 onTap: _onTap,
                 behavior: HitTestBehavior.opaque,
-                child: Transform.flip(
-                  flipX: movingLeft,
-                  child: child,
-                ),
+                child: Transform.flip(flipX: movingLeft, child: child),
               ),
             ),
           ],
@@ -345,10 +357,7 @@ class _SpeechBubble extends StatelessWidget {
             offset: Offset(0, 3),
           ),
         ],
-        border: Border.all(
-          color: colors.outline,
-          width: 0.8,
-        ),
+        border: Border.all(color: colors.outline, width: 0.8),
       ),
       child: Text(
         text,

@@ -9697,6 +9697,36 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bấm vào heo để nhận lời khuyên nè! 🐷'**
   String get mascotFunQuote5;
+
+  /// No description provided for @mascotStreakPraise.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã ghi chép liên tục {days} ngày rồi! Siêu quá heo ơi! 🐷🔥'**
+  String mascotStreakPraise(int days);
+
+  /// No description provided for @widgetTotalBalance.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số dư tổng'**
+  String get widgetTotalBalance;
+
+  /// No description provided for @widgetTodaySpending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu hôm nay'**
+  String get widgetTodaySpending;
+
+  /// No description provided for @widgetQuickAdd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi chép'**
+  String get widgetQuickAdd;
+
+  /// No description provided for @widgetScanReceipt.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quét ảnh'**
+  String get widgetScanReceipt;
 }
 
 class _AppLocalizationsDelegate

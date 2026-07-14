@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
+
+import '../../l10n/gen_l10n/app_localizations.dart';
 
 import '../../features/categories/domain/models/category.dart';
 import '../../features/transactions/data/repositories/transaction_repository.dart';
@@ -52,6 +55,12 @@ class WidgetUpdateService {
       final currencyCode = _ref.read(preferredCurrencyProvider);
       final locale = _ref.read(preferredLocaleProvider);
 
+      final l10n = lookupAppLocalizations(Locale(locale));
+      final labelBalance = l10n.widgetTotalBalance;
+      final labelSpending = l10n.widgetTodaySpending;
+      final labelQuickAdd = l10n.widgetQuickAdd;
+      final labelScanReceipt = l10n.widgetScanReceipt;
+
       final formattedBalance = formatCurrency(
         totalBalance,
         currencyCode: currencyCode,
@@ -64,7 +73,7 @@ class WidgetUpdateService {
         locale: locale.toString(),
       );
 
-      // 5. Save formatted data to shared preferences (App Group)
+      // 5. Save formatted data & labels to shared preferences (App Group)
       await HomeWidget.saveWidgetData<String>(
         'total_balance',
         formattedBalance,
@@ -72,6 +81,19 @@ class WidgetUpdateService {
       await HomeWidget.saveWidgetData<String>(
         'today_spending',
         formattedSpending,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'total_balance_label',
+        labelBalance,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'today_spending_label',
+        labelSpending,
+      );
+      await HomeWidget.saveWidgetData<String>('quick_add_label', labelQuickAdd);
+      await HomeWidget.saveWidgetData<String>(
+        'scan_receipt_label',
+        labelScanReceipt,
       );
 
       // 6. Request Widget Extension timeline reload

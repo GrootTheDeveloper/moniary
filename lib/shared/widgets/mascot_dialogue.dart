@@ -29,12 +29,14 @@ class MascotDialogueGenerator {
   /// [budgetCategories] – categories with budget limits for the current month.
   /// [todayTransactions] – transactions recorded today (may be empty).
   /// [monthTransactions] – all transactions for the current month.
+  /// [streakDays] - consecutive logging streak days.
   static String generate(
     BuildContext context, {
     required bool allTimeEmpty,
     required List<CategoryBudget> budgetCategories,
     required List<TransactionEntry> todayTransactions,
     required List<TransactionEntry> monthTransactions,
+    required int streakDays,
   }) {
     final l10n = context.l10n;
 
@@ -49,19 +51,24 @@ class MascotDialogueGenerator {
       return l10n.mascotOverBudget(overLimit.first.categoryName);
     }
 
-    // 2. Near-budget category
+    // 2. High recording streak (>= 3 days) → celebrate!
+    if (streakDays >= 3) {
+      return l10n.mascotStreakPraise(streakDays);
+    }
+
+    // 3. Near-budget category
     final nearLimit = budgetCategories.where((c) => c.isNearLimit).toList();
     if (nearLimit.isNotEmpty) {
       return l10n.mascotNearBudget(nearLimit.first.categoryName);
     }
 
-    // 3. No spending today (but user has past data)
+    // 4. No spending today (but user has past data)
     final todayExpenses = todayTransactions.where((t) => t.isExpense).toList();
     if (todayExpenses.isEmpty) {
       return l10n.mascotZeroExpenseToday;
     }
 
-    // 4. Good savings rate this month (>25%)
+    // 5. Good savings rate this month (>25%)
     final income = monthTransactions
         .where((t) => t.isIncome)
         .fold<double>(0, (sum, t) => sum + t.amount);
@@ -75,7 +82,7 @@ class MascotDialogueGenerator {
       }
     }
 
-    // 5. Rotate fun quotes
+    // 6. Rotate fun quotes
     final quotes = [
       l10n.mascotFunQuote1,
       l10n.mascotFunQuote2,

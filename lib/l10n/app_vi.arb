@@ -2247,5 +2247,15 @@
   "mascotFunQuote2": "Nghe heo đi, đừng mua món đó! 🐽",
   "mascotFunQuote3": "Tiết kiệm một đồng là kiếm được một đồng! 💰",
   "mascotFunQuote4": "Nuôi heo đất mau lớn để đi chơi thôi! 🐖",
-  "mascotFunQuote5": "Bấm vào heo để nhận lời khuyên nè! 🐷"
+  "mascotFunQuote5": "Bấm vào heo để nhận lời khuyên nè! 🐷",
+  "mascotStreakPraise": "Bạn đã ghi chép liên tục {days} ngày rồi! Siêu quá heo ơi! 🐷🔥",
+  "@mascotStreakPraise": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "widgetTotalBalance": "Số dư tổng",
+  "widgetTodaySpending": "Chi tiêu hôm nay",
+  "widgetQuickAdd": "Ghi chép",
+  "widgetScanReceipt": "Quét ảnh"
 }

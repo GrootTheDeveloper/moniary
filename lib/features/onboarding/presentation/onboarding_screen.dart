@@ -264,7 +264,9 @@ class _ReceiptScanIllustrationState extends State<_ReceiptScanIllustration>
     _master.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         Future.delayed(const Duration(seconds: 2), () {
-          if (mounted && widget.isActive && _master.status == AnimationStatus.completed) {
+          if (mounted &&
+              widget.isActive &&
+              _master.status == AnimationStatus.completed) {
             _master.forward(from: 0);
           }
         });
@@ -376,7 +378,8 @@ class _ReceiptScanIllustrationState extends State<_ReceiptScanIllustration>
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
     const cameraW = 230.0;
-    const cameraH = 215.0; // Increased from 175.0 to 215.0 for longer aspect ratio
+    const cameraH =
+        215.0; // Increased from 175.0 to 215.0 for longer aspect ratio
 
     return AnimatedBuilder(
       animation: _master,
@@ -730,17 +733,16 @@ class _ReceiptScanIllustrationState extends State<_ReceiptScanIllustration>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         decoration: BoxDecoration(
-          color: const Color(0xFF191613).withValues(alpha: 0.8), // Dark pill body
+          color: const Color(
+            0xFF191613,
+          ).withValues(alpha: 0.8), // Dark pill body
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: tealColor.withValues(alpha: 0.6), // Glowing teal border
             width: 1.0,
           ),
           boxShadow: [
-            BoxShadow(
-              color: tealColor.withValues(alpha: 0.25),
-              blurRadius: 8,
-            ),
+            BoxShadow(color: tealColor.withValues(alpha: 0.25), blurRadius: 8),
           ],
         ),
         child: Row(
@@ -798,7 +800,11 @@ class _ReceiptScanIllustrationState extends State<_ReceiptScanIllustration>
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
-            child: Icon(Icons.restaurant_outlined, size: 16, color: colors.primary),
+            child: Icon(
+              Icons.restaurant_outlined,
+              size: 16,
+              color: colors.primary,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -847,7 +853,10 @@ class _ReceiptScanIllustrationState extends State<_ReceiptScanIllustration>
     Color bg,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5), // Slightly reduced padding
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 5,
+      ), // Slightly reduced padding
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(20),
@@ -953,7 +962,9 @@ class _PhotoDiaryIllustrationState extends State<_PhotoDiaryIllustration>
     _master.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         Future.delayed(const Duration(seconds: 2), () {
-          if (mounted && widget.isActive && _master.status == AnimationStatus.completed) {
+          if (mounted &&
+              widget.isActive &&
+              _master.status == AnimationStatus.completed) {
             _master.forward(from: 0);
           }
         });
@@ -984,10 +995,12 @@ class _PhotoDiaryIllustrationState extends State<_PhotoDiaryIllustration>
     for (int i = 0; i < 10; i++) {
       final start = 0.16 + i * 0.05;
       final end = (start + 0.12).clamp(0.0, 1.0);
-      _cellOpacity.add(CurvedAnimation(
-        parent: _master,
-        curve: Interval(start, end, curve: easeOut),
-      ));
+      _cellOpacity.add(
+        CurvedAnimation(
+          parent: _master,
+          curve: Interval(start, end, curve: easeOut),
+        ),
+      );
       _cellScale.add(
         Tween<double>(begin: 0.3, end: 1.0).animate(
           CurvedAnimation(
@@ -1088,10 +1101,10 @@ class _PhotoDiaryIllustrationState extends State<_PhotoDiaryIllustration>
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: cols,
-                      mainAxisSpacing: gap,
-                      crossAxisSpacing: gap,
-                    ),
+                          crossAxisCount: cols,
+                          mainAxisSpacing: gap,
+                          crossAxisSpacing: gap,
+                        ),
                     itemCount: cols * rows,
                     itemBuilder: (ctx, index) {
                       final filledIndex = filledList.indexOf(index);
@@ -1192,10 +1205,7 @@ class _PhotoDiaryIllustrationState extends State<_PhotoDiaryIllustration>
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [
-                            baseColor,
-                            baseColor.withValues(alpha: 0.8),
-                          ],
+                          colors: [baseColor, baseColor.withValues(alpha: 0.8)],
                         ),
                       ),
                       child: Center(
@@ -1234,9 +1244,7 @@ class _PhotoDiaryIllustrationState extends State<_PhotoDiaryIllustration>
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: colors.outline.withValues(alpha: 0.4),
-          ),
+          border: Border.all(color: colors.outline.withValues(alpha: 0.4)),
           color: colors.surface.withValues(alpha: 0.35),
         ),
         child: Center(
@@ -1359,9 +1367,21 @@ class _BudgetIllustrationState extends State<_BudgetIllustration>
   late final Animation<double> _insightSlide;
 
   static const _categories = [
-    (icon: Icons.restaurant_outlined, label: 'onboardingCategoryFood', percent: 0.45),
-    (icon: Icons.directions_bus_outlined, label: 'onboardingCategoryTransport', percent: 0.18),
-    (icon: Icons.movie_outlined, label: 'onboardingCategoryEntertainment', percent: 0.07),
+    (
+      icon: Icons.restaurant_outlined,
+      label: 'onboardingCategoryFood',
+      percent: 0.45,
+    ),
+    (
+      icon: Icons.directions_bus_outlined,
+      label: 'onboardingCategoryTransport',
+      percent: 0.18,
+    ),
+    (
+      icon: Icons.movie_outlined,
+      label: 'onboardingCategoryEntertainment',
+      percent: 0.07,
+    ),
   ];
 
   @override
@@ -1374,7 +1394,9 @@ class _BudgetIllustrationState extends State<_BudgetIllustration>
     _master.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         Future.delayed(const Duration(seconds: 2), () {
-          if (mounted && widget.isActive && _master.status == AnimationStatus.completed) {
+          if (mounted &&
+              widget.isActive &&
+              _master.status == AnimationStatus.completed) {
             _master.forward(from: 0);
           }
         });
@@ -1517,11 +1539,11 @@ class _BudgetIllustrationState extends State<_BudgetIllustration>
                         children: [
                           Text(
                             '${_percentCounter.value}%',
-                            style:
-                                context.moniaryTypography.displayMedium.copyWith(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w700,
-                            ),
+                            style: context.moniaryTypography.displayMedium
+                                .copyWith(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w700,
+                                ),
                           ),
                           Text(
                             context.l10n.onboardingBudgetUsed.toUpperCase(),
@@ -1545,8 +1567,8 @@ class _BudgetIllustrationState extends State<_BudgetIllustration>
                 final label = i == 0
                     ? context.l10n.onboardingCategoryFood
                     : i == 1
-                        ? context.l10n.onboardingCategoryTransport
-                        : context.l10n.onboardingCategoryEntertainment;
+                    ? context.l10n.onboardingCategoryTransport
+                    : context.l10n.onboardingCategoryEntertainment;
 
                 return Opacity(
                   opacity: rowOpacities[i].value,
@@ -1598,9 +1620,7 @@ class _BudgetIllustrationState extends State<_BudgetIllustration>
         color: colors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: colors.outline.withValues(
-            alpha: showWarning ? 0.8 : 0.4,
-          ),
+          color: colors.outline.withValues(alpha: showWarning ? 0.8 : 0.4),
           width: showWarning ? 1.2 : 0.8,
         ),
       ),

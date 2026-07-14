@@ -5432,4 +5432,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mascotFunQuote5 => 'Tap the pig for some advice! 🐷';
+
+  @override
+  String mascotStreakPraise(int days) {
+    return 'You\'ve logged for $days days in a row! You\'re on fire! 🐷🔥';
+  }
+
+  @override
+  String get widgetTotalBalance => 'Total Balance';
+
+  @override
+  String get widgetTodaySpending => 'Today\'s Spending';
+
+  @override
+  String get widgetQuickAdd => 'Quick Add';
+
+  @override
+  String get widgetScanReceipt => 'Scan Receipt';
 }
