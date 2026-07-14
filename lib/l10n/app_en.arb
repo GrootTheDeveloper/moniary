@@ -2262,5 +2262,17 @@
   "mascotNightGreeting": "It's late, time to rest! Good night! 🐷💤",
   "mascotTapReaction1": "Ouch! Don't poke me, it tickles! 🐷",
   "mascotTapReaction2": "Hi there! Let's record your expenses together! 🐷💰",
-  "mascotTapReaction3": "Did you know tracking daily helps save up to 20%? 🐷✨"
+  "mascotTapReaction3": "Did you know tracking daily helps save up to 20%? 🐷✨",
+  "widgetStreakTitle": "Streak",
+  "widgetLongestStreak": "Record",
+  "widgetDays": "{count} days",
+  "@widgetDays": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "widgetBudgetTitle": "Budget",
+  "widgetBudgetSpent": "Spent",
+  "widgetBudgetRemaining": "Remaining",
+  "widgetOverBudget": "Over Limit"
 }

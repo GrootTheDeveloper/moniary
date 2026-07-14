@@ -5468,4 +5468,27 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mascotTapReaction3 =>
       'Did you know tracking daily helps save up to 20%? 🐷✨';
+
+  @override
+  String get widgetStreakTitle => 'Streak';
+
+  @override
+  String get widgetLongestStreak => 'Record';
+
+  @override
+  String widgetDays(int count) {
+    return '$count days';
+  }
+
+  @override
+  String get widgetBudgetTitle => 'Budget';
+
+  @override
+  String get widgetBudgetSpent => 'Spent';
+
+  @override
+  String get widgetBudgetRemaining => 'Remaining';
+
+  @override
+  String get widgetOverBudget => 'Over Limit';
 }

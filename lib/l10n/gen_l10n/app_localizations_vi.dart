@@ -5472,4 +5472,27 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get mascotTapReaction3 =>
       'Bạn có biết ghi chép đều đặn giúp tiết kiệm tới 20% không? 🐷✨';
+
+  @override
+  String get widgetStreakTitle => 'Chuỗi ghi';
+
+  @override
+  String get widgetLongestStreak => 'Kỷ lục';
+
+  @override
+  String widgetDays(int count) {
+    return '$count ngày';
+  }
+
+  @override
+  String get widgetBudgetTitle => 'Ngân sách';
+
+  @override
+  String get widgetBudgetSpent => 'Đã chi';
+
+  @override
+  String get widgetBudgetRemaining => 'Còn lại';
+
+  @override
+  String get widgetOverBudget => 'Vượt hạn mức';
 }

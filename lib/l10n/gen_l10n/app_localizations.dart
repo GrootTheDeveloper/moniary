@@ -9757,6 +9757,48 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bạn có biết ghi chép đều đặn giúp tiết kiệm tới 20% không? 🐷✨'**
   String get mascotTapReaction3;
+
+  /// No description provided for @widgetStreakTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuỗi ghi'**
+  String get widgetStreakTitle;
+
+  /// No description provided for @widgetLongestStreak.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kỷ lục'**
+  String get widgetLongestStreak;
+
+  /// No description provided for @widgetDays.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ngày'**
+  String widgetDays(int count);
+
+  /// No description provided for @widgetBudgetTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngân sách'**
+  String get widgetBudgetTitle;
+
+  /// No description provided for @widgetBudgetSpent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chi'**
+  String get widgetBudgetSpent;
+
+  /// No description provided for @widgetBudgetRemaining.
+  ///
+  /// In vi, this message translates to:
+  /// **'Còn lại'**
+  String get widgetBudgetRemaining;
+
+  /// No description provided for @widgetOverBudget.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vượt hạn mức'**
+  String get widgetOverBudget;
 }
 
 class _AppLocalizationsDelegate
