@@ -9,6 +9,7 @@ import '../../../../core/supabase/app_exception.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_roadmap.dart';
 import '../../domain/entities/group_transaction.dart';
+import '../../domain/entities/group_roadmap.dart';
 
 class GroupSupabaseDataSource {
   const GroupSupabaseDataSource(this.client);
@@ -200,46 +201,6 @@ class GroupSupabaseDataSource {
     }, onConflict: 'group_id');
   }
 
-  Future<List<Map<String, dynamic>>> fetchRecurringTransactions(
-    String groupId,
-  ) async {
-    final rows = await client
-        .from('group_recurring_transactions')
-        .select()
-        .eq('group_id', groupId)
-        .order('next_run_at');
-    return _rows(rows);
-  }
-
-  Future<void> createRecurringTransaction({
-    required String groupId,
-    required String title,
-    required int amount,
-    required String frequency,
-    required DateTime nextRunAt,
-    required int notifyDaysBefore,
-  }) {
-    return client.from('group_recurring_transactions').insert({
-      'group_id': groupId,
-      'created_by': _currentUserId(),
-      'title': title.trim(),
-      'amount': amount,
-      'frequency': frequency,
-      'next_run_at': nextRunAt.toUtc().toIso8601String(),
-      'notify_days_before': notifyDaysBefore,
-    });
-  }
-
-  Future<void> updateRecurringTransactionActive({
-    required String recurringTransactionId,
-    required bool isActive,
-  }) {
-    return client
-        .from('group_recurring_transactions')
-        .update({'is_active': isActive})
-        .eq('id', recurringTransactionId);
-  }
-
   Future<Map<String, dynamic>> fetchPublicProfile(String groupId) async {
     final row = await client
         .from('group_public_profiles')
@@ -355,6 +316,8 @@ class GroupSupabaseDataSource {
         'p_split_mode': draft.splitMode.value,
         'p_payment_mode': draft.paymentMode.value,
         'p_payer_amounts': draft.payerAmounts,
+        'p_participant_ids': draft.participantIds,
+        'p_share_amounts': draft.shareAmounts,
       },
     );
     return result as String;
@@ -376,6 +339,8 @@ class GroupSupabaseDataSource {
         'p_split_mode': draft.splitMode.value,
         'p_payment_mode': draft.paymentMode.value,
         'p_payer_amounts': draft.payerAmounts,
+        'p_participant_ids': draft.participantIds,
+        'p_share_amounts': draft.shareAmounts,
       },
     );
   }
@@ -414,10 +379,13 @@ class GroupSupabaseDataSource {
     );
   }
 
-  Future<void> disputeSettlement(String settlementId) {
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String reason,
+  }) {
     return client.rpc(
-      'dispute_settlement',
-      params: {'p_settlement_id': settlementId},
+      'dispute_group_settlement',
+      params: {'p_settlement_id': settlementId, 'p_reason': reason},
     );
   }
 
@@ -425,6 +393,13 @@ class GroupSupabaseDataSource {
     return client.rpc(
       'reset_disputed_settlement',
       params: {'p_settlement_id': settlementId},
+    );
+  }
+
+  Future<void> removeMember({required String groupId, required String userId}) {
+    return client.rpc(
+      'remove_group_member',
+      params: {'p_group_id': groupId, 'p_user_id': userId},
     );
   }
 
@@ -492,6 +467,78 @@ class GroupSupabaseDataSource {
       params: {'p_transaction_id': transactionId},
     );
     return _rows(rows);
+  }
+
+  Future<Map<String, dynamic>?> fetchPublicGroupProfile(String slug) async {
+    final result = await client.rpc(
+      'get_public_group_profile',
+      params: {'p_slug': slug},
+    );
+    final values = _rows(result);
+    return values.isEmpty ? null : values.first;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchRecurringTransactions(
+    String groupId,
+  ) async {
+    final rows = await client
+        .from('group_recurring_transactions')
+        .select()
+        .eq('group_id', groupId)
+        .order('next_run_at');
+    return _rows(rows);
+  }
+
+  Future<String> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) async {
+    final result = await client.rpc(
+      'create_group_recurring_transaction',
+      params: {
+        'p_group_id': groupId,
+        'p_title': title,
+        'p_amount': amount,
+        'p_frequency': frequency,
+        'p_next_run_at': nextRunAt.toUtc().toIso8601String(),
+        'p_notify_days_before': notifyDaysBefore,
+      },
+    );
+    return result as String;
+  }
+
+  Future<void> updateRecurringTransaction({
+    required String id,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  }) {
+    return client.rpc(
+      'update_group_recurring_transaction',
+      params: {
+        'p_id': id,
+        'p_title': title,
+        'p_amount': amount,
+        'p_frequency': frequency,
+        'p_next_run_at': nextRunAt.toUtc().toIso8601String(),
+        'p_notify_days_before': notifyDaysBefore,
+        'p_is_active': isActive,
+      },
+    );
+  }
+
+  Future<void> deleteRecurringTransaction(String id) {
+    return client.rpc(
+      'delete_group_recurring_transaction',
+      params: {'p_id': id},
+    );
   }
 
   Future<String> uploadGroupAvatar({

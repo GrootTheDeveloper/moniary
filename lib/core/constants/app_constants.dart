@@ -23,7 +23,7 @@ class AppConstants {
     'OCR_API_URL',
     defaultValue: 'http://10.0.2.2:8000',
   );
-  static const ocrRequestTimeout = Duration(seconds: 270);
+  static const ocrRequestTimeout = Duration(seconds: 8);
 
   /// Call once at app startup. In release mode, crash if Supabase env is missing.
   static void assertSupabaseConfig() {

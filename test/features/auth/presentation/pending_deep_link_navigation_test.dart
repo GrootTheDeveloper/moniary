@@ -10,6 +10,8 @@ import 'package:moniary/features/auth/application/post_auth_decision_provider.da
 import 'package:moniary/features/auth/data/auth_repository.dart';
 import 'package:moniary/features/auth/presentation/login_screen.dart';
 import 'package:moniary/features/calendar/presentation/month/calendar_screen.dart';
+import 'package:moniary/features/categories/data/repositories/category_repository.dart';
+import 'package:moniary/features/categories/domain/models/category.dart';
 import 'package:moniary/features/friends/presentation/screens/friend_invite_accept_screen.dart';
 import 'package:moniary/features/profile/application/profile_setup_controller.dart';
 import 'package:moniary/features/profile/data/profile_repository.dart';
@@ -136,6 +138,19 @@ class FakeProfileRepository implements ProfileRepository {
   }
 
   @override
+  Future<UserProfile> completeSurveySetup({
+    required String occupation,
+    required String preferredCurrency,
+    required String walletName,
+    required double initialBalance,
+  }) {
+    return completeSurvey(
+      occupation: occupation,
+      preferredCurrency: preferredCurrency,
+    );
+  }
+
+  @override
   void resetMockProfile() {}
 
   @override
@@ -213,6 +228,35 @@ class FakeWalletRepository implements WalletRepository {
   void clearMockUserData() {
     _wallets.clear();
   }
+}
+
+class FakeCategoryRepository implements CategoryRepository {
+  var initializedOccupation = '';
+
+  @override
+  Future<void> ensureOccupationDefaults(String occupation) async {
+    initializedOccupation = occupation;
+  }
+
+  @override
+  Future<List<Category>> fetchCategories() async => const [];
+
+  @override
+  Future<void> createCategory({
+    required String name,
+    required TransactionType type,
+  }) async {}
+
+  @override
+  Future<void> updateCategory({
+    required String categoryId,
+    required String name,
+    required TransactionType type,
+    required bool isActive,
+  }) async {}
+
+  @override
+  void clearMockUserData() {}
 }
 
 Widget _routerApp({
@@ -331,6 +375,7 @@ void main() {
         useMockDataModeProvider.overrideWithValue(true),
         profileRepositoryProvider.overrideWithValue(FakeProfileRepository()),
         walletRepositoryProvider.overrideWithValue(FakeWalletRepository()),
+        categoryRepositoryProvider.overrideWithValue(FakeCategoryRepository()),
         profileSetupControllerProvider.overrideWith(
           TestProfileSetupController.new,
         ),

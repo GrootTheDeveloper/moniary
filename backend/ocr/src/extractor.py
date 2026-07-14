@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from src.cleaner import clean_text
+from src.classifier import classify_category
 from src.models import OCRTextLine, ReceiptData
 from src.ocr import recognize_image
 from src.preprocess import preprocess
@@ -36,12 +37,14 @@ def extract_receipt_with_metadata(image_path: str) -> ExtractedReceipt:
         header = extract_header(lines)
         items = extract_items(lines)
         totals = extract_totals(lines)
+        suggested_category, _ = classify_category(header.get("merchant"), items)
         data = ReceiptData(
             merchant=header.get("merchant"),
             address=header.get("address"),
             date=header.get("date"),
             time=header.get("time"),
             items=items,
+            suggested_category=suggested_category,
             **totals,
         )
         return ExtractedReceipt(

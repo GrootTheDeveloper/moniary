@@ -275,23 +275,45 @@ class GroupPublicProfile {
     required this.isEnabled,
     required this.showStats,
     this.slug,
+    this.groupName,
+    this.avatarPath,
+    this.description,
+    this.groupType,
+    this.memberCount,
+    this.transactionCount,
+    this.totalSpent,
   });
 
   final String groupId;
   final bool isEnabled;
   final bool showStats;
   final String? slug;
+  final String? groupName;
+  final String? avatarPath;
+  final String? description;
+  final String? groupType;
+  final int? memberCount;
+  final int? transactionCount;
+  final int? totalSpent;
 
   GroupPublicProfile copyWith({
     bool? isEnabled,
     bool? showStats,
     String? slug,
+    bool clearSlug = false,
   }) {
     return GroupPublicProfile(
       groupId: groupId,
       isEnabled: isEnabled ?? this.isEnabled,
       showStats: showStats ?? this.showStats,
-      slug: slug ?? this.slug,
+      slug: clearSlug ? null : slug ?? this.slug,
+      groupName: groupName ?? this.groupName,
+      avatarPath: avatarPath ?? this.avatarPath,
+      description: description ?? this.description,
+      groupType: groupType ?? this.groupType,
+      memberCount: memberCount ?? this.memberCount,
+      transactionCount: transactionCount ?? this.transactionCount,
+      totalSpent: totalSpent ?? this.totalSpent,
     );
   }
 

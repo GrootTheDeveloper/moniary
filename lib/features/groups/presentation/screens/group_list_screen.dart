@@ -11,6 +11,7 @@ import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/spending_group.dart';
 import 'create_group_screen.dart';
+import 'group_activity_center_screen.dart';
 import 'group_detail_screen.dart';
 import 'group_invitations_screen.dart';
 import 'invite_member_screen.dart';
@@ -24,6 +25,9 @@ class GroupListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final groupsAsync = ref.watch(groupsControllerProvider);
     final pendingInviteCount = ref.watch(pendingGroupInviteCountProvider);
+    final unreadNotificationCount = ref.watch(
+      unreadGroupNotificationCountProvider,
+    );
     final colors = context.moniaryColors;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark.copyWith(
@@ -45,6 +49,7 @@ class GroupListScreen extends ConsumerWidget {
           data: (groups) => _GroupListContent(
             groups: groups,
             pendingInviteCount: pendingInviteCount,
+            unreadNotificationCount: unreadNotificationCount,
             onCreate: () => _openCreateGroup(context, ref),
             onRefresh: () =>
                 ref.read(groupsControllerProvider.notifier).refresh(),
@@ -76,12 +81,14 @@ class _GroupListContent extends StatelessWidget {
   const _GroupListContent({
     required this.groups,
     required this.pendingInviteCount,
+    required this.unreadNotificationCount,
     required this.onCreate,
     required this.onRefresh,
   });
 
   final List<SpendingGroup> groups;
   final int pendingInviteCount;
+  final int unreadNotificationCount;
   final VoidCallback onCreate;
   final Future<void> Function() onRefresh;
 
@@ -103,6 +110,7 @@ class _GroupListContent extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(14, 18, 14, 0),
                     child: _GroupsHeader(
                       pendingInviteCount: pendingInviteCount,
+                      unreadNotificationCount: unreadNotificationCount,
                       onCreate: onCreate,
                     ),
                   ),
@@ -166,10 +174,12 @@ class _GroupListContent extends StatelessWidget {
 class _GroupsHeader extends StatelessWidget {
   const _GroupsHeader({
     required this.pendingInviteCount,
+    required this.unreadNotificationCount,
     required this.onCreate,
   });
 
   final int pendingInviteCount;
+  final int unreadNotificationCount;
   final VoidCallback onCreate;
 
   @override
@@ -215,6 +225,18 @@ class _GroupsHeader extends StatelessWidget {
           ),
           const SizedBox(width: 9),
         ],
+        _HeaderIconButton(
+          label: context.l10n.groupActivityTabNotifications,
+          icon: unreadNotificationCount > 0
+              ? Icons.notifications_active_outlined
+              : Icons.notifications_none_outlined,
+          badge: unreadNotificationCount,
+          onTap: () => context.push(GroupActivityCenterScreen.routePath),
+          foreground: colors.textPrimary,
+          background: colors.surface.withValues(alpha: 0.58),
+          border: colors.outline.withValues(alpha: 0.8),
+        ),
+        const SizedBox(width: 9),
         _HeaderIconButton(
           label: context.l10n.groupCreateNew,
           icon: Icons.add_rounded,

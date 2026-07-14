@@ -438,9 +438,14 @@ class _RecurringTab extends ConsumerWidget {
                   value: item.isActive,
                   onChanged: (value) => ref
                       .read(groupActionControllerProvider.notifier)
-                      .updateRecurringTransactionActive(
-                        recurringTransactionId: item.id,
+                      .updateRecurringTransaction(
                         groupId: groupId,
+                        id: item.id,
+                        title: item.title,
+                        amount: item.amount,
+                        frequency: item.frequency,
+                        nextRunAt: item.nextRunAt,
+                        notifyDaysBefore: item.notifyDaysBefore,
                         isActive: value,
                       ),
                   title: Text(item.title),

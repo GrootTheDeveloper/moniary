@@ -98,12 +98,15 @@ floating global action that pushes `/assistant`; it is not a fifth shell tab.
 | `/groups/member-amount` | `MemberAmountInputScreen` | `MemberAmountInputArgs` |
 | `/groups/settlements` | `DebtSettlementScreen` | Group ID |
 | `/groups/transaction/detail` | `GroupTransactionDetailScreen` | Transaction ID; fade |
+| `/groups/activity-center` | `GroupActivityCenterScreen` | Optional group ID; without one it opens the notifications-only view |
 | `/friends` | `FriendsScreen` | Friend list/requests |
 | `/friends/add` | `AddFriendScreen` | Search/add |
+| `/friends/qr` | `FriendQrScreen` | Display or scan a friend invite QR code |
 | `/friends/invite/:token` | `FriendInviteAcceptScreen` | Path token |
 
-Invalid/missing group extras fall back to `GroupsScreen`; the friend token
-route falls back to `FriendsScreen`.
+Invalid/missing required group extras fall back to `GroupsScreen`; the group
+activity center intentionally accepts a missing group ID for the global
+notifications inbox. The friend token route falls back to `FriendsScreen`.
 
 ### Settings: account and data
 

@@ -41,6 +41,11 @@ class OnboardingSeenNotifier extends Notifier<bool> {
     state = true;
     await ref.read(sharedPreferencesProvider).setBool(_key, true);
   }
+
+  Future<void> reset() async {
+    state = false;
+    await ref.read(sharedPreferencesProvider).remove(_key);
+  }
 }
 
 class PreferredCurrencyNotifier extends Notifier<String> {

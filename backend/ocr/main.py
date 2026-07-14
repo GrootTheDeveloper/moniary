@@ -3,6 +3,7 @@
 import base64
 import binascii
 import mimetypes
+import time
 import uuid
 from pathlib import Path
 
@@ -15,7 +16,7 @@ from pydantic import BaseModel
 from src.extractor import extract_receipt_with_metadata
 from src.models import ReceiptResponse
 from src.ocr import ocr_health
-from src.validator import validate
+from src.validator import field_confidence, validate
 
 
 MAX_FILE_SIZE = 15 * 1024 * 1024
@@ -86,6 +87,7 @@ def _mime_from_payload(payload: str, filename: str) -> tuple[str, str]:
 
 
 def _process_image(image_path: Path, debug: bool) -> ReceiptResponse:
+    started_at = time.perf_counter()
     extracted = extract_receipt_with_metadata(str(image_path))
     validated, issues, confidence = validate(extracted.data)
     return ReceiptResponse(
@@ -96,6 +98,8 @@ def _process_image(image_path: Path, debug: bool) -> ReceiptResponse:
         ocr_lines=extracted.ocr_lines if debug else None,
         validation_issues=issues,
         confidence=confidence,
+        field_confidence=field_confidence(validated, issues),
+        processing_ms=round((time.perf_counter() - started_at) * 1000),
     )
 
 

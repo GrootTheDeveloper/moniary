@@ -33,6 +33,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonSave => 'Save';
 
   @override
+  String get commonSaved => 'Saved';
+
+  @override
   String get commonCancel => 'Cancel';
 
   @override
@@ -297,6 +300,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingBudgetLabel => 'Monthly budget';
+
+  @override
+  String get onboardingScanning => 'Reading receipt...';
+
+  @override
+  String get onboardingRecognized => 'Recognised!';
+
+  @override
+  String get onboardingCategoryFood => 'Food & dining';
+
+  @override
+  String get onboardingCategoryTransport => 'Transport';
+
+  @override
+  String get onboardingCategoryEntertainment => 'Entertainment';
+
+  @override
+  String get onboardingIncome => 'Income';
+
+  @override
+  String get onboardingExpenseLabel => 'Expense';
+
+  @override
+  String get onboardingStreakLabel => 'days';
+
+  @override
+  String get onboardingBudgetUsed => 'Used';
+
+  @override
+  String get onboardingBudgetWarning => 'Nearing limit!';
+
+  @override
+  String get onboardingInsightText => 'Food spending up 20%';
 
   @override
   String get profileSetupTitle => 'Profile Setup';
@@ -3927,10 +3963,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupPhotoAlbumTitle => 'Photo album';
 
   @override
-  String get groupPhotoAlbumEmpty => 'No photos yet';
+  String get groupPhotoAlbumEmpty => 'No transaction photos yet';
+
+  @override
+  String get groupPhotoAlbumLoadError => 'Could not load the photo album';
+
+  @override
+  String get groupTransactionFallback => 'Group transaction';
+
+  @override
+  String get groupMemberFallback => 'Member';
 
   @override
   String get groupBudgetTitle => 'Group budget';
+
+  @override
+  String get groupBudgetSubtitle =>
+      'Set a shared monthly spending limit for this group.';
 
   @override
   String get groupBudgetMonthlyLimit => 'Monthly limit';
@@ -3952,6 +4001,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupBudgetSaved => 'Budget updated';
+
+  @override
+  String get groupBudgetCurrencySuffix => 'in your currency';
+
+  @override
+  String get groupBudgetAdminOnly =>
+      'Only group owners and admins can change this budget.';
+
+  @override
+  String get groupBudgetInvalidLimit => 'Enter a valid non-negative limit.';
 
   @override
   String get groupNotificationPrefsTitle => 'Notification settings';
@@ -3992,6 +4051,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupNotificationPrefsSaved => 'Notification settings saved';
 
   @override
+  String get groupNotificationPreferencesTitle => 'Notification preferences';
+
+  @override
+  String get groupNotificationPreferencesSubtitle =>
+      'Choose which group events should notify you.';
+
+  @override
+  String get groupNotificationMuteAll => 'Mute all notifications';
+
+  @override
+  String get groupNotificationTransactions => 'Transaction updates';
+
+  @override
+  String get groupNotificationDebts => 'Debt and settlement updates';
+
+  @override
+  String get groupNotificationInvites => 'Invitations';
+
+  @override
+  String get groupNotificationMentions => 'Mentions';
+
+  @override
   String get groupPublicProfileTitle => 'Public profile';
 
   @override
@@ -4013,7 +4094,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Include spending statistics on the public page';
 
   @override
-  String get groupPublicProfileSlug => 'Custom link';
+  String get groupPublicProfileSlug => 'Public slug';
 
   @override
   String get groupPublicProfileSlugHint => 'my-group-name';
@@ -4024,6 +4105,83 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupPublicProfileSaved => 'Public profile updated';
+
+  @override
+  String get groupPublicProfileSettingsTitle => 'Public profile settings';
+
+  @override
+  String get groupPublicProfileSettingsSubtitle =>
+      'Only safe group information is shown publicly.';
+
+  @override
+  String get groupPublicProfileEnabled => 'Enable public profile';
+
+  @override
+  String get groupPublicProfileShowStatsSubtitle =>
+      'Shows aggregate counts and total spending only.';
+
+  @override
+  String get groupPublicProfileInvalidSlug =>
+      'Use 3–80 lowercase letters, numbers, or hyphens.';
+
+  @override
+  String get groupPublicProfileFallbackName => 'Moniary group';
+
+  @override
+  String get groupPublicProfileMembers => 'Members';
+
+  @override
+  String get groupPublicProfileTransactions => 'Transactions';
+
+  @override
+  String get groupPublicProfileTotalSpent => 'Total spent';
+
+  @override
+  String get groupPublicProfileSafeNotice =>
+      'Personal details and transaction-level data are not shown.';
+
+  @override
+  String get groupRecurringTitle => 'Recurring transactions';
+
+  @override
+  String get groupRecurringAdd => 'Add recurring';
+
+  @override
+  String get groupRecurringEdit => 'Edit recurring transaction';
+
+  @override
+  String get groupRecurringEmpty => 'No recurring transactions yet';
+
+  @override
+  String get groupRecurringName => 'Title';
+
+  @override
+  String get groupRecurringAmount => 'Amount';
+
+  @override
+  String get groupRecurringFrequency => 'Frequency';
+
+  @override
+  String get groupRecurringWeekly => 'Weekly';
+
+  @override
+  String get groupRecurringMonthly => 'Monthly';
+
+  @override
+  String get groupRecurringNextRun => 'Next run';
+
+  @override
+  String get groupRecurringNotifyBefore => 'Notify days before';
+
+  @override
+  String get groupRecurringActive => 'Active';
+
+  @override
+  String get groupRecurringDeleteTitle => 'Delete recurring transaction?';
+
+  @override
+  String get groupRecurringDeleteMessage =>
+      'This recurring transaction will be permanently removed.';
 
   @override
   String get groupActivityTransactionReacted => 'reacted to a transaction';
@@ -4323,6 +4481,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get friendOutgoingRequests => 'Sent requests';
+
+  @override
+  String get friendRequestsEmpty => 'No friend requests yet.';
 
   @override
   String get friendAccept => 'Accept';
@@ -5056,4 +5217,78 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cameraFallbackGenericError =>
       'Could not open camera. You can enter the transaction manually.';
+
+  @override
+  String get scanSuggestionNotice =>
+      'Fields marked as AI suggestions were filled from the receipt. Review them before saving.';
+
+  @override
+  String get scanAiSuggestion => 'AI suggestion';
+
+  @override
+  String get scanSuggestionNeedsReview => 'AI suggestion - review recommended';
+
+  @override
+  String get friendQrTitle => 'Friend QR';
+
+  @override
+  String get friendQrMyCode => 'My code';
+
+  @override
+  String get friendQrScan => 'Scan';
+
+  @override
+  String get friendQrRetry => 'Try again';
+
+  @override
+  String get friendQrShare => 'Share code';
+
+  @override
+  String get friendQrLoadError => 'The camera could not be started.';
+
+  @override
+  String get friendQrTorch => 'Toggle flashlight';
+
+  @override
+  String get friendQrSwitchCamera => 'Switch camera';
+
+  @override
+  String get friendQrInvalid => 'This is not a valid Moniary friend QR code.';
+
+  @override
+  String get friendRateLimited =>
+      'Too many friend requests. Please try again later.';
+
+  @override
+  String get groupSplitExact => 'Exact amounts';
+
+  @override
+  String get groupParticipantsTitle => 'Participants in this expense';
+
+  @override
+  String get groupSettlementDisputeTitle => 'Report a settlement issue';
+
+  @override
+  String get groupSettlementDisputeReasonHint => 'Describe what is incorrect';
+
+  @override
+  String get groupSettlementDisputeReasonRequired =>
+      'Enter a reason for the dispute.';
+
+  @override
+  String get groupSettlementDisputeAction => 'Dispute';
+
+  @override
+  String get groupTransferOwnershipAction => 'Transfer ownership';
+
+  @override
+  String get groupRemoveMemberAction => 'Remove member';
+
+  @override
+  String get groupMemberRemoveUnresolved =>
+      'This member still has an unsettled balance and cannot be removed.';
+
+  @override
+  String get groupMemberActionForbidden =>
+      'You do not have permission to manage this member.';
 }

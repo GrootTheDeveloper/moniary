@@ -36,6 +36,15 @@ use `get_my_group_invites`, `accept_direct_group_invite`, and
 identity linking, sign-out, password reset, and `initialize_user`. Auth state
 feeds `currentSessionProvider` and router refresh.
 
+### Profile setup RPCs
+
+`complete_profile_survey` completes the post-setup survey atomically in
+Supabase mode: it initializes the base user data, creates or updates the
+default wallet, stores occupation/currency, and calls
+`ensure_occupation_categories`. The category RPC preserves existing categories
+and inserts or reactivates default category templates for the selected
+occupation.
+
 ### Storage
 
 The private bucket is `transaction-images`. It stores transaction images,

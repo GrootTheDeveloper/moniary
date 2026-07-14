@@ -103,11 +103,17 @@ class ScanningController extends Notifier<ScanningState> {
       status: ScanningStatus.scanning,
       imagePath: imagePath,
     );
+    final stopwatch = Stopwatch()..start();
 
     try {
       final result = await ref
           .read(ocrExtractionControllerProvider)
           .extractFromImage(imagePath);
+      stopwatch.stop();
+      AppLogger.info(
+        'OCR completed in ${stopwatch.elapsedMilliseconds}ms '
+        '(server ${result.processingTime.inMilliseconds}ms)',
+      );
       state = ScanningState(
         status: ScanningStatus.success,
         imagePath: imagePath,

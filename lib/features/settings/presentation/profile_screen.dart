@@ -15,6 +15,7 @@ import '../../profile/presentation/timezone_picker_screen.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
+import '../../friends/application/friend_controller.dart';
 import '../../friends/presentation/screens/friends_screen.dart';
 import '../../journal/presentation/journal_collections_screen.dart';
 import '../../journal/presentation/monthly_recap_screen.dart';
@@ -380,6 +381,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final privacyState = ref.watch(privacyControllerProvider);
     final requestHistory = ref.watch(privacyRequestHistoryProvider);
     final isGuest = ref.watch(guestModeEnabledProvider);
+    final pendingFriendRequestCount = ref.watch(
+      pendingIncomingFriendRequestCountProvider,
+    );
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -435,6 +439,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 18),
                       _ProfileQuickActions(
                         onFriends: () => context.push(FriendsScreen.routePath),
+                        pendingFriendRequestCount: pendingFriendRequestCount,
                         onExport: () =>
                             context.push(ExportDataScreen.routePath),
                         onSettings: () =>
@@ -1058,11 +1063,13 @@ class _ProfileHeader extends StatelessWidget {
 class _ProfileQuickActions extends StatelessWidget {
   const _ProfileQuickActions({
     required this.onFriends,
+    required this.pendingFriendRequestCount,
     required this.onExport,
     required this.onSettings,
   });
 
   final VoidCallback onFriends;
+  final int pendingFriendRequestCount;
   final VoidCallback onExport;
   final VoidCallback onSettings;
 
@@ -1075,6 +1082,7 @@ class _ProfileQuickActions extends StatelessWidget {
             icon: Icons.people_outlined,
             label: context.l10n.friendsTitle,
             onTap: onFriends,
+            badge: pendingFriendRequestCount,
           ),
         ),
         const SizedBox(width: 12),
@@ -1103,11 +1111,13 @@ class _QuickActionButton extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
+    this.badge = 0,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final int badge;
 
   @override
   Widget build(BuildContext context) {
@@ -1126,7 +1136,21 @@ class _QuickActionButton extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: colors.primary, size: 20),
+            SizedBox(
+              height: 22,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(icon, color: colors.primary, size: 20),
+                  if (badge > 0)
+                    Positioned(
+                      top: -7,
+                      right: -13,
+                      child: _ProfileActionBadge(count: badge),
+                    ),
+                ],
+              ),
+            ),
             const SizedBox(height: 8),
             Text(
               label.toUpperCase(),
@@ -1135,6 +1159,33 @@ class _QuickActionButton extends StatelessWidget {
               style: context.moniaryTypography.metadataStrong,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileActionBadge extends StatelessWidget {
+  const _ProfileActionBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.moniaryColors.primary,
+        borderRadius: BorderRadius.circular(99),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        child: Text(
+          count > 99 ? '99+' : '$count',
+          style: context.moniaryTypography.metadataStrong.copyWith(
+            color: AppTheme.surfaceRaised,
+            fontSize: 8.5,
+            letterSpacing: 0,
+          ),
         ),
       ),
     );

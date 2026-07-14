@@ -112,9 +112,11 @@ class _GroupTransactionDetailScreenState
               ),
               _InfoRow(
                 label: context.l10n.groupSplitModeTitle,
-                value: transaction.splitMode == GroupSplitMode.equal
-                    ? context.l10n.groupSplitEqual
-                    : context.l10n.groupSplitUnequal,
+                value: switch (transaction.splitMode) {
+                  GroupSplitMode.equal => context.l10n.groupSplitEqual,
+                  GroupSplitMode.exact => context.l10n.groupSplitExact,
+                  GroupSplitMode.unequal => context.l10n.groupSplitUnequal,
+                },
               ),
               _InfoRow(
                 label: context.l10n.groupPaymentModeTitle,

@@ -774,25 +774,37 @@ class GroupMockDataSource {
     final memberIds = _activeMembers(
       draft.groupId,
     ).map((member) => member.userId).toList();
+    final participantIds = draft.participantIds.isEmpty
+        ? memberIds
+        : draft.participantIds;
     final now = DateTime.now();
     final id = _id('transaction');
     late final Map<String, int> shares;
     late final Map<String, int> paidAmounts;
     late final GroupSplitStatus splitStatus;
-    if (draft.splitMode == GroupSplitMode.equal) {
+    if (draft.splitMode != GroupSplitMode.unequal) {
       final result = _splitCalculator.calculate(
         totalAmount: draft.totalAmount,
         activeMemberIds: memberIds,
+        participantIds: participantIds,
         splitMode: draft.splitMode,
         paymentMode: draft.paymentMode,
+        unequalShares: draft.shareAmounts,
         payerAmounts: draft.payerAmounts,
       );
       shares = result.shares;
       paidAmounts = result.paidAmounts;
       splitStatus = GroupSplitStatus.posted;
     } else {
-      _validatePayerDraft(draft, memberIds);
-      shares = {for (final id in memberIds) id: 0};
+      _splitCalculator.validateDraft(
+        totalAmount: draft.totalAmount,
+        activeMemberIds: memberIds,
+        participantIds: participantIds,
+        splitMode: draft.splitMode,
+        paymentMode: draft.paymentMode,
+        payerAmounts: draft.payerAmounts,
+      );
+      shares = {for (final id in participantIds) id: 0};
       paidAmounts = draft.paymentMode == GroupPaymentMode.everyonePaid
           ? {for (final id in memberIds) id: 0}
           : {for (final id in memberIds) id: draft.payerAmounts[id] ?? 0};
@@ -827,8 +839,8 @@ class GroupMockDataSource {
         id,
         shares,
         now,
-        submitted: draft.splitMode == GroupSplitMode.equal
-            ? memberIds.toSet()
+        submitted: draft.splitMode != GroupSplitMode.unequal
+            ? participantIds.toSet()
             : {},
       ),
       comments: [],
@@ -1355,15 +1367,31 @@ class GroupMockDataSource {
     _refreshSettlements(match.item.groupId);
   }
 
-  Future<void> disputeSettlement(String settlementId) async {
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String reason,
+  }) async {
     final match = _findSettlement(settlementId);
-    if (match.item.toUserId != currentUserId ||
-        match.item.status != GroupSettlementStatus.payerMarkedPaid) {
-      throw const AppException('Forbidden', code: 'GROUP_SETTLEMENT_FORBIDDEN');
+    final isParticipant =
+        match.item.fromUserId == currentUserId ||
+        match.item.toUserId == currentUserId;
+    if (!isParticipant ||
+        match.item.status == GroupSettlementStatus.completed ||
+        match.item.status == GroupSettlementStatus.disputed ||
+        reason.trim().isEmpty) {
+      throw const AppException(
+        'Settlement cannot be disputed',
+        code: 'GROUP_SETTLEMENT_FORBIDDEN',
+      );
     }
     match.list[match.index] = _copySettlement(
       match.item,
       status: GroupSettlementStatus.disputed,
+    );
+    _recordActivity(
+      match.item.groupId,
+      'settlement_disputed',
+      metadata: {'settlement_id': settlementId, 'reason': reason.trim()},
     );
   }
 
@@ -1376,6 +1404,68 @@ class GroupMockDataSource {
     match.list[match.index] = _copySettlement(
       match.item,
       status: GroupSettlementStatus.pending,
+    );
+  }
+
+  Future<void> removeMember({
+    required String groupId,
+    required String userId,
+  }) async {
+    final members = _members[groupId];
+    if (members == null || userId == currentUserId) {
+      throw const AppException(
+        'Member cannot be removed',
+        code: 'GROUP_MEMBER_REMOVE_FORBIDDEN',
+      );
+    }
+    final actorIndex = members.indexWhere(
+      (member) =>
+          member.userId == currentUserId &&
+          member.status == GroupMemberStatus.active,
+    );
+    final targetIndex = members.indexWhere(
+      (member) =>
+          member.userId == userId &&
+          (member.status == GroupMemberStatus.active ||
+              member.status == GroupMemberStatus.invited),
+    );
+    if (actorIndex < 0 || targetIndex < 0) {
+      throw const AppException('Member not found', code: 'NOT_FOUND');
+    }
+    final actor = members[actorIndex];
+    final target = members[targetIndex];
+    final canRemove =
+        actor.role == GroupRole.owner ||
+        (actor.role == GroupRole.admin && target.role == GroupRole.member);
+    if (!canRemove || target.role == GroupRole.owner) {
+      throw const AppException(
+        'Member cannot be removed',
+        code: 'GROUP_MEMBER_REMOVE_FORBIDDEN',
+      );
+    }
+    final unresolved =
+        _settlements[groupId]?.any(
+          (settlement) =>
+              (settlement.fromUserId == userId ||
+                  settlement.toUserId == userId) &&
+              settlement.status != GroupSettlementStatus.completed,
+        ) ??
+        false;
+    if ((_groupBalances(groupId)[userId] ?? 0) != 0 || unresolved) {
+      throw const AppException(
+        'Member has unresolved group balance',
+        code: 'GROUP_MEMBER_REMOVE_UNRESOLVED',
+      );
+    }
+    members[targetIndex] = _memberWith(
+      target,
+      status: GroupMemberStatus.removed,
+      leftAt: DateTime.now(),
+    );
+    _recordActivity(
+      groupId,
+      'member_removed',
+      metadata: {'removed_user_id': userId},
     );
   }
 
@@ -1594,22 +1684,6 @@ class GroupMockDataSource {
       );
     }
     record.comments.removeAt(index);
-  }
-
-  void _validatePayerDraft(
-    GroupTransactionDraft draft,
-    List<String> memberIds,
-  ) {
-    if (draft.paymentMode == GroupPaymentMode.everyonePaid) {
-      return;
-    }
-    _splitCalculator.calculate(
-      totalAmount: draft.totalAmount,
-      activeMemberIds: memberIds,
-      splitMode: GroupSplitMode.equal,
-      paymentMode: draft.paymentMode,
-      payerAmounts: draft.payerAmounts,
-    );
   }
 
   void _refreshSettlements(String groupId) {
@@ -2024,6 +2098,26 @@ class GroupMockDataSource {
       updatedAt: DateTime.now(),
       fromDisplayName: value.fromDisplayName,
       toDisplayName: value.toDisplayName,
+    );
+  }
+
+  SpendingGroupMember _memberWith(
+    SpendingGroupMember value, {
+    GroupRole? role,
+    GroupMemberStatus? status,
+    DateTime? leftAt,
+  }) {
+    return SpendingGroupMember(
+      id: value.id,
+      groupId: value.groupId,
+      userId: value.userId,
+      role: role ?? value.role,
+      status: status ?? value.status,
+      joinedAt: value.joinedAt,
+      leftAt: leftAt ?? value.leftAt,
+      displayName: value.displayName,
+      username: value.username,
+      avatarPath: value.avatarPath,
     );
   }
 

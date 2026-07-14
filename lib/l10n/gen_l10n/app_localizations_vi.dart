@@ -34,6 +34,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get commonSave => 'Lưu';
 
   @override
+  String get commonSaved => 'Đã lưu';
+
+  @override
   String get commonCancel => 'Hủy';
 
   @override
@@ -298,6 +301,39 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get onboardingBudgetLabel => 'Ngân sách tháng';
+
+  @override
+  String get onboardingScanning => 'Đang nhận diện...';
+
+  @override
+  String get onboardingRecognized => 'Đã nhận diện!';
+
+  @override
+  String get onboardingCategoryFood => 'Ăn uống';
+
+  @override
+  String get onboardingCategoryTransport => 'Di chuyển';
+
+  @override
+  String get onboardingCategoryEntertainment => 'Giải trí';
+
+  @override
+  String get onboardingIncome => 'Thu nhập';
+
+  @override
+  String get onboardingExpenseLabel => 'Chi tiêu';
+
+  @override
+  String get onboardingStreakLabel => 'ngày';
+
+  @override
+  String get onboardingBudgetUsed => 'Đã dùng';
+
+  @override
+  String get onboardingBudgetWarning => 'Sắp vượt hạn mức!';
+
+  @override
+  String get onboardingInsightText => 'Chi ăn uống tăng 20%';
 
   @override
   String get profileSetupTitle => 'Thiết lập hồ sơ';
@@ -3928,13 +3964,26 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupPhotoAlbumTitle => 'Album ảnh';
 
   @override
-  String get groupPhotoAlbumEmpty => 'Chưa có ảnh nào';
+  String get groupPhotoAlbumEmpty => 'Chưa có ảnh giao dịch';
+
+  @override
+  String get groupPhotoAlbumLoadError => 'Không thể tải album ảnh';
+
+  @override
+  String get groupTransactionFallback => 'Giao dịch nhóm';
+
+  @override
+  String get groupMemberFallback => 'Thành viên';
 
   @override
   String get groupBudgetTitle => 'Ngân sách nhóm';
 
   @override
-  String get groupBudgetMonthlyLimit => 'Giới hạn hàng tháng';
+  String get groupBudgetSubtitle =>
+      'Đặt giới hạn chi tiêu chung mỗi tháng cho nhóm.';
+
+  @override
+  String get groupBudgetMonthlyLimit => 'Giới hạn mỗi tháng';
 
   @override
   String get groupBudgetWarningThreshold => 'Ngưỡng cảnh báo';
@@ -3953,6 +4002,16 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupBudgetSaved => 'Đã cập nhật ngân sách';
+
+  @override
+  String get groupBudgetCurrencySuffix => 'theo tiền tệ của bạn';
+
+  @override
+  String get groupBudgetAdminOnly =>
+      'Chỉ chủ nhóm và quản trị viên được sửa ngân sách.';
+
+  @override
+  String get groupBudgetInvalidLimit => 'Nhập giới hạn hợp lệ, không âm.';
 
   @override
   String get groupNotificationPrefsTitle => 'Cài đặt thông báo';
@@ -3993,6 +4052,28 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupNotificationPrefsSaved => 'Đã lưu cài đặt thông báo';
 
   @override
+  String get groupNotificationPreferencesTitle => 'Tuỳ chọn thông báo';
+
+  @override
+  String get groupNotificationPreferencesSubtitle =>
+      'Chọn loại sự kiện nhóm bạn muốn nhận thông báo.';
+
+  @override
+  String get groupNotificationMuteAll => 'Tắt tất cả thông báo';
+
+  @override
+  String get groupNotificationTransactions => 'Cập nhật giao dịch';
+
+  @override
+  String get groupNotificationDebts => 'Cập nhật nợ và tất toán';
+
+  @override
+  String get groupNotificationInvites => 'Lời mời';
+
+  @override
+  String get groupNotificationMentions => 'Lượt nhắc tên';
+
+  @override
   String get groupPublicProfileTitle => 'Trang công khai';
 
   @override
@@ -4014,7 +4095,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bao gồm thống kê chi tiêu trên trang công khai';
 
   @override
-  String get groupPublicProfileSlug => 'Liên kết tùy chỉnh';
+  String get groupPublicProfileSlug => 'Slug công khai';
 
   @override
   String get groupPublicProfileSlugHint => 'ten-nhom-cua-toi';
@@ -4025,6 +4106,83 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupPublicProfileSaved => 'Đã cập nhật trang công khai';
+
+  @override
+  String get groupPublicProfileSettingsTitle => 'Cài đặt trang công khai';
+
+  @override
+  String get groupPublicProfileSettingsSubtitle =>
+      'Chỉ thông tin an toàn của nhóm được hiển thị công khai.';
+
+  @override
+  String get groupPublicProfileEnabled => 'Bật trang công khai';
+
+  @override
+  String get groupPublicProfileShowStatsSubtitle =>
+      'Chỉ hiển thị số lượng tổng hợp và tổng chi tiêu.';
+
+  @override
+  String get groupPublicProfileInvalidSlug =>
+      'Dùng 3–80 chữ thường, số hoặc dấu gạch ngang.';
+
+  @override
+  String get groupPublicProfileFallbackName => 'Nhóm Moniary';
+
+  @override
+  String get groupPublicProfileMembers => 'Thành viên';
+
+  @override
+  String get groupPublicProfileTransactions => 'Giao dịch';
+
+  @override
+  String get groupPublicProfileTotalSpent => 'Tổng chi';
+
+  @override
+  String get groupPublicProfileSafeNotice =>
+      'Không hiển thị thông tin cá nhân hay dữ liệu giao dịch chi tiết.';
+
+  @override
+  String get groupRecurringTitle => 'Giao dịch định kỳ';
+
+  @override
+  String get groupRecurringAdd => 'Thêm giao dịch định kỳ';
+
+  @override
+  String get groupRecurringEdit => 'Sửa giao dịch định kỳ';
+
+  @override
+  String get groupRecurringEmpty => 'Chưa có giao dịch định kỳ';
+
+  @override
+  String get groupRecurringName => 'Tên giao dịch';
+
+  @override
+  String get groupRecurringAmount => 'Số tiền';
+
+  @override
+  String get groupRecurringFrequency => 'Tần suất';
+
+  @override
+  String get groupRecurringWeekly => 'Hàng tuần';
+
+  @override
+  String get groupRecurringMonthly => 'Hàng tháng';
+
+  @override
+  String get groupRecurringNextRun => 'Lần chạy tiếp theo';
+
+  @override
+  String get groupRecurringNotifyBefore => 'Báo trước số ngày';
+
+  @override
+  String get groupRecurringActive => 'Đang hoạt động';
+
+  @override
+  String get groupRecurringDeleteTitle => 'Xoá giao dịch định kỳ?';
+
+  @override
+  String get groupRecurringDeleteMessage =>
+      'Giao dịch định kỳ này sẽ bị xoá vĩnh viễn.';
 
   @override
   String get groupActivityTransactionReacted =>
@@ -4326,6 +4484,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get friendOutgoingRequests => 'Đã gửi lời mời';
+
+  @override
+  String get friendRequestsEmpty => 'Chưa có lời mời kết bạn nào.';
 
   @override
   String get friendAccept => 'Chấp nhận';
@@ -5059,4 +5220,79 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get cameraFallbackGenericError =>
       'Không thể mở camera. Bạn có thể nhập giao dịch thủ công.';
+
+  @override
+  String get scanSuggestionNotice =>
+      'Các trường có nhãn AI đề xuất được điền từ hóa đơn. Hãy kiểm tra trước khi lưu.';
+
+  @override
+  String get scanAiSuggestion => 'AI đề xuất';
+
+  @override
+  String get scanSuggestionNeedsReview => 'AI đề xuất - nên kiểm tra lại';
+
+  @override
+  String get friendQrTitle => 'QR kết bạn';
+
+  @override
+  String get friendQrMyCode => 'Mã của tôi';
+
+  @override
+  String get friendQrScan => 'Quét mã';
+
+  @override
+  String get friendQrRetry => 'Thử lại';
+
+  @override
+  String get friendQrShare => 'Chia sẻ mã';
+
+  @override
+  String get friendQrLoadError => 'Không thể khởi động camera.';
+
+  @override
+  String get friendQrTorch => 'Bật hoặc tắt đèn pin';
+
+  @override
+  String get friendQrSwitchCamera => 'Đổi camera';
+
+  @override
+  String get friendQrInvalid => 'Đây không phải mã QR kết bạn Moniary hợp lệ.';
+
+  @override
+  String get friendRateLimited =>
+      'Bạn đã gửi quá nhiều lời mời kết bạn. Vui lòng thử lại sau.';
+
+  @override
+  String get groupSplitExact => 'Số tiền cụ thể';
+
+  @override
+  String get groupParticipantsTitle => 'Người tham gia khoản chi';
+
+  @override
+  String get groupSettlementDisputeTitle => 'Báo cáo vấn đề thanh toán';
+
+  @override
+  String get groupSettlementDisputeReasonHint =>
+      'Mô tả thông tin chưa chính xác';
+
+  @override
+  String get groupSettlementDisputeReasonRequired =>
+      'Vui lòng nhập lý do tranh chấp.';
+
+  @override
+  String get groupSettlementDisputeAction => 'Tranh chấp';
+
+  @override
+  String get groupTransferOwnershipAction => 'Chuyển quyền chủ nhóm';
+
+  @override
+  String get groupRemoveMemberAction => 'Xóa thành viên';
+
+  @override
+  String get groupMemberRemoveUnresolved =>
+      'Thành viên này vẫn còn số dư chưa quyết toán nên chưa thể xóa.';
+
+  @override
+  String get groupMemberActionForbidden =>
+      'Bạn không có quyền quản lý thành viên này.';
 }

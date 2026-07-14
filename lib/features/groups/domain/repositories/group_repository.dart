@@ -109,24 +109,6 @@ abstract interface class GroupRepository {
 
   Future<List<GroupPhotoItem>> fetchPhotoAlbum(String groupId);
 
-  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
-    String groupId,
-  );
-
-  Future<void> createRecurringTransaction({
-    required String groupId,
-    required String title,
-    required int amount,
-    required String frequency,
-    required DateTime nextRunAt,
-    required int notifyDaysBefore,
-  });
-
-  Future<void> updateRecurringTransactionActive({
-    required String recurringTransactionId,
-    required bool isActive,
-  });
-
   Future<GroupPublicProfile> fetchPublicProfile(String groupId);
 
   Future<void> updatePublicProfile(GroupPublicProfile profile);
@@ -135,9 +117,14 @@ abstract interface class GroupRepository {
 
   Future<void> confirmSettlementReceived(String settlementId);
 
-  Future<void> disputeSettlement(String settlementId);
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String reason,
+  });
 
   Future<void> resetDisputedSettlement(String settlementId);
+
+  Future<void> removeMember({required String groupId, required String userId});
 
   Future<void> leaveGroup(String groupId);
 
@@ -163,4 +150,31 @@ abstract interface class GroupRepository {
     required String commentId,
     required String transactionId,
   });
+
+  Future<GroupPublicProfile> fetchPublicGroupProfile(String slug);
+
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  );
+
+  Future<String> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  });
+
+  Future<void> updateRecurringTransaction({
+    required String id,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  });
+
+  Future<void> deleteRecurringTransaction(String id);
 }

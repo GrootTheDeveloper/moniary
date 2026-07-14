@@ -8,6 +8,7 @@ import '../domain/entities/group_settlement.dart';
 import '../domain/entities/group_transaction.dart';
 import '../domain/entities/group_invite.dart';
 import '../domain/entities/spending_group.dart';
+import '../domain/services/group_split_calculator.dart';
 
 final groupsControllerProvider =
     AsyncNotifierProvider<GroupsController, List<SpendingGroup>>(
@@ -24,6 +25,11 @@ final groupDetailProvider = FutureProvider.family<SpendingGroupDetail, String>((
 final groupTransactionsProvider =
     FutureProvider.family<List<GroupTransaction>, String>((ref, groupId) {
       return ref.watch(groupRepositoryProvider).fetchTransactions(groupId);
+    });
+
+final publicGroupProfileProvider =
+    FutureProvider.family<GroupPublicProfile, String>((ref, slug) {
+      return ref.watch(groupRepositoryProvider).fetchPublicGroupProfile(slug);
     });
 
 final groupTransactionDetailProvider =
@@ -155,6 +161,17 @@ final pendingGroupInviteCountProvider = Provider<int>((ref) {
       );
 });
 
+final unreadGroupNotificationCountProvider = Provider<int>((ref) {
+  return ref
+      .watch(groupNotificationsProvider)
+      .when(
+        data: (notifications) =>
+            notifications.where((notification) => !notification.isRead).length,
+        loading: () => 0,
+        error: (_, _) => 0,
+      );
+});
+
 final currentGroupUserIdProvider = Provider<String>((ref) {
   return ref.watch(groupRepositoryProvider).currentUserId;
 });
@@ -179,6 +196,70 @@ class GroupsController extends AsyncNotifier<List<SpendingGroup>> {
 class GroupActionController extends AsyncNotifier<void> {
   @override
   Future<void> build() async {}
+
+  Future<void> refreshRecurringTransactions(String groupId) async {
+    ref.invalidate(groupRecurringTransactionsProvider(groupId));
+  }
+
+  Future<String> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) {
+    return _run(() async {
+      final id = await ref
+          .read(groupRepositoryProvider)
+          .createRecurringTransaction(
+            groupId: groupId,
+            title: title,
+            amount: amount,
+            frequency: frequency,
+            nextRunAt: nextRunAt,
+            notifyDaysBefore: notifyDaysBefore,
+          );
+      ref.invalidate(groupRecurringTransactionsProvider(groupId));
+      return id;
+    });
+  }
+
+  Future<void> updateRecurringTransaction({
+    required String groupId,
+    required String id,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .updateRecurringTransaction(
+            id: id,
+            title: title,
+            amount: amount,
+            frequency: frequency,
+            nextRunAt: nextRunAt,
+            notifyDaysBefore: notifyDaysBefore,
+            isActive: isActive,
+          );
+      ref.invalidate(groupRecurringTransactionsProvider(groupId));
+    });
+  }
+
+  Future<void> deleteRecurringTransaction({
+    required String groupId,
+    required String id,
+  }) {
+    return _run(() async {
+      await ref.read(groupRepositoryProvider).deleteRecurringTransaction(id);
+      ref.invalidate(groupRecurringTransactionsProvider(groupId));
+    });
+  }
 
   Future<String> createGroup({
     required String name,
@@ -277,6 +358,7 @@ class GroupActionController extends AsyncNotifier<void> {
 
   Future<String> createTransaction(GroupTransactionDraft draft) {
     return _run(() async {
+      await _validateTransactionDraft(draft);
       final id = await ref
           .read(groupRepositoryProvider)
           .createTransaction(draft);
@@ -290,6 +372,7 @@ class GroupActionController extends AsyncNotifier<void> {
     required GroupTransactionDraft draft,
   }) {
     return _run(() async {
+      await _validateTransactionDraft(draft);
       await ref
           .read(groupRepositoryProvider)
           .updateTransaction(transactionId: transactionId, draft: draft);
@@ -353,9 +436,12 @@ class GroupActionController extends AsyncNotifier<void> {
   Future<void> disputeSettlement({
     required String settlementId,
     required String groupId,
+    required String reason,
   }) {
     return _run(() async {
-      await ref.read(groupRepositoryProvider).disputeSettlement(settlementId);
+      await ref
+          .read(groupRepositoryProvider)
+          .disputeSettlement(settlementId: settlementId, reason: reason);
       _invalidateGroup(groupId);
     });
   }
@@ -368,6 +454,15 @@ class GroupActionController extends AsyncNotifier<void> {
       await ref
           .read(groupRepositoryProvider)
           .resetDisputedSettlement(settlementId);
+      _invalidateGroup(groupId);
+    });
+  }
+
+  Future<void> removeMember({required String groupId, required String userId}) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .removeMember(groupId: groupId, userId: userId);
       _invalidateGroup(groupId);
     });
   }
@@ -482,47 +577,6 @@ class GroupActionController extends AsyncNotifier<void> {
     );
   }
 
-  Future<void> createRecurringTransaction({
-    required String groupId,
-    required String title,
-    required int amount,
-    required String frequency,
-    required DateTime nextRunAt,
-    required int notifyDaysBefore,
-  }) {
-    return _run(() async {
-      await ref
-          .read(groupRepositoryProvider)
-          .createRecurringTransaction(
-            groupId: groupId,
-            title: title,
-            amount: amount,
-            frequency: frequency,
-            nextRunAt: nextRunAt,
-            notifyDaysBefore: notifyDaysBefore,
-          );
-      ref.invalidate(groupRecurringTransactionsProvider(groupId));
-      ref.invalidate(groupActivitiesProvider(groupId));
-      ref.invalidate(groupNotificationsProvider);
-    });
-  }
-
-  Future<void> updateRecurringTransactionActive({
-    required String recurringTransactionId,
-    required String groupId,
-    required bool isActive,
-  }) {
-    return _run(() async {
-      await ref
-          .read(groupRepositoryProvider)
-          .updateRecurringTransactionActive(
-            recurringTransactionId: recurringTransactionId,
-            isActive: isActive,
-          );
-      ref.invalidate(groupRecurringTransactionsProvider(groupId));
-    });
-  }
-
   Future<void> updatePublicProfile(GroupPublicProfile profile) {
     return _run(() async {
       await ref.read(groupRepositoryProvider).updatePublicProfile(profile);
@@ -554,5 +608,22 @@ class GroupActionController extends AsyncNotifier<void> {
     ref.invalidate(groupFeedProvider(groupId));
     ref.invalidate(groupPhotoAlbumProvider(groupId));
     ref.invalidate(groupBudgetProvider(groupId));
+  }
+
+  Future<void> _validateTransactionDraft(GroupTransactionDraft draft) async {
+    final detail = await ref.read(groupDetailProvider(draft.groupId).future);
+    const GroupSplitCalculator().validateDraft(
+      totalAmount: draft.totalAmount,
+      activeMemberIds: detail.activeMembers
+          .map((member) => member.userId)
+          .toList(growable: false),
+      splitMode: draft.splitMode,
+      paymentMode: draft.paymentMode,
+      participantIds: draft.participantIds.isEmpty
+          ? null
+          : draft.participantIds,
+      shareAmounts: draft.shareAmounts,
+      payerAmounts: draft.payerAmounts,
+    );
   }
 }

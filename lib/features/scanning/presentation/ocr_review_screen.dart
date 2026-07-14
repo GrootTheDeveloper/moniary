@@ -46,6 +46,12 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
   late DateTime _date;
   String? _walletId;
   String? _categoryId;
+  bool _merchantEdited = false;
+  bool _amountEdited = false;
+  bool _dateEdited = false;
+  bool _categoryEdited = false;
+  bool _noteEdited = false;
+  bool _resolvedCategorySuggestion = false;
 
   @override
   void initState() {
@@ -55,12 +61,13 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
       text: result.merchantName ?? '',
     );
     _amountController = TextEditingController(
-      text: result.totalAmount == null
-          ? ''
-          : _formatDecimal(result.totalAmount!),
+      text: result.totalAmount?.toString() ?? '',
     );
     _noteController = TextEditingController(text: result.note ?? '');
     _date = result.transactionDate ?? DateTime.now();
+    _merchantController.addListener(_markMerchantEdited);
+    _amountController.addListener(_markAmountEdited);
+    _noteController.addListener(_markNoteEdited);
   }
 
   @override
@@ -91,7 +98,18 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
             .toList() ??
         const <Category>[];
     _walletId ??= _defaultWalletId(wallets);
-    _categoryId ??= categories.isEmpty ? null : categories.first.id;
+    if (!_resolvedCategorySuggestion && categories.isNotEmpty) {
+      final suggestedCategoryId = _suggestedCategoryId(
+        categories,
+        widget.args.result.categoryKey,
+      );
+      _categoryId = suggestedCategoryId ?? categories.first.id;
+      if (widget.args.result.categorySuggestion != null &&
+          suggestedCategoryId == null) {
+        _categoryEdited = true;
+      }
+      _resolvedCategorySuggestion = true;
+    }
 
     final loading = composer.isLoading;
 
@@ -100,13 +118,17 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
-          _ConfidenceCard(confidence: widget.args.result.confidence),
+          const _SuggestionNotice(),
           const SizedBox(height: 18),
           TextField(
             controller: _merchantController,
             decoration: InputDecoration(
               labelText: context.l10n.scanMerchant,
               prefixIcon: const Icon(Icons.storefront_outlined),
+              helperText: _suggestionLabel(
+                widget.args.result.merchantSuggestion,
+                edited: _merchantEdited,
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -117,10 +139,21 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
               labelText: context.l10n.transactionAmount,
               suffixText: ref.currencySymbol,
               prefixIcon: const Icon(Icons.payments_outlined),
+              helperText: _suggestionLabel(
+                widget.args.result.totalSuggestion,
+                edited: _amountEdited,
+              ),
             ),
           ),
           const SizedBox(height: 12),
-          _DateTile(date: _date, onTap: _pickDate),
+          _DateTile(
+            date: _date,
+            onTap: _pickDate,
+            suggestionLabel: _suggestionLabel(
+              widget.args.result.dateSuggestion,
+              edited: _dateEdited,
+            ),
+          ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             initialValue: wallets.any((wallet) => wallet.id == _walletId)
@@ -160,10 +193,17 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
                 .toList(),
             onChanged: loading
                 ? null
-                : (value) => setState(() => _categoryId = value),
+                : (value) => setState(() {
+                    _categoryId = value;
+                    _categoryEdited = true;
+                  }),
             decoration: InputDecoration(
               labelText: context.l10n.transactionExpenseCategory,
               prefixIcon: const Icon(Icons.category_outlined),
+              helperText: _suggestionLabel(
+                widget.args.result.categorySuggestion,
+                edited: _categoryEdited,
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -175,6 +215,10 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
               labelText: context.l10n.transactionNote,
               alignLabelWithHint: true,
               prefixIcon: const Icon(Icons.notes_outlined),
+              helperText: _suggestionLabel(
+                widget.args.result.noteSuggestion,
+                edited: _noteEdited,
+              ),
             ),
           ),
           if (walletsAsync.isLoading || categoriesAsync.isLoading) ...[
@@ -245,6 +289,47 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
         .id;
   }
 
+  String? _suggestedCategoryId(List<Category> categories, String? categoryKey) {
+    if (categoryKey == null) return null;
+    final expectedIcon = switch (categoryKey) {
+      'food' => 'restaurant',
+      'transport' => 'directions_car',
+      'shopping' => 'shopping_bag',
+      _ => null,
+    };
+    if (expectedIcon == null) return null;
+    for (final category in categories) {
+      if (category.icon == expectedIcon) return category.id;
+    }
+    return null;
+  }
+
+  String? _suggestionLabel<T>(
+    OcrSuggestion<T>? suggestion, {
+    required bool edited,
+  }) {
+    if (suggestion == null || edited) return null;
+    return suggestion.needsReview
+        ? context.l10n.scanSuggestionNeedsReview
+        : context.l10n.scanAiSuggestion;
+  }
+
+  void _markMerchantEdited() => _markEdited(
+    isEdited: _merchantEdited,
+    update: () => _merchantEdited = true,
+  );
+
+  void _markAmountEdited() =>
+      _markEdited(isEdited: _amountEdited, update: () => _amountEdited = true);
+
+  void _markNoteEdited() =>
+      _markEdited(isEdited: _noteEdited, update: () => _noteEdited = true);
+
+  void _markEdited({required bool isEdited, required VoidCallback update}) {
+    if (isEdited || !mounted) return;
+    setState(update);
+  }
+
   Future<void> _pickDate() async {
     final selected = await showDatePicker(
       context: context,
@@ -256,6 +341,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
       return;
     }
     setState(() {
+      _dateEdited = true;
       _date = DateTime(
         selected.year,
         selected.month,
@@ -367,19 +453,16 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
   }
 }
 
-class _ConfidenceCard extends StatelessWidget {
-  const _ConfidenceCard({required this.confidence});
-
-  final double confidence;
+class _SuggestionNotice extends StatelessWidget {
+  const _SuggestionNotice();
 
   @override
   Widget build(BuildContext context) {
-    final percent = (confidence.clamp(0, 1) * 100).round();
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppTheme.outline),
       ),
       child: Row(
@@ -388,7 +471,7 @@ class _ConfidenceCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              context.l10n.scanOcrConfidence(percent),
+              context.l10n.scanSuggestionNotice,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
@@ -399,10 +482,15 @@ class _ConfidenceCard extends StatelessWidget {
 }
 
 class _DateTile extends StatelessWidget {
-  const _DateTile({required this.date, required this.onTap});
+  const _DateTile({
+    required this.date,
+    required this.onTap,
+    this.suggestionLabel,
+  });
 
   final DateTime date;
   final VoidCallback onTap;
+  final String? suggestionLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -415,6 +503,7 @@ class _DateTile extends StatelessWidget {
       tileColor: AppTheme.surfaceRaised,
       leading: const Icon(Icons.event_outlined),
       title: Text(context.l10n.transactionDate),
+      subtitle: suggestionLabel == null ? null : Text(suggestionLabel!),
       trailing: Text(
         DateFormat(
           'dd/MM/yyyy',
