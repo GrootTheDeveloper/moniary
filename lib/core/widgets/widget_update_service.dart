@@ -13,7 +13,17 @@ import '../../shared/utils/currency_formatter.dart';
 import '../../shared/utils/app_logger.dart';
 
 final widgetUpdateServiceProvider = Provider<WidgetUpdateService>((ref) {
-  return WidgetUpdateService(ref);
+  final service = WidgetUpdateService(ref);
+
+  // Auto-update widget dynamically whenever locale or preferred currency changes
+  ref.listen<String>(preferredLocaleProvider, (prev, next) {
+    service.updateWidget().ignore();
+  });
+  ref.listen<String>(preferredCurrencyProvider, (prev, next) {
+    service.updateWidget().ignore();
+  });
+
+  return service;
 });
 
 class WidgetUpdateService {
