@@ -34,6 +34,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get commonSave => 'Lưu';
 
   @override
+  String get commonSaved => 'Đã lưu';
+
+  @override
   String get commonCancel => 'Hủy';
 
   @override
@@ -3826,6 +3829,29 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupMemberFallback => 'Thành viên';
+
+  @override
+  String get groupBudgetTitle => 'Ngân sách nhóm';
+
+  @override
+  String get groupBudgetSubtitle =>
+      'Đặt giới hạn chi tiêu chung mỗi tháng cho nhóm.';
+
+  @override
+  String get groupBudgetMonthlyLimit => 'Giới hạn mỗi tháng';
+
+  @override
+  String get groupBudgetCurrencySuffix => 'theo tiền tệ của bạn';
+
+  @override
+  String get groupBudgetWarningThreshold => 'Cảnh báo khi chi tiêu đạt';
+
+  @override
+  String get groupBudgetAdminOnly =>
+      'Chỉ chủ nhóm và quản trị viên được sửa ngân sách.';
+
+  @override
+  String get groupBudgetInvalidLimit => 'Nhập giới hạn hợp lệ, không âm.';
 
   @override
   String get groupActivityTransactionReacted =>

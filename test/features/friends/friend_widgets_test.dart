@@ -796,6 +796,13 @@ class FakeGroupRepository implements GroupRepository {
   final List<String> declinedInviteIds = [];
 
   @override
+  Future<GroupBudget> fetchBudget(String groupId) async =>
+      GroupBudget.defaults(groupId);
+
+  @override
+  Future<void> saveBudget(GroupBudget budget) async {}
+
+  @override
   String get currentUserId => 'mock-user-id';
 
   @override

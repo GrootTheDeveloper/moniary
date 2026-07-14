@@ -33,6 +33,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonSave => 'Save';
 
   @override
+  String get commonSaved => 'Saved';
+
+  @override
   String get commonCancel => 'Cancel';
 
   @override
@@ -3824,6 +3827,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupMemberFallback => 'Member';
+
+  @override
+  String get groupBudgetTitle => 'Group budget';
+
+  @override
+  String get groupBudgetSubtitle =>
+      'Set a shared monthly spending limit for this group.';
+
+  @override
+  String get groupBudgetMonthlyLimit => 'Monthly limit';
+
+  @override
+  String get groupBudgetCurrencySuffix => 'in your currency';
+
+  @override
+  String get groupBudgetWarningThreshold => 'Warn when spending reaches';
+
+  @override
+  String get groupBudgetAdminOnly =>
+      'Only group owners and admins can change this budget.';
+
+  @override
+  String get groupBudgetInvalidLimit => 'Enter a valid non-negative limit.';
 
   @override
   String get groupActivityTransactionReacted => 'reacted to a transaction';

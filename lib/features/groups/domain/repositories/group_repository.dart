@@ -86,4 +86,8 @@ abstract interface class GroupRepository {
   Future<List<GroupNotification>> fetchNotifications();
 
   Future<void> markNotificationRead(String notificationId);
+
+  Future<GroupBudget> fetchBudget(String groupId);
+
+  Future<void> saveBudget(GroupBudget budget);
 }

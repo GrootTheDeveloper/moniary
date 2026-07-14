@@ -559,6 +559,27 @@ class GroupRepositoryImpl implements GroupRepository {
     );
   }
 
+  @override
+  Future<GroupBudget> fetchBudget(String groupId) async {
+    if (_useMockData) return GroupBudget.defaults(groupId);
+    return _guard('fetch group budget', () async {
+      final row = await _remote.fetchBudget(groupId);
+      if (row == null) return GroupBudget.defaults(groupId);
+      return GroupBudget(
+        groupId: groupId,
+        monthlyLimit: (row['monthly_limit'] as num).toInt(),
+        warningThresholdPercent: (row['warning_threshold_percent'] as num)
+            .toInt(),
+      );
+    });
+  }
+
+  @override
+  Future<void> saveBudget(GroupBudget budget) {
+    if (_useMockData) return Future.value();
+    return _guard('save group budget', () => _remote.saveBudget(budget));
+  }
+
   Future<T> _guard<T>(String operation, Future<T> Function() action) async {
     try {
       return await action();

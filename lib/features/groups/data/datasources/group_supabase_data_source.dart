@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_transaction.dart';
+import '../../domain/entities/group_roadmap.dart';
 
 class GroupSupabaseDataSource {
   const GroupSupabaseDataSource(this.client);
@@ -336,6 +337,23 @@ class GroupSupabaseDataSource {
       'mark_group_notification_read',
       params: {'p_notification_id': notificationId},
     );
+  }
+
+  Future<Map<String, dynamic>?> fetchBudget(String groupId) async {
+    final rows = await client
+        .from('group_budgets')
+        .select()
+        .eq('group_id', groupId);
+    final values = _rows(rows);
+    return values.isEmpty ? null : values.first;
+  }
+
+  Future<void> saveBudget(GroupBudget budget) {
+    return client.from('group_budgets').upsert({
+      'group_id': budget.groupId,
+      'monthly_limit': budget.monthlyLimit,
+      'warning_threshold_percent': budget.warningThresholdPercent,
+    }, onConflict: 'group_id');
   }
 
   Future<String> uploadGroupAvatar({

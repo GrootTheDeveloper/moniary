@@ -26,6 +26,13 @@ final groupTransactionsProvider =
       return ref.watch(groupRepositoryProvider).fetchTransactions(groupId);
     });
 
+final groupBudgetProvider = FutureProvider.family<GroupBudget, String>((
+  ref,
+  groupId,
+) {
+  return ref.watch(groupRepositoryProvider).fetchBudget(groupId);
+});
+
 final groupTransactionDetailProvider =
     FutureProvider.family<GroupTransactionDetail, String>((ref, transactionId) {
       return ref
@@ -115,6 +122,13 @@ class GroupsController extends AsyncNotifier<List<SpendingGroup>> {
 class GroupActionController extends AsyncNotifier<void> {
   @override
   Future<void> build() async {}
+
+  Future<void> saveBudget(GroupBudget budget) {
+    return _run(() async {
+      await ref.read(groupRepositoryProvider).saveBudget(budget);
+      ref.invalidate(groupBudgetProvider(budget.groupId));
+    });
+  }
 
   Future<String> createGroup({
     required String name,

@@ -146,6 +146,12 @@ abstract class AppLocalizations {
   /// **'Lưu'**
   String get commonSave;
 
+  /// No description provided for @commonSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu'**
+  String get commonSaved;
+
   /// No description provided for @commonCancel.
   ///
   /// In vi, this message translates to:
@@ -6913,6 +6919,48 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thành viên'**
   String get groupMemberFallback;
+
+  /// No description provided for @groupBudgetTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngân sách nhóm'**
+  String get groupBudgetTitle;
+
+  /// No description provided for @groupBudgetSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt giới hạn chi tiêu chung mỗi tháng cho nhóm.'**
+  String get groupBudgetSubtitle;
+
+  /// No description provided for @groupBudgetMonthlyLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giới hạn mỗi tháng'**
+  String get groupBudgetMonthlyLimit;
+
+  /// No description provided for @groupBudgetCurrencySuffix.
+  ///
+  /// In vi, this message translates to:
+  /// **'theo tiền tệ của bạn'**
+  String get groupBudgetCurrencySuffix;
+
+  /// No description provided for @groupBudgetWarningThreshold.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cảnh báo khi chi tiêu đạt'**
+  String get groupBudgetWarningThreshold;
+
+  /// No description provided for @groupBudgetAdminOnly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ chủ nhóm và quản trị viên được sửa ngân sách.'**
+  String get groupBudgetAdminOnly;
+
+  /// No description provided for @groupBudgetInvalidLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập giới hạn hợp lệ, không âm.'**
+  String get groupBudgetInvalidLimit;
 
   /// No description provided for @groupActivityTransactionReacted.
   ///
