@@ -18,6 +18,7 @@ import '../../../transactions/presentation/detail/day_detail_screen.dart';
 import '../../../transactions/presentation/detail/transaction_detail_screen.dart';
 import '../../../transactions/presentation/detail/transaction_route_args.dart';
 import '../../../transactions/presentation/utils/transaction_image_source.dart';
+import '../../../friends/application/friend_controller.dart';
 import '../../../friends/presentation/screens/friends_screen.dart';
 import '../../../wallets/domain/models/wallet.dart';
 import '../../../wallets/application/wallets_controller.dart';
@@ -260,6 +261,9 @@ class _SeamlessHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isHidden = ref.watch(privacyControllerProvider).isBalancesHidden;
     final streak = ref.watch(recordingStreakProvider).value;
+    final pendingFriendRequestCount = ref.watch(
+      pendingIncomingFriendRequestCountProvider,
+    );
     final colors = context.moniaryColors;
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
@@ -322,6 +326,7 @@ class _SeamlessHeader extends ConsumerWidget {
                     label: context.l10n.friendsTitle,
                     icon: Icons.people_outline,
                     onTap: onFriendsTap,
+                    badge: pendingFriendRequestCount,
                   ),
                   const SizedBox(width: 7),
                   _HeaderCircleButton(
@@ -570,12 +575,14 @@ class _HeaderCircleButton extends StatelessWidget {
     required this.label,
     required this.icon,
     required this.onTap,
+    this.badge = 0,
   });
 
   final String tooltip;
   final String label;
   final IconData icon;
   final VoidCallback onTap;
+  final int badge;
 
   @override
   Widget build(BuildContext context) {
@@ -601,10 +608,22 @@ class _HeaderCircleButton extends StatelessWidget {
                 child: SizedBox(
                   width: 38,
                   height: 38,
-                  child: Icon(
-                    icon,
-                    color: colors.textPrimary.withValues(alpha: 0.66),
-                    size: 18,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(
+                        icon,
+                        color: colors.textPrimary.withValues(alpha: 0.66),
+                        size: 18,
+                      ),
+                      if (badge > 0)
+                        Positioned(
+                          top: -5,
+                          right: -5,
+                          child: _HeaderActionBadge(count: badge),
+                        ),
+                    ],
                   ),
                 ),
               ),
@@ -621,6 +640,33 @@ class _HeaderCircleButton extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HeaderActionBadge extends StatelessWidget {
+  const _HeaderActionBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.moniaryColors.primary,
+        borderRadius: BorderRadius.circular(99),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        child: Text(
+          count > 99 ? '99+' : '$count',
+          style: context.moniaryTypography.metadataStrong.copyWith(
+            color: AppTheme.surfaceRaised,
+            fontSize: 8.5,
+            letterSpacing: 0,
+          ),
         ),
       ),
     );

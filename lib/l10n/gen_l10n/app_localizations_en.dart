@@ -4046,6 +4046,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendOutgoingRequests => 'Sent requests';
 
   @override
+  String get friendRequestsEmpty => 'No friend requests yet.';
+
+  @override
   String get friendAccept => 'Accept';
 
   @override

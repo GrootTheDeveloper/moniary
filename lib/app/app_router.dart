@@ -429,9 +429,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: GroupActivityCenterScreen.routePath,
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
-          final child = groupId == null
-              ? const GroupsScreen()
-              : GroupActivityCenterScreen(groupId: groupId);
+          final child = GroupActivityCenterScreen(groupId: groupId);
           return buildSlideTransitionPage(state: state, child: child);
         },
       ),

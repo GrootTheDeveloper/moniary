@@ -43,6 +43,9 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
   Widget build(BuildContext context) {
     final friendsAsync = ref.watch(friendsControllerProvider);
     final incomingAsync = ref.watch(incomingFriendRequestsProvider);
+    final pendingIncomingCount = ref.watch(
+      pendingIncomingFriendRequestCountProvider,
+    );
     final outgoingAsync = ref.watch(outgoingFriendRequestsProvider);
     final action = ref.watch(friendActionControllerProvider);
 
@@ -80,6 +83,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                       ? () => Navigator.of(context).maybePop()
                       : null,
                   onAdd: () => context.push(AddFriendScreen.routePath),
+                  onRequests: () => _showFriendRequestsSheet(context),
+                  pendingRequestCount: pendingIncomingCount,
                 ),
                 const SizedBox(height: 22),
                 _SearchField(
@@ -226,6 +231,89 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     ).showSnackBar(SnackBar(content: Text(context.l10n.friendRequestDeclined)));
   }
 
+  Future<void> _showFriendRequestsSheet(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => Consumer(
+        builder: (context, ref, _) {
+          final incomingAsync = ref.watch(incomingFriendRequestsProvider);
+          final action = ref.watch(friendActionControllerProvider);
+          final colors = context.moniaryColors;
+          return SafeArea(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(context).height * 0.72,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      context.l10n.friendIncomingRequests,
+                      textAlign: TextAlign.center,
+                      style: context.moniaryTypography.displaySmall.copyWith(
+                        fontSize: 22,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Flexible(
+                      child: incomingAsync.when(
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
+                        error: (error, stackTrace) {
+                          AppLogger.error(
+                            'Failed to load friend request inbox',
+                            error,
+                            stackTrace,
+                          );
+                          return _SectionError(onRetry: () => _refresh(ref));
+                        },
+                        data: (requests) {
+                          if (requests.isEmpty) {
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 36,
+                                ),
+                                child: Text(
+                                  context.l10n.friendRequestsEmpty,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: colors.textDim),
+                                ),
+                              ),
+                            );
+                          }
+                          return ListView(
+                            shrinkWrap: true,
+                            children: [
+                              _RequestSection(
+                                title: context.l10n.friendIncomingRequests,
+                                requests: requests,
+                                actionLoading: action.isLoading,
+                                onAccept: (request) =>
+                                    _accept(sheetContext, ref, request),
+                                onDecline: (request) =>
+                                    _decline(sheetContext, ref, request),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Future<void> _cancel(
     BuildContext context,
     WidgetRef ref,
@@ -320,14 +408,20 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
 }
 
 class _FriendsTopBar extends StatelessWidget {
-  const _FriendsTopBar({required this.onAdd, this.onBack});
+  const _FriendsTopBar({
+    required this.onAdd,
+    required this.onRequests,
+    required this.pendingRequestCount,
+    this.onBack,
+  });
 
   final VoidCallback? onBack;
   final VoidCallback onAdd;
+  final VoidCallback onRequests;
+  final int pendingRequestCount;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.moniaryColors;
     return SizedBox(
       height: 84,
       child: Stack(
@@ -341,24 +435,63 @@ class _FriendsTopBar extends StatelessWidget {
               icon: Icons.arrow_back_ios_new_rounded,
             ),
           ),
-          Text(
-            context.l10n.friendsTitle,
-            style: context.moniaryTypography.displaySmall.copyWith(
-              fontSize: 22,
-              color: colors.textPrimary,
-            ),
+          _TitleWithBadge(
+            title: context.l10n.friendsTitle,
+            badge: pendingRequestCount,
           ),
           Align(
             alignment: Alignment.centerRight,
-            child: _IconSquareButton(
-              tooltip: context.l10n.friendAdd,
-              onPressed: onAdd,
-              icon: Icons.person_add_alt_1_rounded,
-              filled: true,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _IconSquareButton(
+                  tooltip: context.l10n.friendIncomingRequests,
+                  onPressed: onRequests,
+                  icon: pendingRequestCount > 0
+                      ? Icons.mark_email_unread_outlined
+                      : Icons.mark_email_read_outlined,
+                  badge: pendingRequestCount,
+                ),
+                const SizedBox(width: 8),
+                _IconSquareButton(
+                  tooltip: context.l10n.friendAdd,
+                  onPressed: onAdd,
+                  icon: Icons.person_add_alt_1_rounded,
+                  filled: true,
+                ),
+              ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _TitleWithBadge extends StatelessWidget {
+  const _TitleWithBadge({required this.title, required this.badge});
+
+  final String title;
+  final int badge;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          title,
+          style: context.moniaryTypography.displaySmall.copyWith(
+            fontSize: 22,
+            color: colors.textPrimary,
+          ),
+        ),
+        if (badge > 0) ...[
+          const SizedBox(width: 8),
+          _FriendRequestBadge(count: badge),
+        ],
+      ],
     );
   }
 }
@@ -369,12 +502,14 @@ class _IconSquareButton extends StatelessWidget {
     required this.onPressed,
     required this.icon,
     this.filled = false,
+    this.badge = 0,
   });
 
   final String tooltip;
   final VoidCallback? onPressed;
   final IconData icon;
   final bool filled;
+  final int badge;
 
   @override
   Widget build(BuildContext context) {
@@ -396,7 +531,46 @@ class _IconSquareButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(13),
               border: filled ? null : Border.all(color: colors.outline),
             ),
-            child: Icon(icon, size: 21, color: foreground),
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: [
+                Icon(icon, size: 21, color: foreground),
+                if (badge > 0)
+                  Positioned(
+                    top: -5,
+                    right: -5,
+                    child: _FriendRequestBadge(count: badge),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FriendRequestBadge extends StatelessWidget {
+  const _FriendRequestBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.moniaryColors.primary,
+        borderRadius: BorderRadius.circular(99),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        child: Text(
+          count > 99 ? '99+' : '$count',
+          style: context.moniaryTypography.metadataStrong.copyWith(
+            color: AppTheme.surfaceRaised,
+            fontSize: 9,
+            letterSpacing: 0,
           ),
         ),
       ),
@@ -509,70 +683,86 @@ class _FriendRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 70),
-          decoration: BoxDecoration(
-            border: showDivider
-                ? Border(
-                    bottom: BorderSide(
-                      color: colors.outline.withValues(alpha: 0.55),
-                    ),
-                  )
-                : null,
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 13),
-          child: Row(
-            children: [
-              ClipOval(
-                child: SupabaseImage(
-                  imagePath: friend.avatarPath,
-                  width: 48,
-                  height: 48,
-                  fallbackIcon: Icons.person_outline_rounded,
-                  fallbackBuilder: (context) => _AvatarFallback(friend: friend),
-                ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 320;
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 70),
+              decoration: BoxDecoration(
+                border: showDivider
+                    ? Border(
+                        bottom: BorderSide(
+                          color: colors.outline.withValues(alpha: 0.55),
+                        ),
+                      )
+                    : null,
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      friend.displayName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w900,
-                        color: colors.textPrimary,
-                      ),
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              child: Row(
+                children: [
+                  ClipOval(
+                    child: SupabaseImage(
+                      imagePath: friend.avatarPath,
+                      width: 48,
+                      height: 48,
+                      fallbackIcon: Icons.person_outline_rounded,
+                      fallbackBuilder: (context) =>
+                          _AvatarFallback(friend: friend),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      context.l10n
-                          .friendSharedGroups(friend.sharedGroupCount)
-                          .toUpperCase(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.moniaryTypography.metadata.copyWith(
-                        color: colors.textDim,
-                      ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          friend.displayName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w900,
+                                color: colors.textPrimary,
+                              ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          context.l10n
+                              .friendSharedGroups(friend.sharedGroupCount)
+                              .toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.moniaryTypography.metadata.copyWith(
+                            color: colors.textDim,
+                          ),
+                        ),
+                        if (compact) ...[
+                          const SizedBox(height: 6),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: _FriendBalance(profile: friend),
+                          ),
+                        ],
+                      ],
                     ),
+                  ),
+                  if (!compact) ...[
+                    const SizedBox(width: 10),
+                    _FriendBalance(profile: friend),
                   ],
-                ),
+                ],
               ),
-              const SizedBox(width: 10),
-              _FriendBalance(profile: friend),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -680,18 +870,20 @@ class _RequestSection extends StatelessWidget {
         for (final request in requests)
           _RequestRow(
             request: request,
-            trailing: Wrap(
-              spacing: 8,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
+                _RequestIconButton(
                   tooltip: context.l10n.friendDecline,
                   onPressed: actionLoading ? null : () => onDecline(request),
                   icon: const Icon(Icons.close_rounded),
                 ),
-                IconButton.filled(
+                const SizedBox(width: 6),
+                _RequestIconButton(
                   tooltip: context.l10n.friendAccept,
                   onPressed: actionLoading ? null : () => onAccept(request),
                   icon: const Icon(Icons.check_rounded),
+                  filled: true,
                 ),
               ],
             ),
@@ -723,6 +915,11 @@ class _OutgoingRequestSection extends StatelessWidget {
             subtitle: context.l10n.friendRequestPending,
             trailing: TextButton(
               onPressed: actionLoading ? null : () => onCancel(request),
+              style: TextButton.styleFrom(
+                minimumSize: const Size(44, 36),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
               child: Text(context.l10n.friendCancel),
             ),
           ),
@@ -746,44 +943,116 @@ class _RequestRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final friend = request.otherProfile;
     final colors = context.moniaryColors;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        children: [
-          ClipOval(
-            child: SupabaseImage(
-              imagePath: friend.avatarPath,
-              width: 42,
-              height: 42,
-              fallbackBuilder: (context) => _AvatarFallback(friend: friend),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 300;
+        final identity = Row(
+          children: [
+            ClipOval(
+              child: SupabaseImage(
+                imagePath: friend.avatarPath,
+                width: 42,
+                height: 42,
+                fallbackBuilder: (context) => _AvatarFallback(friend: friend),
+              ),
             ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  friend.displayName,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    friend.displayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  subtitle ?? friend.displayUsername,
-                  style: context.moniaryTypography.metadata.copyWith(
-                    color: colors.textDim,
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle ?? friend.displayUsername,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.moniaryTypography.metadata.copyWith(
+                      color: colors.textDim,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          trailing,
-        ],
-      ),
+          ],
+        );
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: compact
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    identity,
+                    const SizedBox(height: 8),
+                    Align(alignment: Alignment.centerRight, child: trailing),
+                  ],
+                )
+              : Row(
+                  children: [
+                    Expanded(child: identity),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      flex: 0,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: trailing,
+                      ),
+                    ),
+                  ],
+                ),
+        );
+      },
     );
+  }
+}
+
+class _RequestIconButton extends StatelessWidget {
+  const _RequestIconButton({
+    required this.tooltip,
+    required this.onPressed,
+    required this.icon,
+    this.filled = false,
+  });
+
+  final String tooltip;
+  final VoidCallback? onPressed;
+  final Widget icon;
+  final bool filled;
+
+  @override
+  Widget build(BuildContext context) {
+    final button = filled
+        ? IconButton.filled(
+            tooltip: tooltip,
+            onPressed: onPressed,
+            icon: icon,
+            constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+            padding: EdgeInsets.zero,
+            style: IconButton.styleFrom(
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          )
+        : IconButton(
+            tooltip: tooltip,
+            onPressed: onPressed,
+            icon: icon,
+            constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+            padding: EdgeInsets.zero,
+            style: IconButton.styleFrom(
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          );
+
+    return button;
   }
 }
 

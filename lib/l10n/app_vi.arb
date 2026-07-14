@@ -1671,6 +1671,7 @@
   "friendBalanceSettled": "Đã cân",
   "friendIncomingRequests": "Lời mời kết bạn",
   "friendOutgoingRequests": "Đã gửi lời mời",
+  "friendRequestsEmpty": "Chưa có lời mời kết bạn nào.",
   "friendAccept": "Chấp nhận",
   "friendDecline": "Từ chối",
   "friendCancel": "Hủy lời mời",

@@ -1671,6 +1671,7 @@
   "friendBalanceSettled": "Settled",
   "friendIncomingRequests": "Friend requests",
   "friendOutgoingRequests": "Sent requests",
+  "friendRequestsEmpty": "No friend requests yet.",
   "friendAccept": "Accept",
   "friendDecline": "Decline",
   "friendCancel": "Cancel request",

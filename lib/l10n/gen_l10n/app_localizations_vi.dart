@@ -4050,6 +4050,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendOutgoingRequests => 'Đã gửi lời mời';
 
   @override
+  String get friendRequestsEmpty => 'Chưa có lời mời kết bạn nào.';
+
+  @override
   String get friendAccept => 'Chấp nhận';
 
   @override

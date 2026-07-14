@@ -71,6 +71,10 @@
 - **Purpose**: manage financial sources and expense/income classifications.
 - **Repositories**: `WalletRepository` and `CategoryRepository`, both with
   Supabase and mock paths selected by `useMockDataModeProvider`.
+- **Setup defaults**: profile survey completion seeds the common default
+  categories plus occupation-specific defaults for students, office workers,
+  freelancers, and business owners. Existing categories are preserved and
+  matching names are reactivated/updated instead of duplicated.
 - **UI**: primarily embedded sections/sheets rather than standalone routes.
 
 ## Groups
@@ -88,14 +92,19 @@
 - **Direct invitations**: recipients can reopen username/friend invitations
   from the localized group-invitations inbox, where they can accept or decline
   before the seven-day expiry; the Group tab shows a pending-invitation badge.
+- **Notifications**: group activity notifications are available from the Group
+  tab header as a global inbox, and from group detail with the activity timeline
+  when a group ID is provided.
 - **Screens**: group list/detail/create, invite member, shared-invite
-  acceptance, direct-invitations inbox, add/detail transaction, member amount
-  input, and debt settlement.
+  acceptance, direct-invitations inbox, activity/notifications center,
+  add/detail transaction, member amount input, and debt settlement.
 
 ## Friends
 
 - **Purpose**: search by username, request lifecycle, friend removal, friend
   invite links, deep-link acceptance, and inviting a friend to a group.
+- **Requests visibility**: incoming friend requests live in `FriendsScreen` and
+  surface as badges on the Friends title plus Calendar/Profile entry points.
 - **Backend**: friends and invite-link migrations define tables, RLS, and RPCs.
   The Flutter data source uses RPCs and returns minimal profile data.
 - **Deep link**: invite links are generated as
@@ -139,8 +148,9 @@
 
 - **Purpose**: profile create/edit, username/avatar, and post-setup survey.
 - **Setup**: `ProfileSetupScreen` stores name, username, timezone, and avatar.
-- **Survey**: `ProfileSurveyScreen` stores occupation/preferred currency and
-  creates or updates the default wallet.
+- **Survey**: `ProfileSurveyScreen` stores occupation/preferred currency,
+  creates or updates the default wallet, and initializes occupation-specific
+  category defaults.
 - **Data**: `ProfileRepository` supports Supabase and mock profiles.
 
 ## Auth, Onboarding, and Splash

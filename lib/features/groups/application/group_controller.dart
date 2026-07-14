@@ -80,6 +80,17 @@ final pendingGroupInviteCountProvider = Provider<int>((ref) {
       );
 });
 
+final unreadGroupNotificationCountProvider = Provider<int>((ref) {
+  return ref
+      .watch(groupNotificationsProvider)
+      .when(
+        data: (notifications) =>
+            notifications.where((notification) => !notification.isRead).length,
+        loading: () => 0,
+        error: (_, _) => 0,
+      );
+});
+
 final currentGroupUserIdProvider = Provider<String>((ref) {
   return ref.watch(groupRepositoryProvider).currentUserId;
 });

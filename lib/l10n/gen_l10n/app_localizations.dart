@@ -7316,6 +7316,12 @@ abstract class AppLocalizations {
   /// **'Đã gửi lời mời'**
   String get friendOutgoingRequests;
 
+  /// No description provided for @friendRequestsEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có lời mời kết bạn nào.'**
+  String get friendRequestsEmpty;
+
   /// No description provided for @friendAccept.
   ///
   /// In vi, this message translates to:

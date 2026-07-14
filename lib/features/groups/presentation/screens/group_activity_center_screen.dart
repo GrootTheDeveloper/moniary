@@ -10,32 +10,32 @@ import '../../domain/entities/group_community.dart';
 import 'group_transaction_detail_screen.dart';
 
 class GroupActivityCenterScreen extends ConsumerWidget {
-  const GroupActivityCenterScreen({required this.groupId, super.key});
+  const GroupActivityCenterScreen({this.groupId, super.key});
 
   static const routePath = '/groups/activity-center';
 
-  final String groupId;
+  final String? groupId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final groupId = this.groupId;
+    final tabs = <Tab>[
+      if (groupId != null) Tab(text: context.l10n.groupActivityTabTimeline),
+      Tab(text: context.l10n.groupActivityTabNotifications),
+    ];
+    final views = <Widget>[
+      if (groupId != null) _ActivityTimelineTab(groupId: groupId),
+      const _NotificationsTab(),
+    ];
+
     return DefaultTabController(
-      length: 2,
+      length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
           title: Text(context.l10n.groupActivityCenterTitle),
-          bottom: TabBar(
-            tabs: [
-              Tab(text: context.l10n.groupActivityTabTimeline),
-              Tab(text: context.l10n.groupActivityTabNotifications),
-            ],
-          ),
+          bottom: TabBar(tabs: tabs),
         ),
-        body: TabBarView(
-          children: [
-            _ActivityTimelineTab(groupId: groupId),
-            const _NotificationsTab(),
-          ],
-        ),
+        body: TabBarView(children: views),
       ),
     );
   }
