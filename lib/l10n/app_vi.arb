@@ -102,6 +102,8 @@
   "passwordResetSuccess": "Đã cập nhật mật khẩu. Hãy đăng nhập bằng mật khẩu mới.",
   "confirmPasswordLabel": "Xác nhận mật khẩu",
   "validationPasswordsMismatch": "Mật khẩu xác nhận không khớp",
+  "signupLegalConsentLabel": "Tôi đã đọc và đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư của Moniary.",
+  "signupLegalConsentRequired": "Hãy đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư để tạo tài khoản.",
   "splashLoading": "Đang tải ứng dụng...",
   "splashRetry": "Thử lại",
   "splashError": "Không thể kết nối. Vui lòng kiểm tra mạng và thử lại.",

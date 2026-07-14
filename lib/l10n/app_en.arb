@@ -102,6 +102,8 @@
   "passwordResetSuccess": "Your password was updated. Sign in with the new password.",
   "confirmPasswordLabel": "Confirm password",
   "validationPasswordsMismatch": "Passwords do not match",
+  "signupLegalConsentLabel": "I have read and agree to Moniary's Terms of Use and Privacy Policy.",
+  "signupLegalConsentRequired": "Agree to the Terms of Use and Privacy Policy to create an account.",
   "splashLoading": "Loading app...",
   "splashRetry": "Retry",
   "splashError": "Cannot connect. Please check your network and try again.",

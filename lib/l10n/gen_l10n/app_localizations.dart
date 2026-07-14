@@ -584,6 +584,18 @@ abstract class AppLocalizations {
   /// **'Mật khẩu xác nhận không khớp'**
   String get validationPasswordsMismatch;
 
+  /// No description provided for @signupLegalConsentLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tôi đã đọc và đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư của Moniary.'**
+  String get signupLegalConsentLabel;
+
+  /// No description provided for @signupLegalConsentRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư để tạo tài khoản.'**
+  String get signupLegalConsentRequired;
+
   /// No description provided for @splashLoading.
   ///
   /// In vi, this message translates to:

@@ -279,6 +279,14 @@ class AppLocalizationsVi extends AppLocalizations {
   String get validationPasswordsMismatch => 'Mật khẩu xác nhận không khớp';
 
   @override
+  String get signupLegalConsentLabel =>
+      'Tôi đã đọc và đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư của Moniary.';
+
+  @override
+  String get signupLegalConsentRequired =>
+      'Hãy đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư để tạo tài khoản.';
+
+  @override
   String get splashLoading => 'Đang tải ứng dụng...';
 
   @override

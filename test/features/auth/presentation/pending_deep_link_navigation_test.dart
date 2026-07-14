@@ -18,6 +18,8 @@ import 'package:moniary/features/profile/data/profile_repository.dart';
 import 'package:moniary/features/profile/domain/user_profile.dart';
 import 'package:moniary/features/profile/presentation/profile_setup_screen.dart';
 import 'package:moniary/features/profile/presentation/profile_survey_screen.dart';
+import 'package:moniary/features/settings/presentation/legal/terms_of_use_screen.dart';
+import 'package:moniary/features/settings/presentation/privacy/privacy_policy_screen.dart';
 import 'package:moniary/features/wallets/data/repositories/wallet_repository.dart';
 import 'package:moniary/features/wallets/domain/models/wallet.dart';
 import 'package:moniary/l10n/gen_l10n/app_localizations.dart';
@@ -45,6 +47,7 @@ class FakeAuthRepository extends AuthRepository {
 
   String? signedUpEmail;
   String? signedUpPassword;
+  var googleSignInCount = 0;
 
   @override
   Future<Session?> signInAnonymously({String? captchaToken}) async =>
@@ -57,6 +60,12 @@ class FakeAuthRepository extends AuthRepository {
   }) async {
     signedUpEmail = email;
     signedUpPassword = password;
+    return _mockSession();
+  }
+
+  @override
+  Future<Session?> signInWithGoogle() async {
+    googleSignInCount++;
     return _mockSession();
   }
 }
@@ -299,6 +308,14 @@ Widget _routerApp({
             const Scaffold(body: Text('calendar target')),
       ),
       GoRoute(
+        path: TermsOfUseScreen.routePath,
+        builder: (context, state) => const TermsOfUseScreen(),
+      ),
+      GoRoute(
+        path: PrivacyPolicyScreen.routePath,
+        builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+      GoRoute(
         path: FriendInviteAcceptScreen.routePath,
         builder: (context, state) =>
             Scaffold(body: Text('invite ${state.pathParameters['token']}')),
@@ -451,11 +468,74 @@ void main() {
       find.byKey(const ValueKey('login_confirm_password_field')),
       'password123',
     );
+    await tester.tap(
+      find.byKey(const ValueKey('signup_legal_consent_checkbox')),
+    );
     await tester.tap(find.byKey(const ValueKey('login_email_submit_button')));
     await tester.pumpAndSettle();
 
     expect(repository.signedUpEmail, 'bee@moniary.app');
     expect(repository.signedUpPassword, 'password123');
+  });
+
+  testWidgets('signup requires legal consent and opens both policies', (
+    tester,
+  ) async {
+    await useLargeTestViewport(tester);
+    final repository = FakeAuthRepository();
+    final container = ProviderContainer(
+      overrides: [
+        authRepositoryProvider.overrideWithValue(repository),
+        useMockDataModeProvider.overrideWithValue(true),
+        authStateChangesProvider.overrideWith((ref) => const Stream.empty()),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      _routerApp(container: container, initialLocation: LoginScreen.routePath),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('login_auth_mode_toggle')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const ValueKey('login_email_field')),
+      'bee@moniary.app',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('login_password_field')),
+      'password123',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('login_confirm_password_field')),
+      'password123',
+    );
+    await tester.tap(find.byKey(const ValueKey('login_email_submit_button')));
+    await tester.pump();
+
+    expect(
+      find.text(
+        'Agree to the Terms of Use and Privacy Policy to create an account.',
+      ),
+      findsOneWidget,
+    );
+    expect(repository.signedUpEmail, isNull);
+
+    await tester.tap(find.byTooltip('Sign in with Google'));
+    await tester.pump();
+    expect(repository.googleSignInCount, 0);
+
+    await tester.tap(find.byKey(const ValueKey('signup_terms_link')));
+    await tester.pumpAndSettle();
+    expect(find.byType(TermsOfUseScreen), findsOneWidget);
+
+    final router = GoRouter.of(tester.element(find.byType(TermsOfUseScreen)));
+    router.pop();
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('signup_privacy_link')));
+    await tester.pumpAndSettle();
+    expect(find.byType(PrivacyPolicyScreen), findsOneWidget);
   });
 
   testWidgets('login home destination consumes pending invite route', (

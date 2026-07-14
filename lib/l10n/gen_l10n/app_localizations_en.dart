@@ -279,6 +279,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get validationPasswordsMismatch => 'Passwords do not match';
 
   @override
+  String get signupLegalConsentLabel =>
+      'I have read and agree to Moniary\'s Terms of Use and Privacy Policy.';
+
+  @override
+  String get signupLegalConsentRequired =>
+      'Agree to the Terms of Use and Privacy Policy to create an account.';
+
+  @override
   String get splashLoading => 'Loading app...';
 
   @override

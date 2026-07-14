@@ -19,6 +19,8 @@ import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../../profile/presentation/profile_survey_screen.dart';
 import '../../settings/domain/account/account_deletion_status.dart';
+import '../../settings/presentation/legal/terms_of_use_screen.dart';
+import '../../settings/presentation/privacy/privacy_policy_screen.dart';
 import '../application/account_status_controller.dart';
 import '../application/auth_controller.dart';
 import '../application/post_auth_decision_provider.dart';
@@ -36,6 +38,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _legalConsentKey = GlobalKey<FormFieldState<bool>>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -301,7 +304,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           )
                         else
-                          const SizedBox(height: 12),
+                          _SignupLegalConsent(
+                            formFieldKey: _legalConsentKey,
+                            enabled: !isBusy,
+                          ),
                         FilledButton(
                           key: const ValueKey('login_email_submit_button'),
                           onPressed: isBusy ? null : _submitEmail,
@@ -369,7 +375,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   icon: Icons.g_mobiledata_outlined,
                                   onPressed: isBusy
                                       ? null
-                                      : () => _enterApp(
+                                      : () => _startSocialAuth(
                                           () => ref
                                               .read(
                                                 authControllerProvider.notifier,
@@ -383,7 +389,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   icon: Icons.facebook_outlined,
                                   onPressed: isBusy
                                       ? null
-                                      : () => _enterApp(
+                                      : () => _startSocialAuth(
                                           () => ref
                                               .read(
                                                 authControllerProvider.notifier,
@@ -547,6 +553,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } catch (error, stackTrace) {
       _showAuthError(error, stackTrace);
     }
+  }
+
+  Future<void> _startSocialAuth(Future<void> Function() signInAction) async {
+    if (_isSignUp && !(_legalConsentKey.currentState?.validate() ?? false)) {
+      return;
+    }
+    await _enterApp(signInAction);
   }
 
   Future<void> _signInAnonymously() async {
@@ -742,6 +755,84 @@ class _DividerLabel extends StatelessWidget {
         ),
         Expanded(child: Divider(color: divider, height: 1)),
       ],
+    );
+  }
+}
+
+class _SignupLegalConsent extends StatelessWidget {
+  const _SignupLegalConsent({
+    required this.formFieldKey,
+    required this.enabled,
+  });
+
+  final GlobalKey<FormFieldState<bool>> formFieldKey;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+
+    return FormField<bool>(
+      key: formFieldKey,
+      initialValue: false,
+      validator: (accepted) =>
+          accepted == true ? null : context.l10n.signupLegalConsentRequired,
+      builder: (field) => Padding(
+        padding: const EdgeInsets.only(top: 4, bottom: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Checkbox(
+                  key: const ValueKey('signup_legal_consent_checkbox'),
+                  value: field.value ?? false,
+                  onChanged: enabled
+                      ? (value) => field.didChange(value ?? false)
+                      : null,
+                ),
+                Expanded(
+                  child: Text(
+                    context.l10n.signupLegalConsentLabel,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ],
+            ),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 4,
+              children: [
+                TextButton(
+                  key: const ValueKey('signup_terms_link'),
+                  onPressed: enabled
+                      ? () => context.push(TermsOfUseScreen.routePath)
+                      : null,
+                  child: Text(context.l10n.legalViewTermsOfUse),
+                ),
+                TextButton(
+                  key: const ValueKey('signup_privacy_link'),
+                  onPressed: enabled
+                      ? () => context.push(PrivacyPolicyScreen.routePath)
+                      : null,
+                  child: Text(context.l10n.legalViewPrivacyPolicy),
+                ),
+              ],
+            ),
+            if (field.hasError)
+              Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: Text(
+                  field.errorText!,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: colors.danger),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

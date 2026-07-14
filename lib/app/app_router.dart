@@ -190,6 +190,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         PasswordResetScreen.routePath,
         ProfileSetupScreen.routePath,
         ProfileSurveyScreen.routePath,
+        PrivacyPolicyScreen.routePath,
+        TermsOfUseScreen.routePath,
       };
       final isPublicGroupRoute = location.startsWith('/public-group/');
       final isPublicRoute =
