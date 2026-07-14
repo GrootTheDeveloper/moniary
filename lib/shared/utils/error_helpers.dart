@@ -23,6 +23,8 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.errorNotFound;
       case 'AUTH_NETWORK_ERROR':
         return l10n.errorConnection;
+      case 'AUTH_CAPTCHA_REQUIRED':
+        return l10n.anonymousCaptchaRequired;
       case 'AUTH_SIGN_IN_FAILED':
       case 'AUTH_SIGN_UP_FAILED':
       case 'AUTH_SIGN_OUT_FAILED':
@@ -185,6 +187,7 @@ String? _authErrorMessage(BuildContext context, String? code) {
     'weak_password' => l10n.authErrorWeakPassword,
     'signup_disabled' => l10n.authErrorSignupDisabled,
     'AUTH_OAUTH_LAUNCH_FAILED' => l10n.authErrorBrowserLaunch,
+    'captcha_failed' => l10n.anonymousCaptchaFailed,
     _ => null,
   };
 }

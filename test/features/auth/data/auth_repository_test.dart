@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moniary/core/constants/app_constants.dart';
+import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/features/auth/data/auth_repository.dart';
 import 'package:moniary/features/auth/domain/email_account_link.dart';
@@ -23,6 +24,21 @@ void main() {
     final session = await repository.signInAnonymously();
 
     expect(session?.user.id, 'mock-user-id');
+  });
+
+  test('live anonymous sign-in rejects a missing CAPTCHA token', () async {
+    final repository = AuthRepository(FakeSupabaseClient(), useMockData: false);
+
+    expect(
+      repository.signInAnonymously(),
+      throwsA(
+        isA<AppException>().having(
+          (error) => error.code,
+          'code',
+          'AUTH_CAPTCHA_REQUIRED',
+        ),
+      ),
+    );
   });
 
   test('signOut completes in mock mode', () async {

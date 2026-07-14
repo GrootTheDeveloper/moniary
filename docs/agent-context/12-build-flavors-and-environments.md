@@ -13,6 +13,10 @@
 | `SUPABASE_ANON_KEY` | Required for release | Must be present with URL |
 | `OCR_API_URL` | Optional at build time | `http://10.0.2.2:8000` |
 | `APP_VERSION` | Optional | `1.0.0+1` |
+| `ENABLE_GOOGLE_AUTH` | Optional | `true`; show Google when configured |
+| `ENABLE_FACEBOOK_AUTH` | Optional | `false`; hide Facebook until configured |
+| `TURNSTILE_SITE_KEY` | Required for live guest sign-in | Public Cloudflare Turnstile widget key |
+| `TURNSTILE_BASE_URL` | Required for live guest sign-in | HTTPS origin allowlisted by the Turnstile widget |
 
 `AppConstants.assertSupabaseConfig()` throws in release mode if either Supabase
 value is missing. In debug without credentials, bootstrap initializes a
@@ -33,7 +37,9 @@ flutter run
 # Debug against Supabase
 flutter run \
   --dart-define=SUPABASE_URL=... \
-  --dart-define=SUPABASE_ANON_KEY=...
+  --dart-define=SUPABASE_ANON_KEY=... \
+  --dart-define=TURNSTILE_SITE_KEY=... \
+  --dart-define=TURNSTILE_BASE_URL=https://auth.example.com/
 
 # Physical device or hosted OCR
 flutter run \

@@ -31,6 +31,13 @@ pending record is bound to the originating user ID; after callback, the app
 verifies that the same user now has a Google identity before updating the
 profile and showing success. No fixed delay is used as a completion signal.
 
+Live anonymous sign-in is fail-closed behind Cloudflare Turnstile: the mobile
+widget obtains a short-lived token and `AuthRepository` forwards it to Supabase
+for server-side verification. Local/hosted Auth limits anonymous creation to
+5 attempts per hour per IP. A nightly `pg_cron` job removes anonymous Auth
+users inactive for 30 days; upgraded email/OAuth users are preserved. Mock mode
+does not invoke Turnstile or create a remote Auth user.
+
 ## Session and route security
 
 - Supabase auth changes are exposed as a `StreamProvider`.
@@ -80,7 +87,8 @@ client-side `user_id` filters are not a security boundary.
 
 ## Secrets
 
-`SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `OCR_API_URL` are compile-time
-Dart defines. Edge Function secrets such as `RESEND_API_KEY` belong in the
-Supabase environment. Never commit access tokens, service-role keys, signing
-secrets, or production credentials.
+`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `OCR_API_URL`, `TURNSTILE_SITE_KEY`, and
+`TURNSTILE_BASE_URL` are compile-time Dart defines. The Turnstile secret and
+Edge Function secrets such as `RESEND_API_KEY` belong in the Supabase
+environment. Never commit access tokens, service-role keys, signing secrets,
+or production credentials.

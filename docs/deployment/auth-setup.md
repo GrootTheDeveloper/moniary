@@ -15,6 +15,8 @@ SUPABASE_ANON_KEY=sb_publishable_YOUR_KEY
 OCR_API_URL=https://your-ocr-api.example.com
 ENABLE_GOOGLE_AUTH=true
 ENABLE_FACEBOOK_AUTH=false
+TURNSTILE_SITE_KEY=YOUR_PUBLIC_TURNSTILE_SITE_KEY
+TURNSTILE_BASE_URL=https://auth.example.com/
 ```
 
 Run on a physical iPhone with:
@@ -58,7 +60,37 @@ localhost as the production Site URL.
 Keep **Allow manual linking** enabled. Anonymous-to-Google account upgrades use
 Supabase identity linking and will be rejected when this setting is disabled.
 
-## 3. Email signup
+## 3. Anonymous sign-in protection
+
+Anonymous sign-in remains enabled because guest data can be upgraded in place
+to email or Google. It must not be exposed without CAPTCHA:
+
+1. In Cloudflare Dashboard, create a Turnstile widget in **Managed** mode.
+2. Add a domain you control, such as `auth.example.com`, to the widget's
+   hostname allowlist. `TURNSTILE_BASE_URL` must be an HTTPS URL on that exact
+   hostname; the URL is used as the embedded widget origin.
+3. Put only the public **Site Key** and base URL in `mobile.env`. Rebuild the
+   app because Dart defines are compile-time values.
+4. In Supabase Dashboard, open Authentication > Bot and Abuse Protection,
+   enable CAPTCHA, choose **Cloudflare Turnstile**, and paste the private
+   **Secret Key**. Never put that secret in `mobile.env` or Git.
+5. In Authentication > Rate Limits, set anonymous sign-ins to no more than
+   **5 per hour per IP address**.
+6. Apply `supabase/migrations/20260715120000_cleanup_stale_anonymous_users.sql`.
+   It deletes anonymous Auth users inactive for 30 days every night. Upgraded
+   email/OAuth accounts are not anonymous and are preserved.
+
+For local Supabase, export the server-only secret before `supabase start`:
+
+```bash
+export SUPABASE_AUTH_CAPTCHA_SECRET=YOUR_PRIVATE_TURNSTILE_SECRET
+```
+
+The app refuses live anonymous sign-in when the public Turnstile configuration
+is missing. Mock mode intentionally skips CAPTCHA and never creates a Supabase
+Auth user.
+
+## 4. Email signup
 
 Email signup is enabled and email confirmation is required. Configure hosted
 SMTP in Authentication > Emails > SMTP Settings before testing with arbitrary
@@ -70,7 +102,7 @@ After signup, open the confirmation email on the same iPhone and verify that
 the link returns to Moniary. If delivery or confirmation fails, inspect
 Authentication > Audit Logs.
 
-## 4. Google
+## 5. Google
 
 In Google Cloud Console, use this Supabase callback as an authorized redirect
 URI:
@@ -83,7 +115,7 @@ Configure the OAuth consent screen and add tester accounts while the app is in
 testing mode. Add the Google client ID and secret in Supabase, then keep
 `ENABLE_GOOGLE_AUTH=true`.
 
-## 5. Facebook
+## 6. Facebook
 
 Facebook is intentionally hidden until all of the following are complete:
 
@@ -95,11 +127,13 @@ Facebook is intentionally hidden until all of the following are complete:
    tester during development.
 5. Set `ENABLE_FACEBOOK_AUTH=true` in `mobile.env` and rebuild the app.
 
-## 6. Physical-device verification
+## 7. Physical-device verification
 
 Test each path from a fresh install or after signing out:
 
 - email signup, confirmation link, and email/password sign-in;
+- anonymous sign-in cannot proceed before Turnstile succeeds, and repeated
+  attempts hit the configured Supabase rate limit;
 - password-reset email, cold/warm callback, new-password confirmation, and
   sign-in with the new password;
 - anonymous-to-email upgrade, email callback on the same device, password
@@ -114,7 +148,7 @@ Test each path from a fresh install or after signing out:
 
 Do not test Facebook while its Supabase provider or build flag is disabled.
 
-## 7. iOS release review
+## 8. iOS release review
 
 Before submitting an iOS release, verify that the available email/guest login
 experience satisfies App Review Guideline 4.8 as an equivalent privacy-focused

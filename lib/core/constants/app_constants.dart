@@ -52,6 +52,12 @@ class AppConstants {
     defaultValue: false,
   );
 
+  static const turnstileSiteKey = String.fromEnvironment('TURNSTILE_SITE_KEY');
+  static const turnstileBaseUrl = String.fromEnvironment('TURNSTILE_BASE_URL');
+
+  static bool get hasTurnstileConfig =>
+      turnstileSiteKey.isNotEmpty && turnstileBaseUrl.isNotEmpty;
+
   // --- OCR ---
   static const ocrApiUrl = String.fromEnvironment(
     'OCR_API_URL',

@@ -266,6 +266,12 @@ abstract class AppLocalizations {
   /// **'Xác nhận'**
   String get commonConfirm;
 
+  /// No description provided for @commonContinue.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếp tục'**
+  String get commonContinue;
+
   /// No description provided for @errorGeneric.
   ///
   /// In vi, this message translates to:
@@ -487,6 +493,54 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Dùng thử ngay — không cần tài khoản →'**
   String get loginGuestCta;
+
+  /// No description provided for @anonymousCaptchaTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác minh trước khi tiếp tục'**
+  String get anonymousCaptchaTitle;
+
+  /// No description provided for @anonymousCaptchaDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoàn tất bước kiểm tra bảo mật để bắt đầu phiên khách.'**
+  String get anonymousCaptchaDescription;
+
+  /// No description provided for @anonymousCaptchaVerified.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xác minh'**
+  String get anonymousCaptchaVerified;
+
+  /// No description provided for @anonymousCaptchaRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy hoàn tất kiểm tra bảo mật trước khi tiếp tục với tài khoản khách.'**
+  String get anonymousCaptchaRequired;
+
+  /// No description provided for @anonymousCaptchaFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác minh thất bại. Vui lòng thử lại.'**
+  String get anonymousCaptchaFailed;
+
+  /// No description provided for @anonymousCaptchaExpired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiên xác minh đã hết hạn. Vui lòng thực hiện lại.'**
+  String get anonymousCaptchaExpired;
+
+  /// No description provided for @anonymousCaptchaTimeout.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bước kiểm tra bảo mật tải quá lâu. Hãy kiểm tra kết nối rồi thử lại.'**
+  String get anonymousCaptchaTimeout;
+
+  /// No description provided for @anonymousCaptchaConfigRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản build này chưa cấu hình bảo mật cho đăng nhập khách.'**
+  String get anonymousCaptchaConfigRequired;
 
   /// No description provided for @loginPasswordResetSent.
   ///

@@ -22,6 +22,7 @@ import '../../settings/domain/account/account_deletion_status.dart';
 import '../application/account_status_controller.dart';
 import '../application/auth_controller.dart';
 import '../application/post_auth_decision_provider.dart';
+import 'anonymous_captcha_dialog.dart';
 import 'password_reset_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -373,13 +374,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SizedBox(height: 6),
                         TextButton(
                           key: const ValueKey('login_guest_button'),
-                          onPressed: isBusy
-                              ? null
-                              : () => _enterApp(
-                                  () => ref
-                                      .read(authControllerProvider.notifier)
-                                      .signInAnonymously(),
-                                ),
+                          onPressed: isBusy ? null : _signInAnonymously,
                           style: TextButton.styleFrom(
                             foregroundColor: colors.textSecondary,
                             minimumSize: const Size.fromHeight(48),
@@ -501,6 +496,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } catch (error, stackTrace) {
       _showAuthError(error, stackTrace);
     }
+  }
+
+  Future<void> _signInAnonymously() async {
+    final useMockData = ref.read(useMockDataModeProvider);
+    if (useMockData) {
+      await _enterApp(
+        () => ref.read(authControllerProvider.notifier).signInAnonymously(),
+      );
+      return;
+    }
+
+    if (!AppConstants.hasTurnstileConfig) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.anonymousCaptchaConfigRequired)),
+      );
+      return;
+    }
+
+    final captchaToken = await showAnonymousCaptchaDialog(context);
+    if (!mounted || captchaToken == null) return;
+    await _enterApp(
+      () => ref
+          .read(authControllerProvider.notifier)
+          .signInAnonymously(captchaToken: captchaToken),
+    );
   }
 
   void _showAuthError(Object error, StackTrace stackTrace) {

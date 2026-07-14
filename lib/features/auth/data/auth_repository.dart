@@ -20,8 +20,8 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 class AuthRepository {
-  AuthRepository(this._client, {bool useMockData = false})
-    : _useMockData = useMockData || !AppConstants.hasSupabaseConfig;
+  AuthRepository(this._client, {bool? useMockData})
+    : _useMockData = useMockData ?? !AppConstants.hasSupabaseConfig;
 
   final SupabaseClient? _client;
   final bool _useMockData;
@@ -37,15 +37,28 @@ class AuthRepository {
     return client;
   }
 
-  Future<Session?> signInAnonymously() async {
+  Future<Session?> signInAnonymously({String? captchaToken}) async {
     if (_useMockData) {
       return _mockSession();
     }
 
+    final normalizedCaptchaToken = captchaToken?.trim();
+    if (normalizedCaptchaToken == null || normalizedCaptchaToken.isEmpty) {
+      throw const AppException(
+        'CAPTCHA is required for anonymous sign-in',
+        code: 'AUTH_CAPTCHA_REQUIRED',
+      );
+    }
+
     try {
-      await _requiredClient.auth.signInAnonymously();
+      await _requiredClient.auth.signInAnonymously(
+        captchaToken: normalizedCaptchaToken,
+      );
       await _initializeUserIfPossible();
       return null;
+    } on AuthException catch (e, st) {
+      AppLogger.error('Anonymous sign-in failed', e, st);
+      throw _mapAuthException(e);
     } catch (e, st) {
       AppLogger.error('Anonymous sign-in failed', e, st);
       if (e is AppException) rethrow;

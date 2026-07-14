@@ -100,6 +100,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get commonConfirm => 'Xác nhận';
 
   @override
+  String get commonContinue => 'Tiếp tục';
+
+  @override
   String get errorGeneric => 'Đã xảy ra lỗi. Vui lòng thử lại.';
 
   @override
@@ -221,6 +224,35 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get loginGuestCta => 'Dùng thử ngay — không cần tài khoản →';
+
+  @override
+  String get anonymousCaptchaTitle => 'Xác minh trước khi tiếp tục';
+
+  @override
+  String get anonymousCaptchaDescription =>
+      'Hoàn tất bước kiểm tra bảo mật để bắt đầu phiên khách.';
+
+  @override
+  String get anonymousCaptchaVerified => 'Đã xác minh';
+
+  @override
+  String get anonymousCaptchaRequired =>
+      'Hãy hoàn tất kiểm tra bảo mật trước khi tiếp tục với tài khoản khách.';
+
+  @override
+  String get anonymousCaptchaFailed => 'Xác minh thất bại. Vui lòng thử lại.';
+
+  @override
+  String get anonymousCaptchaExpired =>
+      'Phiên xác minh đã hết hạn. Vui lòng thực hiện lại.';
+
+  @override
+  String get anonymousCaptchaTimeout =>
+      'Bước kiểm tra bảo mật tải quá lâu. Hãy kiểm tra kết nối rồi thử lại.';
+
+  @override
+  String get anonymousCaptchaConfigRequired =>
+      'Bản build này chưa cấu hình bảo mật cho đăng nhập khách.';
 
   @override
   String get loginPasswordResetSent =>

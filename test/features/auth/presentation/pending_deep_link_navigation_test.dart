@@ -44,7 +44,8 @@ class FakeAuthRepository extends AuthRepository {
   FakeAuthRepository() : super(null, useMockData: true);
 
   @override
-  Future<Session?> signInAnonymously() async => _mockSession();
+  Future<Session?> signInAnonymously({String? captchaToken}) async =>
+      _mockSession();
 }
 
 class TestProfileSetupController extends ProfileSetupController {

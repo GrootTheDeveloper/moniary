@@ -34,14 +34,14 @@ class AuthController extends AsyncNotifier<void> {
     });
   }
 
-  Future<void> signInAnonymously() async {
+  Future<void> signInAnonymously({String? captchaToken}) async {
     if (_isProcessing) return;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
       final session = await ref
           .read(authRepositoryProvider)
-          .signInAnonymously();
+          .signInAnonymously(captchaToken: captchaToken);
 
       _applySignedInSession(session);
       state = const AsyncData(null);

@@ -99,6 +99,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonConfirm => 'Confirm';
 
   @override
+  String get commonContinue => 'Continue';
+
+  @override
   String get errorGeneric => 'An error occurred. Please try again.';
 
   @override
@@ -221,6 +224,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginGuestCta => 'Try it now — no account needed →';
+
+  @override
+  String get anonymousCaptchaTitle => 'Verify before continuing';
+
+  @override
+  String get anonymousCaptchaDescription =>
+      'Complete this security check to start a guest session.';
+
+  @override
+  String get anonymousCaptchaVerified => 'Verification complete';
+
+  @override
+  String get anonymousCaptchaRequired =>
+      'Complete the security check before continuing as a guest.';
+
+  @override
+  String get anonymousCaptchaFailed => 'Verification failed. Please try again.';
+
+  @override
+  String get anonymousCaptchaExpired =>
+      'Verification expired. Please complete it again.';
+
+  @override
+  String get anonymousCaptchaTimeout =>
+      'The security check took too long to load. Check your connection and try again.';
+
+  @override
+  String get anonymousCaptchaConfigRequired =>
+      'Guest sign-in is not configured securely for this build.';
 
   @override
   String get loginPasswordResetSent =>
