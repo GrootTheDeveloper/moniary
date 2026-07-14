@@ -69,13 +69,6 @@ const Map<String, CurrencyInfo> _catalog = {
     decimalDigits: 0,
     numberLocale: 'vi_VN',
   ),
-  // App-specific gold unit ("chỉ") offered in the profile survey.
-  'VGO': CurrencyInfo(
-    code: 'VGO',
-    symbol: 'chỉ',
-    decimalDigits: 2,
-    numberLocale: 'vi_VN',
-  ),
   'USD': CurrencyInfo(
     code: 'USD',
     symbol: r'$',
