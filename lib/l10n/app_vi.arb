@@ -2078,9 +2078,32 @@
   "loginNeedAccount": "Chưa có tài khoản? Đăng ký",
   "cameraFallbackPermissionDenied": "Không có quyền truy cập camera. Bạn có thể nhập giao dịch thủ công.",
   "cameraFallbackGenericError": "Không thể mở camera. Bạn có thể nhập giao dịch thủ công.",
-  "scanSuggestionNotice": "Các trường có nhãn AI đề xuất được điền từ hóa đơn. Hãy kiểm tra trước khi lưu.",
-  "scanAiSuggestion": "AI đề xuất",
-  "scanSuggestionNeedsReview": "AI đề xuất - nên kiểm tra lại",
+  "scanSuggestionNotice": "Thông tin trên hóa đơn đã được tự động điền. Hãy kiểm tra trước khi lưu.",
+  "scanAiSuggestion": "Từ hóa đơn",
+  "scanSuggestionNeedsReview": "Từ hóa đơn - nên kiểm tra lại",
+  "scanDetectedSummary": "Thông tin nhận diện từ hóa đơn",
+  "scanDetectedItemsCount": "Đã nhận diện {count} mặt hàng",
+  "@scanDetectedItemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanPaymentMethod": "Phương thức thanh toán",
+  "scanPaymentCash": "Tiền mặt",
+  "scanPaymentCard": "Thẻ",
+  "scanPaymentTransfer": "Chuyển khoản",
+  "scanPaymentOther": "Khác",
+  "scanCurrency": "Loại tiền: {currency}",
+  "@scanCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "scanValidationNotice": "Một số thông tin nhận diện có thể cần bạn kiểm tra nhanh.",
   "friendQrTitle": "QR kết bạn",
   "friendQrMyCode": "Mã của tôi",
   "friendQrScan": "Quét mã",

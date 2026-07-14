@@ -2078,9 +2078,32 @@
   "loginNeedAccount": "Need an account? Sign up",
   "cameraFallbackPermissionDenied": "Camera permission denied. You can enter the transaction manually.",
   "cameraFallbackGenericError": "Could not open camera. You can enter the transaction manually.",
-  "scanSuggestionNotice": "Fields marked as AI suggestions were filled from the receipt. Review them before saving.",
-  "scanAiSuggestion": "AI suggestion",
-  "scanSuggestionNeedsReview": "AI suggestion - review recommended",
+  "scanSuggestionNotice": "Receipt details were filled automatically. Review them before saving.",
+  "scanAiSuggestion": "From receipt",
+  "scanSuggestionNeedsReview": "From receipt - review recommended",
+  "scanDetectedSummary": "Detected from receipt",
+  "scanDetectedItemsCount": "Items detected: {count}",
+  "@scanDetectedItemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanPaymentMethod": "Payment method",
+  "scanPaymentCash": "Cash",
+  "scanPaymentCard": "Card",
+  "scanPaymentTransfer": "Bank transfer",
+  "scanPaymentOther": "Other",
+  "scanCurrency": "Currency: {currency}",
+  "@scanCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "scanValidationNotice": "Some extracted values may need a quick review.",
   "friendQrTitle": "Friend QR",
   "friendQrMyCode": "My code",
   "friendQrScan": "Scan",

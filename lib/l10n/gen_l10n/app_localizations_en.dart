@@ -5018,13 +5018,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanSuggestionNotice =>
-      'Fields marked as AI suggestions were filled from the receipt. Review them before saving.';
+      'Receipt details were filled automatically. Review them before saving.';
 
   @override
-  String get scanAiSuggestion => 'AI suggestion';
+  String get scanAiSuggestion => 'From receipt';
 
   @override
-  String get scanSuggestionNeedsReview => 'AI suggestion - review recommended';
+  String get scanSuggestionNeedsReview => 'From receipt - review recommended';
+
+  @override
+  String get scanDetectedSummary => 'Detected from receipt';
+
+  @override
+  String scanDetectedItemsCount(int count) {
+    return 'Items detected: $count';
+  }
+
+  @override
+  String get scanPaymentMethod => 'Payment method';
+
+  @override
+  String get scanPaymentCash => 'Cash';
+
+  @override
+  String get scanPaymentCard => 'Card';
+
+  @override
+  String get scanPaymentTransfer => 'Bank transfer';
+
+  @override
+  String get scanPaymentOther => 'Other';
+
+  @override
+  String scanCurrency(String currency) {
+    return 'Currency: $currency';
+  }
+
+  @override
+  String get scanValidationNotice =>
+      'Some extracted values may need a quick review.';
 
   @override
   String get friendQrTitle => 'Friend QR';

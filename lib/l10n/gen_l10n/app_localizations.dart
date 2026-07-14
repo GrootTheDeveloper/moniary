@@ -9001,20 +9001,74 @@ abstract class AppLocalizations {
   /// No description provided for @scanSuggestionNotice.
   ///
   /// In vi, this message translates to:
-  /// **'Các trường có nhãn AI đề xuất được điền từ hóa đơn. Hãy kiểm tra trước khi lưu.'**
+  /// **'Thông tin trên hóa đơn đã được tự động điền. Hãy kiểm tra trước khi lưu.'**
   String get scanSuggestionNotice;
 
   /// No description provided for @scanAiSuggestion.
   ///
   /// In vi, this message translates to:
-  /// **'AI đề xuất'**
+  /// **'Từ hóa đơn'**
   String get scanAiSuggestion;
 
   /// No description provided for @scanSuggestionNeedsReview.
   ///
   /// In vi, this message translates to:
-  /// **'AI đề xuất - nên kiểm tra lại'**
+  /// **'Từ hóa đơn - nên kiểm tra lại'**
   String get scanSuggestionNeedsReview;
+
+  /// No description provided for @scanDetectedSummary.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông tin nhận diện từ hóa đơn'**
+  String get scanDetectedSummary;
+
+  /// No description provided for @scanDetectedItemsCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã nhận diện {count} mặt hàng'**
+  String scanDetectedItemsCount(int count);
+
+  /// No description provided for @scanPaymentMethod.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phương thức thanh toán'**
+  String get scanPaymentMethod;
+
+  /// No description provided for @scanPaymentCash.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiền mặt'**
+  String get scanPaymentCash;
+
+  /// No description provided for @scanPaymentCard.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thẻ'**
+  String get scanPaymentCard;
+
+  /// No description provided for @scanPaymentTransfer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển khoản'**
+  String get scanPaymentTransfer;
+
+  /// No description provided for @scanPaymentOther.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khác'**
+  String get scanPaymentOther;
+
+  /// No description provided for @scanCurrency.
+  ///
+  /// In vi, this message translates to:
+  /// **'Loại tiền: {currency}'**
+  String scanCurrency(String currency);
+
+  /// No description provided for @scanValidationNotice.
+  ///
+  /// In vi, this message translates to:
+  /// **'Một số thông tin nhận diện có thể cần bạn kiểm tra nhanh.'**
+  String get scanValidationNotice;
 
   /// No description provided for @friendQrTitle.
   ///

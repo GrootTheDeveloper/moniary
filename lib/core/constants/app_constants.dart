@@ -21,9 +21,10 @@ class AppConstants {
   // --- OCR ---
   static const ocrApiUrl = String.fromEnvironment(
     'OCR_API_URL',
-    defaultValue: 'http://10.0.2.2:8000',
+    defaultValue:
+        'https://ca-moniary-ocr-ocr-eo5b67.happydesert-5a5977c3.southeastasia.azurecontainerapps.io',
   );
-  static const ocrRequestTimeout = Duration(seconds: 8);
+  static const ocrRequestTimeout = Duration(seconds: 30);
 
   /// Call once at app startup. In release mode, crash if Supabase env is missing.
   static void assertSupabaseConfig() {

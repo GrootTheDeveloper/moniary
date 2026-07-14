@@ -5021,13 +5021,45 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get scanSuggestionNotice =>
-      'Các trường có nhãn AI đề xuất được điền từ hóa đơn. Hãy kiểm tra trước khi lưu.';
+      'Thông tin trên hóa đơn đã được tự động điền. Hãy kiểm tra trước khi lưu.';
 
   @override
-  String get scanAiSuggestion => 'AI đề xuất';
+  String get scanAiSuggestion => 'Từ hóa đơn';
 
   @override
-  String get scanSuggestionNeedsReview => 'AI đề xuất - nên kiểm tra lại';
+  String get scanSuggestionNeedsReview => 'Từ hóa đơn - nên kiểm tra lại';
+
+  @override
+  String get scanDetectedSummary => 'Thông tin nhận diện từ hóa đơn';
+
+  @override
+  String scanDetectedItemsCount(int count) {
+    return 'Đã nhận diện $count mặt hàng';
+  }
+
+  @override
+  String get scanPaymentMethod => 'Phương thức thanh toán';
+
+  @override
+  String get scanPaymentCash => 'Tiền mặt';
+
+  @override
+  String get scanPaymentCard => 'Thẻ';
+
+  @override
+  String get scanPaymentTransfer => 'Chuyển khoản';
+
+  @override
+  String get scanPaymentOther => 'Khác';
+
+  @override
+  String scanCurrency(String currency) {
+    return 'Loại tiền: $currency';
+  }
+
+  @override
+  String get scanValidationNotice =>
+      'Một số thông tin nhận diện có thể cần bạn kiểm tra nhanh.';
 
   @override
   String get friendQrTitle => 'QR kết bạn';
