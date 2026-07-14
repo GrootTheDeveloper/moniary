@@ -918,6 +918,23 @@ class TransactionRepository {
     }
   }
 
+  Future<bool> hasAnyTransactions() async {
+    if (_useMockData) {
+      return _mockTransactions.isNotEmpty;
+    }
+    try {
+      final uid = _userId;
+      final rows = await _client
+          .from('transactions')
+          .select('id')
+          .eq('user_id', uid)
+          .limit(1);
+      return (rows as List).isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
   PostgrestFilterBuilder<PostgrestList> _baseSelect() {
     return _client.from('transactions').select('''
           id,

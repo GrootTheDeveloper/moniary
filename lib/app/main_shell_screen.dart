@@ -11,6 +11,7 @@ import '../features/transactions/domain/models/transaction_mutation_result.dart'
 import '../features/transactions/presentation/form/create_transaction_sheet.dart';
 import '../l10n/l10n_extension.dart';
 import '../shared/widgets/bottom_nav_bar.dart';
+import '../shared/widgets/mascot_overlay.dart';
 
 class MainShellScreen extends ConsumerWidget {
   const MainShellScreen({super.key, required this.navigationShell});
@@ -40,6 +41,13 @@ class MainShellScreen extends ConsumerWidget {
               foregroundColor: colors.surfaceRaised,
               onPressed: () => context.push(AssistantHomeScreen.routePath),
             ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: -10.0,
+            height: 200.0,
+            child: const MascotOverlay(),
           ),
         ],
       ),

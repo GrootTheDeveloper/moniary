@@ -5291,4 +5291,42 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get groupMemberActionForbidden =>
       'You do not have permission to manage this member.';
+
+  @override
+  String get mascotFirstTransaction =>
+      'Hey there! Add your first transaction so piggy can track it! 🐷';
+
+  @override
+  String mascotOverBudget(String category) {
+    return '$category is over budget! Your wallet is crying! 🛑';
+  }
+
+  @override
+  String mascotNearBudget(String category) {
+    return 'Careful! $category is nearly at its budget limit! ⚠️';
+  }
+
+  @override
+  String get mascotZeroExpenseToday =>
+      'No spending today! Piggy is proud of you! 🐖💖';
+
+  @override
+  String mascotGoodSavings(String percent) {
+    return 'Saved $percent% this month. Amazing! 🏆';
+  }
+
+  @override
+  String get mascotFunQuote1 => 'Have you logged your expenses today? 📝';
+
+  @override
+  String get mascotFunQuote2 => 'Listen to piggy, don\'t buy that! 🐽';
+
+  @override
+  String get mascotFunQuote3 => 'A penny saved is a penny earned! 💰';
+
+  @override
+  String get mascotFunQuote4 => 'Feed the piggy bank and go on a trip! 🐖';
+
+  @override
+  String get mascotFunQuote5 => 'Tap the pig for some advice! 🐷';
 }

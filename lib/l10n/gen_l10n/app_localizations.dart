@@ -9481,6 +9481,66 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bạn không có quyền quản lý thành viên này.'**
   String get groupMemberActionForbidden;
+
+  /// No description provided for @mascotFirstTransaction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chào bạn! Hãy thêm giao dịch đầu tiên để heo theo dõi nhé! 🐷'**
+  String get mascotFirstTransaction;
+
+  /// No description provided for @mascotOverBudget.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví đang khóc vì mục {category} vượt trần rồi kìa! 🛑'**
+  String mascotOverBudget(String category);
+
+  /// No description provided for @mascotNearBudget.
+  ///
+  /// In vi, this message translates to:
+  /// **'Coi chừng mục {category} sắp chạm trần ngân sách nha! ⚠️'**
+  String mascotNearBudget(String category);
+
+  /// No description provided for @mascotZeroExpenseToday.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hôm nay chưa tiêu đồng nào! Heo tự hào về bạn! 🐖💖'**
+  String get mascotZeroExpenseToday;
+
+  /// No description provided for @mascotGoodSavings.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng này tiết kiệm được {percent}%. Quá siêu! 🏆'**
+  String mascotGoodSavings(String percent);
+
+  /// No description provided for @mascotFunQuote1.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hôm nay bạn đã ghi chép chi tiêu chưa? 📝'**
+  String get mascotFunQuote1;
+
+  /// No description provided for @mascotFunQuote2.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nghe heo đi, đừng mua món đó! 🐽'**
+  String get mascotFunQuote2;
+
+  /// No description provided for @mascotFunQuote3.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiết kiệm một đồng là kiếm được một đồng! 💰'**
+  String get mascotFunQuote3;
+
+  /// No description provided for @mascotFunQuote4.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nuôi heo đất mau lớn để đi chơi thôi! 🐖'**
+  String get mascotFunQuote4;
+
+  /// No description provided for @mascotFunQuote5.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bấm vào heo để nhận lời khuyên nè! 🐷'**
+  String get mascotFunQuote5;
 }
 
 class _AppLocalizationsDelegate

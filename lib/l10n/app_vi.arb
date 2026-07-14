@@ -2176,5 +2176,30 @@
   "groupTransferOwnershipAction": "Chuyển quyền chủ nhóm",
   "groupRemoveMemberAction": "Xóa thành viên",
   "groupMemberRemoveUnresolved": "Thành viên này vẫn còn số dư chưa quyết toán nên chưa thể xóa.",
-  "groupMemberActionForbidden": "Bạn không có quyền quản lý thành viên này."
+  "groupMemberActionForbidden": "Bạn không có quyền quản lý thành viên này.",
+  "mascotFirstTransaction": "Chào bạn! Hãy thêm giao dịch đầu tiên để heo theo dõi nhé! 🐷",
+  "mascotOverBudget": "Ví đang khóc vì mục {category} vượt trần rồi kìa! 🛑",
+  "@mascotOverBudget": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "mascotNearBudget": "Coi chừng mục {category} sắp chạm trần ngân sách nha! ⚠️",
+  "@mascotNearBudget": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "mascotZeroExpenseToday": "Hôm nay chưa tiêu đồng nào! Heo tự hào về bạn! 🐖💖",
+  "mascotGoodSavings": "Tháng này tiết kiệm được {percent}%. Quá siêu! 🏆",
+  "@mascotGoodSavings": {
+    "placeholders": {
+      "percent": { "type": "String" }
+    }
+  },
+  "mascotFunQuote1": "Hôm nay bạn đã ghi chép chi tiêu chưa? 📝",
+  "mascotFunQuote2": "Nghe heo đi, đừng mua món đó! 🐽",
+  "mascotFunQuote3": "Tiết kiệm một đồng là kiếm được một đồng! 💰",
+  "mascotFunQuote4": "Nuôi heo đất mau lớn để đi chơi thôi! 🐖",
+  "mascotFunQuote5": "Bấm vào heo để nhận lời khuyên nè! 🐷"
 }
