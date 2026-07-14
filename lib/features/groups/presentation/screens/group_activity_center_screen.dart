@@ -348,8 +348,16 @@ class _NotificationRow extends ConsumerWidget {
         return context.l10n.groupNotificationMemberLeft;
       case 'member_leave_blocked_warning':
         return context.l10n.groupNotificationLeaveBlocked;
+      case 'comment_added':
+      case 'transaction_commented':
+        return context.l10n.groupNotificationCommentAdded;
+      case 'transaction_reacted':
+        return context.l10n.groupNotificationReactionAdded;
+      case 'comment_mention':
+      case 'mention':
+        return context.l10n.groupNotificationMention;
       default:
-        return type.replaceAll('_', ' ');
+        return context.l10n.groupNotificationGeneric;
     }
   }
 }

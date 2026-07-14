@@ -4064,6 +4064,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'A member tried to leave with unresolved items';
 
   @override
+  String get groupNotificationCommentAdded => 'A new comment was added';
+
+  @override
+  String get groupNotificationReactionAdded =>
+      'Someone reacted to a transaction';
+
+  @override
+  String get groupNotificationMention => 'You were mentioned in the community';
+
+  @override
+  String get groupNotificationGeneric => 'New group update';
+
+  @override
   String get groupTransactionCreator => 'Posted by';
 
   @override

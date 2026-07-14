@@ -7352,6 +7352,30 @@ abstract class AppLocalizations {
   /// **'Một thành viên cố rời nhóm khi còn khoản chưa xử lý'**
   String get groupNotificationLeaveBlocked;
 
+  /// No description provided for @groupNotificationCommentAdded.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có bình luận mới'**
+  String get groupNotificationCommentAdded;
+
+  /// No description provided for @groupNotificationReactionAdded.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có người đã thả cảm xúc vào giao dịch'**
+  String get groupNotificationReactionAdded;
+
+  /// No description provided for @groupNotificationMention.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn được nhắc tên trong cộng đồng'**
+  String get groupNotificationMention;
+
+  /// No description provided for @groupNotificationGeneric.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có cập nhật mới trong nhóm'**
+  String get groupNotificationGeneric;
+
   /// No description provided for @groupTransactionCreator.
   ///
   /// In vi, this message translates to:

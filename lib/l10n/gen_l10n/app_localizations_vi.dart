@@ -4067,6 +4067,19 @@ class AppLocalizationsVi extends AppLocalizations {
       'Một thành viên cố rời nhóm khi còn khoản chưa xử lý';
 
   @override
+  String get groupNotificationCommentAdded => 'Có bình luận mới';
+
+  @override
+  String get groupNotificationReactionAdded =>
+      'Có người đã thả cảm xúc vào giao dịch';
+
+  @override
+  String get groupNotificationMention => 'Bạn được nhắc tên trong cộng đồng';
+
+  @override
+  String get groupNotificationGeneric => 'Có cập nhật mới trong nhóm';
+
+  @override
   String get groupTransactionCreator => 'Người đăng';
 
   @override
