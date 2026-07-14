@@ -3278,6 +3278,18 @@ abstract class AppLocalizations {
   /// **'Thay đổi múi giờ'**
   String get profileChangeTimezone;
 
+  /// No description provided for @profileMascotTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Linh vật ứng dụng'**
+  String get profileMascotTitle;
+
+  /// No description provided for @profileMascotSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiện linh vật hoạt hình trên thanh điều hướng dưới cùng.'**
+  String get profileMascotSubtitle;
+
   /// No description provided for @timezonePickerSearch.
   ///
   /// In vi, this message translates to:

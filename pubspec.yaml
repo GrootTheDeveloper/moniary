@@ -50,6 +50,7 @@ flutter:
     - logo.png
     - assets/demo_transactions/
     - assets/demo_avatars/
+    - assets/mascot/
     - assets/fonts/OFL-Manrope.txt
     - assets/fonts/OFL-InstrumentSerif.txt
     - assets/fonts/OFL-JetBrainsMono.txt

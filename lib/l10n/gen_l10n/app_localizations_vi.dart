@@ -1756,6 +1756,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileChangeTimezone => 'Thay đổi múi giờ';
 
   @override
+  String get profileMascotTitle => 'Linh vật ứng dụng';
+
+  @override
+  String get profileMascotSubtitle =>
+      'Hiện linh vật hoạt hình trên thanh điều hướng dưới cùng.';
+
+  @override
   String get timezonePickerSearch => 'Tìm múi giờ...';
 
   @override

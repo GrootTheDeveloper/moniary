@@ -1758,6 +1758,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileChangeTimezone => 'Change Timezone';
 
   @override
+  String get profileMascotTitle => 'App Mascot';
+
+  @override
+  String get profileMascotSubtitle =>
+      'Show the animated mascot on the bottom navigation bar.';
+
+  @override
   String get timezonePickerSearch => 'Search timezones...';
 
   @override

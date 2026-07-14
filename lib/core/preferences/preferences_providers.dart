@@ -22,6 +22,10 @@ final preferredCurrencyProvider =
       PreferredCurrencyNotifier.new,
     );
 
+final mascotEnabledProvider = NotifierProvider<MascotEnabledNotifier, bool>(
+  MascotEnabledNotifier.new,
+);
+
 class PreferredLocaleNotifier extends Notifier<Locale> {
   static const _key = 'preferred_locale';
 
@@ -63,5 +67,19 @@ class PreferredCurrencyNotifier extends Notifier<String> {
   Future<void> setCurrency(String value) async {
     state = value;
     await ref.read(sharedPreferencesProvider).setString(_key, value);
+  }
+}
+
+class MascotEnabledNotifier extends Notifier<bool> {
+  static const _key = 'mascot_enabled';
+
+  @override
+  bool build() {
+    return ref.read(sharedPreferencesProvider).getBool(_key) ?? true;
+  }
+
+  Future<void> setEnabled(bool value) async {
+    state = value;
+    await ref.read(sharedPreferencesProvider).setBool(_key, value);
   }
 }

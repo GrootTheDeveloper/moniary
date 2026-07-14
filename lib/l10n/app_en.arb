@@ -785,6 +785,8 @@
   },
   "profileEditInfo": "Edit information",
   "profileChangeTimezone": "Change Timezone",
+  "profileMascotTitle": "App Mascot",
+  "profileMascotSubtitle": "Show the animated mascot on the bottom navigation bar.",
   "timezonePickerSearch": "Search timezones...",
   "timezonePickerUseDevice": "Use device timezone",
   "timezonePickerNoResults": "No timezones found",
