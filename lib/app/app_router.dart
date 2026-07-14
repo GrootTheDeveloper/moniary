@@ -48,6 +48,7 @@ import '../features/journal/presentation/recording_streak_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
 import '../features/profile/presentation/timezone_picker_screen.dart';
+import '../features/profile/presentation/currency_picker_screen.dart';
 import '../features/profile/presentation/profile_survey_screen.dart';
 import '../features/scanning/presentation/ocr_review_screen.dart';
 import '../features/scanning/presentation/scanning_screen.dart';
@@ -198,6 +199,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: TimezonePickerScreen.routePath,
         builder: (context, state) => const TimezonePickerScreen(),
+      ),
+      GoRoute(
+        path: CurrencyPickerScreen.routePath,
+        builder: (context, state) => CurrencyPickerScreen(
+          pickOnly: state.uri.queryParameters['pickOnly'] == 'true',
+        ),
       ),
       GoRoute(
         path: ProfileSurveyScreen.routePath,

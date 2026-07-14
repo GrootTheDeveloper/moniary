@@ -21,6 +21,8 @@ import '../../journal/presentation/monthly_recap_screen.dart';
 import '../../journal/presentation/recording_streak_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
+import '../../profile/presentation/currency_picker_screen.dart';
+import '../../profile/domain/currency_data.dart';
 import '../application/account/account_actions_controller.dart';
 import '../application/privacy_controller.dart';
 import 'export/export_data_screen.dart';
@@ -523,6 +525,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ),
                           _SettingsTile(
+                            icon: Icons.currency_exchange_outlined,
+                            title: context.l10n.profileSetupCurrency,
+                            subtitle: () {
+                              final currencyCode = ref.watch(
+                                preferredCurrencyProvider,
+                              );
+                              final info = currencyInfoFor(currencyCode);
+                              return '${info.flag}  ${info.name} (${info.code})';
+                            }(),
+                            onTap: () =>
+                                context.push(CurrencyPickerScreen.routePath),
+                          ),
+                          _SettingsTile(
                             icon: Icons.schedule_outlined,
                             title: context.l10n.profileChangeTimezone,
                             subtitle: timezoneDisplayLabel(profile.timezone),
@@ -537,6 +552,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ref.watch(preferredLocaleProvider),
                             ),
                             onTap: _showLanguagePicker,
+                          ),
+                          _SettingsTile(
+                            icon: Icons.calendar_view_week_outlined,
+                            title: context.l10n.profileFirstDayOfWeekLabel,
+                            subtitle: ref.watch(firstDayOfWeekProvider) == 7
+                                ? context.l10n.profileFirstDayOfWeekSun
+                                : context.l10n.profileFirstDayOfWeekMon,
+                            onTap: () => _showFirstDayOfWeekSheet(
+                              ref.read(firstDayOfWeekProvider),
+                            ),
                           ),
                           _MascotToggleTile(
                             enabled: ref.watch(mascotEnabledProvider),
@@ -791,6 +816,57 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 },
                 icon: const Icon(Icons.edit_outlined),
                 label: Text(context.l10n.editProfileTitle),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showFirstDayOfWeekSheet(int currentDay) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                context.l10n.profileFirstDayOfWeekLabel,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              RadioGroup<int>(
+                groupValue: currentDay,
+                onChanged: (v) {
+                  if (v == null) return;
+                  ref
+                      .read(firstDayOfWeekProvider.notifier)
+                      .setFirstDayOfWeek(v);
+                  Navigator.pop(context);
+                },
+                child: Column(
+                  children: [
+                    RadioListTile<int>(
+                      value: 1,
+                      title: Text(context.l10n.profileFirstDayOfWeekMon),
+                    ),
+                    RadioListTile<int>(
+                      value: 7,
+                      title: Text(context.l10n.profileFirstDayOfWeekSun),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

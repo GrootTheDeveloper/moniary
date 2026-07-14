@@ -1808,6 +1808,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLanguage => 'Language';
 
   @override
+  String get currencyPickerTitle => 'Select Currency';
+
+  @override
+  String get currencyPickerSearch => 'Search currency...';
+
+  @override
+  String get currencyPickerNoResults => 'No currencies found';
+
+  @override
+  String get currencyPickerPopular => 'Popular Currencies';
+
+  @override
+  String get currencyPickerAll => 'All Currencies';
+
+  @override
+  String get profileFirstDayOfWeekLabel => 'First day of the week';
+
+  @override
+  String get profileFirstDayOfWeekMon => 'Monday';
+
+  @override
+  String get profileFirstDayOfWeekSun => 'Sunday';
+
+  @override
   String get profileLanguageVi => 'Vietnamese';
 
   @override

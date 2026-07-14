@@ -3350,6 +3350,54 @@ abstract class AppLocalizations {
   /// **'Ngôn ngữ'**
   String get profileLanguage;
 
+  /// No description provided for @currencyPickerTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn tiền tệ'**
+  String get currencyPickerTitle;
+
+  /// No description provided for @currencyPickerSearch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm tiền tệ...'**
+  String get currencyPickerSearch;
+
+  /// No description provided for @currencyPickerNoResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy tiền tệ'**
+  String get currencyPickerNoResults;
+
+  /// No description provided for @currencyPickerPopular.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiền tệ phổ biến'**
+  String get currencyPickerPopular;
+
+  /// No description provided for @currencyPickerAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả tiền tệ'**
+  String get currencyPickerAll;
+
+  /// No description provided for @profileFirstDayOfWeekLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày đầu tuần'**
+  String get profileFirstDayOfWeekLabel;
+
+  /// No description provided for @profileFirstDayOfWeekMon.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thứ Hai'**
+  String get profileFirstDayOfWeekMon;
+
+  /// No description provided for @profileFirstDayOfWeekSun.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chủ Nhật'**
+  String get profileFirstDayOfWeekSun;
+
   /// No description provided for @profileLanguageVi.
   ///
   /// In vi, this message translates to:

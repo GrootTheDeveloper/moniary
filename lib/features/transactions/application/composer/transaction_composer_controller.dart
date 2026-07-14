@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../calendar/application/month/calendar_month_provider.dart';
 import '../../../categories/domain/models/category.dart';
+import '../../../wallets/application/wallets_controller.dart';
+import '../../../../core/widgets/widget_update_service.dart';
 import '../../data/repositories/transaction_repository.dart';
 import '../queries/transaction_queries.dart';
 
@@ -52,6 +54,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
       if (imageBytes == null) {
         // Update to 'uploaded' even if no image? Or just leave it?
         // PRD says: image_path is null and status pending/failed is allowed.
+        _triggerUpdates();
         state = const AsyncData(null);
         return;
       }
@@ -78,6 +81,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
         );
         rethrow;
       }
+      _triggerUpdates();
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -131,6 +135,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
           rethrow;
         }
       }
+      _triggerUpdates();
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -161,6 +166,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
       ref.invalidate(transactionByIdProvider(transactionId));
       ref.invalidate(transactionsForDayProvider(dayStart));
       ref.invalidate(calendarMonthProvider(monthStart));
+      _triggerUpdates();
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -174,10 +180,16 @@ class TransactionComposerController extends AsyncNotifier<void> {
       await ref
           .read(transactionRepositoryProvider)
           .deleteTransaction(transactionId);
+      _triggerUpdates();
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
       rethrow;
     }
+  }
+
+  void _triggerUpdates() {
+    ref.invalidate(walletsControllerProvider);
+    ref.read(widgetUpdateServiceProvider).updateWidget().ignore();
   }
 }

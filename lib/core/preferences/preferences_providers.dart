@@ -25,6 +25,10 @@ final mascotEnabledProvider = NotifierProvider<MascotEnabledNotifier, bool>(
   MascotEnabledNotifier.new,
 );
 
+final firstDayOfWeekProvider = NotifierProvider<FirstDayOfWeekNotifier, int>(
+  FirstDayOfWeekNotifier.new,
+);
+
 class OnboardingSeenNotifier extends Notifier<bool> {
   static const _key = 'onboarding_seen';
 
@@ -78,5 +82,20 @@ class MascotEnabledNotifier extends Notifier<bool> {
   Future<void> setEnabled(bool value) async {
     state = value;
     await ref.read(sharedPreferencesProvider).setBool(_key, value);
+  }
+}
+
+class FirstDayOfWeekNotifier extends Notifier<int> {
+  static const _key = 'first_day_of_week';
+
+  @override
+  int build() {
+    // 1 represents Monday (default), 7 represents Sunday
+    return ref.read(sharedPreferencesProvider).getInt(_key) ?? 1;
+  }
+
+  Future<void> setFirstDayOfWeek(int value) async {
+    state = value;
+    await ref.read(sharedPreferencesProvider).setInt(_key, value);
   }
 }

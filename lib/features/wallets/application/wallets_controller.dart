@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/repositories/wallet_repository.dart';
 import '../domain/models/wallet.dart';
+import '../../../core/widgets/widget_update_service.dart';
 
 final walletsControllerProvider =
     AsyncNotifierProvider<WalletsController, List<Wallet>>(
@@ -41,6 +42,7 @@ class WalletsController extends AsyncNotifier<List<Wallet>> {
       state = AsyncData(
         await ref.read(walletRepositoryProvider).fetchWallets(),
       );
+      ref.read(widgetUpdateServiceProvider).updateWidget().ignore();
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
       rethrow;
@@ -71,6 +73,7 @@ class WalletsController extends AsyncNotifier<List<Wallet>> {
       state = AsyncData(
         await ref.read(walletRepositoryProvider).fetchWallets(),
       );
+      ref.read(widgetUpdateServiceProvider).updateWidget().ignore();
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
       rethrow;

@@ -1806,6 +1806,30 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileLanguage => 'Ngôn ngữ';
 
   @override
+  String get currencyPickerTitle => 'Chọn tiền tệ';
+
+  @override
+  String get currencyPickerSearch => 'Tìm tiền tệ...';
+
+  @override
+  String get currencyPickerNoResults => 'Không tìm thấy tiền tệ';
+
+  @override
+  String get currencyPickerPopular => 'Tiền tệ phổ biến';
+
+  @override
+  String get currencyPickerAll => 'Tất cả tiền tệ';
+
+  @override
+  String get profileFirstDayOfWeekLabel => 'Ngày đầu tuần';
+
+  @override
+  String get profileFirstDayOfWeekMon => 'Thứ Hai';
+
+  @override
+  String get profileFirstDayOfWeekSun => 'Chủ Nhật';
+
+  @override
   String get profileLanguageVi => 'Tiếng Việt';
 
   @override
