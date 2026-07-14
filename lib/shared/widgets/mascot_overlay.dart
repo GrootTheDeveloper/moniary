@@ -246,6 +246,23 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
       return const SizedBox.shrink();
     }
 
+    final mascotDataAsync = ref.watch(mascotDataProvider);
+    final data = mascotDataAsync.asData?.value;
+
+    final isOverBudget = data?.budgetCategories.any((c) => c.isOverLimit) ?? false;
+    final isHappy = (data?.streakDays ?? 0) >= 3;
+
+    final targetDuration = isOverBudget
+        ? const Duration(seconds: 10) // sluggish walk (worried/sluggish mood)
+        : (isHappy ? const Duration(seconds: 4) : const Duration(seconds: 6)); // happy / normal walk
+
+    if (_walkController.duration != targetDuration) {
+      _walkController.duration = targetDuration;
+      if (_walkController.isAnimating) {
+        _walkController.repeat(reverse: true);
+      }
+    }
+
     _startFrameLoop();
     if (!_walkController.isAnimating && !_isIdling) {
       _walkController.repeat(reverse: true);

@@ -10,7 +10,8 @@ struct Provider: TimelineProvider {
             labelBalance: "Số dư tổng",
             labelSpend: "Chi tiêu hôm nay",
             labelQuickAdd: "Ghi chép",
-            labelScanReceipt: "Quét ảnh"
+            labelScanReceipt: "Quét ảnh",
+            streak: 0
         )
     }
 
@@ -33,6 +34,7 @@ struct Provider: TimelineProvider {
         let labelSpend = defaults?.string(forKey: "today_spending_label") ?? "Chi tiêu hôm nay"
         let labelQuickAdd = defaults?.string(forKey: "quick_add_label") ?? "Ghi chép"
         let labelScanReceipt = defaults?.string(forKey: "scan_receipt_label") ?? "Quét ảnh"
+        let streak = defaults?.integer(forKey: "recording_streak") ?? 0
         return SimpleEntry(
             date: Date(),
             balance: balance,
@@ -40,7 +42,8 @@ struct Provider: TimelineProvider {
             labelBalance: labelBalance,
             labelSpend: labelSpend,
             labelQuickAdd: labelQuickAdd,
-            labelScanReceipt: labelScanReceipt
+            labelScanReceipt: labelScanReceipt,
+            streak: streak
         )
     }
 }
@@ -53,6 +56,7 @@ struct SimpleEntry: TimelineEntry {
     let labelSpend: String
     let labelQuickAdd: String
     let labelScanReceipt: String
+    let streak: Int
 }
 
 struct MoniaryWidgetEntryView : View {
@@ -61,13 +65,28 @@ struct MoniaryWidgetEntryView : View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack {
+            HStack(alignment: .center, spacing: 6) {
                 Image(systemName: "wallet.pass.fill")
                     .foregroundColor(Color(red: 0.4, green: 0.9, blue: 0.8)) // mint green
                     .imageScale(.medium)
                 Text("Moniary")
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
+                
+                if entry.streak > 0 {
+                    HStack(spacing: 2) {
+                        Text("🔥")
+                            .font(.system(size: 9))
+                        Text("\(entry.streak)")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundColor(.orange)
+                    }
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(Color.orange.opacity(0.15))
+                    .cornerRadius(6)
+                }
+                
                 Spacer()
             }
             .padding(.bottom, 12)
@@ -156,7 +175,8 @@ struct MoniaryWidget: Widget {
         labelBalance: "Số dư tổng",
         labelSpend: "Chi tiêu hôm nay",
         labelQuickAdd: "Ghi chép",
-        labelScanReceipt: "Quét ảnh"
+        labelScanReceipt: "Quét ảnh",
+        streak: 3
     )
 }
 
@@ -170,6 +190,7 @@ struct MoniaryWidget: Widget {
         labelBalance: "Số dư tổng",
         labelSpend: "Chi tiêu hôm nay",
         labelQuickAdd: "Ghi chép",
-        labelScanReceipt: "Quét ảnh"
+        labelScanReceipt: "Quét ảnh",
+        streak: 3
     )
 }

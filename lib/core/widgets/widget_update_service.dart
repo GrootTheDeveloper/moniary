@@ -5,6 +5,7 @@ import 'package:home_widget/home_widget.dart';
 
 import '../../l10n/gen_l10n/app_localizations.dart';
 
+import '../../features/journal/application/journal_controller.dart';
 import '../../features/categories/domain/models/category.dart';
 import '../../features/transactions/data/repositories/transaction_repository.dart';
 import '../../features/wallets/data/repositories/wallet_repository.dart';
@@ -61,6 +62,10 @@ class WidgetUpdateService {
           .where((t) => t.type == TransactionType.expense)
           .fold(0.0, (sum, t) => sum + t.amount);
 
+      final streak = _ref.read(recordingStreakProvider).whenOrNull(
+        data: (s) => s.currentDays,
+      ) ?? 0;
+
       // 4. Retrieve preferred user currency and locale
       final currencyCode = _ref.read(preferredCurrencyProvider);
       final locale = _ref.read(preferredLocaleProvider);
@@ -104,6 +109,10 @@ class WidgetUpdateService {
       await HomeWidget.saveWidgetData<String>(
         'scan_receipt_label',
         labelScanReceipt,
+      );
+      await HomeWidget.saveWidgetData<int>(
+        'recording_streak',
+        streak,
       );
 
       // 6. Request Widget Extension timeline reload
