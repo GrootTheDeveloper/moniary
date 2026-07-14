@@ -180,12 +180,14 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
           );
         }
 
-        final transactions = snapshot.data ?? [];
-        var filtered = transactions;
-
-        if (_showStarredOnly) {
-          filtered = filtered.where((tx) => tx.isImportant).toList();
-        }
+        final transactions = snapshot.data ?? const <TransactionEntry>[];
+        // Copy into a fresh modifiable list before sorting: the provider may
+        // hand back an unmodifiable list (e.g. `const []` for an empty query),
+        // and sort() mutates in place.
+        final filtered = (_showStarredOnly
+                ? transactions.where((tx) => tx.isImportant)
+                : transactions)
+            .toList();
 
         // Sort: Starred items first, then by date (already sorted by date from repo)
         filtered.sort((a, b) {
