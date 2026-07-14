@@ -274,9 +274,7 @@ struct MoniaryWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             MoniaryWidgetEntryView(entry: entry)
-                .containerBackground(for: .widget) {
-                    GlassmorphicBackground()
-                }
+                .widgetBackground(GlassmorphicBackground())
         }
         .configurationDisplayName("Moniary Dashboard")
         .description("Xem nhanh số dư và chi tiêu hôm nay của bạn.")
@@ -480,9 +478,7 @@ struct MoniaryStreakCalendarWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             MoniaryStreakCalendarWidgetEntryView(entry: entry)
-                .containerBackground(for: .widget) {
-                    GlassmorphicBackground()
-                }
+                .widgetBackground(GlassmorphicBackground())
         }
         .configurationDisplayName("Moniary Streak")
         .description("Theo dõi chuỗi ngày ghi chép chi tiêu liên tục của bạn.")
@@ -642,12 +638,28 @@ struct MoniaryBudgetWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             MoniaryBudgetWidgetEntryView(entry: entry)
-                .containerBackground(for: .widget) {
-                    GlassmorphicBackground()
-                }
+                .widgetBackground(GlassmorphicBackground())
         }
         .configurationDisplayName("Moniary Budget")
         .description("Giám sát tiến trình chi tiêu theo hạn mức ngân sách tháng.")
         .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular, .accessoryRectangular])
+    }
+}
+
+// ── View Extension for iOS Background Compatibility ───────────────────────────
+extension View {
+    @ViewBuilder
+    func widgetBackground(_ backgroundView: some View) -> some View {
+        #if compiler(>=5.9)
+        if #available(iOS 17.0, *) {
+            self.containerBackground(for: .widget) {
+                backgroundView
+            }
+        } else {
+            self.background(backgroundView)
+        }
+        #else
+        self.background(backgroundView)
+        #endif
     }
 }

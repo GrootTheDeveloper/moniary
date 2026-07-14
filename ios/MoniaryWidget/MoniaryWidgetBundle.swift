@@ -5,6 +5,7 @@
 //  Created by Mickey Nguyen on 14/7/26.
 //
 
+/*
 import WidgetKit
 import SwiftUI
 
@@ -12,6 +13,7 @@ import SwiftUI
 struct MoniaryWidgetBundle: WidgetBundle {
     var body: some Widget {
         MoniaryWidget()
-        MoniaryWidgetControl()
+        // MoniaryWidgetControl()
     }
 }
+*/
