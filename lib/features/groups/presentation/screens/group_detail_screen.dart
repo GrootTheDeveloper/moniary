@@ -152,17 +152,18 @@ class GroupDetailScreen extends ConsumerWidget {
                     );
                   },
                 ),
-                ListTile(
-                  leading: const Icon(Icons.public_outlined),
-                  title: Text(context.l10n.groupPublicProfileSettingsTitle),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    context.push(
-                      GroupPublicProfileScreen.routePath,
-                      extra: groupId,
-                    );
-                  },
-                ),
+                if (detail.canInvite)
+                  ListTile(
+                    leading: const Icon(Icons.public_outlined),
+                    title: Text(context.l10n.groupPublicProfileSettingsTitle),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      context.push(
+                        GroupPublicProfileScreen.routePath,
+                        extra: groupId,
+                      );
+                    },
+                  ),
                 ListTile(
                   leading: const Icon(Icons.autorenew_outlined),
                   title: Text(context.l10n.groupRecurringTitle),
