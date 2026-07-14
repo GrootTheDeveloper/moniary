@@ -3882,6 +3882,57 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupPublicProfileSaved => 'Đã cập nhật trang công khai';
 
   @override
+  String get groupRecurringTitle => 'Giao dịch định kỳ';
+
+  @override
+  String get groupRecurringAdd => 'Thêm định kỳ';
+
+  @override
+  String get groupRecurringEditTitle => 'Sửa định kỳ';
+
+  @override
+  String get groupRecurringEmpty => 'Chưa có giao dịch định kỳ nào';
+
+  @override
+  String get groupRecurringName => 'Tên';
+
+  @override
+  String get groupRecurringAmount => 'Số tiền';
+
+  @override
+  String get groupRecurringFrequency => 'Tần suất';
+
+  @override
+  String get groupRecurringWeekly => 'Hàng tuần';
+
+  @override
+  String get groupRecurringMonthly => 'Hàng tháng';
+
+  @override
+  String get groupRecurringNextRun => 'Lần tới';
+
+  @override
+  String get groupRecurringNotifyDays => 'Báo trước số ngày';
+
+  @override
+  String get groupRecurringInactive => 'Tạm dừng';
+
+  @override
+  String get groupRecurringDeactivate => 'Tạm dừng định kỳ này';
+
+  @override
+  String get groupRecurringReactivate => 'Tiếp tục định kỳ này';
+
+  @override
+  String get groupRecurringNameRequired => 'Cần nhập tên';
+
+  @override
+  String get groupRecurringAmountRequired => 'Số tiền phải lớn hơn 0';
+
+  @override
+  String get groupRecurringSaved => 'Đã lưu giao dịch định kỳ';
+
+  @override
   String get groupActivityTransactionReacted =>
       'đã thả cảm xúc vào một giao dịch';
 

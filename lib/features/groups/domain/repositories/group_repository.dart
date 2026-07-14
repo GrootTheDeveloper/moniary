@@ -92,4 +92,28 @@ abstract interface class GroupRepository {
   Future<GroupPublicProfile> fetchPublicProfile(String groupId);
 
   Future<void> upsertPublicProfile(GroupPublicProfile profile);
+
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  );
+
+  Future<void> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  });
+
+  Future<void> updateRecurringTransaction({
+    required String id,
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  });
 }

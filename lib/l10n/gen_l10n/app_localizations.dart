@@ -7010,6 +7010,108 @@ abstract class AppLocalizations {
   /// **'Đã cập nhật trang công khai'**
   String get groupPublicProfileSaved;
 
+  /// No description provided for @groupRecurringTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch định kỳ'**
+  String get groupRecurringTitle;
+
+  /// No description provided for @groupRecurringAdd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm định kỳ'**
+  String get groupRecurringAdd;
+
+  /// No description provided for @groupRecurringEditTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa định kỳ'**
+  String get groupRecurringEditTitle;
+
+  /// No description provided for @groupRecurringEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có giao dịch định kỳ nào'**
+  String get groupRecurringEmpty;
+
+  /// No description provided for @groupRecurringName.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên'**
+  String get groupRecurringName;
+
+  /// No description provided for @groupRecurringAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền'**
+  String get groupRecurringAmount;
+
+  /// No description provided for @groupRecurringFrequency.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tần suất'**
+  String get groupRecurringFrequency;
+
+  /// No description provided for @groupRecurringWeekly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hàng tuần'**
+  String get groupRecurringWeekly;
+
+  /// No description provided for @groupRecurringMonthly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hàng tháng'**
+  String get groupRecurringMonthly;
+
+  /// No description provided for @groupRecurringNextRun.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lần tới'**
+  String get groupRecurringNextRun;
+
+  /// No description provided for @groupRecurringNotifyDays.
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo trước số ngày'**
+  String get groupRecurringNotifyDays;
+
+  /// No description provided for @groupRecurringInactive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạm dừng'**
+  String get groupRecurringInactive;
+
+  /// No description provided for @groupRecurringDeactivate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạm dừng định kỳ này'**
+  String get groupRecurringDeactivate;
+
+  /// No description provided for @groupRecurringReactivate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếp tục định kỳ này'**
+  String get groupRecurringReactivate;
+
+  /// No description provided for @groupRecurringNameRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần nhập tên'**
+  String get groupRecurringNameRequired;
+
+  /// No description provided for @groupRecurringAmountRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền phải lớn hơn 0'**
+  String get groupRecurringAmountRequired;
+
+  /// No description provided for @groupRecurringSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu giao dịch định kỳ'**
+  String get groupRecurringSaved;
+
   /// No description provided for @groupActivityTransactionReacted.
   ///
   /// In vi, this message translates to:

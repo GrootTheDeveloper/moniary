@@ -663,6 +663,106 @@ class GroupRepositoryImpl implements GroupRepository {
     );
   }
 
+  @override
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  ) {
+    if (_useMockData) {
+      return _mock
+          .fetchRecurringTransactions(groupId)
+          .then((rows) => rows.map(_mapRecurring).toList());
+    }
+    return _guard('fetch group recurring transactions', () async {
+      final rows = await _remote.fetchRecurringTransactions(groupId);
+      return rows.map(_mapRecurring).toList();
+    });
+  }
+
+  @override
+  Future<void> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) {
+    if (_useMockData) {
+      return _mock.createRecurringTransaction(
+        groupId: groupId,
+        title: title,
+        amount: amount,
+        frequency: frequency,
+        nextRunAt: nextRunAt,
+        notifyDaysBefore: notifyDaysBefore,
+      );
+    }
+    return _guard(
+      'create group recurring transaction',
+      () => _remote.createRecurringTransaction(
+        groupId: groupId,
+        title: title,
+        amount: amount,
+        frequency: frequency,
+        nextRunAt: nextRunAt,
+        notifyDaysBefore: notifyDaysBefore,
+      ),
+    );
+  }
+
+  @override
+  Future<void> updateRecurringTransaction({
+    required String id,
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  }) {
+    if (_useMockData) {
+      return _mock.updateRecurringTransaction(
+        id: id,
+        title: title,
+        amount: amount,
+        frequency: frequency,
+        nextRunAt: nextRunAt,
+        notifyDaysBefore: notifyDaysBefore,
+        isActive: isActive,
+      );
+    }
+    return _guard(
+      'update group recurring transaction',
+      () => _remote.updateRecurringTransaction(
+        id: id,
+        title: title,
+        amount: amount,
+        frequency: frequency,
+        nextRunAt: nextRunAt,
+        notifyDaysBefore: notifyDaysBefore,
+        isActive: isActive,
+      ),
+    );
+  }
+
+  GroupRecurringTransaction _mapRecurring(Map<String, dynamic> row) {
+    return GroupRecurringTransaction(
+      id: row['id'] as String,
+      groupId: row['group_id'] as String,
+      createdBy: row['created_by'] as String,
+      title: row['title'] as String,
+      amount: (row['amount'] as num).toInt(),
+      frequency: row['frequency'] as String? ?? 'monthly',
+      nextRunAt: DateTime.parse(row['next_run_at'] as String).toLocal(),
+      notifyDaysBefore: (row['notify_days_before'] as num?)?.toInt() ?? 1,
+      isActive: row['is_active'] as bool? ?? true,
+      createdAt: row['created_at'] != null
+          ? DateTime.parse(row['created_at'] as String).toLocal()
+          : DateTime.now(),
+    );
+  }
+
   Future<T> _guard<T>(String operation, Future<T> Function() action) async {
     try {
       return await action();

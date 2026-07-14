@@ -726,4 +726,37 @@ class FakeGroupRepository implements GroupRepository {
   Future<void> upsertPublicProfile(GroupPublicProfile profile) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  ) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> updateRecurringTransaction({
+    required String id,
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  }) {
+    throw UnimplementedError();
+  }
 }

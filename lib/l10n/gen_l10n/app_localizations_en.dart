@@ -3880,6 +3880,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupPublicProfileSaved => 'Public profile updated';
 
   @override
+  String get groupRecurringTitle => 'Recurring transactions';
+
+  @override
+  String get groupRecurringAdd => 'Add recurring';
+
+  @override
+  String get groupRecurringEditTitle => 'Edit recurring';
+
+  @override
+  String get groupRecurringEmpty => 'No recurring transactions yet';
+
+  @override
+  String get groupRecurringName => 'Name';
+
+  @override
+  String get groupRecurringAmount => 'Amount';
+
+  @override
+  String get groupRecurringFrequency => 'Frequency';
+
+  @override
+  String get groupRecurringWeekly => 'Weekly';
+
+  @override
+  String get groupRecurringMonthly => 'Monthly';
+
+  @override
+  String get groupRecurringNextRun => 'Next run';
+
+  @override
+  String get groupRecurringNotifyDays => 'Notify days before';
+
+  @override
+  String get groupRecurringInactive => 'Paused';
+
+  @override
+  String get groupRecurringDeactivate => 'Pause this recurring';
+
+  @override
+  String get groupRecurringReactivate => 'Resume this recurring';
+
+  @override
+  String get groupRecurringNameRequired => 'Name is required';
+
+  @override
+  String get groupRecurringAmountRequired => 'Amount must be greater than 0';
+
+  @override
+  String get groupRecurringSaved => 'Recurring transaction saved';
+
+  @override
   String get groupActivityTransactionReacted => 'reacted to a transaction';
 
   @override

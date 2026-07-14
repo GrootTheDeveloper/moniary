@@ -30,6 +30,7 @@ import '../features/groups/presentation/screens/group_detail_screen.dart';
 import '../features/groups/presentation/screens/group_notification_preferences_screen.dart';
 import '../features/groups/presentation/screens/group_photo_album_screen.dart';
 import '../features/groups/presentation/screens/group_public_profile_screen.dart';
+import '../features/groups/presentation/screens/group_recurring_transactions_screen.dart';
 import '../features/groups/presentation/screens/group_invite_accept_screen.dart';
 import '../features/groups/presentation/screens/group_invitations_screen.dart';
 import '../features/groups/presentation/screens/group_transaction_detail_screen.dart';
@@ -464,6 +465,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final child = groupId == null
               ? const GroupsScreen()
               : GroupPublicProfileScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupRecurringTransactionsScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupRecurringTransactionsScreen(groupId: groupId);
           return buildSlideTransitionPage(state: state, child: child);
         },
       ),

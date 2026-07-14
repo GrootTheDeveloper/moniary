@@ -27,6 +27,7 @@ class GroupMockDataSource {
   static final Map<String, Map<String, dynamic>> _budgets = {};
   static final Map<String, Map<String, dynamic>> _notificationPrefs = {};
   static final Map<String, Map<String, dynamic>> _publicProfiles = {};
+  static final Map<String, Map<String, dynamic>> _recurring = {};
   static var _sequence = 0;
 
   static void resetForTesting() {
@@ -39,6 +40,7 @@ class GroupMockDataSource {
     _budgets.clear();
     _notificationPrefs.clear();
     _publicProfiles.clear();
+    _recurring.clear();
     _sequence = 0;
   }
 
@@ -1176,6 +1178,66 @@ class GroupMockDataSource {
       'show_stats': showStats,
       'slug': slug,
     };
+  }
+
+  Future<List<Map<String, dynamic>>> fetchRecurringTransactions(
+    String groupId,
+  ) async {
+    _requireActiveMember(groupId);
+    final rows = _recurring.values
+        .where((row) => row['group_id'] == groupId)
+        .toList()
+      ..sort(
+        (a, b) => (a['next_run_at'] as String).compareTo(
+          b['next_run_at'] as String,
+        ),
+      );
+    return rows;
+  }
+
+  Future<void> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) async {
+    _requireActiveMember(groupId);
+    final id = _id('recurring');
+    _recurring[id] = {
+      'id': id,
+      'group_id': groupId,
+      'created_by': currentUserId,
+      'title': title,
+      'amount': amount,
+      'frequency': frequency,
+      'next_run_at': nextRunAt.toUtc().toIso8601String(),
+      'notify_days_before': notifyDaysBefore,
+      'is_active': true,
+      'created_at': DateTime.now().toUtc().toIso8601String(),
+    };
+  }
+
+  Future<void> updateRecurringTransaction({
+    required String id,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  }) async {
+    final row = _recurring[id];
+    if (row == null) {
+      throw const AppException('Not found', code: 'NOT_FOUND');
+    }
+    row['title'] = title;
+    row['amount'] = amount;
+    row['frequency'] = frequency;
+    row['next_run_at'] = nextRunAt.toUtc().toIso8601String();
+    row['notify_days_before'] = notifyDaysBefore;
+    row['is_active'] = isActive;
   }
 
   void _validatePayerDraft(

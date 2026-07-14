@@ -429,6 +429,62 @@ class GroupSupabaseDataSource {
     );
   }
 
+  Future<List<Map<String, dynamic>>> fetchRecurringTransactions(
+    String groupId,
+  ) async {
+    final rows = await client
+        .from('group_recurring_transactions')
+        .select()
+        .eq('group_id', groupId)
+        .order('next_run_at');
+    return _rows(rows);
+  }
+
+  Future<void> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) {
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) {
+      throw const AuthException('AUTH_REQUIRED');
+    }
+    return client.from('group_recurring_transactions').insert({
+      'group_id': groupId,
+      'created_by': userId,
+      'title': title,
+      'amount': amount,
+      'frequency': frequency,
+      'next_run_at': nextRunAt.toUtc().toIso8601String(),
+      'notify_days_before': notifyDaysBefore,
+    });
+  }
+
+  Future<void> updateRecurringTransaction({
+    required String id,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  }) {
+    return client
+        .from('group_recurring_transactions')
+        .update({
+          'title': title,
+          'amount': amount,
+          'frequency': frequency,
+          'next_run_at': nextRunAt.toUtc().toIso8601String(),
+          'notify_days_before': notifyDaysBefore,
+          'is_active': isActive,
+        })
+        .eq('id', id);
+  }
+
   Future<void> _uploadCompressed({
     required String path,
     required String filePath,
