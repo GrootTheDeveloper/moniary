@@ -2274,5 +2274,7 @@
   "widgetBudgetTitle": "Ngân sách",
   "widgetBudgetSpent": "Đã chi",
   "widgetBudgetRemaining": "Còn lại",
-  "widgetOverBudget": "Vượt hạn mức"
+  "widgetOverBudget": "Vượt hạn mức",
+  "mascotFeedAction": "Cho Heo ăn 🍎",
+  "mascotFedResponse": "Ngon quá! Heo no bụng rồi, cảm ơn nha! 💖🐷"
 }

@@ -5491,4 +5491,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get widgetOverBudget => 'Over Limit';
+
+  @override
+  String get mascotFeedAction => 'Feed Piggy 🍎';
+
+  @override
+  String get mascotFedResponse => 'Yummy! I\'m full and happy now! 💖🐷';
 }

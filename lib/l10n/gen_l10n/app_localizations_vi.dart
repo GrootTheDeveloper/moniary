@@ -5495,4 +5495,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get widgetOverBudget => 'Vượt hạn mức';
+
+  @override
+  String get mascotFeedAction => 'Cho Heo ăn 🍎';
+
+  @override
+  String get mascotFedResponse => 'Ngon quá! Heo no bụng rồi, cảm ơn nha! 💖🐷';
 }

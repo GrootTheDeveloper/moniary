@@ -2274,5 +2274,7 @@
   "widgetBudgetTitle": "Budget",
   "widgetBudgetSpent": "Spent",
   "widgetBudgetRemaining": "Remaining",
-  "widgetOverBudget": "Over Limit"
+  "widgetOverBudget": "Over Limit",
+  "mascotFeedAction": "Feed Piggy 🍎",
+  "mascotFedResponse": "Yummy! I'm full and happy now! 💖🐷"
 }

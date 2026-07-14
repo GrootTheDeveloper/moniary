@@ -9799,6 +9799,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Vượt hạn mức'**
   String get widgetOverBudget;
+
+  /// No description provided for @mascotFeedAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cho Heo ăn 🍎'**
+  String get mascotFeedAction;
+
+  /// No description provided for @mascotFedResponse.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngon quá! Heo no bụng rồi, cảm ơn nha! 💖🐷'**
+  String get mascotFedResponse;
 }
 
 class _AppLocalizationsDelegate
