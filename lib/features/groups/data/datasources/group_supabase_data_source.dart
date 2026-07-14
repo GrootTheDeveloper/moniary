@@ -305,6 +305,14 @@ class GroupSupabaseDataSource {
               return;
             case 'unresolved':
               throw const PostgrestException(message: 'GROUP_LEAVE_UNRESOLVED');
+            case 'unresolved_transaction':
+              throw const PostgrestException(
+                message: 'GROUP_LEAVE_INCOMPLETE_TRANSACTION',
+              );
+            case 'disputed_settlement':
+              throw const PostgrestException(
+                message: 'GROUP_LEAVE_DISPUTED_SETTLEMENT',
+              );
             case 'owner_transfer_required':
               throw const PostgrestException(
                 message: 'GROUP_OWNER_TRANSFER_REQUIRED',
@@ -358,8 +366,13 @@ class GroupSupabaseDataSource {
     return _rows(rows);
   }
 
-  Future<List<Map<String, dynamic>>> fetchNotifications() async {
-    final rows = await client.rpc('list_group_notifications');
+  Future<List<Map<String, dynamic>>> fetchNotifications({
+    String? category,
+  }) async {
+    final rows = await client.rpc(
+      'list_group_notifications',
+      params: {'p_category': category},
+    );
     return _rows(rows);
   }
 
@@ -413,6 +426,8 @@ class GroupSupabaseDataSource {
       'debt_notifications': preference.debtNotifications,
       'invite_notifications': preference.inviteNotifications,
       'mention_notifications': preference.mentionNotifications,
+      'community_comments': preference.communityComments,
+      'community_reactions': preference.communityReactions,
       'quiet_hours_start': preference.quietHoursStart,
       'quiet_hours_end': preference.quietHoursEnd,
     }, onConflict: 'group_id,user_id');

@@ -3587,6 +3587,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupLeaveBlocked => 'You still have unresolved group expenses.';
 
   @override
+  String get groupLeaveIncompleteTransaction =>
+      'Finish or cancel your incomplete group transactions before leaving.';
+
+  @override
+  String get groupLeaveDisputedSettlement =>
+      'Resolve the disputed settlement before leaving.';
+
+  @override
   String get groupOwnerTransferRequired =>
       'Transfer ownership or add another owner before leaving.';
 
@@ -3874,6 +3882,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupNotificationMentions => 'Mentions';
 
   @override
+  String get groupNotificationCommunitySection => 'Community updates';
+
+  @override
+  String get groupNotificationComments => 'Comments and replies';
+
+  @override
+  String get groupNotificationReactions => 'Reactions';
+
+  @override
   String get groupPublicProfileTitle => 'Public group profile';
 
   @override
@@ -3960,6 +3977,45 @@ class AppLocalizationsEn extends AppLocalizations {
       'This recurring transaction will be permanently removed.';
 
   @override
+  String get groupToolsTitle => 'Group tools';
+
+  @override
+  String get groupToolsSubtitle =>
+      'Manage the group without losing sight of shared money.';
+
+  @override
+  String get groupToolsFinanceSection => 'Finance';
+
+  @override
+  String get groupToolsCommunitySection => 'Community';
+
+  @override
+  String get groupToolsSettingsSection => 'Settings';
+
+  @override
+  String get groupToolsBudgetSubtitle =>
+      'Monthly spending limit and warning threshold.';
+
+  @override
+  String get groupToolsRecurringSubtitle => 'Scheduled expenses and reminders.';
+
+  @override
+  String get groupToolsActivitySubtitle =>
+      'Timeline, group notices, and community updates.';
+
+  @override
+  String get groupToolsAlbumSubtitle =>
+      'Receipt photos attached to group expenses.';
+
+  @override
+  String get groupToolsNotificationsSubtitle =>
+      'Choose the group and community updates you receive.';
+
+  @override
+  String get groupToolsPublicProfileSubtitle =>
+      'Control the safe public-facing group page.';
+
+  @override
   String get groupActivityTransactionReacted => 'reacted to a transaction';
 
   @override
@@ -3989,6 +4045,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupNotificationGroupInvite => 'You have a new group invite';
+
+  @override
+  String get groupActivityTabGroupNotifications => 'Group';
+
+  @override
+  String get groupActivityTabCommunityNotifications => 'Community';
+
+  @override
+  String get communityNotificationsEmptyState =>
+      'No community notifications yet';
+
+  @override
+  String get groupNotificationMemberLeft => 'A member left the group';
+
+  @override
+  String get groupNotificationLeaveBlocked =>
+      'A member tried to leave with unresolved items';
 
   @override
   String get groupTransactionCreator => 'Posted by';

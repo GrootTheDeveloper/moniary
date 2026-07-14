@@ -1184,6 +1184,12 @@ class GroupMockDataSource {
   Future<void> leaveGroup(String groupId) async {
     final detail = await fetchGroupDetail(groupId);
     final balance = _groupBalances(groupId)[currentUserId] ?? 0;
+    final incompleteTransaction = _recordsForGroup(groupId).any(
+      (record) =>
+          record.transaction.createdBy == currentUserId &&
+          record.transaction.splitStatus != GroupSplitStatus.posted &&
+          record.transaction.splitStatus != GroupSplitStatus.cancelled,
+    );
     final unresolved =
         _settlements[groupId]?.any(
           (item) =>
@@ -1192,6 +1198,12 @@ class GroupMockDataSource {
               item.status != GroupSettlementStatus.completed,
         ) ??
         false;
+    if (incompleteTransaction) {
+      throw const AppException(
+        'Incomplete group transaction',
+        code: 'GROUP_LEAVE_INCOMPLETE_TRANSACTION',
+      );
+    }
     if (balance != 0 || unresolved) {
       throw const AppException(
         'Unresolved group balance',
@@ -1227,6 +1239,21 @@ class GroupMockDataSource {
       username: member.username,
       avatarPath: member.avatarPath,
     );
+    _logActivity(groupId: groupId, type: 'member_left', metadata: const {});
+    final groupName = _groups[groupId]?.name ?? groupId;
+    for (final activeMember in _activeMembers(groupId)) {
+      if (activeMember.userId == currentUserId) continue;
+      _notifications.add(
+        GroupNotification(
+          id: _id('notification'),
+          groupId: groupId,
+          groupName: groupName,
+          type: 'member_left',
+          isRead: false,
+          createdAt: DateTime.now(),
+        ),
+      );
+    }
   }
 
   Future<void> addComment({
@@ -1304,9 +1331,12 @@ class GroupMockDataSource {
     return List.unmodifiable((_activities[groupId] ?? const []).reversed);
   }
 
-  Future<List<GroupNotification>> fetchNotifications() async {
+  Future<List<GroupNotification>> fetchNotifications({String? category}) async {
     _seedDemoNotificationsIfNeeded();
-    return List.unmodifiable(_notifications.reversed);
+    final items = category == null
+        ? _notifications
+        : _notifications.where((item) => item.category == category).toList();
+    return List.unmodifiable(items.reversed);
   }
 
   Future<void> markNotificationRead(String notificationId) async {
@@ -1322,6 +1352,7 @@ class GroupMockDataSource {
       createdAt: n.createdAt,
       groupTransactionId: n.groupTransactionId,
       inviteToken: n.inviteToken,
+      category: n.category,
     );
   }
 

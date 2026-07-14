@@ -1070,7 +1070,10 @@ class FakeGroupRepository implements GroupRepository {
   Future<List<GroupActivity>> fetchActivities(String groupId) async => const [];
 
   @override
-  Future<List<GroupNotification>> fetchNotifications() async => notifications;
+  Future<List<GroupNotification>> fetchNotifications({String? category}) async =>
+      category == null
+          ? notifications
+          : notifications.where((item) => item.category == category).toList();
 
   @override
   Future<void> markNotificationRead(String notificationId) async {
@@ -1088,6 +1091,7 @@ class FakeGroupRepository implements GroupRepository {
       createdAt: notification.createdAt,
       groupTransactionId: notification.groupTransactionId,
       inviteToken: notification.inviteToken,
+      category: notification.category,
     );
   }
 }

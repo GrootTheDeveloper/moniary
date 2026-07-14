@@ -587,12 +587,12 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
-  Future<List<GroupNotification>> fetchNotifications() {
+  Future<List<GroupNotification>> fetchNotifications({String? category}) {
     if (_useMockData) {
-      return _mock.fetchNotifications();
+      return _mock.fetchNotifications(category: category);
     }
     return _guard('fetch group notifications', () async {
-      final rows = await _remote.fetchNotifications();
+      final rows = await _remote.fetchNotifications(category: category);
       return rows.map(GroupModelMapper.notification).toList();
     });
   }
@@ -647,6 +647,8 @@ class GroupRepositoryImpl implements GroupRepository {
         debtNotifications: row['debt_notifications'] as bool,
         inviteNotifications: row['invite_notifications'] as bool,
         mentionNotifications: row['mention_notifications'] as bool,
+        communityComments: row['community_comments'] as bool? ?? true,
+        communityReactions: row['community_reactions'] as bool? ?? true,
         quietHoursStart: (row['quiet_hours_start'] as num?)?.toInt(),
         quietHoursEnd: (row['quiet_hours_end'] as num?)?.toInt(),
       );

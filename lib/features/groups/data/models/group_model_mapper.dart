@@ -184,6 +184,7 @@ class GroupModelMapper {
       groupName: row['group_name'] as String,
       groupTransactionId: row['group_transaction_id'] as String?,
       inviteToken: row['invite_token'] as String?,
+      category: row['category'] as String? ?? 'group',
       type: row['type'] as String,
       isRead: row['is_read'] as bool? ?? false,
       createdAt: _date(row['created_at']),

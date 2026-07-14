@@ -95,7 +95,7 @@ abstract interface class GroupRepository {
 
   Future<List<GroupActivity>> fetchActivities(String groupId);
 
-  Future<List<GroupNotification>> fetchNotifications();
+  Future<List<GroupNotification>> fetchNotifications({String? category});
 
   Future<void> markNotificationRead(String notificationId);
 

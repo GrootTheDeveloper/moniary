@@ -3588,6 +3588,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bạn ơi! bạn còn vài khoản thu chi chưa được xử lý kìa.';
 
   @override
+  String get groupLeaveIncompleteTransaction =>
+      'Hãy hoàn tất hoặc huỷ các giao dịch nhóm chưa xong trước khi rời nhóm.';
+
+  @override
+  String get groupLeaveDisputedSettlement =>
+      'Hãy xử lý khoản tất toán đang tranh chấp trước khi rời nhóm.';
+
+  @override
   String get groupOwnerTransferRequired =>
       'Bạn cần chuyển quyền owner hoặc thêm một owner khác trước khi rời nhóm.';
 
@@ -3876,6 +3884,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupNotificationMentions => 'Lượt nhắc tên';
 
   @override
+  String get groupNotificationCommunitySection => 'Cập nhật cộng đồng';
+
+  @override
+  String get groupNotificationComments => 'Bình luận và trả lời';
+
+  @override
+  String get groupNotificationReactions => 'Lượt reaction';
+
+  @override
   String get groupPublicProfileTitle => 'Trang công khai nhóm';
 
   @override
@@ -3962,6 +3979,45 @@ class AppLocalizationsVi extends AppLocalizations {
       'Giao dịch định kỳ này sẽ bị xoá vĩnh viễn.';
 
   @override
+  String get groupToolsTitle => 'Công cụ nhóm';
+
+  @override
+  String get groupToolsSubtitle =>
+      'Quản lý nhóm mà vẫn luôn thấy rõ dòng tiền chung.';
+
+  @override
+  String get groupToolsFinanceSection => 'Tài chính';
+
+  @override
+  String get groupToolsCommunitySection => 'Cộng đồng';
+
+  @override
+  String get groupToolsSettingsSection => 'Cài đặt';
+
+  @override
+  String get groupToolsBudgetSubtitle =>
+      'Giới hạn chi tiêu tháng và ngưỡng cảnh báo.';
+
+  @override
+  String get groupToolsRecurringSubtitle => 'Khoản chi định kỳ và lời nhắc.';
+
+  @override
+  String get groupToolsActivitySubtitle =>
+      'Dòng hoạt động, thông báo nhóm và cập nhật cộng đồng.';
+
+  @override
+  String get groupToolsAlbumSubtitle =>
+      'Ảnh hoá đơn gắn với các khoản chi nhóm.';
+
+  @override
+  String get groupToolsNotificationsSubtitle =>
+      'Chọn cập nhật nhóm và cộng đồng bạn muốn nhận.';
+
+  @override
+  String get groupToolsPublicProfileSubtitle =>
+      'Kiểm soát trang công khai an toàn của nhóm.';
+
+  @override
   String get groupActivityTransactionReacted =>
       'đã thả cảm xúc vào một giao dịch';
 
@@ -3993,6 +4049,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupNotificationGroupInvite => 'Bạn có lời mời vào nhóm mới';
+
+  @override
+  String get groupActivityTabGroupNotifications => 'Nhóm';
+
+  @override
+  String get groupActivityTabCommunityNotifications => 'Cộng đồng';
+
+  @override
+  String get communityNotificationsEmptyState => 'Chưa có thông báo cộng đồng';
+
+  @override
+  String get groupNotificationMemberLeft => 'Một thành viên đã rời nhóm';
+
+  @override
+  String get groupNotificationLeaveBlocked =>
+      'Một thành viên cố rời nhóm khi còn khoản chưa xử lý';
 
   @override
   String get groupTransactionCreator => 'Người đăng';

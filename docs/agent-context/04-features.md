@@ -98,6 +98,16 @@
 - **Notifications**: group activity notifications are available from the Group
   tab header as a global inbox, and from group detail with the activity timeline
   when a group ID is provided.
+- **UX organization**: group detail keeps finance-first quick actions for add
+  expense, settle, community, and tools. Budget, recurring, album, notification
+  preferences, and public profile are grouped under the tools screen. The
+  notification center separates operational Group notifications from social
+  Community notifications.
+- **Leave guard**: leaving is allowed only when the member has zero balance, no
+  pending/payer-marked/disputed settlement, and no incomplete transaction. A
+  successful leave creates both a member-left activity and notifications for
+  remaining active members; direct member status updates cannot bypass the
+  lifecycle RPC.
 - **Member and settlement controls**: owners can transfer ownership; owners and
   admins can remove permitted members only after their balances and settlements
   are resolved. Settlement participants can open a dispute with a reason.
