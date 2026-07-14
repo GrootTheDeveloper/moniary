@@ -12,6 +12,28 @@ extension Date {
     }
 }
 
+// ── Glassmorphic Dynamic Background ──────────────────────────────────────────
+struct GlassmorphicBackground: View {
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        let startColor = colorScheme == .dark 
+            ? Color(red: 0.08, green: 0.08, blue: 0.12)
+            : Color(red: 0.95, green: 0.95, blue: 0.98)
+        let endColor = colorScheme == .dark
+            ? Color(red: 0.03, green: 0.03, blue: 0.05)
+            : Color(red: 0.88, green: 0.90, blue: 0.94)
+        
+        ZStack {
+            LinearGradient(colors: [startColor, endColor], startPoint: .topLeading, endPoint: .bottomTrailing)
+            
+            RoundedRectangle(cornerRadius: 0)
+                .fill(Color.white.opacity(colorScheme == .dark ? 0.02 : 0.2))
+                .blendMode(.overlay)
+        }
+    }
+}
+
 // ── Widget Bundle ─────────────────────────────────────────────────────────────
 @main
 struct MoniaryWidgetsBundle: WidgetBundle {
@@ -166,7 +188,7 @@ struct MoniaryWidgetEntryView : View {
                     .imageScale(.medium)
                 Text("Moniary")
                     .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                 
                 if entry.streak > 0 {
                     HStack(spacing: 2) {
@@ -189,10 +211,10 @@ struct MoniaryWidgetEntryView : View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(entry.labelBalance)
                     .font(.system(size: 10, weight: .semibold))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondary)
                 Text(entry.balance)
                     .font(.system(size: 20, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                     .minimumScaleFactor(0.6)
                     .lineLimit(1)
             }
@@ -201,7 +223,7 @@ struct MoniaryWidgetEntryView : View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(entry.labelSpend)
                     .font(.system(size: 10, weight: .semibold))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondary)
                 Text(entry.spend)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4)) // soft red
@@ -235,8 +257,8 @@ struct MoniaryWidgetEntryView : View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 8)
-                        .background(Color.white.opacity(0.08))
-                        .foregroundColor(.white)
+                        .background(Color.primary.opacity(0.06))
+                        .foregroundColor(.primary)
                         .cornerRadius(10)
                     }
                 }
@@ -252,7 +274,9 @@ struct MoniaryWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             MoniaryWidgetEntryView(entry: entry)
-                .containerBackground(Color(red: 0.05, green: 0.05, blue: 0.07), for: .widget)
+                .containerBackground(for: .widget) {
+                    GlassmorphicBackground()
+                }
         }
         .configurationDisplayName("Moniary Dashboard")
         .description("Xem nhanh số dư và chi tiêu hôm nay của bạn.")
@@ -277,10 +301,10 @@ struct Streak14DayRowView: View {
                 VStack(spacing: 4) {
                     Text(String(format: "%02d", dayNum))
                         .font(.system(size: 8))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondary)
                     
                     Circle()
-                        .fill(isRecorded ? Color.orange : Color.white.opacity(0.1))
+                        .fill(isRecorded ? Color.orange : Color.primary.opacity(0.08))
                         .frame(width: 13, height: 13)
                         .overlay(
                             Group {
@@ -317,7 +341,7 @@ struct StreakCalendarGridView: View {
                 ForEach(weekdayLabels, id: \.self) { label in
                     Text(label)
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondary)
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -335,7 +359,7 @@ struct StreakCalendarGridView: View {
                     
                     Text("\(day)")
                         .font(.system(size: 8, weight: isRecorded ? .bold : .regular))
-                        .foregroundColor(isRecorded ? .white : .gray)
+                        .foregroundColor(isRecorded ? .white : .secondary)
                         .frame(height: 12)
                         .frame(maxWidth: .infinity)
                         .background(
@@ -379,7 +403,7 @@ struct MoniaryStreakCalendarWidgetEntryView: View {
                         .imageScale(.medium)
                     Text(entry.labelStreak)
                         .font(.system(size: 13, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                     
                     if entry.streak > 0 {
                         Text("🔥 \(entry.labelDays)")
@@ -397,10 +421,10 @@ struct MoniaryStreakCalendarWidgetEntryView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(entry.labelLongest)
                                 .font(.system(size: 8, weight: .semibold))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondary)
                             Text(entry.labelLongestDays)
                                 .font(.system(size: 12, weight: .bold, design: .rounded))
-                                .foregroundColor(.white)
+                                .foregroundColor(.primary)
                         }
                         Spacer()
                     }
@@ -415,27 +439,27 @@ struct MoniaryStreakCalendarWidgetEntryView: View {
                             if !entry.userName.isEmpty {
                                 Text(entry.userName)
                                     .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.secondary)
                             }
                             
                             Text(entry.labelStreak)
                                 .font(.system(size: 9, weight: .semibold))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondary)
                             Text(entry.labelDays)
                                 .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.white)
+                                .foregroundColor(.primary)
                                 .padding(.bottom, 4)
 
                             Text(entry.labelLongest)
                                 .font(.system(size: 9, weight: .semibold))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondary)
                             Text(entry.labelLongestDays)
                                 .font(.system(size: 14, weight: .bold))
                                 .foregroundColor(.orange)
                         }
                         
                         Divider()
-                            .background(Color.white.opacity(0.1))
+                            .background(Color.primary.opacity(0.1))
                         
                         // Calendar grid
                         VStack(alignment: .leading, spacing: 4) {
@@ -456,7 +480,9 @@ struct MoniaryStreakCalendarWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             MoniaryStreakCalendarWidgetEntryView(entry: entry)
-                .containerBackground(Color(red: 0.05, green: 0.05, blue: 0.07), for: .widget)
+                .containerBackground(for: .widget) {
+                    GlassmorphicBackground()
+                }
         }
         .configurationDisplayName("Moniary Streak")
         .description("Theo dõi chuỗi ngày ghi chép chi tiêu liên tục của bạn.")
@@ -484,7 +510,7 @@ struct CircularProgressView: View {
             
             Text(labelProgress)
                 .font(.system(size: 9, weight: .bold, design: .rounded))
-                .foregroundColor(.white)
+                .foregroundColor(.primary)
         }
     }
 }
@@ -523,7 +549,7 @@ struct MoniaryBudgetWidgetEntryView: View {
                         .imageScale(.medium)
                     Text(entry.labelBudget)
                         .font(.system(size: 13, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                     
                     if isOver {
                         Text(entry.labelOverBudget)
@@ -544,10 +570,10 @@ struct MoniaryBudgetWidgetEntryView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(entry.labelBudgetRemaining)
                             .font(.system(size: 8, weight: .semibold))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondary)
                         Text(entry.budgetRemaining)
                             .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundColor(isOver ? .red : .white)
+                            .foregroundColor(isOver ? .red : .primary)
                             .minimumScaleFactor(0.8)
                             .lineLimit(1)
                         
@@ -555,7 +581,7 @@ struct MoniaryBudgetWidgetEntryView: View {
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
                                 RoundedRectangle(cornerRadius: 3)
-                                    .fill(Color.white.opacity(0.1))
+                                    .fill(Color.primary.opacity(0.08))
                                     .frame(height: 6)
                                 RoundedRectangle(cornerRadius: 3)
                                     .fill(isOver ? Color.red : Color.blue)
@@ -567,7 +593,7 @@ struct MoniaryBudgetWidgetEntryView: View {
                         
                         Text(String(format: "%.0f%%", entry.budgetProgress * 100))
                             .font(.system(size: 9, weight: .semibold))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondary)
                     }
                 } else if family == .systemMedium {
                     // Side-by-side circular layout
@@ -576,17 +602,17 @@ struct MoniaryBudgetWidgetEntryView: View {
                             VStack(alignment: .leading, spacing: 1) {
                                 Text(entry.labelBudgetSpent)
                                     .font(.system(size: 8, weight: .semibold))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.secondary)
                                 Text(entry.budgetSpent)
                                     .font(.system(size: 14, weight: .bold, design: .rounded))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.primary)
                                     .lineLimit(1)
                             }
                             
                             VStack(alignment: .leading, spacing: 1) {
                                 Text(entry.labelBudgetRemaining)
                                     .font(.system(size: 8, weight: .semibold))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.secondary)
                                 Text(entry.budgetRemaining)
                                     .font(.system(size: 14, weight: .bold, design: .rounded))
                                     .foregroundColor(isOver ? .red : Color(red: 0.4, green: 0.9, blue: 0.8))
@@ -616,7 +642,9 @@ struct MoniaryBudgetWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             MoniaryBudgetWidgetEntryView(entry: entry)
-                .containerBackground(Color(red: 0.05, green: 0.05, blue: 0.07), for: .widget)
+                .containerBackground(for: .widget) {
+                    GlassmorphicBackground()
+                }
         }
         .configurationDisplayName("Moniary Budget")
         .description("Giám sát tiến trình chi tiêu theo hạn mức ngân sách tháng.")
