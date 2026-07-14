@@ -359,81 +359,94 @@ struct MoniaryStreakCalendarWidgetEntryView: View {
     @Environment(\.widgetFamily) var family
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Header
-            HStack(alignment: .center, spacing: 6) {
-                Image(systemName: "calendar.badge.clock")
-                    .foregroundColor(.orange)
-                    .imageScale(.medium)
-                Text(entry.labelStreak)
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
-                
-                if entry.streak > 0 {
-                    Text("🔥 \(entry.labelDays)")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(.orange)
-                }
-                
-                Spacer()
+        switch family {
+        case .accessoryInline:
+            Text("🔥 \(entry.streak)")
+        case .accessoryRectangular:
+            VStack(alignment: .leading, spacing: 1) {
+                Text("🔥 \(entry.labelStreak): \(entry.streak)")
+                    .font(.system(size: 11, weight: .bold))
+                Text("🏆 \(entry.labelLongest): \(entry.longestStreak)")
+                    .font(.system(size: 9))
+                    .foregroundColor(.secondary)
             }
-            .padding(.bottom, 10)
-
-            if family == .systemMedium {
-                // Streak Stats Summary
-                HStack(spacing: 12) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(entry.labelLongest)
-                            .font(.system(size: 8, weight: .semibold))
-                            .foregroundColor(.gray)
-                        Text(entry.labelLongestDays)
-                            .font(.system(size: 12, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
-                    }
-                    Spacer()
-                }
-                .padding(.bottom, 6)
-
-                // 14-day row tracker
-                Streak14DayRowView(recordedDays: entry.recordedDays)
-            } else if family == .systemLarge {
-                // Large layout shows full month grid
-                HStack(spacing: 20) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        if !entry.userName.isEmpty {
-                            Text(entry.userName)
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundColor(.gray)
-                        }
-                        
-                        Text(entry.labelStreak)
-                            .font(.system(size: 9, weight: .semibold))
-                            .foregroundColor(.gray)
-                        Text(entry.labelDays)
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding(.bottom, 4)
-
-                        Text(entry.labelLongest)
-                            .font(.system(size: 9, weight: .semibold))
-                            .foregroundColor(.gray)
-                        Text(entry.labelLongestDays)
-                            .font(.system(size: 14, weight: .bold))
+        default:
+            VStack(alignment: .leading, spacing: 0) {
+                // Header
+                HStack(alignment: .center, spacing: 6) {
+                    Image(systemName: "calendar.badge.clock")
+                        .foregroundColor(.orange)
+                        .imageScale(.medium)
+                    Text(entry.labelStreak)
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                    
+                    if entry.streak > 0 {
+                        Text("🔥 \(entry.labelDays)")
+                            .font(.system(size: 10, weight: .bold))
                             .foregroundColor(.orange)
                     }
                     
-                    Divider()
-                        .background(Color.white.opacity(0.1))
-                    
-                    // Calendar grid
-                    VStack(alignment: .leading, spacing: 4) {
-                        StreakCalendarGridView(recordedDays: entry.recordedDays)
-                    }
+                    Spacer()
                 }
-                .padding(.top, 4)
+                .padding(.bottom, 10)
+
+                if family == .systemMedium {
+                    // Streak Stats Summary
+                    HStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(entry.labelLongest)
+                                .font(.system(size: 8, weight: .semibold))
+                                .foregroundColor(.gray)
+                            Text(entry.labelLongestDays)
+                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                                .foregroundColor(.white)
+                        }
+                        Spacer()
+                    }
+                    .padding(.bottom, 6)
+
+                    // 14-day row tracker
+                    Streak14DayRowView(recordedDays: entry.recordedDays)
+                } else if family == .systemLarge {
+                    // Large layout shows full month grid
+                    HStack(spacing: 20) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            if !entry.userName.isEmpty {
+                                Text(entry.userName)
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(.gray)
+                            }
+                            
+                            Text(entry.labelStreak)
+                                .font(.system(size: 9, weight: .semibold))
+                                .foregroundColor(.gray)
+                            Text(entry.labelDays)
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(.bottom, 4)
+
+                            Text(entry.labelLongest)
+                                .font(.system(size: 9, weight: .semibold))
+                                .foregroundColor(.gray)
+                            Text(entry.labelLongestDays)
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(.orange)
+                        }
+                        
+                        Divider()
+                            .background(Color.white.opacity(0.1))
+                        
+                        // Calendar grid
+                        VStack(alignment: .leading, spacing: 4) {
+                            StreakCalendarGridView(recordedDays: entry.recordedDays)
+                        }
+                    }
+                    .padding(.top, 4)
+                }
             }
+            .padding(14)
         }
-        .padding(14)
     }
 }
 
@@ -447,7 +460,7 @@ struct MoniaryStreakCalendarWidget: Widget {
         }
         .configurationDisplayName("Moniary Streak")
         .description("Theo dõi chuỗi ngày ghi chép chi tiêu liên tục của bạn.")
-        .supportedFamilies([.systemMedium, .systemLarge])
+        .supportedFamilies([.systemMedium, .systemLarge, .accessoryInline, .accessoryRectangular])
     }
 }
 
@@ -483,97 +496,117 @@ struct MoniaryBudgetWidgetEntryView: View {
     var body: some View {
         let isOver = entry.budgetProgress > 1.0
         
-        VStack(alignment: .leading, spacing: 0) {
-            // Header
-            HStack(alignment: .center, spacing: 6) {
+        switch family {
+        case .accessoryCircular:
+            Gauge(value: entry.budgetProgress) {
                 Image(systemName: "chart.pie.fill")
-                    .foregroundColor(isOver ? .red : .blue)
-                    .imageScale(.medium)
-                Text(entry.labelBudget)
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
-                
-                if isOver {
-                    Text(entry.labelOverBudget)
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundColor(.red)
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 1)
-                        .background(Color.red.opacity(0.15))
-                        .cornerRadius(4)
-                }
-                
-                Spacer()
+            } currentValueLabel: {
+                Text(String(format: "%.0f%%", entry.budgetProgress * 100))
             }
-            .padding(.bottom, 12)
-
-            if family == .systemSmall {
-                // Linear Progress bar and remaining amount
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(entry.labelBudgetRemaining)
-                        .font(.system(size: 8, weight: .semibold))
-                        .foregroundColor(.gray)
-                    Text(entry.budgetRemaining)
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundColor(isOver ? .red : .white)
-                        .minimumScaleFactor(0.8)
-                        .lineLimit(1)
+            .gaugeStyle(.accessoryCircular)
+        case .accessoryRectangular:
+            VStack(alignment: .leading, spacing: 1) {
+                Text(entry.labelBudget)
+                    .font(.system(size: 10, weight: .bold))
+                Text(entry.budgetRemaining)
+                    .font(.system(size: 12, weight: .bold))
+                Text(String(format: "%@: %@", entry.labelBudgetSpent, entry.budgetSpent))
+                    .font(.system(size: 8))
+                    .foregroundColor(.secondary)
+            }
+        default:
+            VStack(alignment: .leading, spacing: 0) {
+                // Header
+                HStack(alignment: .center, spacing: 6) {
+                    Image(systemName: "chart.pie.fill")
+                        .foregroundColor(isOver ? .red : .blue)
+                        .imageScale(.medium)
+                    Text(entry.labelBudget)
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
                     
-                    // Simple Linear Bar
-                    GeometryReader { geo in
-                        ZStack(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: 3)
-                                .fill(Color.white.opacity(0.1))
-                                .frame(height: 6)
-                            RoundedRectangle(cornerRadius: 3)
-                                .fill(isOver ? Color.red : Color.blue)
-                                .frame(width: geo.size.width * CGFloat(min(entry.budgetProgress, 1.0)), height: 6)
-                        }
-                    }
-                    .frame(height: 6)
-                    .padding(.top, 4)
-                    
-                    Text(String(format: "%.0f%%", entry.budgetProgress * 100))
-                        .font(.system(size: 9, weight: .semibold))
-                        .foregroundColor(.gray)
-                }
-            } else if family == .systemMedium {
-                // Side-by-side circular layout
-                HStack(spacing: 16) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text(entry.labelBudgetSpent)
-                                .font(.system(size: 8, weight: .semibold))
-                                .foregroundColor(.gray)
-                            Text(entry.budgetSpent)
-                                .font(.system(size: 14, weight: .bold, design: .rounded))
-                                .foregroundColor(.white)
-                                .lineLimit(1)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text(entry.labelBudgetRemaining)
-                                .font(.system(size: 8, weight: .semibold))
-                                .foregroundColor(.gray)
-                            Text(entry.budgetRemaining)
-                                .font(.system(size: 14, weight: .bold, design: .rounded))
-                                .foregroundColor(isOver ? .red : Color(red: 0.4, green: 0.9, blue: 0.8))
-                                .lineLimit(1)
-                        }
+                    if isOver {
+                        Text(entry.labelOverBudget)
+                            .font(.system(size: 8, weight: .bold))
+                            .foregroundColor(.red)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 1)
+                            .background(Color.red.opacity(0.15))
+                            .cornerRadius(4)
                     }
                     
                     Spacer()
-                    
-                    // Circular progress dial
-                    CircularProgressView(
-                        progress: entry.budgetProgress,
-                        labelProgress: String(format: "%.0f%%", entry.budgetProgress * 100)
-                    )
-                    .frame(width: 54, height: 54)
+                }
+                .padding(.bottom, 12)
+
+                if family == .systemSmall {
+                    // Linear Progress bar and remaining amount
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(entry.labelBudgetRemaining)
+                            .font(.system(size: 8, weight: .semibold))
+                            .foregroundColor(.gray)
+                        Text(entry.budgetRemaining)
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .foregroundColor(isOver ? .red : .white)
+                            .minimumScaleFactor(0.8)
+                            .lineLimit(1)
+                        
+                        // Simple Linear Bar
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 3)
+                                    .fill(Color.white.opacity(0.1))
+                                    .frame(height: 6)
+                                RoundedRectangle(cornerRadius: 3)
+                                    .fill(isOver ? Color.red : Color.blue)
+                                    .frame(width: geo.size.width * CGFloat(min(entry.budgetProgress, 1.0)), height: 6)
+                            }
+                        }
+                        .frame(height: 6)
+                        .padding(.top, 4)
+                        
+                        Text(String(format: "%.0f%%", entry.budgetProgress * 100))
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundColor(.gray)
+                    }
+                } else if family == .systemMedium {
+                    // Side-by-side circular layout
+                    HStack(spacing: 16) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(entry.labelBudgetSpent)
+                                    .font(.system(size: 8, weight: .semibold))
+                                    .foregroundColor(.gray)
+                                Text(entry.budgetSpent)
+                                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                                    .foregroundColor(.white)
+                                    .lineLimit(1)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(entry.labelBudgetRemaining)
+                                    .font(.system(size: 8, weight: .semibold))
+                                    .foregroundColor(.gray)
+                                Text(entry.budgetRemaining)
+                                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                                    .foregroundColor(isOver ? .red : Color(red: 0.4, green: 0.9, blue: 0.8))
+                                    .lineLimit(1)
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        // Circular progress dial
+                        CircularProgressView(
+                            progress: entry.budgetProgress,
+                            labelProgress: String(format: "%.0f%%", entry.budgetProgress * 100)
+                        )
+                        .frame(width: 54, height: 54)
+                    }
                 }
             }
+            .padding(14)
         }
-        .padding(14)
     }
 }
 
@@ -587,6 +620,6 @@ struct MoniaryBudgetWidget: Widget {
         }
         .configurationDisplayName("Moniary Budget")
         .description("Giám sát tiến trình chi tiêu theo hạn mức ngân sách tháng.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular, .accessoryRectangular])
     }
 }
