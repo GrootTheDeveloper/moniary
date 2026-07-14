@@ -20,6 +20,8 @@ import 'group_activity_center_screen.dart';
 import 'group_photo_album_screen.dart';
 import 'group_budget_screen.dart';
 import 'group_notification_preferences_screen.dart';
+import 'group_public_profile_screen.dart';
+import 'group_recurring_transactions_screen.dart';
 import 'group_transaction_detail_screen.dart';
 import 'invite_member_screen.dart';
 
@@ -139,6 +141,28 @@ class GroupDetailScreen extends ConsumerWidget {
                   Navigator.pop(sheetContext);
                   context.push(
                     GroupNotificationPreferencesScreen.routePath,
+                    extra: groupId,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.public_outlined),
+                title: Text(context.l10n.groupPublicProfileSettingsTitle),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  context.push(
+                    GroupPublicProfileScreen.routePath,
+                    extra: groupId,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.autorenew_outlined),
+                title: Text(context.l10n.groupRecurringTitle),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  context.push(
+                    GroupRecurringTransactionsScreen.routePath,
                     extra: groupId,
                   );
                 },

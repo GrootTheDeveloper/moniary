@@ -3874,6 +3874,92 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupNotificationMentions => 'Mentions';
 
   @override
+  String get groupPublicProfileTitle => 'Public group profile';
+
+  @override
+  String get groupPublicProfileSettingsTitle => 'Public profile settings';
+
+  @override
+  String get groupPublicProfileSettingsSubtitle =>
+      'Only safe group information is shown publicly.';
+
+  @override
+  String get groupPublicProfileSlug => 'Public slug';
+
+  @override
+  String get groupPublicProfileEnabled => 'Enable public profile';
+
+  @override
+  String get groupPublicProfileShowStats => 'Show group statistics';
+
+  @override
+  String get groupPublicProfileShowStatsSubtitle =>
+      'Shows aggregate counts and total spending only.';
+
+  @override
+  String get groupPublicProfileInvalidSlug =>
+      'Use 3–80 lowercase letters, numbers, or hyphens.';
+
+  @override
+  String get groupPublicProfileFallbackName => 'Moniary group';
+
+  @override
+  String get groupPublicProfileMembers => 'Members';
+
+  @override
+  String get groupPublicProfileTransactions => 'Transactions';
+
+  @override
+  String get groupPublicProfileTotalSpent => 'Total spent';
+
+  @override
+  String get groupPublicProfileSafeNotice =>
+      'Personal details and transaction-level data are not shown.';
+
+  @override
+  String get groupRecurringTitle => 'Recurring transactions';
+
+  @override
+  String get groupRecurringAdd => 'Add recurring';
+
+  @override
+  String get groupRecurringEdit => 'Edit recurring transaction';
+
+  @override
+  String get groupRecurringEmpty => 'No recurring transactions yet';
+
+  @override
+  String get groupRecurringName => 'Title';
+
+  @override
+  String get groupRecurringAmount => 'Amount';
+
+  @override
+  String get groupRecurringFrequency => 'Frequency';
+
+  @override
+  String get groupRecurringWeekly => 'Weekly';
+
+  @override
+  String get groupRecurringMonthly => 'Monthly';
+
+  @override
+  String get groupRecurringNextRun => 'Next run';
+
+  @override
+  String get groupRecurringNotifyBefore => 'Notify days before';
+
+  @override
+  String get groupRecurringActive => 'Active';
+
+  @override
+  String get groupRecurringDeleteTitle => 'Delete recurring transaction?';
+
+  @override
+  String get groupRecurringDeleteMessage =>
+      'This recurring transaction will be permanently removed.';
+
+  @override
   String get groupActivityTransactionReacted => 'reacted to a transaction';
 
   @override

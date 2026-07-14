@@ -40,11 +40,33 @@ final groupNotificationPreferenceProvider =
           .fetchNotificationPreference(groupId);
     });
 
+final groupPublicProfileProvider =
+    FutureProvider.family<GroupPublicProfile, String>((ref, groupId) {
+      return ref
+          .watch(groupRepositoryProvider)
+          .fetchGroupPublicProfile(groupId);
+    });
+
+final publicGroupProfileProvider =
+    FutureProvider.family<GroupPublicProfile, String>((ref, slug) {
+      return ref.watch(groupRepositoryProvider).fetchPublicGroupProfile(slug);
+    });
+
 final groupTransactionDetailProvider =
     FutureProvider.family<GroupTransactionDetail, String>((ref, transactionId) {
       return ref
           .watch(groupRepositoryProvider)
           .fetchTransactionDetail(transactionId);
+    });
+
+final groupRecurringTransactionsProvider =
+    FutureProvider.family<List<GroupRecurringTransaction>, String>((
+      ref,
+      groupId,
+    ) {
+      return ref
+          .watch(groupRepositoryProvider)
+          .fetchRecurringTransactions(groupId);
     });
 
 final groupSettlementOverviewProvider =
@@ -145,6 +167,77 @@ class GroupActionController extends AsyncNotifier<void> {
           .read(groupRepositoryProvider)
           .saveNotificationPreference(preference);
       ref.invalidate(groupNotificationPreferenceProvider(preference.groupId));
+    });
+  }
+
+  Future<void> saveGroupPublicProfile(GroupPublicProfile profile) {
+    return _run(() async {
+      await ref.read(groupRepositoryProvider).saveGroupPublicProfile(profile);
+      ref.invalidate(groupPublicProfileProvider(profile.groupId));
+    });
+  }
+
+  Future<void> refreshRecurringTransactions(String groupId) async {
+    ref.invalidate(groupRecurringTransactionsProvider(groupId));
+  }
+
+  Future<String> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) {
+    return _run(() async {
+      final id = await ref
+          .read(groupRepositoryProvider)
+          .createRecurringTransaction(
+            groupId: groupId,
+            title: title,
+            amount: amount,
+            frequency: frequency,
+            nextRunAt: nextRunAt,
+            notifyDaysBefore: notifyDaysBefore,
+          );
+      ref.invalidate(groupRecurringTransactionsProvider(groupId));
+      return id;
+    });
+  }
+
+  Future<void> updateRecurringTransaction({
+    required String groupId,
+    required String id,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .updateRecurringTransaction(
+            id: id,
+            title: title,
+            amount: amount,
+            frequency: frequency,
+            nextRunAt: nextRunAt,
+            notifyDaysBefore: notifyDaysBefore,
+            isActive: isActive,
+          );
+      ref.invalidate(groupRecurringTransactionsProvider(groupId));
+    });
+  }
+
+  Future<void> deleteRecurringTransaction({
+    required String groupId,
+    required String id,
+  }) {
+    return _run(() async {
+      await ref.read(groupRepositoryProvider).deleteRecurringTransaction(id);
+      ref.invalidate(groupRecurringTransactionsProvider(groupId));
     });
   }
 

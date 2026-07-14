@@ -813,6 +813,46 @@ class FakeGroupRepository implements GroupRepository {
   ) async {}
 
   @override
+  Future<GroupPublicProfile> fetchGroupPublicProfile(String groupId) async =>
+      GroupPublicProfile.defaults(groupId);
+
+  @override
+  Future<void> saveGroupPublicProfile(GroupPublicProfile profile) async {}
+
+  @override
+  Future<GroupPublicProfile> fetchPublicGroupProfile(String slug) async =>
+      GroupPublicProfile.defaults('public-group');
+
+  @override
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  ) async => const [];
+
+  @override
+  Future<String> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) async => 'mock-recurring-id';
+
+  @override
+  Future<void> updateRecurringTransaction({
+    required String id,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  }) async {}
+
+  @override
+  Future<void> deleteRecurringTransaction(String id) async {}
+
+  @override
   String get currentUserId => 'mock-user-id';
 
   @override

@@ -7004,6 +7004,168 @@ abstract class AppLocalizations {
   /// **'Lượt nhắc tên'**
   String get groupNotificationMentions;
 
+  /// No description provided for @groupPublicProfileTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trang công khai nhóm'**
+  String get groupPublicProfileTitle;
+
+  /// No description provided for @groupPublicProfileSettingsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cài đặt trang công khai'**
+  String get groupPublicProfileSettingsTitle;
+
+  /// No description provided for @groupPublicProfileSettingsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ thông tin an toàn của nhóm được hiển thị công khai.'**
+  String get groupPublicProfileSettingsSubtitle;
+
+  /// No description provided for @groupPublicProfileSlug.
+  ///
+  /// In vi, this message translates to:
+  /// **'Slug công khai'**
+  String get groupPublicProfileSlug;
+
+  /// No description provided for @groupPublicProfileEnabled.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bật trang công khai'**
+  String get groupPublicProfileEnabled;
+
+  /// No description provided for @groupPublicProfileShowStats.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiển thị thống kê nhóm'**
+  String get groupPublicProfileShowStats;
+
+  /// No description provided for @groupPublicProfileShowStatsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ hiển thị số lượng tổng hợp và tổng chi tiêu.'**
+  String get groupPublicProfileShowStatsSubtitle;
+
+  /// No description provided for @groupPublicProfileInvalidSlug.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng 3–80 chữ thường, số hoặc dấu gạch ngang.'**
+  String get groupPublicProfileInvalidSlug;
+
+  /// No description provided for @groupPublicProfileFallbackName.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhóm Moniary'**
+  String get groupPublicProfileFallbackName;
+
+  /// No description provided for @groupPublicProfileMembers.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành viên'**
+  String get groupPublicProfileMembers;
+
+  /// No description provided for @groupPublicProfileTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch'**
+  String get groupPublicProfileTransactions;
+
+  /// No description provided for @groupPublicProfileTotalSpent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng chi'**
+  String get groupPublicProfileTotalSpent;
+
+  /// No description provided for @groupPublicProfileSafeNotice.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không hiển thị thông tin cá nhân hay dữ liệu giao dịch chi tiết.'**
+  String get groupPublicProfileSafeNotice;
+
+  /// No description provided for @groupRecurringTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch định kỳ'**
+  String get groupRecurringTitle;
+
+  /// No description provided for @groupRecurringAdd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm giao dịch định kỳ'**
+  String get groupRecurringAdd;
+
+  /// No description provided for @groupRecurringEdit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa giao dịch định kỳ'**
+  String get groupRecurringEdit;
+
+  /// No description provided for @groupRecurringEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có giao dịch định kỳ'**
+  String get groupRecurringEmpty;
+
+  /// No description provided for @groupRecurringName.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên giao dịch'**
+  String get groupRecurringName;
+
+  /// No description provided for @groupRecurringAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền'**
+  String get groupRecurringAmount;
+
+  /// No description provided for @groupRecurringFrequency.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tần suất'**
+  String get groupRecurringFrequency;
+
+  /// No description provided for @groupRecurringWeekly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hàng tuần'**
+  String get groupRecurringWeekly;
+
+  /// No description provided for @groupRecurringMonthly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hàng tháng'**
+  String get groupRecurringMonthly;
+
+  /// No description provided for @groupRecurringNextRun.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lần chạy tiếp theo'**
+  String get groupRecurringNextRun;
+
+  /// No description provided for @groupRecurringNotifyBefore.
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo trước số ngày'**
+  String get groupRecurringNotifyBefore;
+
+  /// No description provided for @groupRecurringActive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang hoạt động'**
+  String get groupRecurringActive;
+
+  /// No description provided for @groupRecurringDeleteTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá giao dịch định kỳ?'**
+  String get groupRecurringDeleteTitle;
+
+  /// No description provided for @groupRecurringDeleteMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch định kỳ này sẽ bị xoá vĩnh viễn.'**
+  String get groupRecurringDeleteMessage;
+
   /// No description provided for @groupActivityTransactionReacted.
   ///
   /// In vi, this message translates to:

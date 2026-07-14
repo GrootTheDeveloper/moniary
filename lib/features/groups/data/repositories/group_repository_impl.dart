@@ -619,6 +619,146 @@ class GroupRepositoryImpl implements GroupRepository {
     );
   }
 
+  @override
+  Future<GroupPublicProfile> fetchGroupPublicProfile(String groupId) async {
+    if (_useMockData) return GroupPublicProfile.defaults(groupId);
+    return _guard('fetch group public profile', () async {
+      final row = await _remote.fetchGroupPublicProfile(groupId);
+      if (row == null) return GroupPublicProfile.defaults(groupId);
+      return _publicProfileFromRow(row, groupId: groupId);
+    });
+  }
+
+  @override
+  Future<void> saveGroupPublicProfile(GroupPublicProfile profile) {
+    if (_useMockData) return Future.value();
+    return _guard(
+      'save group public profile',
+      () => _remote.saveGroupPublicProfile(profile),
+    );
+  }
+
+  @override
+  Future<GroupPublicProfile> fetchPublicGroupProfile(String slug) {
+    if (_useMockData) {
+      return Future.error(
+        const AppException('Public profile unavailable in demo mode'),
+      );
+    }
+    return _guard('fetch public group profile', () async {
+      final row = await _remote.fetchPublicGroupProfile(slug);
+      if (row == null) {
+        throw const AppException(
+          'Public group profile not found',
+          code: 'NOT_FOUND',
+        );
+      }
+      return _publicProfileFromRow(row, groupId: row['group_id'] as String);
+    });
+  }
+
+  GroupPublicProfile _publicProfileFromRow(
+    Map<String, dynamic> row, {
+    required String groupId,
+  }) {
+    return GroupPublicProfile(
+      groupId: groupId,
+      isEnabled: row['is_enabled'] as bool? ?? true,
+      showStats: row['show_stats'] as bool? ?? false,
+      slug: row['slug'] as String?,
+      groupName: row['group_name'] as String?,
+      avatarPath: row['avatar_path'] as String?,
+      description: row['description'] as String?,
+      groupType: row['group_type'] as String?,
+      memberCount: (row['member_count'] as num?)?.toInt(),
+      transactionCount: (row['transaction_count'] as num?)?.toInt(),
+      totalSpent: (row['total_spent'] as num?)?.toInt(),
+    );
+  }
+
+  @override
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  ) async {
+    if (_useMockData) return const [];
+    return _guard('fetch recurring group transactions', () async {
+      final rows = await _remote.fetchRecurringTransactions(groupId);
+      return rows.map(_recurringFromRow).toList(growable: false);
+    });
+  }
+
+  @override
+  Future<String> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) {
+    if (_useMockData) return Future.value('mock-recurring-id');
+    return _guard(
+      'create recurring group transaction',
+      () => _remote.createRecurringTransaction(
+        groupId: groupId,
+        title: title,
+        amount: amount,
+        frequency: frequency,
+        nextRunAt: nextRunAt,
+        notifyDaysBefore: notifyDaysBefore,
+      ),
+    );
+  }
+
+  @override
+  Future<void> updateRecurringTransaction({
+    required String id,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  }) {
+    if (_useMockData) return Future.value();
+    return _guard(
+      'update recurring group transaction',
+      () => _remote.updateRecurringTransaction(
+        id: id,
+        title: title,
+        amount: amount,
+        frequency: frequency,
+        nextRunAt: nextRunAt,
+        notifyDaysBefore: notifyDaysBefore,
+        isActive: isActive,
+      ),
+    );
+  }
+
+  @override
+  Future<void> deleteRecurringTransaction(String id) {
+    if (_useMockData) return Future.value();
+    return _guard(
+      'delete recurring group transaction',
+      () => _remote.deleteRecurringTransaction(id),
+    );
+  }
+
+  GroupRecurringTransaction _recurringFromRow(Map<String, dynamic> row) {
+    return GroupRecurringTransaction(
+      id: row['id'] as String,
+      groupId: row['group_id'] as String,
+      createdBy: row['created_by'] as String,
+      title: row['title'] as String,
+      amount: (row['amount'] as num).toInt(),
+      frequency: row['frequency'] as String,
+      nextRunAt: DateTime.parse(row['next_run_at'] as String),
+      notifyDaysBefore: (row['notify_days_before'] as num).toInt(),
+      isActive: row['is_active'] as bool,
+      createdAt: DateTime.parse(row['created_at'] as String),
+    );
+  }
+
   Future<T> _guard<T>(String operation, Future<T> Function() action) async {
     try {
       return await action();

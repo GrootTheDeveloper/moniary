@@ -91,7 +91,42 @@ abstract interface class GroupRepository {
 
   Future<void> saveBudget(GroupBudget budget);
 
-  Future<GroupNotificationPreference> fetchNotificationPreference(String groupId);
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  );
 
-  Future<void> saveNotificationPreference(GroupNotificationPreference preference);
+  Future<void> saveNotificationPreference(
+    GroupNotificationPreference preference,
+  );
+
+  Future<GroupPublicProfile> fetchGroupPublicProfile(String groupId);
+
+  Future<void> saveGroupPublicProfile(GroupPublicProfile profile);
+
+  Future<GroupPublicProfile> fetchPublicGroupProfile(String slug);
+
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  );
+
+  Future<String> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  });
+
+  Future<void> updateRecurringTransaction({
+    required String id,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  });
+
+  Future<void> deleteRecurringTransaction(String id);
 }

@@ -3876,6 +3876,92 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupNotificationMentions => 'Lượt nhắc tên';
 
   @override
+  String get groupPublicProfileTitle => 'Trang công khai nhóm';
+
+  @override
+  String get groupPublicProfileSettingsTitle => 'Cài đặt trang công khai';
+
+  @override
+  String get groupPublicProfileSettingsSubtitle =>
+      'Chỉ thông tin an toàn của nhóm được hiển thị công khai.';
+
+  @override
+  String get groupPublicProfileSlug => 'Slug công khai';
+
+  @override
+  String get groupPublicProfileEnabled => 'Bật trang công khai';
+
+  @override
+  String get groupPublicProfileShowStats => 'Hiển thị thống kê nhóm';
+
+  @override
+  String get groupPublicProfileShowStatsSubtitle =>
+      'Chỉ hiển thị số lượng tổng hợp và tổng chi tiêu.';
+
+  @override
+  String get groupPublicProfileInvalidSlug =>
+      'Dùng 3–80 chữ thường, số hoặc dấu gạch ngang.';
+
+  @override
+  String get groupPublicProfileFallbackName => 'Nhóm Moniary';
+
+  @override
+  String get groupPublicProfileMembers => 'Thành viên';
+
+  @override
+  String get groupPublicProfileTransactions => 'Giao dịch';
+
+  @override
+  String get groupPublicProfileTotalSpent => 'Tổng chi';
+
+  @override
+  String get groupPublicProfileSafeNotice =>
+      'Không hiển thị thông tin cá nhân hay dữ liệu giao dịch chi tiết.';
+
+  @override
+  String get groupRecurringTitle => 'Giao dịch định kỳ';
+
+  @override
+  String get groupRecurringAdd => 'Thêm giao dịch định kỳ';
+
+  @override
+  String get groupRecurringEdit => 'Sửa giao dịch định kỳ';
+
+  @override
+  String get groupRecurringEmpty => 'Chưa có giao dịch định kỳ';
+
+  @override
+  String get groupRecurringName => 'Tên giao dịch';
+
+  @override
+  String get groupRecurringAmount => 'Số tiền';
+
+  @override
+  String get groupRecurringFrequency => 'Tần suất';
+
+  @override
+  String get groupRecurringWeekly => 'Hàng tuần';
+
+  @override
+  String get groupRecurringMonthly => 'Hàng tháng';
+
+  @override
+  String get groupRecurringNextRun => 'Lần chạy tiếp theo';
+
+  @override
+  String get groupRecurringNotifyBefore => 'Báo trước số ngày';
+
+  @override
+  String get groupRecurringActive => 'Đang hoạt động';
+
+  @override
+  String get groupRecurringDeleteTitle => 'Xoá giao dịch định kỳ?';
+
+  @override
+  String get groupRecurringDeleteMessage =>
+      'Giao dịch định kỳ này sẽ bị xoá vĩnh viễn.';
+
+  @override
   String get groupActivityTransactionReacted =>
       'đã thả cảm xúc vào một giao dịch';
 

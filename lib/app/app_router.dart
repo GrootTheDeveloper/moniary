@@ -29,6 +29,8 @@ import '../features/groups/presentation/screens/group_activity_center_screen.dar
 import '../features/groups/presentation/screens/group_photo_album_screen.dart';
 import '../features/groups/presentation/screens/group_budget_screen.dart';
 import '../features/groups/presentation/screens/group_notification_preferences_screen.dart';
+import '../features/groups/presentation/screens/group_public_profile_screen.dart';
+import '../features/groups/presentation/screens/group_recurring_transactions_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
 import '../features/groups/presentation/screens/group_invite_accept_screen.dart';
 import '../features/groups/presentation/screens/group_invitations_screen.dart';
@@ -138,6 +140,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ProfileSetupScreen.routePath,
         ProfileSurveyScreen.routePath,
       };
+      final isPublicGroupRoute = location.startsWith('/public-group/');
+      final isPublicRoute =
+          publicRoutes.contains(location) || isPublicGroupRoute;
 
       // Handle account soft delete status
       final accountStatus = ref.read(accountStatusControllerProvider).value;
@@ -149,18 +154,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       if (!onboardingSeen &&
           location != SplashScreen.routePath &&
-          location != OnboardingScreen.routePath) {
+          location != OnboardingScreen.routePath &&
+          !isPublicRoute) {
         return OnboardingScreen.routePath;
       }
 
-      if (session == null && !publicRoutes.contains(location)) {
+      if (session == null && !isPublicRoute) {
         return LoginScreen.routePath;
       }
 
       // App lock check
       if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
-        if (location != AppLockScreen.routePath &&
-            !publicRoutes.contains(location)) {
+        if (location != AppLockScreen.routePath && !isPublicRoute) {
           return AppLockScreen.routePath;
         }
       } else {
@@ -463,6 +468,35 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final child = groupId == null
               ? const GroupsScreen()
               : GroupNotificationPreferencesScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupPublicProfileScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupPublicProfileScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupPublicProfileScreen.publicRoutePath,
+        pageBuilder: (context, state) => buildFadeTransitionPage(
+          state: state,
+          child: GroupPublicProfileScreen.public(
+            slug: state.pathParameters['slug']!,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: GroupRecurringTransactionsScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupRecurringTransactionsScreen(groupId: groupId);
           return buildSlideTransitionPage(state: state, child: child);
         },
       ),
