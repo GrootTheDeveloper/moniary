@@ -191,9 +191,12 @@ class AuthRepository {
       return response.session;
     } on AuthException catch (e, st) {
       AppLogger.error('Supabase AuthException during sign-in', e, st);
-      throw AppException(e.message, code: e.code);
+      throw _mapAuthException(e);
     } catch (e, st) {
       AppLogger.error('Unexpected error during email sign-in', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
       throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
     }
   }
@@ -204,12 +207,19 @@ class AuthRepository {
   }) async {
     if (_useMockData) return;
     try {
-      await _requiredClient.auth.signUp(email: email, password: password);
+      await _requiredClient.auth.signUp(
+        email: email,
+        password: password,
+        emailRedirectTo: 'io.supabase.moniary://login-callback',
+      );
     } on AuthException catch (e, st) {
       AppLogger.error('Email sign-up failed', e, st);
-      throw AppException(e.message, code: e.code);
+      throw _mapAuthException(e);
     } catch (e, st) {
       AppLogger.error('Email sign-up failed (unexpected)', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
       throw const AppException('errorGeneric', code: 'AUTH_SIGN_UP_FAILED');
     }
   }
@@ -223,14 +233,35 @@ class AuthRepository {
       );
     } on AuthException catch (e, st) {
       AppLogger.error('Password reset request failed', e, st);
-      throw AppException(e.message, code: e.code);
+      throw _mapAuthException(e);
     } catch (e, st) {
       AppLogger.error('Password reset request failed (unexpected)', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
       throw const AppException(
         'errorGeneric',
         code: 'AUTH_PASSWORD_RESET_FAILED',
       );
     }
+  }
+
+  AppException _mapAuthException(AuthException error) {
+    if (_isNetworkError(error)) {
+      return const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+    }
+    return AppException(error.message, code: error.code);
+  }
+
+  bool _isNetworkError(Object error) {
+    final message = error.toString().toLowerCase();
+    return message.contains('socketexception') ||
+        message.contains('clientexception') ||
+        message.contains('failed host lookup') ||
+        message.contains('connection refused') ||
+        message.contains('connection reset') ||
+        message.contains('network is unreachable') ||
+        message.contains('connection timed out');
   }
 
   Future<void> _initializeUserIfPossible() async {

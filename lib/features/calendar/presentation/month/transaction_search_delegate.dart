@@ -3,9 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
-import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/supabase_image.dart';
@@ -427,11 +426,11 @@ class _SearchResultRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
-      final title = transaction.note?.trim().isNotEmpty == true
-          ? transaction.note!.trim()
-          : transaction.categoryName.trim().isEmpty
-              ? context.l10n.categoryOther
-              : transaction.categoryName;
+    final title = transaction.note?.trim().isNotEmpty == true
+        ? transaction.note!.trim()
+        : transaction.categoryName.trim().isEmpty
+        ? context.l10n.categoryOther
+        : transaction.categoryName;
     final amountColor = transaction.isIncome
         ? colors.success
         : colors.textPrimary;
@@ -500,7 +499,7 @@ class _SearchResultRow extends ConsumerWidget {
                   const SizedBox(width: 10),
                   ObscurableAmountText(
                     amountText:
-                        '${transaction.isIncome ? '+' : '-'}${formatCurrency(transaction.amount, currencyCode: ref.watch(preferredCurrencyProvider), locale: Localizations.localeOf(context).toString())}',
+                        '${transaction.isIncome ? '+' : '-'}${ref.formatAmount(transaction.amount)}',
                     style: TextStyle(
                       color: amountColor,
                       fontFamily: 'JetBrains Mono',

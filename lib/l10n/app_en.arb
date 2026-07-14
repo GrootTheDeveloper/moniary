@@ -12,6 +12,31 @@
   "commonDelete": "Delete",
   "commonEdit": "Edit",
   "commonRetry": "Retry",
+  "commonJustNow": "Just now",
+  "commonMinutesAgo": "{count}m ago",
+  "@commonMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonHoursAgo": "{count}h ago",
+  "@commonHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonDaysAgo": "{count}d ago",
+  "@commonDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "commonAdd": "Add",
   "commonClose": "Close",
   "commonSaving": "Saving...",
@@ -722,6 +747,35 @@
   },
   "statsExpenseSameAsPrevious": "About the same as last month",
   "statsExpenseNoPrevious": "No previous month data yet",
+  "statsInsightTitle": "Smart insights",
+  "statsInsightSavings": "You saved {percent}% of your income this month.",
+  "@statsInsightSavings": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsInsightWeekend": "You spent {percent}% of your budget on weekends. Be careful!",
+  "@statsInsightWeekend": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsInsightCategorySurge": "{category} spending increased {percent}% compared to last month.",
+  "@statsInsightCategorySurge": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsInsightPositive": "You're managing your spending well! Keep it up.",
   "statsBudgetUsed": "Budget · used {percent}%",
   "@statsBudgetUsed": {
     "placeholders": {
@@ -787,12 +841,12 @@
   "profileChangeTimezone": "Change Timezone",
   "profileMascotTitle": "App Mascot",
   "profileMascotSubtitle": "Show the animated mascot on the bottom navigation bar.",
-  "timezonePickerSearch": "Search timezones...",
-  "timezonePickerUseDevice": "Use device timezone",
-  "timezonePickerNoResults": "No timezones found",
-  "profileLanguageLabel": "Language",
+  "profileLanguage": "Language",
   "profileLanguageVi": "Vietnamese",
   "profileLanguageEn": "English",
+  "timezonePickerSearch": "Search timezone",
+  "timezonePickerNoResults": "No timezones found",
+  "timezonePickerUseDevice": "Use device timezone",
   "profileAnonymousBadge": "Guest account",
   "profileVerifiedBadge": "Verified ({provider})",
   "@profileVerifiedBadge": {
@@ -1568,6 +1622,21 @@
   "groupTransactionHistorySubtitle": "{payer} paid · Split {count} people",
   "@groupTransactionHistorySubtitle": {"placeholders": {"payer": {"type": "String"}, "count": {"type": "int"}}},
   "groupTransactionDetailTitle": "Group transaction details",
+  "groupActivityCenterTitle": "Group activity",
+  "groupActivityTabTimeline": "Activity",
+  "groupActivityTabNotifications": "Notifications",
+  "groupActivityEmpty": "No activity yet",
+  "groupNotificationsEmptyState": "No notifications yet",
+  "groupActivityTransactionReacted": "reacted to a transaction",
+  "groupActivityTransactionCommented": "commented on a transaction",
+  "groupActivityMemberJoined": "joined the group",
+  "groupActivityMemberLeft": "left the group",
+  "groupActivityInvitationAccepted": "accepted a group invite",
+  "groupActivityInvitationDeclined": "declined a group invite",
+  "groupNotificationTransactionPosted": "New transaction posted",
+  "groupNotificationMemberAmountRequired": "Your share amount is needed",
+  "groupNotificationDebtSettled": "A debt was settled",
+  "groupNotificationGroupInvite": "You have a new group invite",
   "groupTransactionCreator": "Posted by",
   "groupTransactionPayers": "Payers",
   "groupTransactionShares": "Member shares",

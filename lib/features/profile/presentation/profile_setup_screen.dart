@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../app/app_theme.dart';
-import '../../../l10n/l10n_extension.dart';
-import '../../../shared/utils/error_helpers.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../l10n/l10n_extension.dart';
+import '../../../shared/utils/app_logger.dart';
+import '../../../shared/utils/error_helpers.dart';
 import '../../../core/preferences/preferences_providers.dart';
-import 'package:flutter_timezone/flutter_timezone.dart';
 import '../../../features/calendar/presentation/month/calendar_screen.dart';
 import '../../../shared/widgets/aurora_background.dart';
 import '../../../shared/widgets/supabase_image.dart';
@@ -35,11 +36,22 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   String _currency = 'VND';
   String? _avatarPath;
   bool _avatarPicked = false;
+  String? _detectedTimezone;
 
   @override
   void initState() {
     super.initState();
     _currency = ref.read(preferredCurrencyProvider);
+    _detectDeviceTimezone();
+  }
+
+  Future<void> _detectDeviceTimezone() async {
+    try {
+      final tz = await FlutterTimezone.getLocalTimezone();
+      if (mounted) setState(() => _detectedTimezone = tz);
+    } catch (e, st) {
+      AppLogger.error('Failed to detect device timezone', e, st);
+    }
   }
 
   @override
@@ -302,22 +314,16 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     }
 
     try {
+      final existingProfile = ref
+          .read(profileSetupControllerProvider)
+          .asData
+          ?.value;
+      final timezone =
+          (widget.isEditMode && existingProfile?.timezone.isNotEmpty == true)
+          ? existingProfile!.timezone
+          : (_detectedTimezone ?? AppConstants.defaultTimezone);
       await ref.read(preferredCurrencyProvider.notifier).setCurrency(_currency);
-      final String timezone;
-      if (widget.isEditMode) {
-        timezone =
-            ref.read(profileSetupControllerProvider).asData?.value?.timezone ??
-            AppConstants.defaultTimezone;
-      } else {
-        String detected;
-        try {
-          detected = await FlutterTimezone.getLocalTimezone();
-        } catch (_) {
-          detected = AppConstants.defaultTimezone;
-        }
-        if (!mounted) return;
-        timezone = detected;
-      }
+      if (!mounted) return;
       await ref
           .read(profileSetupControllerProvider.notifier)
           .saveProfile(
@@ -364,7 +370,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(userFriendlyMessage(context, error))),
-      ) ;
+      );
     }
   }
 }

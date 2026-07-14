@@ -4,9 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
-import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/moniary_design.dart';
 import '../../../../shared/widgets/supabase_image.dart';
@@ -17,6 +16,7 @@ import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
 import 'add_group_transaction_screen.dart';
 import 'debt_settlement_screen.dart';
+import 'group_activity_center_screen.dart';
 import 'group_transaction_detail_screen.dart';
 import 'invite_member_screen.dart';
 
@@ -102,6 +102,17 @@ class GroupDetailScreen extends ConsumerWidget {
                     context.push(InviteMemberScreen.routePath, extra: groupId);
                   },
                 ),
+              ListTile(
+                leading: const Icon(Icons.bolt_outlined),
+                title: Text(context.l10n.groupActivityCenterTitle),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  context.push(
+                    GroupActivityCenterScreen.routePath,
+                    extra: groupId,
+                  );
+                },
+              ),
               ListTile(
                 leading: const Icon(Icons.logout_outlined),
                 title: Text(context.l10n.groupLeave),
@@ -346,7 +357,6 @@ class _GroupHero extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currencyCode = ref.watch(preferredCurrencyProvider);
     final colors = context.moniaryColors;
     final group = detail.group;
     final balance = group.currentUserBalance;
@@ -366,11 +376,7 @@ class _GroupHero extends ConsumerWidget {
         ?.where((item) => item.splitStatus == GroupSplitStatus.posted)
         .fold<int>(0, (sum, item) => sum + item.totalAmount);
     final transactionCount = transactions?.length ?? group.transactionCount;
-    final totalText = formatCurrency(
-      total ?? group.totalSpent,
-      currencyCode: currencyCode,
-      locale: Localizations.localeOf(context).toString(),
-    );
+    final totalText = ref.formatAmount(total ?? group.totalSpent);
 
     return Column(
       children: [
@@ -428,11 +434,7 @@ class _GroupHero extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      formatCurrency(
-                        balance.abs(),
-                        currencyCode: currencyCode,
-                        locale: Localizations.localeOf(context).toString(),
-                      ),
+                      ref.formatAmount(balance.abs()),
                       style: context.moniaryTypography.displaySmall.copyWith(
                         color: balanceColor,
                         fontSize: 24,
@@ -503,7 +505,6 @@ class _BalanceRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currencyCode = ref.watch(preferredCurrencyProvider);
     final colors = context.moniaryColors;
     final valueColor = balance.balance == 0
         ? colors.textDim
@@ -511,12 +512,8 @@ class _BalanceRow extends ConsumerWidget {
         ? colors.danger
         : colors.success;
     final valueText = balance.balance == 0
-        ? formatCurrency(
-            0,
-            currencyCode: currencyCode,
-            locale: Localizations.localeOf(context).toString(),
-          )
-        : '${balance.balance > 0 ? '-' : '+'}${formatCurrency(balance.balance.abs(), currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}';
+        ? ref.formatAmount(0)
+        : '${balance.balance > 0 ? '-' : '+'}${ref.formatAmount(balance.balance.abs())}';
 
     return Container(
       constraints: const BoxConstraints(minHeight: 62),
@@ -620,7 +617,6 @@ class _TransactionRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currencyCode = ref.watch(preferredCurrencyProvider);
     final colors = context.moniaryColors;
     final payerName = transaction.creatorName?.trim().isNotEmpty == true
         ? transaction.creatorName!
@@ -695,11 +691,7 @@ class _TransactionRow extends ConsumerWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                formatCurrency(
-                  transaction.totalAmount,
-                  currencyCode: currencyCode,
-                  locale: Localizations.localeOf(context).toString(),
-                ),
+                ref.formatAmount(transaction.totalAmount),
                 style: context.moniaryTypography.metadataStrong.copyWith(
                   color: colors.textPrimary,
                   fontSize: 11,

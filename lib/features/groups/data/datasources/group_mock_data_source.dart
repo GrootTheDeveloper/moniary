@@ -1,7 +1,9 @@
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
+import '../../domain/entities/group_community.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_invite.dart';
+import '../../domain/entities/group_roadmap.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
@@ -24,6 +26,9 @@ class GroupMockDataSource {
   static final Map<String, List<GroupSettlementSuggestion>> _settlements = {};
   static final Map<String, _MockGroupInviteLink> _inviteLinks = {};
   static final Map<String, _MockDirectGroupInvite> _directInvites = {};
+  static final Map<String, Map<String, Set<String>>> _reactions = {};
+  static final Map<String, List<GroupActivity>> _activities = {};
+  static final List<GroupNotification> _notifications = [];
   static var _sequence = 0;
 
   static void resetForTesting() {
@@ -33,6 +38,9 @@ class GroupMockDataSource {
     _settlements.clear();
     _inviteLinks.clear();
     _directInvites.clear();
+    _reactions.clear();
+    _activities.clear();
+    _notifications.clear();
     _sequence = 0;
   }
 
@@ -1099,6 +1107,126 @@ class GroupMockDataSource {
         displayName: 'mock-user',
       ),
     );
+    _logActivity(
+      groupId: record.transaction.groupId,
+      type: 'transaction_commented',
+      metadata: {'transactionId': transactionId},
+    );
+  }
+
+  Future<List<GroupReactionSummary>> fetchReactions(
+    String transactionId,
+  ) async {
+    final byEmoji = _reactions[transactionId] ?? const {};
+    final summaries = byEmoji.entries
+        .map(
+          (entry) => GroupReactionSummary(
+            emoji: entry.key,
+            count: entry.value.length,
+            reactedByCurrentUser: entry.value.contains(currentUserId),
+          ),
+        )
+        .where((summary) => summary.count > 0)
+        .toList();
+    summaries.sort((a, b) => b.count.compareTo(a.count));
+    return summaries;
+  }
+
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) async {
+    final record = _requireTransaction(transactionId);
+    _requireActiveMember(record.transaction.groupId);
+    final byEmoji = _reactions.putIfAbsent(transactionId, () => {});
+    final users = byEmoji.putIfAbsent(emoji, () => {});
+    if (!users.add(currentUserId)) {
+      users.remove(currentUserId);
+      if (users.isEmpty) byEmoji.remove(emoji);
+      return;
+    }
+    _logActivity(
+      groupId: record.transaction.groupId,
+      type: 'transaction_reacted',
+      metadata: {'transactionId': transactionId, 'emoji': emoji},
+    );
+  }
+
+  Future<List<GroupActivity>> fetchActivities(String groupId) async {
+    _requireActiveMember(groupId);
+    return List.unmodifiable((_activities[groupId] ?? const []).reversed);
+  }
+
+  Future<List<GroupNotification>> fetchNotifications() async {
+    _seedDemoNotificationsIfNeeded();
+    return List.unmodifiable(_notifications.reversed);
+  }
+
+  Future<void> markNotificationRead(String notificationId) async {
+    final index = _notifications.indexWhere((n) => n.id == notificationId);
+    if (index == -1) return;
+    final n = _notifications[index];
+    _notifications[index] = GroupNotification(
+      id: n.id,
+      groupId: n.groupId,
+      groupName: n.groupName,
+      type: n.type,
+      isRead: true,
+      createdAt: n.createdAt,
+      groupTransactionId: n.groupTransactionId,
+      inviteToken: n.inviteToken,
+    );
+  }
+
+  void _logActivity({
+    required String groupId,
+    required String type,
+    required Map<String, dynamic> metadata,
+  }) {
+    final list = _activities.putIfAbsent(groupId, () => []);
+    list.add(
+      GroupActivity(
+        id: _id('activity'),
+        groupId: groupId,
+        actorUserId: currentUserId,
+        actorName: 'Bạn',
+        type: type,
+        metadata: metadata,
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+
+  void _seedDemoNotificationsIfNeeded() {
+    if (currentUserId != _demoUserId || _notifications.isNotEmpty) return;
+    if (_groups.isEmpty) return;
+    final now = DateTime.now();
+    _notifications.addAll([
+      GroupNotification(
+        id: _id('notification'),
+        groupId: 'mock-group-dalat',
+        groupName: _groups['mock-group-dalat']?.name ?? 'Đà Lạt 6/2025',
+        type: 'transaction_posted',
+        isRead: false,
+        createdAt: now.subtract(const Duration(hours: 2)),
+      ),
+      GroupNotification(
+        id: _id('notification'),
+        groupId: 'mock-group-home-q3',
+        groupName: _groups['mock-group-home-q3']?.name ?? 'Nhà chung Q3',
+        type: 'member_amount_required',
+        isRead: false,
+        createdAt: now.subtract(const Duration(days: 1)),
+      ),
+      GroupNotification(
+        id: _id('notification'),
+        groupId: 'mock-group-cafe-weekend',
+        groupName: _groups['mock-group-cafe-weekend']?.name ?? 'Cafe cuối tuần',
+        type: 'debt_settled',
+        isRead: true,
+        createdAt: now.subtract(const Duration(days: 3)),
+      ),
+    ]);
   }
 
   void _validatePayerDraft(

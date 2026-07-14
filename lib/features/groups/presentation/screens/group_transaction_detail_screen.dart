@@ -4,8 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../core/preferences/preferences_providers.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
@@ -42,7 +41,6 @@ class _GroupTransactionDetailScreenState
       groupTransactionDetailProvider(widget.transactionId),
     );
     final currentUserId = ref.watch(currentGroupUserIdProvider);
-    final currencyCode = ref.watch(preferredCurrencyProvider);
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.groupTransactionDetailTitle)),
       body: detailAsync.when(
@@ -80,11 +78,7 @@ class _GroupTransactionDetailScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                formatCurrency(
-                  transaction.totalAmount,
-                  currencyCode: currencyCode,
-                  locale: Localizations.localeOf(context).toString(),
-                ),
+                ref.formatAmount(transaction.totalAmount),
                 style: const TextStyle(
                   color: AppTheme.mintSoft,
                   fontSize: 24,
@@ -95,6 +89,8 @@ class _GroupTransactionDetailScreenState
                 const SizedBox(height: 10),
                 Text(transaction.note!),
               ],
+              const SizedBox(height: 14),
+              _ReactionRow(transactionId: transaction.id),
               const SizedBox(height: 18),
               _InfoRow(
                 label: context.l10n.groupTransactionCreator,
@@ -146,13 +142,7 @@ class _GroupTransactionDetailScreenState
                   title: Text(
                     payer.displayName ?? context.l10n.groupUnknownMember,
                   ),
-                  trailing: Text(
-                    formatCurrency(
-                      payer.paidAmount,
-                      currencyCode: currencyCode,
-                      locale: Localizations.localeOf(context).toString(),
-                    ),
-                  ),
+                  trailing: Text(ref.formatAmount(payer.paidAmount)),
                 ),
               ),
               const SizedBox(height: 18),
@@ -173,21 +163,9 @@ class _GroupTransactionDetailScreenState
                   ),
                   subtitle: Text(
                     context.l10n.groupSharePaidBalance(
-                      formatCurrency(
-                        share.shareAmount,
-                        currencyCode: currencyCode,
-                        locale: Localizations.localeOf(context).toString(),
-                      ),
-                      formatCurrency(
-                        paid,
-                        currencyCode: currencyCode,
-                        locale: Localizations.localeOf(context).toString(),
-                      ),
-                      formatCurrency(
-                        share.shareAmount - paid,
-                        currencyCode: currencyCode,
-                        locale: Localizations.localeOf(context).toString(),
-                      ),
+                      ref.formatAmount(share.shareAmount),
+                      ref.formatAmount(paid),
+                      ref.formatAmount(share.shareAmount - paid),
                     ),
                   ),
                 );
@@ -332,6 +310,174 @@ class _GroupTransactionDetailScreenState
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+}
+
+class _ReactionRow extends ConsumerWidget {
+  const _ReactionRow({required this.transactionId});
+
+  final String transactionId;
+
+  static const _quickEmojis = ['👍', '❤️', '😂', '😮', '🎉'];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reactionsAsync = ref.watch(groupReactionsProvider(transactionId));
+    final reactions = reactionsAsync.asData?.value ?? const [];
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        for (final reaction in reactions)
+          _ReactionChip(
+            transactionId: transactionId,
+            emoji: reaction.emoji,
+            count: reaction.count,
+            selected: reaction.reactedByCurrentUser,
+          ),
+        _AddReactionButton(transactionId: transactionId),
+      ],
+    );
+  }
+}
+
+class _ReactionChip extends ConsumerWidget {
+  const _ReactionChip({
+    required this.transactionId,
+    required this.emoji,
+    required this.count,
+    required this.selected,
+  });
+
+  final String transactionId;
+  final String emoji;
+  final int count;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.moniaryColors;
+    return Material(
+      color: selected
+          ? AppTheme.mintSoft.withValues(alpha: 0.18)
+          : colors.surface,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: () => ref
+            .read(groupActionControllerProvider.notifier)
+            .toggleReaction(transactionId: transactionId, emoji: emoji),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: selected ? AppTheme.mintSoft : colors.outline,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 14)),
+              const SizedBox(width: 5),
+              Text(
+                '$count',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: selected ? AppTheme.mintSoft : colors.textDim,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AddReactionButton extends ConsumerWidget {
+  const _AddReactionButton({required this.transactionId});
+
+  final String transactionId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.moniaryColors;
+    return Material(
+      color: colors.surface,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: () => _showEmojiPicker(context, ref),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: colors.outline),
+          ),
+          child: Icon(
+            Icons.add_reaction_outlined,
+            size: 16,
+            color: colors.textDim,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showEmojiPicker(BuildContext context, WidgetRef ref) async {
+    final emoji = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) =>
+          _EmojiPickerSheet(emojis: _ReactionRow._quickEmojis),
+    );
+    if (emoji == null) return;
+    if (!context.mounted) return;
+    await ref
+        .read(groupActionControllerProvider.notifier)
+        .toggleReaction(transactionId: transactionId, emoji: emoji);
+  }
+}
+
+class _EmojiPickerSheet extends StatelessWidget {
+  const _EmojiPickerSheet({required this.emojis});
+
+  final List<String> emojis;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: colors.outline),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              for (final emoji in emojis)
+                InkWell(
+                  borderRadius: BorderRadius.circular(999),
+                  onTap: () => Navigator.pop(context, emoji),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(emoji, style: const TextStyle(fontSize: 26)),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

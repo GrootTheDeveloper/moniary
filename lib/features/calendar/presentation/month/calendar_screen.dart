@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../profile/application/profile_setup_controller.dart';
 import '../../../journal/application/journal_controller.dart';
 import '../../../journal/presentation/monthly_recap_screen.dart';
@@ -30,8 +31,6 @@ import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
 import '../../../../shared/utils/error_helpers.dart';
-import '../../../../core/preferences/preferences_providers.dart';
-import '../../../../shared/utils/currency_formatter.dart';
 import '../../../settings/application/privacy_controller.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
@@ -389,9 +388,9 @@ class _SeamlessHeader extends ConsumerWidget {
                   ObscurableAmountText(
                     amountText: _formatMoney(
                       context,
+                      ref,
                       totalBalance,
                       isNegative: totalBalance < 0,
-                      currencyCode: ref.watch(preferredCurrencyProvider),
                     ),
                     style: context.moniaryTypography.displayLarge.copyWith(
                       fontSize: 42,
@@ -410,18 +409,22 @@ class _SeamlessHeader extends ConsumerWidget {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _IncomeExpensePill(
-                    label: context.l10n.calendarIncome,
-                    amount: monthData.totalIncome,
-                    color: colors.success,
-                    icon: Icons.south_west_outlined,
+                  Expanded(
+                    child: _IncomeExpensePill(
+                      label: context.l10n.calendarIncome,
+                      amount: monthData.totalIncome,
+                      color: colors.success,
+                      icon: Icons.south_west_outlined,
+                    ),
                   ),
                   const SizedBox(width: 10),
-                  _IncomeExpensePill(
-                    label: context.l10n.calendarExpense,
-                    amount: monthData.totalExpense,
-                    color: colors.danger,
-                    icon: Icons.north_east_outlined,
+                  Expanded(
+                    child: _IncomeExpensePill(
+                      label: context.l10n.calendarExpense,
+                      amount: monthData.totalExpense,
+                      color: colors.danger,
+                      icon: Icons.north_east_outlined,
+                    ),
                   ),
                 ],
               );
@@ -690,18 +693,22 @@ class _IncomeExpensePill extends ConsumerWidget {
         children: [
           Icon(icon, color: color, size: 14),
           const SizedBox(width: 6),
-          ObscurableAmountText(
-            prefixText: '$label: ',
-            amountText: _formatMoney(
-              context,
-              amount,
-              isNegative: false,
-              currencyCode: ref.watch(preferredCurrencyProvider),
-            ).replaceAll('+', ''),
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'JetBrains Mono',
+          Flexible(
+            child: ObscurableAmountText(
+              prefixText: '$label: ',
+              amountText: _formatMoney(
+                context,
+                ref,
+                amount,
+                isNegative: false,
+              ).replaceAll('+', ''),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'JetBrains Mono',
+              ),
             ),
           ),
         ],
@@ -1788,12 +1795,12 @@ class _CalendarSkeletonCardState extends State<_CalendarSkeletonCard>
 
 String _formatMoney(
   BuildContext context,
+  WidgetRef ref,
   double amount, {
   required bool isNegative,
-  required String currencyCode,
 }) {
   final sign = isNegative ? '-' : '+';
-  return '$sign${formatCurrency(amount, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString())}';
+  return '$sign${ref.formatAmount(amount.abs())}';
 }
 
 class _TodayGrid extends StatelessWidget {

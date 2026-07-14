@@ -16,6 +16,15 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.errorLocalAuthFailed;
       case 'NOT_FOUND':
         return l10n.errorNotFound;
+      case 'AUTH_NETWORK_ERROR':
+        return l10n.errorConnection;
+      case 'AUTH_SIGN_IN_FAILED':
+      case 'AUTH_SIGN_UP_FAILED':
+      case 'AUTH_SIGN_OUT_FAILED':
+      case 'AUTH_LINK_EMAIL_FAILED':
+      case 'AUTH_LINK_GOOGLE_FAILED':
+      case 'AUTH_LINK_APPLE_FAILED':
+        return l10n.errorGeneric;
       case 'GROUP_NAME_REQUIRED':
         return l10n.groupNameRequired;
       case 'GROUP_USER_NOT_FOUND':
@@ -92,5 +101,19 @@ String userFriendlyMessage(BuildContext context, Object error) {
 
     return l10n.errorGeneric;
   }
+  if (_looksLikeNetworkError(error)) {
+    return l10n.errorConnection;
+  }
   return l10n.errorGeneric;
+}
+
+bool _looksLikeNetworkError(Object error) {
+  final message = error.toString().toLowerCase();
+  return message.contains('socketexception') ||
+      message.contains('clientexception') ||
+      message.contains('failed host lookup') ||
+      message.contains('connection refused') ||
+      message.contains('connection reset') ||
+      message.contains('network is unreachable') ||
+      message.contains('connection timed out');
 }

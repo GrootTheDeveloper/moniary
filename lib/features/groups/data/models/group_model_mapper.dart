@@ -1,4 +1,6 @@
+import '../../domain/entities/group_community.dart';
 import '../../domain/entities/group_enums.dart';
+import '../../domain/entities/group_roadmap.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
@@ -152,6 +154,39 @@ class GroupModelMapper {
       updatedAt: _date(row['updated_at']),
       fromDisplayName: fromProfile?['full_name'] as String?,
       toDisplayName: toProfile?['full_name'] as String?,
+    );
+  }
+
+  static GroupReactionSummary reaction(Map<String, dynamic> row) {
+    return GroupReactionSummary(
+      emoji: row['emoji'] as String,
+      count: (row['reaction_count'] as num).toInt(),
+      reactedByCurrentUser: row['reacted_by_current_user'] as bool? ?? false,
+    );
+  }
+
+  static GroupActivity activity(Map<String, dynamic> row) {
+    return GroupActivity(
+      id: row['id'] as String,
+      groupId: row['group_id'] as String,
+      actorUserId: row['actor_user_id'] as String,
+      actorName: row['actor_name'] as String?,
+      type: row['type'] as String,
+      metadata: (row['metadata'] as Map<String, dynamic>?) ?? const {},
+      createdAt: _date(row['created_at']),
+    );
+  }
+
+  static GroupNotification notification(Map<String, dynamic> row) {
+    return GroupNotification(
+      id: row['id'] as String,
+      groupId: row['group_id'] as String,
+      groupName: row['group_name'] as String,
+      groupTransactionId: row['group_transaction_id'] as String?,
+      inviteToken: row['invite_token'] as String?,
+      type: row['type'] as String,
+      isRead: row['is_read'] as bool? ?? false,
+      createdAt: _date(row['created_at']),
     );
   }
 

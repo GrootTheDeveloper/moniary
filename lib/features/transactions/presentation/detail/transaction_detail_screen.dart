@@ -5,9 +5,8 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
-import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/composer/transaction_composer_controller.dart';
@@ -48,7 +47,6 @@ class _TransactionDetailBody extends ConsumerWidget {
     final colors = context.moniaryColors;
     final typography = context.moniaryTypography;
     final locale = Localizations.localeOf(context).toString();
-    final currencyCode = ref.watch(preferredCurrencyProvider);
     final categoryColor = AppColor.fromHex(
       transaction.categoryColor,
       fallback: transaction.isIncome ? colors.success : colors.warning,
@@ -180,10 +178,8 @@ class _TransactionDetailBody extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               ObscurableAmountText(
-                                amountText: formatCurrency(
+                                amountText: ref.formatAmount(
                                   transaction.amount,
-                                  currencyCode: currencyCode,
-                                  locale: locale,
                                 ),
                                 prefixText: transaction.isIncome ? '+' : '-',
                                 style: typography.displayMedium.copyWith(

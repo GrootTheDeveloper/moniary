@@ -8,8 +8,10 @@ import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/app_logger.dart';
+import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/widgets/obscurable_amount_text.dart';
+import '../application/stats_insights_logic.dart';
 import '../../budgets/application/budget_controller.dart';
 import '../../budgets/domain/monthly_budget.dart';
 import '../../budgets/presentation/budget_screen.dart';
@@ -19,8 +21,6 @@ import '../../transactions/domain/models/transaction_entry.dart';
 import '../../transactions/domain/models/transaction_mutation_result.dart';
 import '../../transactions/presentation/detail/transaction_detail_screen.dart';
 import '../../transactions/presentation/detail/transaction_route_args.dart';
-import '../../../core/preferences/preferences_providers.dart';
-import '../../../shared/utils/currency_formatter.dart';
 
 final statisticsMonthProvider =
     FutureProvider.family<List<TransactionEntry>, DateTime>((ref, month) async {
@@ -193,6 +193,11 @@ class _StatisticsBody extends StatelessWidget {
               .toList();
     final weekly = _WeeklySummary.fromTransactions(month, expenseTransactions);
     final topCategory = categories.isEmpty ? null : categories.first;
+    final insights = StatsInsightsLogic.generateInsights(
+      context,
+      transactions,
+      previousTransactions ?? const [],
+    );
 
     return SafeArea(
       bottom: false,
@@ -218,6 +223,10 @@ class _StatisticsBody extends StatelessWidget {
                   budget: budget,
                   onOpenBudget: onOpenBudget,
                 ),
+                if (insights.isNotEmpty) ...[
+                  const SizedBox(height: 22),
+                  _InsightsSection(insights: insights),
+                ],
                 const SizedBox(height: 25),
                 if (categories.isEmpty)
                   const _StatsEmpty()
@@ -377,11 +386,7 @@ class _StatsHero extends ConsumerWidget {
         ),
         const SizedBox(height: 7),
         ObscurableAmountText(
-          amountText: _money(
-            context,
-            expense,
-            currencyCode: ref.watch(preferredCurrencyProvider),
-          ),
+          amountText: _money(ref, expense),
           style: context.moniaryTypography.displayLarge.copyWith(
             color: colors.textPrimary,
             fontSize: 43,
@@ -447,6 +452,69 @@ class _StatsHero extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _InsightsSection extends StatelessWidget {
+  const _InsightsSection({required this.insights});
+
+  final List<StatsInsight> insights;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(label: context.l10n.statsInsightTitle),
+        const SizedBox(height: 12),
+        for (var i = 0; i < insights.length; i++) ...[
+          if (i > 0) const SizedBox(height: 8),
+          _InsightCard(insight: insights[i]),
+        ],
+      ],
+    );
+  }
+}
+
+class _InsightCard extends StatelessWidget {
+  const _InsightCard({required this.insight});
+
+  final StatsInsight insight;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final accent = switch (insight.type) {
+      InsightType.success => colors.success,
+      InsightType.warning => AppTheme.terracotta,
+      InsightType.info => colors.primary,
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: accent.withValues(alpha: 0.28)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(insight.icon, size: 18, color: accent),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              insight.message,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -863,11 +931,7 @@ class _CategoryAmountRow extends ConsumerWidget {
                   ),
                   const SizedBox(width: 12),
                   ObscurableAmountText(
-                    amountText: _money(
-                      context,
-                      category.amount,
-                      currencyCode: ref.watch(preferredCurrencyProvider),
-                    ),
+                    amountText: _money(ref, category.amount),
                     style: TextStyle(
                       color: colors.textPrimary,
                       fontFamily: 'JetBrains Mono',
@@ -1013,16 +1077,8 @@ String _categoryLabel(BuildContext context, String value) {
   return trimmed.isEmpty ? context.l10n.categoryOther : trimmed;
 }
 
-String _money(
-  BuildContext context,
-  double amount, {
-  required String currencyCode,
-}) {
-  return formatCurrency(
-    amount,
-    currencyCode: currencyCode,
-    locale: Localizations.localeOf(context).toString(),
-  );
+String _money(WidgetRef ref, double amount) {
+  return ref.formatAmount(amount);
 }
 
 String _compactAmount(BuildContext context, double amount) {

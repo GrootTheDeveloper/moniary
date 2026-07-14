@@ -8,7 +8,10 @@ import '../../../core/preferences/preferences_providers.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
+import '../../../shared/utils/timezone_utils.dart';
+import '../../../shared/widgets/selection_picker_sheet.dart';
 import '../../../shared/widgets/supabase_image.dart';
+import '../../profile/presentation/timezone_picker_screen.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
@@ -18,8 +21,6 @@ import '../../journal/presentation/monthly_recap_screen.dart';
 import '../../journal/presentation/recording_streak_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
-import '../../profile/presentation/timezone_picker_screen.dart';
-import '../../../shared/utils/timezone_utils.dart';
 import '../application/account/account_actions_controller.dart';
 import '../application/privacy_controller.dart';
 import 'export/export_data_screen.dart';
@@ -377,7 +378,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final privacyState = ref.watch(privacyControllerProvider);
     final requestHistory = ref.watch(privacyRequestHistoryProvider);
     final isGuest = ref.watch(guestModeEnabledProvider);
-    final locale = ref.watch(preferredLocaleProvider);
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -523,20 +523,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ),
                           _SettingsTile(
-                            icon: Icons.language_outlined,
-                            title: context.l10n.profileLanguageLabel,
-                            subtitle: locale.languageCode == 'en'
-                                ? context.l10n.profileLanguageEn
-                                : context.l10n.profileLanguageVi,
-                            onTap: () =>
-                                _showLanguageSheet(locale.languageCode),
-                          ),
-                          _SettingsTile(
                             icon: Icons.schedule_outlined,
                             title: context.l10n.profileChangeTimezone,
                             subtitle: timezoneDisplayLabel(profile.timezone),
                             onTap: () =>
                                 context.push(TimezonePickerScreen.routePath),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.language_outlined,
+                            title: context.l10n.profileLanguage,
+                            subtitle: _localeDisplayName(
+                              context,
+                              ref.watch(preferredLocaleProvider),
+                            ),
+                            onTap: _showLanguagePicker,
                           ),
                           _MascotToggleTile(
                             enabled: ref.watch(mascotEnabledProvider),
@@ -799,57 +799,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  void _showLanguageSheet(String currentCode) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppTheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                context.l10n.profileLanguageLabel,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              RadioGroup<String>(
-                groupValue: currentCode,
-                onChanged: (v) {
-                  if (v == null) return;
-                  ref
-                      .read(preferredLocaleProvider.notifier)
-                      .setLocale(Locale(v));
-                  Navigator.pop(context);
-                },
-                child: Column(
-                  children: [
-                    RadioListTile<String>(
-                      value: 'vi',
-                      title: Text(context.l10n.profileLanguageVi),
-                    ),
-                    RadioListTile<String>(
-                      value: 'en',
-                      title: Text(context.l10n.profileLanguageEn),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   Future<void> _signOut(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -884,6 +833,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (context.mounted) {
         context.go(LoginScreen.routePath);
       }
+    }
+  }
+
+  Future<void> _showLanguagePicker() async {
+    const options = ['vi', 'en'];
+    final current = ref.read(preferredLocaleProvider);
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => SelectionPickerSheet<String>(
+        title: context.l10n.profileLanguage,
+        options: options,
+        labelBuilder: (locale) => _localeDisplayName(context, locale),
+        isSelected: (locale) => locale == current,
+      ),
+    );
+    if (selected != null && mounted) {
+      await ref.read(preferredLocaleProvider.notifier).setLocale(selected);
     }
   }
 
@@ -1356,4 +1324,12 @@ class _MascotToggleTile extends StatelessWidget {
       ),
     );
   }
+}
+
+String _localeDisplayName(BuildContext context, String locale) {
+  return switch (locale) {
+    'en' => context.l10n.profileLanguageEn,
+    'vi' => context.l10n.profileLanguageVi,
+    _ => locale,
+  };
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/features/groups/domain/entities/group_enums.dart';
 import 'package:moniary/features/groups/domain/entities/spending_group.dart';
 import 'package:moniary/features/groups/presentation/widgets/group_confirmation_dialog.dart';
@@ -10,12 +13,22 @@ import 'package:moniary/features/groups/presentation/widgets/split_mode_selector
 import 'package:moniary/l10n/gen_l10n/app_localizations.dart';
 
 void main() {
+  late SharedPreferences prefs;
+
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    prefs = await SharedPreferences.getInstance();
+  });
+
   Widget app(Widget child) {
-    return MaterialApp(
-      locale: const Locale('vi'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: SingleChildScrollView(child: child)),
+    return ProviderScope(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      child: MaterialApp(
+        locale: const Locale('vi'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(body: SingleChildScrollView(child: child)),
+      ),
     );
   }
 
@@ -95,7 +108,6 @@ void main() {
           paymentMode: GroupPaymentMode.multiplePayers,
           selectedPayerIds: const {'a', 'b'},
           controllers: controllers,
-          currencySuffix: '₫',
           onSingleSelected: (_) {},
           onMultipleToggled: (_, _) {},
         ),

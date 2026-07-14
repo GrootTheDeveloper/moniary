@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_theme.dart';
-import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../domain/entities/spending_group.dart';
 
@@ -19,24 +18,11 @@ class GroupCard extends ConsumerWidget {
     final colors = context.moniaryColors;
     final typography = context.moniaryTypography;
     final balance = group.currentUserBalance;
-    final currencyCode = ref.watch(preferredCurrencyProvider);
     final balanceText = balance == 0
         ? context.l10n.groupBalanceSettled
         : balance > 0
-        ? context.l10n.groupBalanceOwes(
-            formatCurrency(
-              balance,
-              currencyCode: currencyCode,
-              locale: Localizations.localeOf(context).toString(),
-            ),
-          )
-        : context.l10n.groupBalanceReceives(
-            formatCurrency(
-              balance.abs(),
-              currencyCode: currencyCode,
-              locale: Localizations.localeOf(context).toString(),
-            ),
-          );
+        ? context.l10n.groupBalanceOwes(ref.formatAmount(balance))
+        : context.l10n.groupBalanceReceives(ref.formatAmount(balance.abs()));
     final balanceColor = balance == 0
         ? colors.success
         : balance > 0
@@ -99,7 +85,7 @@ class GroupCard extends ConsumerWidget {
                     const SizedBox(height: 6),
                     Text(
                       '${context.l10n.groupMemberCount(group.memberCount)} · '
-                      '${context.l10n.groupTotalSpent(formatCurrency(group.totalSpent, currencyCode: currencyCode, locale: Localizations.localeOf(context).toString()))}',
+                      '${context.l10n.groupTotalSpent(ref.formatAmount(group.totalSpent))}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: typography.metadata.copyWith(

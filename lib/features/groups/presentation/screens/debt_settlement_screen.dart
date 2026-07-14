@@ -4,9 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
-import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/moniary_design.dart';
 import '../../../../shared/widgets/supabase_image.dart';
@@ -280,7 +279,6 @@ class _SettlementCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currencyCode = ref.watch(preferredCurrencyProvider);
     final colors = context.moniaryColors;
     return Container(
       constraints: const BoxConstraints(minHeight: 68),
@@ -346,11 +344,7 @@ class _SettlementCard extends ConsumerWidget {
           ),
           const SizedBox(width: 15),
           Text(
-            formatCurrency(
-              item.amount,
-              currencyCode: currencyCode,
-              locale: Localizations.localeOf(context).toString(),
-            ),
+            ref.formatAmount(item.amount),
             style: context.moniaryTypography.metadataStrong.copyWith(
               color: colors.textPrimary,
               fontSize: 11,

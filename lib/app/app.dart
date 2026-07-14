@@ -59,8 +59,8 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      locale: ref.watch(preferredLocaleProvider),
       routerConfig: ref.watch(appRouterProvider),
+      locale: Locale(ref.watch(preferredLocaleProvider)),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
     );

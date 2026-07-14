@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../calendar/presentation/month/calendar_screen.dart';
 import '../application/assistant_controller.dart';
 import 'assistant_permission_screen.dart';
 
@@ -55,14 +56,23 @@ class _AssistantIntroScreenState extends ConsumerState<AssistantIntroScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
-                child: TextButton(
-                  onPressed: _finish,
-                  child: Text(context.l10n.assistantIntroSkip),
-                ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 8, 24, 0),
+              child: Row(
+                children: [
+                  IconButton(
+                    tooltip: MaterialLocalizations.of(
+                      context,
+                    ).backButtonTooltip,
+                    onPressed: _goBack,
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: _finish,
+                    child: Text(context.l10n.assistantIntroSkip),
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -132,6 +142,14 @@ class _AssistantIntroScreenState extends ConsumerState<AssistantIntroScreen> {
         ),
       ),
     );
+  }
+
+  void _goBack() {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    context.go(CalendarScreen.routePath);
   }
 
   Future<void> _finish() async {

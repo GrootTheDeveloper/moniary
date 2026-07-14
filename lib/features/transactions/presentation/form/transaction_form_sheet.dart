@@ -9,10 +9,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
-import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../core/constants/app_constants.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../../core/constants/app_color.dart';
@@ -324,10 +323,6 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                     amountFormatter: _amountFormatter,
                     noteController: _noteController,
                     onClear: () => setState(() => _pickedFile = null),
-                    currencySuffix: currencySymbolFor(
-                      currencyCode: ref.watch(preferredCurrencyProvider),
-                      locale: Localizations.localeOf(context).toString(),
-                    ),
                   ),
                   const SizedBox(height: 10),
                   Row(
@@ -649,7 +644,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
   }
 }
 
-class _ImagePreview extends StatelessWidget {
+class _ImagePreview extends ConsumerWidget {
   const _ImagePreview({
     required this.file,
     this.initialImagePath,
@@ -657,7 +652,6 @@ class _ImagePreview extends StatelessWidget {
     required this.amountFormatter,
     required this.noteController,
     required this.onClear,
-    required this.currencySuffix,
   });
   final XFile? file;
   final String? initialImagePath;
@@ -665,10 +659,9 @@ class _ImagePreview extends StatelessWidget {
   final CurrencyTextInputFormatter amountFormatter;
   final TextEditingController noteController;
   final VoidCallback onClear;
-  final String currencySuffix;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     return SizedBox(
       width: double.infinity,
@@ -775,7 +768,7 @@ class _ImagePreview extends StatelessWidget {
                             color: Colors.white,
                             fontWeight: FontWeight.w800,
                           ),
-                          suffixText: currencySuffix,
+                          suffixText: ref.currencySymbol,
                           suffixStyle: const TextStyle(
                             fontSize: 13,
                             color: Colors.white,

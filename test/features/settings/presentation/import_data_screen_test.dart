@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/features/settings/application/import_controller.dart';
 import 'package:moniary/features/settings/domain/models/csv_transaction_row.dart';
@@ -71,10 +72,13 @@ void main() {
     tester,
   ) async {
     final l10n = await AppLocalizations.delegate.load(const Locale('vi'));
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           importControllerProvider.overrideWith(TestImportController.new),
           importHistoryProvider.overrideWith((ref) async => const []),
           walletsControllerProvider.overrideWith(FailingWalletsController.new),
@@ -105,10 +109,13 @@ void main() {
     final l10n = await AppLocalizations.delegate.load(const Locale('vi'));
     await tester.binding.setSurfaceSize(const Size(900, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           importControllerProvider.overrideWith(FailingImportController.new),
           importHistoryProvider.overrideWith((ref) async => const []),
           walletsControllerProvider.overrideWith(

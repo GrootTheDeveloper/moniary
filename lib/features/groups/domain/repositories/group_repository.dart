@@ -1,4 +1,6 @@
+import '../entities/group_community.dart';
 import '../entities/group_invite.dart';
+import '../entities/group_roadmap.dart';
 import '../entities/group_settlement.dart';
 import '../entities/group_transaction.dart';
 import '../entities/spending_group.dart';
@@ -71,4 +73,17 @@ abstract interface class GroupRepository {
     required String transactionId,
     required String content,
   });
+
+  Future<List<GroupReactionSummary>> fetchReactions(String transactionId);
+
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  });
+
+  Future<List<GroupActivity>> fetchActivities(String groupId);
+
+  Future<List<GroupNotification>> fetchNotifications();
+
+  Future<void> markNotificationRead(String notificationId);
 }

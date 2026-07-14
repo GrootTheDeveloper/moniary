@@ -5,8 +5,10 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../shared/utils/app_logger.dart';
+import '../../domain/entities/group_community.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_invite.dart';
+import '../../domain/entities/group_roadmap.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
@@ -496,6 +498,64 @@ class GroupRepositoryImpl implements GroupRepository {
     return _guard(
       'add group transaction comment',
       () => _remote.addComment(transactionId: transactionId, content: content),
+    );
+  }
+
+  @override
+  Future<List<GroupReactionSummary>> fetchReactions(String transactionId) {
+    if (_useMockData) {
+      return _mock.fetchReactions(transactionId);
+    }
+    return _guard('fetch group transaction reactions', () async {
+      final rows = await _remote.fetchReactions(transactionId);
+      return rows.map(GroupModelMapper.reaction).toList();
+    });
+  }
+
+  @override
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) {
+    if (_useMockData) {
+      return _mock.toggleReaction(transactionId: transactionId, emoji: emoji);
+    }
+    return _guard(
+      'toggle group transaction reaction',
+      () => _remote.toggleReaction(transactionId: transactionId, emoji: emoji),
+    );
+  }
+
+  @override
+  Future<List<GroupActivity>> fetchActivities(String groupId) {
+    if (_useMockData) {
+      return _mock.fetchActivities(groupId);
+    }
+    return _guard('fetch group activities', () async {
+      final rows = await _remote.fetchActivities(groupId);
+      return rows.map(GroupModelMapper.activity).toList();
+    });
+  }
+
+  @override
+  Future<List<GroupNotification>> fetchNotifications() {
+    if (_useMockData) {
+      return _mock.fetchNotifications();
+    }
+    return _guard('fetch group notifications', () async {
+      final rows = await _remote.fetchNotifications();
+      return rows.map(GroupModelMapper.notification).toList();
+    });
+  }
+
+  @override
+  Future<void> markNotificationRead(String notificationId) {
+    if (_useMockData) {
+      return _mock.markNotificationRead(notificationId);
+    }
+    return _guard(
+      'mark group notification read',
+      () => _remote.markNotificationRead(notificationId),
     );
   }
 
