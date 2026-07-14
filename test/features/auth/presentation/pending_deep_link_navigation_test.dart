@@ -43,9 +43,22 @@ Session _mockSession() {
 class FakeAuthRepository extends AuthRepository {
   FakeAuthRepository() : super(null, useMockData: true);
 
+  String? signedUpEmail;
+  String? signedUpPassword;
+
   @override
   Future<Session?> signInAnonymously({String? captchaToken}) async =>
       _mockSession();
+
+  @override
+  Future<Session?> signUpWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    signedUpEmail = email;
+    signedUpPassword = password;
+    return _mockSession();
+  }
 }
 
 class TestProfileSetupController extends ProfileSetupController {
@@ -359,6 +372,90 @@ void main() {
       find.descendant(of: find.byType(Wrap), matching: find.byType(IconButton)),
       findsNWidgets(2),
     );
+  });
+
+  testWidgets('signup rejects a mismatched password confirmation', (
+    tester,
+  ) async {
+    await useLargeTestViewport(tester);
+    final repository = FakeAuthRepository();
+    final container = ProviderContainer(
+      overrides: [
+        authRepositoryProvider.overrideWithValue(repository),
+        useMockDataModeProvider.overrideWithValue(true),
+        authStateChangesProvider.overrideWith((ref) => const Stream.empty()),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      _routerApp(container: container, initialLocation: LoginScreen.routePath),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('login_auth_mode_toggle')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const ValueKey('login_email_field')),
+      'bee@moniary.app',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('login_password_field')),
+      'password123',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('login_confirm_password_field')),
+      'different-password',
+    );
+    await tester.tap(find.byKey(const ValueKey('login_email_submit_button')));
+    await tester.pump();
+
+    expect(find.text('Passwords do not match'), findsOneWidget);
+    expect(repository.signedUpEmail, isNull);
+    expect(repository.signedUpPassword, isNull);
+  });
+
+  testWidgets('signup submits after password confirmation matches', (
+    tester,
+  ) async {
+    await useLargeTestViewport(tester);
+    final repository = FakeAuthRepository();
+    final container = ProviderContainer(
+      overrides: [
+        authRepositoryProvider.overrideWithValue(repository),
+        useMockDataModeProvider.overrideWithValue(true),
+        authStateChangesProvider.overrideWith((ref) => const Stream.empty()),
+        postAuthDecisionProvider.overrideWith(
+          (ref) async => const PostAuthDecision(PostAuthDestination.noSession),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      _routerApp(container: container, initialLocation: LoginScreen.routePath),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('login_auth_mode_toggle')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const ValueKey('login_email_field')),
+      'bee@moniary.app',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('login_password_field')),
+      'password123',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('login_confirm_password_field')),
+      'password123',
+    );
+    await tester.tap(find.byKey(const ValueKey('login_email_submit_button')));
+    await tester.pumpAndSettle();
+
+    expect(repository.signedUpEmail, 'bee@moniary.app');
+    expect(repository.signedUpPassword, 'password123');
   });
 
   testWidgets('login home destination consumes pending invite route', (

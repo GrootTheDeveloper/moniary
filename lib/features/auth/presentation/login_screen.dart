@@ -38,11 +38,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _isRecoverySheetOpen = false;
   bool _isResolvingPostAuth = false;
   bool _isSignUp = false;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void initState() {
@@ -58,6 +60,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -191,6 +194,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ],
                         const SizedBox(height: 22),
                         TextFormField(
+                          key: const ValueKey('login_email_field'),
                           controller: _emailController,
                           enabled: !isBusy,
                           keyboardType: TextInputType.emailAddress,
@@ -209,6 +213,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         const SizedBox(height: 11),
                         TextFormField(
+                          key: const ValueKey('login_password_field'),
                           controller: _passwordController,
                           enabled: !isBusy,
                           obscureText: _obscurePassword,
@@ -217,8 +222,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ? AutofillHints.newPassword
                                 : AutofillHints.password,
                           ],
+                          textInputAction: _isSignUp
+                              ? TextInputAction.next
+                              : TextInputAction.done,
                           onFieldSubmitted: (_) {
-                            if (!isBusy) _submitEmail();
+                            if (!isBusy && !_isSignUp) _submitEmail();
                           },
                           decoration: InputDecoration(
                             labelText: context.l10n.loginPasswordLabel,
@@ -241,6 +249,41 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             return null;
                           },
                         ),
+                        if (_isSignUp) ...[
+                          const SizedBox(height: 11),
+                          TextFormField(
+                            key: const ValueKey('login_confirm_password_field'),
+                            controller: _confirmPasswordController,
+                            enabled: !isBusy,
+                            obscureText: _obscureConfirmPassword,
+                            autofillHints: const [AutofillHints.newPassword],
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (_) {
+                              if (!isBusy) _submitEmail();
+                            },
+                            decoration: InputDecoration(
+                              labelText: context.l10n.confirmPasswordLabel,
+                              suffixIcon: IconButton(
+                                onPressed: () => setState(
+                                  () => _obscureConfirmPassword =
+                                      !_obscureConfirmPassword,
+                                ),
+                                icon: Icon(
+                                  _obscureConfirmPassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value != _passwordController.text) {
+                                return context.l10n.validationPasswordsMismatch;
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
                         if (!_isSignUp)
                           Align(
                             alignment: Alignment.centerRight,
@@ -260,6 +303,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         else
                           const SizedBox(height: 12),
                         FilledButton(
+                          key: const ValueKey('login_email_submit_button'),
                           onPressed: isBusy ? null : _submitEmail,
                           child: isBusy
                               ? SizedBox.square(
@@ -286,10 +330,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                             TextButton(
+                              key: const ValueKey('login_auth_mode_toggle'),
                               onPressed: isBusy
                                   ? null
                                   : () => setState(() {
                                       _isSignUp = !_isSignUp;
+                                      _confirmPasswordController.clear();
+                                      _obscureConfirmPassword = true;
                                       _formKey.currentState?.reset();
                                     }),
                               style: TextButton.styleFrom(
@@ -443,7 +490,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.loginEmailConfirmationSent)),
           );
-          setState(() => _isSignUp = false);
+          setState(() {
+            _isSignUp = false;
+            _confirmPasswordController.clear();
+            _obscureConfirmPassword = true;
+          });
         } else {
           await _completeAuthentication();
         }
