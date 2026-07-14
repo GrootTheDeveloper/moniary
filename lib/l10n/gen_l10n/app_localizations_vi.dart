@@ -3813,6 +3813,21 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupNotificationsEmptyState => 'Chưa có thông báo nào';
 
   @override
+  String get groupPhotoAlbumTitle => 'Album ảnh';
+
+  @override
+  String get groupPhotoAlbumEmpty => 'Chưa có ảnh giao dịch';
+
+  @override
+  String get groupPhotoAlbumLoadError => 'Không thể tải album ảnh';
+
+  @override
+  String get groupTransactionFallback => 'Giao dịch nhóm';
+
+  @override
+  String get groupMemberFallback => 'Thành viên';
+
+  @override
   String get groupActivityTransactionReacted =>
       'đã thả cảm xúc vào một giao dịch';
 

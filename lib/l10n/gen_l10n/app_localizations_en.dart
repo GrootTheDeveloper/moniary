@@ -3811,6 +3811,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupNotificationsEmptyState => 'No notifications yet';
 
   @override
+  String get groupPhotoAlbumTitle => 'Photo album';
+
+  @override
+  String get groupPhotoAlbumEmpty => 'No transaction photos yet';
+
+  @override
+  String get groupPhotoAlbumLoadError => 'Could not load the photo album';
+
+  @override
+  String get groupTransactionFallback => 'Group transaction';
+
+  @override
+  String get groupMemberFallback => 'Member';
+
+  @override
   String get groupActivityTransactionReacted => 'reacted to a transaction';
 
   @override

@@ -17,6 +17,7 @@ import '../../domain/entities/spending_group.dart';
 import 'add_group_transaction_screen.dart';
 import 'debt_settlement_screen.dart';
 import 'group_activity_center_screen.dart';
+import 'group_photo_album_screen.dart';
 import 'group_transaction_detail_screen.dart';
 import 'invite_member_screen.dart';
 
@@ -111,6 +112,14 @@ class GroupDetailScreen extends ConsumerWidget {
                     GroupActivityCenterScreen.routePath,
                     extra: groupId,
                   );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: Text(context.l10n.groupPhotoAlbumTitle),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  context.push(GroupPhotoAlbumScreen.routePath, extra: groupId);
                 },
               ),
               ListTile(

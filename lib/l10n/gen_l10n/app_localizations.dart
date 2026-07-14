@@ -6884,6 +6884,36 @@ abstract class AppLocalizations {
   /// **'Chưa có thông báo nào'**
   String get groupNotificationsEmptyState;
 
+  /// No description provided for @groupPhotoAlbumTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Album ảnh'**
+  String get groupPhotoAlbumTitle;
+
+  /// No description provided for @groupPhotoAlbumEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có ảnh giao dịch'**
+  String get groupPhotoAlbumEmpty;
+
+  /// No description provided for @groupPhotoAlbumLoadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tải album ảnh'**
+  String get groupPhotoAlbumLoadError;
+
+  /// No description provided for @groupTransactionFallback.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch nhóm'**
+  String get groupTransactionFallback;
+
+  /// No description provided for @groupMemberFallback.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành viên'**
+  String get groupMemberFallback;
+
   /// No description provided for @groupActivityTransactionReacted.
   ///
   /// In vi, this message translates to:

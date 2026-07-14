@@ -26,6 +26,7 @@ import '../features/groups/presentation/screens/add_group_transaction_screen.dar
 import '../features/groups/presentation/screens/create_group_screen.dart';
 import '../features/groups/presentation/screens/debt_settlement_screen.dart';
 import '../features/groups/presentation/screens/group_activity_center_screen.dart';
+import '../features/groups/presentation/screens/group_photo_album_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
 import '../features/groups/presentation/screens/group_invite_accept_screen.dart';
 import '../features/groups/presentation/screens/group_invitations_screen.dart';
@@ -430,6 +431,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = GroupActivityCenterScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupPhotoAlbumScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupPhotoAlbumScreen(groupId: groupId);
           return buildSlideTransitionPage(state: state, child: child);
         },
       ),
