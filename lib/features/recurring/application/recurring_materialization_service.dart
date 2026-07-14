@@ -80,6 +80,7 @@ class RecurringMaterializationService {
         transactionDate: next,
         note: rule.note,
         source: 'recurring',
+        recurringTransactionId: rule.id,
       );
       posted++;
       lastRun = next;

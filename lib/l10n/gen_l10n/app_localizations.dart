@@ -3608,6 +3608,54 @@ abstract class AppLocalizations {
   /// **'Hãy tạo danh mục phù hợp trước'**
   String get recurringNoCategories;
 
+  /// No description provided for @recurringApplyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Áp dụng thay đổi cho giao dịch đã tạo?'**
+  String get recurringApplyTitle;
+
+  /// No description provided for @recurringApplyMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ký này đã tạo {count} giao dịch.'**
+  String recurringApplyMessage(int count);
+
+  /// No description provided for @recurringApplyFutureOnly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ áp dụng từ lần tới'**
+  String get recurringApplyFutureOnly;
+
+  /// No description provided for @recurringApplyUpdate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật các giao dịch đã tạo'**
+  String get recurringApplyUpdate;
+
+  /// No description provided for @recurringApplyDelete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa hết và tạo lại'**
+  String get recurringApplyDelete;
+
+  /// No description provided for @recurringDeleteKeepTx.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giữ lại giao dịch'**
+  String get recurringDeleteKeepTx;
+
+  /// No description provided for @recurringDeleteRemoveTx.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa luôn giao dịch'**
+  String get recurringDeleteRemoveTx;
+
+  /// No description provided for @recurringDeleteGeneratedMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ký này đã tạo {count} giao dịch. Bạn muốn xử lý chúng thế nào?'**
+  String recurringDeleteGeneratedMessage(int count);
+
   /// No description provided for @starredTransactionsEmpty.
   ///
   /// In vi, this message translates to:

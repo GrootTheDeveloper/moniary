@@ -2,6 +2,15 @@ import '../../../categories/domain/models/category.dart';
 
 enum RecurringFrequency { daily, weekly, monthly, yearly }
 
+/// How editing a subscription should affect the transactions it has already
+/// auto-posted.
+/// - [futureOnly]: leave existing generated transactions untouched.
+/// - [updateExisting]: update the shared fields of existing generated
+///   transactions to match the new rule.
+/// - [deleteAndRegenerate]: delete existing generated transactions and repost
+///   from the rule's start date.
+enum RecurringApplyMode { futureOnly, updateExisting, deleteAndRegenerate }
+
 extension RecurringFrequencyX on RecurringFrequency {
   String get value => switch (this) {
     RecurringFrequency.daily => 'daily',

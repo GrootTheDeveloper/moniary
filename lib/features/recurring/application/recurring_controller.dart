@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../categories/domain/models/category.dart';
+import '../../transactions/data/repositories/transaction_repository.dart';
 import '../data/repositories/recurring_transaction_repository.dart';
 import '../domain/models/recurring_transaction.dart';
 
@@ -72,6 +73,7 @@ class RecurringController extends AsyncNotifier<List<RecurringTransaction>> {
     DateTime? endDate,
     String? note,
     bool autoPost = false,
+    RecurringApplyMode applyMode = RecurringApplyMode.futureOnly,
   }) async {
     state = const AsyncLoading();
     try {
@@ -90,6 +92,34 @@ class RecurringController extends AsyncNotifier<List<RecurringTransaction>> {
         note: note,
         autoPost: autoPost,
       );
+
+      switch (applyMode) {
+        case RecurringApplyMode.futureOnly:
+          break;
+        case RecurringApplyMode.updateExisting:
+          await ref
+              .read(transactionRepositoryProvider)
+              .updateGeneratedTransactions(
+                recurringTransactionId: id,
+                amount: amount,
+                type: type,
+                walletId: walletId,
+                categoryId: categoryId,
+                note: note,
+              );
+        case RecurringApplyMode.deleteAndRegenerate:
+          await ref
+              .read(transactionRepositoryProvider)
+              .deleteGeneratedTransactions(id);
+          // Rewind the schedule so materialization reposts from the start.
+          await _repository.advanceSchedule(
+            id: id,
+            nextRunDate: startDate,
+            lastRunDate: null,
+            isActive: isActive,
+          );
+      }
+
       state = AsyncData(await _repository.fetchRecurringTransactions());
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
@@ -97,9 +127,23 @@ class RecurringController extends AsyncNotifier<List<RecurringTransaction>> {
     }
   }
 
-  Future<void> deleteRecurring(String id) async {
+  Future<int> generatedTransactionCount(String id) {
+    return ref.read(transactionRepositoryProvider).countGeneratedTransactions(
+      id,
+    );
+  }
+
+  Future<void> deleteRecurring(
+    String id, {
+    bool deleteGeneratedTransactions = false,
+  }) async {
     state = const AsyncLoading();
     try {
+      if (deleteGeneratedTransactions) {
+        await ref
+            .read(transactionRepositoryProvider)
+            .deleteGeneratedTransactions(id);
+      }
       await _repository.deleteRecurringTransaction(id);
       state = AsyncData(await _repository.fetchRecurringTransactions());
     } catch (error, stackTrace) {

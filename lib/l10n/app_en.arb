@@ -868,6 +868,20 @@
   "recurringAmountRequired": "Enter an amount greater than 0",
   "recurringNoWallets": "Create a wallet first to add recurring items",
   "recurringNoCategories": "Create a matching category first",
+  "recurringApplyTitle": "Apply changes to created transactions?",
+  "recurringApplyMessage": "This subscription has already created {count} transaction(s).",
+  "@recurringApplyMessage": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "recurringApplyFutureOnly": "Only apply from now on",
+  "recurringApplyUpdate": "Update the created transactions",
+  "recurringApplyDelete": "Delete all and re-create",
+  "recurringDeleteKeepTx": "Keep transactions",
+  "recurringDeleteRemoveTx": "Delete transactions too",
+  "recurringDeleteGeneratedMessage": "This subscription created {count} transaction(s). What should happen to them?",
+  "@recurringDeleteGeneratedMessage": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "statsCategoryTransactions": "Transactions in this category",
   "statsDayTooltip": "Day {day}\n{amount}",
   "@statsDayTooltip": {

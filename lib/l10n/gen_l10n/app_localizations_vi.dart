@@ -1928,6 +1928,34 @@ class AppLocalizationsVi extends AppLocalizations {
   String get recurringNoCategories => 'Hãy tạo danh mục phù hợp trước';
 
   @override
+  String get recurringApplyTitle => 'Áp dụng thay đổi cho giao dịch đã tạo?';
+
+  @override
+  String recurringApplyMessage(int count) {
+    return 'Đăng ký này đã tạo $count giao dịch.';
+  }
+
+  @override
+  String get recurringApplyFutureOnly => 'Chỉ áp dụng từ lần tới';
+
+  @override
+  String get recurringApplyUpdate => 'Cập nhật các giao dịch đã tạo';
+
+  @override
+  String get recurringApplyDelete => 'Xóa hết và tạo lại';
+
+  @override
+  String get recurringDeleteKeepTx => 'Giữ lại giao dịch';
+
+  @override
+  String get recurringDeleteRemoveTx => 'Xóa luôn giao dịch';
+
+  @override
+  String recurringDeleteGeneratedMessage(int count) {
+    return 'Đăng ký này đã tạo $count giao dịch. Bạn muốn xử lý chúng thế nào?';
+  }
+
+  @override
   String get starredTransactionsEmpty => 'Chưa có giao dịch quan trọng nào';
 
   @override

@@ -1933,6 +1933,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recurringNoCategories => 'Create a matching category first';
 
   @override
+  String get recurringApplyTitle => 'Apply changes to created transactions?';
+
+  @override
+  String recurringApplyMessage(int count) {
+    return 'This subscription has already created $count transaction(s).';
+  }
+
+  @override
+  String get recurringApplyFutureOnly => 'Only apply from now on';
+
+  @override
+  String get recurringApplyUpdate => 'Update the created transactions';
+
+  @override
+  String get recurringApplyDelete => 'Delete all and re-create';
+
+  @override
+  String get recurringDeleteKeepTx => 'Keep transactions';
+
+  @override
+  String get recurringDeleteRemoveTx => 'Delete transactions too';
+
+  @override
+  String recurringDeleteGeneratedMessage(int count) {
+    return 'This subscription created $count transaction(s). What should happen to them?';
+  }
+
+  @override
   String get starredTransactionsEmpty => 'No starred transactions yet';
 
   @override

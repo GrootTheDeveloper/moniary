@@ -82,29 +82,71 @@ class RecurringTransactionsScreen extends ConsumerWidget {
     WidgetRef ref,
     RecurringTransaction item,
   ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.l10n.recurringDeleteTitle),
-        content: Text(context.l10n.recurringDeleteMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(context.l10n.commonCancel),
+    final notifier = ref.read(recurringControllerProvider.notifier);
+    var generatedCount = 0;
+    try {
+      generatedCount = await notifier.generatedTransactionCount(item.id);
+    } catch (_) {
+      generatedCount = 0;
+    }
+    if (!context.mounted) return;
+
+    // deleteGenerated: null = cancelled, false = keep transactions,
+    // true = also delete generated transactions.
+    bool? deleteGenerated;
+    if (generatedCount > 0) {
+      deleteGenerated = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(dialogContext.l10n.recurringDeleteTitle),
+          content: Text(
+            dialogContext.l10n.recurringDeleteGeneratedMessage(generatedCount),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(context.l10n.commonDelete),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true || !context.mounted) return;
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(dialogContext.l10n.commonCancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(dialogContext.l10n.recurringDeleteKeepTx),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(dialogContext.l10n.recurringDeleteRemoveTx),
+            ),
+          ],
+        ),
+      );
+      if (deleteGenerated == null || !context.mounted) return;
+    } else {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(dialogContext.l10n.recurringDeleteTitle),
+          content: Text(dialogContext.l10n.recurringDeleteMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(dialogContext.l10n.commonCancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(dialogContext.l10n.commonDelete),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !context.mounted) return;
+      deleteGenerated = false;
+    }
+
     final messenger = ScaffoldMessenger.of(context);
     try {
-      await ref
-          .read(recurringControllerProvider.notifier)
-          .deleteRecurring(item.id);
+      await notifier.deleteRecurring(
+        item.id,
+        deleteGeneratedTransactions: deleteGenerated,
+      );
     } catch (error) {
       if (!context.mounted) return;
       messenger.showSnackBar(
@@ -507,6 +549,67 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
     );
   }
 
+  Future<RecurringApplyMode?> _askApplyMode(
+    BuildContext context,
+    int count,
+  ) {
+    return showDialog<RecurringApplyMode>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(dialogContext.l10n.recurringApplyTitle),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(dialogContext.l10n.recurringApplyMessage(count)),
+              const SizedBox(height: 8),
+              _applyModeTile(
+                dialogContext,
+                Icons.schedule_outlined,
+                dialogContext.l10n.recurringApplyFutureOnly,
+                RecurringApplyMode.futureOnly,
+              ),
+              _applyModeTile(
+                dialogContext,
+                Icons.edit_outlined,
+                dialogContext.l10n.recurringApplyUpdate,
+                RecurringApplyMode.updateExisting,
+              ),
+              _applyModeTile(
+                dialogContext,
+                Icons.delete_sweep_outlined,
+                dialogContext.l10n.recurringApplyDelete,
+                RecurringApplyMode.deleteAndRegenerate,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(dialogContext.l10n.commonCancel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _applyModeTile(
+    BuildContext context,
+    IconData icon,
+    String label,
+    RecurringApplyMode mode,
+  ) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon, color: context.moniaryColors.primary),
+      title: Text(label),
+      onTap: () => Navigator.pop(context, mode),
+    );
+  }
+
   Future<void> _submit() async {
     final messenger = ScaffoldMessenger.of(context);
     final amount = double.tryParse(_amount.text.trim()) ?? 0;
@@ -527,8 +630,25 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
     try {
       final notifier = ref.read(recurringControllerProvider.notifier);
       if (_editing) {
+        final id = widget.item!.id;
+        var applyMode = RecurringApplyMode.futureOnly;
+        var generatedCount = 0;
+        try {
+          generatedCount = await notifier.generatedTransactionCount(id);
+        } catch (_) {
+          generatedCount = 0;
+        }
+        if (!mounted) return;
+        if (generatedCount > 0) {
+          final chosen = await _askApplyMode(context, generatedCount);
+          if (chosen == null) {
+            setState(() => _submitting = false);
+            return;
+          }
+          applyMode = chosen;
+        }
         await notifier.updateRecurring(
-          id: widget.item!.id,
+          id: id,
           amount: amount,
           type: _type,
           walletId: _walletId!,
@@ -541,6 +661,7 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
           endDate: _endDate,
           note: note,
           autoPost: _autoPost,
+          applyMode: applyMode,
         );
       } else {
         await notifier.createRecurring(
