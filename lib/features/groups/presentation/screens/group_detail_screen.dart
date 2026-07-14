@@ -17,11 +17,7 @@ import '../../domain/entities/spending_group.dart';
 import 'add_group_transaction_screen.dart';
 import 'debt_settlement_screen.dart';
 import 'group_activity_center_screen.dart';
-import 'group_photo_album_screen.dart';
-import 'group_budget_screen.dart';
-import 'group_notification_preferences_screen.dart';
-import 'group_public_profile_screen.dart';
-import 'group_recurring_transactions_screen.dart';
+import 'group_tools_screen.dart';
 import 'group_transaction_detail_screen.dart';
 import 'invite_member_screen.dart';
 
@@ -69,6 +65,12 @@ class GroupDetailScreen extends ConsumerWidget {
             onActions: () => _showGroupActions(context, ref, detail),
             onSettle: () =>
                 context.push(DebtSettlementScreen.routePath, extra: groupId),
+            onCommunity: () => context.push(
+              GroupActivityCenterScreen.routePath,
+              extra: groupId,
+            ),
+            onTools: () =>
+                context.push(GroupToolsScreen.routePath, extra: groupId),
             onAddTransaction: detail.activeMembers.isEmpty
                 ? null
                 : () => context.push(
@@ -123,7 +125,7 @@ class GroupDetailScreen extends ConsumerWidget {
                     },
                   ),
                 ListTile(
-                  leading: const Icon(Icons.bolt_outlined),
+                  leading: const Icon(Icons.forum_outlined),
                   title: Text(context.l10n.groupActivityCenterTitle),
                   onTap: () {
                     Navigator.pop(sheetContext);
@@ -134,56 +136,11 @@ class GroupDetailScreen extends ConsumerWidget {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.photo_library_outlined),
-                  title: Text(context.l10n.groupPhotoAlbumTitle),
+                  leading: const Icon(Icons.tune_outlined),
+                  title: Text(context.l10n.groupToolsTitle),
                   onTap: () {
                     Navigator.pop(sheetContext);
-                    context.push(
-                      GroupPhotoAlbumScreen.routePath,
-                      extra: groupId,
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.account_balance_wallet_outlined),
-                  title: Text(context.l10n.groupBudgetTitle),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    context.push(GroupBudgetScreen.routePath, extra: groupId);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.notifications_none_outlined),
-                  title: Text(context.l10n.groupNotificationPreferencesTitle),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    context.push(
-                      GroupNotificationPreferencesScreen.routePath,
-                      extra: groupId,
-                    );
-                  },
-                ),
-                if (detail.canInvite)
-                  ListTile(
-                    leading: const Icon(Icons.public_outlined),
-                    title: Text(context.l10n.groupPublicProfileSettingsTitle),
-                    onTap: () {
-                      Navigator.pop(sheetContext);
-                      context.push(
-                        GroupPublicProfileScreen.routePath,
-                        extra: groupId,
-                      );
-                    },
-                  ),
-                ListTile(
-                  leading: const Icon(Icons.autorenew_outlined),
-                  title: Text(context.l10n.groupRecurringTitle),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    context.push(
-                      GroupRecurringTransactionsScreen.routePath,
-                      extra: groupId,
-                    );
+                    context.push(GroupToolsScreen.routePath, extra: groupId);
                   },
                 ),
                 ListTile(
@@ -403,6 +360,8 @@ class _GroupDetailContent extends StatelessWidget {
     required this.onRefresh,
     required this.onActions,
     required this.onSettle,
+    required this.onCommunity,
+    required this.onTools,
     required this.onAddTransaction,
   });
 
@@ -412,6 +371,8 @@ class _GroupDetailContent extends StatelessWidget {
   final Future<void> Function() onRefresh;
   final VoidCallback onActions;
   final VoidCallback onSettle;
+  final VoidCallback onCommunity;
+  final VoidCallback onTools;
   final VoidCallback? onAddTransaction;
 
   @override
@@ -437,6 +398,13 @@ class _GroupDetailContent extends StatelessWidget {
                       detail: detail,
                       transactionsAsync: transactionsAsync,
                       onSettle: onSettle,
+                    ),
+                    const SizedBox(height: 18),
+                    _GroupQuickActions(
+                      onAddTransaction: onAddTransaction,
+                      onSettle: onSettle,
+                      onCommunity: onCommunity,
+                      onTools: onTools,
                     ),
                     MoniarySectionLabel(
                       context.l10n.groupMemberBalanceTitle,
@@ -496,6 +464,71 @@ class _GroupDetailContent extends StatelessWidget {
       ],
     );
   }
+}
+
+class _GroupQuickActions extends StatelessWidget {
+  const _GroupQuickActions({
+    required this.onAddTransaction,
+    required this.onSettle,
+    required this.onCommunity,
+    required this.onTools,
+  });
+
+  final VoidCallback? onAddTransaction;
+  final VoidCallback onSettle;
+  final VoidCallback onCommunity;
+  final VoidCallback onTools;
+
+  @override
+  Widget build(BuildContext context) => Wrap(
+    spacing: 8,
+    runSpacing: 8,
+    children: [
+      _QuickAction(
+        icon: Icons.add_rounded,
+        label: context.l10n.groupAddTransaction,
+        onTap: onAddTransaction,
+      ),
+      _QuickAction(
+        icon: Icons.swap_horiz_rounded,
+        label: context.l10n.groupSettleAction,
+        onTap: onSettle,
+      ),
+      _QuickAction(
+        icon: Icons.forum_outlined,
+        label: context.l10n.groupActivityCenterTitle,
+        onTap: onCommunity,
+      ),
+      _QuickAction(
+        icon: Icons.tune_outlined,
+        label: context.l10n.groupToolsTitle,
+        onTap: onTools,
+      ),
+    ],
+  );
+}
+
+class _QuickAction extends StatelessWidget {
+  const _QuickAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) => OutlinedButton.icon(
+    onPressed: onTap,
+    icon: Icon(icon, size: 17),
+    label: Text(label),
+    style: OutlinedButton.styleFrom(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 10),
+      textStyle: Theme.of(context).textTheme.labelMedium,
+    ),
+  );
 }
 
 class _DetailTopBar extends StatelessWidget {

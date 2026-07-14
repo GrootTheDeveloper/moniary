@@ -101,6 +101,32 @@ class _GroupNotificationPreferencesScreenState
                 ),
               ),
               const SizedBox(height: 18),
+              Text(
+                context.l10n.groupNotificationCommunitySection,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 6),
+              Card(
+                child: Column(
+                  children: [
+                    _toggle(
+                      context.l10n.groupNotificationComments,
+                      value.communityComments,
+                      (next) =>
+                          _update(value.copyWith(communityComments: next)),
+                      enabled: !value.muteAll,
+                    ),
+                    _toggle(
+                      context.l10n.groupNotificationReactions,
+                      value.communityReactions,
+                      (next) =>
+                          _update(value.copyWith(communityReactions: next)),
+                      enabled: !value.muteAll,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
               FilledButton(
                 onPressed: ref.watch(groupActionControllerProvider).isLoading
                     ? null

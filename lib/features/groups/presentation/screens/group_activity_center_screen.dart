@@ -7,6 +7,7 @@ import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_community.dart';
+import 'group_detail_screen.dart';
 import 'group_transaction_detail_screen.dart';
 
 class GroupActivityCenterScreen extends ConsumerWidget {
@@ -22,10 +23,12 @@ class GroupActivityCenterScreen extends ConsumerWidget {
     final tabs = <Tab>[
       if (groupId != null) Tab(text: context.l10n.groupActivityTabTimeline),
       Tab(text: context.l10n.groupActivityTabNotifications),
+      Tab(text: context.l10n.groupActivityTabCommunityNotifications),
     ];
     final views = <Widget>[
       if (groupId != null) _ActivityTimelineTab(groupId: groupId),
-      const _NotificationsTab(),
+      const _NotificationsTab(category: 'group'),
+      const _NotificationsTab(category: 'community'),
     ];
 
     return DefaultTabController(
@@ -191,11 +194,15 @@ class _ActivityRow extends StatelessWidget {
 }
 
 class _NotificationsTab extends ConsumerWidget {
-  const _NotificationsTab();
+  const _NotificationsTab({required this.category});
+
+  final String category;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notificationsAsync = ref.watch(groupNotificationsProvider);
+    final notificationsAsync = category == 'community'
+        ? ref.watch(communityNotificationsProvider)
+        : ref.watch(groupNotificationsProvider);
     final colors = context.moniaryColors;
 
     return notificationsAsync.when(
@@ -211,7 +218,9 @@ class _NotificationsTab extends ConsumerWidget {
       ),
       data: (notifications) {
         return RefreshIndicator(
-          onRefresh: () async => ref.invalidate(groupNotificationsProvider),
+          onRefresh: () async => category == 'community'
+              ? ref.invalidate(communityNotificationsProvider)
+              : ref.invalidate(groupNotificationsProvider),
           child: notifications.isEmpty
               ? ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -220,7 +229,9 @@ class _NotificationsTab extends ConsumerWidget {
                       height: 320,
                       child: Center(
                         child: Text(
-                          context.l10n.groupNotificationsEmptyState,
+                          category == 'community'
+                              ? context.l10n.communityNotificationsEmptyState
+                              : context.l10n.groupNotificationsEmptyState,
                           style: TextStyle(color: colors.textDim),
                         ),
                       ),
@@ -315,6 +326,11 @@ class _NotificationRow extends ConsumerWidget {
         GroupTransactionDetailScreen.routePath,
         extra: transactionId,
       );
+    } else if (context.mounted) {
+      await context.push(
+        GroupDetailScreen.routePath,
+        extra: notification.groupId,
+      );
     }
   }
 
@@ -328,6 +344,10 @@ class _NotificationRow extends ConsumerWidget {
         return context.l10n.groupNotificationDebtSettled;
       case 'group_invite':
         return context.l10n.groupNotificationGroupInvite;
+      case 'member_left':
+        return context.l10n.groupNotificationMemberLeft;
+      case 'member_leave_blocked_warning':
+        return context.l10n.groupNotificationLeaveBlocked;
       default:
         return type.replaceAll('_', ' ');
     }
