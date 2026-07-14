@@ -1064,15 +1064,26 @@ class _MonthCalendarCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
-    final weekdayLabels = [
-      context.l10n.calendarMon,
-      context.l10n.calendarTue,
-      context.l10n.calendarWed,
-      context.l10n.calendarThu,
-      context.l10n.calendarFri,
-      context.l10n.calendarSat,
-      context.l10n.calendarSun,
-    ];
+    final firstDay = ref.watch(firstDayOfWeekProvider);
+    final weekdayLabels = firstDay == 7
+        ? [
+            context.l10n.calendarSun,
+            context.l10n.calendarMon,
+            context.l10n.calendarTue,
+            context.l10n.calendarWed,
+            context.l10n.calendarThu,
+            context.l10n.calendarFri,
+            context.l10n.calendarSat,
+          ]
+        : [
+            context.l10n.calendarMon,
+            context.l10n.calendarTue,
+            context.l10n.calendarWed,
+            context.l10n.calendarThu,
+            context.l10n.calendarFri,
+            context.l10n.calendarSat,
+            context.l10n.calendarSun,
+          ];
 
     return Container(
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),

@@ -3338,6 +3338,24 @@ abstract class AppLocalizations {
   /// **'Tất cả tiền tệ'**
   String get currencyPickerAll;
 
+  /// No description provided for @profileFirstDayOfWeekLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày đầu tuần'**
+  String get profileFirstDayOfWeekLabel;
+
+  /// No description provided for @profileFirstDayOfWeekMon.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thứ Hai'**
+  String get profileFirstDayOfWeekMon;
+
+  /// No description provided for @profileFirstDayOfWeekSun.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chủ Nhật'**
+  String get profileFirstDayOfWeekSun;
+
   /// No description provided for @profileLanguageLabel.
   ///
   /// In vi, this message translates to:

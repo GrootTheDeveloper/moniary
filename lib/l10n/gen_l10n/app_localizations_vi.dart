@@ -1787,6 +1787,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get currencyPickerAll => 'Tất cả tiền tệ';
 
   @override
+  String get profileFirstDayOfWeekLabel => 'Ngày đầu tuần';
+
+  @override
+  String get profileFirstDayOfWeekMon => 'Thứ Hai';
+
+  @override
+  String get profileFirstDayOfWeekSun => 'Chủ Nhật';
+
+  @override
   String get profileLanguageLabel => 'Ngôn ngữ';
 
   @override
