@@ -55,6 +55,16 @@
   "errorNotLoggedIn": "Bạn chưa đăng nhập.",
   "errorNotFound": "Dữ liệu không tồn tại.",
   "errorConnection": "Lỗi kết nối. Vui lòng thử lại.",
+  "authErrorInvalidCredentials": "Email hoặc mật khẩu không đúng.",
+  "authErrorEmailNotConfirmed": "Hãy xác nhận email trước khi đăng nhập.",
+  "authErrorProviderDisabled": "Phương thức đăng nhập này chưa được cấu hình.",
+  "authErrorOAuthCallback": "Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng bắt đầu lại.",
+  "authErrorRateLimited": "Bạn đã thử xác thực quá nhiều lần. Vui lòng chờ rồi thử lại.",
+  "authErrorEmailAlreadyRegistered": "Email này đã có tài khoản.",
+  "authErrorWeakPassword": "Vui lòng dùng mật khẩu mạnh hơn.",
+  "authErrorSignupDisabled": "Hệ thống hiện không cho phép đăng ký tài khoản mới.",
+  "authErrorBrowserLaunch": "Không thể mở trình duyệt đăng nhập bảo mật.",
+  "authMockModeWarning": "Đang chạy chế độ mock. Bản build này chưa kết nối Supabase nên đăng nhập không phải dữ liệu thật.",
   "loginTitle": "Moniary",
   "loginSubtitle": "Quản lý chi tiêu cá nhân",
   "loginAnonymous": "Tiếp tục với tài khoản khách",
@@ -62,7 +72,6 @@
   "loginFeatureSubtitle": "Ghi chi tiêu bằng ảnh",
   "loginHeader": "Đăng nhập",
   "loginGoogle": "Đăng nhập với Google",
-  "loginApple": "Đăng nhập với Apple",
   "loginFacebook": "Đăng nhập với Facebook",
   "loginEmail": "Đăng nhập với Email",
   "loginOr": "hoặc",
@@ -905,23 +914,13 @@
   "profileNewPassword": "Mật khẩu mới",
   "profileLinkEmail": "Liên kết Email",
   "profileLinkGoogle": "Liên kết Google",
-  "profileLinkApple": "Liên kết Apple",
   "profileLinkFacebook": "Liên kết Facebook",
   "profileLinkSuccess": "Liên kết tài khoản email thành công!",
   "profileLinkGoogleBrowser": "Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.",
-  "profileLinkAppleBrowser": "Hoàn tất liên kết Apple trong trình duyệt để quay lại Moniary.",
   "profileLinkFacebookBrowser": "Hoàn tất liên kết Facebook trong trình duyệt để quay lại Moniary.",
   "profileLinkGoogleError": "Lỗi liên kết Google: {error}",
-  "profileLinkAppleError": "Lỗi liên kết Apple: {error}",
   "profileLinkFacebookError": "Lỗi liên kết Facebook: {error}",
   "@profileLinkGoogleError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "@profileLinkAppleError": {
     "placeholders": {
       "error": {
         "type": "String"

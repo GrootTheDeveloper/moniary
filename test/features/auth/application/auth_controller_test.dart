@@ -28,12 +28,17 @@ Session _mockSession() {
 }
 
 class FakeAuthRepository extends AuthRepository {
-  FakeAuthRepository({this.emailSession, this.googleSession, this.appleSession})
-    : super(null, useMockData: true);
+  FakeAuthRepository({
+    this.emailSession,
+    this.signUpSession,
+    this.googleSession,
+    this.facebookSession,
+  }) : super(null, useMockData: true);
 
   final Session? emailSession;
+  final Session? signUpSession;
   final Session? googleSession;
-  final Session? appleSession;
+  final Session? facebookSession;
   var signOutCount = 0;
 
   @override
@@ -55,8 +60,16 @@ class FakeAuthRepository extends AuthRepository {
   }
 
   @override
-  Future<Session?> signInWithApple() async {
-    return appleSession;
+  Future<Session?> signUpWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    return signUpSession;
+  }
+
+  @override
+  Future<Session?> signInWithFacebook() async {
+    return facebookSession;
   }
 }
 
@@ -154,20 +167,20 @@ void main() {
 
     await container.read(authControllerProvider.notifier).signInWithGoogle();
 
-    expect(repository.signOutCount, 1);
+    expect(repository.signOutCount, 0);
     expect(container.read(authControllerProvider).isLoading, isFalse);
     expect(container.read(authControllerProvider).hasError, isFalse);
     expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
   });
 
-  test('signInWithApple applies returned mock session', () async {
-    final repository = FakeAuthRepository(appleSession: _mockSession());
+  test('signInWithFacebook applies returned mock session', () async {
+    final repository = FakeAuthRepository(facebookSession: _mockSession());
     final container = ProviderContainer(
       overrides: [authRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);
 
-    await container.read(authControllerProvider.notifier).signInWithApple();
+    await container.read(authControllerProvider.notifier).signInWithFacebook();
 
     expect(container.read(authControllerProvider).isLoading, isFalse);
     expect(container.read(authControllerProvider).hasError, isFalse);
@@ -185,40 +198,43 @@ void main() {
 
       await container.read(authControllerProvider.notifier).signInWithGoogle();
 
-      expect(repository.signOutCount, 1);
+      expect(repository.signOutCount, 0);
       expect(container.read(authControllerProvider).isLoading, isFalse);
       expect(container.read(authControllerProvider).hasError, isFalse);
       expect(container.read(mockSessionProvider), isNull);
     },
   );
 
-  test('signInWithFacebook applies returned mock session', () async {
-    final repository = FakeAuthRepository();
+  test('signUpWithEmail applies an immediate session', () async {
+    final repository = FakeAuthRepository(signUpSession: _mockSession());
     final container = ProviderContainer(
       overrides: [authRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);
 
-    await container.read(authControllerProvider.notifier).signInWithFacebook();
+    final requiresConfirmation = await container
+        .read(authControllerProvider.notifier)
+        .signUpWithEmail(email: 'bee@moniary.app', password: 'password123');
 
-    expect(container.read(authControllerProvider).isLoading, isFalse);
+    expect(requiresConfirmation, isFalse);
     expect(container.read(authControllerProvider).hasError, isFalse);
     expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
   });
 
-  test('signUpWithEmail completes controller state in mock mode', () async {
+  test('signUpWithEmail reports when confirmation is required', () async {
     final repository = FakeAuthRepository();
     final container = ProviderContainer(
       overrides: [authRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);
 
-    await container
+    final requiresConfirmation = await container
         .read(authControllerProvider.notifier)
         .signUpWithEmail(email: 'bee@moniary.app', password: 'password123');
 
-    expect(container.read(authControllerProvider).isLoading, isFalse);
+    expect(requiresConfirmation, isTrue);
     expect(container.read(authControllerProvider).hasError, isFalse);
+    expect(container.read(mockSessionProvider), isNull);
   });
 
   test(
@@ -254,22 +270,6 @@ void main() {
     expect(container.read(authControllerProvider).hasError, isFalse);
   });
 
-  test('linkAppleAccount reports mock profile update in mock mode', () async {
-    final repository = FakeAuthRepository();
-    final container = ProviderContainer(
-      overrides: [
-        authRepositoryProvider.overrideWithValue(repository),
-        supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
-      ],
-    );
-    addTearDown(container.dispose);
-
-    await container.read(authControllerProvider.notifier).linkAppleAccount();
-
-    expect(container.read(authControllerProvider).isLoading, isFalse);
-    expect(container.read(authControllerProvider).hasError, isFalse);
-  });
-
   test(
     'linkFacebookAccount reports mock profile update in mock mode',
     () async {
@@ -290,4 +290,25 @@ void main() {
       expect(container.read(authControllerProvider).hasError, isFalse);
     },
   );
+
+  test('mock repository supports every direct and social auth path', () async {
+    final repository = AuthRepository(null, useMockData: true);
+
+    expect(
+      (await repository.signInWithEmail(
+        email: 'bee@moniary.app',
+        password: 'password123',
+      ))?.user.id,
+      'mock-user-id',
+    );
+    expect(
+      (await repository.signUpWithEmail(
+        email: 'bee@moniary.app',
+        password: 'password123',
+      ))?.user.id,
+      'mock-user-id',
+    );
+    expect((await repository.signInWithGoogle())?.user.id, 'mock-user-id');
+    expect((await repository.signInWithFacebook())?.user.id, 'mock-user-id');
+  });
 }

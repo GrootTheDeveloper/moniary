@@ -124,7 +124,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
     navigatorKey: appRootNavigatorKey,
     initialLocation: SplashScreen.routePath,
-    overridePlatformDefaultLocation: false,
+    // app_links and Supabase own native auth callbacks. Feeding the same URI
+    // into GoRouter can turn a valid OAuth cold-start callback into a 404.
+    overridePlatformDefaultLocation: true,
     refreshListenable: authRefreshListenable,
     errorBuilder: (context, state) {
       final routeLocation = pendingDeepLinkRouteLocation(state.uri);

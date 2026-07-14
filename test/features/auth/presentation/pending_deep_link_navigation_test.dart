@@ -334,6 +334,32 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
   }
 
+  testWidgets('login exposes only Google and Facebook social auth actions', (
+    tester,
+  ) async {
+    await useLargeTestViewport(tester);
+    final container = ProviderContainer(
+      overrides: [
+        authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
+        useMockDataModeProvider.overrideWithValue(true),
+        authStateChangesProvider.overrideWith((ref) => const Stream.empty()),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      _routerApp(container: container, initialLocation: LoginScreen.routePath),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Sign in with Google'), findsOneWidget);
+    expect(find.byTooltip('Sign in with Facebook'), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(Wrap), matching: find.byType(IconButton)),
+      findsNWidgets(2),
+    );
+  });
+
   testWidgets('login home destination consumes pending invite route', (
     tester,
   ) async {

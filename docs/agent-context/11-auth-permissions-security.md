@@ -10,10 +10,10 @@ Supabase Auth is initialized with PKCE when real configuration is present.
 
 - email/password sign-in and sign-up;
 - password-reset request;
-- Google, Facebook, and Apple OAuth;
+- Google and Facebook OAuth;
 - anonymous Supabase sign-in;
 - explicit guest/mock session;
-- linking email, Google, or Apple identity to an existing account;
+- linking email or Google identity to an existing account;
 - sign-out and user initialization.
 
 In mock/guest mode these flows return or maintain a synthetic

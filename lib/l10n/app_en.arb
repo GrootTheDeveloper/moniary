@@ -55,6 +55,16 @@
   "errorNotLoggedIn": "You are not logged in.",
   "errorNotFound": "Data not found.",
   "errorConnection": "Connection error. Please try again.",
+  "authErrorInvalidCredentials": "The email or password is incorrect.",
+  "authErrorEmailNotConfirmed": "Confirm your email before signing in.",
+  "authErrorProviderDisabled": "This sign-in provider is not configured yet.",
+  "authErrorOAuthCallback": "The sign-in callback expired or is invalid. Please start again.",
+  "authErrorRateLimited": "Too many authentication attempts. Please wait and try again.",
+  "authErrorEmailAlreadyRegistered": "An account already exists for this email.",
+  "authErrorWeakPassword": "Use a stronger password and try again.",
+  "authErrorSignupDisabled": "New account registration is currently disabled.",
+  "authErrorBrowserLaunch": "Could not open the secure sign-in browser.",
+  "authMockModeWarning": "Mock mode is active. This build is not connected to Supabase, so authentication is not real.",
   "loginTitle": "Moniary",
   "loginSubtitle": "Personal expense manager",
   "loginAnonymous": "Continue as guest",
@@ -62,7 +72,6 @@
   "loginFeatureSubtitle": "Track expenses with photos",
   "loginHeader": "Sign In",
   "loginGoogle": "Sign in with Google",
-  "loginApple": "Sign in with Apple",
   "loginFacebook": "Sign in with Facebook",
   "loginEmail": "Sign in with Email",
   "loginOr": "or",
@@ -905,23 +914,13 @@
   "profileNewPassword": "New password",
   "profileLinkEmail": "Link Email",
   "profileLinkGoogle": "Link Google",
-  "profileLinkApple": "Link Apple",
   "profileLinkFacebook": "Link Facebook",
   "profileLinkSuccess": "Linked account successfully!",
   "profileLinkGoogleBrowser": "Complete Google linking in browser to return to Moniary.",
-  "profileLinkAppleBrowser": "Complete Apple linking in browser to return to Moniary.",
   "profileLinkFacebookBrowser": "Complete Facebook linking in browser to return to Moniary.",
   "profileLinkGoogleError": "Google linking error: {error}",
-  "profileLinkAppleError": "Apple linking error: {error}",
   "profileLinkFacebookError": "Facebook linking error: {error}",
   "@profileLinkGoogleError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "@profileLinkAppleError": {
     "placeholders": {
       "error": {
         "type": "String"

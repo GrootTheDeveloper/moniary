@@ -120,6 +120,44 @@ class AppLocalizationsVi extends AppLocalizations {
   String get errorConnection => 'Lỗi kết nối. Vui lòng thử lại.';
 
   @override
+  String get authErrorInvalidCredentials => 'Email hoặc mật khẩu không đúng.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'Vui lòng xác nhận email trước khi đăng nhập.';
+
+  @override
+  String get authErrorProviderDisabled =>
+      'Phương thức đăng nhập này chưa được cấu hình.';
+
+  @override
+  String get authErrorOAuthCallback =>
+      'Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng bắt đầu lại.';
+
+  @override
+  String get authErrorRateLimited =>
+      'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.';
+
+  @override
+  String get authErrorEmailAlreadyRegistered => 'Email này đã được đăng ký.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'Mật khẩu chưa đủ mạnh. Hãy thử mật khẩu dài hơn kèm số hoặc ký tự đặc biệt.';
+
+  @override
+  String get authErrorSignupDisabled =>
+      'Hệ thống hiện không cho phép đăng ký tài khoản mới.';
+
+  @override
+  String get authErrorBrowserLaunch =>
+      'Không thể mở trình duyệt đăng nhập bảo mật.';
+
+  @override
+  String get authMockModeWarning =>
+      'Đang chạy chế độ mock. Bản build này chưa kết nối Supabase nên đăng nhập không phải dữ liệu thật.';
+
+  @override
   String get loginTitle => 'Moniary';
 
   @override
@@ -140,9 +178,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get loginGoogle => 'Đăng nhập với Google';
-
-  @override
-  String get loginApple => 'Đăng nhập với Apple';
 
   @override
   String get loginFacebook => 'Đăng nhập với Facebook';
@@ -2002,9 +2037,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileLinkGoogle => 'Liên kết Google';
 
   @override
-  String get profileLinkApple => 'Liên kết Apple';
-
-  @override
   String get profileLinkFacebook => 'Liên kết Facebook';
 
   @override
@@ -2015,21 +2047,12 @@ class AppLocalizationsVi extends AppLocalizations {
       'Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.';
 
   @override
-  String get profileLinkAppleBrowser =>
-      'Hoàn tất liên kết Apple trong trình duyệt để quay lại Moniary.';
-
-  @override
   String get profileLinkFacebookBrowser =>
       'Hoàn tất liên kết Facebook trong trình duyệt để quay lại Moniary.';
 
   @override
   String profileLinkGoogleError(String error) {
     return 'Lỗi liên kết Google: $error';
-  }
-
-  @override
-  String profileLinkAppleError(String error) {
-    return 'Lỗi liên kết Apple: $error';
   }
 
   @override
@@ -5738,24 +5761,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get resetPasswordSuccess => 'Mật khẩu của bạn đã được cập nhật.';
-
-  @override
-  String get authErrorInvalidCredentials => 'Email hoặc mật khẩu không đúng.';
-
-  @override
-  String get authErrorEmailNotConfirmed =>
-      'Vui lòng xác nhận email trước khi đăng nhập.';
-
-  @override
-  String get authErrorEmailAlreadyRegistered => 'Email này đã được đăng ký.';
-
-  @override
-  String get authErrorWeakPassword =>
-      'Mật khẩu chưa đủ mạnh. Hãy thử mật khẩu dài hơn kèm số hoặc ký tự đặc biệt.';
-
-  @override
-  String get authErrorRateLimited =>
-      'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.';
 
   @override
   String get authErrorUserBanned => 'Tài khoản này đã bị tạm khóa.';

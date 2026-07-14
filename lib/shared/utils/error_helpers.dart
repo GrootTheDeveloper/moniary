@@ -1,4 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../core/supabase/app_exception.dart';
 import '../../l10n/l10n_extension.dart';
 
@@ -7,6 +9,9 @@ import '../../l10n/l10n_extension.dart';
 String userFriendlyMessage(BuildContext context, Object error) {
   final l10n = context.l10n;
   if (error is AppException) {
+    final authMessage = _authErrorMessage(context, error.code);
+    if (authMessage != null) return authMessage;
+
     switch (error.code) {
       case 'AUTH_REQUIRED':
         return l10n.errorNotLoggedIn;
@@ -23,7 +28,6 @@ String userFriendlyMessage(BuildContext context, Object error) {
       case 'AUTH_SIGN_OUT_FAILED':
       case 'AUTH_LINK_EMAIL_FAILED':
       case 'AUTH_LINK_GOOGLE_FAILED':
-      case 'AUTH_LINK_APPLE_FAILED':
       case 'AUTH_LINK_FACEBOOK_FAILED':
       case 'AUTH_PASSWORD_UPDATE_FAILED':
         return l10n.errorGeneric;
@@ -147,10 +151,37 @@ String userFriendlyMessage(BuildContext context, Object error) {
 
     return l10n.errorGeneric;
   }
+  if (error is AuthException) {
+    return _authErrorMessage(context, error.code) ?? l10n.errorGeneric;
+  }
   if (_looksLikeNetworkError(error)) {
     return l10n.errorConnection;
   }
   return l10n.errorGeneric;
+}
+
+String? _authErrorMessage(BuildContext context, String? code) {
+  final l10n = context.l10n;
+  return switch (code) {
+    'invalid_credentials' => l10n.authErrorInvalidCredentials,
+    'email_not_confirmed' => l10n.authErrorEmailNotConfirmed,
+    'provider_disabled' ||
+    'oauth_provider_not_supported' ||
+    'email_provider_disabled' => l10n.authErrorProviderDisabled,
+    'bad_oauth_state' ||
+    'bad_oauth_callback' ||
+    'bad_code_verifier' ||
+    'flow_state_not_found' ||
+    'flow_state_expired' => l10n.authErrorOAuthCallback,
+    'over_request_rate_limit' ||
+    'over_email_send_rate_limit' => l10n.authErrorRateLimited,
+    'email_exists' ||
+    'user_already_exists' => l10n.authErrorEmailAlreadyRegistered,
+    'weak_password' => l10n.authErrorWeakPassword,
+    'signup_disabled' => l10n.authErrorSignupDisabled,
+    'AUTH_OAUTH_LAUNCH_FAILED' => l10n.authErrorBrowserLaunch,
+    _ => null,
+  };
 }
 
 bool _looksLikeNetworkError(Object error) {

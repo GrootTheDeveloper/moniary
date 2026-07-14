@@ -169,35 +169,6 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> linkAppleAccount() async {
-    if (_isProcessing) return;
-    _isProcessing = true;
-    state = const AsyncLoading();
-    try {
-      final usesMockProfile = await ref
-          .read(authRepositoryProvider)
-          .linkAppleAccount();
-
-      ref.invalidate(currentProfileProvider);
-
-      if (usesMockProfile) {
-        ref
-            .read(profileRepositoryProvider)
-            .setMockEmailAndProvider(
-              email: 'mock-apple@apple.com',
-              loginProvider: 'apple',
-            );
-      }
-      state = const AsyncData(null);
-    } catch (e, st) {
-      AppLogger.error('linkAppleAccount failed', e, st);
-      state = AsyncError(e, st);
-      rethrow;
-    } finally {
-      _isProcessing = false;
-    }
-  }
-
   Future<void> linkFacebookAccount() async {
     if (_isProcessing) return;
     _isProcessing = true;
@@ -232,27 +203,8 @@ class AuthController extends AsyncNotifier<void> {
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      // Clear any existing verifier to avoid bad_code_verifier if a previous flow was stale
-      await ref.read(authRepositoryProvider).signOut();
-
       final session = await ref.read(authRepositoryProvider).signInWithGoogle();
 
-      _applySignedInSession(session);
-      state = const AsyncData(null);
-    } catch (e, st) {
-      state = AsyncError(e, st);
-      rethrow;
-    } finally {
-      _isProcessing = false;
-    }
-  }
-
-  Future<void> signInWithApple() async {
-    if (_isProcessing) return;
-    _isProcessing = true;
-    state = const AsyncLoading();
-    try {
-      final session = await ref.read(authRepositoryProvider).signInWithApple();
       _applySignedInSession(session);
       state = const AsyncData(null);
     } catch (e, st) {
@@ -303,18 +255,20 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> signUpWithEmail({
+  Future<bool> signUpWithEmail({
     required String email,
     required String password,
   }) async {
-    if (_isProcessing) return;
+    if (_isProcessing) return true;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      await ref
+      final session = await ref
           .read(authRepositoryProvider)
           .signUpWithEmail(email: email, password: password);
+      _applySignedInSession(session);
       state = const AsyncData(null);
+      return session == null;
     } catch (e, st) {
       state = AsyncError(e, st);
       rethrow;

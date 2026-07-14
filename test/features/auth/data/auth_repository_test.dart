@@ -105,20 +105,6 @@ void main() {
     expect(usesMockProfile, isTrue);
   });
 
-  test('linkAppleAccount reports mock profile update in mock mode', () async {
-    if (AppConstants.hasSupabaseConfig) {
-      markTestSkipped('Mock mode test requires missing Supabase config.');
-      return;
-    }
-
-    SharedPreferences.setMockInitialValues({});
-    final repository = AuthRepository(FakeSupabaseClient());
-
-    final usesMockProfile = await repository.linkAppleAccount();
-
-    expect(usesMockProfile, isTrue);
-  });
-
   test(
     'linkFacebookAccount reports mock profile update in mock mode',
     () async {

@@ -38,6 +38,20 @@ class AppConstants {
       firebaseMessagingSenderId.isNotEmpty &&
       firebaseProjectId.isNotEmpty;
 
+  static const supabaseLoginCallbackUrl =
+      'io.supabase.moniary://login-callback';
+  static const supabasePasswordResetCallbackUrl =
+      'io.supabase.moniary://reset-password';
+
+  static const googleAuthEnabled = bool.fromEnvironment(
+    'ENABLE_GOOGLE_AUTH',
+    defaultValue: true,
+  );
+  static const facebookAuthEnabled = bool.fromEnvironment(
+    'ENABLE_FACEBOOK_AUTH',
+    defaultValue: false,
+  );
+
   // --- OCR ---
   static const ocrApiUrl = String.fromEnvironment(
     'OCR_API_URL',

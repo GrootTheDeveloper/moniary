@@ -119,6 +119,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorConnection => 'Connection error. Please try again.';
 
   @override
+  String get authErrorInvalidCredentials => 'Incorrect email or password.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'Please confirm your email before signing in.';
+
+  @override
+  String get authErrorProviderDisabled =>
+      'This sign-in provider is not configured yet.';
+
+  @override
+  String get authErrorOAuthCallback =>
+      'The sign-in callback expired or is invalid. Please start again.';
+
+  @override
+  String get authErrorRateLimited =>
+      'Too many attempts. Please try again later.';
+
+  @override
+  String get authErrorEmailAlreadyRegistered =>
+      'This email is already registered.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'This password is too weak. Try a longer one with numbers or symbols.';
+
+  @override
+  String get authErrorSignupDisabled =>
+      'New account registration is currently disabled.';
+
+  @override
+  String get authErrorBrowserLaunch =>
+      'Could not open the secure sign-in browser.';
+
+  @override
+  String get authMockModeWarning =>
+      'Mock mode is active. This build is not connected to Supabase, so authentication is not real.';
+
+  @override
   String get loginTitle => 'Moniary';
 
   @override
@@ -139,9 +178,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginGoogle => 'Sign in with Google';
-
-  @override
-  String get loginApple => 'Sign in with Apple';
 
   @override
   String get loginFacebook => 'Sign in with Facebook';
@@ -2007,9 +2043,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLinkGoogle => 'Link Google';
 
   @override
-  String get profileLinkApple => 'Link Apple';
-
-  @override
   String get profileLinkFacebook => 'Link Facebook';
 
   @override
@@ -2020,21 +2053,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Complete Google linking in browser to return to Moniary.';
 
   @override
-  String get profileLinkAppleBrowser =>
-      'Complete Apple linking in browser to return to Moniary.';
-
-  @override
   String get profileLinkFacebookBrowser =>
       'Complete Facebook linking in browser to return to Moniary.';
 
   @override
   String profileLinkGoogleError(String error) {
     return 'Google linking error: $error';
-  }
-
-  @override
-  String profileLinkAppleError(String error) {
-    return 'Apple linking error: $error';
   }
 
   @override
@@ -5736,25 +5760,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resetPasswordSuccess => 'Your password has been updated.';
-
-  @override
-  String get authErrorInvalidCredentials => 'Incorrect email or password.';
-
-  @override
-  String get authErrorEmailNotConfirmed =>
-      'Please confirm your email before signing in.';
-
-  @override
-  String get authErrorEmailAlreadyRegistered =>
-      'This email is already registered.';
-
-  @override
-  String get authErrorWeakPassword =>
-      'This password is too weak. Try a longer one with numbers or symbols.';
-
-  @override
-  String get authErrorRateLimited =>
-      'Too many attempts. Please try again later.';
 
   @override
   String get authErrorUserBanned => 'This account has been suspended.';

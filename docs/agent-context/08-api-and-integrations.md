@@ -32,7 +32,7 @@ use `get_my_group_invites`, `accept_direct_group_invite`, and
 
 ### Auth
 
-`AuthRepository` owns email/password, anonymous, Google/Facebook/Apple OAuth,
+`AuthRepository` owns email/password, anonymous, Google/Facebook OAuth,
 identity linking, sign-out, password reset, and `initialize_user`. Auth state
 feeds `currentSessionProvider` and router refresh.
 

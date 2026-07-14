@@ -66,6 +66,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final colors = context.moniaryColors;
     final authAction = ref.watch(authControllerProvider);
     final isBusy = authAction.isLoading || _isResolvingPostAuth;
+    final useMockData = ref.watch(useMockDataModeProvider);
+    final showGoogleAuth = useMockData || AppConstants.googleAuthEnabled;
+    final showFacebookAuth = useMockData || AppConstants.facebookAuthEnabled;
+    final showSocialAuth = showGoogleAuth || showFacebookAuth;
 
     ref.listen(currentSessionProvider, (previous, next) {
       if (previous == null && next != null) {
@@ -73,6 +77,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           if (mounted) _completeAuthentication();
         });
       }
+    });
+
+    ref.listen(authStateChangesProvider, (previous, next) {
+      next.whenOrNull(
+        error: (error, stackTrace) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _showAuthError(error, stackTrace);
+          });
+        },
+      );
     });
 
     return Scaffold(
@@ -143,6 +157,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           textAlign: TextAlign.center,
                           style: context.moniaryTypography.displaySmall,
                         ),
+                        if (kDebugMode && !AppConstants.hasSupabaseConfig) ...[
+                          const SizedBox(height: 14),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: colors.warning.withValues(alpha: 0.14),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: colors.warning.withValues(alpha: 0.5),
+                              ),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  size: 18,
+                                  color: colors.textPrimary,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    context.l10n.authMockModeWarning,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: 22),
                         TextFormField(
                           controller: _emailController,
@@ -261,49 +307,46 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
-                        _DividerLabel(label: context.l10n.loginSocialDivider),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _SocialButton(
-                              tooltip: context.l10n.loginGoogle,
-                              icon: Icons.g_mobiledata_outlined,
-                              onPressed: isBusy
-                                  ? null
-                                  : () => _enterApp(
-                                      () => ref
-                                          .read(authControllerProvider.notifier)
-                                          .signInWithGoogle(),
-                                    ),
-                            ),
-                            const SizedBox(width: 14),
-                            _SocialButton(
-                              tooltip: context.l10n.loginFacebook,
-                              icon: Icons.facebook_outlined,
-                              onPressed: isBusy
-                                  ? null
-                                  : () => _enterApp(
-                                      () => ref
-                                          .read(authControllerProvider.notifier)
-                                          .signInWithFacebook(),
-                                    ),
-                            ),
-                            const SizedBox(width: 14),
-                            _SocialButton(
-                              tooltip: context.l10n.loginApple,
-                              icon: Icons.apple,
-                              onPressed: isBusy
-                                  ? null
-                                  : () => _enterApp(
-                                      () => ref
-                                          .read(authControllerProvider.notifier)
-                                          .signInWithApple(),
-                                    ),
-                            ),
-                          ],
-                        ),
+                        if (showSocialAuth) ...[
+                          const SizedBox(height: 8),
+                          _DividerLabel(label: context.l10n.loginSocialDivider),
+                          const SizedBox(height: 16),
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 14,
+                            runSpacing: 14,
+                            children: [
+                              if (showGoogleAuth)
+                                _SocialButton(
+                                  tooltip: context.l10n.loginGoogle,
+                                  icon: Icons.g_mobiledata_outlined,
+                                  onPressed: isBusy
+                                      ? null
+                                      : () => _enterApp(
+                                          () => ref
+                                              .read(
+                                                authControllerProvider.notifier,
+                                              )
+                                              .signInWithGoogle(),
+                                        ),
+                                ),
+                              if (showFacebookAuth)
+                                _SocialButton(
+                                  tooltip: context.l10n.loginFacebook,
+                                  icon: Icons.facebook_outlined,
+                                  onPressed: isBusy
+                                      ? null
+                                      : () => _enterApp(
+                                          () => ref
+                                              .read(
+                                                authControllerProvider.notifier,
+                                              )
+                                              .signInWithFacebook(),
+                                        ),
+                                ),
+                            ],
+                          ),
+                        ],
                         const Spacer(),
                         OutlinedButton(
                           key: const ValueKey('login_demo_button'),
@@ -398,14 +441,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     if (_isSignUp) {
       try {
-        await ref
+        final requiresEmailConfirmation = await ref
             .read(authControllerProvider.notifier)
             .signUpWithEmail(email: email, password: password);
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.loginEmailConfirmationSent)),
-        );
-        setState(() => _isSignUp = false);
+        if (requiresEmailConfirmation) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.loginEmailConfirmationSent)),
+          );
+          setState(() => _isSignUp = false);
+        } else {
+          await _completeAuthentication();
+        }
       } catch (error, stackTrace) {
         _showAuthError(error, stackTrace);
       }

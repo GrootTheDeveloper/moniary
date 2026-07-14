@@ -302,6 +302,66 @@ abstract class AppLocalizations {
   /// **'Lỗi kết nối. Vui lòng thử lại.'**
   String get errorConnection;
 
+  /// No description provided for @authErrorInvalidCredentials.
+  ///
+  /// In vi, this message translates to:
+  /// **'Email hoặc mật khẩu không đúng.'**
+  String get authErrorInvalidCredentials;
+
+  /// No description provided for @authErrorEmailNotConfirmed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng xác nhận email trước khi đăng nhập.'**
+  String get authErrorEmailNotConfirmed;
+
+  /// No description provided for @authErrorProviderDisabled.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phương thức đăng nhập này chưa được cấu hình.'**
+  String get authErrorProviderDisabled;
+
+  /// No description provided for @authErrorOAuthCallback.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng bắt đầu lại.'**
+  String get authErrorOAuthCallback;
+
+  /// No description provided for @authErrorRateLimited.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.'**
+  String get authErrorRateLimited;
+
+  /// No description provided for @authErrorEmailAlreadyRegistered.
+  ///
+  /// In vi, this message translates to:
+  /// **'Email này đã được đăng ký.'**
+  String get authErrorEmailAlreadyRegistered;
+
+  /// No description provided for @authErrorWeakPassword.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mật khẩu chưa đủ mạnh. Hãy thử mật khẩu dài hơn kèm số hoặc ký tự đặc biệt.'**
+  String get authErrorWeakPassword;
+
+  /// No description provided for @authErrorSignupDisabled.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hệ thống hiện không cho phép đăng ký tài khoản mới.'**
+  String get authErrorSignupDisabled;
+
+  /// No description provided for @authErrorBrowserLaunch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể mở trình duyệt đăng nhập bảo mật.'**
+  String get authErrorBrowserLaunch;
+
+  /// No description provided for @authMockModeWarning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chạy chế độ mock. Bản build này chưa kết nối Supabase nên đăng nhập không phải dữ liệu thật.'**
+  String get authMockModeWarning;
+
   /// No description provided for @loginTitle.
   ///
   /// In vi, this message translates to:
@@ -343,12 +403,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Đăng nhập với Google'**
   String get loginGoogle;
-
-  /// No description provided for @loginApple.
-  ///
-  /// In vi, this message translates to:
-  /// **'Đăng nhập với Apple'**
-  String get loginApple;
 
   /// No description provided for @loginFacebook.
   ///
@@ -3740,12 +3794,6 @@ abstract class AppLocalizations {
   /// **'Liên kết Google'**
   String get profileLinkGoogle;
 
-  /// No description provided for @profileLinkApple.
-  ///
-  /// In vi, this message translates to:
-  /// **'Liên kết Apple'**
-  String get profileLinkApple;
-
   /// No description provided for @profileLinkFacebook.
   ///
   /// In vi, this message translates to:
@@ -3764,12 +3812,6 @@ abstract class AppLocalizations {
   /// **'Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.'**
   String get profileLinkGoogleBrowser;
 
-  /// No description provided for @profileLinkAppleBrowser.
-  ///
-  /// In vi, this message translates to:
-  /// **'Hoàn tất liên kết Apple trong trình duyệt để quay lại Moniary.'**
-  String get profileLinkAppleBrowser;
-
   /// No description provided for @profileLinkFacebookBrowser.
   ///
   /// In vi, this message translates to:
@@ -3781,12 +3823,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Lỗi liên kết Google: {error}'**
   String profileLinkGoogleError(String error);
-
-  /// No description provided for @profileLinkAppleError.
-  ///
-  /// In vi, this message translates to:
-  /// **'Lỗi liên kết Apple: {error}'**
-  String profileLinkAppleError(String error);
 
   /// No description provided for @profileLinkFacebookError.
   ///
@@ -10261,36 +10297,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Mật khẩu của bạn đã được cập nhật.'**
   String get resetPasswordSuccess;
-
-  /// No description provided for @authErrorInvalidCredentials.
-  ///
-  /// In vi, this message translates to:
-  /// **'Email hoặc mật khẩu không đúng.'**
-  String get authErrorInvalidCredentials;
-
-  /// No description provided for @authErrorEmailNotConfirmed.
-  ///
-  /// In vi, this message translates to:
-  /// **'Vui lòng xác nhận email trước khi đăng nhập.'**
-  String get authErrorEmailNotConfirmed;
-
-  /// No description provided for @authErrorEmailAlreadyRegistered.
-  ///
-  /// In vi, this message translates to:
-  /// **'Email này đã được đăng ký.'**
-  String get authErrorEmailAlreadyRegistered;
-
-  /// No description provided for @authErrorWeakPassword.
-  ///
-  /// In vi, this message translates to:
-  /// **'Mật khẩu chưa đủ mạnh. Hãy thử mật khẩu dài hơn kèm số hoặc ký tự đặc biệt.'**
-  String get authErrorWeakPassword;
-
-  /// No description provided for @authErrorRateLimited.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.'**
-  String get authErrorRateLimited;
 
   /// No description provided for @authErrorUserBanned.
   ///
