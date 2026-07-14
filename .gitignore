@@ -60,3 +60,6 @@ key.properties
 .env
 *.env
 .gemini/
+
+# Local-only notes
+HANDOFF.md

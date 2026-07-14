@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/app_theme.dart';
@@ -9,7 +10,7 @@ import '../../features/settings/presentation/profile_screen.dart';
 
 enum MoniaryTab { calendar, stats, groups, profile }
 
-class MoniaryBottomNavBar extends StatelessWidget {
+class MoniaryBottomNavBar extends ConsumerWidget {
   const MoniaryBottomNavBar({
     super.key,
     required this.currentTab,
@@ -22,7 +23,7 @@ class MoniaryBottomNavBar extends StatelessWidget {
   final VoidCallback? onCameraPressed;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
 
     return SafeArea(

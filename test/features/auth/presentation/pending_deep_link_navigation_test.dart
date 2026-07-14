@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +10,8 @@ import 'package:moniary/features/auth/application/post_auth_decision_provider.da
 import 'package:moniary/features/auth/data/auth_repository.dart';
 import 'package:moniary/features/auth/presentation/login_screen.dart';
 import 'package:moniary/features/calendar/presentation/month/calendar_screen.dart';
+import 'package:moniary/features/categories/data/repositories/category_repository.dart';
+import 'package:moniary/features/categories/domain/models/category.dart';
 import 'package:moniary/features/friends/presentation/screens/friend_invite_accept_screen.dart';
 import 'package:moniary/features/profile/application/profile_setup_controller.dart';
 import 'package:moniary/features/profile/data/profile_repository.dart';
@@ -135,6 +138,19 @@ class FakeProfileRepository implements ProfileRepository {
   }
 
   @override
+  Future<UserProfile> completeSurveySetup({
+    required String occupation,
+    required String preferredCurrency,
+    required String walletName,
+    required double initialBalance,
+  }) {
+    return completeSurvey(
+      occupation: occupation,
+      preferredCurrency: preferredCurrency,
+    );
+  }
+
+  @override
   void resetMockProfile() {}
 
   @override
@@ -214,6 +230,35 @@ class FakeWalletRepository implements WalletRepository {
   }
 }
 
+class FakeCategoryRepository implements CategoryRepository {
+  var initializedOccupation = '';
+
+  @override
+  Future<void> ensureOccupationDefaults(String occupation) async {
+    initializedOccupation = occupation;
+  }
+
+  @override
+  Future<List<Category>> fetchCategories() async => const [];
+
+  @override
+  Future<void> createCategory({
+    required String name,
+    required TransactionType type,
+  }) async {}
+
+  @override
+  Future<void> updateCategory({
+    required String categoryId,
+    required String name,
+    required TransactionType type,
+    required bool isActive,
+  }) async {}
+
+  @override
+  void clearMockUserData() {}
+}
+
 Widget _routerApp({
   required ProviderContainer container,
   required String initialLocation,
@@ -268,6 +313,15 @@ void main() {
   setUp(() {
     final binding = TestWidgetsFlutterBinding.ensureInitialized();
     binding.platformDispatcher.textScaleFactorTestValue = 1;
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(const MethodChannel('flutter_timezone'), (
+          methodCall,
+        ) async {
+          if (methodCall.method == 'getLocalTimezone') {
+            return 'Asia/Ho_Chi_Minh';
+          }
+          return null;
+        });
   });
 
   tearDown(() {
@@ -305,7 +359,8 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('login_guest_button')));
     await tester.pumpAndSettle();
 
-    expect(find.text('invite token-1'), findsOneWidget);
+    expect(find.text('calendar target'), findsOneWidget);
+    expect(container.read(pendingFriendInvitePromptProvider), 'token-1');
     expect(container.read(pendingDeepLinkProvider), isNull);
   });
 
@@ -321,6 +376,7 @@ void main() {
         useMockDataModeProvider.overrideWithValue(true),
         profileRepositoryProvider.overrideWithValue(FakeProfileRepository()),
         walletRepositoryProvider.overrideWithValue(FakeWalletRepository()),
+        categoryRepositoryProvider.overrideWithValue(FakeCategoryRepository()),
         profileSetupControllerProvider.overrideWith(
           TestProfileSetupController.new,
         ),
@@ -361,7 +417,8 @@ void main() {
     await tester.tap(find.byType(FilledButton));
     await tester.pumpAndSettle();
 
-    expect(find.text('invite token-2'), findsOneWidget);
+    expect(find.text('calendar target'), findsOneWidget);
+    expect(container.read(pendingFriendInvitePromptProvider), 'token-2');
     expect(container.read(pendingDeepLinkProvider), isNull);
   });
 

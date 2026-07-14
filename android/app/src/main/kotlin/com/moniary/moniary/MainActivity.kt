@@ -3,6 +3,7 @@ package com.moniary.moniary
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
@@ -12,8 +13,27 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.File
 
 class MainActivity : FlutterActivity() {
+    private var deepLinkChannel: MethodChannel? = null
+    private var initialDeepLink: String? = null
+    private var latestDeepLink: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        captureDeepLink(intent, setInitial = true)
+        super.onCreate(savedInstanceState)
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        deepLinkChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "moniary/deep_links")
+        captureDeepLink(intent, setInitial = initialDeepLink == null)
+        deepLinkChannel?.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "getInitialLink" -> result.success(initialDeepLink)
+                "getLatestLink" -> result.success(latestDeepLink)
+                else -> result.notImplemented()
+            }
+        }
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "moniary/file_actions")
             .setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -46,6 +66,25 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val link = captureDeepLink(intent, setInitial = false)
+        if (link != null) {
+            deepLinkChannel?.invokeMethod("onDeepLink", link)
+        }
+    }
+
+    private fun captureDeepLink(intent: Intent?, setInitial: Boolean): String? {
+        if (intent?.action != Intent.ACTION_VIEW) return null
+        val link = intent.dataString?.takeIf { it.isNotBlank() } ?: return null
+        if (setInitial && initialDeepLink == null) {
+            initialDeepLink = link
+        }
+        latestDeepLink = link
+        return link
     }
 
     private fun openFile(path: String): Boolean {

@@ -7,6 +7,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
+import '../../../../core/preferences/preferences_providers.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../profile/application/profile_setup_controller.dart';
 import '../../../journal/application/journal_controller.dart';
 import '../../../journal/presentation/monthly_recap_screen.dart';
@@ -17,6 +19,7 @@ import '../../../transactions/presentation/detail/day_detail_screen.dart';
 import '../../../transactions/presentation/detail/transaction_detail_screen.dart';
 import '../../../transactions/presentation/detail/transaction_route_args.dart';
 import '../../../transactions/presentation/utils/transaction_image_source.dart';
+import '../../../friends/application/friend_controller.dart';
 import '../../../friends/presentation/screens/friends_screen.dart';
 import '../../../wallets/domain/models/wallet.dart';
 import '../../../wallets/application/wallets_controller.dart';
@@ -29,7 +32,6 @@ import 'transaction_search_delegate.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
-import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../settings/application/privacy_controller.dart';
 
@@ -54,7 +56,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         ?.trim();
     final displayName = profileName?.isNotEmpty == true
         ? profileName!
-        : context.l10n.profileSurveyFallbackName;
+        : context.l10n.profileUserDefault;
     final visibleMonth = ref.watch(calendarVisibleMonthProvider);
     final monthAsync = ref.watch(calendarMonthProvider(visibleMonth));
     final walletsAsync = ref.watch(walletsControllerProvider);
@@ -260,6 +262,9 @@ class _SeamlessHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isHidden = ref.watch(privacyControllerProvider).isBalancesHidden;
     final streak = ref.watch(recordingStreakProvider).value;
+    final pendingFriendRequestCount = ref.watch(
+      pendingIncomingFriendRequestCountProvider,
+    );
     final colors = context.moniaryColors;
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
@@ -322,6 +327,7 @@ class _SeamlessHeader extends ConsumerWidget {
                     label: context.l10n.friendsTitle,
                     icon: Icons.people_outline,
                     onTap: onFriendsTap,
+                    badge: pendingFriendRequestCount,
                   ),
                   const SizedBox(width: 7),
                   _HeaderCircleButton(
@@ -388,6 +394,7 @@ class _SeamlessHeader extends ConsumerWidget {
                   ObscurableAmountText(
                     amountText: _formatMoney(
                       context,
+                      ref,
                       totalBalance,
                       isNegative: totalBalance < 0,
                     ),
@@ -408,18 +415,22 @@ class _SeamlessHeader extends ConsumerWidget {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _IncomeExpensePill(
-                    label: context.l10n.calendarIncome,
-                    amount: monthData.totalIncome,
-                    color: colors.success,
-                    icon: Icons.south_west_outlined,
+                  Expanded(
+                    child: _IncomeExpensePill(
+                      label: context.l10n.calendarIncome,
+                      amount: monthData.totalIncome,
+                      color: colors.success,
+                      icon: Icons.south_west_outlined,
+                    ),
                   ),
                   const SizedBox(width: 10),
-                  _IncomeExpensePill(
-                    label: context.l10n.calendarExpense,
-                    amount: monthData.totalExpense,
-                    color: colors.danger,
-                    icon: Icons.north_east_outlined,
+                  Expanded(
+                    child: _IncomeExpensePill(
+                      label: context.l10n.calendarExpense,
+                      amount: monthData.totalExpense,
+                      color: colors.danger,
+                      icon: Icons.north_east_outlined,
+                    ),
                   ),
                 ],
               );
@@ -565,12 +576,14 @@ class _HeaderCircleButton extends StatelessWidget {
     required this.label,
     required this.icon,
     required this.onTap,
+    this.badge = 0,
   });
 
   final String tooltip;
   final String label;
   final IconData icon;
   final VoidCallback onTap;
+  final int badge;
 
   @override
   Widget build(BuildContext context) {
@@ -596,10 +609,22 @@ class _HeaderCircleButton extends StatelessWidget {
                 child: SizedBox(
                   width: 38,
                   height: 38,
-                  child: Icon(
-                    icon,
-                    color: colors.textPrimary.withValues(alpha: 0.66),
-                    size: 18,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(
+                        icon,
+                        color: colors.textPrimary.withValues(alpha: 0.66),
+                        size: 18,
+                      ),
+                      if (badge > 0)
+                        Positioned(
+                          top: -5,
+                          right: -5,
+                          child: _HeaderActionBadge(count: badge),
+                        ),
+                    ],
                   ),
                 ),
               ),
@@ -616,6 +641,33 @@ class _HeaderCircleButton extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HeaderActionBadge extends StatelessWidget {
+  const _HeaderActionBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.moniaryColors.primary,
+        borderRadius: BorderRadius.circular(99),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        child: Text(
+          count > 99 ? '99+' : '$count',
+          style: context.moniaryTypography.metadataStrong.copyWith(
+            color: AppTheme.surfaceRaised,
+            fontSize: 8.5,
+            letterSpacing: 0,
+          ),
         ),
       ),
     );
@@ -661,7 +713,7 @@ class _IconPill extends StatelessWidget {
   }
 }
 
-class _IncomeExpensePill extends StatelessWidget {
+class _IncomeExpensePill extends ConsumerWidget {
   const _IncomeExpensePill({
     required this.label,
     required this.amount,
@@ -675,7 +727,7 @@ class _IncomeExpensePill extends StatelessWidget {
   final IconData icon;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
       decoration: BoxDecoration(
@@ -688,17 +740,22 @@ class _IncomeExpensePill extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 14),
           const SizedBox(width: 6),
-          ObscurableAmountText(
-            prefixText: '$label: ',
-            amountText: _formatMoney(
-              context,
-              amount,
-              isNegative: false,
-            ).replaceAll('+', ''),
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'JetBrains Mono',
+          Flexible(
+            child: ObscurableAmountText(
+              prefixText: '$label: ',
+              amountText: _formatMoney(
+                context,
+                ref,
+                amount,
+                isNegative: false,
+              ).replaceAll('+', ''),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'JetBrains Mono',
+              ),
             ),
           ),
         ],
@@ -1061,15 +1118,26 @@ class _MonthCalendarCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
-    final weekdayLabels = [
-      context.l10n.calendarMon,
-      context.l10n.calendarTue,
-      context.l10n.calendarWed,
-      context.l10n.calendarThu,
-      context.l10n.calendarFri,
-      context.l10n.calendarSat,
-      context.l10n.calendarSun,
-    ];
+    final firstDay = ref.watch(firstDayOfWeekProvider);
+    final weekdayLabels = firstDay == 7
+        ? [
+            context.l10n.calendarSun,
+            context.l10n.calendarMon,
+            context.l10n.calendarTue,
+            context.l10n.calendarWed,
+            context.l10n.calendarThu,
+            context.l10n.calendarFri,
+            context.l10n.calendarSat,
+          ]
+        : [
+            context.l10n.calendarMon,
+            context.l10n.calendarTue,
+            context.l10n.calendarWed,
+            context.l10n.calendarThu,
+            context.l10n.calendarFri,
+            context.l10n.calendarSat,
+            context.l10n.calendarSun,
+          ];
 
     return Container(
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
@@ -1785,11 +1853,12 @@ class _CalendarSkeletonCardState extends State<_CalendarSkeletonCard>
 
 String _formatMoney(
   BuildContext context,
+  WidgetRef ref,
   double amount, {
   required bool isNegative,
 }) {
   final sign = isNegative ? '-' : '+';
-  return '$sign${formatMoney(amount)}';
+  return '$sign${ref.formatAmount(amount.abs())}';
 }
 
 class _TodayGrid extends StatelessWidget {

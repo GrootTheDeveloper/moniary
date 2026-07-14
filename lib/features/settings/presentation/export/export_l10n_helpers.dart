@@ -74,9 +74,10 @@ String localizedExportDateRange(
   BuildContext context,
   ExportHistoryEntry entry,
 ) {
+  final localeName = Localizations.localeOf(context).toString();
   if (entry.hasDateRange) {
-    final start = _dateLabel(entry.startDate);
-    final end = _dateLabel(entry.endDate);
+    final start = _dateLabel(entry.startDate, localeName);
+    final end = _dateLabel(entry.endDate, localeName);
     return '$start - $end';
   }
 
@@ -92,9 +93,9 @@ String localizedExportDateRange(
   };
 }
 
-String _dateLabel(DateTime? date) {
+String _dateLabel(DateTime? date, String localeName) {
   if (date == null) {
     return '...';
   }
-  return DateFormat('dd/MM/yyyy').format(date);
+  return DateFormat('dd/MM/yyyy', localeName).format(date);
 }

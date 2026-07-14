@@ -1,5 +1,47 @@
 import 'package:intl/intl.dart';
 
+// Dynamic currency policy:
+// - Empty/null-like code → VND (₫, 0 decimals, locale-aware separators).
+// - VND → same as above.
+// - Any other non-empty code → NumberFormat.simpleCurrency via Intl.
+//   Intl resolves symbol and decimal digits from locale data for the code.
+//   Unknown codes (e.g. XYZ) produce the code itself as symbol: "12.345,67 XYZ".
+//   Currency-symbol variation by locale (e.g. $ vs CA$) is intentional Intl
+//   behavior — do not override or whitelist symbols.
+
+String currencySymbolFor({
+  required String currencyCode,
+  required String locale,
+}) {
+  final normalized = currencyCode.trim().toUpperCase();
+  if (normalized.isEmpty || normalized == 'VND') return '₫';
+  final symbol = NumberFormat.simpleCurrency(
+    locale: locale,
+    name: normalized,
+  ).currencySymbol;
+  // Intl returns the code itself for unknown currencies — acceptable as suffix.
+  return symbol.isEmpty ? normalized : symbol;
+}
+
+String formatCurrency(
+  num amount, {
+  required String currencyCode,
+  required String locale,
+}) {
+  final normalized = currencyCode.trim().toUpperCase();
+  if (normalized.isEmpty || normalized == 'VND') {
+    return NumberFormat.currency(
+      locale: locale,
+      symbol: '₫',
+      decimalDigits: 0,
+    ).format(amount);
+  }
+  return NumberFormat.simpleCurrency(
+    locale: locale,
+    name: normalized,
+  ).format(amount);
+}
+
 /// Display metadata for a supported currency.
 ///
 /// [numberLocale] drives digit grouping (e.g. `1.234` vs `1,234`) and the
@@ -128,48 +170,3 @@ CurrencyInfo currencyInfoFor(String code) {
         numberLocale: _fallbackLocale,
       );
 }
-
-/// The user's active display currency. Synced from `preferredCurrencyProvider`
-/// (and at startup from persisted preferences) so the context-free
-/// [formatMoney] / [formatVnd] helpers reflect the chosen currency everywhere.
-String _activeCurrencyCode = 'VND';
-
-void setActiveCurrencyCode(String code) {
-  final normalized = code.trim().toUpperCase();
-  if (normalized.isNotEmpty) _activeCurrencyCode = normalized;
-}
-
-String activeCurrencyCode() => _activeCurrencyCode;
-
-String activeCurrencySymbol() => currencyInfoFor(_activeCurrencyCode).symbol;
-
-/// Formats [amount] in [currencyCode] (defaults to the active currency).
-/// Set [includeSymbol] to false for a bare grouped number.
-String formatMoney(
-  num amount, {
-  String? currencyCode,
-  bool includeSymbol = true,
-}) {
-  final info = currencyInfoFor(currencyCode ?? _activeCurrencyCode);
-  try {
-    return NumberFormat.currency(
-      locale: info.numberLocale,
-      symbol: includeSymbol ? info.symbol : '',
-      decimalDigits: info.decimalDigits,
-    ).format(amount).trim();
-  } catch (_) {
-    // Fall back to a safe locale if number-formatting data is unavailable.
-    final number = NumberFormat.currency(
-      locale: _fallbackLocale,
-      symbol: '',
-      decimalDigits: info.decimalDigits,
-    ).format(amount).trim();
-    return includeSymbol ? '${info.symbol}$number' : number;
-  }
-}
-
-/// Formats [amount] in the user's active display currency.
-///
-/// Historically VND-only; retained as the app-wide money formatter so every
-/// call site honours the chosen currency without threading context.
-String formatVnd(num amount) => formatMoney(amount);

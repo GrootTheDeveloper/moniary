@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/moniary_design.dart';
 import '../../../../shared/widgets/supabase_image.dart';
@@ -16,6 +16,7 @@ import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
 import 'add_group_transaction_screen.dart';
 import 'debt_settlement_screen.dart';
+import 'group_activity_center_screen.dart';
 import 'group_budget_screen.dart';
 import 'group_notification_preferences_screen.dart';
 import 'group_photo_album_screen.dart';
@@ -23,6 +24,8 @@ import 'group_public_profile_screen.dart';
 import 'group_recurring_transactions_screen.dart';
 import 'group_transaction_detail_screen.dart';
 import 'invite_member_screen.dart';
+
+enum _MemberAction { transferOwnership, remove }
 
 class GroupDetailScreen extends ConsumerWidget {
   const GroupDetailScreen({required this.groupId, super.key});
@@ -89,21 +92,45 @@ class GroupDetailScreen extends ConsumerWidget {
       builder: (sheetContext) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                detail.group.name,
-                style: context.moniaryTypography.displaySmall,
-              ),
-              const SizedBox(height: 16),
-              if (detail.canInvite)
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  detail.group.name,
+                  style: context.moniaryTypography.displaySmall,
+                ),
+                const SizedBox(height: 16),
+                if (detail.canInvite)
+                  ListTile(
+                    leading: const Icon(Icons.person_add_outlined),
+                    title: Text(context.l10n.groupInviteTitle),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      context.push(
+                        InviteMemberScreen.routePath,
+                        extra: groupId,
+                      );
+                    },
+                  ),
+                if (detail.canInvite)
+                  ListTile(
+                    leading: const Icon(Icons.manage_accounts_outlined),
+                    title: Text(context.l10n.groupMembersHeader),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      _manageMembers(context, ref, detail);
+                    },
+                  ),
                 ListTile(
-                  leading: const Icon(Icons.person_add_outlined),
-                  title: Text(context.l10n.groupInviteTitle),
+                  leading: const Icon(Icons.bolt_outlined),
+                  title: Text(context.l10n.groupActivityCenterTitle),
                   onTap: () {
                     Navigator.pop(sheetContext);
-                    context.push(InviteMemberScreen.routePath, extra: groupId);
+                    context.push(
+                      GroupActivityCenterScreen.routePath,
+                      extra: groupId,
+                    );
                   },
                 ),
               ListTile(
@@ -111,21 +138,15 @@ class GroupDetailScreen extends ConsumerWidget {
                 title: Text(context.l10n.groupPhotoAlbumTitle),
                 onTap: () {
                   Navigator.pop(sheetContext);
-                  context.push(
-                    GroupPhotoAlbumScreen.routePath,
-                    extra: groupId,
-                  );
+                  context.push(GroupPhotoAlbumScreen.routePath, extra: groupId);
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.savings_outlined),
+                leading: const Icon(Icons.account_balance_wallet_outlined),
                 title: Text(context.l10n.groupBudgetTitle),
                 onTap: () {
                   Navigator.pop(sheetContext);
-                  context.push(
-                    GroupBudgetScreen.routePath,
-                    extra: groupId,
-                  );
+                  context.push(GroupBudgetScreen.routePath, extra: groupId);
                 },
               ),
               ListTile(
@@ -139,19 +160,20 @@ class GroupDetailScreen extends ConsumerWidget {
                   );
                 },
               ),
+              if (detail.canInvite)
+                ListTile(
+                  leading: const Icon(Icons.public_outlined),
+                  title: Text(context.l10n.groupPublicProfileSettingsTitle),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    context.push(
+                      GroupPublicProfileScreen.routePath,
+                      extra: groupId,
+                    );
+                  },
+                ),
               ListTile(
-                leading: const Icon(Icons.public_outlined),
-                title: Text(context.l10n.groupPublicProfileTitle),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  context.push(
-                    GroupPublicProfileScreen.routePath,
-                    extra: groupId,
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.event_repeat_outlined),
+                leading: const Icon(Icons.autorenew_outlined),
                 title: Text(context.l10n.groupRecurringTitle),
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -173,8 +195,9 @@ class GroupDetailScreen extends ConsumerWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Future<void> _leaveGroup(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
@@ -206,6 +229,166 @@ class GroupDetailScreen extends ConsumerWidget {
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+
+  Future<void> _manageMembers(
+    BuildContext context,
+    WidgetRef ref,
+    SpendingGroupDetail detail,
+  ) async {
+    final currentUserId = ref.read(currentGroupUserIdProvider);
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: SizedBox(
+          height: MediaQuery.sizeOf(sheetContext).height * 0.7,
+          child: Column(
+            children: [
+              ListTile(
+                title: Text(
+                  context.l10n.groupMembersHeader,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  children: [
+                    for (final member in detail.activeMembers)
+                      ListTile(
+                        leading: const Icon(Icons.person_outline),
+                        title: Text(member.resolvedName),
+                        subtitle: Text(member.role.value.toUpperCase()),
+                        trailing:
+                            !_canManageMember(detail, member, currentUserId)
+                            ? null
+                            : PopupMenuButton<_MemberAction>(
+                                onSelected: (action) {
+                                  Navigator.pop(sheetContext);
+                                  if (action ==
+                                      _MemberAction.transferOwnership) {
+                                    _transferOwnership(context, ref, member);
+                                  } else {
+                                    _removeMember(context, ref, member);
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  if (detail.currentUserRole == GroupRole.owner)
+                                    PopupMenuItem(
+                                      value: _MemberAction.transferOwnership,
+                                      child: Text(
+                                        context
+                                            .l10n
+                                            .groupTransferOwnershipAction,
+                                      ),
+                                    ),
+                                  if (detail.currentUserRole ==
+                                          GroupRole.owner ||
+                                      (detail.currentUserRole ==
+                                              GroupRole.admin &&
+                                          member.role == GroupRole.member))
+                                    PopupMenuItem(
+                                      value: _MemberAction.remove,
+                                      child: Text(
+                                        context.l10n.groupRemoveMemberAction,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _transferOwnership(
+    BuildContext context,
+    WidgetRef ref,
+    SpendingGroupMember member,
+  ) async {
+    final confirmed = await _confirmMemberAction(
+      context,
+      title: context.l10n.groupTransferOwnershipAction,
+      member: member,
+    );
+    if (!confirmed || !context.mounted) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .transferOwnership(groupId: groupId, newOwnerUserId: member.userId);
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
+  }
+
+  bool _canManageMember(
+    SpendingGroupDetail detail,
+    SpendingGroupMember member,
+    String currentUserId,
+  ) {
+    if (member.userId == currentUserId || member.role == GroupRole.owner) {
+      return false;
+    }
+    return detail.currentUserRole == GroupRole.owner ||
+        (detail.currentUserRole == GroupRole.admin &&
+            member.role == GroupRole.member);
+  }
+
+  Future<void> _removeMember(
+    BuildContext context,
+    WidgetRef ref,
+    SpendingGroupMember member,
+  ) async {
+    final confirmed = await _confirmMemberAction(
+      context,
+      title: context.l10n.groupRemoveMemberConfirm,
+      member: member,
+    );
+    if (!confirmed || !context.mounted) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .removeMember(groupId: groupId, userId: member.userId);
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
+  }
+
+  Future<bool> _confirmMemberAction(
+    BuildContext context, {
+    required String title,
+    required SpendingGroupMember member,
+  }) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(title),
+            content: Text(member.resolvedName),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(context.l10n.commonCancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(context.l10n.commonConfirm),
+              ),
+            ],
+          ),
+        ) ??
+        false;
   }
 }
 
@@ -392,7 +575,7 @@ class _TopIconButton extends StatelessWidget {
   }
 }
 
-class _GroupHero extends StatelessWidget {
+class _GroupHero extends ConsumerWidget {
   const _GroupHero({
     required this.detail,
     required this.transactionsAsync,
@@ -404,7 +587,7 @@ class _GroupHero extends StatelessWidget {
   final VoidCallback onSettle;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final group = detail.group;
     final balance = group.currentUserBalance;
@@ -424,7 +607,7 @@ class _GroupHero extends StatelessWidget {
         ?.where((item) => item.splitStatus == GroupSplitStatus.posted)
         .fold<int>(0, (sum, item) => sum + item.totalAmount);
     final transactionCount = transactions?.length ?? group.transactionCount;
-    final totalText = formatVnd(total ?? group.totalSpent);
+    final totalText = ref.formatAmount(total ?? group.totalSpent);
 
     return Column(
       children: [
@@ -482,7 +665,7 @@ class _GroupHero extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      formatVnd(balance.abs()),
+                      ref.formatAmount(balance.abs()),
                       style: context.moniaryTypography.displaySmall.copyWith(
                         color: balanceColor,
                         fontSize: 24,
@@ -540,7 +723,7 @@ class _MemberBalances extends StatelessWidget {
   }
 }
 
-class _BalanceRow extends StatelessWidget {
+class _BalanceRow extends ConsumerWidget {
   const _BalanceRow({
     required this.balance,
     required this.avatarPath,
@@ -552,7 +735,7 @@ class _BalanceRow extends StatelessWidget {
   final bool showTopDivider;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final valueColor = balance.balance == 0
         ? colors.textDim
@@ -560,8 +743,8 @@ class _BalanceRow extends StatelessWidget {
         ? colors.danger
         : colors.success;
     final valueText = balance.balance == 0
-        ? formatVnd(0)
-        : '${balance.balance > 0 ? '-' : '+'}${formatVnd(balance.balance.abs())}';
+        ? ref.formatAmount(0)
+        : '${balance.balance > 0 ? '-' : '+'}${ref.formatAmount(balance.balance.abs())}';
 
     return Container(
       constraints: const BoxConstraints(minHeight: 62),
@@ -650,7 +833,7 @@ class _TransactionHistory extends StatelessWidget {
   }
 }
 
-class _TransactionRow extends StatelessWidget {
+class _TransactionRow extends ConsumerWidget {
   const _TransactionRow({
     required this.transaction,
     required this.memberCount,
@@ -664,7 +847,7 @@ class _TransactionRow extends StatelessWidget {
   final bool showTopDivider;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final payerName = transaction.creatorName?.trim().isNotEmpty == true
         ? transaction.creatorName!
@@ -739,7 +922,7 @@ class _TransactionRow extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                formatVnd(transaction.totalAmount),
+                ref.formatAmount(transaction.totalAmount),
                 style: context.moniaryTypography.metadataStrong.copyWith(
                   color: colors.textPrimary,
                   fontSize: 11,

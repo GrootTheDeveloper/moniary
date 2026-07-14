@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../app/app_theme.dart';
@@ -10,6 +11,7 @@ import '../../../../shared/widgets/moniary_design.dart';
 import '../../application/friend_controller.dart';
 import '../../domain/entities/friend_profile.dart';
 import '../widgets/friend_profile_tile.dart';
+import 'friend_qr_screen.dart';
 
 class AddFriendScreen extends ConsumerStatefulWidget {
   const AddFriendScreen({super.key});
@@ -104,6 +106,12 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
             isLoading: action.isLoading,
             onShare: _shareInviteLink,
           ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () => context.push(FriendQrScreen.routePath),
+            icon: const Icon(Icons.qr_code_scanner_outlined),
+            label: Text(context.l10n.friendQrTitle),
+          ),
           const SizedBox(height: 18),
           if (searchAsync == null)
             _SearchHint()
@@ -150,6 +158,12 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
 
   void _search() {
     final value = _usernameController.text.trim().toLowerCase();
+    if (value.length < 2) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.friendSearchPrompt)));
+      return;
+    }
     setState(() => _query = value);
   }
 

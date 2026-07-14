@@ -1,14 +1,19 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../core/preferences/preferences_providers.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../core/deeplinks/pending_deep_link_controller.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../shared/brand/brand_assets.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
+import '../../onboarding/presentation/onboarding_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../../profile/presentation/profile_survey_screen.dart';
@@ -120,7 +125,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(18),
                               child: Image.asset(
-                                'logo.png',
+                                BrandAssets.appLogo,
                                 fit: BoxFit.cover,
                                 semanticLabel: context.l10n.loginTitle,
                               ),
@@ -340,6 +345,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                           child: Text(context.l10n.loginGuestCta),
                         ),
+                        if (kDebugMode) ...[
+                          const SizedBox(height: 10),
+                          OutlinedButton.icon(
+                            key: const ValueKey('login_reset_onboarding_dev'),
+                            onPressed: () async {
+                              await ref
+                                  .read(onboardingSeenProvider.notifier)
+                                  .reset();
+                              if (context.mounted) {
+                                context.go(OnboardingScreen.routePath);
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.restart_alt_outlined,
+                              size: 16,
+                            ),
+                            label: const Text('RESET ONBOARDING (DEV)'),
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(42),
+                              foregroundColor: colors.primary,
+                              side: BorderSide(
+                                color: colors.primary.withValues(alpha: 0.5),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -455,6 +491,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         final pendingRoute = ref
             .read(pendingDeepLinkProvider.notifier)
             .consume();
+        final friendInviteToken = friendInviteTokenFromRouteLocation(
+          pendingRoute,
+        );
+        if (friendInviteToken != null) {
+          ref
+              .read(pendingFriendInvitePromptProvider.notifier)
+              .set(friendInviteToken);
+          context.go(CalendarScreen.routePath);
+          return;
+        }
         context.go(pendingRoute ?? CalendarScreen.routePath);
       case PostAuthDestination.pendingDeletion:
         await _showRecoverySheet(decision.deletionStatus!);

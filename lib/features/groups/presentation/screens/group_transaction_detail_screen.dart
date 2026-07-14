@@ -4,12 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_transaction.dart';
+import '../widgets/comment_list.dart';
 import 'add_group_transaction_screen.dart';
 import 'member_amount_input_screen.dart';
 
@@ -69,7 +70,19 @@ class _GroupTransactionDetailScreenState
                     borderRadius: BorderRadius.circular(32),
                   ),
                 ),
-              if (transaction.imagePath != null) const SizedBox(height: 18),
+              if (transaction.imagePath != null ||
+                  transaction.imageUploadStatus ==
+                      GroupImageUploadStatus.failed)
+                const SizedBox(height: 18),
+              if (transaction.imageUploadStatus ==
+                  GroupImageUploadStatus.failed)
+                _ImageUploadFailureNotice(
+                  canRetry: isCreator,
+                  onRetry: () => _openEdit(detail),
+                ),
+              if (transaction.imageUploadStatus ==
+                  GroupImageUploadStatus.failed)
+                const SizedBox(height: 18),
               Text(
                 transaction.caption?.isNotEmpty == true
                     ? transaction.caption!
@@ -78,7 +91,7 @@ class _GroupTransactionDetailScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                formatVnd(transaction.totalAmount),
+                ref.formatAmount(transaction.totalAmount),
                 style: const TextStyle(
                   color: AppTheme.mintSoft,
                   fontSize: 24,
@@ -89,6 +102,8 @@ class _GroupTransactionDetailScreenState
                 const SizedBox(height: 10),
                 Text(transaction.note!),
               ],
+              const SizedBox(height: 14),
+              _ReactionRow(transactionId: transaction.id),
               const SizedBox(height: 18),
               _InfoRow(
                 label: context.l10n.groupTransactionCreator,
@@ -97,9 +112,11 @@ class _GroupTransactionDetailScreenState
               ),
               _InfoRow(
                 label: context.l10n.groupSplitModeTitle,
-                value: transaction.splitMode == GroupSplitMode.equal
-                    ? context.l10n.groupSplitEqual
-                    : context.l10n.groupSplitUnequal,
+                value: switch (transaction.splitMode) {
+                  GroupSplitMode.equal => context.l10n.groupSplitEqual,
+                  GroupSplitMode.exact => context.l10n.groupSplitExact,
+                  GroupSplitMode.unequal => context.l10n.groupSplitUnequal,
+                },
               ),
               _InfoRow(
                 label: context.l10n.groupPaymentModeTitle,
@@ -140,7 +157,7 @@ class _GroupTransactionDetailScreenState
                   title: Text(
                     payer.displayName ?? context.l10n.groupUnknownMember,
                   ),
-                  trailing: Text(formatVnd(payer.paidAmount)),
+                  trailing: Text(ref.formatAmount(payer.paidAmount)),
                 ),
               ),
               const SizedBox(height: 18),
@@ -161,9 +178,9 @@ class _GroupTransactionDetailScreenState
                   ),
                   subtitle: Text(
                     context.l10n.groupSharePaidBalance(
-                      formatVnd(share.shareAmount),
-                      formatVnd(paid),
-                      formatVnd(share.shareAmount - paid),
+                      ref.formatAmount(share.shareAmount),
+                      ref.formatAmount(paid),
+                      ref.formatAmount(share.shareAmount - paid),
                     ),
                   ),
                 );
@@ -174,13 +191,7 @@ class _GroupTransactionDetailScreenState
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () => context.push(
-                          AddGroupTransactionScreen.routePath,
-                          extra: AddGroupTransactionArgs(
-                            groupId: transaction.groupId,
-                            initialDetail: detail,
-                          ),
-                        ),
+                        onPressed: () => _openEdit(detail),
                         icon: const Icon(Icons.edit_outlined),
                         label: Text(context.l10n.commonEdit),
                       ),
@@ -205,19 +216,17 @@ class _GroupTransactionDetailScreenState
               if (detail.comments.isEmpty)
                 Text(context.l10n.groupCommentsEmpty)
               else
-                ...detail.comments.map(
-                  (comment) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      backgroundColor: AppTheme.surfaceRaised,
-                      child: const Icon(Icons.person_outline),
-                    ),
-                    title: Text(
-                      comment.displayName ?? context.l10n.groupUnknownMember,
-                    ),
-                    subtitle: Text(comment.content),
-                  ),
+                CommentList(
+                  comments: detail.comments,
+                  currentUserId: currentUserId,
+                  onEdit: _editComment,
+                  onDelete: _deleteComment,
                 ),
+              const SizedBox(height: 10),
+              const Text(
+                'Dùng @username để nhắc thành viên trong nhóm.',
+                style: TextStyle(color: AppTheme.textSubtle),
+              ),
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -240,6 +249,16 @@ class _GroupTransactionDetailScreenState
             ],
           );
         },
+      ),
+    );
+  }
+
+  Future<void> _openEdit(GroupTransactionDetail detail) {
+    return context.push(
+      AddGroupTransactionScreen.routePath,
+      extra: AddGroupTransactionArgs(
+        groupId: detail.transaction.groupId,
+        initialDetail: detail,
       ),
     );
   }
@@ -275,6 +294,90 @@ class _GroupTransactionDetailScreenState
     }
   }
 
+  Future<void> _editComment(GroupTransactionComment comment) async {
+    final controller = TextEditingController(text: comment.content);
+    final commentRequiredMessage = context.l10n.groupCommentRequired;
+    final content = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.commonEdit),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          minLines: 2,
+          maxLines: 4,
+          decoration: InputDecoration(hintText: context.l10n.groupCommentHint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: Text(context.l10n.commonSave),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    final trimmed = content?.trim();
+    if (trimmed == null) return;
+    if (trimmed.isEmpty) {
+      _showMessage(commentRequiredMessage);
+      return;
+    }
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .updateComment(
+            commentId: comment.id,
+            transactionId: widget.transactionId,
+            content: trimmed,
+          );
+    } catch (error) {
+      if (!mounted) return;
+      _showMessage(userFriendlyMessage(context, error));
+    }
+  }
+
+  Future<void> _deleteComment(GroupTransactionComment comment) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text(context.l10n.groupCommentDeleteConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.commonDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .deleteComment(
+            commentId: comment.id,
+            transactionId: widget.transactionId,
+          );
+    } catch (error) {
+      if (!mounted) return;
+      _showMessage(userFriendlyMessage(context, error));
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
   Future<void> _delete(GroupTransactionDetail detail) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -308,6 +411,212 @@ class _GroupTransactionDetailScreenState
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+}
+
+class _ReactionRow extends ConsumerWidget {
+  const _ReactionRow({required this.transactionId});
+
+  final String transactionId;
+
+  static const _quickEmojis = ['👍', '❤️', '😂', '😮', '🎉'];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reactionsAsync = ref.watch(groupReactionsProvider(transactionId));
+    final reactions = reactionsAsync.asData?.value ?? const [];
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        for (final reaction in reactions)
+          _ReactionChip(
+            transactionId: transactionId,
+            emoji: reaction.emoji,
+            count: reaction.count,
+            selected: reaction.reactedByCurrentUser,
+          ),
+        _AddReactionButton(transactionId: transactionId),
+      ],
+    );
+  }
+}
+
+class _ReactionChip extends ConsumerWidget {
+  const _ReactionChip({
+    required this.transactionId,
+    required this.emoji,
+    required this.count,
+    required this.selected,
+  });
+
+  final String transactionId;
+  final String emoji;
+  final int count;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.moniaryColors;
+    return Material(
+      color: selected
+          ? AppTheme.mintSoft.withValues(alpha: 0.18)
+          : colors.surface,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: () => ref
+            .read(groupActionControllerProvider.notifier)
+            .toggleReaction(transactionId: transactionId, emoji: emoji),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: selected ? AppTheme.mintSoft : colors.outline,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 14)),
+              const SizedBox(width: 5),
+              Text(
+                '$count',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: selected ? AppTheme.mintSoft : colors.textDim,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AddReactionButton extends ConsumerWidget {
+  const _AddReactionButton({required this.transactionId});
+
+  final String transactionId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.moniaryColors;
+    return Material(
+      color: colors.surface,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: () => _showEmojiPicker(context, ref),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: colors.outline),
+          ),
+          child: Icon(
+            Icons.add_reaction_outlined,
+            size: 16,
+            color: colors.textDim,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showEmojiPicker(BuildContext context, WidgetRef ref) async {
+    final emoji = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) =>
+          _EmojiPickerSheet(emojis: _ReactionRow._quickEmojis),
+    );
+    if (emoji == null) return;
+    if (!context.mounted) return;
+    await ref
+        .read(groupActionControllerProvider.notifier)
+        .toggleReaction(transactionId: transactionId, emoji: emoji);
+  }
+}
+
+class _EmojiPickerSheet extends StatelessWidget {
+  const _EmojiPickerSheet({required this.emojis});
+
+  final List<String> emojis;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: colors.outline),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              for (final emoji in emojis)
+                InkWell(
+                  borderRadius: BorderRadius.circular(999),
+                  onTap: () => Navigator.pop(context, emoji),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(emoji, style: const TextStyle(fontSize: 26)),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ImageUploadFailureNotice extends StatelessWidget {
+  const _ImageUploadFailureNotice({
+    required this.canRetry,
+    required this.onRetry,
+  });
+
+  final bool canRetry;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.amber.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, color: AppTheme.amber),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              context.l10n.groupTransactionImageUploadFailed,
+              style: const TextStyle(color: AppTheme.amber),
+            ),
+          ),
+          if (canRetry)
+            TextButton(
+              onPressed: onRetry,
+              child: Text(context.l10n.commonRetry),
+            ),
+        ],
+      ),
+    );
   }
 }
 

@@ -6,13 +6,15 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/spending_group.dart';
 import 'create_group_screen.dart';
+import 'group_activity_center_screen.dart';
 import 'group_detail_screen.dart';
 import 'group_invitations_screen.dart';
+import 'invite_member_screen.dart';
 
 class GroupListScreen extends ConsumerWidget {
   const GroupListScreen({super.key});
@@ -23,6 +25,9 @@ class GroupListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final groupsAsync = ref.watch(groupsControllerProvider);
     final pendingInviteCount = ref.watch(pendingGroupInviteCountProvider);
+    final unreadNotificationCount = ref.watch(
+      unreadGroupNotificationCountProvider,
+    );
     final colors = context.moniaryColors;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark.copyWith(
@@ -44,6 +49,7 @@ class GroupListScreen extends ConsumerWidget {
           data: (groups) => _GroupListContent(
             groups: groups,
             pendingInviteCount: pendingInviteCount,
+            unreadNotificationCount: unreadNotificationCount,
             onCreate: () => _openCreateGroup(context, ref),
             onRefresh: () =>
                 ref.read(groupsControllerProvider.notifier).refresh(),
@@ -54,9 +60,19 @@ class GroupListScreen extends ConsumerWidget {
   }
 
   Future<void> _openCreateGroup(BuildContext context, WidgetRef ref) async {
-    final groupId = await context.push<String>(CreateGroupScreen.routePath);
+    final result = await context.push<Object?>(CreateGroupScreen.routePath);
     ref.invalidate(groupsControllerProvider);
+    final groupId = switch (result) {
+      final CreateGroupResult value => value.groupId,
+      final String value => value,
+      _ => null,
+    };
     if (groupId == null || !context.mounted) return;
+    final inviteMembers = result is CreateGroupResult && result.inviteMembers;
+    if (inviteMembers) {
+      await context.push(InviteMemberScreen.routePath, extra: groupId);
+      if (!context.mounted) return;
+    }
     await context.push(GroupDetailScreen.routePath, extra: groupId);
   }
 }
@@ -65,12 +81,14 @@ class _GroupListContent extends StatelessWidget {
   const _GroupListContent({
     required this.groups,
     required this.pendingInviteCount,
+    required this.unreadNotificationCount,
     required this.onCreate,
     required this.onRefresh,
   });
 
   final List<SpendingGroup> groups;
   final int pendingInviteCount;
+  final int unreadNotificationCount;
   final VoidCallback onCreate;
   final Future<void> Function() onRefresh;
 
@@ -92,6 +110,7 @@ class _GroupListContent extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(14, 18, 14, 0),
                     child: _GroupsHeader(
                       pendingInviteCount: pendingInviteCount,
+                      unreadNotificationCount: unreadNotificationCount,
                       onCreate: onCreate,
                     ),
                   ),
@@ -155,10 +174,12 @@ class _GroupListContent extends StatelessWidget {
 class _GroupsHeader extends StatelessWidget {
   const _GroupsHeader({
     required this.pendingInviteCount,
+    required this.unreadNotificationCount,
     required this.onCreate,
   });
 
   final int pendingInviteCount;
+  final int unreadNotificationCount;
   final VoidCallback onCreate;
 
   @override
@@ -204,6 +225,18 @@ class _GroupsHeader extends StatelessWidget {
           ),
           const SizedBox(width: 9),
         ],
+        _HeaderIconButton(
+          label: context.l10n.groupActivityTabNotifications,
+          icon: unreadNotificationCount > 0
+              ? Icons.notifications_active_outlined
+              : Icons.notifications_none_outlined,
+          badge: unreadNotificationCount,
+          onTap: () => context.push(GroupActivityCenterScreen.routePath),
+          foreground: colors.textPrimary,
+          background: colors.surface.withValues(alpha: 0.58),
+          border: colors.outline.withValues(alpha: 0.8),
+        ),
+        const SizedBox(width: 9),
         _HeaderIconButton(
           label: context.l10n.groupCreateNew,
           icon: Icons.add_rounded,
@@ -297,13 +330,13 @@ class _HeaderIconButton extends StatelessWidget {
   }
 }
 
-class _GroupBalanceOverview extends StatelessWidget {
+class _GroupBalanceOverview extends ConsumerWidget {
   const _GroupBalanceOverview({required this.groups});
 
   final List<SpendingGroup> groups;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final toReceive = groups
         .where((group) => group.currentUserBalance < 0)
         .fold<int>(0, (sum, group) => sum + group.currentUserBalance.abs());
@@ -317,7 +350,7 @@ class _GroupBalanceOverview extends StatelessWidget {
           child: _BalanceSummaryTile(
             label: context.l10n.groupBalanceReceiveShort,
             summaryLabel: context.l10n.groupBalanceReceiveSummary,
-            value: '+${formatVnd(toReceive)}',
+            value: '+${ref.formatAmount(toReceive)}',
             color: context.moniaryColors.success,
           ),
         ),
@@ -326,7 +359,7 @@ class _GroupBalanceOverview extends StatelessWidget {
           child: _BalanceSummaryTile(
             label: context.l10n.groupBalancePayShort,
             summaryLabel: context.l10n.groupBalancePaySummary,
-            value: '-${formatVnd(toPay)}',
+            value: '-${ref.formatAmount(toPay)}',
             color: context.moniaryColors.danger,
           ),
         ),
@@ -390,7 +423,7 @@ class _BalanceSummaryTile extends StatelessWidget {
   }
 }
 
-class _ReferenceGroupCard extends StatelessWidget {
+class _ReferenceGroupCard extends ConsumerWidget {
   const _ReferenceGroupCard({
     required this.group,
     required this.index,
@@ -402,7 +435,7 @@ class _ReferenceGroupCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final balance = group.currentUserBalance;
     final settled = balance == 0;
@@ -412,10 +445,10 @@ class _ReferenceGroupCard extends StatelessWidget {
         ? colors.success
         : colors.danger;
     final amountText = settled
-        ? formatVnd(0)
+        ? ref.formatAmount(0)
         : balance < 0
-        ? '+${formatVnd(balance.abs())}'
-        : '-${formatVnd(balance)}';
+        ? '+${ref.formatAmount(balance.abs())}'
+        : '-${ref.formatAmount(balance)}';
     final stateLabel = settled
         ? context.l10n.groupBalanceSettledShort
         : balance < 0

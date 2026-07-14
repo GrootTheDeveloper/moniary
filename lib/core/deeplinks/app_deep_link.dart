@@ -6,6 +6,15 @@ sealed class AppDeepLink {
   String get routeLocation;
 
   static AppDeepLink? parse(Uri uri) {
+    if (uri.scheme == 'moniary') {
+      if (uri.host == 'quick-add') {
+        return const QuickAddDeepLink();
+      }
+      if (uri.host == 'scan-receipt') {
+        return const ScanReceiptDeepLink();
+      }
+    }
+
     final friendToken = _inviteToken(
       uri,
       host: AppConstants.friendInviteHost,
@@ -76,4 +85,18 @@ class GroupInviteDeepLink extends AppDeepLink {
 
   @override
   String get routeLocation => '/groups/invite/${Uri.encodeComponent(token)}';
+}
+
+class QuickAddDeepLink extends AppDeepLink {
+  const QuickAddDeepLink();
+
+  @override
+  String get routeLocation => '/transaction-form';
+}
+
+class ScanReceiptDeepLink extends AppDeepLink {
+  const ScanReceiptDeepLink();
+
+  @override
+  String get routeLocation => '/scanning';
 }

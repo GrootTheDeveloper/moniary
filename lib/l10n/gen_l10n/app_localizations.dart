@@ -146,6 +146,12 @@ abstract class AppLocalizations {
   /// **'Lưu'**
   String get commonSave;
 
+  /// No description provided for @commonSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu'**
+  String get commonSaved;
+
   /// No description provided for @commonCancel.
   ///
   /// In vi, this message translates to:
@@ -637,6 +643,72 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Ngân sách tháng'**
   String get onboardingBudgetLabel;
+
+  /// No description provided for @onboardingScanning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang nhận diện...'**
+  String get onboardingScanning;
+
+  /// No description provided for @onboardingRecognized.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã nhận diện!'**
+  String get onboardingRecognized;
+
+  /// No description provided for @onboardingCategoryFood.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ăn uống'**
+  String get onboardingCategoryFood;
+
+  /// No description provided for @onboardingCategoryTransport.
+  ///
+  /// In vi, this message translates to:
+  /// **'Di chuyển'**
+  String get onboardingCategoryTransport;
+
+  /// No description provided for @onboardingCategoryEntertainment.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giải trí'**
+  String get onboardingCategoryEntertainment;
+
+  /// No description provided for @onboardingIncome.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thu nhập'**
+  String get onboardingIncome;
+
+  /// No description provided for @onboardingExpenseLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu'**
+  String get onboardingExpenseLabel;
+
+  /// No description provided for @onboardingStreakLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'ngày'**
+  String get onboardingStreakLabel;
+
+  /// No description provided for @onboardingBudgetUsed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã dùng'**
+  String get onboardingBudgetUsed;
+
+  /// No description provided for @onboardingBudgetWarning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sắp vượt hạn mức!'**
+  String get onboardingBudgetWarning;
+
+  /// No description provided for @onboardingInsightText.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi ăn uống tăng 20%'**
+  String get onboardingInsightText;
 
   /// No description provided for @profileSetupTitle.
   ///
@@ -1130,6 +1202,18 @@ abstract class AppLocalizations {
   /// **'Thêm khoản cho ngày này'**
   String get transactionAddForDay;
 
+  /// No description provided for @transactionDayGridView.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh'**
+  String get transactionDayGridView;
+
+  /// No description provided for @transactionDayListView.
+  ///
+  /// In vi, this message translates to:
+  /// **'Danh sách'**
+  String get transactionDayListView;
+
   /// No description provided for @transactionLoadDetailError.
   ///
   /// In vi, this message translates to:
@@ -1165,6 +1249,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'đ'**
   String get transactionAmountSuffix;
+
+  /// No description provided for @transactionAmountHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'0'**
+  String get transactionAmountHint;
 
   /// No description provided for @transactionWallet.
   ///
@@ -1448,6 +1538,12 @@ abstract class AppLocalizations {
   /// **'Tên ví không được trống.'**
   String get walletNameRequired;
 
+  /// No description provided for @walletUnknown.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví không xác định'**
+  String get walletUnknown;
+
   /// No description provided for @walletTypeCash.
   ///
   /// In vi, this message translates to:
@@ -1565,8 +1661,14 @@ abstract class AppLocalizations {
   /// No description provided for @categoryError.
   ///
   /// In vi, this message translates to:
-  /// **'Category error: {error}'**
+  /// **'Lỗi danh mục: {error}'**
   String categoryError(String error);
+
+  /// No description provided for @categoryOther.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khác'**
+  String get categoryOther;
 
   /// No description provided for @categoryExpense.
   ///
@@ -2203,6 +2305,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Hồ sơ'**
   String get profileTitle;
+
+  /// No description provided for @editProfileTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉnh sửa hồ sơ'**
+  String get editProfileTitle;
 
   /// No description provided for @profileUserDefault.
   ///
@@ -2924,24 +3032,6 @@ abstract class AppLocalizations {
   /// **'Các kênh liên hệ này giúp bạn gửi đúng yêu cầu về dữ liệu, hỗ trợ hoặc pháp lý.'**
   String get legalContactHero;
 
-  /// No description provided for @legalContactPrivacyLabel.
-  ///
-  /// In vi, this message translates to:
-  /// **'Quyền riêng tư'**
-  String get legalContactPrivacyLabel;
-
-  /// No description provided for @legalContactSupportLabel.
-  ///
-  /// In vi, this message translates to:
-  /// **'Hỗ trợ'**
-  String get legalContactSupportLabel;
-
-  /// No description provided for @legalContactLegalLabel.
-  ///
-  /// In vi, this message translates to:
-  /// **'Pháp lý'**
-  String get legalContactLegalLabel;
-
   /// No description provided for @legalContactPrivacyDesc.
   ///
   /// In vi, this message translates to:
@@ -2960,113 +3050,23 @@ abstract class AppLocalizations {
   /// **'Vấn đề điều khoản, phát hành hoặc yêu cầu pháp lý.'**
   String get legalContactLegalDesc;
 
-  /// No description provided for @thirdPartyServicesHero.
+  /// No description provided for @legalContactPrivacy.
   ///
   /// In vi, this message translates to:
-  /// **'Thông báo này giúp bạn hiểu Moniary dựa vào những dịch vụ nào để đăng nhập, lưu trữ và vận hành dữ liệu.'**
-  String get thirdPartyServicesHero;
+  /// **'Quyền riêng tư'**
+  String get legalContactPrivacy;
 
-  /// No description provided for @thirdPartyServicesSyncTitle.
+  /// No description provided for @legalContactSupport.
   ///
   /// In vi, this message translates to:
-  /// **'Đồng bộ và lưu trữ dữ liệu'**
-  String get thirdPartyServicesSyncTitle;
+  /// **'Hỗ trợ'**
+  String get legalContactSupport;
 
-  /// No description provided for @thirdPartyServicesSyncDesc.
+  /// No description provided for @legalContactLegal.
   ///
   /// In vi, this message translates to:
-  /// **'Dùng cho đăng nhập, đồng bộ dữ liệu, lưu ảnh giao dịch và xử lý yêu cầu xóa tài khoản.'**
-  String get thirdPartyServicesSyncDesc;
-
-  /// No description provided for @thirdPartyServicesAppPlatformTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Nền tảng ứng dụng'**
-  String get thirdPartyServicesAppPlatformTitle;
-
-  /// No description provided for @thirdPartyServicesAppPlatformDesc.
-  ///
-  /// In vi, this message translates to:
-  /// **'Dùng để xây dựng giao diện, điều hướng, trạng thái, camera, chọn ảnh và xử lý file trong app.'**
-  String get thirdPartyServicesAppPlatformDesc;
-
-  /// No description provided for @thirdPartyServicesDeviceStorageTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bộ nhớ thiết bị'**
-  String get thirdPartyServicesDeviceStorageTitle;
-
-  /// No description provided for @thirdPartyServicesDeviceStorageDesc.
-  ///
-  /// In vi, this message translates to:
-  /// **'File xuất dữ liệu, yêu cầu quyền riêng tư và lịch sử xuất/yêu cầu được ghi trong thư mục tài liệu của app trên thiết bị.'**
-  String get thirdPartyServicesDeviceStorageDesc;
-
-  /// No description provided for @thirdPartyServicesNoAdsTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Không tích hợp quảng cáo'**
-  String get thirdPartyServicesNoAdsTitle;
-
-  /// No description provided for @thirdPartyServicesNoAdsDesc.
-  ///
-  /// In vi, this message translates to:
-  /// **'Moniary không dùng SDK quảng cáo, theo dõi marketing, danh bạ, SMS, email cá nhân hoặc kết nối ngân hàng tự động.'**
-  String get thirdPartyServicesNoAdsDesc;
-
-  /// No description provided for @userRightsHero.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bạn có quyền hiểu dữ liệu nào đang được lưu, xuất dữ liệu của mình và gửi yêu cầu quyền riêng tư khi cần.'**
-  String get userRightsHero;
-
-  /// No description provided for @userRightsViewDataTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Xem dữ liệu đang lưu'**
-  String get userRightsViewDataTitle;
-
-  /// No description provided for @userRightsViewDataDesc.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bạn có thể xem tổng quan dữ liệu, nhóm dữ liệu, ảnh giao dịch và file trên thiết bị.'**
-  String get userRightsViewDataDesc;
-
-  /// No description provided for @userRightsExportTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Xuất dữ liệu'**
-  String get userRightsExportTitle;
-
-  /// No description provided for @userRightsExportDesc.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bạn có thể xuất dữ liệu ở định dạng CSV, Excel hoặc PDF trước khi chia sẻ hoặc rời app.'**
-  String get userRightsExportDesc;
-
-  /// No description provided for @userRightsSupportTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Yêu cầu sửa hoặc hỗ trợ'**
-  String get userRightsSupportTitle;
-
-  /// No description provided for @userRightsSupportDesc.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bạn có thể tạo yêu cầu quyền riêng tư nếu dữ liệu cần kiểm tra, sửa hoặc giải thích thêm.'**
-  String get userRightsSupportDesc;
-
-  /// No description provided for @userRightsDeletionTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Yêu cầu xóa dữ liệu'**
-  String get userRightsDeletionTitle;
-
-  /// No description provided for @userRightsDeletionDesc.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bạn có thể xóa tài khoản trong app hoặc tạo yêu cầu thủ công khi luồng trực tiếp thất bại.'**
-  String get userRightsDeletionDesc;
+  /// **'Pháp lý'**
+  String get legalContactLegal;
 
   /// No description provided for @privacyDetailCreatedAt.
   ///
@@ -3302,6 +3302,210 @@ abstract class AppLocalizations {
   /// **'Giao dịch quan trọng'**
   String get starredTransactionsTitle;
 
+  /// No description provided for @recurringTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Định kỳ & đăng ký'**
+  String get recurringTitle;
+
+  /// No description provided for @recurringSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ký, lương, tiền thuê và các khoản lặp lại khác'**
+  String get recurringSubtitle;
+
+  /// No description provided for @recurringAdd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm định kỳ'**
+  String get recurringAdd;
+
+  /// No description provided for @recurringEdit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa định kỳ'**
+  String get recurringEdit;
+
+  /// No description provided for @recurringEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có khoản định kỳ nào'**
+  String get recurringEmpty;
+
+  /// No description provided for @recurringAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền'**
+  String get recurringAmount;
+
+  /// No description provided for @recurringType.
+  ///
+  /// In vi, this message translates to:
+  /// **'Loại'**
+  String get recurringType;
+
+  /// No description provided for @recurringIncome.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thu nhập'**
+  String get recurringIncome;
+
+  /// No description provided for @recurringExpense.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu'**
+  String get recurringExpense;
+
+  /// No description provided for @recurringWallet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví'**
+  String get recurringWallet;
+
+  /// No description provided for @recurringCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Danh mục'**
+  String get recurringCategory;
+
+  /// No description provided for @recurringNote.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi chú (tùy chọn)'**
+  String get recurringNote;
+
+  /// No description provided for @recurringFrequency.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tần suất'**
+  String get recurringFrequency;
+
+  /// No description provided for @recurringInterval.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi'**
+  String get recurringInterval;
+
+  /// No description provided for @recurringDaily.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hàng ngày'**
+  String get recurringDaily;
+
+  /// No description provided for @recurringWeekly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hàng tuần'**
+  String get recurringWeekly;
+
+  /// No description provided for @recurringMonthly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hàng tháng'**
+  String get recurringMonthly;
+
+  /// No description provided for @recurringYearly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hàng năm'**
+  String get recurringYearly;
+
+  /// No description provided for @recurringEvery.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi {interval} × {unit}'**
+  String recurringEvery(int interval, String unit);
+
+  /// No description provided for @recurringStartDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày bắt đầu'**
+  String get recurringStartDate;
+
+  /// No description provided for @recurringNextRun.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lần chạy tới'**
+  String get recurringNextRun;
+
+  /// No description provided for @recurringNextRunLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kế tiếp'**
+  String get recurringNextRunLabel;
+
+  /// No description provided for @recurringEndDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày kết thúc'**
+  String get recurringEndDate;
+
+  /// No description provided for @recurringNoEndDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có ngày kết thúc'**
+  String get recurringNoEndDate;
+
+  /// No description provided for @recurringAutoPost.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự động ghi giao dịch'**
+  String get recurringAutoPost;
+
+  /// No description provided for @recurringAutoPostHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự động tạo giao dịch vào mỗi ngày chạy'**
+  String get recurringAutoPostHelp;
+
+  /// No description provided for @recurringActive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang hoạt động'**
+  String get recurringActive;
+
+  /// No description provided for @recurringPaused.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạm dừng'**
+  String get recurringPaused;
+
+  /// No description provided for @recurringDeleteTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa khoản định kỳ?'**
+  String get recurringDeleteTitle;
+
+  /// No description provided for @recurringDeleteMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quy tắc định kỳ này sẽ bị xóa. Các giao dịch đã tạo vẫn được giữ lại.'**
+  String get recurringDeleteMessage;
+
+  /// No description provided for @recurringSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu khoản định kỳ'**
+  String get recurringSaved;
+
+  /// No description provided for @recurringAmountRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập số tiền lớn hơn 0'**
+  String get recurringAmountRequired;
+
+  /// No description provided for @recurringNoWallets.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy tạo ví trước khi thêm khoản định kỳ'**
+  String get recurringNoWallets;
+
+  /// No description provided for @recurringNoCategories.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy tạo danh mục phù hợp trước'**
+  String get recurringNoCategories;
+
   /// No description provided for @starredTransactionsEmpty.
   ///
   /// In vi, this message translates to:
@@ -3416,11 +3620,83 @@ abstract class AppLocalizations {
   /// **'Thay đổi múi giờ'**
   String get profileChangeTimezone;
 
+  /// No description provided for @profileMascotTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Linh vật ứng dụng'**
+  String get profileMascotTitle;
+
+  /// No description provided for @profileMascotSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiện linh vật hoạt hình trên thanh điều hướng dưới cùng.'**
+  String get profileMascotSubtitle;
+
   /// No description provided for @profileLanguage.
   ///
   /// In vi, this message translates to:
   /// **'Ngôn ngữ'**
   String get profileLanguage;
+
+  /// No description provided for @currencyPickerTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn tiền tệ'**
+  String get currencyPickerTitle;
+
+  /// No description provided for @currencyPickerSearch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm tiền tệ...'**
+  String get currencyPickerSearch;
+
+  /// No description provided for @currencyPickerNoResults.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy tiền tệ'**
+  String get currencyPickerNoResults;
+
+  /// No description provided for @currencyPickerPopular.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiền tệ phổ biến'**
+  String get currencyPickerPopular;
+
+  /// No description provided for @currencyPickerAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả tiền tệ'**
+  String get currencyPickerAll;
+
+  /// No description provided for @profileFirstDayOfWeekLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày đầu tuần'**
+  String get profileFirstDayOfWeekLabel;
+
+  /// No description provided for @profileFirstDayOfWeekMon.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thứ Hai'**
+  String get profileFirstDayOfWeekMon;
+
+  /// No description provided for @profileFirstDayOfWeekSun.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chủ Nhật'**
+  String get profileFirstDayOfWeekSun;
+
+  /// No description provided for @profileLanguageVi.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếng Việt'**
+  String get profileLanguageVi;
+
+  /// No description provided for @profileLanguageEn.
+  ///
+  /// In vi, this message translates to:
+  /// **'English'**
+  String get profileLanguageEn;
 
   /// No description provided for @timezonePickerSearch.
   ///
@@ -3578,6 +3854,16 @@ abstract class AppLocalizations {
   /// **'Sao chép tất cả liên hệ'**
   String get legalCopyAllContacts;
 
+  /// No description provided for @legalCopyAllText.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền riêng tư: {privacyEmail}\nHỗ trợ: {supportEmail}\nPháp lý: {legalEmail}'**
+  String legalCopyAllText(
+    String privacyEmail,
+    String supportEmail,
+    String legalEmail,
+  );
+
   /// No description provided for @legalCopyContactSuccess.
   ///
   /// In vi, this message translates to:
@@ -3679,6 +3965,72 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'FAQ quyền riêng tư & tài khoản'**
   String get privacyFaq;
+
+  /// No description provided for @privacyFaqHeroBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Các câu hỏi thường gặp về dữ liệu cá nhân, xuất dữ liệu, xóa tài khoản và yêu cầu quyền riêng tư.'**
+  String get privacyFaqHeroBody;
+
+  /// No description provided for @privacyFaqStoredDataQuestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'Moniary lưu những dữ liệu nào?'**
+  String get privacyFaqStoredDataQuestion;
+
+  /// No description provided for @privacyFaqStoredDataAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'App lưu hồ sơ, ví, danh mục, giao dịch, ghi chú và đường dẫn ảnh giao dịch khi người dùng tạo dữ liệu trong app.'**
+  String get privacyFaqStoredDataAnswer;
+
+  /// No description provided for @privacyFaqExportBeforeDeletionQuestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tôi có thể xuất dữ liệu trước khi xóa tài khoản không?'**
+  String get privacyFaqExportBeforeDeletionQuestion;
+
+  /// No description provided for @privacyFaqExportBeforeDeletionAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có. Bạn có thể xuất dữ liệu thành CSV, Excel hoặc PDF trong phần Xuất dữ liệu của tôi.'**
+  String get privacyFaqExportBeforeDeletionAnswer;
+
+  /// No description provided for @privacyFaqDeletionImagesQuestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa tài khoản có xóa ảnh giao dịch không?'**
+  String get privacyFaqDeletionImagesQuestion;
+
+  /// No description provided for @privacyFaqDeletionImagesAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Luồng xóa tài khoản được thiết kế để xóa dữ liệu app và ảnh giao dịch gắn với người dùng hiện tại.'**
+  String get privacyFaqDeletionImagesAnswer;
+
+  /// No description provided for @privacyFaqDeletionFailQuestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nếu xóa tài khoản trực tiếp thất bại thì sao?'**
+  String get privacyFaqDeletionFailQuestion;
+
+  /// No description provided for @privacyFaqDeletionFailAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có thể tạo file yêu cầu xóa dữ liệu thủ công và gửi cho kênh hỗ trợ quyền riêng tư.'**
+  String get privacyFaqDeletionFailAnswer;
+
+  /// No description provided for @privacyFaqExportLocationQuestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'File xuất dữ liệu nằm ở đâu?'**
+  String get privacyFaqExportLocationQuestion;
+
+  /// No description provided for @privacyFaqExportLocationAnswer.
+  ///
+  /// In vi, this message translates to:
+  /// **'File xuất dữ liệu được lưu trong thư mục tài liệu của app trên thiết bị và có thể mở hoặc chia sẻ từ lịch sử xuất dữ liệu.'**
+  String get privacyFaqExportLocationAnswer;
 
   /// No description provided for @privacyCenter.
   ///
@@ -4841,8 +5193,50 @@ abstract class AppLocalizations {
   /// No description provided for @thirdPartyServicesSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xem app dùng dịch vụ đồng bộ, lưu trữ và bộ nhớ thiết bị như thế nào.'**
+  /// **'Xem app đang dùng Supabase, Flutter/package và bộ nhớ thiết bị như thế nào.'**
   String get thirdPartyServicesSubtitle;
+
+  /// No description provided for @thirdPartyHeroBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo này giúp người dùng hiểu app dựa vào dịch vụ nào để đăng nhập, lưu trữ và vận hành dữ liệu.'**
+  String get thirdPartyHeroBody;
+
+  /// No description provided for @thirdPartySupabaseDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Được dùng cho đăng nhập, cơ sở dữ liệu, storage ảnh giao dịch và edge function xóa tài khoản.'**
+  String get thirdPartySupabaseDescription;
+
+  /// No description provided for @thirdPartyFlutterDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Framework giao diện chính của app, kèm các package hỗ trợ điều hướng, trạng thái, camera, chọn ảnh và xử lý file.'**
+  String get thirdPartyFlutterDescription;
+
+  /// No description provided for @thirdPartyDeviceStorageTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bộ nhớ thiết bị'**
+  String get thirdPartyDeviceStorageTitle;
+
+  /// No description provided for @thirdPartyDeviceStorageDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'File export, request privacy và lịch sử export/request được ghi trong thư mục tài liệu của app trên thiết bị.'**
+  String get thirdPartyDeviceStorageDescription;
+
+  /// No description provided for @thirdPartyNoAdsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tích hợp quảng cáo'**
+  String get thirdPartyNoAdsTitle;
+
+  /// No description provided for @thirdPartyNoAdsDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'MVP không dùng SDK quảng cáo, tracking marketing, danh bạ, SMS, email inbox hoặc kết nối ngân hàng tự động.'**
+  String get thirdPartyNoAdsDescription;
 
   /// No description provided for @releaseChecklistTitle.
   ///
@@ -4901,8 +5295,62 @@ abstract class AppLocalizations {
   /// No description provided for @userDataRightsSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tóm tắt quyền xem dữ liệu, xuất dữ liệu, yêu cầu sửa/xóa và liên hệ quyền riêng tư.'**
+  /// **'Tóm tắt quyền xem dữ liệu, xuất dữ liệu, yêu cầu sửa/xóa và liên hệ privacy.'**
   String get userDataRightsSubtitle;
+
+  /// No description provided for @userRightsHeroBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng có quyền hiểu dữ liệu nào đang được lưu, xuất dữ liệu của mình và gửi yêu cầu privacy khi cần.'**
+  String get userRightsHeroBody;
+
+  /// No description provided for @userRightsAccessTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem dữ liệu đang lưu'**
+  String get userRightsAccessTitle;
+
+  /// No description provided for @userRightsAccessDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng có thể xem tổng quan dữ liệu, nhóm dữ liệu, ảnh giao dịch và file cục bộ.'**
+  String get userRightsAccessDescription;
+
+  /// No description provided for @userRightsExportTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất dữ liệu'**
+  String get userRightsExportTitle;
+
+  /// No description provided for @userRightsExportDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng có thể xuất dữ liệu ở định dạng CSV, Excel hoặc PDF trước khi chia sẻ hoặc rời app.'**
+  String get userRightsExportDescription;
+
+  /// No description provided for @userRightsCorrectionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu sửa hoặc hỗ trợ'**
+  String get userRightsCorrectionTitle;
+
+  /// No description provided for @userRightsCorrectionDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng có thể tạo yêu cầu privacy nếu dữ liệu cần kiểm tra, sửa hoặc giải thích thêm.'**
+  String get userRightsCorrectionDescription;
+
+  /// No description provided for @userRightsDeletionTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu xóa dữ liệu'**
+  String get userRightsDeletionTitle;
+
+  /// No description provided for @userRightsDeletionDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng có thể xóa tài khoản trong app hoặc tạo request thủ công khi luồng trực tiếp thất bại.'**
+  String get userRightsDeletionDescription;
 
   /// No description provided for @policyAcceptanceNoticeTitle.
   ///
@@ -4915,6 +5363,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Giải thích rằng việc tiếp tục sử dụng app áp dụng theo chính sách và điều khoản hiện tại.'**
   String get policyAcceptanceNoticeSubtitle;
+
+  /// No description provided for @policyAcceptanceHero.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo này giúp người dùng hiểu rằng các chính sách hiện tại áp dụng khi tiếp tục sử dụng Moniary.'**
+  String get policyAcceptanceHero;
+
+  /// No description provided for @policyAcceptanceBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khi tiếp tục dùng Moniary, người dùng xác nhận đã có cơ hội đọc Chính sách bảo mật, Điều khoản sử dụng, thông báo lưu giữ dữ liệu và các ghi chú an toàn liên quan.'**
+  String get policyAcceptanceBody;
 
   /// No description provided for @legalContactTitle.
   ///
@@ -6398,11 +6858,47 @@ abstract class AppLocalizations {
   /// **'Bạn cần chuyển quyền owner hoặc thêm một owner khác trước khi rời nhóm.'**
   String get groupOwnerTransferRequired;
 
+  /// No description provided for @groupOwnerRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ owner của nhóm mới có thể thực hiện thao tác này.'**
+  String get groupOwnerRequired;
+
+  /// No description provided for @groupOwnerTransferTargetRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng chọn một thành viên đang tham gia khác để làm owner.'**
+  String get groupOwnerTransferTargetRequired;
+
+  /// No description provided for @groupTransferOwnership.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển owner'**
+  String get groupTransferOwnership;
+
+  /// No description provided for @groupTransferOwnershipConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển quyền owner của nhóm cho {member}?'**
+  String groupTransferOwnershipConfirm(String member);
+
+  /// No description provided for @groupTransferOwnershipDone.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chuyển quyền owner của nhóm.'**
+  String get groupTransferOwnershipDone;
+
   /// No description provided for @groupInviteTitle.
   ///
   /// In vi, this message translates to:
   /// **'Mời thành viên'**
   String get groupInviteTitle;
+
+  /// No description provided for @groupInviteAfterCreate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mời thành viên sau khi tạo nhóm'**
+  String get groupInviteAfterCreate;
 
   /// No description provided for @groupInviteByUsername.
   ///
@@ -6554,6 +7050,24 @@ abstract class AppLocalizations {
   /// **'Mở nhóm'**
   String get groupInviteOpenGroups;
 
+  /// No description provided for @groupCopyInviteLink.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sao chép link'**
+  String get groupCopyInviteLink;
+
+  /// No description provided for @groupShareInviteLink.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ link'**
+  String get groupShareInviteLink;
+
+  /// No description provided for @groupInviteShareMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tham gia nhóm chi tiêu của mình trên Moniary nhé: {link}'**
+  String groupInviteShareMessage(String link);
+
   /// No description provided for @groupInviteSent.
   ///
   /// In vi, this message translates to:
@@ -6577,6 +7091,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Mời từ danh sách bạn bè'**
   String get groupFriendInviteTitle;
+
+  /// No description provided for @groupInviteAlreadyAccepted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Link mời nhóm đã được sử dụng.'**
+  String get groupInviteAlreadyAccepted;
+
+  /// No description provided for @groupInviteGroupArchived.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhóm này đã được lưu trữ.'**
+  String get groupInviteGroupArchived;
 
   /// No description provided for @groupMemberInvited.
   ///
@@ -6631,6 +7157,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Ảnh không bắt buộc nhưng được khuyến khích.'**
   String get groupTransactionImageOptional;
+
+  /// No description provided for @groupTransactionImageUploadFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Upload ảnh thất bại. Hãy chọn lại ảnh để thử lại.'**
+  String get groupTransactionImageUploadFailed;
 
   /// No description provided for @groupSplitModeTitle.
   ///
@@ -6827,8 +7359,26 @@ abstract class AppLocalizations {
   /// No description provided for @groupPhotoAlbumEmpty.
   ///
   /// In vi, this message translates to:
-  /// **'Chưa có ảnh nào'**
+  /// **'Chưa có ảnh giao dịch'**
   String get groupPhotoAlbumEmpty;
+
+  /// No description provided for @groupPhotoAlbumLoadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tải album ảnh'**
+  String get groupPhotoAlbumLoadError;
+
+  /// No description provided for @groupTransactionFallback.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch nhóm'**
+  String get groupTransactionFallback;
+
+  /// No description provided for @groupMemberFallback.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành viên'**
+  String get groupMemberFallback;
 
   /// No description provided for @groupBudgetTitle.
   ///
@@ -6836,10 +7386,16 @@ abstract class AppLocalizations {
   /// **'Ngân sách nhóm'**
   String get groupBudgetTitle;
 
+  /// No description provided for @groupBudgetSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt giới hạn chi tiêu chung mỗi tháng cho nhóm.'**
+  String get groupBudgetSubtitle;
+
   /// No description provided for @groupBudgetMonthlyLimit.
   ///
   /// In vi, this message translates to:
-  /// **'Giới hạn hàng tháng'**
+  /// **'Giới hạn mỗi tháng'**
   String get groupBudgetMonthlyLimit;
 
   /// No description provided for @groupBudgetWarningThreshold.
@@ -6877,6 +7433,24 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Đã cập nhật ngân sách'**
   String get groupBudgetSaved;
+
+  /// No description provided for @groupBudgetCurrencySuffix.
+  ///
+  /// In vi, this message translates to:
+  /// **'theo tiền tệ của bạn'**
+  String get groupBudgetCurrencySuffix;
+
+  /// No description provided for @groupBudgetAdminOnly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ chủ nhóm và quản trị viên được sửa ngân sách.'**
+  String get groupBudgetAdminOnly;
+
+  /// No description provided for @groupBudgetInvalidLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập giới hạn hợp lệ, không âm.'**
+  String get groupBudgetInvalidLimit;
 
   /// No description provided for @groupNotificationPrefsTitle.
   ///
@@ -6950,6 +7524,48 @@ abstract class AppLocalizations {
   /// **'Đã lưu cài đặt thông báo'**
   String get groupNotificationPrefsSaved;
 
+  /// No description provided for @groupNotificationPreferencesTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tuỳ chọn thông báo'**
+  String get groupNotificationPreferencesTitle;
+
+  /// No description provided for @groupNotificationPreferencesSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn loại sự kiện nhóm bạn muốn nhận thông báo.'**
+  String get groupNotificationPreferencesSubtitle;
+
+  /// No description provided for @groupNotificationMuteAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tắt tất cả thông báo'**
+  String get groupNotificationMuteAll;
+
+  /// No description provided for @groupNotificationTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật giao dịch'**
+  String get groupNotificationTransactions;
+
+  /// No description provided for @groupNotificationDebts.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật nợ và tất toán'**
+  String get groupNotificationDebts;
+
+  /// No description provided for @groupNotificationInvites.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lời mời'**
+  String get groupNotificationInvites;
+
+  /// No description provided for @groupNotificationMentions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lượt nhắc tên'**
+  String get groupNotificationMentions;
+
   /// No description provided for @groupPublicProfileTitle.
   ///
   /// In vi, this message translates to:
@@ -6989,7 +7605,7 @@ abstract class AppLocalizations {
   /// No description provided for @groupPublicProfileSlug.
   ///
   /// In vi, this message translates to:
-  /// **'Liên kết tùy chỉnh'**
+  /// **'Slug công khai'**
   String get groupPublicProfileSlug;
 
   /// No description provided for @groupPublicProfileSlugHint.
@@ -7010,6 +7626,66 @@ abstract class AppLocalizations {
   /// **'Đã cập nhật trang công khai'**
   String get groupPublicProfileSaved;
 
+  /// No description provided for @groupPublicProfileSettingsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cài đặt trang công khai'**
+  String get groupPublicProfileSettingsTitle;
+
+  /// No description provided for @groupPublicProfileSettingsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ thông tin an toàn của nhóm được hiển thị công khai.'**
+  String get groupPublicProfileSettingsSubtitle;
+
+  /// No description provided for @groupPublicProfileEnabled.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bật trang công khai'**
+  String get groupPublicProfileEnabled;
+
+  /// No description provided for @groupPublicProfileShowStatsSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ hiển thị số lượng tổng hợp và tổng chi tiêu.'**
+  String get groupPublicProfileShowStatsSubtitle;
+
+  /// No description provided for @groupPublicProfileInvalidSlug.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng 3–80 chữ thường, số hoặc dấu gạch ngang.'**
+  String get groupPublicProfileInvalidSlug;
+
+  /// No description provided for @groupPublicProfileFallbackName.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhóm Moniary'**
+  String get groupPublicProfileFallbackName;
+
+  /// No description provided for @groupPublicProfileMembers.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành viên'**
+  String get groupPublicProfileMembers;
+
+  /// No description provided for @groupPublicProfileTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch'**
+  String get groupPublicProfileTransactions;
+
+  /// No description provided for @groupPublicProfileTotalSpent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng chi'**
+  String get groupPublicProfileTotalSpent;
+
+  /// No description provided for @groupPublicProfileSafeNotice.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không hiển thị thông tin cá nhân hay dữ liệu giao dịch chi tiết.'**
+  String get groupPublicProfileSafeNotice;
+
   /// No description provided for @groupRecurringTitle.
   ///
   /// In vi, this message translates to:
@@ -7019,25 +7695,25 @@ abstract class AppLocalizations {
   /// No description provided for @groupRecurringAdd.
   ///
   /// In vi, this message translates to:
-  /// **'Thêm định kỳ'**
+  /// **'Thêm giao dịch định kỳ'**
   String get groupRecurringAdd;
 
-  /// No description provided for @groupRecurringEditTitle.
+  /// No description provided for @groupRecurringEdit.
   ///
   /// In vi, this message translates to:
-  /// **'Sửa định kỳ'**
-  String get groupRecurringEditTitle;
+  /// **'Sửa giao dịch định kỳ'**
+  String get groupRecurringEdit;
 
   /// No description provided for @groupRecurringEmpty.
   ///
   /// In vi, this message translates to:
-  /// **'Chưa có giao dịch định kỳ nào'**
+  /// **'Chưa có giao dịch định kỳ'**
   String get groupRecurringEmpty;
 
   /// No description provided for @groupRecurringName.
   ///
   /// In vi, this message translates to:
-  /// **'Tên'**
+  /// **'Tên giao dịch'**
   String get groupRecurringName;
 
   /// No description provided for @groupRecurringAmount.
@@ -7067,50 +7743,32 @@ abstract class AppLocalizations {
   /// No description provided for @groupRecurringNextRun.
   ///
   /// In vi, this message translates to:
-  /// **'Lần tới'**
+  /// **'Lần chạy tiếp theo'**
   String get groupRecurringNextRun;
 
-  /// No description provided for @groupRecurringNotifyDays.
+  /// No description provided for @groupRecurringNotifyBefore.
   ///
   /// In vi, this message translates to:
   /// **'Báo trước số ngày'**
-  String get groupRecurringNotifyDays;
+  String get groupRecurringNotifyBefore;
 
-  /// No description provided for @groupRecurringInactive.
+  /// No description provided for @groupRecurringActive.
   ///
   /// In vi, this message translates to:
-  /// **'Tạm dừng'**
-  String get groupRecurringInactive;
+  /// **'Đang hoạt động'**
+  String get groupRecurringActive;
 
-  /// No description provided for @groupRecurringDeactivate.
+  /// No description provided for @groupRecurringDeleteTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tạm dừng định kỳ này'**
-  String get groupRecurringDeactivate;
+  /// **'Xoá giao dịch định kỳ?'**
+  String get groupRecurringDeleteTitle;
 
-  /// No description provided for @groupRecurringReactivate.
+  /// No description provided for @groupRecurringDeleteMessage.
   ///
   /// In vi, this message translates to:
-  /// **'Tiếp tục định kỳ này'**
-  String get groupRecurringReactivate;
-
-  /// No description provided for @groupRecurringNameRequired.
-  ///
-  /// In vi, this message translates to:
-  /// **'Cần nhập tên'**
-  String get groupRecurringNameRequired;
-
-  /// No description provided for @groupRecurringAmountRequired.
-  ///
-  /// In vi, this message translates to:
-  /// **'Số tiền phải lớn hơn 0'**
-  String get groupRecurringAmountRequired;
-
-  /// No description provided for @groupRecurringSaved.
-  ///
-  /// In vi, this message translates to:
-  /// **'Đã lưu giao dịch định kỳ'**
-  String get groupRecurringSaved;
+  /// **'Giao dịch định kỳ này sẽ bị xoá vĩnh viễn.'**
+  String get groupRecurringDeleteMessage;
 
   /// No description provided for @groupActivityTransactionReacted.
   ///
@@ -7358,6 +8016,12 @@ abstract class AppLocalizations {
   /// **'Vui lòng nhập nội dung bình luận.'**
   String get groupCommentRequired;
 
+  /// No description provided for @groupCommentDeleteConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa bình luận này?'**
+  String get groupCommentDeleteConfirm;
+
   /// No description provided for @groupUnknownMember.
   ///
   /// In vi, this message translates to:
@@ -7405,6 +8069,108 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Thống kê nhóm cơ bản dùng tổng chi và công nợ hiện tại.'**
   String get groupStatsPlaceholder;
+
+  /// No description provided for @groupStatsLoadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được thống kê nhóm.'**
+  String get groupStatsLoadError;
+
+  /// No description provided for @groupStatsTransactionCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số giao dịch'**
+  String get groupStatsTransactionCount;
+
+  /// No description provided for @groupStatsPendingCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ xử lý'**
+  String get groupStatsPendingCount;
+
+  /// No description provided for @groupNotificationsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo nhóm'**
+  String get groupNotificationsTitle;
+
+  /// No description provided for @groupNotificationsEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có thông báo nhóm.'**
+  String get groupNotificationsEmpty;
+
+  /// No description provided for @groupNotificationInvite.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có lời mời vào nhóm.'**
+  String get groupNotificationInvite;
+
+  /// No description provided for @groupNotificationMemberJoined.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có thành viên mới tham gia nhóm.'**
+  String get groupNotificationMemberJoined;
+
+  /// No description provided for @groupNotificationTransactionCreated.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có giao dịch nhóm mới.'**
+  String get groupNotificationTransactionCreated;
+
+  /// No description provided for @groupNotificationOwnerTransferred.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền owner của nhóm đã được chuyển.'**
+  String get groupNotificationOwnerTransferred;
+
+  /// No description provided for @groupNotificationGeneric.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có cập nhật mới trong nhóm.'**
+  String get groupNotificationGeneric;
+
+  /// No description provided for @groupActivitiesTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoạt động nhóm'**
+  String get groupActivitiesTitle;
+
+  /// No description provided for @groupActivitiesEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có hoạt động nhóm.'**
+  String get groupActivitiesEmpty;
+
+  /// No description provided for @groupActivitiesLoadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tải được hoạt động nhóm.'**
+  String get groupActivitiesLoadError;
+
+  /// No description provided for @groupActivityTransactionCreated.
+  ///
+  /// In vi, this message translates to:
+  /// **'{actor} đã tạo giao dịch nhóm.'**
+  String groupActivityTransactionCreated(String actor);
+
+  /// No description provided for @groupActivityTransactionPosted.
+  ///
+  /// In vi, this message translates to:
+  /// **'{actor} đã đăng giao dịch nhóm.'**
+  String groupActivityTransactionPosted(String actor);
+
+  /// No description provided for @groupActivityOwnerTransferred.
+  ///
+  /// In vi, this message translates to:
+  /// **'{actor} đã chuyển quyền owner của nhóm.'**
+  String groupActivityOwnerTransferred(String actor);
+
+  /// No description provided for @groupActivityGeneric.
+  ///
+  /// In vi, this message translates to:
+  /// **'{actor} đã cập nhật nhóm.'**
+  String groupActivityGeneric(String actor);
 
   /// No description provided for @groupLeaveWarningActivity.
   ///
@@ -7543,6 +8309,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Đã gửi lời mời'**
   String get friendOutgoingRequests;
+
+  /// No description provided for @friendRequestsEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có lời mời kết bạn nào.'**
+  String get friendRequestsEmpty;
 
   /// No description provided for @friendAccept.
   ///
@@ -8155,14 +8927,26 @@ abstract class AppLocalizations {
   /// No description provided for @journalRecapTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tổng kết tháng'**
+  /// **'Money Story'**
   String get journalRecapTitle;
 
   /// No description provided for @journalRecapMonth.
   ///
   /// In vi, this message translates to:
-  /// **'Tổng kết {month}'**
+  /// **'Money Story {month}'**
   String journalRecapMonth(String month);
+
+  /// No description provided for @journalMoneyStoryMonth.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng {month}'**
+  String journalMoneyStoryMonth(String month);
+
+  /// No description provided for @journalMoneyStoryExpenseLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng chi tháng này'**
+  String get journalMoneyStoryExpenseLabel;
 
   /// No description provided for @journalRecordedCount.
   ///
@@ -8215,13 +8999,139 @@ abstract class AppLocalizations {
   /// No description provided for @journalShareRecap.
   ///
   /// In vi, this message translates to:
-  /// **'Chia sẻ tổng kết'**
+  /// **'Chia sẻ story'**
   String get journalShareRecap;
+
+  /// No description provided for @journalMoneyStoryCashFlow.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dòng tiền tháng này'**
+  String get journalMoneyStoryCashFlow;
+
+  /// No description provided for @journalMoneyStoryIncome.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thu vào'**
+  String get journalMoneyStoryIncome;
+
+  /// No description provided for @journalMoneyStoryExpense.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi ra'**
+  String get journalMoneyStoryExpense;
+
+  /// No description provided for @journalMoneyStoryNet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Còn lại'**
+  String get journalMoneyStoryNet;
+
+  /// No description provided for @journalMoneyStoryAverageDay.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trung bình / ngày ghi'**
+  String get journalMoneyStoryAverageDay;
+
+  /// No description provided for @journalMoneyStoryActiveDays.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ngày có ghi chép'**
+  String journalMoneyStoryActiveDays(int count);
+
+  /// No description provided for @journalMoneyStoryCategoryShare.
+  ///
+  /// In vi, this message translates to:
+  /// **'{category} chiếm {percent}%'**
+  String journalMoneyStoryCategoryShare(String category, int percent);
+
+  /// No description provided for @journalMoneyStoryCategoryPercent.
+  ///
+  /// In vi, this message translates to:
+  /// **'{percent}%'**
+  String journalMoneyStoryCategoryPercent(int percent);
+
+  /// No description provided for @journalMoneyStoryHighestDayEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có ngày chi nổi bật trong tháng này.'**
+  String get journalMoneyStoryHighestDayEmpty;
+
+  /// No description provided for @journalMoneyStoryHighestDayTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} khoản trong ngày này'**
+  String journalMoneyStoryHighestDayTransactions(int count);
+
+  /// No description provided for @journalMoneyStoryInsightsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Những điều tháng này kể lại'**
+  String get journalMoneyStoryInsightsTitle;
+
+  /// No description provided for @journalMoneyStoryInsightSpendingDown.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn chi ít hơn {percent}% so với tháng trước.'**
+  String journalMoneyStoryInsightSpendingDown(int percent);
+
+  /// No description provided for @journalMoneyStoryInsightSpendingUp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu tăng {percent}% so với tháng trước.'**
+  String journalMoneyStoryInsightSpendingUp(int percent);
+
+  /// No description provided for @journalMoneyStoryInsightTopCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'{category} là điểm rơi lớn nhất, chiếm {percent}% tổng chi.'**
+  String journalMoneyStoryInsightTopCategory(String category, int percent);
+
+  /// No description provided for @journalMoneyStoryInsightWeekend.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cuối tuần chiếm {percent}% chi tiêu của tháng.'**
+  String journalMoneyStoryInsightWeekend(int percent);
+
+  /// No description provided for @journalMoneyStoryInsightRecording.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn ghi chép trong {count} ngày, đủ đều để nhìn ra thói quen.'**
+  String journalMoneyStoryInsightRecording(int count);
+
+  /// No description provided for @journalMoneyStoryInsightQuiet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng này còn khá yên ắng. Ghi thêm vài khoản để story kể được nhiều hơn.'**
+  String get journalMoneyStoryInsightQuiet;
+
+  /// No description provided for @journalMoneyStoryShareTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sẵn sàng lưu lại tháng này'**
+  String get journalMoneyStoryShareTitle;
+
+  /// No description provided for @journalMoneyStoryShareBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo poster gọn đẹp để chia sẻ hoặc giữ riêng trong máy.'**
+  String get journalMoneyStoryShareBody;
+
+  /// No description provided for @journalMoneyStoryNoTransactionsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Story tháng này còn trống'**
+  String get journalMoneyStoryNoTransactionsTitle;
+
+  /// No description provided for @journalMoneyStoryNoTransactionsBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi vài khoản chi để Moniary kể lại tháng của bạn bằng số liệu và hình ảnh.'**
+  String get journalMoneyStoryNoTransactionsBody;
 
   /// No description provided for @journalExportTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xuất nhật ký'**
+  /// **'Xuất Money Story'**
   String get journalExportTitle;
 
   /// No description provided for @journalExportPost.
@@ -8239,13 +9149,13 @@ abstract class AppLocalizations {
   /// No description provided for @journalExportBrand.
   ///
   /// In vi, this message translates to:
-  /// **'Moniary · Nhật ký chi tiêu'**
+  /// **'Moniary · Money Story'**
   String get journalExportBrand;
 
   /// No description provided for @journalExportSaved.
   ///
   /// In vi, this message translates to:
-  /// **'Đã tạo ảnh nhật ký để bạn chia sẻ.'**
+  /// **'Đã tạo ảnh Money Story để bạn chia sẻ.'**
   String get journalExportSaved;
 
   /// No description provided for @journalExportWholeMonth.
@@ -8397,6 +9307,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Kết bạn'**
   String get friendInviteAcceptButton;
+
+  /// No description provided for @friendInviteAgreeButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng ý'**
+  String get friendInviteAgreeButton;
 
   /// No description provided for @friendInviteAccepted.
   ///
@@ -8787,6 +9703,204 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Không thể mở camera. Bạn có thể nhập giao dịch thủ công.'**
   String get cameraFallbackGenericError;
+
+  /// No description provided for @scanSuggestionNotice.
+  ///
+  /// In vi, this message translates to:
+  /// **'Các trường có nhãn AI đề xuất được điền từ hóa đơn. Hãy kiểm tra trước khi lưu.'**
+  String get scanSuggestionNotice;
+
+  /// No description provided for @scanAiSuggestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'AI đề xuất'**
+  String get scanAiSuggestion;
+
+  /// No description provided for @scanSuggestionNeedsReview.
+  ///
+  /// In vi, this message translates to:
+  /// **'AI đề xuất - nên kiểm tra lại'**
+  String get scanSuggestionNeedsReview;
+
+  /// No description provided for @friendQrTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'QR kết bạn'**
+  String get friendQrTitle;
+
+  /// No description provided for @friendQrMyCode.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mã của tôi'**
+  String get friendQrMyCode;
+
+  /// No description provided for @friendQrScan.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quét mã'**
+  String get friendQrScan;
+
+  /// No description provided for @friendQrRetry.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử lại'**
+  String get friendQrRetry;
+
+  /// No description provided for @friendQrShare.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ mã'**
+  String get friendQrShare;
+
+  /// No description provided for @friendQrLoadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể khởi động camera.'**
+  String get friendQrLoadError;
+
+  /// No description provided for @friendQrTorch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bật hoặc tắt đèn pin'**
+  String get friendQrTorch;
+
+  /// No description provided for @friendQrSwitchCamera.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đổi camera'**
+  String get friendQrSwitchCamera;
+
+  /// No description provided for @friendQrInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đây không phải mã QR kết bạn Moniary hợp lệ.'**
+  String get friendQrInvalid;
+
+  /// No description provided for @friendRateLimited.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã gửi quá nhiều lời mời kết bạn. Vui lòng thử lại sau.'**
+  String get friendRateLimited;
+
+  /// No description provided for @groupSplitExact.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền cụ thể'**
+  String get groupSplitExact;
+
+  /// No description provided for @groupParticipantsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người tham gia khoản chi'**
+  String get groupParticipantsTitle;
+
+  /// No description provided for @groupSettlementDisputeTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Báo cáo vấn đề thanh toán'**
+  String get groupSettlementDisputeTitle;
+
+  /// No description provided for @groupSettlementDisputeReasonHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mô tả thông tin chưa chính xác'**
+  String get groupSettlementDisputeReasonHint;
+
+  /// No description provided for @groupSettlementDisputeReasonRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng nhập lý do tranh chấp.'**
+  String get groupSettlementDisputeReasonRequired;
+
+  /// No description provided for @groupSettlementDisputeAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tranh chấp'**
+  String get groupSettlementDisputeAction;
+
+  /// No description provided for @groupTransferOwnershipAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển quyền chủ nhóm'**
+  String get groupTransferOwnershipAction;
+
+  /// No description provided for @groupRemoveMemberAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa thành viên'**
+  String get groupRemoveMemberAction;
+
+  /// No description provided for @groupMemberRemoveUnresolved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thành viên này vẫn còn số dư chưa quyết toán nên chưa thể xóa.'**
+  String get groupMemberRemoveUnresolved;
+
+  /// No description provided for @groupMemberActionForbidden.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không có quyền quản lý thành viên này.'**
+  String get groupMemberActionForbidden;
+
+  /// No description provided for @mascotFirstTransaction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chào bạn! Hãy thêm giao dịch đầu tiên để heo theo dõi nhé! 🐷'**
+  String get mascotFirstTransaction;
+
+  /// No description provided for @mascotOverBudget.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví đang khóc vì mục {category} vượt trần rồi kìa! 🛑'**
+  String mascotOverBudget(String category);
+
+  /// No description provided for @mascotNearBudget.
+  ///
+  /// In vi, this message translates to:
+  /// **'Coi chừng mục {category} sắp chạm trần ngân sách nha! ⚠️'**
+  String mascotNearBudget(String category);
+
+  /// No description provided for @mascotZeroExpenseToday.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hôm nay chưa tiêu đồng nào! Heo tự hào về bạn! 🐖💖'**
+  String get mascotZeroExpenseToday;
+
+  /// No description provided for @mascotGoodSavings.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng này tiết kiệm được {percent}%. Quá siêu! 🏆'**
+  String mascotGoodSavings(String percent);
+
+  /// No description provided for @mascotFunQuote1.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hôm nay bạn đã ghi chép chi tiêu chưa? 📝'**
+  String get mascotFunQuote1;
+
+  /// No description provided for @mascotFunQuote2.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nghe heo đi, đừng mua món đó! 🐽'**
+  String get mascotFunQuote2;
+
+  /// No description provided for @mascotFunQuote3.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiết kiệm một đồng là kiếm được một đồng! 💰'**
+  String get mascotFunQuote3;
+
+  /// No description provided for @mascotFunQuote4.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nuôi heo đất mau lớn để đi chơi thôi! 🐖'**
+  String get mascotFunQuote4;
+
+  /// No description provided for @mascotFunQuote5.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bấm vào heo để nhận lời khuyên nè! 🐷'**
+  String get mascotFunQuote5;
 }
 
 class _AppLocalizationsDelegate

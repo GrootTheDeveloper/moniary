@@ -35,7 +35,7 @@ class ImportHistoryEntry {
       id: map['id'] as String? ?? '',
       fileName: map['file_name'] as String? ?? 'unknown.csv',
       importedCount: map['imported_count'] as int? ?? 0,
-      walletName: map['wallet_name'] as String? ?? 'Unknown',
+      walletName: map['wallet_name'] as String? ?? '',
       createdAt:
           DateTime.tryParse(map['created_at'] as String? ?? '') ??
           DateTime.now(),

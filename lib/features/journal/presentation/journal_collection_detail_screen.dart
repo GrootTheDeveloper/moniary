@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
-import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/widgets/moniary_design.dart';
 import '../../../shared/widgets/supabase_image.dart';
@@ -94,7 +94,7 @@ class JournalCollectionDetailScreen extends ConsumerWidget {
                         Localizations.localeOf(context).toString(),
                       ).format(transaction.transactionDate),
                     ),
-                    trailing: Text(formatVnd(transaction.amount)),
+                    trailing: Text(ref.formatAmount(transaction.amount)),
                   );
                 },
               ),
@@ -263,13 +263,13 @@ class _CollectionTopBar extends StatelessWidget {
   }
 }
 
-class _CollectionHero extends StatelessWidget {
+class _CollectionHero extends ConsumerWidget {
   const _CollectionHero({required this.collection});
 
   final JournalCollectionSummary collection;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     return Column(
       children: [
@@ -293,7 +293,7 @@ class _CollectionHero extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          formatVnd(collection.totalExpense),
+          ref.formatAmount(collection.totalExpense),
           textAlign: TextAlign.center,
           style: context.moniaryTypography.displayMedium.copyWith(
             color: colors.textPrimary,

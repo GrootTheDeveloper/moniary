@@ -8,9 +8,10 @@ import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/app_logger.dart';
-import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/widgets/obscurable_amount_text.dart';
+import '../application/stats_insights_logic.dart';
 import '../../budgets/application/budget_controller.dart';
 import '../../budgets/domain/monthly_budget.dart';
 import '../../budgets/presentation/budget_screen.dart';
@@ -192,6 +193,11 @@ class _StatisticsBody extends StatelessWidget {
               .toList();
     final weekly = _WeeklySummary.fromTransactions(month, expenseTransactions);
     final topCategory = categories.isEmpty ? null : categories.first;
+    final insights = StatsInsightsLogic.generateInsights(
+      context,
+      transactions,
+      previousTransactions ?? const [],
+    );
 
     return SafeArea(
       bottom: false,
@@ -217,6 +223,10 @@ class _StatisticsBody extends StatelessWidget {
                   budget: budget,
                   onOpenBudget: onOpenBudget,
                 ),
+                if (insights.isNotEmpty) ...[
+                  const SizedBox(height: 22),
+                  _InsightsSection(insights: insights),
+                ],
                 const SizedBox(height: 25),
                 if (categories.isEmpty)
                   const _StatsEmpty()
@@ -342,7 +352,7 @@ class _HeaderArrowButton extends StatelessWidget {
   }
 }
 
-class _StatsHero extends StatelessWidget {
+class _StatsHero extends ConsumerWidget {
   const _StatsHero({
     required this.month,
     required this.expense,
@@ -358,7 +368,7 @@ class _StatsHero extends StatelessWidget {
   final VoidCallback onOpenBudget;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final monthLabel = _monthLabel(context, month);
     final budgetProgress = budget?.progress ?? 0;
@@ -376,7 +386,7 @@ class _StatsHero extends StatelessWidget {
         ),
         const SizedBox(height: 7),
         ObscurableAmountText(
-          amountText: _money(context, expense),
+          amountText: _money(ref, expense),
           style: context.moniaryTypography.displayLarge.copyWith(
             color: colors.textPrimary,
             fontSize: 43,
@@ -442,6 +452,69 @@ class _StatsHero extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _InsightsSection extends StatelessWidget {
+  const _InsightsSection({required this.insights});
+
+  final List<StatsInsight> insights;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(label: context.l10n.statsInsightTitle),
+        const SizedBox(height: 12),
+        for (var i = 0; i < insights.length; i++) ...[
+          if (i > 0) const SizedBox(height: 8),
+          _InsightCard(insight: insights[i]),
+        ],
+      ],
+    );
+  }
+}
+
+class _InsightCard extends StatelessWidget {
+  const _InsightCard({required this.insight});
+
+  final StatsInsight insight;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final accent = switch (insight.type) {
+      InsightType.success => colors.success,
+      InsightType.warning => AppTheme.terracotta,
+      InsightType.info => colors.primary,
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: accent.withValues(alpha: 0.28)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(insight.icon, size: 18, color: accent),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              insight.message,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -525,7 +598,10 @@ class _CategoryDonutSection extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    (active?.categoryName ?? '').toUpperCase(),
+                    _categoryLabel(
+                      context,
+                      active?.categoryName ?? '',
+                    ).toUpperCase(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: context.moniaryTypography.metadataStrong.copyWith(
@@ -551,7 +627,7 @@ class _CategoryDonutSection extends StatelessWidget {
               final selected = selectedCategoryId == item.categoryId;
               return _LegendRow(
                 color: _statColor(index, item.categoryColor),
-                label: item.categoryName,
+                label: _categoryLabel(context, item.categoryName),
                 percent: percent,
                 selected: selected,
                 onTap: () => onCategoryTap(item.categoryId),
@@ -780,7 +856,7 @@ class _CategoryListSection extends StatelessWidget {
   }
 }
 
-class _CategoryAmountRow extends StatelessWidget {
+class _CategoryAmountRow extends ConsumerWidget {
   const _CategoryAmountRow({
     required this.category,
     required this.color,
@@ -792,7 +868,7 @@ class _CategoryAmountRow extends StatelessWidget {
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     return Column(
       children: [
@@ -829,7 +905,7 @@ class _CategoryAmountRow extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          category.categoryName,
+                          _categoryLabel(context, category.categoryName),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyMedium
@@ -855,7 +931,7 @@ class _CategoryAmountRow extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   ObscurableAmountText(
-                    amountText: _money(context, category.amount),
+                    amountText: _money(ref, category.amount),
                     style: TextStyle(
                       color: colors.textPrimary,
                       fontFamily: 'JetBrains Mono',
@@ -996,7 +1072,14 @@ class _WeeklySummary {
   }
 }
 
-String _money(BuildContext context, double amount) => formatMoney(amount);
+String _categoryLabel(BuildContext context, String value) {
+  final trimmed = value.trim();
+  return trimmed.isEmpty ? context.l10n.categoryOther : trimmed;
+}
+
+String _money(WidgetRef ref, double amount) {
+  return ref.formatAmount(amount);
+}
 
 String _compactAmount(BuildContext context, double amount) {
   if (amount <= 0) return '0';

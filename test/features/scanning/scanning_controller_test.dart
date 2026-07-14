@@ -21,8 +21,16 @@ class SuccessOcrService implements OcrService {
   @override
   Future<OcrResult> extractFromImage(String imagePath) async {
     return const OcrResult(
-      merchantName: 'Test merchant',
-      totalAmount: 117,
+      merchantSuggestion: OcrSuggestion(
+        value: 'Test merchant',
+        confidence: 0.9,
+        source: OcrSuggestionSource.ocr,
+      ),
+      totalSuggestion: OcrSuggestion(
+        value: 117,
+        confidence: 0.9,
+        source: OcrSuggestionSource.ocr,
+      ),
       confidence: 0.9,
     );
   }

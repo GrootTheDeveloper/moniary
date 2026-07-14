@@ -1,3 +1,4 @@
+import '../entities/group_community.dart';
 import '../entities/group_invite.dart';
 import '../entities/group_roadmap.dart';
 import '../entities/group_settlement.dart';
@@ -32,6 +33,8 @@ abstract interface class GroupRepository {
 
   Future<void> declineDirectInvite(String inviteId);
 
+  Future<void> declineInvite(String token);
+
   Future<void> inviteByUsername({
     required String groupId,
     required String username,
@@ -62,42 +65,99 @@ abstract interface class GroupRepository {
 
   Future<GroupSettlementOverview> fetchSettlementOverview(String groupId);
 
+  Future<GroupStatsOverview> fetchStats(String groupId);
+
+  Future<List<GroupNotification>> fetchNotifications();
+
+  Future<void> markNotificationRead(String notificationId);
+
+  Future<List<GroupActivity>> fetchActivities(String groupId);
+
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  );
+
+  Future<void> updateNotificationPreference(
+    GroupNotificationPreference preference,
+  );
+
+  Future<List<GroupReactionSummary>> fetchReactionSummaries(
+    String transactionId,
+  );
+
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  });
+
+  Future<GroupMonthlyStats> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  });
+
+  Future<GroupBudget> fetchBudget(String groupId);
+
+  Future<void> updateBudget(GroupBudget budget);
+
+  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
+    String groupId,
+  );
+
+  Future<String> buildGroupReportCsv(String groupId);
+
+  Future<List<GroupFeedItem>> fetchFeed(String groupId);
+
+  Future<List<GroupPhotoItem>> fetchPhotoAlbum(String groupId);
+
+  Future<GroupPublicProfile> fetchPublicProfile(String groupId);
+
+  Future<void> updatePublicProfile(GroupPublicProfile profile);
+
   Future<void> markSettlementPaid(String settlementId);
 
   Future<void> confirmSettlementReceived(String settlementId);
 
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String reason,
+  });
+
+  Future<void> resetDisputedSettlement(String settlementId);
+
+  Future<void> removeMember({required String groupId, required String userId});
+
   Future<void> leaveGroup(String groupId);
+
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  });
 
   Future<void> addComment({
     required String transactionId,
     required String content,
   });
 
-  Future<GroupBudget?> fetchGroupBudget(String groupId);
+  Future<List<GroupReactionSummary>> fetchReactions(String transactionId);
 
-  Future<void> upsertGroupBudget({
-    required String groupId,
-    required int monthlyLimit,
-    required int warningThresholdPercent,
+  Future<void> updateComment({
+    required String commentId,
+    required String transactionId,
+    required String content,
   });
 
-  Future<GroupNotificationPreference> fetchNotificationPreference(
-    String groupId,
-  );
+  Future<void> deleteComment({
+    required String commentId,
+    required String transactionId,
+  });
 
-  Future<void> upsertNotificationPreference(
-    GroupNotificationPreference preference,
-  );
-
-  Future<GroupPublicProfile> fetchPublicProfile(String groupId);
-
-  Future<void> upsertPublicProfile(GroupPublicProfile profile);
+  Future<GroupPublicProfile> fetchPublicGroupProfile(String slug);
 
   Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
     String groupId,
   );
 
-  Future<void> createRecurringTransaction({
+  Future<String> createRecurringTransaction({
     required String groupId,
     required String title,
     required int amount,
@@ -108,7 +168,6 @@ abstract interface class GroupRepository {
 
   Future<void> updateRecurringTransaction({
     required String id,
-    required String groupId,
     required String title,
     required int amount,
     required String frequency,
@@ -116,4 +175,6 @@ abstract interface class GroupRepository {
     required int notifyDaysBefore,
     required bool isActive,
   });
+
+  Future<void> deleteRecurringTransaction(String id);
 }

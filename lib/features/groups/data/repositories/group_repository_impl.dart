@@ -5,6 +5,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../shared/utils/app_logger.dart';
+import '../../domain/entities/group_community.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_invite.dart';
 import '../../domain/entities/group_roadmap.dart';
@@ -262,6 +263,14 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<void> declineInvite(String token) {
+    if (_useMockData) {
+      return _mock.declineInvite(token);
+    }
+    return _guard('decline group invite', () => _remote.declineInvite(token));
+  }
+
+  @override
   Future<void> inviteByUsername({
     required String groupId,
     required String username,
@@ -457,6 +466,379 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<GroupStatsOverview> fetchStats(String groupId) {
+    if (_useMockData) {
+      return _mock.fetchStats(groupId);
+    }
+    return _guard('fetch group stats', () async {
+      final detail = await fetchGroupDetail(groupId);
+      final transactions = await fetchTransactions(groupId);
+      final settlement = await fetchSettlementOverview(groupId);
+      return _buildStats(
+        detail: detail,
+        transactions: transactions,
+        settlement: settlement,
+        currentUserId: currentUserId,
+      );
+    });
+  }
+
+  @override
+  Future<List<GroupNotification>> fetchNotifications() {
+    if (_useMockData) {
+      return _mock.fetchNotifications();
+    }
+    return _guard('fetch group notifications', () async {
+      return (await _remote.fetchNotifications())
+          .map(GroupModelMapper.notification)
+          .toList();
+    });
+  }
+
+  @override
+  Future<void> markNotificationRead(String notificationId) {
+    if (_useMockData) {
+      return _mock.markNotificationRead(notificationId);
+    }
+    return _guard(
+      'mark group notification read',
+      () => _remote.markNotificationRead(notificationId),
+    );
+  }
+
+  @override
+  Future<List<GroupActivity>> fetchActivities(String groupId) {
+    if (_useMockData) {
+      return _mock.fetchActivities(groupId);
+    }
+    return _guard('fetch group activities', () async {
+      return (await _remote.fetchActivities(
+        groupId,
+      )).map(GroupModelMapper.activity).toList();
+    });
+  }
+
+  @override
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  ) {
+    if (_useMockData) {
+      return _mock.fetchNotificationPreference(groupId);
+    }
+    return _guard('fetch group notification preference', () async {
+      return GroupModelMapper.notificationPreference(
+        await _remote.fetchNotificationPreference(groupId),
+      );
+    });
+  }
+
+  @override
+  Future<void> updateNotificationPreference(
+    GroupNotificationPreference preference,
+  ) {
+    if (_useMockData) {
+      return _mock.updateNotificationPreference(preference);
+    }
+    return _guard(
+      'update group notification preference',
+      () => _remote.updateNotificationPreference(preference),
+    );
+  }
+
+  @override
+  Future<List<GroupReactionSummary>> fetchReactionSummaries(
+    String transactionId,
+  ) {
+    if (_useMockData) {
+      return _mock.fetchReactionSummaries(transactionId);
+    }
+    return _guard('fetch group transaction reactions', () async {
+      return (await _remote.fetchReactionSummaries(
+        transactionId,
+      )).map(GroupModelMapper.reactionSummary).toList();
+    });
+  }
+
+  @override
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) {
+    if (_useMockData) {
+      return _mock.toggleReaction(transactionId: transactionId, emoji: emoji);
+    }
+    return _guard(
+      'toggle group transaction reaction',
+      () => _remote.toggleReaction(transactionId: transactionId, emoji: emoji),
+    );
+  }
+
+  @override
+  Future<GroupMonthlyStats> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  }) {
+    return _guard('fetch group monthly stats', () async {
+      final detail = await fetchGroupDetail(groupId);
+      final transactions = await fetchTransactions(groupId);
+      final start = DateTime(month.year, month.month);
+      final end = DateTime(month.year, month.month + 1);
+      final posted = transactions
+          .where(
+            (item) =>
+                item.splitStatus == GroupSplitStatus.posted &&
+                !item.transactionDate.isBefore(start) &&
+                item.transactionDate.isBefore(end),
+          )
+          .toList();
+      final categories = <String, ({int amount, int count})>{};
+      final members = {
+        for (final member in detail.activeMembers)
+          member.userId: _MemberStats(member.resolvedName),
+      };
+      for (final transaction in posted) {
+        final category = transaction.categoryName?.trim().isNotEmpty == true
+            ? transaction.categoryName!
+            : 'Chưa chọn danh mục';
+        final currentCategory = categories[category] ?? (amount: 0, count: 0);
+        categories[category] = (
+          amount: currentCategory.amount + transaction.totalAmount,
+          count: currentCategory.count + 1,
+        );
+
+        final txDetail = await fetchTransactionDetail(transaction.id);
+        final touchedMembers = <String>{};
+        for (final share in txDetail.shares) {
+          final member = members.putIfAbsent(
+            share.userId,
+            () => _MemberStats(
+              share.displayName?.trim().isNotEmpty == true
+                  ? share.displayName!
+                  : share.userId,
+            ),
+          );
+          member.shareAmount += share.shareAmount;
+          touchedMembers.add(share.userId);
+        }
+        for (final payer in txDetail.payers) {
+          final member = members.putIfAbsent(
+            payer.userId,
+            () => _MemberStats(
+              payer.displayName?.trim().isNotEmpty == true
+                  ? payer.displayName!
+                  : payer.userId,
+            ),
+          );
+          member.paidAmount += payer.paidAmount;
+          touchedMembers.add(payer.userId);
+        }
+        for (final userId in touchedMembers) {
+          members[userId]?.transactionCount += 1;
+        }
+      }
+      final categoryBreakdown =
+          categories.entries
+              .map(
+                (entry) => GroupCategorySpending(
+                  categoryName: entry.key,
+                  totalAmount: entry.value.amount,
+                  transactionCount: entry.value.count,
+                ),
+              )
+              .toList()
+            ..sort(
+              (left, right) => right.totalAmount.compareTo(left.totalAmount),
+            );
+      final topCategory = categoryBreakdown.isEmpty
+          ? null
+          : categoryBreakdown.first;
+      final memberBreakdown =
+          members.entries
+              .map(
+                (entry) => GroupMemberBreakdown(
+                  userId: entry.key,
+                  displayName: entry.value.displayName,
+                  shareAmount: entry.value.shareAmount,
+                  paidAmount: entry.value.paidAmount,
+                  balance: entry.value.shareAmount - entry.value.paidAmount,
+                  transactionCount: entry.value.transactionCount,
+                ),
+              )
+              .toList()
+            ..sort(
+              (left, right) => right.shareAmount.compareTo(left.shareAmount),
+            );
+      return GroupMonthlyStats(
+        groupId: groupId,
+        month: start,
+        totalSpent: posted.fold<int>(
+          0,
+          (sum, transaction) => sum + transaction.totalAmount,
+        ),
+        transactionCount: posted.length,
+        topCategoryName: topCategory?.categoryName,
+        topCategoryAmount: topCategory?.totalAmount ?? 0,
+        categoryBreakdown: categoryBreakdown,
+        memberBreakdown: memberBreakdown,
+      );
+    });
+  }
+
+  @override
+  Future<GroupBudget> fetchBudget(String groupId) {
+    if (_useMockData) {
+      return _mock.fetchBudget(groupId);
+    }
+    return _guard('fetch group budget', () async {
+      return GroupModelMapper.budget(await _remote.fetchBudget(groupId));
+    });
+  }
+
+  @override
+  Future<void> updateBudget(GroupBudget budget) {
+    if (_useMockData) {
+      return _mock.updateBudget(budget);
+    }
+    return _guard('update group budget', () => _remote.updateBudget(budget));
+  }
+
+  @override
+  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
+    String groupId,
+  ) async {
+    final overview = await fetchSettlementOverview(groupId);
+    final result =
+        overview.suggestions
+            .where((item) => item.status != GroupSettlementStatus.pending)
+            .map(
+              (item) => GroupSettlementHistoryEntry(
+                id: item.id,
+                fromName: item.fromDisplayName ?? item.fromUserId,
+                toName: item.toDisplayName ?? item.toUserId,
+                amount: item.amount,
+                status: item.status.value,
+                updatedAt: item.updatedAt,
+              ),
+            )
+            .toList()
+          ..sort((left, right) => right.updatedAt.compareTo(left.updatedAt));
+    return result;
+  }
+
+  @override
+  Future<String> buildGroupReportCsv(String groupId) async {
+    final detail = await fetchGroupDetail(groupId);
+    final transactions = await fetchTransactions(groupId);
+    final settlement = await fetchSettlementOverview(groupId);
+    final history = await fetchSettlementHistory(groupId);
+    final buffer = StringBuffer()
+      ..writeln(_csvRow(['Bao cao nhom', detail.group.name]))
+      ..writeln()
+      ..writeln(_csvRow(['Giao dich']))
+      ..writeln(_csvRow(['Ngay', 'Nguoi tao', 'Danh muc', 'Mo ta', 'So tien']));
+    for (final transaction in transactions) {
+      buffer.writeln(
+        _csvRow([
+          transaction.transactionDate.toIso8601String(),
+          transaction.creatorName ?? transaction.createdBy,
+          transaction.categoryName ?? '',
+          transaction.caption ?? transaction.note ?? '',
+          transaction.totalAmount.toString(),
+        ]),
+      );
+    }
+    buffer
+      ..writeln()
+      ..writeln(_csvRow(['Can doi']))
+      ..writeln(_csvRow(['Thanh vien', 'Da tra', 'Phai chiu', 'Can doi']));
+    for (final balance in settlement.balances) {
+      buffer.writeln(
+        _csvRow([
+          balance.displayName ?? balance.userId,
+          balance.totalPaidAmount.toString(),
+          balance.totalShareAmount.toString(),
+          balance.balance.toString(),
+        ]),
+      );
+    }
+    buffer
+      ..writeln()
+      ..writeln(_csvRow(['Lich su thanh toan no']))
+      ..writeln(_csvRow(['Cap thanh toan', 'So tien', 'Trang thai', 'Ngay']));
+    for (final entry in history) {
+      buffer.writeln(
+        _csvRow([
+          '${entry.fromName} -> ${entry.toName}',
+          entry.amount.toString(),
+          entry.status,
+          entry.updatedAt.toIso8601String(),
+        ]),
+      );
+    }
+    return buffer.toString();
+  }
+
+  @override
+  Future<List<GroupFeedItem>> fetchFeed(String groupId) async {
+    final transactions = await fetchTransactions(groupId);
+    final items = <GroupFeedItem>[];
+    for (final transaction in transactions) {
+      final detail = await fetchTransactionDetail(transaction.id);
+      items.add(
+        GroupFeedItem(
+          transaction: transaction,
+          reactions: await fetchReactionSummaries(transaction.id),
+          commentCount: detail.comments.length,
+        ),
+      );
+    }
+    return items;
+  }
+
+  @override
+  Future<List<GroupPhotoItem>> fetchPhotoAlbum(String groupId) async {
+    final transactions = await fetchTransactions(groupId);
+    return transactions
+        .where((item) => item.imagePath?.isNotEmpty == true)
+        .map(
+          (item) => GroupPhotoItem(
+            transactionId: item.id,
+            groupId: item.groupId,
+            createdBy: item.createdBy,
+            caption: item.caption ?? item.categoryName,
+            imagePath: item.imagePath!,
+            amount: item.totalAmount,
+            transactionDate: item.transactionDate,
+            creatorName: item.creatorName,
+          ),
+        )
+        .toList();
+  }
+
+  @override
+  Future<GroupPublicProfile> fetchPublicProfile(String groupId) {
+    if (_useMockData) {
+      return _mock.fetchPublicProfile(groupId);
+    }
+    return _guard('fetch group public profile', () async {
+      return GroupModelMapper.publicProfile(
+        await _remote.fetchPublicProfile(groupId),
+      );
+    });
+  }
+
+  @override
+  Future<void> updatePublicProfile(GroupPublicProfile profile) {
+    if (_useMockData) {
+      return _mock.updatePublicProfile(profile);
+    }
+    return _guard(
+      'update group public profile',
+      () => _remote.updatePublicProfile(profile),
+    );
+  }
+
+  @override
   Future<void> markSettlementPaid(String settlementId) {
     if (_useMockData) {
       return _mock.markSettlementPaid(settlementId);
@@ -479,11 +861,71 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String reason,
+  }) {
+    if (_useMockData) {
+      return _mock.disputeSettlement(
+        settlementId: settlementId,
+        reason: reason,
+      );
+    }
+    return _guard(
+      'dispute group settlement',
+      () =>
+          _remote.disputeSettlement(settlementId: settlementId, reason: reason),
+    );
+  }
+
+  @override
+  Future<void> resetDisputedSettlement(String settlementId) {
+    if (_useMockData) {
+      return _mock.resetDisputedSettlement(settlementId);
+    }
+    return _guard(
+      'reset disputed group settlement',
+      () => _remote.resetDisputedSettlement(settlementId),
+    );
+  }
+
+  @override
+  Future<void> removeMember({required String groupId, required String userId}) {
+    if (_useMockData) {
+      return _mock.removeMember(groupId: groupId, userId: userId);
+    }
+    return _guard(
+      'remove group member',
+      () => _remote.removeMember(groupId: groupId, userId: userId),
+    );
+  }
+
+  @override
   Future<void> leaveGroup(String groupId) {
     if (_useMockData) {
       return _mock.leaveGroup(groupId);
     }
     return _guard('leave group', () => _remote.leaveGroup(groupId));
+  }
+
+  @override
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) {
+    if (_useMockData) {
+      return _mock.transferOwnership(
+        groupId: groupId,
+        newOwnerUserId: newOwnerUserId,
+      );
+    }
+    return _guard(
+      'transfer group ownership',
+      () => _remote.transferOwnership(
+        groupId: groupId,
+        newOwnerUserId: newOwnerUserId,
+      ),
+    );
   }
 
   @override
@@ -501,185 +943,103 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
-  Future<GroupBudget?> fetchGroupBudget(String groupId) {
+  Future<List<GroupReactionSummary>> fetchReactions(String transactionId) {
     if (_useMockData) {
-      return _mock.fetchGroupBudget(groupId).then((row) {
-        if (row == null) return null;
-        return GroupBudget(
-          groupId: row['group_id'] as String,
-          monthlyLimit: (row['monthly_limit'] as num).toInt(),
-          warningThresholdPercent:
-              (row['warning_threshold_percent'] as num).toInt(),
-        );
-      });
+      return _mock.fetchReactions(transactionId);
     }
-    return _guard('fetch group budget', () async {
-      final row = await _remote.fetchGroupBudget(groupId);
-      if (row == null) return null;
-      return GroupBudget(
-        groupId: row['group_id'] as String,
-        monthlyLimit: (row['monthly_limit'] as num).toInt(),
-        warningThresholdPercent:
-            (row['warning_threshold_percent'] as num).toInt(),
-      );
+    return _guard('fetch group transaction reactions', () async {
+      final rows = await _remote.fetchReactions(transactionId);
+      return rows.map(GroupModelMapper.reaction).toList();
     });
   }
 
   @override
-  Future<void> upsertGroupBudget({
-    required String groupId,
-    required int monthlyLimit,
-    required int warningThresholdPercent,
+  Future<void> updateComment({
+    required String commentId,
+    required String transactionId,
+    required String content,
   }) {
     if (_useMockData) {
-      return _mock.upsertGroupBudget(
-        groupId: groupId,
-        monthlyLimit: monthlyLimit,
-        warningThresholdPercent: warningThresholdPercent,
+      return _mock.updateComment(
+        commentId: commentId,
+        transactionId: transactionId,
+        content: content,
       );
     }
     return _guard(
-      'upsert group budget',
-      () => _remote.upsertGroupBudget(
-        groupId: groupId,
-        monthlyLimit: monthlyLimit,
-        warningThresholdPercent: warningThresholdPercent,
-      ),
+      'update group transaction comment',
+      () => _remote.updateComment(commentId: commentId, content: content),
     );
   }
 
   @override
-  Future<GroupNotificationPreference> fetchNotificationPreference(
-    String groupId,
-  ) {
+  Future<void> deleteComment({
+    required String commentId,
+    required String transactionId,
+  }) {
     if (_useMockData) {
-      return _mock
-          .fetchNotificationPreference(groupId)
-          .then((row) => _mapNotificationPreference(groupId, row));
+      return _mock.deleteComment(
+        commentId: commentId,
+        transactionId: transactionId,
+      );
     }
-    return _guard('fetch group notification preference', () async {
-      final row = await _remote.fetchNotificationPreference(groupId);
-      return _mapNotificationPreference(groupId, row);
+    return _guard(
+      'delete group transaction comment',
+      () => _remote.deleteComment(commentId),
+    );
+  }
+
+  @override
+  Future<GroupPublicProfile> fetchPublicGroupProfile(String slug) {
+    if (_useMockData) {
+      return Future.error(
+        const AppException('Public profile unavailable in demo mode'),
+      );
+    }
+    return _guard('fetch public group profile', () async {
+      final row = await _remote.fetchPublicGroupProfile(slug);
+      if (row == null) {
+        throw const AppException(
+          'Public group profile not found',
+          code: 'NOT_FOUND',
+        );
+      }
+      return _publicProfileFromRow(row, groupId: row['group_id'] as String);
     });
   }
 
-  @override
-  Future<void> upsertNotificationPreference(
-    GroupNotificationPreference preference,
-  ) {
-    if (_useMockData) {
-      return _mock.upsertNotificationPreference(
-        groupId: preference.groupId,
-        muteAll: preference.muteAll,
-        transactionNotifications: preference.transactionNotifications,
-        debtNotifications: preference.debtNotifications,
-        inviteNotifications: preference.inviteNotifications,
-        mentionNotifications: preference.mentionNotifications,
-        quietHoursStart: preference.quietHoursStart,
-        quietHoursEnd: preference.quietHoursEnd,
-      );
-    }
-    return _guard(
-      'upsert group notification preference',
-      () => _remote.upsertNotificationPreference(
-        groupId: preference.groupId,
-        muteAll: preference.muteAll,
-        transactionNotifications: preference.transactionNotifications,
-        debtNotifications: preference.debtNotifications,
-        inviteNotifications: preference.inviteNotifications,
-        mentionNotifications: preference.mentionNotifications,
-        quietHoursStart: preference.quietHoursStart,
-        quietHoursEnd: preference.quietHoursEnd,
-      ),
-    );
-  }
-
-  GroupNotificationPreference _mapNotificationPreference(
-    String groupId,
-    Map<String, dynamic>? row,
-  ) {
-    if (row == null) {
-      return GroupNotificationPreference.defaults(groupId);
-    }
-    return GroupNotificationPreference(
-      groupId: groupId,
-      muteAll: row['mute_all'] as bool? ?? false,
-      transactionNotifications:
-          row['transaction_notifications'] as bool? ?? true,
-      debtNotifications: row['debt_notifications'] as bool? ?? true,
-      inviteNotifications: row['invite_notifications'] as bool? ?? true,
-      mentionNotifications: row['mention_notifications'] as bool? ?? true,
-      quietHoursStart: (row['quiet_hours_start'] as num?)?.toInt(),
-      quietHoursEnd: (row['quiet_hours_end'] as num?)?.toInt(),
-    );
-  }
-
-  @override
-  Future<GroupPublicProfile> fetchPublicProfile(String groupId) {
-    if (_useMockData) {
-      return _mock
-          .fetchPublicProfile(groupId)
-          .then((row) => _mapPublicProfile(groupId, row));
-    }
-    return _guard('fetch group public profile', () async {
-      final row = await _remote.fetchPublicProfile(groupId);
-      return _mapPublicProfile(groupId, row);
-    });
-  }
-
-  @override
-  Future<void> upsertPublicProfile(GroupPublicProfile profile) {
-    if (_useMockData) {
-      return _mock.upsertPublicProfile(
-        groupId: profile.groupId,
-        isEnabled: profile.isEnabled,
-        showStats: profile.showStats,
-        slug: profile.slug,
-      );
-    }
-    return _guard(
-      'upsert group public profile',
-      () => _remote.upsertPublicProfile(
-        groupId: profile.groupId,
-        isEnabled: profile.isEnabled,
-        showStats: profile.showStats,
-        slug: profile.slug,
-      ),
-    );
-  }
-
-  GroupPublicProfile _mapPublicProfile(
-    String groupId,
-    Map<String, dynamic>? row,
-  ) {
-    if (row == null) {
-      return GroupPublicProfile.defaults(groupId);
-    }
+  GroupPublicProfile _publicProfileFromRow(
+    Map<String, dynamic> row, {
+    required String groupId,
+  }) {
     return GroupPublicProfile(
       groupId: groupId,
-      isEnabled: row['is_enabled'] as bool? ?? false,
+      isEnabled: row['is_enabled'] as bool? ?? true,
       showStats: row['show_stats'] as bool? ?? false,
       slug: row['slug'] as String?,
+      groupName: row['group_name'] as String?,
+      avatarPath: row['avatar_path'] as String?,
+      description: row['description'] as String?,
+      groupType: row['group_type'] as String?,
+      memberCount: (row['member_count'] as num?)?.toInt(),
+      transactionCount: (row['transaction_count'] as num?)?.toInt(),
+      totalSpent: (row['total_spent'] as num?)?.toInt(),
     );
   }
 
   @override
   Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
     String groupId,
-  ) {
-    if (_useMockData) {
-      return _mock
-          .fetchRecurringTransactions(groupId)
-          .then((rows) => rows.map(_mapRecurring).toList());
-    }
-    return _guard('fetch group recurring transactions', () async {
+  ) async {
+    if (_useMockData) return const [];
+    return _guard('fetch recurring group transactions', () async {
       final rows = await _remote.fetchRecurringTransactions(groupId);
-      return rows.map(_mapRecurring).toList();
+      return rows.map(_recurringFromRow).toList(growable: false);
     });
   }
 
   @override
-  Future<void> createRecurringTransaction({
+  Future<String> createRecurringTransaction({
     required String groupId,
     required String title,
     required int amount,
@@ -687,18 +1047,9 @@ class GroupRepositoryImpl implements GroupRepository {
     required DateTime nextRunAt,
     required int notifyDaysBefore,
   }) {
-    if (_useMockData) {
-      return _mock.createRecurringTransaction(
-        groupId: groupId,
-        title: title,
-        amount: amount,
-        frequency: frequency,
-        nextRunAt: nextRunAt,
-        notifyDaysBefore: notifyDaysBefore,
-      );
-    }
+    if (_useMockData) return Future.value('mock-recurring-id');
     return _guard(
-      'create group recurring transaction',
+      'create recurring group transaction',
       () => _remote.createRecurringTransaction(
         groupId: groupId,
         title: title,
@@ -713,7 +1064,6 @@ class GroupRepositoryImpl implements GroupRepository {
   @override
   Future<void> updateRecurringTransaction({
     required String id,
-    required String groupId,
     required String title,
     required int amount,
     required String frequency,
@@ -721,19 +1071,9 @@ class GroupRepositoryImpl implements GroupRepository {
     required int notifyDaysBefore,
     required bool isActive,
   }) {
-    if (_useMockData) {
-      return _mock.updateRecurringTransaction(
-        id: id,
-        title: title,
-        amount: amount,
-        frequency: frequency,
-        nextRunAt: nextRunAt,
-        notifyDaysBefore: notifyDaysBefore,
-        isActive: isActive,
-      );
-    }
+    if (_useMockData) return Future.value();
     return _guard(
-      'update group recurring transaction',
+      'update recurring group transaction',
       () => _remote.updateRecurringTransaction(
         id: id,
         title: title,
@@ -746,20 +1086,27 @@ class GroupRepositoryImpl implements GroupRepository {
     );
   }
 
-  GroupRecurringTransaction _mapRecurring(Map<String, dynamic> row) {
+  @override
+  Future<void> deleteRecurringTransaction(String id) {
+    if (_useMockData) return Future.value();
+    return _guard(
+      'delete recurring group transaction',
+      () => _remote.deleteRecurringTransaction(id),
+    );
+  }
+
+  GroupRecurringTransaction _recurringFromRow(Map<String, dynamic> row) {
     return GroupRecurringTransaction(
       id: row['id'] as String,
       groupId: row['group_id'] as String,
       createdBy: row['created_by'] as String,
       title: row['title'] as String,
       amount: (row['amount'] as num).toInt(),
-      frequency: row['frequency'] as String? ?? 'monthly',
-      nextRunAt: DateTime.parse(row['next_run_at'] as String).toLocal(),
-      notifyDaysBefore: (row['notify_days_before'] as num?)?.toInt() ?? 1,
-      isActive: row['is_active'] as bool? ?? true,
-      createdAt: row['created_at'] != null
-          ? DateTime.parse(row['created_at'] as String).toLocal()
-          : DateTime.now(),
+      frequency: row['frequency'] as String,
+      nextRunAt: DateTime.parse(row['next_run_at'] as String),
+      notifyDaysBefore: (row['notify_days_before'] as num).toInt(),
+      isActive: row['is_active'] as bool,
+      createdAt: DateTime.parse(row['created_at'] as String),
     );
   }
 
@@ -785,4 +1132,55 @@ class GroupRepositoryImpl implements GroupRepository {
       throw const AppException('errorConnection');
     }
   }
+
+  static GroupStatsOverview _buildStats({
+    required SpendingGroupDetail detail,
+    required List<GroupTransaction> transactions,
+    required GroupSettlementOverview settlement,
+    required String currentUserId,
+  }) {
+    final posted = transactions.where(
+      (item) => item.splitStatus == GroupSplitStatus.posted,
+    );
+    final pendingTransactions = transactions.where(
+      (item) =>
+          item.splitStatus != GroupSplitStatus.posted &&
+          item.splitStatus != GroupSplitStatus.cancelled,
+    );
+    final pendingSettlements = settlement.suggestions.where(
+      (item) => item.status != GroupSettlementStatus.completed,
+    );
+    final ownBalance = settlement.balances
+        .where((item) => item.userId == currentUserId)
+        .fold<int>(0, (sum, item) => sum + item.balance);
+    return GroupStatsOverview(
+      totalSpent: posted.fold<int>(
+        0,
+        (sum, transaction) => sum + transaction.totalAmount,
+      ),
+      transactionCount: transactions.length,
+      pendingTransactionCount: pendingTransactions.length,
+      pendingSettlementCount: pendingSettlements.length,
+      memberCount: detail.activeMembers.length,
+      currentUserBalance: ownBalance,
+    );
+  }
+
+  static String _csvRow(List<String> values) {
+    return values
+        .map((value) {
+          final escaped = value.replaceAll('"', '""');
+          return '"$escaped"';
+        })
+        .join(',');
+  }
+}
+
+class _MemberStats {
+  _MemberStats(this.displayName);
+
+  final String displayName;
+  int shareAmount = 0;
+  int paidAmount = 0;
+  int transactionCount = 0;
 }

@@ -15,6 +15,16 @@ final incomingFriendRequestsProvider = FutureProvider<List<FriendRequest>>((
   return ref.watch(friendRepositoryProvider).fetchIncomingRequests();
 });
 
+final pendingIncomingFriendRequestCountProvider = Provider<int>((ref) {
+  return ref
+      .watch(incomingFriendRequestsProvider)
+      .when(
+        data: (requests) => requests.length,
+        loading: () => 0,
+        error: (_, _) => 0,
+      );
+});
+
 final outgoingFriendRequestsProvider = FutureProvider<List<FriendRequest>>((
   ref,
 ) {
@@ -30,6 +40,12 @@ final friendInvitePreviewProvider = FutureProvider.autoDispose
     .family<FriendInvitePreview, String>((ref, token) {
       return ref.watch(friendRepositoryProvider).fetchInvitePreview(token);
     });
+
+final friendInviteLinkProvider = FutureProvider.autoDispose<FriendInviteLink>((
+  ref,
+) {
+  return ref.watch(friendRepositoryProvider).createInviteLink();
+});
 
 final friendActionControllerProvider =
     AsyncNotifierProvider<FriendActionController, void>(

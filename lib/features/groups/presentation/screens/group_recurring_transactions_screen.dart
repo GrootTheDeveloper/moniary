@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_roadmap.dart';
@@ -12,401 +12,343 @@ import '../../domain/entities/group_roadmap.dart';
 class GroupRecurringTransactionsScreen extends ConsumerWidget {
   const GroupRecurringTransactionsScreen({required this.groupId, super.key});
 
-  static const routePath = '/groups/recurring';
-
+  static const routePath = '/group-recurring-transactions';
   final String groupId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recurringAsync = ref.watch(
-      groupRecurringTransactionsProvider(groupId),
-    );
-    final colors = context.moniaryColors;
-
+    final itemsAsync = ref.watch(groupRecurringTransactionsProvider(groupId));
     return Scaffold(
+      backgroundColor: context.moniaryColors.backgroundSoft,
       appBar: AppBar(title: Text(context.l10n.groupRecurringTitle)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showForm(context, ref),
         icon: const Icon(Icons.add),
         label: Text(context.l10n.groupRecurringAdd),
       ),
-      body: recurringAsync.when(
+      body: itemsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(
-              userFriendlyMessage(context, error),
-              textAlign: TextAlign.center,
-            ),
-          ),
+        error: (error, _) => _Message(
+          message: userFriendlyMessage(context, error),
+          onRetry: () =>
+              ref.invalidate(groupRecurringTransactionsProvider(groupId)),
         ),
-        data: (items) {
-          return RefreshIndicator(
-            color: colors.primary,
-            backgroundColor: colors.backgroundSoft,
-            onRefresh: () async =>
-                ref.invalidate(groupRecurringTransactionsProvider(groupId)),
-            child: items.isEmpty
-                ? ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    children: [
-                      SizedBox(
-                        height: 360,
-                        child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.event_repeat_outlined,
-                                size: 44,
-                                color: colors.textDim,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                context.l10n.groupRecurringEmpty,
-                                style: TextStyle(color: colors.textDim),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
-                    itemCount: items.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 10),
-                    itemBuilder: (context, index) => _RecurringTile(
-                      groupId: groupId,
-                      item: items[index],
-                    ),
+        data: (items) => items.isEmpty
+            ? _Message(message: context.l10n.groupRecurringEmpty)
+            : RefreshIndicator(
+                onRefresh: () async =>
+                    ref.invalidate(groupRecurringTransactionsProvider(groupId)),
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+                  itemCount: items.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
+                  itemBuilder: (context, index) => _RecurringCard(
+                    item: items[index],
+                    onEdit: () => _showForm(context, ref, item: items[index]),
+                    onDelete: () => _delete(context, ref, items[index]),
                   ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _showForm(
-    BuildContext context,
-    WidgetRef ref, {
-    GroupRecurringTransaction? existing,
-  }) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (sheetContext) => _RecurringFormSheet(
-        groupId: groupId,
-        existing: existing,
-      ),
-    );
-  }
-}
-
-class _RecurringTile extends ConsumerWidget {
-  const _RecurringTile({required this.groupId, required this.item});
-
-  final String groupId;
-  final GroupRecurringTransaction item;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colors = context.moniaryColors;
-    final dimmed = !item.isActive;
-
-    return Opacity(
-      opacity: dimmed ? 0.5 : 1,
-      child: Container(
-        decoration: BoxDecoration(
-          color: colors.surfaceRaised.withValues(alpha: 0.48),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: colors.outline),
-        ),
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 6,
-          ),
-          onTap: () => showModalBottomSheet<void>(
-            context: context,
-            isScrollControlled: true,
-            showDragHandle: true,
-            builder: (sheetContext) => _RecurringFormSheet(
-              groupId: groupId,
-              existing: item,
-            ),
-          ),
-          title: Text(
-            item.title,
-            style: TextStyle(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          subtitle: Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              '${_frequencyLabel(context, item.frequency)} · '
-              '${context.l10n.groupRecurringNextRun}: '
-              '${DateFormat.yMMMd().format(item.nextRunAt)}',
-              style: TextStyle(color: colors.textDim, fontSize: 12),
-            ),
-          ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                formatMoney(item.amount),
-                style: TextStyle(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w700,
                 ),
               ),
-              if (!item.isActive)
-                Text(
-                  context.l10n.groupRecurringInactive,
-                  style: TextStyle(color: colors.textDim, fontSize: 11),
-                ),
-            ],
-          ),
-        ),
       ),
     );
   }
+
+  Future<void> _showForm(
+    BuildContext context,
+    WidgetRef ref, {
+    GroupRecurringTransaction? item,
+  }) async {
+    final result = await showDialog<_RecurringFormValue>(
+      context: context,
+      builder: (_) => _RecurringForm(item: item),
+    );
+    if (result == null || !context.mounted) return;
+    try {
+      final controller = ref.read(groupActionControllerProvider.notifier);
+      if (item == null) {
+        await controller.createRecurringTransaction(
+          groupId: groupId,
+          title: result.title,
+          amount: result.amount,
+          frequency: result.frequency,
+          nextRunAt: result.nextRunAt,
+          notifyDaysBefore: result.notifyDaysBefore,
+        );
+      } else {
+        await controller.updateRecurringTransaction(
+          groupId: groupId,
+          id: item.id,
+          title: result.title,
+          amount: result.amount,
+          frequency: result.frequency,
+          nextRunAt: result.nextRunAt,
+          notifyDaysBefore: result.notifyDaysBefore,
+          isActive: result.isActive,
+        );
+      }
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
+        );
+      }
+    }
+  }
+
+  Future<void> _delete(
+    BuildContext context,
+    WidgetRef ref,
+    GroupRecurringTransaction item,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.groupRecurringDeleteTitle),
+        content: Text(context.l10n.groupRecurringDeleteMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(context.l10n.commonDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .deleteRecurringTransaction(groupId: groupId, id: item.id);
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
+        );
+      }
+    }
+  }
 }
 
-String _frequencyLabel(BuildContext context, String frequency) {
-  return switch (frequency) {
-    'weekly' => context.l10n.groupRecurringWeekly,
-    _ => context.l10n.groupRecurringMonthly,
-  };
-}
-
-class _RecurringFormSheet extends ConsumerStatefulWidget {
-  const _RecurringFormSheet({required this.groupId, this.existing});
-
-  final String groupId;
-  final GroupRecurringTransaction? existing;
+class _RecurringCard extends StatelessWidget {
+  const _RecurringCard({
+    required this.item,
+    required this.onEdit,
+    required this.onDelete,
+  });
+  final GroupRecurringTransaction item;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   @override
-  ConsumerState<_RecurringFormSheet> createState() =>
-      _RecurringFormSheetState();
+  Widget build(BuildContext context) => Card(
+    child: ListTile(
+      contentPadding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+      leading: CircleAvatar(
+        backgroundColor: context.moniaryColors.primary.withValues(alpha: .12),
+        child: Icon(Icons.autorenew, color: context.moniaryColors.primary),
+      ),
+      title: Text(item.title),
+      subtitle: Text(
+        '${item.amount} • ${item.frequency} • ${DateFormat('dd/MM/yyyy').format(item.nextRunAt.toLocal())}',
+      ),
+      trailing: PopupMenuButton<String>(
+        onSelected: (value) {
+          if (value == 'edit') onEdit();
+          if (value == 'delete') onDelete();
+        },
+        itemBuilder: (context) => [
+          PopupMenuItem(value: 'edit', child: Text(context.l10n.commonEdit)),
+          PopupMenuItem(
+            value: 'delete',
+            child: Text(context.l10n.commonDelete),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
-class _RecurringFormSheetState extends ConsumerState<_RecurringFormSheet> {
-  late final TextEditingController _titleController;
-  late final TextEditingController _amountController;
-  late String _frequency;
-  late DateTime _nextRunAt;
-  late int _notifyDaysBefore;
-  bool _isSubmitting = false;
+class _RecurringFormValue {
+  const _RecurringFormValue({
+    required this.title,
+    required this.amount,
+    required this.frequency,
+    required this.nextRunAt,
+    required this.notifyDaysBefore,
+    required this.isActive,
+  });
+  final String title;
+  final int amount;
+  final String frequency;
+  final DateTime nextRunAt;
+  final int notifyDaysBefore;
+  final bool isActive;
+}
 
-  bool get _editing => widget.existing != null;
+class _RecurringForm extends StatefulWidget {
+  const _RecurringForm({this.item});
+  final GroupRecurringTransaction? item;
+
+  @override
+  State<_RecurringForm> createState() => _RecurringFormState();
+}
+
+class _RecurringFormState extends State<_RecurringForm> {
+  late final TextEditingController _title;
+  late final TextEditingController _amount;
+  late DateTime _date;
+  late String _frequency;
+  late int _notifyDays;
+  late bool _active;
 
   @override
   void initState() {
     super.initState();
-    final e = widget.existing;
-    _titleController = TextEditingController(text: e?.title ?? '');
-    _amountController = TextEditingController(
-      text: e != null ? e.amount.toString() : '',
-    );
-    _frequency = e?.frequency ?? 'monthly';
-    _nextRunAt = e?.nextRunAt ?? DateTime.now().add(const Duration(days: 30));
-    _notifyDaysBefore = e?.notifyDaysBefore ?? 1;
+    final item = widget.item;
+    _title = TextEditingController(text: item?.title);
+    _amount = TextEditingController(text: item?.amount.toString());
+    _date = item?.nextRunAt.toLocal() ?? DateTime.now();
+    _frequency = item?.frequency ?? 'monthly';
+    _notifyDays = item?.notifyDaysBefore ?? 1;
+    _active = item?.isActive ?? true;
   }
 
   @override
   void dispose() {
-    _titleController.dispose();
-    _amountController.dispose();
+    _title.dispose();
+    _amount.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(24, 0, 24, bottomInset + 24),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              _editing
-                  ? context.l10n.groupRecurringEditTitle
-                  : context.l10n.groupRecurringAdd,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text(
+      widget.item == null
+          ? context.l10n.groupRecurringAdd
+          : context.l10n.groupRecurringEdit,
+    ),
+    content: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _title,
+            decoration: InputDecoration(
+              labelText: context.l10n.groupRecurringName,
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(
-                labelText: context.l10n.groupRecurringName,
-                prefixIcon: const Icon(Icons.label_outline),
-              ),
+          ),
+          TextField(
+            controller: _amount,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            decoration: InputDecoration(
+              labelText: context.l10n.groupRecurringAmount,
             ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(),
-              decoration: InputDecoration(
-                labelText: context.l10n.groupRecurringAmount,
-                prefixIcon: const Icon(Icons.payments_outlined),
-              ),
+          ),
+          DropdownButtonFormField<String>(
+            initialValue: _frequency,
+            decoration: InputDecoration(
+              labelText: context.l10n.groupRecurringFrequency,
             ),
-            const SizedBox(height: 14),
-            DropdownButtonFormField<String>(
-              initialValue: _frequency,
-              isExpanded: true,
-              decoration: InputDecoration(
-                labelText: context.l10n.groupRecurringFrequency,
-                prefixIcon: const Icon(Icons.repeat_outlined),
+            items: [
+              DropdownMenuItem(
+                value: 'weekly',
+                child: Text(context.l10n.groupRecurringWeekly),
               ),
-              items: [
-                DropdownMenuItem(
-                  value: 'weekly',
-                  child: Text(context.l10n.groupRecurringWeekly),
-                ),
-                DropdownMenuItem(
-                  value: 'monthly',
-                  child: Text(context.l10n.groupRecurringMonthly),
-                ),
-              ],
-              onChanged: (value) {
-                if (value != null) setState(() => _frequency = value);
-              },
+              DropdownMenuItem(
+                value: 'monthly',
+                child: Text(context.l10n.groupRecurringMonthly),
+              ),
+            ],
+            onChanged: (value) =>
+                setState(() => _frequency = value ?? 'monthly'),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(context.l10n.groupRecurringNextRun),
+            subtitle: Text(DateFormat('dd/MM/yyyy').format(_date)),
+            onTap: () async {
+              final picked = await showDatePicker(
+                context: context,
+                firstDate: DateTime.now(),
+                lastDate: DateTime.now().add(const Duration(days: 3650)),
+                initialDate: _date.isBefore(DateTime.now())
+                    ? DateTime.now()
+                    : _date,
+              );
+              if (picked != null) setState(() => _date = picked);
+            },
+          ),
+          DropdownButtonFormField<int>(
+            initialValue: _notifyDays,
+            decoration: InputDecoration(
+              labelText: context.l10n.groupRecurringNotifyBefore,
             ),
-            const SizedBox(height: 14),
-            ListTile(
+            items: List.generate(
+              8,
+              (index) => DropdownMenuItem(value: index, child: Text('$index')),
+            ),
+            onChanged: (value) => setState(() => _notifyDays = value ?? 1),
+          ),
+          if (widget.item != null)
+            SwitchListTile.adaptive(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.event_outlined),
-              title: Text(context.l10n.groupRecurringNextRun),
-              subtitle: Text(DateFormat.yMMMd().format(_nextRunAt)),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: _pickDate,
+              title: Text(context.l10n.groupRecurringActive),
+              value: _active,
+              onChanged: (value) => setState(() => _active = value),
             ),
-            const SizedBox(height: 6),
-            Text(
-              '${context.l10n.groupRecurringNotifyDays}: $_notifyDaysBefore',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            Slider(
-              value: _notifyDaysBefore.toDouble(),
-              min: 0,
-              max: 30,
-              divisions: 30,
-              label: '$_notifyDaysBefore',
-              onChanged: (value) =>
-                  setState(() => _notifyDaysBefore = value.toInt()),
-            ),
-            const SizedBox(height: 12),
-            FilledButton(
-              onPressed: _isSubmitting ? null : _submit,
-              child: Text(
-                _isSubmitting
-                    ? context.l10n.commonSaving
-                    : context.l10n.commonSave,
-              ),
-            ),
-            if (_editing && widget.existing!.isActive) ...[
-              const SizedBox(height: 8),
-              TextButton.icon(
-                onPressed: _isSubmitting ? null : _deactivate,
-                icon: const Icon(Icons.pause_circle_outline),
-                label: Text(context.l10n.groupRecurringDeactivate),
-              ),
-            ],
-            if (_editing && !widget.existing!.isActive) ...[
-              const SizedBox(height: 8),
-              TextButton.icon(
-                onPressed: _isSubmitting ? null : _reactivate,
-                icon: const Icon(Icons.play_circle_outline),
-                label: Text(context.l10n.groupRecurringReactivate),
-              ),
-            ],
-          ],
-        ),
+        ],
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: Text(context.l10n.commonCancel),
+      ),
+      FilledButton(onPressed: _submit, child: Text(context.l10n.commonSave)),
+    ],
+  );
+
+  void _submit() {
+    final title = _title.text.trim();
+    final amount = int.tryParse(_amount.text.trim());
+    if (title.isEmpty || amount == null || amount <= 0) return;
+    Navigator.pop(
+      context,
+      _RecurringFormValue(
+        title: title,
+        amount: amount,
+        frequency: _frequency,
+        nextRunAt: _date,
+        notifyDaysBefore: _notifyDays,
+        isActive: _active,
       ),
     );
   }
+}
 
-  Future<void> _pickDate() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _nextRunAt.isBefore(now) ? now : _nextRunAt,
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 3650)),
-    );
-    if (picked != null) setState(() => _nextRunAt = picked);
-  }
+class _Message extends StatelessWidget {
+  const _Message({required this.message, this.onRetry});
+  final String message;
+  final VoidCallback? onRetry;
 
-  Future<void> _submit({bool? overrideActive}) async {
-    final messenger = ScaffoldMessenger.of(context);
-    final title = _titleController.text.trim();
-    final amount = int.tryParse(_amountController.text.trim()) ?? 0;
-
-    if (title.isEmpty) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(context.l10n.groupRecurringNameRequired)),
-      );
-      return;
-    }
-    if (amount <= 0) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(context.l10n.groupRecurringAmountRequired)),
-      );
-      return;
-    }
-
-    setState(() => _isSubmitting = true);
-
-    try {
-      final notifier = ref.read(groupActionControllerProvider.notifier);
-      if (_editing) {
-        await notifier.updateRecurringTransaction(
-          id: widget.existing!.id,
-          groupId: widget.groupId,
-          title: title,
-          amount: amount,
-          frequency: _frequency,
-          nextRunAt: _nextRunAt,
-          notifyDaysBefore: _notifyDaysBefore,
-          isActive: overrideActive ?? widget.existing!.isActive,
-        );
-      } else {
-        await notifier.createRecurringTransaction(
-          groupId: widget.groupId,
-          title: title,
-          amount: amount,
-          frequency: _frequency,
-          nextRunAt: _nextRunAt,
-          notifyDaysBefore: _notifyDaysBefore,
-        );
-      }
-      if (!mounted) return;
-      Navigator.pop(context);
-      messenger.showSnackBar(
-        SnackBar(content: Text(context.l10n.groupRecurringSaved)),
-      );
-    } catch (error) {
-      if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(content: Text(userFriendlyMessage(context, error))),
-      );
-      setState(() => _isSubmitting = false);
-    }
-  }
-
-  Future<void> _deactivate() => _submit(overrideActive: false);
-
-  Future<void> _reactivate() => _submit(overrideActive: true);
+  @override
+  Widget build(BuildContext context) => Center(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(message, textAlign: TextAlign.center),
+        if (onRetry != null) ...[
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: onRetry,
+            child: Text(context.l10n.commonRetry),
+          ),
+        ],
+      ],
+    ),
+  );
 }

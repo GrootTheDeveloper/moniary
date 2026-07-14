@@ -567,7 +567,7 @@ class TransactionRepository {
         (element) => element.id == walletId,
         orElse: () => Wallet(
           id: walletId,
-          name: 'Wallet',
+          name: '',
           type: WalletType.cash,
           initialBalance: 0,
           isDefault: false,
@@ -581,7 +581,7 @@ class TransactionRepository {
         (element) => element.id == categoryId,
         orElse: () => Category(
           id: categoryId,
-          name: 'Other',
+          name: '',
           type: type,
           icon: null,
           color: null,
@@ -662,7 +662,7 @@ class TransactionRepository {
           (element) => element.id == walletId,
           orElse: () => Wallet(
             id: walletId,
-            name: 'Wallet',
+            name: '',
             type: WalletType.cash,
             initialBalance: 0,
             isDefault: false,
@@ -676,7 +676,7 @@ class TransactionRepository {
           (element) => element.id == categoryId,
           orElse: () => Category(
             id: categoryId,
-            name: 'Other',
+            name: '',
             type: type,
             icon: null,
             color: null,
@@ -914,6 +914,28 @@ class TransactionRepository {
     } catch (e, st) {
       if (e is AppException) rethrow;
       AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
+      throw const AppException('errorConnection');
+    }
+  }
+
+  Future<bool> hasAnyTransactions() async {
+    if (_useMockData) {
+      return _mockTransactions.isNotEmpty;
+    }
+    try {
+      final uid = _userId;
+      final rows = await _client
+          .from('transactions')
+          .select('id')
+          .eq('user_id', uid)
+          .limit(1);
+      return (rows as List).isNotEmpty;
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Check transactions existence failed', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Check transactions existence failed', e, st);
       throw const AppException('errorConnection');
     }
   }

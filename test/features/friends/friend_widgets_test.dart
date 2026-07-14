@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:moniary/core/deeplinks/pending_deep_link_controller.dart';
+import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/features/friends/data/repositories/friend_repository_impl.dart';
 import 'package:moniary/features/friends/domain/entities/friend_profile.dart';
 import 'package:moniary/features/friends/domain/repositories/friend_repository.dart';
 import 'package:moniary/features/friends/presentation/screens/add_friend_screen.dart';
 import 'package:moniary/features/friends/presentation/screens/friend_invite_accept_screen.dart';
+import 'package:moniary/features/friends/presentation/screens/friend_qr_screen.dart';
 import 'package:moniary/features/friends/presentation/screens/friends_screen.dart';
+import 'package:moniary/features/friends/presentation/widgets/friend_invite_prompt_host.dart';
 import 'package:moniary/features/groups/data/repositories/group_repository_impl.dart';
+import 'package:moniary/features/groups/domain/entities/group_community.dart';
 import 'package:moniary/features/groups/domain/entities/group_enums.dart';
 import 'package:moniary/features/groups/domain/entities/group_invite.dart';
 import 'package:moniary/features/groups/domain/entities/group_roadmap.dart';
@@ -16,12 +22,21 @@ import 'package:moniary/features/groups/domain/entities/group_settlement.dart';
 import 'package:moniary/features/groups/domain/entities/group_transaction.dart';
 import 'package:moniary/features/groups/domain/entities/spending_group.dart';
 import 'package:moniary/features/groups/domain/repositories/group_repository.dart';
+import 'package:moniary/features/groups/presentation/screens/group_activity_center_screen.dart';
+import 'package:moniary/features/groups/presentation/screens/group_detail_screen.dart';
 import 'package:moniary/features/groups/presentation/screens/invite_member_screen.dart';
 import 'package:moniary/features/groups/presentation/screens/group_invitations_screen.dart';
 import 'package:moniary/features/groups/presentation/screens/group_list_screen.dart';
 import 'package:moniary/l10n/gen_l10n/app_localizations.dart';
 
 void main() {
+  late SharedPreferences prefs;
+
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    prefs = await SharedPreferences.getInstance();
+  });
+
   Widget app(
     Widget child, {
     required FakeFriendRepository friendRepository,
@@ -29,6 +44,7 @@ void main() {
   }) {
     return ProviderScope(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         friendRepositoryProvider.overrideWithValue(friendRepository),
         if (groupRepository != null)
           groupRepositoryProvider.overrideWithValue(groupRepository),
@@ -50,6 +66,14 @@ void main() {
       initialLocation: initialLocation,
       routes: [
         GoRoute(
+          path: AddFriendScreen.routePath,
+          builder: (context, state) => const AddFriendScreen(),
+        ),
+        GoRoute(
+          path: FriendQrScreen.routePath,
+          builder: (context, state) => const FriendQrScreen(),
+        ),
+        GoRoute(
           path: FriendInviteAcceptScreen.routePath,
           builder: (context, state) => FriendInviteAcceptScreen(
             token: state.pathParameters['token'] ?? '',
@@ -62,7 +86,49 @@ void main() {
       ],
     );
     return ProviderScope(
-      overrides: [friendRepositoryProvider.overrideWithValue(friendRepository)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        friendRepositoryProvider.overrideWithValue(friendRepository),
+      ],
+      child: MaterialApp.router(
+        locale: const Locale('vi'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router,
+      ),
+    );
+  }
+
+  Widget groupRouterApp({
+    required FakeGroupRepository groupRepository,
+    String initialLocation = GroupListScreen.routePath,
+    String detailGroupId = 'group-1',
+  }) {
+    final router = GoRouter(
+      initialLocation: initialLocation,
+      routes: [
+        GoRoute(
+          path: GroupListScreen.routePath,
+          builder: (context, state) => const GroupListScreen(),
+        ),
+        GoRoute(
+          path: GroupActivityCenterScreen.routePath,
+          builder: (context, state) =>
+              GroupActivityCenterScreen(groupId: state.extra as String?),
+        ),
+        GoRoute(
+          path: GroupDetailScreen.routePath,
+          builder: (context, state) =>
+              GroupDetailScreen(groupId: detailGroupId),
+        ),
+      ],
+    );
+    return ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        friendRepositoryProvider.overrideWithValue(FakeFriendRepository()),
+        groupRepositoryProvider.overrideWithValue(groupRepository),
+      ],
       child: MaterialApp.router(
         locale: const Locale('vi'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -143,7 +209,7 @@ void main() {
 
     expect(find.text('Người này đã gửi lời mời cho bạn'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Chấp nhận'));
+    await tester.tap(find.byTooltip('Chấp nhận').last);
     await tester.pumpAndSettle();
 
     expect(repository.acceptedRequestIds, ['request-1']);
@@ -161,6 +227,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Bạn chưa có bạn bè nào.'), findsOneWidget);
+    await tester.tap(find.byTooltip('Lời mời kết bạn'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Chưa có lời mời kết bạn nào.'), findsOneWidget);
+
+    await tester.tapAt(const Offset(20, 20));
+    await tester.pumpAndSettle();
+
     expect(find.text('Thêm bạn'), findsWidgets);
     expect(find.byTooltip('Chia sẻ link kết bạn'), findsOneWidget);
   });
@@ -180,6 +254,25 @@ void main() {
       find.text('Gửi link cho người khác để họ kết bạn với bạn nhanh hơn.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('AddFriendScreen bấm QR mở màn QR kết bạn', (tester) async {
+    final repository = FakeFriendRepository();
+
+    await tester.pumpWidget(
+      routerApp(
+        friendRepository: repository,
+        initialLocation: AddFriendScreen.routePath,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(OutlinedButton, 'QR kết bạn'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Mã của tôi'), findsOneWidget);
+    expect(find.text('Quét mã'), findsOneWidget);
+    expect(find.text('Chia sẻ mã'), findsOneWidget);
   });
 
   testWidgets('FriendsScreen chấp nhận incoming request', (tester) async {
@@ -205,11 +298,76 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Lời mời kết bạn'), findsOneWidget);
-    await tester.tap(find.byTooltip('Chấp nhận'));
+    expect(find.byTooltip('Lời mời kết bạn'), findsOneWidget);
+    expect(find.text('1'), findsWidgets);
+
+    await tester.tap(find.byTooltip('Lời mời kết bạn'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('An Nguyen'), findsWidgets);
+
+    await tester.tap(find.byTooltip('Chấp nhận').last);
     await tester.pumpAndSettle();
 
     expect(repository.acceptedRequestIds, ['request-1']);
     expect(find.text('Đã chấp nhận lời mời kết bạn.'), findsOneWidget);
+  });
+
+  testWidgets('FriendsScreen giữ layout trên màn hình hẹp', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(320, 640));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.binding.platformDispatcher.textScaleFactorTestValue = 1.3;
+    addTearDown(
+      tester.binding.platformDispatcher.clearTextScaleFactorTestValue,
+    );
+
+    final repository = FakeFriendRepository(
+      friends: const [
+        FriendProfile(
+          userId: 'friend-long',
+          fullName: 'Nguyễn Trần Minh Anh Hoàng Long',
+          username: 'nguyen_tran_minh_anh_hoang_long',
+          sharedGroupCount: 12,
+          currentUserBalance: 123456789,
+        ),
+      ],
+      incoming: [
+        FriendRequest(
+          id: 'incoming-long',
+          fromUserId: 'friend-incoming',
+          toUserId: 'mock-user-id',
+          otherUserId: 'friend-incoming',
+          status: FriendRequestStatus.pending,
+          createdAt: DateTime(2026),
+          isIncoming: true,
+          fullName: 'Một Người Bạn Có Tên Rất Dài',
+          username: 'mot_nguoi_ban_co_ten_rat_dai',
+        ),
+      ],
+      outgoing: [
+        FriendRequest(
+          id: 'outgoing-long',
+          fromUserId: 'mock-user-id',
+          toUserId: 'friend-outgoing',
+          otherUserId: 'friend-outgoing',
+          status: FriendRequestStatus.pending,
+          createdAt: DateTime(2026),
+          isIncoming: false,
+          fullName: 'Bạn Đang Chờ Xác Nhận Rất Dài',
+          username: 'ban_dang_cho_xac_nhan_rat_dai',
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      app(const FriendsScreen(), friendRepository: repository),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Lời mời kết bạn'), findsOneWidget);
+    expect(find.text('Đã gửi lời mời'), findsOneWidget);
+    expect(find.byTooltip('Chấp nhận'), findsOneWidget);
   });
 
   testWidgets('InviteMemberScreen hiển thị friends và mời bằng userId', (
@@ -311,6 +469,148 @@ void main() {
     expect(find.text('1'), findsOneWidget);
   });
 
+  testWidgets('GroupListScreen hiển thị nút thông báo nhóm', (tester) async {
+    final groupRepository = FakeGroupRepository(
+      notifications: [
+        GroupNotification(
+          id: 'notification-1',
+          groupId: 'group-1',
+          groupName: 'Chuyến đi Đà Lạt',
+          type: 'transaction_posted',
+          isRead: false,
+          createdAt: DateTime(2026, 7, 1),
+          groupTransactionId: 'transaction-1',
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      app(
+        const GroupListScreen(),
+        friendRepository: FakeFriendRepository(),
+        groupRepository: groupRepository,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Thông báo'), findsOneWidget);
+    expect(find.text('1'), findsOneWidget);
+  });
+
+  testWidgets('GroupListScreen bấm nút thông báo mở notification inbox', (
+    tester,
+  ) async {
+    final groupRepository = FakeGroupRepository(
+      notifications: [
+        GroupNotification(
+          id: 'notification-1',
+          groupId: 'group-1',
+          groupName: 'Chuyến đi Đà Lạt',
+          type: 'transaction_posted',
+          isRead: false,
+          createdAt: DateTime(2026, 7, 1),
+          groupTransactionId: 'transaction-1',
+        ),
+        GroupNotification(
+          id: 'notification-2',
+          groupId: 'group-2',
+          groupName: 'Nhà chung',
+          type: 'debt_settled',
+          isRead: false,
+          createdAt: DateTime(2026, 7, 2),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(groupRouterApp(groupRepository: groupRepository));
+    await tester.pumpAndSettle();
+
+    final notificationButton = find.byTooltip('Thông báo');
+    expect(notificationButton, findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
+
+    await tester.tap(notificationButton);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Có giao dịch mới'), findsOneWidget);
+    expect(find.text('Một khoản nợ đã được tất toán'), findsOneWidget);
+  });
+
+  testWidgets('GroupActivityCenterScreen mở thông báo không cần nhóm', (
+    tester,
+  ) async {
+    final groupRepository = FakeGroupRepository(
+      notifications: [
+        GroupNotification(
+          id: 'notification-1',
+          groupId: 'group-1',
+          groupName: 'Chuyến đi Đà Lạt',
+          type: 'transaction_posted',
+          isRead: false,
+          createdAt: DateTime(2026, 7, 1),
+          groupTransactionId: 'transaction-1',
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      app(
+        const GroupActivityCenterScreen(),
+        friendRepository: FakeFriendRepository(),
+        groupRepository: groupRepository,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Thông báo'), findsWidgets);
+    expect(find.text('Có giao dịch mới'), findsOneWidget);
+    expect(find.text('Hoạt động'), findsNothing);
+  });
+
+  testWidgets('GroupDetailScreen bấm hoạt động nhóm mở activity center', (
+    tester,
+  ) async {
+    final groupRepository = FakeGroupRepository(
+      notifications: [
+        GroupNotification(
+          id: 'notification-1',
+          groupId: 'group-1',
+          groupName: 'Group',
+          type: 'transaction_posted',
+          isRead: false,
+          createdAt: DateTime(2026, 7, 1),
+          groupTransactionId: 'transaction-1',
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      groupRouterApp(
+        groupRepository: groupRepository,
+        initialLocation: GroupDetailScreen.routePath,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Group'), findsOneWidget);
+    expect(find.byIcon(Icons.more_vert_rounded), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.more_vert_rounded));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Hoạt động nhóm').last);
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Hoạt động'), findsOneWidget);
+    expect(find.text('Thông báo'), findsOneWidget);
+
+    await tester.tap(find.text('Thông báo'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Có giao dịch mới'), findsOneWidget);
+  });
+
   testWidgets('InviteMemberScreen disable bạn đã là thành viên nhóm', (
     tester,
   ) async {
@@ -389,6 +689,68 @@ void main() {
     expect(find.text('Bạn bè'), findsWidgets);
     expect(find.text('An Nguyen'), findsOneWidget);
   });
+
+  testWidgets('FriendInvitePromptHost hiện popup và accept invite', (
+    tester,
+  ) async {
+    final repository = FakeFriendRepository(
+      invitePreview: const FriendInvitePreview(
+        status: FriendInviteStatus.active,
+        relationStatus: FriendRelationStatus.none,
+        inviter: FriendProfile(
+          userId: 'user-an',
+          fullName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(
+      app(
+        const _PromptSeed(
+          token: 'token-1',
+          child: FriendInvitePromptHost(
+            child: Scaffold(body: Text('calendar surface')),
+          ),
+        ),
+        friendRepository: repository,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('calendar surface'), findsOneWidget);
+    expect(find.text('An Nguyen'), findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, 'Từ chối'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Đồng ý'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Đồng ý'));
+    await tester.pumpAndSettle();
+
+    expect(repository.acceptedInviteTokens, ['token-1']);
+  });
+}
+
+class _PromptSeed extends ConsumerStatefulWidget {
+  const _PromptSeed({required this.token, required this.child});
+
+  final String token;
+  final Widget child;
+
+  @override
+  ConsumerState<_PromptSeed> createState() => _PromptSeedState();
+}
+
+class _PromptSeedState extends ConsumerState<_PromptSeed> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(pendingFriendInvitePromptProvider.notifier).set(widget.token);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class FakeFriendRepository implements FriendRepository {
@@ -514,102 +876,19 @@ class FakeGroupRepository implements GroupRepository {
   FakeGroupRepository({
     List<SpendingGroupMember>? members,
     List<GroupDirectInvite>? directInvites,
+    List<GroupNotification>? notifications,
   }) : members = members ?? const [],
-       directInvites = [...?directInvites];
+       directInvites = [...?directInvites],
+       notifications = [...?notifications];
 
   final List<SpendingGroupMember> members;
   final List<String> invitedUserIds = [];
   final List<GroupDirectInvite> directInvites;
+  final List<GroupNotification> notifications;
   final List<String> declinedInviteIds = [];
 
   @override
   String get currentUserId => 'mock-user-id';
-
-  @override
-  Future<void> inviteByUserId({
-    required String groupId,
-    required String userId,
-  }) async {
-    invitedUserIds.add(userId);
-  }
-
-  @override
-  Future<void> inviteByUsername({
-    required String groupId,
-    required String username,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<String> createGroup({
-    required String name,
-    String? description,
-    String? type,
-    String? avatarFilePath,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<String> createInviteLink(String groupId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<GroupInvitePreview> fetchInvitePreview(String token) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<GroupInviteAcceptResult> acceptInvite(String token) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> revokeInviteLink(String token) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<GroupDirectInvite>> fetchDirectInvites() async => directInvites;
-
-  @override
-  Future<GroupInviteAcceptResult> acceptDirectInvite(String inviteId) {
-    final invite = directInvites.firstWhere((item) => item.id == inviteId);
-    directInvites.removeWhere((item) => item.id == inviteId);
-    return Future.value(
-      GroupInviteAcceptResult(
-        status: GroupInviteStatus.accepted,
-        groupId: invite.groupId,
-      ),
-    );
-  }
-
-  @override
-  Future<void> declineDirectInvite(String inviteId) {
-    declinedInviteIds.add(inviteId);
-    directInvites.removeWhere((item) => item.id == inviteId);
-    return Future.value();
-  }
-
-  @override
-  Future<String> createTransaction(GroupTransactionDraft draft) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> updateTransaction({
-    required String transactionId,
-    required GroupTransactionDraft draft,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deleteTransaction(String transactionId) {
-    throw UnimplementedError();
-  }
 
   @override
   Future<List<SpendingGroup>> fetchGroups() async => const [];
@@ -644,119 +923,320 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
-  Future<GroupSettlementOverview> fetchSettlementOverview(String groupId) {
+  Future<String> createGroup({
+    required String name,
+    String? description,
+    String? type,
+    String? avatarFilePath,
+  }) async {
+    return 'new-group-id';
+  }
+
+  @override
+  Future<String> createInviteLink(String groupId) async {
+    return 'invite-token';
+  }
+
+  @override
+  Future<GroupInvitePreview> fetchInvitePreview(String token) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<GroupTransactionDetail> fetchTransactionDetail(String transactionId) {
+  Future<GroupInviteAcceptResult> acceptInvite(String token) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<List<GroupTransaction>> fetchTransactions(String groupId) {
+  Future<void> revokeInviteLink(String token) async {}
+
+  @override
+  Future<List<GroupDirectInvite>> fetchDirectInvites() async => directInvites;
+
+  @override
+  Future<GroupInviteAcceptResult> acceptDirectInvite(String inviteId) async {
+    final invite = directInvites.firstWhere((item) => item.id == inviteId);
+    directInvites.removeWhere((item) => item.id == inviteId);
+    return GroupInviteAcceptResult(
+      status: GroupInviteStatus.accepted,
+      groupId: invite.groupId,
+    );
+  }
+
+  @override
+  Future<void> declineDirectInvite(String inviteId) async {
+    declinedInviteIds.add(inviteId);
+    directInvites.removeWhere((item) => item.id == inviteId);
+  }
+
+  @override
+  Future<void> declineInvite(String token) async {}
+
+  @override
+  Future<void> inviteByUsername({
+    required String groupId,
+    required String username,
+  }) async {}
+
+  @override
+  Future<void> inviteByUserId({
+    required String groupId,
+    required String userId,
+  }) async {
+    invitedUserIds.add(userId);
+  }
+
+  @override
+  Future<List<GroupTransaction>> fetchTransactions(String groupId) async =>
+      const [];
+
+  @override
+  Future<GroupTransactionDetail> fetchTransactionDetail(
+    String transactionId,
+  ) async {
     throw UnimplementedError();
   }
+
+  @override
+  Future<String> createTransaction(GroupTransactionDraft draft) async {
+    return 'new-tx-id';
+  }
+
+  @override
+  Future<void> updateTransaction({
+    required String transactionId,
+    required GroupTransactionDraft draft,
+  }) async {}
+
+  @override
+  Future<void> deleteTransaction(String transactionId) async {}
 
   @override
   Future<void> submitMemberAmount({
     required String transactionId,
     required int shareAmount,
-  }) {
+  }) async {}
+
+  @override
+  Future<GroupSettlementOverview> fetchSettlementOverview(
+    String groupId,
+  ) async {
+    return GroupSettlementOverview(
+      balances: [
+        GroupBalance(
+          groupId: groupId,
+          userId: currentUserId,
+          totalShareAmount: 0,
+          totalPaidAmount: 0,
+          balance: 0,
+          displayName: 'Mock User',
+        ),
+      ],
+      suggestions: const [],
+    );
+  }
+
+  @override
+  Future<GroupStatsOverview> fetchStats(String groupId) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> markSettlementPaid(String settlementId) {
-    throw UnimplementedError();
+  Future<List<GroupNotification>> fetchNotifications() async => notifications;
+
+  @override
+  Future<void> markNotificationRead(String notificationId) async {
+    final index = notifications.indexWhere((item) => item.id == notificationId);
+    if (index == -1) {
+      return;
+    }
+    final notification = notifications[index];
+    notifications[index] = GroupNotification(
+      id: notification.id,
+      groupId: notification.groupId,
+      groupName: notification.groupName,
+      type: notification.type,
+      isRead: true,
+      createdAt: notification.createdAt,
+      groupTransactionId: notification.groupTransactionId,
+      inviteToken: notification.inviteToken,
+    );
   }
 
   @override
-  Future<void> confirmSettlementReceived(String settlementId) {
-    throw UnimplementedError();
+  Future<List<GroupActivity>> fetchActivities(String groupId) async => const [];
+
+  @override
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  ) async {
+    return GroupNotificationPreference.defaults(groupId);
   }
 
   @override
-  Future<void> leaveGroup(String groupId) {
-    throw UnimplementedError();
+  Future<void> updateNotificationPreference(
+    GroupNotificationPreference preference,
+  ) async {}
+
+  @override
+  Future<List<GroupReactionSummary>> fetchReactionSummaries(
+    String transactionId,
+  ) async {
+    return const [];
   }
+
+  @override
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) async {}
+
+  @override
+  Future<GroupMonthlyStats> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  }) async {
+    return GroupMonthlyStats(
+      groupId: groupId,
+      month: month,
+      totalSpent: 0,
+      transactionCount: 0,
+      topCategoryName: null,
+      topCategoryAmount: 0,
+      categoryBreakdown: const [],
+      memberBreakdown: const [],
+    );
+  }
+
+  @override
+  Future<GroupBudget> fetchBudget(String groupId) async {
+    return GroupBudget.defaults(groupId);
+  }
+
+  @override
+  Future<void> updateBudget(GroupBudget budget) async {}
+
+  @override
+  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
+    String groupId,
+  ) async {
+    return const [];
+  }
+
+  @override
+  Future<String> buildGroupReportCsv(String groupId) async {
+    return '';
+  }
+
+  @override
+  Future<List<GroupFeedItem>> fetchFeed(String groupId) async {
+    return const [];
+  }
+
+  @override
+  Future<List<GroupPhotoItem>> fetchPhotoAlbum(String groupId) async {
+    return const [];
+  }
+
+  @override
+  Future<GroupPublicProfile> fetchPublicProfile(String groupId) async {
+    return GroupPublicProfile.defaults(groupId);
+  }
+
+  @override
+  Future<void> updatePublicProfile(GroupPublicProfile profile) async {}
+
+  @override
+  Future<void> markSettlementPaid(String settlementId) async {}
+
+  @override
+  Future<void> confirmSettlementReceived(String settlementId) async {}
+
+  @override
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String reason,
+  }) async {}
+
+  @override
+  Future<void> resetDisputedSettlement(String settlementId) async {}
+
+  @override
+  Future<void> removeMember({
+    required String groupId,
+    required String userId,
+  }) async {}
+
+  @override
+  Future<void> leaveGroup(String groupId) async {}
+
+  @override
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) async {}
 
   @override
   Future<void> addComment({
     required String transactionId,
     required String content,
-  }) {
-    throw UnimplementedError();
+  }) async {}
+
+  @override
+  Future<List<GroupReactionSummary>> fetchReactions(
+    String transactionId,
+  ) async {
+    return const [];
   }
 
   @override
-  Future<GroupBudget?> fetchGroupBudget(String groupId) {
-    throw UnimplementedError();
-  }
+  Future<void> updateComment({
+    required String commentId,
+    required String transactionId,
+    required String content,
+  }) async {}
 
   @override
-  Future<void> upsertGroupBudget({
-    required String groupId,
-    required int monthlyLimit,
-    required int warningThresholdPercent,
-  }) {
-    throw UnimplementedError();
-  }
+  Future<void> deleteComment({
+    required String commentId,
+    required String transactionId,
+  }) async {}
 
   @override
-  Future<GroupNotificationPreference> fetchNotificationPreference(
-    String groupId,
-  ) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> upsertNotificationPreference(
-    GroupNotificationPreference preference,
-  ) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<GroupPublicProfile> fetchPublicProfile(String groupId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> upsertPublicProfile(GroupPublicProfile profile) {
-    throw UnimplementedError();
+  Future<GroupPublicProfile> fetchPublicGroupProfile(String slug) async {
+    return GroupPublicProfile.defaults('public-group');
   }
 
   @override
   Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
     String groupId,
-  ) {
-    throw UnimplementedError();
+  ) async {
+    return const [];
   }
 
   @override
-  Future<void> createRecurringTransaction({
+  Future<String> createRecurringTransaction({
     required String groupId,
     required String title,
     required int amount,
     required String frequency,
     required DateTime nextRunAt,
     required int notifyDaysBefore,
-  }) {
-    throw UnimplementedError();
+  }) async {
+    return 'mock-recurring-id';
   }
 
   @override
   Future<void> updateRecurringTransaction({
     required String id,
-    required String groupId,
     required String title,
     required int amount,
     required String frequency,
     required DateTime nextRunAt,
     required int notifyDaysBefore,
     required bool isActive,
-  }) {
-    throw UnimplementedError();
-  }
+  }) async {}
+
+  @override
+  Future<void> deleteRecurringTransaction(String id) async {}
 }

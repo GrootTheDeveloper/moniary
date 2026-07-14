@@ -1,0 +1,91 @@
+import 'dart:io';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:home_widget/home_widget.dart';
+
+import '../../features/categories/domain/models/category.dart';
+import '../../features/transactions/data/repositories/transaction_repository.dart';
+import '../../features/wallets/data/repositories/wallet_repository.dart';
+import '../preferences/preferences_providers.dart';
+import '../../shared/utils/currency_formatter.dart';
+import '../../shared/utils/app_logger.dart';
+
+final widgetUpdateServiceProvider = Provider<WidgetUpdateService>((ref) {
+  return WidgetUpdateService(ref);
+});
+
+class WidgetUpdateService {
+  WidgetUpdateService(this._ref);
+
+  final Ref _ref;
+
+  static const _appGroupId = 'group.com.moniary';
+  static const _iOSWidgetName = 'MoniaryWidget';
+
+  /// Fetch latest real data from database and update iOS Home Screen Widget
+  Future<void> updateWidget() async {
+    // Skip if running inside unit/widget tests where platform channels are not mocked
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      return;
+    }
+
+    try {
+      // 1. Configure App Group for shared preferences
+      await HomeWidget.setAppGroupId(_appGroupId);
+
+      // 2. Fetch all wallets directly from repository to ensure fresh real data
+      final wallets = await _ref.read(walletRepositoryProvider).fetchWallets();
+      final totalBalance = wallets
+          .where((w) => w.isActive)
+          .fold(0.0, (sum, w) => sum + w.initialBalance);
+
+      // 3. Fetch today's transactions directly from repository
+      final today = DateTime.now();
+      final transactions = await _ref
+          .read(transactionRepositoryProvider)
+          .fetchTransactionsForDay(today);
+
+      final todaySpending = transactions
+          .where((t) => t.type == TransactionType.expense)
+          .fold(0.0, (sum, t) => sum + t.amount);
+
+      // 4. Retrieve preferred user currency and locale
+      final currencyCode = _ref.read(preferredCurrencyProvider);
+      final locale = _ref.read(preferredLocaleProvider);
+
+      final formattedBalance = formatCurrency(
+        totalBalance,
+        currencyCode: currencyCode,
+        locale: locale.toString(),
+      );
+
+      final formattedSpending = formatCurrency(
+        todaySpending,
+        currencyCode: currencyCode,
+        locale: locale.toString(),
+      );
+
+      // 5. Save formatted data to shared preferences (App Group)
+      await HomeWidget.saveWidgetData<String>(
+        'total_balance',
+        formattedBalance,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'today_spending',
+        formattedSpending,
+      );
+
+      // 6. Request Widget Extension timeline reload
+      await HomeWidget.updateWidget(iOSName: _iOSWidgetName);
+
+      AppLogger.info(
+        'iOS Widget updated successfully. Balance: $formattedBalance, Spend: $formattedSpending',
+      );
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to update iOS Home Screen Widget',
+        error,
+        stackTrace,
+      );
+    }
+  }
+}

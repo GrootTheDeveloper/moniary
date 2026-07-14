@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
-import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../l10n/l10n_extension.dart';
@@ -42,7 +42,7 @@ class WalletSection extends ConsumerWidget {
                   padding: const EdgeInsets.only(bottom: 9),
                   child: _WalletTile(
                     wallet: wallet,
-                    balanceLabel: formatMoney(wallet.initialBalance),
+                    balanceLabel: ref.formatAmount(wallet.initialBalance),
                     onEdit: () => _showWalletForm(context, ref, wallet: wallet),
                   ),
                 ),
@@ -332,6 +332,7 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
               ),
               decoration: InputDecoration(
                 labelText: context.l10n.walletInitialBalance,
+                suffixText: ref.currencySymbol,
               ),
             ),
             const SizedBox(height: 8),

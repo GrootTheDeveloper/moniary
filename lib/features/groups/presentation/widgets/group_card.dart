@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../domain/entities/spending_group.dart';
 
-class GroupCard extends StatelessWidget {
+class GroupCard extends ConsumerWidget {
   const GroupCard({required this.group, required this.onTap, super.key});
 
   final SpendingGroup group;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final typography = context.moniaryTypography;
     final balance = group.currentUserBalance;
     final balanceText = balance == 0
         ? context.l10n.groupBalanceSettled
         : balance > 0
-        ? context.l10n.groupBalanceOwes(formatVnd(balance))
-        : context.l10n.groupBalanceReceives(formatVnd(balance.abs()));
+        ? context.l10n.groupBalanceOwes(ref.formatAmount(balance))
+        : context.l10n.groupBalanceReceives(ref.formatAmount(balance.abs()));
     final balanceColor = balance == 0
         ? colors.success
         : balance > 0
@@ -84,7 +85,7 @@ class GroupCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       '${context.l10n.groupMemberCount(group.memberCount)} · '
-                      '${context.l10n.groupTotalSpent(formatVnd(group.totalSpent))}',
+                      '${context.l10n.groupTotalSpent(ref.formatAmount(group.totalSpent))}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: typography.metadata.copyWith(

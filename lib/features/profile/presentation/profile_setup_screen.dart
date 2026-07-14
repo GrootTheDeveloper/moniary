@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../app/app_theme.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../l10n/l10n_extension.dart';
-import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../core/preferences/preferences_providers.dart';
 import '../../../features/calendar/presentation/month/calendar_screen.dart';
@@ -14,6 +16,8 @@ import '../../../shared/widgets/supabase_image.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../auth/application/auth_controller.dart';
 import '../application/profile_setup_controller.dart';
+import '../domain/currency_data.dart';
+import 'currency_picker_screen.dart';
 import 'profile_survey_screen.dart';
 
 class ProfileSetupScreen extends ConsumerStatefulWidget {
@@ -33,11 +37,22 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   String _currency = 'VND';
   String? _avatarPath;
   bool _avatarPicked = false;
+  String? _detectedTimezone;
 
   @override
   void initState() {
     super.initState();
     _currency = ref.read(preferredCurrencyProvider);
+    _detectDeviceTimezone();
+  }
+
+  Future<void> _detectDeviceTimezone() async {
+    try {
+      final tz = await FlutterTimezone.getLocalTimezone();
+      if (mounted) setState(() => _detectedTimezone = tz);
+    } catch (e, st) {
+      AppLogger.error('Failed to detect device timezone', e, st);
+    }
   }
 
   @override
@@ -125,7 +140,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                           children: [
                             Text(
                               isEditMode
-                                  ? '${context.l10n.commonEdit} ${context.l10n.profileTitle}'
+                                  ? context.l10n.editProfileTitle
                                   : context.l10n.profileSetupTitle,
                               style: Theme.of(context).textTheme.headlineMedium,
                             ),
@@ -244,24 +259,15 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        initialValue: _currency,
-                        isExpanded: true,
-                        decoration: const InputDecoration(),
-                        items: supportedCurrencies
-                            .map(
-                              (info) => DropdownMenuItem(
-                                value: info.code,
-                                child: Text(
-                                  '${info.code} (${info.symbol})',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          if (value == null) return;
-                          setState(() => _currency = value);
+                      _CurrencySelector(
+                        code: _currency,
+                        onTap: () async {
+                          final result = await context.push<CurrencyInfo>(
+                            '${CurrencyPickerScreen.routePath}?pickOnly=true',
+                          );
+                          if (result != null && mounted) {
+                            setState(() => _currency = result.code);
+                          }
                         },
                       ),
                       const Spacer(),
@@ -304,13 +310,22 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     }
 
     try {
+      final existingProfile = ref
+          .read(profileSetupControllerProvider)
+          .asData
+          ?.value;
+      final timezone =
+          (widget.isEditMode && existingProfile?.timezone.isNotEmpty == true)
+          ? existingProfile!.timezone
+          : (_detectedTimezone ?? AppConstants.defaultTimezone);
       await ref.read(preferredCurrencyProvider.notifier).setCurrency(_currency);
+      if (!mounted) return;
       await ref
           .read(profileSetupControllerProvider.notifier)
           .saveProfile(
             fullName: name,
             username: username,
-            timezone: 'Asia/Ho_Chi_Minh', // TODO: detect timezone from device
+            timezone: timezone,
             avatarImagePath: _avatarPicked ? _avatarPath : null,
           );
       if (!mounted) return;
@@ -353,5 +368,40 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+}
+
+class _CurrencySelector extends StatelessWidget {
+  const _CurrencySelector({required this.code, required this.onTap});
+
+  final String code;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final info = currencyInfoFor(code);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: InputDecorator(
+        decoration: const InputDecoration(),
+        child: Row(
+          children: [
+            Text(info.flag, style: const TextStyle(fontSize: 22)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                '${info.name} (${info.code})',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_outlined,
+              color: Theme.of(context).hintColor,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

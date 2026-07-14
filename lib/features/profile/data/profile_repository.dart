@@ -214,6 +214,45 @@ class ProfileRepository {
     }
   }
 
+  Future<UserProfile> completeSurveySetup({
+    required String occupation,
+    required String preferredCurrency,
+    required String walletName,
+    required double initialBalance,
+  }) async {
+    if (_useMockData) {
+      return completeSurvey(
+        occupation: occupation,
+        preferredCurrency: preferredCurrency,
+      );
+    }
+
+    try {
+      final row = await _client.rpc(
+        'complete_profile_survey',
+        params: {
+          'p_occupation': occupation,
+          'p_preferred_currency': preferredCurrency,
+          'p_wallet_name': walletName,
+          'p_initial_balance': initialBalance,
+        },
+      );
+      return UserProfile.fromMap(
+        (row as Map<dynamic, dynamic>).cast<String, dynamic>(),
+      );
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Failed to complete profile survey setup', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to complete profile survey setup', e, st);
+      throw const AppException(
+        'errorConnection',
+        code: 'PROFILE_SURVEY_FAILED',
+      );
+    }
+  }
+
   void setMockEmailAndProvider({
     required String email,
     required String loginProvider,

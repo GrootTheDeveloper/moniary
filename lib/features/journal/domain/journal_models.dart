@@ -17,27 +17,70 @@ class MonthlyRecap {
     required this.month,
     required this.transactions,
     required this.totalExpense,
+    required this.totalIncome,
     required this.previousMonthExpense,
+    required this.previousMonthIncome,
     required this.highestSpendDate,
     required this.highestDayAmount,
+    required this.activeRecordingDays,
     required this.topCategories,
+    required this.insights,
   });
 
   final DateTime month;
   final List<TransactionEntry> transactions;
   final double totalExpense;
+  final double totalIncome;
   final double previousMonthExpense;
+  final double previousMonthIncome;
   final DateTime? highestSpendDate;
   final double highestDayAmount;
+  final int activeRecordingDays;
   final List<JournalCategoryTotal> topCategories;
+  final List<MonthlyRecapInsight> insights;
 
   int get expenseCount =>
       transactions.where((transaction) => transaction.isExpense).length;
+
+  double get netAmount => totalIncome - totalExpense;
+
+  double get previousNetAmount => previousMonthIncome - previousMonthExpense;
+
+  double get averageDailyExpense {
+    if (activeRecordingDays == 0) return 0;
+    return totalExpense / activeRecordingDays;
+  }
+
+  double get topCategoryShare {
+    if (totalExpense <= 0 || topCategories.isEmpty) return 0;
+    return topCategories.first.amount / totalExpense;
+  }
 
   double get monthChange {
     if (previousMonthExpense <= 0) return 0;
     return (totalExpense - previousMonthExpense) / previousMonthExpense;
   }
+}
+
+enum MonthlyRecapInsightType {
+  spendingDown,
+  spendingUp,
+  topCategoryShare,
+  weekendHeavy,
+  recordingRhythm,
+  quietMonth,
+}
+
+class MonthlyRecapInsight {
+  const MonthlyRecapInsight({
+    required this.type,
+    required this.value,
+    this.categoryName,
+  });
+
+  final MonthlyRecapInsightType type;
+  final double value;
+  final String? categoryName;
 }
 
 class RecordingStreak {

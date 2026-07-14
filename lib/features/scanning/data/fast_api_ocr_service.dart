@@ -95,12 +95,49 @@ class FastApiOcrService implements OcrService {
     final hasValidationIssues =
         validationIssues is List && validationIssues.isNotEmpty;
     final items = data['items'];
+    final confidenceByField = _fieldConfidence(payload['field_confidence']);
+    final merchant = _stringOrNull(data['merchant']);
+    final total = _positiveIntOrNull(data['total']);
+    final date = _dateOrNull(data['date']);
+    final address = _stringOrNull(data['address']);
+    final category = _stringOrNull(data['suggested_category']);
 
     return OcrResult(
-      merchantName: _stringOrNull(data['merchant']),
-      totalAmount: _positiveDoubleOrNull(data['total']),
-      transactionDate: _dateOrNull(data['date']),
-      note: _stringOrNull(data['address']),
+      merchantSuggestion: merchant == null
+          ? null
+          : OcrSuggestion(
+              value: merchant,
+              confidence: confidenceByField['merchant'] ?? 0.65,
+              source: OcrSuggestionSource.ocr,
+            ),
+      totalSuggestion: total == null
+          ? null
+          : OcrSuggestion(
+              value: total,
+              confidence: confidenceByField['total'] ?? 0.65,
+              source: OcrSuggestionSource.ocr,
+            ),
+      dateSuggestion: date == null
+          ? null
+          : OcrSuggestion(
+              value: date,
+              confidence: confidenceByField['date'] ?? 0.65,
+              source: OcrSuggestionSource.ocr,
+            ),
+      noteSuggestion: address == null
+          ? null
+          : OcrSuggestion(
+              value: address,
+              confidence: confidenceByField['address'] ?? 0.60,
+              source: OcrSuggestionSource.ocr,
+            ),
+      categorySuggestion: category == null
+          ? null
+          : OcrSuggestion(
+              value: category,
+              confidence: confidenceByField['category'] ?? 0.55,
+              source: OcrSuggestionSource.classifier,
+            ),
       items: items is List
           ? items
                 .whereType<Map<String, dynamic>>()
@@ -111,6 +148,9 @@ class FastApiOcrService implements OcrService {
       confidence:
           _positiveDoubleOrNull(payload['confidence']) ??
           (hasValidationIssues ? 0.65 : 0.85),
+      processingTime: Duration(
+        milliseconds: _nonNegativeInt(payload['processing_ms']) ?? 0,
+      ),
     );
   }
 
@@ -120,9 +160,19 @@ class FastApiOcrService implements OcrService {
       name: _stringOrNull(item['name']) ?? '',
       quantity: quantity,
       price:
-          _positiveDoubleOrNull(item['amount']) ??
-          _positiveDoubleOrNull(item['unit_price']),
+          _positiveIntOrNull(item['amount']) ??
+          _positiveIntOrNull(item['unit_price']),
+      confidence: 0.75,
     );
+  }
+
+  Map<String, double> _fieldConfidence(Object? value) {
+    if (value is! Map<String, dynamic>) return const {};
+    return {
+      for (final entry in value.entries)
+        if (_positiveDoubleOrNull(entry.value) case final confidence?)
+          entry.key: confidence.clamp(0.0, 1.0).toDouble(),
+    };
   }
 
   String? _stringOrNull(Object? value) {
@@ -140,6 +190,24 @@ class FastApiOcrService implements OcrService {
       _ => null,
     };
     return parsed == null || parsed <= 0 ? null : parsed;
+  }
+
+  int? _positiveIntOrNull(Object? value) {
+    final parsed = switch (value) {
+      num number => number.round(),
+      String text => double.tryParse(text)?.round(),
+      _ => null,
+    };
+    return parsed == null || parsed <= 0 ? null : parsed;
+  }
+
+  int? _nonNegativeInt(Object? value) {
+    final parsed = switch (value) {
+      num number => number.round(),
+      String text => double.tryParse(text)?.round(),
+      _ => null,
+    };
+    return parsed == null || parsed < 0 ? null : parsed;
   }
 
   DateTime? _dateOrNull(Object? value) {

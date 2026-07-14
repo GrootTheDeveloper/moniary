@@ -22,19 +22,19 @@ class LegalContactScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _ContactCard(
               icon: Icons.privacy_tip_outlined,
-              title: context.l10n.legalContactPrivacyLabel,
+              title: context.l10n.legalContactPrivacy,
               value: AppConstants.privacyEmail,
               description: context.l10n.legalContactPrivacyDesc,
             ),
             _ContactCard(
               icon: Icons.support_agent_outlined,
-              title: context.l10n.legalContactSupportLabel,
+              title: context.l10n.legalContactSupport,
               value: AppConstants.supportEmail,
               description: context.l10n.legalContactSupportDesc,
             ),
             _ContactCard(
               icon: Icons.gavel_outlined,
-              title: context.l10n.legalContactLegalLabel,
+              title: context.l10n.legalContactLegal,
               value: AppConstants.legalEmail,
               description: context.l10n.legalContactLegalDesc,
             ),
@@ -53,10 +53,11 @@ class LegalContactScreen extends StatelessWidget {
   void _copyAll(BuildContext context) {
     Clipboard.setData(
       ClipboardData(
-        text:
-            '${context.l10n.legalContactPrivacyLabel}: ${AppConstants.privacyEmail}\n'
-            '${context.l10n.legalContactSupportLabel}: ${AppConstants.supportEmail}\n'
-            '${context.l10n.legalContactLegalLabel}: ${AppConstants.legalEmail}',
+        text: context.l10n.legalCopyAllText(
+          AppConstants.privacyEmail,
+          AppConstants.supportEmail,
+          AppConstants.legalEmail,
+        ),
       ),
     );
     ScaffoldMessenger.of(context).showSnackBar(

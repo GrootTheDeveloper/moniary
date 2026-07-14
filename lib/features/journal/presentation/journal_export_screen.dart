@@ -4,13 +4,14 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
-import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/widgets/supabase_image.dart';
 import '../../transactions/domain/models/transaction_entry.dart';
 import '../../transactions/presentation/utils/transaction_image_source.dart';
@@ -225,8 +226,8 @@ class _ExportTopBar extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: IconButton(
               onPressed: busy ? null : onClose,
-              tooltip: context.l10n.commonClose,
-              icon: const Icon(Icons.close_rounded),
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              icon: const Icon(Icons.arrow_back_ios_new_rounded),
               color: _posterSurface,
               iconSize: 22,
             ),
@@ -419,7 +420,7 @@ class _PosterMosaic extends StatelessWidget {
   }
 }
 
-class _PosterMetrics extends StatelessWidget {
+class _PosterMetrics extends ConsumerWidget {
   const _PosterMetrics({
     required this.transactionCount,
     required this.totalExpense,
@@ -429,7 +430,7 @@ class _PosterMetrics extends StatelessWidget {
   final double totalExpense;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -441,7 +442,7 @@ class _PosterMetrics extends StatelessWidget {
         ),
         Expanded(
           child: _PosterMetric(
-            value: formatVnd(totalExpense),
+            value: ref.formatAmount(totalExpense),
             label: context.l10n.statsTotalExpense,
             alignEnd: true,
             accentValue: true,

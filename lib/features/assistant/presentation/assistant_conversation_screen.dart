@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
-import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/widgets/moniary_design.dart';
 import '../application/assistant_controller.dart';
 import '../domain/assistant_models.dart';
@@ -175,15 +175,15 @@ class _AssistantConversationScreenState
   }
 }
 
-class _InsightCard extends StatelessWidget {
+class _InsightCard extends ConsumerWidget {
   const _InsightCard({required this.insight});
 
   final AssistantInsight insight;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final snapshot = insight.snapshot;
-    final content = _answer(context, snapshot);
+    final content = _answer(context, ref, snapshot);
     final primaryAmount = switch (insight.kind) {
       AssistantQuestionKind.monthlyTotal => snapshot.monthlyExpense,
       AssistantQuestionKind.weeklyComparison => snapshot.currentWeekExpense,
@@ -206,7 +206,7 @@ class _InsightCard extends StatelessWidget {
           const SizedBox(height: 12),
           if (primaryAmount > 0) ...[
             Text(
-              formatVnd(primaryAmount),
+              ref.formatAmount(primaryAmount),
               style: context.moniaryTypography.displayMedium.copyWith(
                 color: context.moniaryColors.textPrimary,
               ),
@@ -233,7 +233,11 @@ class _InsightCard extends StatelessWidget {
     );
   }
 
-  String _answer(BuildContext context, FinancialAssistantSnapshot snapshot) {
+  String _answer(
+    BuildContext context,
+    WidgetRef ref,
+    FinancialAssistantSnapshot snapshot,
+  ) {
     if (snapshot.monthlyExpense <= 0) {
       return context.l10n.assistantNoData;
     }
@@ -242,7 +246,7 @@ class _InsightCard extends StatelessWidget {
         final previous = snapshot.previousMonthExpense;
         if (previous <= 0) {
           return context.l10n.assistantMonthlyAnswer(
-            formatVnd(snapshot.monthlyExpense),
+            ref.formatAmount(snapshot.monthlyExpense),
           );
         }
         final delta =
@@ -250,7 +254,7 @@ class _InsightCard extends StatelessWidget {
         final direction = snapshot.monthlyExpense >= previous
             ? context.l10n.assistantDirectionMore
             : context.l10n.assistantDirectionLess;
-        return '${context.l10n.assistantMonthlyAnswer(formatVnd(snapshot.monthlyExpense))} '
+        return '${context.l10n.assistantMonthlyAnswer(ref.formatAmount(snapshot.monthlyExpense))} '
             '${context.l10n.assistantMonthlyCompare(direction, delta.toStringAsFixed(0))}';
       case AssistantQuestionKind.weeklyComparison:
         final previous = snapshot.previousWeekExpense;
@@ -261,20 +265,20 @@ class _InsightCard extends StatelessWidget {
             ? context.l10n.assistantDirectionMore.toLowerCase()
             : context.l10n.assistantDirectionLess.toLowerCase();
         return context.l10n.assistantWeeklyAnswer(
-          formatVnd(snapshot.currentWeekExpense),
+          ref.formatAmount(snapshot.currentWeekExpense),
           direction,
           delta.toStringAsFixed(0),
         );
       case AssistantQuestionKind.dailyAverage:
         return context.l10n.assistantDailyAnswer(
-          formatVnd(snapshot.dailyAverage),
+          ref.formatAmount(snapshot.dailyAverage),
         );
       case AssistantQuestionKind.topCategory:
         final category = snapshot.topCategoryName;
         if (category == null) return context.l10n.assistantNoData;
         return context.l10n.assistantTopCategoryAnswer(
           category,
-          formatVnd(snapshot.topCategoryAmount),
+          ref.formatAmount(snapshot.topCategoryAmount),
           (snapshot.topCategoryShare * 100).round().toString(),
         );
       case AssistantQuestionKind.recurringExpenses:
@@ -285,7 +289,7 @@ class _InsightCard extends StatelessWidget {
         return context.l10n.assistantRecurringAnswer(
           label,
           snapshot.recurringCount,
-          formatVnd(snapshot.recurringAmount),
+          ref.formatAmount(snapshot.recurringAmount),
         );
       case AssistantQuestionKind.savingSuggestion:
         final category = snapshot.topCategoryName;
@@ -294,7 +298,7 @@ class _InsightCard extends StatelessWidget {
         }
         return context.l10n.assistantSavingAnswer(
           category,
-          formatVnd(math.max(0, snapshot.suggestedSaving)),
+          ref.formatAmount(math.max(0, snapshot.suggestedSaving)),
         );
     }
   }

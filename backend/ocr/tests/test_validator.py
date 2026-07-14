@@ -1,5 +1,5 @@
 from src.models import ReceiptData, ReceiptItem
-from src.validator import validate
+from src.validator import field_confidence, validate
 
 
 def test_autofill_total():
@@ -86,3 +86,9 @@ def test_confidence_minimal_data():
     _, _, confidence = validate(ReceiptData(total=100_000))
 
     assert confidence < 0.5
+
+
+def test_field_confidence_marks_total_mismatch_for_review():
+    data, issues, _ = validate(ReceiptData(subtotal=100_000, total=150_000))
+    confidence = field_confidence(data, issues)
+    assert confidence["total"] < 0.75

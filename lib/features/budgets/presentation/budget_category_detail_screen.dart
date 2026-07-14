@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../l10n/l10n_extension.dart';
-import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../transactions/domain/models/transaction_entry.dart';
 import '../../transactions/presentation/detail/transaction_detail_screen.dart';
@@ -192,13 +192,13 @@ class _TopIconButton extends StatelessWidget {
   }
 }
 
-class _BudgetCategoryHero extends StatelessWidget {
+class _BudgetCategoryHero extends ConsumerWidget {
   const _BudgetCategoryHero({required this.category});
 
   final CategoryBudget category;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final accent = _budgetAccent(category, colors);
     final percent = (category.progress * 100).round();
@@ -254,9 +254,9 @@ class _BudgetCategoryHero extends StatelessWidget {
         const SizedBox(height: 23),
         Text(
           context.l10n.budgetSpentRemainingLine(
-            formatVnd(category.spentAmount),
-            formatVnd(category.limitAmount),
-            formatVnd(remaining.toDouble()),
+            ref.formatAmount(category.spentAmount),
+            ref.formatAmount(category.limitAmount),
+            ref.formatAmount(remaining.toDouble()),
           ),
           textAlign: TextAlign.center,
           style: context.moniaryTypography.metadataStrong.copyWith(

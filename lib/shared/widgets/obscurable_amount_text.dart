@@ -8,6 +8,8 @@ class ObscurableAmountText extends ConsumerWidget {
   final String obscurePattern;
   final String? prefixText;
   final String? suffixText;
+  final int? maxLines;
+  final TextOverflow? overflow;
 
   const ObscurableAmountText({
     super.key,
@@ -16,6 +18,8 @@ class ObscurableAmountText extends ConsumerWidget {
     this.obscurePattern = '***',
     this.prefixText,
     this.suffixText,
+    this.maxLines,
+    this.overflow,
   });
 
   @override
@@ -27,6 +31,8 @@ class ObscurableAmountText extends ConsumerWidget {
     return Text(
       '${prefixText ?? ''}$displayAmount${suffixText ?? ''}',
       style: style,
+      maxLines: maxLines,
+      overflow: overflow,
     );
   }
 }

@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "FLHU923LV8.com.moniary.moniary",
+        "paths": [
+          "/friends/invite/*",
+          "/groups/invite/*"
+        ]
+      }
+    ]
+  }
+}

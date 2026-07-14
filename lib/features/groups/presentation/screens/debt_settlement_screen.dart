@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/moniary_design.dart';
 import '../../../../shared/widgets/supabase_image.dart';
@@ -59,6 +59,7 @@ class DebtSettlementScreen extends ConsumerWidget {
               },
               onConfirmAll: (items) =>
                   _confirmAllSettled(context, ref, currentUserId, items),
+              onDispute: (item) => _dispute(context, ref, item),
             ),
           ),
         ),
@@ -104,6 +105,59 @@ class DebtSettlementScreen extends ConsumerWidget {
       );
     }
   }
+
+  Future<void> _dispute(
+    BuildContext context,
+    WidgetRef ref,
+    GroupSettlementSuggestion item,
+  ) async {
+    final controller = TextEditingController();
+    final reason = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.groupSettlementDisputeTitle),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLength: 300,
+          minLines: 2,
+          maxLines: 4,
+          decoration: InputDecoration(
+            hintText: context.l10n.groupSettlementDisputeReasonHint,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              final value = controller.text.trim();
+              if (value.isNotEmpty) Navigator.pop(context, value);
+            },
+            child: Text(context.l10n.commonConfirm),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (reason == null || !context.mounted) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .disputeSettlement(
+            settlementId: item.id,
+            groupId: groupId,
+            reason: reason,
+          );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
+  }
 }
 
 class _SettlementContent extends StatelessWidget {
@@ -113,6 +167,7 @@ class _SettlementContent extends StatelessWidget {
     required this.currentUserId,
     required this.onRefresh,
     required this.onConfirmAll,
+    required this.onDispute,
   });
 
   final GroupSettlementOverview overview;
@@ -121,6 +176,7 @@ class _SettlementContent extends StatelessWidget {
   final Future<void> Function() onRefresh;
   final Future<void> Function(List<GroupSettlementSuggestion> items)
   onConfirmAll;
+  final ValueChanged<GroupSettlementSuggestion> onDispute;
 
   @override
   Widget build(BuildContext context) {
@@ -167,6 +223,7 @@ class _SettlementContent extends StatelessWidget {
                       currentUserId: currentUserId,
                       fromAvatarPath: _avatarFor(active[index].fromUserId),
                       toAvatarPath: _avatarFor(active[index].toUserId),
+                      onDispute: () => onDispute(active[index]),
                     ),
                     if (index != active.length - 1) const SizedBox(height: 12),
                   ],
@@ -264,21 +321,23 @@ class _BackButton extends StatelessWidget {
   }
 }
 
-class _SettlementCard extends StatelessWidget {
+class _SettlementCard extends ConsumerWidget {
   const _SettlementCard({
     required this.item,
     required this.currentUserId,
     required this.fromAvatarPath,
     required this.toAvatarPath,
+    required this.onDispute,
   });
 
   final GroupSettlementSuggestion item;
   final String currentUserId;
   final String? fromAvatarPath;
   final String? toAvatarPath;
+  final VoidCallback onDispute;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     return Container(
       constraints: const BoxConstraints(minHeight: 68),
@@ -295,63 +354,76 @@ class _SettlementCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          _MemberFace(
-            imagePath: fromAvatarPath,
-            fallbackColor: const Color(0xFF91A092),
-          ),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 67,
-            child: Text(
-              _displayName(context, item.fromUserId, item.fromDisplayName),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: colors.textPrimary,
-                fontSize: 12,
-                height: 1.15,
-                fontWeight: FontWeight.w800,
+          Row(
+            children: [
+              _MemberFace(
+                imagePath: fromAvatarPath,
+                fallbackColor: const Color(0xFF91A092),
               ),
-            ),
-          ),
-          Expanded(
-            child: Center(
-              child: Text(
-                '→',
-                style: context.moniaryTypography.displaySmall.copyWith(
-                  color: colors.primary,
-                  fontSize: 18,
+              const SizedBox(width: 12),
+              SizedBox(
+                width: 67,
+                child: Text(
+                  _displayName(context, item.fromUserId, item.fromDisplayName),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colors.textPrimary,
+                    fontSize: 12,
+                    height: 1.15,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    '→',
+                    style: context.moniaryTypography.displaySmall.copyWith(
+                      color: colors.primary,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+              _MemberFace(
+                imagePath: toAvatarPath,
+                fallbackColor: const Color(0xFFB8AEA2),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                _displayName(context, item.toUserId, item.toDisplayName),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: colors.textPrimary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(width: 15),
+              Text(
+                ref.formatAmount(item.amount),
+                style: context.moniaryTypography.metadataStrong.copyWith(
+                  color: colors.textPrimary,
+                  fontSize: 11,
+                  letterSpacing: 0,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
+          ),
+          if (item.status != GroupSettlementStatus.disputed)
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: onDispute,
+                icon: const Icon(Icons.report_problem_outlined, size: 16),
+                label: Text(context.l10n.groupSettlementDisputeAction),
+              ),
             ),
-          ),
-          _MemberFace(
-            imagePath: toAvatarPath,
-            fallbackColor: const Color(0xFFB8AEA2),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            _displayName(context, item.toUserId, item.toDisplayName),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: colors.textPrimary,
-              fontSize: 12,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(width: 15),
-          Text(
-            formatVnd(item.amount),
-            style: context.moniaryTypography.metadataStrong.copyWith(
-              color: colors.textPrimary,
-              fontSize: 11,
-              letterSpacing: 0,
-              fontFeatures: const [FontFeature.tabularFigures()],
-            ),
-          ),
         ],
       ),
     );

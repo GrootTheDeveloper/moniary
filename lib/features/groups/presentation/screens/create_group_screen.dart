@@ -9,6 +9,13 @@ import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
 
+class CreateGroupResult {
+  const CreateGroupResult({required this.groupId, required this.inviteMembers});
+
+  final String groupId;
+  final bool inviteMembers;
+}
+
 class CreateGroupScreen extends ConsumerStatefulWidget {
   const CreateGroupScreen({super.key});
 
@@ -23,6 +30,7 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
   final _descriptionController = TextEditingController();
   final _typeController = TextEditingController();
   String? _avatarPath;
+  var _inviteMembers = true;
 
   @override
   void dispose() {
@@ -93,6 +101,14 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
               prefixIcon: const Icon(Icons.notes_outlined),
             ),
           ),
+          const SizedBox(height: 12),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            value: _inviteMembers,
+            onChanged: (value) => setState(() => _inviteMembers = value),
+            title: Text(context.l10n.groupInviteAfterCreate),
+            secondary: const Icon(Icons.person_add_outlined),
+          ),
           const SizedBox(height: 24),
           FilledButton(
             onPressed: action.isLoading ? null : _create,
@@ -134,7 +150,9 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
             avatarFilePath: _avatarPath,
           );
       if (!mounted) return;
-      context.pop(groupId);
+      context.pop(
+        CreateGroupResult(groupId: groupId, inviteMembers: _inviteMembers),
+      );
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

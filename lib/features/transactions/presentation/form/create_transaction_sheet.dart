@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../categories/domain/models/category.dart';
 import '../../../categories/application/categories_controller.dart';
@@ -194,8 +195,9 @@ class _CreateTransactionSheetState
                 ),
                 decoration: InputDecoration(
                   labelText: context.l10n.transactionAmount,
-                  hintText: '57000',
+                  hintText: ref.formatAmount(57000),
                   prefixIcon: const Icon(Icons.payments_outlined),
+                  suffixText: ref.currencySymbol,
                 ),
               ),
               const SizedBox(height: 14),
@@ -387,7 +389,10 @@ class _DateTimeTile extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                DateFormat('dd/MM/yyyy • HH:mm', 'vi_VN').format(value),
+                DateFormat(
+                  'dd/MM/yyyy • HH:mm',
+                  Localizations.localeOf(context).toString(),
+                ).format(value),
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(color: Colors.white),

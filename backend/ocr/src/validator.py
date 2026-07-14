@@ -1,6 +1,7 @@
 """Arithmetic validation and confidence scoring for OCR results."""
 
 from src.models import ReceiptData
+from src.classifier import classify_category
 
 
 MONEY_TOLERANCE = 500.0
@@ -72,3 +73,26 @@ def validate(data: ReceiptData) -> tuple[ReceiptData, list[str], float]:
         score += 0.20
 
     return normalized, issues, min(round(score, 2), 1.0)
+
+
+def field_confidence(
+    data: ReceiptData,
+    issues: list[str],
+) -> dict[str, float]:
+    """Return conservative confidence per field for review UX decisions."""
+    category, category_confidence = classify_category(data.merchant, data.items)
+    total_has_issue = any(issue.startswith("Total ") for issue in issues)
+    result: dict[str, float] = {}
+    if data.merchant:
+        result["merchant"] = 0.82
+    if data.total > 0:
+        result["total"] = 0.55 if total_has_issue else 0.94
+    if data.date:
+        result["date"] = 0.85
+    if data.address:
+        result["address"] = 0.70
+    if data.items:
+        result["items"] = 0.76 if not issues else 0.62
+    if category and data.suggested_category == category:
+        result["category"] = category_confidence
+    return result

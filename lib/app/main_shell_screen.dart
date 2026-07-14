@@ -7,10 +7,12 @@ import '../core/providers/camera_provider.dart';
 import '../features/assistant/presentation/assistant_home_screen.dart';
 import '../features/calendar/application/month/calendar_month_provider.dart';
 import '../features/calendar/application/month/calendar_visible_month_provider.dart';
+import '../features/recurring/presentation/recurring_auto_post_runner.dart';
 import '../features/transactions/domain/models/transaction_mutation_result.dart';
 import '../features/transactions/presentation/form/create_transaction_sheet.dart';
 import '../l10n/l10n_extension.dart';
 import '../shared/widgets/bottom_nav_bar.dart';
+import '../shared/widgets/mascot_overlay.dart';
 
 class MainShellScreen extends ConsumerWidget {
   const MainShellScreen({super.key, required this.navigationShell});
@@ -32,6 +34,9 @@ class MainShellScreen extends ConsumerWidget {
       body: Stack(
         children: [
           Positioned.fill(child: navigationShell),
+          // Positioned so this zero-size logic-only widget doesn't make the
+          // Stack (StackFit.loose) collapse to its size and blank the body.
+          const Positioned(width: 0, height: 0, child: RecurringAutoPostRunner()),
           Positioned(
             right: 18,
             bottom: 18,
@@ -40,6 +45,13 @@ class MainShellScreen extends ConsumerWidget {
               foregroundColor: colors.surfaceRaised,
               onPressed: () => context.push(AssistantHomeScreen.routePath),
             ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: -10.0,
+            height: 200.0,
+            child: const MascotOverlay(),
           ),
         ],
       ),

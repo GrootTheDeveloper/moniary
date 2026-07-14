@@ -494,7 +494,10 @@ class _PrivacyRequestHistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final createdAt = DateFormat('dd/MM/yyyy HH:mm').format(entry.createdAt);
+    final createdAt = DateFormat(
+      'dd/MM/yyyy HH:mm',
+      Localizations.localeOf(context).toString(),
+    ).format(entry.createdAt);
     final status = privacyRequestStatusById(entry.status);
 
     return InkWell(

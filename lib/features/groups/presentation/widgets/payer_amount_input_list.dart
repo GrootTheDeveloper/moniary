@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/spending_group.dart';
 
-class PayerAmountInputList extends StatelessWidget {
+class PayerAmountInputList extends ConsumerWidget {
   const PayerAmountInputList({
     required this.members,
     required this.paymentMode,
@@ -24,7 +25,7 @@ class PayerAmountInputList extends StatelessWidget {
   final void Function(String userId, bool selected) onMultipleToggled;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (paymentMode == GroupPaymentMode.everyonePaid) {
       return const SizedBox.shrink();
     }
@@ -72,7 +73,7 @@ class PayerAmountInputList extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText: context.l10n.groupTransactionTotal,
-                    suffixText: activeCurrencySymbol(),
+                    suffixText: ref.currencySymbol,
                   ),
                 ),
               ),

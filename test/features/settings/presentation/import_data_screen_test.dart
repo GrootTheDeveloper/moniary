@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/features/settings/application/import_controller.dart';
 import 'package:moniary/features/settings/domain/models/csv_transaction_row.dart';
 import 'package:moniary/features/settings/presentation/import/import_data_screen.dart';
@@ -60,18 +62,27 @@ class AvailableWalletsController extends WalletsController {
   }
 }
 
+class _FakeCurrencyNotifier extends PreferredCurrencyNotifier {
+  @override
+  String build() => 'VND';
+}
+
 void main() {
   testWidgets('import wallet load error hides raw backend details', (
     tester,
   ) async {
     final l10n = await AppLocalizations.delegate.load(const Locale('vi'));
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           importControllerProvider.overrideWith(TestImportController.new),
           importHistoryProvider.overrideWith((ref) async => const []),
           walletsControllerProvider.overrideWith(FailingWalletsController.new),
+          preferredCurrencyProvider.overrideWith(_FakeCurrencyNotifier.new),
         ],
         child: const MaterialApp(
           locale: Locale('vi'),
@@ -98,15 +109,19 @@ void main() {
     final l10n = await AppLocalizations.delegate.load(const Locale('vi'));
     await tester.binding.setSurfaceSize(const Size(900, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           importControllerProvider.overrideWith(FailingImportController.new),
           importHistoryProvider.overrideWith((ref) async => const []),
           walletsControllerProvider.overrideWith(
             AvailableWalletsController.new,
           ),
+          preferredCurrencyProvider.overrideWith(_FakeCurrencyNotifier.new),
         ],
         child: const MaterialApp(
           locale: Locale('vi'),

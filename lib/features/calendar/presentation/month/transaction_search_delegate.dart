@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/supabase_image.dart';
@@ -413,7 +412,7 @@ class _SearchChip extends StatelessWidget {
   }
 }
 
-class _SearchResultRow extends StatelessWidget {
+class _SearchResultRow extends ConsumerWidget {
   const _SearchResultRow({
     required this.transaction,
     required this.showTopDivider,
@@ -425,10 +424,12 @@ class _SearchResultRow extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final title = transaction.note?.trim().isNotEmpty == true
         ? transaction.note!.trim()
+        : transaction.categoryName.trim().isEmpty
+        ? context.l10n.categoryOther
         : transaction.categoryName;
     final amountColor = transaction.isIncome
         ? colors.success
@@ -483,7 +484,7 @@ class _SearchResultRow extends StatelessWidget {
                         Text(
                           '${_formatSearchDate(context, transaction.transactionDate)} · '
                           '${DateFormat('HH:mm').format(transaction.transactionDate)} · '
-                          '${transaction.walletName.toUpperCase()}',
+                          '${(transaction.walletName.trim().isEmpty ? context.l10n.walletUnknown : transaction.walletName).toUpperCase()}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: context.moniaryTypography.metadata.copyWith(
@@ -498,7 +499,7 @@ class _SearchResultRow extends StatelessWidget {
                   const SizedBox(width: 10),
                   ObscurableAmountText(
                     amountText:
-                        '${transaction.isIncome ? '+' : '-'}${formatVnd(transaction.amount)}',
+                        '${transaction.isIncome ? '+' : '-'}${ref.formatAmount(transaction.amount)}',
                     style: TextStyle(
                       color: amountColor,
                       fontFamily: 'JetBrains Mono',

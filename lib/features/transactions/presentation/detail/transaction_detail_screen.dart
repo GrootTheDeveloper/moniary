@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/composer/transaction_composer_controller.dart';
@@ -52,7 +52,13 @@ class _TransactionDetailBody extends ConsumerWidget {
       fallback: transaction.isIncome ? colors.success : colors.warning,
     );
     final note = transaction.note?.trim();
-    final title = note?.isNotEmpty == true ? note! : transaction.categoryName;
+    final categoryLabel = transaction.categoryName.trim().isEmpty
+        ? context.l10n.categoryOther
+        : transaction.categoryName;
+    final walletLabel = transaction.walletName.trim().isEmpty
+        ? context.l10n.walletUnknown
+        : transaction.walletName;
+    final title = note?.isNotEmpty == true ? note! : categoryLabel;
 
     return SafeArea(
       bottom: false,
@@ -172,7 +178,9 @@ class _TransactionDetailBody extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               ObscurableAmountText(
-                                amountText: formatVnd(transaction.amount),
+                                amountText: ref.formatAmount(
+                                  transaction.amount,
+                                ),
                                 prefixText: transaction.isIncome ? '+' : '-',
                                 style: typography.displayMedium.copyWith(
                                   color: transaction.isIncome
@@ -200,7 +208,7 @@ class _TransactionDetailBody extends ConsumerWidget {
                                 spacing: 8,
                                 runSpacing: 6,
                                 children: [
-                                  _HeroTag(label: transaction.categoryName),
+                                  _HeroTag(label: categoryLabel),
                                   _HeroTag(
                                     label: transaction.imagePath == null
                                         ? context.l10n.transactionSourceManual
@@ -221,11 +229,11 @@ class _TransactionDetailBody extends ConsumerWidget {
               const SizedBox(height: 21),
               _DetailMetaRow(
                 label: context.l10n.transactionWallet,
-                value: transaction.walletName,
+                value: walletLabel,
               ),
               _DetailMetaRow(
                 label: context.l10n.transactionCategory,
-                value: transaction.categoryName,
+                value: categoryLabel,
                 indicatorColor: categoryColor,
               ),
               _DetailMetaRow(

@@ -10,7 +10,6 @@ import '../../../shared/utils/app_logger.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/l10n_model_extensions.dart';
 import '../../transactions/domain/models/transaction_mutation_result.dart';
-import '../../transactions/presentation/camera/camera_screen.dart';
 import '../application/scanning_controller.dart';
 import 'ocr_review_screen.dart';
 
@@ -133,9 +132,9 @@ class _ScanningScreenState extends ConsumerState<ScanningScreen> {
     try {
       final file = await ImagePicker().pickImage(
         source: source,
-        maxWidth: 1920,
-        maxHeight: 1920,
-        imageQuality: 90,
+        maxWidth: 1600,
+        maxHeight: 1600,
+        imageQuality: 72,
       );
       if (file != null) {
         ref.read(scanningControllerProvider.notifier).selectImage(file.path);
@@ -165,8 +164,10 @@ class _ScanningScreenState extends ConsumerState<ScanningScreen> {
   }
 
   Future<void> _openManualEntry(BuildContext context) async {
+    final imagePath = ref.read(scanningControllerProvider).imagePath;
     final mutation = await context.push<TransactionMutationResult>(
-      CameraScreen.routePath,
+      '/transaction-form',
+      extra: imagePath == null ? null : {'imagePath': imagePath},
     );
     if (mutation != null && context.mounted) {
       context.pop(mutation);

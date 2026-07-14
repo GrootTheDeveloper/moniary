@@ -4,19 +4,27 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../core/preferences/preferences_providers.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
+import '../../../shared/utils/timezone_utils.dart';
+import '../../../shared/widgets/selection_picker_sheet.dart';
 import '../../../shared/widgets/supabase_image.dart';
+import '../../profile/presentation/timezone_picker_screen.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
+import '../../friends/application/friend_controller.dart';
 import '../../friends/presentation/screens/friends_screen.dart';
 import '../../journal/presentation/journal_collections_screen.dart';
 import '../../journal/presentation/monthly_recap_screen.dart';
 import '../../journal/presentation/recording_streak_screen.dart';
+import '../../recurring/presentation/recurring_transactions_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
+import '../../profile/presentation/currency_picker_screen.dart';
+import '../../profile/domain/currency_data.dart';
 import '../application/account/account_actions_controller.dart';
 import '../application/privacy_controller.dart';
 import 'export/export_data_screen.dart';
@@ -374,6 +382,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final privacyState = ref.watch(privacyControllerProvider);
     final requestHistory = ref.watch(privacyRequestHistoryProvider);
     final isGuest = ref.watch(guestModeEnabledProvider);
+    final pendingFriendRequestCount = ref.watch(
+      pendingIncomingFriendRequestCountProvider,
+    );
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -429,6 +440,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 18),
                       _ProfileQuickActions(
                         onFriends: () => context.push(FriendsScreen.routePath),
+                        pendingFriendRequestCount: pendingFriendRequestCount,
                         onExport: () =>
                             context.push(ExportDataScreen.routePath),
                         onSettings: () =>
@@ -457,6 +469,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             title: context.l10n.starredTransactionsTitle,
                             subtitle: '',
                             onTap: () => context.push('/starred-transactions'),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.autorenew_outlined,
+                            title: context.l10n.recurringTitle,
+                            subtitle: context.l10n.recurringSubtitle,
+                            onTap: () => context.push(
+                              RecurringTransactionsScreen.routePath,
+                            ),
                           ),
                           _SettingsTile(
                             icon: Icons.auto_stories_outlined,
@@ -500,8 +520,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         children: [
                           _SettingsTile(
                             icon: Icons.person_outlined,
-                            title:
-                                '${context.l10n.commonEdit} ${context.l10n.profileTitle}',
+                            title: context.l10n.editProfileTitle,
                             subtitle: email,
                             onTap: () => _showEditProfileSheet(
                               name: name,
@@ -520,11 +539,49 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ),
                           _SettingsTile(
-                            icon: Icons.lock_outlined,
-                            title: context.l10n.profileChangeTimezone,
-                            subtitle: profile.timezone,
+                            icon: Icons.currency_exchange_outlined,
+                            title: context.l10n.profileSetupCurrency,
+                            subtitle: () {
+                              final currencyCode = ref.watch(
+                                preferredCurrencyProvider,
+                              );
+                              final info = currencyInfoFor(currencyCode);
+                              return '${info.flag}  ${info.name} (${info.code})';
+                            }(),
                             onTap: () =>
-                                context.push(ProfileSetupScreen.routePath),
+                                context.push(CurrencyPickerScreen.routePath),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.schedule_outlined,
+                            title: context.l10n.profileChangeTimezone,
+                            subtitle: timezoneDisplayLabel(profile.timezone),
+                            onTap: () =>
+                                context.push(TimezonePickerScreen.routePath),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.language_outlined,
+                            title: context.l10n.profileLanguage,
+                            subtitle: _localeDisplayName(
+                              context,
+                              ref.watch(preferredLocaleProvider),
+                            ),
+                            onTap: _showLanguagePicker,
+                          ),
+                          _SettingsTile(
+                            icon: Icons.calendar_view_week_outlined,
+                            title: context.l10n.profileFirstDayOfWeekLabel,
+                            subtitle: ref.watch(firstDayOfWeekProvider) == 7
+                                ? context.l10n.profileFirstDayOfWeekSun
+                                : context.l10n.profileFirstDayOfWeekMon,
+                            onTap: () => _showFirstDayOfWeekSheet(
+                              ref.read(firstDayOfWeekProvider),
+                            ),
+                          ),
+                          _MascotToggleTile(
+                            enabled: ref.watch(mascotEnabledProvider),
+                            onChanged: (value) => ref
+                                .read(mascotEnabledProvider.notifier)
+                                .setEnabled(value),
                           ),
                           if (accountMode.needsAccountProtectionCard)
                             _AccountModeBanner(
@@ -676,52 +733,60 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     showModalBottomSheet(
       context: context,
       useSafeArea: true,
+      isScrollControlled: true,
       backgroundColor: AppTheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                context.l10n.profileHowMoniaryWorksTitle,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    context.l10n.profileHowMoniaryWorksTitle,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 18),
+                  _SetupStep(
+                    icon: Icons.account_balance_wallet_outlined,
+                    title: context.l10n.profileSetupGuideWalletTitle,
+                    body: context.l10n.profileSetupGuideWalletBody,
+                  ),
+                  _SetupStep(
+                    icon: Icons.camera_alt_outlined,
+                    title: context.l10n.profileSetupGuideTransactionTitle,
+                    body: context.l10n.profileSetupGuideTransactionBody,
+                  ),
+                  _SetupStep(
+                    icon: Icons.calendar_month_outlined,
+                    title: context.l10n.profileSetupGuideReviewTitle,
+                    body: context.l10n.profileSetupGuideReviewBody,
+                  ),
+                  _SetupStep(
+                    icon: Icons.ios_share_outlined,
+                    title: context.l10n.profileSetupGuideExportTitle,
+                    body: context.l10n.profileSetupGuideExportBody,
+                  ),
+                  const SizedBox(height: 18),
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      context.go(CalendarScreen.routePath);
+                    },
+                    child: Text(context.l10n.calendarTitle),
+                  ),
+                ],
               ),
-              const SizedBox(height: 18),
-              _SetupStep(
-                icon: Icons.account_balance_wallet_outlined,
-                title: context.l10n.profileSetupGuideWalletTitle,
-                body: context.l10n.profileSetupGuideWalletBody,
-              ),
-              _SetupStep(
-                icon: Icons.camera_alt_outlined,
-                title: context.l10n.profileSetupGuideTransactionTitle,
-                body: context.l10n.profileSetupGuideTransactionBody,
-              ),
-              _SetupStep(
-                icon: Icons.calendar_month_outlined,
-                title: context.l10n.profileSetupGuideReviewTitle,
-                body: context.l10n.profileSetupGuideReviewBody,
-              ),
-              _SetupStep(
-                icon: Icons.ios_share_outlined,
-                title: context.l10n.profileSetupGuideExportTitle,
-                body: context.l10n.profileSetupGuideExportBody,
-              ),
-              const SizedBox(height: 18),
-              FilledButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  context.go(CalendarScreen.routePath);
-                },
-                child: Text(context.l10n.calendarTitle),
-              ),
-            ],
+            ),
           ),
         );
       },
@@ -764,8 +829,57 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   context.push('${ProfileSetupScreen.routePath}?mode=edit');
                 },
                 icon: const Icon(Icons.edit_outlined),
-                label: Text(
-                  '${context.l10n.commonEdit} ${context.l10n.profileTitle}',
+                label: Text(context.l10n.editProfileTitle),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showFirstDayOfWeekSheet(int currentDay) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                context.l10n.profileFirstDayOfWeekLabel,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              RadioGroup<int>(
+                groupValue: currentDay,
+                onChanged: (v) {
+                  if (v == null) return;
+                  ref
+                      .read(firstDayOfWeekProvider.notifier)
+                      .setFirstDayOfWeek(v);
+                  Navigator.pop(context);
+                },
+                child: Column(
+                  children: [
+                    RadioListTile<int>(
+                      value: 1,
+                      title: Text(context.l10n.profileFirstDayOfWeekMon),
+                    ),
+                    RadioListTile<int>(
+                      value: 7,
+                      title: Text(context.l10n.profileFirstDayOfWeekSun),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -809,6 +923,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (context.mounted) {
         context.go(LoginScreen.routePath);
       }
+    }
+  }
+
+  Future<void> _showLanguagePicker() async {
+    const options = ['vi', 'en'];
+    final current = ref.read(preferredLocaleProvider);
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => SelectionPickerSheet<String>(
+        title: context.l10n.profileLanguage,
+        options: options,
+        labelBuilder: (locale) => _localeDisplayName(context, locale),
+        isSelected: (locale) => locale == current,
+      ),
+    );
+    if (selected != null && mounted) {
+      await ref.read(preferredLocaleProvider.notifier).setLocale(selected);
     }
   }
 
@@ -939,11 +1072,13 @@ class _ProfileHeader extends StatelessWidget {
 class _ProfileQuickActions extends StatelessWidget {
   const _ProfileQuickActions({
     required this.onFriends,
+    required this.pendingFriendRequestCount,
     required this.onExport,
     required this.onSettings,
   });
 
   final VoidCallback onFriends;
+  final int pendingFriendRequestCount;
   final VoidCallback onExport;
   final VoidCallback onSettings;
 
@@ -956,6 +1091,7 @@ class _ProfileQuickActions extends StatelessWidget {
             icon: Icons.people_outlined,
             label: context.l10n.friendsTitle,
             onTap: onFriends,
+            badge: pendingFriendRequestCount,
           ),
         ),
         const SizedBox(width: 12),
@@ -984,11 +1120,13 @@ class _QuickActionButton extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
+    this.badge = 0,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final int badge;
 
   @override
   Widget build(BuildContext context) {
@@ -1007,7 +1145,21 @@ class _QuickActionButton extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: colors.primary, size: 20),
+            SizedBox(
+              height: 22,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(icon, color: colors.primary, size: 20),
+                  if (badge > 0)
+                    Positioned(
+                      top: -7,
+                      right: -13,
+                      child: _ProfileActionBadge(count: badge),
+                    ),
+                ],
+              ),
+            ),
             const SizedBox(height: 8),
             Text(
               label.toUpperCase(),
@@ -1016,6 +1168,33 @@ class _QuickActionButton extends StatelessWidget {
               style: context.moniaryTypography.metadataStrong,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileActionBadge extends StatelessWidget {
+  const _ProfileActionBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.moniaryColors.primary,
+        borderRadius: BorderRadius.circular(99),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        child: Text(
+          count > 99 ? '99+' : '$count',
+          style: context.moniaryTypography.metadataStrong.copyWith(
+            color: AppTheme.surfaceRaised,
+            fontSize: 8.5,
+            letterSpacing: 0,
+          ),
         ),
       ),
     );
@@ -1228,4 +1407,65 @@ class _SettingsTile extends StatelessWidget {
       status: status,
     );
   }
+}
+
+class _MascotToggleTile extends StatelessWidget {
+  const _MascotToggleTile({required this.enabled, required this.onChanged});
+
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return InkWell(
+      onTap: () => onChanged(!enabled),
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 60),
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 14),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: colors.textPrimary.withValues(alpha: 0.12),
+            ),
+          ),
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 34,
+              child: Icon(Icons.pets_outlined, color: colors.primary, size: 20),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.profileMascotTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    context.l10n.profileMascotSubtitle,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Switch(value: enabled, onChanged: onChanged),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+String _localeDisplayName(BuildContext context, String locale) {
+  return switch (locale) {
+    'en' => context.l10n.profileLanguageEn,
+    'vi' => context.l10n.profileLanguageVi,
+    _ => locale,
+  };
 }

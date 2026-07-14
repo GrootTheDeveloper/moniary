@@ -20,23 +20,23 @@ class ThirdPartyServicesScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _ServiceItem(
               icon: Icons.cloud_queue_outlined,
-              title: context.l10n.thirdPartyServicesSyncTitle,
-              description: context.l10n.thirdPartyServicesSyncDesc,
+              title: 'Supabase',
+              description: context.l10n.thirdPartySupabaseDescription,
             ),
             _ServiceItem(
               icon: Icons.flutter_dash_outlined,
-              title: context.l10n.thirdPartyServicesAppPlatformTitle,
-              description: context.l10n.thirdPartyServicesAppPlatformDesc,
+              title: 'Flutter',
+              description: context.l10n.thirdPartyFlutterDescription,
             ),
             _ServiceItem(
               icon: Icons.folder_special_outlined,
-              title: context.l10n.thirdPartyServicesDeviceStorageTitle,
-              description: context.l10n.thirdPartyServicesDeviceStorageDesc,
+              title: context.l10n.thirdPartyDeviceStorageTitle,
+              description: context.l10n.thirdPartyDeviceStorageDescription,
             ),
             _ServiceItem(
               icon: Icons.no_accounts_outlined,
-              title: context.l10n.thirdPartyServicesNoAdsTitle,
-              description: context.l10n.thirdPartyServicesNoAdsDesc,
+              title: context.l10n.thirdPartyNoAdsTitle,
+              description: context.l10n.thirdPartyNoAdsDescription,
             ),
           ],
         ),
@@ -58,7 +58,7 @@ class _ThirdPartyHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        context.l10n.thirdPartyServicesHero,
+        context.l10n.thirdPartyHeroBody,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );

@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'app_navigation.dart';
 import 'main_shell_screen.dart';
+import '../core/deeplinks/app_deep_link.dart';
+import '../core/deeplinks/pending_deep_link_controller.dart';
 import '../l10n/l10n_extension.dart';
 import '../core/preferences/preferences_providers.dart';
 import '../core/supabase/supabase_providers.dart';
@@ -17,22 +20,28 @@ import '../features/assistant/presentation/assistant_question_catalog.dart';
 import '../features/assistant/presentation/assistant_question_library_screen.dart';
 import '../features/budgets/presentation/budget_category_detail_screen.dart';
 import '../features/budgets/presentation/budget_screen.dart';
+import '../features/recurring/presentation/recurring_transactions_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/friends/presentation/screens/add_friend_screen.dart';
 import '../features/friends/presentation/screens/friend_invite_accept_screen.dart';
+import '../features/friends/presentation/screens/friend_qr_screen.dart';
 import '../features/friends/presentation/screens/friends_screen.dart';
 import '../features/groups/presentation/groups_screen.dart';
 import '../features/groups/presentation/screens/add_group_transaction_screen.dart';
 import '../features/groups/presentation/screens/create_group_screen.dart';
 import '../features/groups/presentation/screens/debt_settlement_screen.dart';
+import '../features/groups/presentation/screens/group_activity_center_screen.dart';
 import '../features/groups/presentation/screens/group_budget_screen.dart';
+import '../features/groups/presentation/screens/group_recurring_transactions_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
 import '../features/groups/presentation/screens/group_notification_preferences_screen.dart';
 import '../features/groups/presentation/screens/group_photo_album_screen.dart';
 import '../features/groups/presentation/screens/group_public_profile_screen.dart';
-import '../features/groups/presentation/screens/group_recurring_transactions_screen.dart';
 import '../features/groups/presentation/screens/group_invite_accept_screen.dart';
 import '../features/groups/presentation/screens/group_invitations_screen.dart';
+import '../features/groups/presentation/screens/group_notifications_screen.dart';
+import '../features/groups/presentation/screens/group_social_screen.dart';
+import '../features/groups/presentation/screens/group_statistics_screen.dart';
 import '../features/groups/presentation/screens/group_transaction_detail_screen.dart';
 import '../features/groups/presentation/screens/invite_member_screen.dart';
 import '../features/groups/presentation/screens/member_amount_input_screen.dart';
@@ -44,6 +53,8 @@ import '../features/journal/presentation/monthly_recap_screen.dart';
 import '../features/journal/presentation/recording_streak_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
+import '../features/profile/presentation/timezone_picker_screen.dart';
+import '../features/profile/presentation/currency_picker_screen.dart';
 import '../features/profile/presentation/profile_survey_screen.dart';
 import '../features/scanning/presentation/ocr_review_screen.dart';
 import '../features/scanning/presentation/scanning_screen.dart';
@@ -107,29 +118,63 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   ref.onDispose(authRefreshListenable.dispose);
 
   final router = GoRouter(
+    navigatorKey: appRootNavigatorKey,
     initialLocation: SplashScreen.routePath,
-    overridePlatformDefaultLocation: true,
+    overridePlatformDefaultLocation: false,
     refreshListenable: authRefreshListenable,
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(context.l10n.routeNotFound),
-            const SizedBox(height: 16),
-            FilledButton(
-              onPressed: () => context.go('/'),
-              child: Text(context.l10n.routeGoBack),
-            ),
-          ],
+    errorBuilder: (context, state) {
+      final routeLocation = pendingDeepLinkRouteLocation(state.uri);
+      if (routeLocation != null) {
+        return _DeepLinkRedirectScreen(routeLocation: routeLocation);
+      }
+
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(context.l10n.routeNotFound),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () => context.go('/'),
+                child: Text(context.l10n.routeGoBack),
+              ),
+            ],
+          ),
         ),
-      ),
-    ),
+      );
+    },
     redirect: (context, state) {
+      final routeLocation = pendingDeepLinkRouteLocation(state.uri);
       final session = ref.read(currentSessionProvider);
       final onboardingSeen = ref.read(onboardingSeenProvider);
       final privacyState = ref.read(privacyControllerProvider);
       final location = state.matchedLocation;
+
+      if (routeLocation != null) {
+        if (session == null) {
+          ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
+          return LoginScreen.routePath;
+        }
+        if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
+          ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
+          return AppLockScreen.routePath;
+        }
+        final friendInviteToken = friendInviteTokenFromRouteLocation(
+          routeLocation,
+        );
+        if (friendInviteToken != null) {
+          ref
+              .read(pendingFriendInvitePromptProvider.notifier)
+              .set(friendInviteToken);
+          return location == CalendarScreen.routePath
+              ? null
+              : CalendarScreen.routePath;
+        }
+        if (!_isSameRoutePath(state.uri, routeLocation)) {
+          return routeLocation;
+        }
+      }
 
       const publicRoutes = {
         SplashScreen.routePath,
@@ -138,6 +183,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ProfileSetupScreen.routePath,
         ProfileSurveyScreen.routePath,
       };
+      final isPublicGroupRoute = location.startsWith('/public-group/');
+      final isPublicRoute =
+          publicRoutes.contains(location) || isPublicGroupRoute;
 
       // Handle account soft delete status
       final accountStatus = ref.read(accountStatusControllerProvider).value;
@@ -149,18 +197,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       if (!onboardingSeen &&
           location != SplashScreen.routePath &&
-          location != OnboardingScreen.routePath) {
+          location != OnboardingScreen.routePath &&
+          !isPublicRoute) {
+        if (routeLocation != null) {
+          ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
+        }
         return OnboardingScreen.routePath;
       }
 
-      if (session == null && !publicRoutes.contains(location)) {
+      if (session == null && !isPublicRoute) {
+        if (routeLocation != null) {
+          ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
+        }
         return LoginScreen.routePath;
       }
 
       // App lock check
       if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
-        if (location != AppLockScreen.routePath &&
-            !publicRoutes.contains(location)) {
+        if (location != AppLockScreen.routePath && !isPublicRoute) {
+          if (routeLocation != null) {
+            ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
+          }
           return AppLockScreen.routePath;
         }
       } else {
@@ -189,6 +246,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: ProfileSetupScreen.routePath,
         builder: (context, state) => ProfileSetupScreen(
           isEditMode: state.uri.queryParameters['mode'] == 'edit',
+        ),
+      ),
+      GoRoute(
+        path: CurrencyPickerScreen.routePath,
+        builder: (context, state) => CurrencyPickerScreen(
+          pickOnly: state.uri.queryParameters['pickOnly'] == 'true',
         ),
       ),
       GoRoute(
@@ -331,6 +394,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             buildSlideTransitionPage(state: state, child: const BudgetScreen()),
       ),
       GoRoute(
+        path: RecurringTransactionsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const RecurringTransactionsScreen(),
+        ),
+      ),
+      GoRoute(
         path: BudgetCategoryDetailScreen.routePath,
         pageBuilder: (context, state) {
           final args = state.extra as BudgetCategoryDetailArgs?;
@@ -419,6 +489,36 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: GroupActivityCenterScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupActivityCenterScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupStatisticsScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupStatisticsScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupSocialScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupSocialScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
         path: GroupTransactionDetailScreen.routePath,
         pageBuilder: (context, state) {
           final transactionId = state.extra as String?;
@@ -469,6 +569,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: GroupPublicProfileScreen.publicRoutePath,
+        pageBuilder: (context, state) => buildFadeTransitionPage(
+          state: state,
+          child: GroupPublicProfileScreen.public(
+            slug: state.pathParameters['slug']!,
+          ),
+        ),
+      ),
+      GoRoute(
         path: GroupRecurringTransactionsScreen.routePath,
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
@@ -490,6 +599,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => buildSlideUpTransitionPage(
           state: state,
           child: const AddFriendScreen(),
+        ),
+      ),
+      GoRoute(
+        path: FriendQrScreen.routePath,
+        pageBuilder: (context, state) => buildSlideUpTransitionPage(
+          state: state,
+          child: const FriendQrScreen(),
         ),
       ),
       GoRoute(
@@ -517,6 +633,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
           child: const GroupInvitationsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: GroupNotificationsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const GroupNotificationsScreen(),
         ),
       ),
       GoRoute(
@@ -685,6 +808,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: TimezonePickerScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const TimezonePickerScreen(),
+        ),
+      ),
+      GoRoute(
         path: ImportDataScreen.routePath,
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
@@ -830,6 +960,81 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return router;
 });
+
+String? pendingDeepLinkRouteLocation(Uri uri) {
+  final deepLink = AppDeepLink.parse(uri);
+  if (deepLink != null) return deepLink.routeLocation;
+
+  final path = uri.path;
+  if (_isInviteRoute(path)) {
+    final value = uri.toString();
+    return value.isEmpty ? path : value;
+  }
+
+  return null;
+}
+
+bool _isInviteRoute(String path) {
+  return path.startsWith('/friends/invite/') ||
+      path.startsWith('/groups/invite/');
+}
+
+bool _isSameRoutePath(Uri uri, String routeLocation) {
+  final target = Uri.tryParse(routeLocation);
+  if (target == null) return uri.toString() == routeLocation;
+  return uri.path == target.path;
+}
+
+class _DeepLinkRedirectScreen extends ConsumerStatefulWidget {
+  const _DeepLinkRedirectScreen({required this.routeLocation});
+
+  final String routeLocation;
+
+  @override
+  ConsumerState<_DeepLinkRedirectScreen> createState() =>
+      _DeepLinkRedirectScreenState();
+}
+
+class _DeepLinkRedirectScreenState
+    extends ConsumerState<_DeepLinkRedirectScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _redirect());
+  }
+
+  void _redirect() {
+    if (!mounted) return;
+    final session = ref.read(currentSessionProvider);
+    final privacyState = ref.read(privacyControllerProvider);
+    if (session == null) {
+      ref.read(pendingDeepLinkProvider.notifier).set(widget.routeLocation);
+      context.go(LoginScreen.routePath);
+      return;
+    }
+    if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
+      ref.read(pendingDeepLinkProvider.notifier).set(widget.routeLocation);
+      context.go(AppLockScreen.routePath);
+      return;
+    }
+    final friendInviteToken = friendInviteTokenFromRouteLocation(
+      widget.routeLocation,
+    );
+    if (friendInviteToken != null) {
+      ref
+          .read(pendingFriendInvitePromptProvider.notifier)
+          .set(friendInviteToken);
+      context.go(CalendarScreen.routePath);
+      return;
+    }
+    context.go(widget.routeLocation);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+  }
+}
 
 CustomTransitionPage<void> buildSlideTransitionPage({
   required GoRouterState state,

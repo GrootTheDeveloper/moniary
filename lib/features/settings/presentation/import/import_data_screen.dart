@@ -10,7 +10,7 @@ import 'package:moniary/features/wallets/application/wallets_controller.dart';
 import 'package:moniary/features/wallets/domain/models/wallet.dart';
 import 'package:moniary/l10n/l10n_extension.dart';
 import 'package:moniary/shared/utils/app_logger.dart';
-import 'package:moniary/shared/utils/currency_formatter.dart';
+import 'package:moniary/shared/utils/currency_formatting_ref.dart';
 
 import '../../domain/import/import_history_entry.dart';
 import '../widgets/recent_history_error_card.dart';
@@ -186,9 +186,12 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                   final row = state.parsedRows[index];
                   return _PreviewRowTile(
                     title:
-                        '${row.categoryName} - ${formatVnd(row.amount ?? 0)}',
+                        '${row.categoryName} - ${ref.formatAmount(row.amount ?? 0)}',
                     subtitle: row.isValid
-                        ? DateFormat('dd/MM/yyyy').format(row.date!)
+                        ? DateFormat(
+                            'dd/MM/yyyy',
+                            Localizations.localeOf(context).toString(),
+                          ).format(row.date!)
                         : _getErrorMessage(context, row.errorMessage ?? ''),
                     isValid: row.isValid,
                   );
@@ -750,7 +753,12 @@ class _RecentImportTile extends StatelessWidget {
         entry.fileName,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      subtitle: Text(DateFormat('dd/MM/yyyy').format(entry.createdAt)),
+      subtitle: Text(
+        DateFormat(
+          'dd/MM/yyyy',
+          Localizations.localeOf(context).toString(),
+        ).format(entry.createdAt),
+      ),
       trailing: const Icon(Icons.chevron_right, color: AppTheme.textSubtle),
       onTap: () {
         context.push(ImportHistoryScreen.detailRoutePath, extra: entry);

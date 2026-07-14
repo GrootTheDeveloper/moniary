@@ -33,6 +33,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonSave => 'Save';
 
   @override
+  String get commonSaved => 'Saved';
+
+  @override
   String get commonCancel => 'Cancel';
 
   @override
@@ -297,6 +300,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingBudgetLabel => 'Monthly budget';
+
+  @override
+  String get onboardingScanning => 'Reading receipt...';
+
+  @override
+  String get onboardingRecognized => 'Recognised!';
+
+  @override
+  String get onboardingCategoryFood => 'Food & dining';
+
+  @override
+  String get onboardingCategoryTransport => 'Transport';
+
+  @override
+  String get onboardingCategoryEntertainment => 'Entertainment';
+
+  @override
+  String get onboardingIncome => 'Income';
+
+  @override
+  String get onboardingExpenseLabel => 'Expense';
+
+  @override
+  String get onboardingStreakLabel => 'days';
+
+  @override
+  String get onboardingBudgetUsed => 'Used';
+
+  @override
+  String get onboardingBudgetWarning => 'Nearing limit!';
+
+  @override
+  String get onboardingInsightText => 'Food spending up 20%';
 
   @override
   String get profileSetupTitle => 'Profile Setup';
@@ -565,6 +601,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionAddForDay => 'Add an entry for this day';
 
   @override
+  String get transactionDayGridView => 'Grid';
+
+  @override
+  String get transactionDayListView => 'List';
+
+  @override
   String transactionLoadDetailError(String error) {
     return 'Could not load transaction details.\n$error';
   }
@@ -583,6 +625,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactionAmountSuffix => 'đ';
+
+  @override
+  String get transactionAmountHint => '0';
 
   @override
   String get transactionWallet => 'Wallet';
@@ -735,6 +780,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get walletNameRequired => 'Wallet name cannot be empty.';
 
   @override
+  String get walletUnknown => 'Unknown wallet';
+
+  @override
   String get walletTypeCash => 'Cash';
 
   @override
@@ -799,6 +847,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String categoryError(String error) {
     return 'Category error: $error';
   }
+
+  @override
+  String get categoryOther => 'Other';
 
   @override
   String get categoryExpense => 'Expense';
@@ -1151,6 +1202,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileTitle => 'Profile';
+
+  @override
+  String get editProfileTitle => 'Edit Profile';
 
   @override
   String get profileUserDefault => 'Moniary User';
@@ -1556,15 +1610,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Use these contact channels to send data, support, or legal requests to the right place.';
 
   @override
-  String get legalContactPrivacyLabel => 'Privacy';
-
-  @override
-  String get legalContactSupportLabel => 'Support';
-
-  @override
-  String get legalContactLegalLabel => 'Legal';
-
-  @override
   String get legalContactPrivacyDesc =>
       'Personal data requests, data deletion, or privacy questions.';
 
@@ -1577,68 +1622,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Terms issues, release questions, or legal requests.';
 
   @override
-  String get thirdPartyServicesHero =>
-      'This notice helps you understand which services Moniary relies on for login, storage, and data operations.';
+  String get legalContactPrivacy => 'Privacy';
 
   @override
-  String get thirdPartyServicesSyncTitle => 'Data sync and storage';
+  String get legalContactSupport => 'Support';
 
   @override
-  String get thirdPartyServicesSyncDesc =>
-      'Used for login, data synchronization, transaction photo storage, and account deletion requests.';
-
-  @override
-  String get thirdPartyServicesAppPlatformTitle => 'App platform';
-
-  @override
-  String get thirdPartyServicesAppPlatformDesc =>
-      'Used to build the interface, navigation, state, camera, photo picking, and file handling in the app.';
-
-  @override
-  String get thirdPartyServicesDeviceStorageTitle => 'Device storage';
-
-  @override
-  String get thirdPartyServicesDeviceStorageDesc =>
-      'Export files, privacy requests, and export/request history are saved in the app documents folder on this device.';
-
-  @override
-  String get thirdPartyServicesNoAdsTitle => 'No advertising integration';
-
-  @override
-  String get thirdPartyServicesNoAdsDesc =>
-      'Moniary does not use ad SDKs, marketing tracking, contacts, SMS, personal email, or automatic bank connections.';
-
-  @override
-  String get userRightsHero =>
-      'You have the right to understand what data is stored, export your data, and send privacy requests when needed.';
-
-  @override
-  String get userRightsViewDataTitle => 'View stored data';
-
-  @override
-  String get userRightsViewDataDesc =>
-      'You can view data summaries, stored data groups, transaction photos, and files on this device.';
-
-  @override
-  String get userRightsExportTitle => 'Export data';
-
-  @override
-  String get userRightsExportDesc =>
-      'You can export data as CSV, Excel, or PDF before sharing it or leaving the app.';
-
-  @override
-  String get userRightsSupportTitle => 'Request correction or support';
-
-  @override
-  String get userRightsSupportDesc =>
-      'You can create a privacy request if data needs review, correction, or further explanation.';
-
-  @override
-  String get userRightsDeletionTitle => 'Request data deletion';
-
-  @override
-  String get userRightsDeletionDesc =>
-      'You can delete your account in the app or create a manual request if direct deletion fails.';
+  String get legalContactLegal => 'Legal';
 
   @override
   String privacyDetailCreatedAt(String date) {
@@ -1783,6 +1773,114 @@ class AppLocalizationsEn extends AppLocalizations {
   String get starredTransactionsTitle => 'Starred Transactions';
 
   @override
+  String get recurringTitle => 'Recurring & subscriptions';
+
+  @override
+  String get recurringSubtitle =>
+      'Subscriptions, salary, rent and other repeating items';
+
+  @override
+  String get recurringAdd => 'Add recurring';
+
+  @override
+  String get recurringEdit => 'Edit recurring';
+
+  @override
+  String get recurringEmpty => 'No recurring items yet';
+
+  @override
+  String get recurringAmount => 'Amount';
+
+  @override
+  String get recurringType => 'Type';
+
+  @override
+  String get recurringIncome => 'Income';
+
+  @override
+  String get recurringExpense => 'Expense';
+
+  @override
+  String get recurringWallet => 'Wallet';
+
+  @override
+  String get recurringCategory => 'Category';
+
+  @override
+  String get recurringNote => 'Note (optional)';
+
+  @override
+  String get recurringFrequency => 'Frequency';
+
+  @override
+  String get recurringInterval => 'Every';
+
+  @override
+  String get recurringDaily => 'Daily';
+
+  @override
+  String get recurringWeekly => 'Weekly';
+
+  @override
+  String get recurringMonthly => 'Monthly';
+
+  @override
+  String get recurringYearly => 'Yearly';
+
+  @override
+  String recurringEvery(int interval, String unit) {
+    return 'Every $interval × $unit';
+  }
+
+  @override
+  String get recurringStartDate => 'Start date';
+
+  @override
+  String get recurringNextRun => 'Next run';
+
+  @override
+  String get recurringNextRunLabel => 'Next';
+
+  @override
+  String get recurringEndDate => 'End date';
+
+  @override
+  String get recurringNoEndDate => 'No end date';
+
+  @override
+  String get recurringAutoPost => 'Auto-post transactions';
+
+  @override
+  String get recurringAutoPostHelp =>
+      'Automatically create the transaction on each run date';
+
+  @override
+  String get recurringActive => 'Active';
+
+  @override
+  String get recurringPaused => 'Paused';
+
+  @override
+  String get recurringDeleteTitle => 'Delete recurring item?';
+
+  @override
+  String get recurringDeleteMessage =>
+      'This recurring rule will be removed. Past transactions are kept.';
+
+  @override
+  String get recurringSaved => 'Recurring item saved';
+
+  @override
+  String get recurringAmountRequired => 'Enter an amount greater than 0';
+
+  @override
+  String get recurringNoWallets =>
+      'Create a wallet first to add recurring items';
+
+  @override
+  String get recurringNoCategories => 'Create a matching category first';
+
+  @override
   String get starredTransactionsEmpty => 'No starred transactions yet';
 
   @override
@@ -1850,7 +1948,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileChangeTimezone => 'Change Timezone';
 
   @override
+  String get profileMascotTitle => 'App Mascot';
+
+  @override
+  String get profileMascotSubtitle =>
+      'Show the animated mascot on the bottom navigation bar.';
+
+  @override
   String get profileLanguage => 'Language';
+
+  @override
+  String get currencyPickerTitle => 'Select Currency';
+
+  @override
+  String get currencyPickerSearch => 'Search currency...';
+
+  @override
+  String get currencyPickerNoResults => 'No currencies found';
+
+  @override
+  String get currencyPickerPopular => 'Popular Currencies';
+
+  @override
+  String get currencyPickerAll => 'All Currencies';
+
+  @override
+  String get profileFirstDayOfWeekLabel => 'First day of the week';
+
+  @override
+  String get profileFirstDayOfWeekMon => 'Monday';
+
+  @override
+  String get profileFirstDayOfWeekSun => 'Sunday';
+
+  @override
+  String get profileLanguageVi => 'Vietnamese';
+
+  @override
+  String get profileLanguageEn => 'English';
 
   @override
   String get timezonePickerSearch => 'Search timezone';
@@ -1940,6 +2075,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get legalCopyAllContacts => 'Copy all contacts';
 
   @override
+  String legalCopyAllText(
+    String privacyEmail,
+    String supportEmail,
+    String legalEmail,
+  ) {
+    return 'Privacy: $privacyEmail\nSupport: $supportEmail\nLegal: $legalEmail';
+  }
+
+  @override
   String get legalCopyContactSuccess => 'Copied contact info.';
 
   @override
@@ -1989,6 +2133,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyFaq => 'Privacy & account FAQ';
+
+  @override
+  String get privacyFaqHeroBody =>
+      'Frequently asked questions about personal data, export, account deletion, and privacy requests.';
+
+  @override
+  String get privacyFaqStoredDataQuestion => 'What data does Moniary store?';
+
+  @override
+  String get privacyFaqStoredDataAnswer =>
+      'The app stores profiles, wallets, categories, transactions, notes, and transaction image paths when users create data in the app.';
+
+  @override
+  String get privacyFaqExportBeforeDeletionQuestion =>
+      'Can I export my data before deleting my account?';
+
+  @override
+  String get privacyFaqExportBeforeDeletionAnswer =>
+      'Yes. You can export data as CSV, Excel, or PDF in the Export my data section.';
+
+  @override
+  String get privacyFaqDeletionImagesQuestion =>
+      'Does deleting my account also delete transaction images?';
+
+  @override
+  String get privacyFaqDeletionImagesAnswer =>
+      'The account deletion flow is designed to delete app data and transaction images linked to the current user.';
+
+  @override
+  String get privacyFaqDeletionFailQuestion =>
+      'What if direct account deletion fails?';
+
+  @override
+  String get privacyFaqDeletionFailAnswer =>
+      'You can create a manual data deletion request file and send it to the privacy support channel.';
+
+  @override
+  String get privacyFaqExportLocationQuestion =>
+      'Where are export files stored?';
+
+  @override
+  String get privacyFaqExportLocationAnswer =>
+      'Export files are saved in the app\'s documents folder on the device and can be opened or shared from the export history.';
 
   @override
   String get privacyCenter => 'Privacy Center';
@@ -2641,7 +2828,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get thirdPartyServicesSubtitle =>
-      'See how the app uses sync, storage, and device services.';
+      'See how the app uses Supabase, Flutter packages, and device storage.';
+
+  @override
+  String get thirdPartyHeroBody =>
+      'This notice helps users understand which services the app relies on for sign-in, storage, and data operations.';
+
+  @override
+  String get thirdPartySupabaseDescription =>
+      'Used for sign-in, database, transaction image storage, and the account-deletion edge function.';
+
+  @override
+  String get thirdPartyFlutterDescription =>
+      'The app\'s main UI framework, together with packages for navigation, state, camera, image picking, and file handling.';
+
+  @override
+  String get thirdPartyDeviceStorageTitle => 'Device storage';
+
+  @override
+  String get thirdPartyDeviceStorageDescription =>
+      'Export files, privacy requests, and export/request history are written to the app\'s documents folder on the device.';
+
+  @override
+  String get thirdPartyNoAdsTitle => 'No advertising integration';
+
+  @override
+  String get thirdPartyNoAdsDescription =>
+      'The MVP does not use advertising SDKs, marketing tracking, contacts, SMS, email inbox access, or automatic bank connections.';
 
   @override
   String get releaseChecklistTitle => 'Release Checklist';
@@ -2679,11 +2892,51 @@ class AppLocalizationsEn extends AppLocalizations {
       'Summary of data viewing, exporting, edit/delete requests, and privacy contact.';
 
   @override
+  String get userRightsHeroBody =>
+      'Users have the right to understand what data is stored, export their own data, and submit a privacy request when needed.';
+
+  @override
+  String get userRightsAccessTitle => 'View stored data';
+
+  @override
+  String get userRightsAccessDescription =>
+      'Users can view a data overview, data groups, transaction images, and local files.';
+
+  @override
+  String get userRightsExportTitle => 'Export data';
+
+  @override
+  String get userRightsExportDescription =>
+      'Users can export data in CSV, Excel, or PDF format before sharing or leaving the app.';
+
+  @override
+  String get userRightsCorrectionTitle => 'Request correction or support';
+
+  @override
+  String get userRightsCorrectionDescription =>
+      'Users can submit a privacy request if their data needs review, correction, or further explanation.';
+
+  @override
+  String get userRightsDeletionTitle => 'Request data deletion';
+
+  @override
+  String get userRightsDeletionDescription =>
+      'Users can delete their account in-app or submit a manual request if the direct flow fails.';
+
+  @override
   String get policyAcceptanceNoticeTitle => 'Policy Acceptance Notice';
 
   @override
   String get policyAcceptanceNoticeSubtitle =>
       'Explains that continued use applies current policies and terms.';
+
+  @override
+  String get policyAcceptanceHero =>
+      'This notice helps users understand that the current policies apply when continuing to use Moniary.';
+
+  @override
+  String get policyAcceptanceBody =>
+      'By continuing to use Moniary, the user confirms they have had the opportunity to read the Privacy Policy, Terms of Use, data retention notice, and related safety notes.';
 
   @override
   String get legalContactTitle => 'Legal Contact';
@@ -3555,7 +3808,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'Transfer ownership or add another owner before leaving.';
 
   @override
+  String get groupOwnerRequired => 'Only the group owner can do this.';
+
+  @override
+  String get groupOwnerTransferTargetRequired =>
+      'Choose another active member to become owner.';
+
+  @override
+  String get groupTransferOwnership => 'Transfer owner';
+
+  @override
+  String groupTransferOwnershipConfirm(String member) {
+    return 'Transfer group ownership to $member?';
+  }
+
+  @override
+  String get groupTransferOwnershipDone => 'Group ownership transferred.';
+
+  @override
   String get groupInviteTitle => 'Invite members';
+
+  @override
+  String get groupInviteAfterCreate => 'Invite members after creating';
 
   @override
   String get groupInviteByUsername => 'Invite by username';
@@ -3638,6 +3912,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupInviteOpenGroups => 'Open groups';
 
   @override
+  String get groupCopyInviteLink => 'Copy link';
+
+  @override
+  String get groupShareInviteLink => 'Share link';
+
+  @override
+  String groupInviteShareMessage(String link) {
+    return 'Join my Moniary expense group: $link';
+  }
+
+  @override
   String get groupInviteSent => 'Invite sent.';
 
   @override
@@ -3648,6 +3933,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupFriendInviteTitle => 'Invite from friends';
+
+  @override
+  String get groupInviteAlreadyAccepted =>
+      'This group invite link has already been used.';
+
+  @override
+  String get groupInviteGroupArchived => 'This group has been archived.';
 
   @override
   String get groupMemberInvited => 'Invited';
@@ -3676,6 +3968,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get groupTransactionImageOptional =>
       'An image is optional but recommended.';
+
+  @override
+  String get groupTransactionImageUploadFailed =>
+      'Image upload failed. Choose the image again to retry.';
 
   @override
   String get groupSplitModeTitle => 'Split method';
@@ -3781,10 +4077,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupPhotoAlbumTitle => 'Photo album';
 
   @override
-  String get groupPhotoAlbumEmpty => 'No photos yet';
+  String get groupPhotoAlbumEmpty => 'No transaction photos yet';
+
+  @override
+  String get groupPhotoAlbumLoadError => 'Could not load the photo album';
+
+  @override
+  String get groupTransactionFallback => 'Group transaction';
+
+  @override
+  String get groupMemberFallback => 'Member';
 
   @override
   String get groupBudgetTitle => 'Group budget';
+
+  @override
+  String get groupBudgetSubtitle =>
+      'Set a shared monthly spending limit for this group.';
 
   @override
   String get groupBudgetMonthlyLimit => 'Monthly limit';
@@ -3806,6 +4115,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupBudgetSaved => 'Budget updated';
+
+  @override
+  String get groupBudgetCurrencySuffix => 'in your currency';
+
+  @override
+  String get groupBudgetAdminOnly =>
+      'Only group owners and admins can change this budget.';
+
+  @override
+  String get groupBudgetInvalidLimit => 'Enter a valid non-negative limit.';
 
   @override
   String get groupNotificationPrefsTitle => 'Notification settings';
@@ -3846,6 +4165,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupNotificationPrefsSaved => 'Notification settings saved';
 
   @override
+  String get groupNotificationPreferencesTitle => 'Notification preferences';
+
+  @override
+  String get groupNotificationPreferencesSubtitle =>
+      'Choose which group events should notify you.';
+
+  @override
+  String get groupNotificationMuteAll => 'Mute all notifications';
+
+  @override
+  String get groupNotificationTransactions => 'Transaction updates';
+
+  @override
+  String get groupNotificationDebts => 'Debt and settlement updates';
+
+  @override
+  String get groupNotificationInvites => 'Invitations';
+
+  @override
+  String get groupNotificationMentions => 'Mentions';
+
+  @override
   String get groupPublicProfileTitle => 'Public profile';
 
   @override
@@ -3867,7 +4208,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Include spending statistics on the public page';
 
   @override
-  String get groupPublicProfileSlug => 'Custom link';
+  String get groupPublicProfileSlug => 'Public slug';
 
   @override
   String get groupPublicProfileSlugHint => 'my-group-name';
@@ -3880,19 +4221,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupPublicProfileSaved => 'Public profile updated';
 
   @override
+  String get groupPublicProfileSettingsTitle => 'Public profile settings';
+
+  @override
+  String get groupPublicProfileSettingsSubtitle =>
+      'Only safe group information is shown publicly.';
+
+  @override
+  String get groupPublicProfileEnabled => 'Enable public profile';
+
+  @override
+  String get groupPublicProfileShowStatsSubtitle =>
+      'Shows aggregate counts and total spending only.';
+
+  @override
+  String get groupPublicProfileInvalidSlug =>
+      'Use 3–80 lowercase letters, numbers, or hyphens.';
+
+  @override
+  String get groupPublicProfileFallbackName => 'Moniary group';
+
+  @override
+  String get groupPublicProfileMembers => 'Members';
+
+  @override
+  String get groupPublicProfileTransactions => 'Transactions';
+
+  @override
+  String get groupPublicProfileTotalSpent => 'Total spent';
+
+  @override
+  String get groupPublicProfileSafeNotice =>
+      'Personal details and transaction-level data are not shown.';
+
+  @override
   String get groupRecurringTitle => 'Recurring transactions';
 
   @override
   String get groupRecurringAdd => 'Add recurring';
 
   @override
-  String get groupRecurringEditTitle => 'Edit recurring';
+  String get groupRecurringEdit => 'Edit recurring transaction';
 
   @override
   String get groupRecurringEmpty => 'No recurring transactions yet';
 
   @override
-  String get groupRecurringName => 'Name';
+  String get groupRecurringName => 'Title';
 
   @override
   String get groupRecurringAmount => 'Amount';
@@ -3910,25 +4285,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupRecurringNextRun => 'Next run';
 
   @override
-  String get groupRecurringNotifyDays => 'Notify days before';
+  String get groupRecurringNotifyBefore => 'Notify days before';
 
   @override
-  String get groupRecurringInactive => 'Paused';
+  String get groupRecurringActive => 'Active';
 
   @override
-  String get groupRecurringDeactivate => 'Pause this recurring';
+  String get groupRecurringDeleteTitle => 'Delete recurring transaction?';
 
   @override
-  String get groupRecurringReactivate => 'Resume this recurring';
-
-  @override
-  String get groupRecurringNameRequired => 'Name is required';
-
-  @override
-  String get groupRecurringAmountRequired => 'Amount must be greater than 0';
-
-  @override
-  String get groupRecurringSaved => 'Recurring transaction saved';
+  String get groupRecurringDeleteMessage =>
+      'This recurring transaction will be permanently removed.';
 
   @override
   String get groupActivityTransactionReacted => 'reacted to a transaction';
@@ -4061,6 +4428,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupCommentRequired => 'Enter a comment.';
 
   @override
+  String get groupCommentDeleteConfirm => 'Delete this comment?';
+
+  @override
   String get groupUnknownMember => 'Member';
 
   @override
@@ -4087,6 +4457,67 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get groupStatsPlaceholder =>
       'Basic group statistics use current total spending and balances.';
+
+  @override
+  String get groupStatsLoadError => 'Could not load group statistics.';
+
+  @override
+  String get groupStatsTransactionCount => 'Transactions';
+
+  @override
+  String get groupStatsPendingCount => 'Pending';
+
+  @override
+  String get groupNotificationsTitle => 'Group notifications';
+
+  @override
+  String get groupNotificationsEmpty => 'No group notifications yet.';
+
+  @override
+  String get groupNotificationInvite => 'You have a group invite.';
+
+  @override
+  String get groupNotificationMemberJoined => 'A new member joined the group.';
+
+  @override
+  String get groupNotificationTransactionCreated =>
+      'A new group transaction was created.';
+
+  @override
+  String get groupNotificationOwnerTransferred =>
+      'Group ownership was transferred.';
+
+  @override
+  String get groupNotificationGeneric => 'There is a new group update.';
+
+  @override
+  String get groupActivitiesTitle => 'Group activity';
+
+  @override
+  String get groupActivitiesEmpty => 'No group activity yet.';
+
+  @override
+  String get groupActivitiesLoadError => 'Could not load group activity.';
+
+  @override
+  String groupActivityTransactionCreated(String actor) {
+    return '$actor created a group transaction.';
+  }
+
+  @override
+  String groupActivityTransactionPosted(String actor) {
+    return '$actor posted a group transaction.';
+  }
+
+  @override
+  String groupActivityOwnerTransferred(String actor) {
+    return '$actor transferred group ownership.';
+  }
+
+  @override
+  String groupActivityGeneric(String actor) {
+    return '$actor updated the group.';
+  }
 
   @override
   String get groupLeaveWarningActivity =>
@@ -4164,6 +4595,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get friendOutgoingRequests => 'Sent requests';
+
+  @override
+  String get friendRequestsEmpty => 'No friend requests yet.';
 
   @override
   String get friendAccept => 'Accept';
@@ -4530,12 +4964,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Analysis is unavailable right now. Please try again later.';
 
   @override
-  String get journalRecapTitle => 'Monthly recap';
+  String get journalRecapTitle => 'Money Story';
 
   @override
   String journalRecapMonth(String month) {
-    return '$month recap';
+    return '$month Money Story';
   }
+
+  @override
+  String journalMoneyStoryMonth(String month) {
+    return '$month';
+  }
+
+  @override
+  String get journalMoneyStoryExpenseLabel => 'This month\'s spending';
 
   @override
   String journalRecordedCount(int count) {
@@ -4568,10 +5010,96 @@ class AppLocalizationsEn extends AppLocalizations {
   String get journalTopCategories => 'Top categories';
 
   @override
-  String get journalShareRecap => 'Share recap';
+  String get journalShareRecap => 'Share story';
 
   @override
-  String get journalExportTitle => 'Export journal';
+  String get journalMoneyStoryCashFlow => 'This month\'s cash flow';
+
+  @override
+  String get journalMoneyStoryIncome => 'Income';
+
+  @override
+  String get journalMoneyStoryExpense => 'Expense';
+
+  @override
+  String get journalMoneyStoryNet => 'Left over';
+
+  @override
+  String get journalMoneyStoryAverageDay => 'Average / recording day';
+
+  @override
+  String journalMoneyStoryActiveDays(int count) {
+    return '$count recording days';
+  }
+
+  @override
+  String journalMoneyStoryCategoryShare(String category, int percent) {
+    return '$category took $percent%';
+  }
+
+  @override
+  String journalMoneyStoryCategoryPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String get journalMoneyStoryHighestDayEmpty =>
+      'No standout spending day yet this month.';
+
+  @override
+  String journalMoneyStoryHighestDayTransactions(int count) {
+    return '$count entries on this day';
+  }
+
+  @override
+  String get journalMoneyStoryInsightsTitle => 'What this month tells you';
+
+  @override
+  String journalMoneyStoryInsightSpendingDown(int percent) {
+    return 'You spent $percent% less than last month.';
+  }
+
+  @override
+  String journalMoneyStoryInsightSpendingUp(int percent) {
+    return 'Spending rose $percent% compared with last month.';
+  }
+
+  @override
+  String journalMoneyStoryInsightTopCategory(String category, int percent) {
+    return '$category was the biggest theme at $percent% of spending.';
+  }
+
+  @override
+  String journalMoneyStoryInsightWeekend(int percent) {
+    return 'Weekends made up $percent% of this month\'s spending.';
+  }
+
+  @override
+  String journalMoneyStoryInsightRecording(int count) {
+    return 'You recorded spending on $count days, enough rhythm to see patterns.';
+  }
+
+  @override
+  String get journalMoneyStoryInsightQuiet =>
+      'This month is still quiet. Add a few more entries so the story has more to tell.';
+
+  @override
+  String get journalMoneyStoryShareTitle => 'Ready to keep this month';
+
+  @override
+  String get journalMoneyStoryShareBody =>
+      'Create a polished poster to share or save privately.';
+
+  @override
+  String get journalMoneyStoryNoTransactionsTitle =>
+      'This month\'s story is empty';
+
+  @override
+  String get journalMoneyStoryNoTransactionsBody =>
+      'Record a few expenses so Moniary can tell your month through numbers and images.';
+
+  @override
+  String get journalExportTitle => 'Export Money Story';
 
   @override
   String get journalExportPost => 'Post';
@@ -4580,10 +5108,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get journalExportSave => 'Save image';
 
   @override
-  String get journalExportBrand => 'Moniary · Spending journal';
+  String get journalExportBrand => 'Moniary · Money Story';
 
   @override
-  String get journalExportSaved => 'Your journal image is ready to share.';
+  String get journalExportSaved => 'Your Money Story image is ready to share.';
 
   @override
   String get journalExportWholeMonth => 'Whole month';
@@ -4674,6 +5202,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get friendInviteAcceptButton => 'Add friend';
+
+  @override
+  String get friendInviteAgreeButton => 'Accept';
 
   @override
   String get friendInviteAccepted => 'Friend added.';
@@ -4897,4 +5428,116 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cameraFallbackGenericError =>
       'Could not open camera. You can enter the transaction manually.';
+
+  @override
+  String get scanSuggestionNotice =>
+      'Fields marked as AI suggestions were filled from the receipt. Review them before saving.';
+
+  @override
+  String get scanAiSuggestion => 'AI suggestion';
+
+  @override
+  String get scanSuggestionNeedsReview => 'AI suggestion - review recommended';
+
+  @override
+  String get friendQrTitle => 'Friend QR';
+
+  @override
+  String get friendQrMyCode => 'My code';
+
+  @override
+  String get friendQrScan => 'Scan';
+
+  @override
+  String get friendQrRetry => 'Try again';
+
+  @override
+  String get friendQrShare => 'Share code';
+
+  @override
+  String get friendQrLoadError => 'The camera could not be started.';
+
+  @override
+  String get friendQrTorch => 'Toggle flashlight';
+
+  @override
+  String get friendQrSwitchCamera => 'Switch camera';
+
+  @override
+  String get friendQrInvalid => 'This is not a valid Moniary friend QR code.';
+
+  @override
+  String get friendRateLimited =>
+      'Too many friend requests. Please try again later.';
+
+  @override
+  String get groupSplitExact => 'Exact amounts';
+
+  @override
+  String get groupParticipantsTitle => 'Participants in this expense';
+
+  @override
+  String get groupSettlementDisputeTitle => 'Report a settlement issue';
+
+  @override
+  String get groupSettlementDisputeReasonHint => 'Describe what is incorrect';
+
+  @override
+  String get groupSettlementDisputeReasonRequired =>
+      'Enter a reason for the dispute.';
+
+  @override
+  String get groupSettlementDisputeAction => 'Dispute';
+
+  @override
+  String get groupTransferOwnershipAction => 'Transfer ownership';
+
+  @override
+  String get groupRemoveMemberAction => 'Remove member';
+
+  @override
+  String get groupMemberRemoveUnresolved =>
+      'This member still has an unsettled balance and cannot be removed.';
+
+  @override
+  String get groupMemberActionForbidden =>
+      'You do not have permission to manage this member.';
+
+  @override
+  String get mascotFirstTransaction =>
+      'Hey there! Add your first transaction so piggy can track it! 🐷';
+
+  @override
+  String mascotOverBudget(String category) {
+    return '$category is over budget! Your wallet is crying! 🛑';
+  }
+
+  @override
+  String mascotNearBudget(String category) {
+    return 'Careful! $category is nearly at its budget limit! ⚠️';
+  }
+
+  @override
+  String get mascotZeroExpenseToday =>
+      'No spending today! Piggy is proud of you! 🐖💖';
+
+  @override
+  String mascotGoodSavings(String percent) {
+    return 'Saved $percent% this month. Amazing! 🏆';
+  }
+
+  @override
+  String get mascotFunQuote1 => 'Have you logged your expenses today? 📝';
+
+  @override
+  String get mascotFunQuote2 => 'Listen to piggy, don\'t buy that! 🐽';
+
+  @override
+  String get mascotFunQuote3 => 'A penny saved is a penny earned! 💰';
+
+  @override
+  String get mascotFunQuote4 => 'Feed the piggy bank and go on a trip! 🐖';
+
+  @override
+  String get mascotFunQuote5 => 'Tap the pig for some advice! 🐷';
 }

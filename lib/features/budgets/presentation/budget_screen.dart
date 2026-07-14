@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../l10n/l10n_extension.dart';
-import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../application/budget_controller.dart';
 import '../domain/monthly_budget.dart';
@@ -234,13 +234,13 @@ class _TopIconButton extends StatelessWidget {
   }
 }
 
-class _BudgetProgressHero extends StatelessWidget {
+class _BudgetProgressHero extends ConsumerWidget {
   const _BudgetProgressHero({required this.budget});
 
   final MonthlyBudget budget;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final percent = (budget.progress * 100).round();
     final accent =
@@ -293,8 +293,8 @@ class _BudgetProgressHero extends StatelessWidget {
         const SizedBox(height: 18),
         Text(
           context.l10n.budgetSpentOfLimit(
-            formatVnd(budget.totalSpent),
-            formatVnd(budget.totalLimit),
+            ref.formatAmount(budget.totalSpent),
+            ref.formatAmount(budget.totalLimit),
           ),
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -359,7 +359,7 @@ class _BudgetCategoryHeader extends StatelessWidget {
   }
 }
 
-class _BudgetCategoryRow extends StatelessWidget {
+class _BudgetCategoryRow extends ConsumerWidget {
   const _BudgetCategoryRow({
     required this.category,
     required this.onTap,
@@ -371,7 +371,7 @@ class _BudgetCategoryRow extends StatelessWidget {
   final VoidCallback onEdit;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
     final baseColor = _budgetAccent(category);
     final accent = category.isOverLimit
@@ -416,7 +416,7 @@ class _BudgetCategoryRow extends StatelessWidget {
                         children: [
                           TextSpan(
                             text:
-                                '${formatVnd(category.spentAmount)} / ${formatVnd(category.limitAmount)}',
+                                '${ref.formatAmount(category.spentAmount)} / ${ref.formatAmount(category.limitAmount)}',
                           ),
                           if (category.isNearLimit || category.isOverLimit)
                             TextSpan(

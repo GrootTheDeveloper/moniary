@@ -30,10 +30,8 @@ class GroupNotificationPreferencesScreen extends ConsumerWidget {
             ),
           ),
         ),
-        data: (preference) => _PreferencesForm(
-          groupId: groupId,
-          initial: preference,
-        ),
+        data: (preference) =>
+            _PreferencesForm(groupId: groupId, initial: preference),
       ),
     );
   }
@@ -130,8 +128,9 @@ class _PreferencesFormState extends ConsumerState<_PreferencesForm> {
                 onChanged: (value) =>
                     setState(() => _quietHoursEnabled = value),
                 title: Text(context.l10n.groupNotificationPrefsQuietHours),
-                subtitle:
-                    Text(context.l10n.groupNotificationPrefsQuietHoursHelp),
+                subtitle: Text(
+                  context.l10n.groupNotificationPrefsQuietHoursHelp,
+                ),
                 secondary: const Icon(Icons.bedtime_outlined),
               ),
               if (_quietHoursEnabled)
@@ -200,7 +199,7 @@ class _PreferencesFormState extends ConsumerState<_PreferencesForm> {
     try {
       await ref
           .read(groupActionControllerProvider.notifier)
-          .upsertNotificationPreference(preference);
+          .updateNotificationPreference(preference);
       if (!mounted) return;
       messenger.showSnackBar(
         SnackBar(content: Text(context.l10n.groupNotificationPrefsSaved)),

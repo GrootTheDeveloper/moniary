@@ -72,7 +72,9 @@ class ImportDetailScreen extends StatelessWidget {
                   _DetailTile(
                     icon: Icons.account_balance_wallet_outlined,
                     title: context.l10n.importDetailWallet,
-                    value: entry.walletName,
+                    value: entry.walletName.trim().isEmpty
+                        ? context.l10n.walletUnknown
+                        : entry.walletName,
                   ),
                   const Divider(height: 1, color: Colors.white24),
                   _DetailTile(
