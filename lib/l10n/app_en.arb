@@ -2222,5 +2222,30 @@
   "groupTransferOwnershipAction": "Transfer ownership",
   "groupRemoveMemberAction": "Remove member",
   "groupMemberRemoveUnresolved": "This member still has an unsettled balance and cannot be removed.",
-  "groupMemberActionForbidden": "You do not have permission to manage this member."
+  "groupMemberActionForbidden": "You do not have permission to manage this member.",
+  "mascotFirstTransaction": "Hey there! Add your first transaction so piggy can track it! 🐷",
+  "mascotOverBudget": "{category} is over budget! Your wallet is crying! 🛑",
+  "@mascotOverBudget": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "mascotNearBudget": "Careful! {category} is nearly at its budget limit! ⚠️",
+  "@mascotNearBudget": {
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  },
+  "mascotZeroExpenseToday": "No spending today! Piggy is proud of you! 🐖💖",
+  "mascotGoodSavings": "Saved {percent}% this month. Amazing! 🏆",
+  "@mascotGoodSavings": {
+    "placeholders": {
+      "percent": { "type": "String" }
+    }
+  },
+  "mascotFunQuote1": "Have you logged your expenses today? 📝",
+  "mascotFunQuote2": "Listen to piggy, don't buy that! 🐽",
+  "mascotFunQuote3": "A penny saved is a penny earned! 💰",
+  "mascotFunQuote4": "Feed the piggy bank and go on a trip! 🐖",
+  "mascotFunQuote5": "Tap the pig for some advice! 🐷"
 }

@@ -5398,4 +5398,42 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get groupMemberActionForbidden =>
       'Bạn không có quyền quản lý thành viên này.';
+
+  @override
+  String get mascotFirstTransaction =>
+      'Chào bạn! Hãy thêm giao dịch đầu tiên để heo theo dõi nhé! 🐷';
+
+  @override
+  String mascotOverBudget(String category) {
+    return 'Ví đang khóc vì mục $category vượt trần rồi kìa! 🛑';
+  }
+
+  @override
+  String mascotNearBudget(String category) {
+    return 'Coi chừng mục $category sắp chạm trần ngân sách nha! ⚠️';
+  }
+
+  @override
+  String get mascotZeroExpenseToday =>
+      'Hôm nay chưa tiêu đồng nào! Heo tự hào về bạn! 🐖💖';
+
+  @override
+  String mascotGoodSavings(String percent) {
+    return 'Tháng này tiết kiệm được $percent%. Quá siêu! 🏆';
+  }
+
+  @override
+  String get mascotFunQuote1 => 'Hôm nay bạn đã ghi chép chi tiêu chưa? 📝';
+
+  @override
+  String get mascotFunQuote2 => 'Nghe heo đi, đừng mua món đó! 🐽';
+
+  @override
+  String get mascotFunQuote3 => 'Tiết kiệm một đồng là kiếm được một đồng! 💰';
+
+  @override
+  String get mascotFunQuote4 => 'Nuôi heo đất mau lớn để đi chơi thôi! 🐖';
+
+  @override
+  String get mascotFunQuote5 => 'Bấm vào heo để nhận lời khuyên nè! 🐷';
 }

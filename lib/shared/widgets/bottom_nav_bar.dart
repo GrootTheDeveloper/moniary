@@ -7,7 +7,6 @@ import '../../l10n/l10n_extension.dart';
 import '../../features/calendar/presentation/month/calendar_screen.dart';
 import '../../features/groups/presentation/groups_screen.dart';
 import '../../features/settings/presentation/profile_screen.dart';
-import 'mascot_overlay.dart';
 
 enum MoniaryTab { calendar, stats, groups, profile }
 
@@ -105,7 +104,6 @@ class MoniaryBottomNavBar extends ConsumerWidget {
               ),
             ),
             _CameraActionButton(onPressed: onCameraPressed),
-            const MascotOverlay(),
           ],
         ),
       ),
