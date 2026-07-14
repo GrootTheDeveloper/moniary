@@ -73,7 +73,6 @@ String userFriendlyMessage(BuildContext context, Object error) {
       case 'GROUP_MEMBER_REMOVE_UNRESOLVED':
         return l10n.groupMemberRemoveUnresolved;
       case 'GROUP_MEMBER_REMOVE_FORBIDDEN':
-      case 'GROUP_OWNER_REQUIRED':
       case 'GROUP_OWNER_TARGET_INVALID':
         return l10n.groupMemberActionForbidden;
       case 'GROUP_LEAVE_UNRESOLVED':

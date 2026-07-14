@@ -249,7 +249,7 @@ class _RecurringFormState extends State<_RecurringForm> {
             ),
           ),
           DropdownButtonFormField<String>(
-            value: _frequency,
+            initialValue: _frequency,
             decoration: InputDecoration(
               labelText: context.l10n.groupRecurringFrequency,
             ),
@@ -283,7 +283,7 @@ class _RecurringFormState extends State<_RecurringForm> {
             },
           ),
           DropdownButtonFormField<int>(
-            value: _notifyDays,
+            initialValue: _notifyDays,
             decoration: InputDecoration(
               labelText: context.l10n.groupRecurringNotifyBefore,
             ),

@@ -195,8 +195,9 @@ class GroupDetailScreen extends ConsumerWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Future<void> _leaveGroup(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(

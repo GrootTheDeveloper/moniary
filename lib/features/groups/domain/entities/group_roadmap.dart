@@ -301,6 +301,13 @@ class GroupPublicProfile {
     bool? showStats,
     String? slug,
     bool clearSlug = false,
+    String? groupName,
+    String? avatarPath,
+    String? description,
+    String? groupType,
+    int? memberCount,
+    int? transactionCount,
+    int? totalSpent,
   }) {
     return GroupPublicProfile(
       groupId: groupId,
