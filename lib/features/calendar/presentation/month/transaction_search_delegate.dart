@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../l10n/l10n_extension.dart';
@@ -429,6 +428,8 @@ class _SearchResultRow extends ConsumerWidget {
     final colors = context.moniaryColors;
     final title = transaction.note?.trim().isNotEmpty == true
         ? transaction.note!.trim()
+        : transaction.categoryName.trim().isEmpty
+        ? context.l10n.categoryOther
         : transaction.categoryName;
     final amountColor = transaction.isIncome
         ? colors.success
@@ -483,7 +484,7 @@ class _SearchResultRow extends ConsumerWidget {
                         Text(
                           '${_formatSearchDate(context, transaction.transactionDate)} · '
                           '${DateFormat('HH:mm').format(transaction.transactionDate)} · '
-                          '${transaction.walletName.toUpperCase()}',
+                          '${(transaction.walletName.trim().isEmpty ? context.l10n.walletUnknown : transaction.walletName).toUpperCase()}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: context.moniaryTypography.metadata.copyWith(

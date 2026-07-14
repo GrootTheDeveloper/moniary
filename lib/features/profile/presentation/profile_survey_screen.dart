@@ -11,6 +11,8 @@ import '../../../shared/widgets/moniary_design.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
 import '../application/profile_setup_controller.dart';
 import '../application/profile_survey_controller.dart';
+import '../domain/currency_data.dart';
+import 'currency_picker_screen.dart';
 
 class ProfileSurveyScreen extends ConsumerStatefulWidget {
   const ProfileSurveyScreen({super.key});
@@ -353,11 +355,7 @@ class _CurrencyStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currencies = <(String, String, String)>[
-      ('VND', context.l10n.profileSurveyCurrencyVnd, '₫'),
-      ('VGO', context.l10n.profileSurveyCurrencyVgo, 'chỉ'),
-      ('USD', context.l10n.profileSurveyCurrencyUsd, r'$'),
-    ];
+    final info = currencyInfoFor(selected);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 52, 24, 16),
@@ -373,25 +371,23 @@ class _CurrencyStep extends StatelessWidget {
             context.l10n.profileSurveyCurrencyBody,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
-          const SizedBox(height: 28),
-          ...currencies.map(
-            (currency) => MoniaryHairlineTile(
-              title: Text(currency.$2),
-              subtitle: Text(currency.$1),
-              leading: Text(
-                currency.$3,
-                style: context.moniaryTypography.displaySmall.copyWith(
-                  fontSize: currency.$3.length > 2 ? 15 : 22,
-                ),
-              ),
-              trailing: selected == currency.$1
-                  ? Icon(
-                      Icons.check_circle_outline,
-                      color: context.moniaryColors.primary,
-                    )
-                  : const Icon(Icons.circle_outlined),
-              onTap: () => onSelected(currency.$1),
+          const SizedBox(height: 36),
+          MoniaryHairlineTile(
+            title: Text(info.name),
+            subtitle: Text('${info.code} – ${info.symbol}  ·  ${info.country}'),
+            leading: Text(info.flag, style: const TextStyle(fontSize: 28)),
+            trailing: Icon(
+              Icons.chevron_right_outlined,
+              color: context.moniaryColors.textSecondary,
             ),
+            onTap: () async {
+              final result = await context.push<CurrencyInfo>(
+                '${CurrencyPickerScreen.routePath}?pickOnly=true',
+              );
+              if (result != null) {
+                onSelected(result.code);
+              }
+            },
           ),
         ],
       ),

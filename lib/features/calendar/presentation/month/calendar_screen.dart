@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../profile/application/profile_setup_controller.dart';
 import '../../../journal/application/journal_controller.dart';
@@ -55,7 +56,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         ?.trim();
     final displayName = profileName?.isNotEmpty == true
         ? profileName!
-        : context.l10n.profileSurveyFallbackName;
+        : context.l10n.profileUserDefault;
     final visibleMonth = ref.watch(calendarVisibleMonthProvider);
     final monthAsync = ref.watch(calendarMonthProvider(visibleMonth));
     final walletsAsync = ref.watch(walletsControllerProvider);
@@ -1117,15 +1118,26 @@ class _MonthCalendarCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
-    final weekdayLabels = [
-      context.l10n.calendarMon,
-      context.l10n.calendarTue,
-      context.l10n.calendarWed,
-      context.l10n.calendarThu,
-      context.l10n.calendarFri,
-      context.l10n.calendarSat,
-      context.l10n.calendarSun,
-    ];
+    final firstDay = ref.watch(firstDayOfWeekProvider);
+    final weekdayLabels = firstDay == 7
+        ? [
+            context.l10n.calendarSun,
+            context.l10n.calendarMon,
+            context.l10n.calendarTue,
+            context.l10n.calendarWed,
+            context.l10n.calendarThu,
+            context.l10n.calendarFri,
+            context.l10n.calendarSat,
+          ]
+        : [
+            context.l10n.calendarMon,
+            context.l10n.calendarTue,
+            context.l10n.calendarWed,
+            context.l10n.calendarThu,
+            context.l10n.calendarFri,
+            context.l10n.calendarSat,
+            context.l10n.calendarSun,
+          ];
 
     return Container(
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),

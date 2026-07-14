@@ -799,92 +799,6 @@ class FakeGroupRepository implements GroupRepository {
   String get currentUserId => 'mock-user-id';
 
   @override
-  Future<void> inviteByUserId({
-    required String groupId,
-    required String userId,
-  }) async {
-    invitedUserIds.add(userId);
-  }
-
-  @override
-  Future<void> inviteByUsername({
-    required String groupId,
-    required String username,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<String> createGroup({
-    required String name,
-    String? description,
-    String? type,
-    String? avatarFilePath,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<String> createInviteLink(String groupId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<GroupInvitePreview> fetchInvitePreview(String token) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<GroupInviteAcceptResult> acceptInvite(String token) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> revokeInviteLink(String token) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<GroupDirectInvite>> fetchDirectInvites() async => directInvites;
-
-  @override
-  Future<GroupInviteAcceptResult> acceptDirectInvite(String inviteId) {
-    final invite = directInvites.firstWhere((item) => item.id == inviteId);
-    directInvites.removeWhere((item) => item.id == inviteId);
-    return Future.value(
-      GroupInviteAcceptResult(
-        status: GroupInviteStatus.accepted,
-        groupId: invite.groupId,
-      ),
-    );
-  }
-
-  @override
-  Future<void> declineDirectInvite(String inviteId) {
-    declinedInviteIds.add(inviteId);
-    directInvites.removeWhere((item) => item.id == inviteId);
-    return Future.value();
-  }
-
-  @override
-  Future<String> createTransaction(GroupTransactionDraft draft) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> updateTransaction({
-    required String transactionId,
-    required GroupTransactionDraft draft,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deleteTransaction(String transactionId) {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<List<SpendingGroup>> fetchGroups() async => const [];
 
   @override
@@ -917,9 +831,99 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
-  Future<GroupSettlementOverview> fetchSettlementOverview(
-    String groupId,
-  ) async {
+  Future<String> createGroup({
+    required String name,
+    String? description,
+    String? type,
+    String? avatarFilePath,
+  }) async {
+    return 'new-group-id';
+  }
+
+  @override
+  Future<String> createInviteLink(String groupId) async {
+    return 'invite-token';
+  }
+
+  @override
+  Future<GroupInvitePreview> fetchInvitePreview(String token) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<GroupInviteAcceptResult> acceptInvite(String token) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> revokeInviteLink(String token) async {}
+
+  @override
+  Future<List<GroupDirectInvite>> fetchDirectInvites() async => directInvites;
+
+  @override
+  Future<GroupInviteAcceptResult> acceptDirectInvite(String inviteId) async {
+    final invite = directInvites.firstWhere((item) => item.id == inviteId);
+    directInvites.removeWhere((item) => item.id == inviteId);
+    return GroupInviteAcceptResult(
+      status: GroupInviteStatus.accepted,
+      groupId: invite.groupId,
+    );
+  }
+
+  @override
+  Future<void> declineDirectInvite(String inviteId) async {
+    declinedInviteIds.add(inviteId);
+    directInvites.removeWhere((item) => item.id == inviteId);
+  }
+
+  @override
+  Future<void> declineInvite(String token) async {}
+
+  @override
+  Future<void> inviteByUsername({
+    required String groupId,
+    required String username,
+  }) async {}
+
+  @override
+  Future<void> inviteByUserId({
+    required String groupId,
+    required String userId,
+  }) async {
+    invitedUserIds.add(userId);
+  }
+
+  @override
+  Future<List<GroupTransaction>> fetchTransactions(String groupId) async => const [];
+
+  @override
+  Future<GroupTransactionDetail> fetchTransactionDetail(String transactionId) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> createTransaction(GroupTransactionDraft draft) async {
+    return 'new-tx-id';
+  }
+
+  @override
+  Future<void> updateTransaction({
+    required String transactionId,
+    required GroupTransactionDraft draft,
+  }) async {}
+
+  @override
+  Future<void> deleteTransaction(String transactionId) async {}
+
+  @override
+  Future<void> submitMemberAmount({
+    required String transactionId,
+    required int shareAmount,
+  }) async {}
+
+  @override
+  Future<GroupSettlementOverview> fetchSettlementOverview(String groupId) async {
     return GroupSettlementOverview(
       balances: [
         GroupBalance(
@@ -936,60 +940,9 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
-  Future<GroupTransactionDetail> fetchTransactionDetail(String transactionId) {
+  Future<GroupStatsOverview> fetchStats(String groupId) async {
     throw UnimplementedError();
   }
-
-  @override
-  Future<List<GroupTransaction>> fetchTransactions(String groupId) async =>
-      const [];
-
-  @override
-  Future<void> submitMemberAmount({
-    required String transactionId,
-    required int shareAmount,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> markSettlementPaid(String settlementId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> confirmSettlementReceived(String settlementId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> leaveGroup(String groupId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> addComment({
-    required String transactionId,
-    required String content,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<GroupReactionSummary>> fetchReactions(String transactionId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> toggleReaction({
-    required String transactionId,
-    required String emoji,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<GroupActivity>> fetchActivities(String groupId) async => const [];
 
   @override
   Future<List<GroupNotification>> fetchNotifications() async => notifications;
@@ -1012,4 +965,176 @@ class FakeGroupRepository implements GroupRepository {
       inviteToken: notification.inviteToken,
     );
   }
+
+  @override
+  Future<List<GroupActivity>> fetchActivities(String groupId) async => const [];
+
+  @override
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  ) async {
+    return GroupNotificationPreference.defaults(groupId);
+  }
+
+  @override
+  Future<void> updateNotificationPreference(
+    GroupNotificationPreference preference,
+  ) async {}
+
+  @override
+  Future<List<GroupReactionSummary>> fetchReactionSummaries(
+    String transactionId,
+  ) async {
+    return const [];
+  }
+
+  @override
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) async {}
+
+  @override
+  Future<GroupMonthlyStats> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  }) async {
+    return GroupMonthlyStats(
+      groupId: groupId,
+      month: month,
+      totalSpent: 0,
+      transactionCount: 0,
+      topCategoryName: null,
+      topCategoryAmount: 0,
+      categoryBreakdown: const [],
+      memberBreakdown: const [],
+    );
+  }
+
+  @override
+  Future<GroupBudget> fetchBudget(String groupId) async {
+    return GroupBudget.defaults(groupId);
+  }
+
+  @override
+  Future<void> updateBudget(GroupBudget budget) async {}
+
+  @override
+  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
+    String groupId,
+  ) async {
+    return const [];
+  }
+
+  @override
+  Future<String> buildGroupReportCsv(String groupId) async {
+    return '';
+  }
+
+  @override
+  Future<List<GroupFeedItem>> fetchFeed(String groupId) async {
+    return const [];
+  }
+
+  @override
+  Future<List<GroupPhotoItem>> fetchPhotoAlbum(String groupId) async {
+    return const [];
+  }
+
+  @override
+  Future<GroupPublicProfile> fetchPublicProfile(String groupId) async {
+    return GroupPublicProfile.defaults(groupId);
+  }
+
+  @override
+  Future<void> updatePublicProfile(GroupPublicProfile profile) async {}
+
+  @override
+  Future<void> markSettlementPaid(String settlementId) async {}
+
+  @override
+  Future<void> confirmSettlementReceived(String settlementId) async {}
+
+  @override
+  Future<void> disputeSettlement({
+    required String settlementId,
+    required String reason,
+  }) async {}
+
+  @override
+  Future<void> resetDisputedSettlement(String settlementId) async {}
+
+  @override
+  Future<void> removeMember({required String groupId, required String userId}) async {}
+
+  @override
+  Future<void> leaveGroup(String groupId) async {}
+
+  @override
+  Future<void> transferOwnership({
+    required String groupId,
+    required String newOwnerUserId,
+  }) async {}
+
+  @override
+  Future<void> addComment({
+    required String transactionId,
+    required String content,
+  }) async {}
+
+  @override
+  Future<List<GroupReactionSummary>> fetchReactions(String transactionId) async {
+    return const [];
+  }
+
+  @override
+  Future<void> updateComment({
+    required String commentId,
+    required String transactionId,
+    required String content,
+  }) async {}
+
+  @override
+  Future<void> deleteComment({
+    required String commentId,
+    required String transactionId,
+  }) async {}
+
+  @override
+  Future<GroupPublicProfile> fetchPublicGroupProfile(String slug) async {
+    return GroupPublicProfile.defaults('public-group');
+  }
+
+  @override
+  Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
+    String groupId,
+  ) async {
+    return const [];
+  }
+
+  @override
+  Future<String> createRecurringTransaction({
+    required String groupId,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+  }) async {
+    return 'mock-recurring-id';
+  }
+
+  @override
+  Future<void> updateRecurringTransaction({
+    required String id,
+    required String title,
+    required int amount,
+    required String frequency,
+    required DateTime nextRunAt,
+    required int notifyDaysBefore,
+    required bool isActive,
+  }) async {}
+
+  @override
+  Future<void> deleteRecurringTransaction(String id) async {}
 }

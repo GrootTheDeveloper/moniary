@@ -83,6 +83,9 @@
 
 - **Purpose**: shared expense groups, multiple payer/split modes, integer-safe
   balances, settlements, comments, invitations, and private images.
+- **Expense participants**: each expense can target a selected subset of active
+  members. Equal, exact-amount, and member-submitted unequal splits are
+  supported; exact shares must sum to the integer transaction total.
 - **Layers**: `GroupController`, repository contract/implementation,
   Supabase/mock data sources, model mappers, and pure split/settlement services.
 - **Backend**: versioned group tables, RPCs, RLS, Storage policies, and views are
@@ -97,6 +100,9 @@
 - **Notifications**: group activity notifications are available from the Group
   tab header as a global inbox, and from group detail with the activity timeline
   when a group ID is provided.
+- **Member and settlement controls**: owners can transfer ownership; owners and
+  admins can remove permitted members only after their balances and settlements
+  are resolved. Settlement participants can open a dispute with a reason.
 - **Screens**: group list/detail/create, invite member, shared-invite
   acceptance, direct-invitations inbox, activity/notifications center,
   add/detail transaction, member amount input, and debt settlement.
@@ -113,6 +119,8 @@
   `https://go.vuivethoima.id.vn/friends/invite/<token>` and Android also keeps
   legacy `moniary://friends/invite/<token>` parsing for compatibility. Pending
   links survive the auth/profile setup decision flow in Riverpod memory.
+- **QR**: users can display their reusable friend invite link as a QR code or
+  scan another Moniary friend QR code and review the invite before accepting.
 
 ## Scanning (OCR)
 
@@ -122,6 +130,11 @@
   FastApiOcrService`.
 - **Backend**: `backend/ocr/` is rule-based Tesseract + OpenCV + regex/keyword
   matching behind FastAPI. It does not use Ollama, an LLM, or cloud OCR.
+- **Suggestions**: OCR fields include per-field confidence, source, processing
+  time, and a lightweight keyword category suggestion. Autofilled fields are
+  visibly marked as AI suggestions and low-confidence values require review.
+- **Latency**: camera/gallery input is compressed to 1600 px at quality 72 and
+  client extraction times out after eight seconds to keep OCR a utility flow.
 - **Environment**: Android emulator default is `http://10.0.2.2:8000`;
   override `OCR_API_URL` for devices or deployment. There is no mock OCR
   response fallback.
@@ -154,6 +167,14 @@
   creates or updates the default wallet, and initializes occupation-specific
   category defaults.
 - **Data**: `ProfileRepository` supports Supabase and mock profiles.
+- **Display currency**: the chosen currency (`preferredCurrencyProvider`,
+  persisted in `SharedPreferences`) drives all money rendering via
+  `formatMoney`/`formatVnd` in `lib/shared/utils/currency_formatter.dart`. A
+  module-level active currency is synced from the provider (and from prefs at
+  startup in `main`) so the many context-free formatting call sites honour the
+  selection. Scope is **single display currency** (symbol, decimal digits, digit
+  grouping) — amounts are not stored per-currency and there is no FX conversion,
+  so mixing currencies across wallets is out of scope until a Phase 2.
 
 ## Auth, Onboarding, and Splash
 

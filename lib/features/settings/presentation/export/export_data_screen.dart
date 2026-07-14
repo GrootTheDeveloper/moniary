@@ -787,7 +787,9 @@ class _RecentExportTile extends StatelessWidget {
         leading: CircleAvatar(
           backgroundColor: AppTheme.mint.withValues(alpha: 0.1),
           child: Text(
-            entry.format.toUpperCase(),
+            entry.format.trim().isEmpty
+                ? context.l10n.commonUnknown
+                : entry.format.toUpperCase(),
             style: const TextStyle(color: AppTheme.mint, fontSize: 10),
           ),
         ),

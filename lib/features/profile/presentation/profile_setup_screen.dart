@@ -16,6 +16,8 @@ import '../../../shared/widgets/supabase_image.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../auth/application/auth_controller.dart';
 import '../application/profile_setup_controller.dart';
+import '../domain/currency_data.dart';
+import 'currency_picker_screen.dart';
 import 'profile_survey_screen.dart';
 
 class ProfileSetupScreen extends ConsumerStatefulWidget {
@@ -32,7 +34,6 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   final _nameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _currencies = const ['VND', 'USD', 'EUR'];
   String _currency = 'VND';
   String? _avatarPath;
   bool _avatarPicked = false;
@@ -139,7 +140,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                           children: [
                             Text(
                               isEditMode
-                                  ? '${context.l10n.commonEdit} ${context.l10n.profileTitle}'
+                                  ? context.l10n.editProfileTitle
                                   : context.l10n.profileSetupTitle,
                               style: Theme.of(context).textTheme.headlineMedium,
                             ),
@@ -258,20 +259,15 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        initialValue: _currency,
-                        decoration: const InputDecoration(),
-                        items: _currencies
-                            .map(
-                              (currency) => DropdownMenuItem(
-                                value: currency,
-                                child: Text(currency),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          if (value == null) return;
-                          setState(() => _currency = value);
+                      _CurrencySelector(
+                        code: _currency,
+                        onTap: () async {
+                          final result = await context.push<CurrencyInfo>(
+                            '${CurrencyPickerScreen.routePath}?pickOnly=true',
+                          );
+                          if (result != null && mounted) {
+                            setState(() => _currency = result.code);
+                          }
                         },
                       ),
                       const Spacer(),
@@ -323,6 +319,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
           ? existingProfile!.timezone
           : (_detectedTimezone ?? AppConstants.defaultTimezone);
       await ref.read(preferredCurrencyProvider.notifier).setCurrency(_currency);
+      if (!mounted) return;
       await ref
           .read(profileSetupControllerProvider.notifier)
           .saveProfile(
@@ -371,5 +368,40 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+}
+
+class _CurrencySelector extends StatelessWidget {
+  const _CurrencySelector({required this.code, required this.onTap});
+
+  final String code;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final info = currencyInfoFor(code);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: InputDecorator(
+        decoration: const InputDecoration(),
+        child: Row(
+          children: [
+            Text(info.flag, style: const TextStyle(fontSize: 22)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                '${info.name} (${info.code})',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_outlined,
+              color: Theme.of(context).hintColor,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -64,15 +64,17 @@ class TransactionFormScreen extends ConsumerStatefulWidget {
 }
 
 class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
-  late final TextEditingController _amountController;
+  late TextEditingController _amountController;
   late final TextEditingController _noteController;
-  late final CurrencyTextInputFormatter _amountFormatter;
+  late CurrencyTextInputFormatter _amountFormatter;
+  bool _formatterInitialized = false;
   late TransactionType _type;
   late DateTime _selectedDate;
   String? _selectedWalletId;
   String? _selectedCategoryId;
   XFile? _pickedFile;
   bool _isOcrExtracting = false;
+  bool _hasOcrSuggestions = false;
   late bool _isImportant;
 
   bool get _isEditing => widget.initialTransaction != null;
@@ -81,19 +83,6 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
   void initState() {
     super.initState();
     final transaction = widget.initialTransaction;
-
-    _amountFormatter = CurrencyTextInputFormatter.currency(
-      locale: 'vi_VN',
-      symbol: '',
-      decimalDigits: 2,
-    );
-
-    final initialAmount = transaction?.amount ?? 0;
-    _amountController = TextEditingController(
-      text: initialAmount > 0
-          ? _amountFormatter.formatDouble(initialAmount)
-          : '',
-    );
     _noteController = TextEditingController(text: transaction?.note ?? '');
     _type = transaction?.type ?? TransactionType.expense;
     _selectedDate =
@@ -111,6 +100,25 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       if (!mounted) return;
       _setDefaultSelections();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_formatterInitialized) return;
+    _formatterInitialized = true;
+    final localeName = Localizations.localeOf(context).toString();
+    _amountFormatter = CurrencyTextInputFormatter.currency(
+      locale: localeName,
+      symbol: '',
+      decimalDigits: 2,
+    );
+    final initialAmount = widget.initialTransaction?.amount ?? 0;
+    _amountController = TextEditingController(
+      text: initialAmount > 0
+          ? _amountFormatter.formatDouble(initialAmount)
+          : '',
+    );
   }
 
   void _setDefaultSelections() {
@@ -187,7 +195,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       setState(() {
         if (ocrResult.totalAmount != null) {
           _amountController.text = _amountFormatter.formatDouble(
-            ocrResult.totalAmount!,
+            ocrResult.totalAmount!.toDouble(),
           );
         }
         if (ocrResult.note != null) {
@@ -198,6 +206,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
         if (ocrResult.transactionDate != null) {
           _selectedDate = ocrResult.transactionDate!;
         }
+        _hasOcrSuggestions = true;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -431,6 +440,25 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                       });
                     },
                   ),
+                  if (_hasOcrSuggestions) ...[
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.auto_awesome_outlined,
+                          size: 18,
+                          color: colors.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            context.l10n.scanSuggestionNotice,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   if (composerState.isLoading)
                     SizedBox(

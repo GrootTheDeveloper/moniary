@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../transactions/data/repositories/transaction_repository.dart';
 import '../../../transactions/domain/models/transaction_entry.dart';
 import '../../domain/month/calendar_month_data.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 
 import 'calendar_filter_provider.dart';
 
 final calendarMonthProvider =
     FutureProvider.family<CalendarMonthData, DateTime>((ref, month) async {
       final filters = ref.watch(calendarFilterProvider);
+      final firstDayOfWeek = ref.watch(firstDayOfWeekProvider);
       final normalizedMonth = DateTime(month.year, month.month, 1);
       var transactions = await ref
           .watch(transactionRepositoryProvider)
@@ -25,6 +27,7 @@ final calendarMonthProvider =
       return _CalendarMonthBuilder.build(
         month: normalizedMonth,
         transactions: transactions,
+        firstDayOfWeek: firstDayOfWeek,
       );
     });
 
@@ -32,11 +35,13 @@ class _CalendarMonthBuilder {
   static CalendarMonthData build({
     required DateTime month,
     required List<TransactionEntry> transactions,
+    required int firstDayOfWeek,
   }) {
     final firstDay = DateTime(month.year, month.month, 1);
-    final calendarStart = firstDay.subtract(
-      Duration(days: firstDay.weekday - 1),
-    );
+    final offset = firstDayOfWeek == 7
+        ? (firstDay.weekday % 7)
+        : (firstDay.weekday - 1);
+    final calendarStart = firstDay.subtract(Duration(days: offset));
     final grouped = <String, List<TransactionEntry>>{};
 
     for (final transaction in transactions) {

@@ -598,7 +598,10 @@ class _CategoryDonutSection extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    (active?.categoryName ?? '').toUpperCase(),
+                    _categoryLabel(
+                      context,
+                      active?.categoryName ?? '',
+                    ).toUpperCase(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: context.moniaryTypography.metadataStrong.copyWith(
@@ -624,7 +627,7 @@ class _CategoryDonutSection extends StatelessWidget {
               final selected = selectedCategoryId == item.categoryId;
               return _LegendRow(
                 color: _statColor(index, item.categoryColor),
-                label: item.categoryName,
+                label: _categoryLabel(context, item.categoryName),
                 percent: percent,
                 selected: selected,
                 onTap: () => onCategoryTap(item.categoryId),
@@ -902,7 +905,7 @@ class _CategoryAmountRow extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          category.categoryName,
+                          _categoryLabel(context, category.categoryName),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyMedium
@@ -1067,6 +1070,11 @@ class _WeeklySummary {
       (index) => _WeeklySummary(index: index + 1, amount: buckets[index]),
     );
   }
+}
+
+String _categoryLabel(BuildContext context, String value) {
+  final trimmed = value.trim();
+  return trimmed.isEmpty ? context.l10n.categoryOther : trimmed;
 }
 
 String _money(WidgetRef ref, double amount) {

@@ -14,6 +14,7 @@ import 'create_group_screen.dart';
 import 'group_activity_center_screen.dart';
 import 'group_detail_screen.dart';
 import 'group_invitations_screen.dart';
+import 'invite_member_screen.dart';
 
 class GroupListScreen extends ConsumerWidget {
   const GroupListScreen({super.key});
@@ -59,9 +60,19 @@ class GroupListScreen extends ConsumerWidget {
   }
 
   Future<void> _openCreateGroup(BuildContext context, WidgetRef ref) async {
-    final groupId = await context.push<String>(CreateGroupScreen.routePath);
+    final result = await context.push<Object?>(CreateGroupScreen.routePath);
     ref.invalidate(groupsControllerProvider);
+    final groupId = switch (result) {
+      final CreateGroupResult value => value.groupId,
+      final String value => value,
+      _ => null,
+    };
     if (groupId == null || !context.mounted) return;
+    final inviteMembers = result is CreateGroupResult && result.inviteMembers;
+    if (inviteMembers) {
+      await context.push(InviteMemberScreen.routePath, extra: groupId);
+      if (!context.mounted) return;
+    }
     await context.push(GroupDetailScreen.routePath, extra: groupId);
   }
 }

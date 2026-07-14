@@ -24,26 +24,26 @@ class UserRightsSummaryScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _RightItem(
               icon: Icons.visibility_outlined,
-              title: context.l10n.userRightsViewDataTitle,
-              description: context.l10n.userRightsViewDataDesc,
+              title: context.l10n.userRightsAccessTitle,
+              description: context.l10n.userRightsAccessDescription,
               onTap: () => context.push(DataTransparencyScreen.routePath),
             ),
             _RightItem(
               icon: Icons.file_download_outlined,
               title: context.l10n.userRightsExportTitle,
-              description: context.l10n.userRightsExportDesc,
+              description: context.l10n.userRightsExportDescription,
               onTap: () => context.push(ExportDataScreen.routePath),
             ),
             _RightItem(
               icon: Icons.edit_note_outlined,
-              title: context.l10n.userRightsSupportTitle,
-              description: context.l10n.userRightsSupportDesc,
+              title: context.l10n.userRightsCorrectionTitle,
+              description: context.l10n.userRightsCorrectionDescription,
               onTap: () => context.push(PrivacyContactScreen.routePath),
             ),
             _RightItem(
               icon: Icons.delete_outlined,
               title: context.l10n.userRightsDeletionTitle,
-              description: context.l10n.userRightsDeletionDesc,
+              description: context.l10n.userRightsDeletionDescription,
               onTap: () => context.push(PrivacyContactScreen.routePath),
             ),
           ],
@@ -66,7 +66,7 @@ class _RightsHero extends StatelessWidget {
         border: Border.all(color: AppTheme.outline),
       ),
       child: Text(
-        context.l10n.userRightsHero,
+        context.l10n.userRightsHeroBody,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
     );

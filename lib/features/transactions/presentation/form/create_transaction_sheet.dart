@@ -197,16 +197,21 @@ class _CreateTransactionSheetState
                   labelText: context.l10n.transactionAmount,
                   hintText: ref.formatAmount(57000),
                   prefixIcon: const Icon(Icons.payments_outlined),
+                  suffixText: ref.currencySymbol,
                 ),
               ),
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
                 initialValue: _selectedWalletId,
+                isExpanded: true,
                 items: wallets
                     .map(
                       (wallet) => DropdownMenuItem(
                         value: wallet.id,
-                        child: Text(wallet.name),
+                        child: Text(
+                          wallet.name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     )
                     .toList(),
@@ -221,11 +226,15 @@ class _CreateTransactionSheetState
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
                 initialValue: _selectedCategoryId,
+                isExpanded: true,
                 items: categories
                     .map(
                       (category) => DropdownMenuItem(
                         value: category.id,
-                        child: Text(category.name),
+                        child: Text(
+                          category.name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     )
                     .toList(),
@@ -380,7 +389,10 @@ class _DateTimeTile extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                DateFormat('dd/MM/yyyy • HH:mm', 'vi_VN').format(value),
+                DateFormat(
+                  'dd/MM/yyyy • HH:mm',
+                  Localizations.localeOf(context).toString(),
+                ).format(value),
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(color: Colors.white),

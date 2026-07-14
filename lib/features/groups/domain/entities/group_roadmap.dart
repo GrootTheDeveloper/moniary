@@ -231,6 +231,42 @@ class GroupRecurringTransaction {
   final int notifyDaysBefore;
   final bool isActive;
   final DateTime createdAt;
+
+  GroupRecurringTransaction copyWith({
+    int? amount,
+    String? frequency,
+    DateTime? nextRunAt,
+    int? notifyDaysBefore,
+    bool? isActive,
+  }) {
+    return GroupRecurringTransaction(
+      id: id,
+      groupId: groupId,
+      createdBy: createdBy,
+      title: title,
+      amount: amount ?? this.amount,
+      frequency: frequency ?? this.frequency,
+      nextRunAt: nextRunAt ?? this.nextRunAt,
+      notifyDaysBefore: notifyDaysBefore ?? this.notifyDaysBefore,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt,
+    );
+  }
+
+  static GroupRecurringTransaction defaults(String groupId, String createdBy) {
+    return GroupRecurringTransaction(
+      id: '',
+      groupId: groupId,
+      createdBy: createdBy,
+      title: '',
+      amount: 0,
+      frequency: 'monthly',
+      nextRunAt: DateTime.now().add(const Duration(days: 30)),
+      notifyDaysBefore: 1,
+      isActive: true,
+      createdAt: DateTime.now(),
+    );
+  }
 }
 
 class GroupPublicProfile {
@@ -239,23 +275,52 @@ class GroupPublicProfile {
     required this.isEnabled,
     required this.showStats,
     this.slug,
+    this.groupName,
+    this.avatarPath,
+    this.description,
+    this.groupType,
+    this.memberCount,
+    this.transactionCount,
+    this.totalSpent,
   });
 
   final String groupId;
   final bool isEnabled;
   final bool showStats;
   final String? slug;
+  final String? groupName;
+  final String? avatarPath;
+  final String? description;
+  final String? groupType;
+  final int? memberCount;
+  final int? transactionCount;
+  final int? totalSpent;
 
   GroupPublicProfile copyWith({
     bool? isEnabled,
     bool? showStats,
     String? slug,
+    bool clearSlug = false,
+    String? groupName,
+    String? avatarPath,
+    String? description,
+    String? groupType,
+    int? memberCount,
+    int? transactionCount,
+    int? totalSpent,
   }) {
     return GroupPublicProfile(
       groupId: groupId,
       isEnabled: isEnabled ?? this.isEnabled,
       showStats: showStats ?? this.showStats,
-      slug: slug ?? this.slug,
+      slug: clearSlug ? null : slug ?? this.slug,
+      groupName: groupName ?? this.groupName,
+      avatarPath: avatarPath ?? this.avatarPath,
+      description: description ?? this.description,
+      groupType: groupType ?? this.groupType,
+      memberCount: memberCount ?? this.memberCount,
+      transactionCount: transactionCount ?? this.transactionCount,
+      totalSpent: totalSpent ?? this.totalSpent,
     );
   }
 

@@ -690,6 +690,12 @@ class TransactionGridTile extends ConsumerWidget {
       transaction.categoryColor ?? transaction.walletColor,
       fallback: transaction.isIncome ? AppTheme.success : AppTheme.amber,
     );
+    final categoryLabel = transaction.categoryName.trim().isEmpty
+        ? context.l10n.categoryOther
+        : transaction.categoryName;
+    final walletLabel = transaction.walletName.trim().isEmpty
+        ? context.l10n.walletUnknown
+        : transaction.walletName;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -739,9 +745,9 @@ class TransactionGridTile extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GridTag(label: transaction.categoryName),
+                        GridTag(label: categoryLabel),
                         const SizedBox(height: 4),
-                        GridTag(label: transaction.walletName),
+                        GridTag(label: walletLabel),
                       ],
                     ),
                   ),

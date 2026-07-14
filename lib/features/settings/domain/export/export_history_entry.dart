@@ -21,7 +21,7 @@ class ExportHistoryEntry {
 
   factory ExportHistoryEntry.fromMap(Map<String, dynamic> map) {
     return ExportHistoryEntry(
-      format: map['format'] as String? ?? 'unknown',
+      format: map['format'] as String? ?? '',
       path: map['path'] as String? ?? '',
       createdAt:
           DateTime.tryParse(map['created_at'] as String? ?? '') ??

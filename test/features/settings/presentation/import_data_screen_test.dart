@@ -62,6 +62,11 @@ class AvailableWalletsController extends WalletsController {
   }
 }
 
+class _FakeCurrencyNotifier extends PreferredCurrencyNotifier {
+  @override
+  String build() => 'VND';
+}
+
 void main() {
   testWidgets('import wallet load error hides raw backend details', (
     tester,
@@ -77,6 +82,7 @@ void main() {
           importControllerProvider.overrideWith(TestImportController.new),
           importHistoryProvider.overrideWith((ref) async => const []),
           walletsControllerProvider.overrideWith(FailingWalletsController.new),
+          preferredCurrencyProvider.overrideWith(_FakeCurrencyNotifier.new),
         ],
         child: const MaterialApp(
           locale: Locale('vi'),
@@ -115,6 +121,7 @@ void main() {
           walletsControllerProvider.overrideWith(
             AvailableWalletsController.new,
           ),
+          preferredCurrencyProvider.overrideWith(_FakeCurrencyNotifier.new),
         ],
         child: const MaterialApp(
           locale: Locale('vi'),

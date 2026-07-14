@@ -33,13 +33,18 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupMemberAlreadyInvited;
       case 'GROUP_INVITE_INVALID':
       case 'GROUP_INVITE_NOT_FOUND':
+      case 'GROUP_INVITE_FORBIDDEN':
         return l10n.groupInviteInvalid;
       case 'GROUP_INVITE_EXPIRED':
         return l10n.groupInviteExpired;
       case 'GROUP_INVITE_USED':
         return l10n.groupInviteUsed;
+      case 'GROUP_INVITE_NOT_PENDING':
+        return l10n.groupInviteAlreadyAccepted;
       case 'GROUP_INVITE_REVOKED':
         return l10n.groupInviteRevoked;
+      case 'GROUP_INVITE_ARCHIVED':
+        return l10n.groupInviteGroupArchived;
       case 'GROUP_DIRECT_INVITE_INVALID':
         return l10n.groupInvitationInvalid;
       case 'GROUP_DIRECT_INVITE_EXPIRED':
@@ -58,12 +63,30 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupPayerAmountPositive;
       case 'GROUP_PAID_TOTAL_MISMATCH':
         return l10n.groupPaidTotalMismatch;
+      case 'GROUP_PARTICIPANT_NOT_ACTIVE':
+      case 'GROUP_NO_PARTICIPANTS':
+        return l10n.groupNoMembers;
+      case 'GROUP_SHARE_TOTAL_MISMATCH':
+        return l10n.groupTransactionAmountMismatch;
+      case 'GROUP_DISPUTE_REASON_REQUIRED':
+        return l10n.groupSettlementDisputeReasonRequired;
+      case 'GROUP_MEMBER_REMOVE_UNRESOLVED':
+        return l10n.groupMemberRemoveUnresolved;
+      case 'GROUP_MEMBER_REMOVE_FORBIDDEN':
+      case 'GROUP_OWNER_TARGET_INVALID':
+        return l10n.groupMemberActionForbidden;
       case 'GROUP_LEAVE_UNRESOLVED':
         return l10n.groupLeaveBlocked;
       case 'GROUP_OWNER_TRANSFER_REQUIRED':
         return l10n.groupOwnerTransferRequired;
+      case 'GROUP_OWNER_REQUIRED':
+        return l10n.groupOwnerRequired;
+      case 'GROUP_OWNER_TRANSFER_TARGET_REQUIRED':
+        return l10n.groupOwnerTransferTargetRequired;
       case 'GROUP_COMMENT_REQUIRED':
         return l10n.groupCommentRequired;
+      case 'GROUP_COMMENT_OWNER_REQUIRED':
+        return l10n.groupActionFailed;
       case 'GROUP_CREATOR_ONLY':
         return l10n.groupTransactionCreatorOnly;
       case 'FRIEND_USER_NOT_FOUND':
@@ -76,6 +99,8 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.friendRequestAlreadyPending;
       case 'FRIEND_REQUEST_NOT_FOUND':
         return l10n.friendRequestNotFound;
+      case 'FRIEND_RATE_LIMITED':
+        return l10n.friendRateLimited;
       case 'FRIEND_NOT_FOUND':
         return l10n.friendNotFound;
       case 'FRIEND_INVITE_INVALID':

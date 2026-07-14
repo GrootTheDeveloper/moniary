@@ -101,6 +101,7 @@ floating global action that pushes `/assistant`; it is not a fifth shell tab.
 | `/groups/activity-center` | `GroupActivityCenterScreen` | Optional group ID; without one it opens the notifications-only view |
 | `/friends` | `FriendsScreen` | Friend list/requests |
 | `/friends/add` | `AddFriendScreen` | Search/add |
+| `/friends/qr` | `FriendQrScreen` | Display or scan a friend invite QR code |
 | `/friends/invite/:token` | `FriendInviteAcceptScreen` | Path token |
 
 Invalid/missing required group extras fall back to `GroupsScreen`; the group

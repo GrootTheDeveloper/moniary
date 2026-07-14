@@ -132,9 +132,9 @@ class _ScanningScreenState extends ConsumerState<ScanningScreen> {
     try {
       final file = await ImagePicker().pickImage(
         source: source,
-        maxWidth: 1920,
-        maxHeight: 1920,
-        imageQuality: 90,
+        maxWidth: 1600,
+        maxHeight: 1600,
+        imageQuality: 72,
       );
       if (file != null) {
         ref.read(scanningControllerProvider.notifier).selectImage(file.path);

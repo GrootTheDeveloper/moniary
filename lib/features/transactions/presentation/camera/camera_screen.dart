@@ -25,7 +25,6 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
   bool _isFlashOn = false;
   bool _isInitializing = true;
   bool _isCameraInitInFlight = false;
-  bool _cameraInitBlocked = false;
 
   @override
   void initState() {
@@ -35,20 +34,18 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
   }
 
   Future<void> _initCameras() async {
-    if (_cameraInitBlocked || _isCameraInitInFlight) return;
+    if (_isCameraInitInFlight) return;
     _isCameraInitInFlight = true;
     try {
       final cameras = await ref.read(cameraProvider.future);
       if (!mounted) return;
       if (cameras.isEmpty) {
+        // No cameras available on this device — signal failure immediately
         ref
             .read(cameraFailureReasonProvider.notifier)
             .setFailure(CameraFailureReason.generic);
-        AppLogger.warning('No cameras available — showing scanner fallback');
-        setState(() {
-          _isInitializing = false;
-          _cameraInitBlocked = true;
-        });
+        AppLogger.warning('No cameras available — signalling fallback');
+        context.pop();
         return;
       }
       await _initializeCamera(cameras);
@@ -97,13 +94,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen>
             : CameraFailureReason.generic;
         ref.read(cameraFailureReasonProvider.notifier).setFailure(reason);
         AppLogger.error(
-          'Camera init failed ($reason) — showing scanner fallback',
+          'Camera init failed ($reason) — signalling fallback',
           e,
         );
-        setState(() {
-          _isInitializing = false;
-          _cameraInitBlocked = true;
-        });
+        context.pop();
       }
     }
   }

@@ -52,6 +52,8 @@ export MAX_IMAGE_PX=2000
 - `GET /health`: Tesseract version and installed languages.
 - `POST /extract`: multipart image field named `file`.
 - `POST /extract?debug=true`: also returns raw Tesseract text.
+- Responses include `field_confidence`, `processing_ms`, and a stable
+  `suggested_category` key when the local keyword classifier has a match.
 - `POST /extract/base64`: accepts base64 image JSON.
 - Supported images: JPEG, PNG, WEBP, maximum 15 MB.
 
@@ -72,4 +74,3 @@ curl http://localhost:8000/health
 curl -X POST http://localhost:8000/extract \
   -F "file=@../../receipt_1.jpg"
 ```
-

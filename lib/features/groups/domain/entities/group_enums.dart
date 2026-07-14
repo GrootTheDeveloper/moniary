@@ -4,7 +4,7 @@ enum GroupMemberStatus { invited, active, declined, left, removed }
 
 enum GroupStatus { active, archived }
 
-enum GroupSplitMode { equal, unequal }
+enum GroupSplitMode { equal, exact, unequal }
 
 enum GroupPaymentMode { everyonePaid, singlePayer, multiplePayers }
 

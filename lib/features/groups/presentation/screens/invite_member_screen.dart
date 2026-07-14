@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../friends/application/friend_controller.dart';
@@ -88,6 +89,11 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
                   onPressed: action.isLoading ? null : _copyLink,
                   icon: const Icon(Icons.content_copy_outlined),
                   label: Text(context.l10n.groupInviteCopyLink),
+                ),
+                OutlinedButton.icon(
+                  onPressed: action.isLoading ? null : _shareLink,
+                  icon: const Icon(Icons.ios_share_outlined),
+                  label: Text(context.l10n.groupShareInviteLink),
                 ),
                 TextButton.icon(
                   onPressed: action.isLoading ? null : _revokeLink,
@@ -265,6 +271,12 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
     }
+  }
+
+  Future<void> _shareLink() async {
+    final link = _inviteLink;
+    if (link == null) return;
+    await Share.share(context.l10n.groupInviteShareMessage(link));
   }
 }
 

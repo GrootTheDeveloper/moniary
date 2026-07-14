@@ -15,21 +15,30 @@ class SplitModeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SegmentedButton<GroupSplitMode>(
-      segments: [
-        ButtonSegment(
-          value: GroupSplitMode.equal,
-          label: Text(context.l10n.groupSplitEqual),
-          icon: const Icon(Icons.balance_outlined),
-        ),
-        ButtonSegment(
-          value: GroupSplitMode.unequal,
-          label: Text(context.l10n.groupSplitUnequal),
-          icon: const Icon(Icons.tune_outlined),
-        ),
-      ],
-      selected: {value},
-      onSelectionChanged: (selection) => onChanged(selection.first),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SegmentedButton<GroupSplitMode>(
+        segments: [
+          ButtonSegment(
+            value: GroupSplitMode.equal,
+            label: Text(context.l10n.groupSplitEqual),
+            icon: const Icon(Icons.balance_outlined),
+          ),
+          ButtonSegment(
+            value: GroupSplitMode.exact,
+            label: Text(context.l10n.groupSplitExact),
+            icon: const Icon(Icons.edit_note_outlined),
+          ),
+          ButtonSegment(
+            value: GroupSplitMode.unequal,
+            label: Text(context.l10n.groupSplitUnequal),
+            icon: const Icon(Icons.tune_outlined),
+          ),
+        ],
+        selected: {value},
+        showSelectedIcon: false,
+        onSelectionChanged: (selection) => onChanged(selection.first),
+      ),
     );
   }
 }

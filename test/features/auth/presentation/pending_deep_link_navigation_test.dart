@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -312,6 +313,15 @@ void main() {
   setUp(() {
     final binding = TestWidgetsFlutterBinding.ensureInitialized();
     binding.platformDispatcher.textScaleFactorTestValue = 1;
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(const MethodChannel('flutter_timezone'), (
+          methodCall,
+        ) async {
+          if (methodCall.method == 'getLocalTimezone') {
+            return 'Asia/Ho_Chi_Minh';
+          }
+          return null;
+        });
   });
 
   tearDown(() {

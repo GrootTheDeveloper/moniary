@@ -43,9 +43,18 @@ void main() {
               },
             ],
             'total': 117.25,
+            'suggested_category': 'food',
           },
           'validation_issues': <String>[],
           'confidence': 0.92,
+          'field_confidence': {
+            'merchant': 0.82,
+            'total': 0.94,
+            'date': 0.85,
+            'address': 0.7,
+            'category': 0.79,
+          },
+          'processing_ms': 420,
         }),
         200,
         headers: {'content-type': 'application/json'},
@@ -64,12 +73,15 @@ void main() {
     expect(result.merchantName, 'Cửa hàng A');
     expect(result.note, '1 Nguyễn Huệ');
     expect(result.transactionDate, DateTime(2026, 6, 9));
-    expect(result.totalAmount, 117.25);
+    expect(result.totalAmount, 117);
     expect(result.items, hasLength(1));
     expect(result.items.single.name, 'Cà phê sữa');
     expect(result.items.single.quantity, 1.5);
-    expect(result.items.single.price, 35.75);
+    expect(result.items.single.price, 36);
     expect(result.confidence, 0.92);
+    expect(result.categoryKey, 'food');
+    expect(result.categorySuggestion?.confidence, 0.79);
+    expect(result.processingTime, const Duration(milliseconds: 420));
   });
 
   test('maps backend HTTP failures to AppException', () async {

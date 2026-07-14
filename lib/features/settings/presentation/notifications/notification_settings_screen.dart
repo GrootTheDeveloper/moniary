@@ -55,7 +55,9 @@ class _ReminderSection extends ConsumerWidget {
           child: _NotificationTile(
             icon: Icons.notifications_active_outlined,
             title: context.l10n.reminderDailyTitle,
-            subtitle: context.l10n.reminderDailyDesc(_formatTime(context, time)),
+            subtitle: context.l10n.reminderDailyDesc(
+              _formatTime(context, time),
+            ),
             value: settings.enabled,
             onChanged: (val) => _toggle(context, ref, val),
             onTap: settings.enabled
@@ -249,10 +251,7 @@ class _NotificationTile extends StatelessWidget {
                 children: [
                   Text(title, style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
+                  Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
                 ],
               ),
             ),
@@ -296,10 +295,7 @@ class _ErrorCard extends StatelessWidget {
               ).textTheme.bodyMedium?.copyWith(color: AppTheme.danger),
             ),
           ),
-          TextButton(
-            onPressed: onRetry,
-            child: Text(context.l10n.commonRetry),
-          ),
+          TextButton(onPressed: onRetry, child: Text(context.l10n.commonRetry)),
         ],
       ),
     );
