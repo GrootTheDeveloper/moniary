@@ -55,6 +55,44 @@ class LocalNotificationService {
         iOS: darwinSettings,
       ),
     );
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (android != null) {
+      await android.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _personalChannelId,
+          'Personal / Cá nhân',
+          description: 'Personal Moniary notifications.',
+          importance: Importance.high,
+        ),
+      );
+      await android.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _groupChannelId,
+          'Group',
+          description: 'Moniary group notifications.',
+          importance: Importance.high,
+        ),
+      );
+      await android.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _communityChannelId,
+          'Community / Cộng đồng',
+          description: 'Moniary community notifications.',
+          importance: Importance.high,
+        ),
+      );
+      await android.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _systemChannelId,
+          'System / Hệ thống',
+          description: 'Moniary system notifications.',
+          importance: Importance.high,
+        ),
+      );
+    }
     _initialized = true;
   }
 

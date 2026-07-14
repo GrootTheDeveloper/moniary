@@ -41,9 +41,11 @@ class FcmPushNotificationService {
       final messaging = FirebaseMessaging.instance;
       await messaging.requestPermission(alert: true, badge: true, sound: true);
       final token = await messaging.getToken();
-      if (token != null && token.isNotEmpty) await onToken(token);
+      if (token != null && token.isNotEmpty) {
+        await _registerToken(onToken, token);
+      }
       FirebaseMessaging.instance.onTokenRefresh.listen((value) {
-        unawaited(onToken(value));
+        unawaited(_registerToken(onToken, value));
       });
       FirebaseMessaging.onMessage.listen((message) {
         unawaited(_presentForegroundMessage(message));
@@ -56,6 +58,17 @@ class FcmPushNotificationService {
       _initialized = true;
     } catch (error, stackTrace) {
       AppLogger.error('FCM initialization failed', error, stackTrace);
+    }
+  }
+
+  Future<void> _registerToken(
+    Future<void> Function(String token) onToken,
+    String token,
+  ) async {
+    try {
+      await onToken(token);
+    } catch (error, stackTrace) {
+      AppLogger.error('FCM token registration failed', error, stackTrace);
     }
   }
 

@@ -31,11 +31,18 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
     with WidgetsBindingObserver {
   final _appLinks = AppLinks();
   StreamSubscription<Uri>? _linkSubscription;
+  ProviderSubscription? _sessionSubscription;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _sessionSubscription = ref.listenManual(currentSessionProvider, (
+      previous,
+      next,
+    ) {
+      if (next != null) unawaited(_initializePushNotifications());
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeDeepLinks();
       _initializePushNotifications();
@@ -45,6 +52,7 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
   @override
   void dispose() {
     _linkSubscription?.cancel();
+    _sessionSubscription?.close();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -112,7 +120,10 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
   }
 
   Future<void> _initializePushNotifications() async {
-    if (ref.read(useMockDataModeProvider)) return;
+    if (ref.read(useMockDataModeProvider) ||
+        ref.read(currentSessionProvider) == null) {
+      return;
+    }
     final service = ref.read(fcmPushNotificationServiceProvider);
     await service.initialize(
       onToken: (token) => ref
