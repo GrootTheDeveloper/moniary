@@ -90,92 +90,100 @@ class GroupDetailScreen extends ConsumerWidget {
       builder: (sheetContext) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                detail.group.name,
-                style: context.moniaryTypography.displaySmall,
-              ),
-              const SizedBox(height: 16),
-              if (detail.canInvite)
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  detail.group.name,
+                  style: context.moniaryTypography.displaySmall,
+                ),
+                const SizedBox(height: 16),
+                if (detail.canInvite)
+                  ListTile(
+                    leading: const Icon(Icons.person_add_outlined),
+                    title: Text(context.l10n.groupInviteTitle),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      context.push(
+                        InviteMemberScreen.routePath,
+                        extra: groupId,
+                      );
+                    },
+                  ),
                 ListTile(
-                  leading: const Icon(Icons.person_add_outlined),
-                  title: Text(context.l10n.groupInviteTitle),
+                  leading: const Icon(Icons.bolt_outlined),
+                  title: Text(context.l10n.groupActivityCenterTitle),
                   onTap: () {
                     Navigator.pop(sheetContext);
-                    context.push(InviteMemberScreen.routePath, extra: groupId);
+                    context.push(
+                      GroupActivityCenterScreen.routePath,
+                      extra: groupId,
+                    );
                   },
                 ),
-              ListTile(
-                leading: const Icon(Icons.bolt_outlined),
-                title: Text(context.l10n.groupActivityCenterTitle),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  context.push(
-                    GroupActivityCenterScreen.routePath,
-                    extra: groupId,
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.photo_library_outlined),
-                title: Text(context.l10n.groupPhotoAlbumTitle),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  context.push(GroupPhotoAlbumScreen.routePath, extra: groupId);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.account_balance_wallet_outlined),
-                title: Text(context.l10n.groupBudgetTitle),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  context.push(GroupBudgetScreen.routePath, extra: groupId);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.notifications_none_outlined),
-                title: Text(context.l10n.groupNotificationPreferencesTitle),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  context.push(
-                    GroupNotificationPreferencesScreen.routePath,
-                    extra: groupId,
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.public_outlined),
-                title: Text(context.l10n.groupPublicProfileSettingsTitle),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  context.push(
-                    GroupPublicProfileScreen.routePath,
-                    extra: groupId,
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.autorenew_outlined),
-                title: Text(context.l10n.groupRecurringTitle),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  context.push(
-                    GroupRecurringTransactionsScreen.routePath,
-                    extra: groupId,
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.logout_outlined),
-                title: Text(context.l10n.groupLeave),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _leaveGroup(context, ref);
-                },
-              ),
-            ],
+                ListTile(
+                  leading: const Icon(Icons.photo_library_outlined),
+                  title: Text(context.l10n.groupPhotoAlbumTitle),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    context.push(
+                      GroupPhotoAlbumScreen.routePath,
+                      extra: groupId,
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.account_balance_wallet_outlined),
+                  title: Text(context.l10n.groupBudgetTitle),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    context.push(GroupBudgetScreen.routePath, extra: groupId);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.notifications_none_outlined),
+                  title: Text(context.l10n.groupNotificationPreferencesTitle),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    context.push(
+                      GroupNotificationPreferencesScreen.routePath,
+                      extra: groupId,
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.public_outlined),
+                  title: Text(context.l10n.groupPublicProfileSettingsTitle),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    context.push(
+                      GroupPublicProfileScreen.routePath,
+                      extra: groupId,
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.autorenew_outlined),
+                  title: Text(context.l10n.groupRecurringTitle),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    context.push(
+                      GroupRecurringTransactionsScreen.routePath,
+                      extra: groupId,
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.logout_outlined),
+                  title: Text(context.l10n.groupLeave),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _leaveGroup(context, ref);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
