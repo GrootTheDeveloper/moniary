@@ -46,6 +46,9 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.authErrorRateLimited;
       case 'user_banned':
         return l10n.authErrorUserBanned;
+      case 'AUTH_LINK_EMAIL_NOT_CONFIRMED':
+      case 'AUTH_LINK_EMAIL_NOT_PENDING':
+        return l10n.emailLinkNotConfirmed;
       case 'GROUP_NAME_REQUIRED':
         return l10n.groupNameRequired;
       case 'GROUP_USER_NOT_FOUND':

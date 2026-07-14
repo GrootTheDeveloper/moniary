@@ -19,6 +19,12 @@ Supabase Auth is initialized with PKCE when real configuration is present.
 In mock/guest mode these flows return or maintain a synthetic
 `mock-user-id` session and must not access configured user data.
 
+Anonymous-to-email upgrades are two-phase. The app first updates only the
+email and stores the originating user ID plus normalized email locally. After
+Supabase confirms the email and returns the same user, the app opens a separate
+password step, then updates the profile provider. It never reports a completed
+email link before both phases succeed.
+
 ## Session and route security
 
 - Supabase auth changes are exposed as a `StreamProvider`.

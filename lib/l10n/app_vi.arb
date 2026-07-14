@@ -919,6 +919,27 @@
   "profileLinkAccountSubtitle": "Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email hoặc Google để lưu dữ liệu và đăng nhập trên nhiều thiết bị.",
   "profileNewPassword": "Mật khẩu mới",
   "profileLinkEmail": "Liên kết Email",
+  "profileLinkEmailConfirmationSent": "Đã gửi liên kết xác nhận đến {email}. Hãy mở liên kết trên thiết bị này để tiếp tục.",
+  "@profileLinkEmailConfirmationSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailLinkCompleteTitle": "Bảo vệ tài khoản email",
+  "emailLinkCompleteSubtitle": "Email {email} đã được xác nhận. Hãy tạo mật khẩu để hoàn tất nâng cấp tài khoản khách.",
+  "@emailLinkCompleteSubtitle": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailLinkCompleteSubmit": "Hoàn tất nâng cấp tài khoản",
+  "emailLinkMissing": "Yêu cầu liên kết email này không còn khả dụng.",
+  "emailLinkNotConfirmed": "Hãy xác nhận liên kết email trước khi tạo mật khẩu.",
+  "emailLinkReturnProfile": "Quay lại hồ sơ",
   "profileLinkGoogle": "Liên kết Google",
   "profileLinkFacebook": "Liên kết Facebook",
   "profileLinkSuccess": "Liên kết tài khoản email thành công!",

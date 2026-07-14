@@ -2060,6 +2060,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLinkEmail => 'Link Email';
 
   @override
+  String profileLinkEmailConfirmationSent(String email) {
+    return 'A confirmation link was sent to $email. Open it on this device to continue.';
+  }
+
+  @override
+  String get emailLinkCompleteTitle => 'Protect your email account';
+
+  @override
+  String emailLinkCompleteSubtitle(String email) {
+    return 'Email $email is confirmed. Create a password to finish upgrading your guest account.';
+  }
+
+  @override
+  String get emailLinkCompleteSubmit => 'Finish account upgrade';
+
+  @override
+  String get emailLinkMissing =>
+      'This email-linking request is no longer available.';
+
+  @override
+  String get emailLinkNotConfirmed =>
+      'Confirm the email link before creating a password.';
+
+  @override
+  String get emailLinkReturnProfile => 'Return to profile';
+
+  @override
   String get profileLinkGoogle => 'Link Google';
 
   @override

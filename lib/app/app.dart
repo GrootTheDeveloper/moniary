@@ -15,6 +15,8 @@ import '../core/notifications/notification_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/password_reset_screen.dart';
+import '../features/auth/application/pending_email_link_controller.dart';
+import '../features/auth/presentation/email_account_link_completion_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/friends/presentation/widgets/friend_invite_prompt_host.dart';
 import '../features/settings/presentation/privacy/app_lock_screen.dart';
@@ -84,6 +86,27 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
           ref.read(appRouterProvider).go(PasswordResetScreen.routePath);
+        });
+      });
+    });
+
+    ref.listen(authStateChangesProvider, (previous, next) {
+      next.whenData((authState) {
+        final pendingLink = ref.read(pendingEmailAccountLinkProvider);
+        final user = authState.session?.user;
+        if (pendingLink == null || user == null) return;
+        if (!pendingLink.matches(
+          userId: user.id,
+          email: user.email,
+          isAnonymous: user.isAnonymous,
+        )) {
+          return;
+        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          ref
+              .read(appRouterProvider)
+              .go(EmailAccountLinkCompletionScreen.routePath);
         });
       });
     });

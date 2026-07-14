@@ -206,8 +206,9 @@
 
 - **Auth methods**: email sign-in/sign-up/password reset, Google/Facebook
   OAuth, anonymous sign-in, and explicit guest/mock session.
-- **Account linking**: email and Google identity linking paths exist for
-  an already signed-in account.
+- **Account linking**: email upgrade sends confirmation first, persists the
+  originating user/email pair, and only sets a password after the callback;
+  Google identity linking is also available to an already signed-in account.
 - **Boundary**: controllers manage Riverpod state; `AuthRepository` owns
   Supabase Auth, `initialize_user`, and profile-provider updates.
 - **Routing**: splash/post-auth decisions account for onboarding, session,

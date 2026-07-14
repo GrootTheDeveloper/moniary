@@ -6,6 +6,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
+import '../domain/email_account_link.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final client = AppConstants.hasSupabaseConfig
@@ -67,24 +68,60 @@ class AuthRepository {
     }
   }
 
-  Future<bool> linkEmailAccount({
+  Future<EmailAccountLinkStatus> beginEmailAccountLink({
     required String email,
-    required String password,
   }) async {
     if (_useMockData) {
-      return true;
+      return EmailAccountLinkStatus.readyToSetPassword;
     }
 
     try {
-      await _requiredClient.auth.updateUser(
-        UserAttributes(email: email, password: password),
+      final response = await _requiredClient.auth.updateUser(
+        UserAttributes(email: email),
+        emailRedirectTo: AppConstants.supabaseLoginCallbackUrl,
       );
+      final user = response.user;
+      final emailIsConfirmed =
+          user != null &&
+          !user.isAnonymous &&
+          user.email?.trim().toLowerCase() == email.trim().toLowerCase();
+      return emailIsConfirmed
+          ? EmailAccountLinkStatus.readyToSetPassword
+          : EmailAccountLinkStatus.confirmationRequired;
+    } catch (e, st) {
+      AppLogger.error('Starting email account linking failed', e, st);
+      if (e is AppException) rethrow;
+      throw const AppException('errorGeneric', code: 'AUTH_LINK_EMAIL_FAILED');
+    }
+  }
+
+  Future<bool> completeEmailAccountLink({required String password}) async {
+    if (_useMockData) return true;
+
+    try {
+      final user = (await _requiredClient.auth.getUser()).user;
+      final email = user?.email?.trim();
+      if (user == null || user.isAnonymous || email == null || email.isEmpty) {
+        throw const AppException(
+          'Email confirmation is required before setting a password',
+          code: 'AUTH_LINK_EMAIL_NOT_CONFIRMED',
+        );
+      }
+
+      await _requiredClient.auth.updateUser(UserAttributes(password: password));
       await _initializeUserIfPossible();
       await _updateProfileLoginProvider(email: email, loginProvider: 'email');
       return false;
+    } on AuthException catch (e, st) {
+      AppLogger.error('Completing email account linking failed', e, st);
+      throw _mapAuthException(e);
+    } on AppException {
+      rethrow;
     } catch (e, st) {
-      AppLogger.error('Email account linking failed', e, st);
-      if (e is AppException) rethrow;
+      AppLogger.error('Completing email account linking failed', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
       throw const AppException('errorGeneric', code: 'AUTH_LINK_EMAIL_FAILED');
     }
   }

@@ -2,9 +2,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/app_constants.dart';
+import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../data/auth_repository.dart';
+import '../domain/email_account_link.dart';
+import 'pending_email_link_controller.dart';
 import '../../profile/data/profile_repository.dart';
 import '../../profile/application/profile_setup_controller.dart';
 
@@ -113,25 +116,64 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> linkEmailAccount({
+  Future<EmailAccountLinkStatus> beginEmailAccountLink({
     required String email,
-    required String password,
   }) async {
+    if (_isProcessing) {
+      return EmailAccountLinkStatus.confirmationRequired;
+    }
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      final session = ref.read(currentSessionProvider);
+      if (session == null) {
+        throw const AppException('errorNotLoggedIn', code: 'AUTH_REQUIRED');
+      }
+      final result = await ref
+          .read(authRepositoryProvider)
+          .beginEmailAccountLink(email: email);
+      await ref
+          .read(pendingEmailAccountLinkProvider.notifier)
+          .save(userId: session.user.id, email: email);
+      state = const AsyncData(null);
+      return result;
+    } catch (e, st) {
+      AppLogger.error('beginEmailAccountLink failed', e, st);
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> completeEmailAccountLink({required String password}) async {
     if (_isProcessing) return;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
+      final pendingLink = ref.read(pendingEmailAccountLinkProvider);
+      if (pendingLink == null) {
+        throw const AppException(
+          'Email account linking is not pending',
+          code: 'AUTH_LINK_EMAIL_NOT_PENDING',
+        );
+      }
       final usesMockProfile = await ref
           .read(authRepositoryProvider)
-          .linkEmailAccount(email: email, password: password);
+          .completeEmailAccountLink(password: password);
       if (usesMockProfile) {
         ref
             .read(profileRepositoryProvider)
-            .setMockEmailAndProvider(email: email, loginProvider: 'email');
+            .setMockEmailAndProvider(
+              email: pendingLink.email,
+              loginProvider: 'email',
+            );
       }
+      await ref.read(pendingEmailAccountLinkProvider.notifier).clear();
+      ref.invalidate(currentProfileProvider);
       state = const AsyncData(null);
     } catch (e, st) {
-      AppLogger.error('linkEmailAccount failed', e, st);
+      AppLogger.error('completeEmailAccountLink failed', e, st);
       state = AsyncError(e, st);
       rethrow;
     } finally {

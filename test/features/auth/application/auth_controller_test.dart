@@ -5,6 +5,8 @@ import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/features/auth/application/auth_controller.dart';
 import 'package:moniary/features/auth/data/auth_repository.dart';
+import 'package:moniary/features/auth/domain/email_account_link.dart';
+import 'package:moniary/features/auth/application/pending_email_link_controller.dart';
 import 'package:moniary/features/profile/application/profile_setup_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -34,6 +36,8 @@ class FakeAuthRepository extends AuthRepository {
     this.googleSession,
     this.facebookSession,
     this.opensRecoveryLocally = false,
+    this.emailLinkStatus = EmailAccountLinkStatus.confirmationRequired,
+    this.emailLinkUsesMockProfile = false,
   }) : super(null, useMockData: true);
 
   final Session? emailSession;
@@ -41,9 +45,13 @@ class FakeAuthRepository extends AuthRepository {
   final Session? googleSession;
   final Session? facebookSession;
   final bool opensRecoveryLocally;
+  final EmailAccountLinkStatus emailLinkStatus;
+  final bool emailLinkUsesMockProfile;
   var signOutCount = 0;
   var cancelPasswordRecoveryCount = 0;
   String? updatedPassword;
+  String? linkedEmail;
+  String? linkedEmailPassword;
 
   @override
   Future<void> signOut() async {
@@ -90,9 +98,55 @@ class FakeAuthRepository extends AuthRepository {
   Future<void> cancelPasswordRecovery() async {
     cancelPasswordRecoveryCount++;
   }
+
+  @override
+  Future<EmailAccountLinkStatus> beginEmailAccountLink({
+    required String email,
+  }) async {
+    linkedEmail = email;
+    return emailLinkStatus;
+  }
+
+  @override
+  Future<bool> completeEmailAccountLink({required String password}) async {
+    linkedEmailPassword = password;
+    return emailLinkUsesMockProfile;
+  }
 }
 
 void main() {
+  test('pending email link only matches the originating confirmed user', () {
+    const pending = PendingEmailAccountLink(
+      userId: 'anonymous-user-id',
+      email: 'bee@moniary.app',
+    );
+
+    expect(
+      pending.matches(
+        userId: 'anonymous-user-id',
+        email: 'BEE@MONIARY.APP',
+        isAnonymous: false,
+      ),
+      isTrue,
+    );
+    expect(
+      pending.matches(
+        userId: 'different-user-id',
+        email: 'bee@moniary.app',
+        isAnonymous: false,
+      ),
+      isFalse,
+    );
+    expect(
+      pending.matches(
+        userId: 'anonymous-user-id',
+        email: 'bee@moniary.app',
+        isAnonymous: true,
+      ),
+      isFalse,
+    );
+  });
+
   test('signInAnonymously completes controller state in mock mode', () async {
     if (AppConstants.hasSupabaseConfig) {
       markTestSkipped('Mock mode test requires missing Supabase config.');
@@ -381,4 +435,44 @@ void main() {
     expect(repository.cancelPasswordRecoveryCount, 1);
     expect(container.read(mockSessionProvider), isNull);
   });
+
+  test(
+    'email linking persists the matching user and completes later',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final repository = FakeAuthRepository(
+        emailLinkStatus: EmailAccountLinkStatus.readyToSetPassword,
+        emailLinkUsesMockProfile: true,
+      );
+      final container = ProviderContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
+        ],
+      );
+      addTearDown(container.dispose);
+      container.read(mockSessionProvider.notifier).setSession(_mockSession());
+
+      final result = await container
+          .read(authControllerProvider.notifier)
+          .beginEmailAccountLink(email: 'Bee@Moniary.app');
+
+      expect(result, EmailAccountLinkStatus.readyToSetPassword);
+      expect(repository.linkedEmail, 'Bee@Moniary.app');
+      expect(
+        container.read(pendingEmailAccountLinkProvider)?.email,
+        'bee@moniary.app',
+      );
+
+      await container
+          .read(authControllerProvider.notifier)
+          .completeEmailAccountLink(password: 'password123');
+
+      expect(repository.linkedEmailPassword, 'password123');
+      expect(container.read(pendingEmailAccountLinkProvider), isNull);
+      expect(prefs.getString('pending_email_account_link_email'), isNull);
+    },
+  );
 }

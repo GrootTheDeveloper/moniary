@@ -2054,6 +2054,33 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileLinkEmail => 'Liên kết Email';
 
   @override
+  String profileLinkEmailConfirmationSent(String email) {
+    return 'Đã gửi liên kết xác nhận đến $email. Hãy mở liên kết trên thiết bị này để tiếp tục.';
+  }
+
+  @override
+  String get emailLinkCompleteTitle => 'Bảo vệ tài khoản email';
+
+  @override
+  String emailLinkCompleteSubtitle(String email) {
+    return 'Email $email đã được xác nhận. Hãy tạo mật khẩu để hoàn tất nâng cấp tài khoản khách.';
+  }
+
+  @override
+  String get emailLinkCompleteSubmit => 'Hoàn tất nâng cấp tài khoản';
+
+  @override
+  String get emailLinkMissing =>
+      'Yêu cầu liên kết email này không còn khả dụng.';
+
+  @override
+  String get emailLinkNotConfirmed =>
+      'Hãy xác nhận liên kết email trước khi tạo mật khẩu.';
+
+  @override
+  String get emailLinkReturnProfile => 'Quay lại hồ sơ';
+
+  @override
   String get profileLinkGoogle => 'Liên kết Google';
 
   @override

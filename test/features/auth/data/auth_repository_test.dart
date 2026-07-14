@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moniary/core/constants/app_constants.dart';
 import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/features/auth/data/auth_repository.dart';
+import 'package:moniary/features/auth/domain/email_account_link.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -74,7 +75,7 @@ void main() {
     expect(session?.user.id, 'mock-user-id');
   });
 
-  test('linkEmailAccount reports mock profile update in mock mode', () async {
+  test('email account linking completes both mock steps', () async {
     if (AppConstants.hasSupabaseConfig) {
       markTestSkipped('Mock mode test requires missing Supabase config.');
       return;
@@ -83,11 +84,14 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final repository = AuthRepository(FakeSupabaseClient());
 
-    final usesMockProfile = await repository.linkEmailAccount(
+    final status = await repository.beginEmailAccountLink(
       email: 'bee@moniary.app',
+    );
+    final usesMockProfile = await repository.completeEmailAccountLink(
       password: 'password123',
     );
 
+    expect(status, EmailAccountLinkStatus.readyToSetPassword);
     expect(usesMockProfile, isTrue);
   });
 

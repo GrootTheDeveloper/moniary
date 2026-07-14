@@ -919,6 +919,27 @@
   "profileLinkAccountSubtitle": "Your account is currently a guest account. Link Email or Google to save your data and sign in across devices.",
   "profileNewPassword": "New password",
   "profileLinkEmail": "Link Email",
+  "profileLinkEmailConfirmationSent": "A confirmation link was sent to {email}. Open it on this device to continue.",
+  "@profileLinkEmailConfirmationSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailLinkCompleteTitle": "Protect your email account",
+  "emailLinkCompleteSubtitle": "Email {email} is confirmed. Create a password to finish upgrading your guest account.",
+  "@emailLinkCompleteSubtitle": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailLinkCompleteSubmit": "Finish account upgrade",
+  "emailLinkMissing": "This email-linking request is no longer available.",
+  "emailLinkNotConfirmed": "Confirm the email link before creating a password.",
+  "emailLinkReturnProfile": "Return to profile",
   "profileLinkGoogle": "Link Google",
   "profileLinkFacebook": "Link Facebook",
   "profileLinkSuccess": "Linked account successfully!",

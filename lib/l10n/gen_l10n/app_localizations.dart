@@ -3824,6 +3824,48 @@ abstract class AppLocalizations {
   /// **'Liên kết Email'**
   String get profileLinkEmail;
 
+  /// No description provided for @profileLinkEmailConfirmationSent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi liên kết xác nhận đến {email}. Hãy mở liên kết trên thiết bị này để tiếp tục.'**
+  String profileLinkEmailConfirmationSent(String email);
+
+  /// No description provided for @emailLinkCompleteTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bảo vệ tài khoản email'**
+  String get emailLinkCompleteTitle;
+
+  /// No description provided for @emailLinkCompleteSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Email {email} đã được xác nhận. Hãy tạo mật khẩu để hoàn tất nâng cấp tài khoản khách.'**
+  String emailLinkCompleteSubtitle(String email);
+
+  /// No description provided for @emailLinkCompleteSubmit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoàn tất nâng cấp tài khoản'**
+  String get emailLinkCompleteSubmit;
+
+  /// No description provided for @emailLinkMissing.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu liên kết email này không còn khả dụng.'**
+  String get emailLinkMissing;
+
+  /// No description provided for @emailLinkNotConfirmed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy xác nhận liên kết email trước khi tạo mật khẩu.'**
+  String get emailLinkNotConfirmed;
+
+  /// No description provided for @emailLinkReturnProfile.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quay lại hồ sơ'**
+  String get emailLinkReturnProfile;
+
   /// No description provided for @profileLinkGoogle.
   ///
   /// In vi, this message translates to:

@@ -13,6 +13,7 @@ import '../core/preferences/preferences_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/password_reset_screen.dart';
+import '../features/auth/presentation/email_account_link_completion_screen.dart';
 import '../features/assistant/presentation/assistant_conversation_screen.dart';
 import '../features/assistant/presentation/assistant_home_screen.dart';
 import '../features/assistant/presentation/assistant_intro_screen.dart';
@@ -252,6 +253,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: PasswordResetScreen.routePath,
         builder: (context, state) => const PasswordResetScreen(),
+      ),
+      GoRoute(
+        path: EmailAccountLinkCompletionScreen.routePath,
+        builder: (context, state) => const EmailAccountLinkCompletionScreen(),
       ),
       GoRoute(
         path: ProfileSetupScreen.routePath,

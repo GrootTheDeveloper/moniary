@@ -13,6 +13,9 @@ import '../../../shared/widgets/selection_picker_sheet.dart';
 import '../../../shared/widgets/supabase_image.dart';
 import '../../profile/presentation/timezone_picker_screen.dart';
 import '../../auth/application/auth_controller.dart';
+import '../../auth/application/pending_email_link_controller.dart';
+import '../../auth/domain/email_account_link.dart';
+import '../../auth/presentation/email_account_link_completion_screen.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../friends/application/friend_controller.dart';
@@ -51,14 +54,12 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLinkingLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
@@ -68,30 +69,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     refreshSheet();
   }
 
-  Future<bool> _linkEmailAccount(VoidCallback refreshSheet) async {
-    if (!_formKey.currentState!.validate()) return false;
+  Future<EmailAccountLinkStatus?> _linkEmailAccount(
+    VoidCallback refreshSheet,
+  ) async {
+    if (!_formKey.currentState!.validate()) return null;
 
     _setLinkingLoading(true, refreshSheet);
     final messenger = ScaffoldMessenger.of(context);
     final email = _emailController.text.trim();
-    final password = _passwordController.text;
 
     try {
-      await ref
+      final result = await ref
           .read(authControllerProvider.notifier)
-          .linkEmailAccount(email: email, password: password);
+          .beginEmailAccountLink(email: email);
 
-      if (mounted) {
+      if (mounted && result == EmailAccountLinkStatus.confirmationRequired) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text(context.l10n.profileLinkSuccess),
+            content: Text(context.l10n.profileLinkEmailConfirmationSent(email)),
             backgroundColor: AppTheme.success,
           ),
         );
       }
-
-      ref.invalidate(currentProfileProvider);
-      return true;
+      return result;
     } catch (e, st) {
       AppLogger.error('Failed to link email account from profile', e, st);
       if (mounted) {
@@ -102,7 +102,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
-      return false;
+      return null;
     } finally {
       _setLinkingLoading(false, refreshSheet);
     }
@@ -175,6 +175,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   void _showLinkAccountSheet() {
+    final pendingLink = ref.read(pendingEmailAccountLinkProvider);
+    final user = ref.read(currentSessionProvider)?.user;
+    if (pendingLink != null &&
+        user != null &&
+        pendingLink.matches(
+          userId: user.id,
+          email: user.email,
+          isAnonymous: user.isAnonymous,
+        )) {
+      context.push(EmailAccountLinkCompletionScreen.routePath);
+      return;
+    }
+    if (pendingLink != null && pendingLink.userId == user?.id) {
+      _emailController.text = pendingLink.email;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -256,32 +272,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: context.l10n.profileNewPassword,
-                        labelStyle: const TextStyle(color: Colors.white54),
-                        prefixIcon: const Icon(
-                          Icons.lock_outlined,
-                          color: Colors.white54,
-                        ),
-                        filled: true,
-                        fillColor: AppTheme.surfaceRaised,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      validator: (val) {
-                        if (val == null || val.length < 6) {
-                          return context.l10n.validationPasswordMinLength(6);
-                        }
-                        return null;
-                      },
-                    ),
                     const SizedBox(height: 24),
                     if (_isLinkingLoading)
                       const Center(
@@ -295,9 +285,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     else ...[
                       FilledButton.icon(
                         onPressed: () async {
-                          final linked = await _linkEmailAccount(refreshSheet);
-                          if (linked && context.mounted) {
+                          final result = await _linkEmailAccount(refreshSheet);
+                          if (result != null && context.mounted) {
                             Navigator.pop(context);
+                          }
+                          if (result ==
+                                  EmailAccountLinkStatus.readyToSetPassword &&
+                              mounted) {
+                            await this.context.push(
+                              EmailAccountLinkCompletionScreen.routePath,
+                            );
                           }
                         },
                         style: FilledButton.styleFrom(
