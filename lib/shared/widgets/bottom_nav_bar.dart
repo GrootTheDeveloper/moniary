@@ -1,4 +1,6 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -36,70 +38,79 @@ class MoniaryBottomNavBar extends ConsumerWidget {
           children: [
             Positioned.fill(
               top: 14,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: colors.navBar.withValues(alpha: 0.96),
-                  border: Border(
-                    top: BorderSide(
-                      color: colors.textPrimary.withValues(alpha: 0.1),
-                      width: 0.8,
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colors.navBar.withValues(alpha: 0.82),
+                      border: Border(
+                        top: BorderSide(
+                          color: colors.textPrimary.withValues(alpha: 0.08),
+                          width: 0.8,
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        _NavItem(
+                          icon: Icons.calendar_today_outlined,
+                          label: context.l10n.calendarTitle,
+                          active: currentTab == MoniaryTab.calendar,
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            if (onTabSelected != null) {
+                              onTabSelected!(MoniaryTab.calendar);
+                            } else if (currentTab != MoniaryTab.calendar) {
+                              context.go(CalendarScreen.routePath);
+                            }
+                          },
+                        ),
+                        _NavItem(
+                          icon: Icons.bar_chart_rounded,
+                          label: context.l10n.navStatsLabel,
+                          active: currentTab == MoniaryTab.stats,
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            if (onTabSelected != null) {
+                              onTabSelected!(MoniaryTab.stats);
+                            } else if (currentTab != MoniaryTab.stats) {
+                              context.go('/statistics');
+                            }
+                          },
+                        ),
+                        const SizedBox(width: 78),
+                        _NavItem(
+                          icon: Icons.group_rounded,
+                          label: context.l10n.navGroupsLabel,
+                          active: currentTab == MoniaryTab.groups,
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            if (onTabSelected != null) {
+                              onTabSelected!(MoniaryTab.groups);
+                            } else if (currentTab != MoniaryTab.groups) {
+                              context.go(GroupsScreen.routePath);
+                            }
+                          },
+                        ),
+                        _NavItem(
+                          icon: Icons.person_rounded,
+                          label: context.l10n.navProfileLabel,
+                          active: currentTab == MoniaryTab.profile,
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            if (onTabSelected != null) {
+                              onTabSelected!(MoniaryTab.profile);
+                            } else if (currentTab != MoniaryTab.profile) {
+                              context.go(ProfileScreen.routePath);
+                            }
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                      ],
                     ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    const SizedBox(width: 8),
-                    _NavItem(
-                      icon: Icons.calendar_today_outlined,
-                      label: context.l10n.calendarTitle,
-                      active: currentTab == MoniaryTab.calendar,
-                      onTap: () {
-                        if (onTabSelected != null) {
-                          onTabSelected!(MoniaryTab.calendar);
-                        } else if (currentTab != MoniaryTab.calendar) {
-                          context.go(CalendarScreen.routePath);
-                        }
-                      },
-                    ),
-                    _NavItem(
-                      icon: Icons.bar_chart_rounded,
-                      label: context.l10n.navStatsLabel,
-                      active: currentTab == MoniaryTab.stats,
-                      onTap: () {
-                        if (onTabSelected != null) {
-                          onTabSelected!(MoniaryTab.stats);
-                        } else if (currentTab != MoniaryTab.stats) {
-                          context.go('/statistics');
-                        }
-                      },
-                    ),
-                    const SizedBox(width: 78),
-                    _NavItem(
-                      icon: Icons.group_rounded,
-                      label: context.l10n.navGroupsLabel,
-                      active: currentTab == MoniaryTab.groups,
-                      onTap: () {
-                        if (onTabSelected != null) {
-                          onTabSelected!(MoniaryTab.groups);
-                        } else if (currentTab != MoniaryTab.groups) {
-                          context.go(GroupsScreen.routePath);
-                        }
-                      },
-                    ),
-                    _NavItem(
-                      icon: Icons.person_rounded,
-                      label: context.l10n.navProfileLabel,
-                      active: currentTab == MoniaryTab.profile,
-                      onTap: () {
-                        if (onTabSelected != null) {
-                          onTabSelected!(MoniaryTab.profile);
-                        } else if (currentTab != MoniaryTab.profile) {
-                          context.go(ProfileScreen.routePath);
-                        }
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                  ],
                 ),
               ),
             ),
@@ -138,7 +149,12 @@ class _CameraActionButton extends StatelessWidget {
             ),
             child: InkWell(
               borderRadius: BorderRadius.circular(18),
-              onTap: onPressed,
+              onTap: () {
+                HapticFeedback.mediumImpact();
+                if (onPressed != null) {
+                  onPressed!();
+                }
+              },
               child: Icon(
                 Icons.camera_alt_rounded,
                 color: Theme.of(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_theme.dart';
@@ -205,6 +206,7 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
 
   // ── Tap handler ────────────────────────────────────────────────────────────
   void _onTap() {
+    HapticFeedback.lightImpact();
     if (_isIdling) _exitIdle();
 
     _bounceController.forward(from: 0);
@@ -239,6 +241,7 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
 
   // ── Feed animation trigger & callback ───────────────────────────────────────
   void _startFeedAnimation() {
+    HapticFeedback.mediumImpact();
     _speechDismissTimer?.cancel();
     setState(() {
       _isEating = true;
@@ -249,6 +252,7 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
   }
 
   void _onFeedCompleted() {
+    HapticFeedback.heavyImpact();
     _particles.clear();
     final colorsList = [
       Colors.red,

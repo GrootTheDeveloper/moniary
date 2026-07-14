@@ -235,18 +235,21 @@ class AppTheme {
       fontFamily: 'Instrument Serif',
       fontSize: 40,
       height: 1.05,
+      letterSpacing: -0.5,
       color: ink,
     ),
     displayMedium: TextStyle(
       fontFamily: 'Instrument Serif',
       fontSize: 30,
       height: 1.08,
+      letterSpacing: -0.4,
       color: ink,
     ),
     displaySmall: TextStyle(
       fontFamily: 'Instrument Serif',
       fontSize: 24,
       height: 1.12,
+      letterSpacing: -0.3,
       color: ink,
     ),
     metadata: TextStyle(
@@ -254,7 +257,7 @@ class AppTheme {
       fontSize: 9.5,
       height: 1.35,
       fontWeight: FontWeight.w500,
-      letterSpacing: 0.8,
+      letterSpacing: 1.1,
       color: textDim,
     ),
     metadataStrong: TextStyle(
@@ -262,7 +265,7 @@ class AppTheme {
       fontSize: 10,
       height: 1.35,
       fontWeight: FontWeight.w600,
-      letterSpacing: 0.9,
+      letterSpacing: 1.2,
       color: ink,
     ),
   );
@@ -300,6 +303,7 @@ class AppTheme {
           fontSize: 40,
           fontWeight: FontWeight.w400,
           height: 1.02,
+          letterSpacing: -0.5,
           color: colors.textPrimary,
         ),
         headlineMedium: TextStyle(
@@ -307,6 +311,7 @@ class AppTheme {
           fontSize: 30,
           fontWeight: FontWeight.w400,
           height: 1.05,
+          letterSpacing: -0.4,
           color: colors.textPrimary,
         ),
         headlineSmall: TextStyle(
@@ -314,12 +319,14 @@ class AppTheme {
           fontSize: 24,
           fontWeight: FontWeight.w400,
           height: 1.1,
+          letterSpacing: -0.3,
           color: colors.textPrimary,
         ),
         titleLarge: TextStyle(
           fontFamily: 'Instrument Serif',
           fontSize: 22,
           fontWeight: FontWeight.w400,
+          letterSpacing: -0.2,
           color: colors.textPrimary,
         ),
         titleMedium: TextStyle(
