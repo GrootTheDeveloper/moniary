@@ -53,6 +53,12 @@ void main() {
     expect(find.text('Danh sách'), findsOneWidget);
     expect(find.byType(TransactionGridTile), findsNWidgets(2));
     expect(find.textContaining('85.000'), findsWidgets);
+
+    final grid = tester.widget<SliverGrid>(find.byType(SliverGrid));
+    final delegate =
+        grid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
+    expect(delegate.crossAxisCount, 7);
+    expect(delegate.childAspectRatio, 1);
   });
 }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/app_theme.dart';
+import '../brand/brand_assets.dart';
 
 class BrandMark extends StatelessWidget {
   const BrandMark({this.size = 84, this.showBadge = true, super.key});
@@ -19,70 +20,19 @@ class BrandMark extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(size * 0.28),
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF53E4D4), AppTheme.mint, Color(0xFF219E90)],
-              ),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.mint.withValues(alpha: 0.28),
+                  color: AppTheme.terracotta.withValues(alpha: 0.24),
                   blurRadius: 28,
                   offset: const Offset(0, 14),
                 ),
               ],
             ),
-            child: Stack(
-              children: [
-                Positioned(
-                  left: size * 0.15,
-                  top: size * 0.16,
-                  child: Container(
-                    width: size * 0.18,
-                    height: size * 0.08,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF145952),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                ),
-                Center(
-                  child: Container(
-                    width: size * 0.52,
-                    height: size * 0.52,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    child: Center(
-                      child: Container(
-                        width: size * 0.3,
-                        height: size * 0.3,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFF18222E),
-                          border: Border.all(
-                            color: const Color(0xFF2B394A),
-                            width: 3,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: size * 0.14,
-                  top: size * 0.18,
-                  child: Container(
-                    width: size * 0.11,
-                    height: size * 0.11,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0xFFFFF0CF),
-                    ),
-                  ),
-                ),
-              ],
+            clipBehavior: Clip.antiAlias,
+            child: Image.asset(
+              BrandAssets.appLogo,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.medium,
             ),
           ),
           if (showBadge)

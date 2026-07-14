@@ -224,7 +224,7 @@ class _DayDetailBodyState extends ConsumerState<_DayDetailBody> {
                           crossAxisCount: 7,
                           mainAxisSpacing: 6,
                           crossAxisSpacing: 6,
-                          childAspectRatio: 0.72,
+                          childAspectRatio: 1,
                         ),
                     itemBuilder: (context, index) {
                       final transaction = transactions[index];
@@ -696,6 +696,8 @@ class TransactionGridTile extends ConsumerWidget {
     final walletLabel = transaction.walletName.trim().isEmpty
         ? context.l10n.walletUnknown
         : transaction.walletName;
+    final amountLabel =
+        '${transaction.isIncome ? '+' : '-'}${ref.formatAmount(transaction.amount)}';
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -737,6 +739,11 @@ class TransactionGridTile extends ConsumerWidget {
                     ),
                   ),
                 ),
+                Positioned.fill(
+                  child: ColoredBox(
+                    color: Colors.black.withValues(alpha: compact ? 0.36 : 0.2),
+                  ),
+                ),
                 if (!compact)
                   Positioned(
                     top: 6,
@@ -757,8 +764,8 @@ class TransactionGridTile extends ConsumerWidget {
                   right: 0,
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal: compact ? 3 : 8,
-                      vertical: compact ? 4 : 8,
+                      horizontal: compact ? 2 : 8,
+                      vertical: compact ? 3 : 8,
                     ),
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
@@ -774,16 +781,21 @@ class TransactionGridTile extends ConsumerWidget {
                     child: Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            '${transaction.isIncome ? '+' : '-'}${ref.formatAmount(transaction.amount)}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.titleSmall
-                                ?.copyWith(
-                                  color: Colors.white,
-                                  fontSize: compact ? 8 : null,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: compact
+                                ? Alignment.center
+                                : Alignment.centerLeft,
+                            child: Text(
+                              amountLabel,
+                              maxLines: 1,
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontSize: compact ? 10 : 13.5,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                            ),
                           ),
                         ),
                         if (transaction.isImportant) ...[
