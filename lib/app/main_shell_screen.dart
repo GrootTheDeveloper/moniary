@@ -12,6 +12,15 @@ import '../features/transactions/presentation/form/create_transaction_sheet.dart
 import '../l10n/l10n_extension.dart';
 import '../shared/widgets/bottom_nav_bar.dart';
 import '../shared/widgets/mascot_overlay.dart';
+import '../core/widgets/widget_update_service.dart';
+
+final _widgetBootstrapRunProvider = NotifierProvider<_BootstrapNotifier, bool>(_BootstrapNotifier.new);
+
+class _BootstrapNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+  void markRun() => state = true;
+}
 
 class MainShellScreen extends ConsumerWidget {
   const MainShellScreen({super.key, required this.navigationShell});
@@ -21,6 +30,14 @@ class MainShellScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
+
+    final bootstrapRun = ref.read(_widgetBootstrapRunProvider);
+    if (!bootstrapRun) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(_widgetBootstrapRunProvider.notifier).markRun();
+        ref.read(widgetUpdateServiceProvider).updateWidget().ignore();
+      });
+    }
     final currentTab = switch (navigationShell.currentIndex) {
       0 => MoniaryTab.calendar,
       1 => MoniaryTab.stats,

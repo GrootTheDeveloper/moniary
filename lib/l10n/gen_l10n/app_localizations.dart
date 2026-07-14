@@ -9727,6 +9727,36 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Quét ảnh'**
   String get widgetScanReceipt;
+
+  /// No description provided for @mascotMorningGreeting.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chào buổi sáng! Hôm nay bạn có dự định chi tiêu gì chưa? 🐷☀️'**
+  String get mascotMorningGreeting;
+
+  /// No description provided for @mascotNightGreeting.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khuya rồi, nghỉ ngơi thôi heo ơi! Chúc bạn ngủ ngon nhé! 🐷💤'**
+  String get mascotNightGreeting;
+
+  /// No description provided for @mascotTapReaction1.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ối! Đừng chọc heo nha, nhột lắm đó! 🐷'**
+  String get mascotTapReaction1;
+
+  /// No description provided for @mascotTapReaction2.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chào bạn! Cùng heo ghi chép chi tiêu đầy đủ nhé! 🐷💰'**
+  String get mascotTapReaction2;
+
+  /// No description provided for @mascotTapReaction3.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có biết ghi chép đều đặn giúp tiết kiệm tới 20% không? 🐷✨'**
+  String get mascotTapReaction3;
 }
 
 class _AppLocalizationsDelegate

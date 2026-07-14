@@ -5449,4 +5449,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get widgetScanReceipt => 'Scan Receipt';
+
+  @override
+  String get mascotMorningGreeting =>
+      'Good morning! Do you have any spending plans for today? 🐷☀️';
+
+  @override
+  String get mascotNightGreeting =>
+      'It\'s late, time to rest! Good night! 🐷💤';
+
+  @override
+  String get mascotTapReaction1 => 'Ouch! Don\'t poke me, it tickles! 🐷';
+
+  @override
+  String get mascotTapReaction2 =>
+      'Hi there! Let\'s record your expenses together! 🐷💰';
+
+  @override
+  String get mascotTapReaction3 =>
+      'Did you know tracking daily helps save up to 20%? 🐷✨';
 }

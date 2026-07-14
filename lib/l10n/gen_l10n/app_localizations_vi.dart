@@ -5453,4 +5453,23 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get widgetScanReceipt => 'Quét ảnh';
+
+  @override
+  String get mascotMorningGreeting =>
+      'Chào buổi sáng! Hôm nay bạn có dự định chi tiêu gì chưa? 🐷☀️';
+
+  @override
+  String get mascotNightGreeting =>
+      'Khuya rồi, nghỉ ngơi thôi heo ơi! Chúc bạn ngủ ngon nhé! 🐷💤';
+
+  @override
+  String get mascotTapReaction1 => 'Ối! Đừng chọc heo nha, nhột lắm đó! 🐷';
+
+  @override
+  String get mascotTapReaction2 =>
+      'Chào bạn! Cùng heo ghi chép chi tiêu đầy đủ nhé! 🐷💰';
+
+  @override
+  String get mascotTapReaction3 =>
+      'Bạn có biết ghi chép đều đặn giúp tiết kiệm tới 20% không? 🐷✨';
 }

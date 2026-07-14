@@ -20,8 +20,24 @@ class MascotDialogueGenerator {
 
   static final math.Random _rng = math.Random();
 
-  // Index used to rotate fun quotes deterministically across taps.
+  // Index used to rotate fun quotes deterministically.
   static int _funQuoteIndex = 0;
+
+  // Index used to rotate tap reaction quotes.
+  static int _tapReactionIndex = 0;
+
+  /// Returns a tap reaction dialogue rotation.
+  static String getTapReaction(BuildContext context) {
+    final l10n = context.l10n;
+    final reactions = [
+      l10n.mascotTapReaction1,
+      l10n.mascotTapReaction2,
+      l10n.mascotTapReaction3,
+    ];
+    final reaction = reactions[_tapReactionIndex % reactions.length];
+    _tapReactionIndex = (_tapReactionIndex + 1) % reactions.length;
+    return reaction;
+  }
 
   /// Returns a localised dialogue string based on the provided data.
   ///
@@ -37,6 +53,7 @@ class MascotDialogueGenerator {
     required List<TransactionEntry> todayTransactions,
     required List<TransactionEntry> monthTransactions,
     required int streakDays,
+    bool isTap = false,
   }) {
     final l10n = context.l10n;
 
@@ -56,7 +73,15 @@ class MascotDialogueGenerator {
       return l10n.mascotStreakPraise(streakDays);
     }
 
-    // 3. Near-budget category
+    // 3. Time-of-day specific greeting (Morning/Night welcome)
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 10) {
+      return l10n.mascotMorningGreeting;
+    } else if (hour >= 22 || hour < 5) {
+      return l10n.mascotNightGreeting;
+    }
+
+    // 4. Near-budget category
     final nearLimit = budgetCategories.where((c) => c.isNearLimit).toList();
     if (nearLimit.isNotEmpty) {
       return l10n.mascotNearBudget(nearLimit.first.categoryName);
@@ -82,7 +107,11 @@ class MascotDialogueGenerator {
       }
     }
 
-    // 6. Rotate fun quotes
+    // 6. Rotate fun quotes or tap reactions
+    if (isTap) {
+      return getTapReaction(context);
+    }
+
     final quotes = [
       l10n.mascotFunQuote1,
       l10n.mascotFunQuote2,

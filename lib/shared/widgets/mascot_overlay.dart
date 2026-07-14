@@ -193,6 +193,7 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
         todayTransactions: data.todayTransactions,
         monthTransactions: data.monthTransactions,
         streakDays: data.streakDays,
+        isTap: true,
       ),
     );
 
@@ -317,9 +318,11 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
               Positioned(
                 bottom: bubbleBottom,
                 left: bubbleLeft,
-                child: AnimatedOpacity(
-                  opacity: _speechVisible ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 300),
+                child: AnimatedScale(
+                  scale: _speechVisible ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOutBack,
+                  alignment: Alignment.bottomCenter,
                   child: IgnorePointer(
                     child: _SpeechBubble(text: _speechText!),
                   ),
@@ -339,13 +342,36 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
           ],
         );
       },
-      child: SizedBox(
-        height: _mascotHeight,
-        width: mascotWidth,
-        child: Image.asset(
-          'assets/mascot/pig_${(_isIdling ? _idleFrameIndex : _frameIndex).toString().padLeft(2, '0')}.png',
-          fit: BoxFit.contain,
-        ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          SizedBox(
+            height: _mascotHeight,
+            width: mascotWidth,
+            child: Image.asset(
+              'assets/mascot/pig_${(_isIdling ? _idleFrameIndex : _frameIndex).toString().padLeft(2, '0')}.png',
+              fit: BoxFit.contain,
+            ),
+          ),
+          if (isOverBudget)
+            const Positioned(
+              top: -6,
+              right: -6,
+              child: Text(
+                '😰',
+                style: TextStyle(fontSize: 11),
+              ),
+            ),
+          if (isHappy && !isOverBudget)
+            const Positioned(
+              top: -6,
+              right: -6,
+              child: Text(
+                '✨',
+                style: TextStyle(fontSize: 11),
+              ),
+            ),
+        ],
       ),
     );
   }

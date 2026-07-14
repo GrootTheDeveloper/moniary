@@ -2257,5 +2257,10 @@
   "widgetTotalBalance": "Total Balance",
   "widgetTodaySpending": "Today's Spending",
   "widgetQuickAdd": "Quick Add",
-  "widgetScanReceipt": "Scan Receipt"
+  "widgetScanReceipt": "Scan Receipt",
+  "mascotMorningGreeting": "Good morning! Do you have any spending plans for today? 🐷☀️",
+  "mascotNightGreeting": "It's late, time to rest! Good night! 🐷💤",
+  "mascotTapReaction1": "Ouch! Don't poke me, it tickles! 🐷",
+  "mascotTapReaction2": "Hi there! Let's record your expenses together! 🐷💰",
+  "mascotTapReaction3": "Did you know tracking daily helps save up to 20%? 🐷✨"
 }
