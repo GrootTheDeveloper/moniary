@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/supabase/app_exception.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
@@ -71,6 +72,7 @@ class GroupDetailScreen extends ConsumerWidget {
             ),
             onTools: () =>
                 context.push(GroupToolsScreen.routePath, extra: groupId),
+            onLeave: () => _leaveGroup(context, ref),
             onAddTransaction: detail.activeMembers.isEmpty
                 ? null
                 : () => context.push(
@@ -185,8 +187,44 @@ class GroupDetailScreen extends ConsumerWidget {
       if (context.mounted) context.go('/groups');
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      final code = error is AppException ? error.code : null;
+      final shouldOpenSettlements =
+          code == 'GROUP_LEAVE_UNRESOLVED' ||
+          code == 'GROUP_LEAVE_DISPUTED_SETTLEMENT';
+      final shouldOpenGroup =
+          code == 'GROUP_LEAVE_INCOMPLETE_TRANSACTION' ||
+          code == 'GROUP_OWNER_TRANSFER_REQUIRED';
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(context.l10n.groupLeaveBlockedTitle),
+          content: Text(userFriendlyMessage(context, error)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(context.l10n.commonCancel),
+            ),
+            if (shouldOpenSettlements || shouldOpenGroup)
+              FilledButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                  if (shouldOpenSettlements) {
+                    context.push(
+                      DebtSettlementScreen.routePath,
+                      extra: groupId,
+                    );
+                  } else {
+                    context.push(GroupDetailScreen.routePath, extra: groupId);
+                  }
+                },
+                child: Text(
+                  shouldOpenSettlements
+                      ? context.l10n.groupLeaveViewSettlements
+                      : context.l10n.groupLeaveViewGroup,
+                ),
+              ),
+          ],
+        ),
       );
     }
   }
@@ -362,6 +400,7 @@ class _GroupDetailContent extends StatelessWidget {
     required this.onSettle,
     required this.onCommunity,
     required this.onTools,
+    required this.onLeave,
     required this.onAddTransaction,
   });
 
@@ -373,6 +412,7 @@ class _GroupDetailContent extends StatelessWidget {
   final VoidCallback onSettle;
   final VoidCallback onCommunity;
   final VoidCallback onTools;
+  final VoidCallback onLeave;
   final VoidCallback? onAddTransaction;
 
   @override
@@ -405,6 +445,7 @@ class _GroupDetailContent extends StatelessWidget {
                       onSettle: onSettle,
                       onCommunity: onCommunity,
                       onTools: onTools,
+                      onLeave: onLeave,
                     ),
                     MoniarySectionLabel(
                       context.l10n.groupMemberBalanceTitle,
@@ -472,12 +513,14 @@ class _GroupQuickActions extends StatelessWidget {
     required this.onSettle,
     required this.onCommunity,
     required this.onTools,
+    required this.onLeave,
   });
 
   final VoidCallback? onAddTransaction;
   final VoidCallback onSettle;
   final VoidCallback onCommunity;
   final VoidCallback onTools;
+  final VoidCallback onLeave;
 
   @override
   Widget build(BuildContext context) => Wrap(
@@ -503,6 +546,11 @@ class _GroupQuickActions extends StatelessWidget {
         icon: Icons.tune_outlined,
         label: context.l10n.groupToolsTitle,
         onTap: onTools,
+      ),
+      _QuickAction(
+        icon: Icons.logout_outlined,
+        label: context.l10n.groupLeave,
+        onTap: onLeave,
       ),
     ],
   );

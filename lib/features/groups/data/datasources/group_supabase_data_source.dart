@@ -113,6 +113,32 @@ class GroupSupabaseDataSource {
     return _rows(rows);
   }
 
+  Future<Map<String, dynamic>> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  }) async {
+    final result = await client.rpc(
+      'get_group_monthly_stats',
+      params: {
+        'p_group_id': groupId,
+        'p_month':
+            '${month.year.toString().padLeft(4, '0')}-'
+            '${month.month.toString().padLeft(2, '0')}-01',
+      },
+    );
+    return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSettlementHistory(
+    String groupId,
+  ) async {
+    final rows = await client.rpc(
+      'list_group_settlement_history',
+      params: {'p_group_id': groupId},
+    );
+    return _rows(rows);
+  }
+
   Future<String> createGroup({
     required String name,
     String? description,

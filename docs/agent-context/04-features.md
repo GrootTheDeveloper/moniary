@@ -158,7 +158,23 @@
   - `ImportRepository`: CSV parsing and local import history.
   - `NotificationSettingsRepository`: Supabase or mock notification settings.
   - `PrivacyRepository`: app lock and hidden-balance preferences.
-  - `FileActionService`: open/share exported files.
+- `FileActionService`: open/share exported files.
+
+## Notifications
+
+- **Purpose**: global 30-day inbox for personal, Group, Community, and System
+  notification categories.
+- **Layers**: `NotificationCenterScreen`, notification Riverpod providers and
+  actions controller, `NotificationRepository`, Supabase/mock data sources.
+- **Compatibility**: the global RPC normalizes new `app_notifications` with
+  existing `group_notifications` during the migration period.
+- **Delivery**: mute preferences affect phone push delivery but do not remove
+  inbox history. `flutter_local_notifications` keeps daily reminders and
+  provides categorized foreground presentation hooks; FCM/APNs native setup
+  still requires project credentials before remote delivery can be enabled.
+- **Privacy/retention**: lock-screen copy must not include people names or
+  amounts; database queries and cleanup policy retain notification history for
+  30 days.
 - **Local histories**: import/export/privacy-request histories are JSON files in
   the application documents directory. Corrupt existing history is surfaced and
   not silently overwritten.

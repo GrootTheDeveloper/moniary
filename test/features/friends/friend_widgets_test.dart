@@ -803,6 +803,26 @@ class FakeGroupRepository implements GroupRepository {
   Future<void> saveBudget(GroupBudget budget) async {}
 
   @override
+  Future<GroupMonthlyStats> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  }) async => GroupMonthlyStats(
+    groupId: groupId,
+    month: month,
+    totalSpent: 0,
+    transactionCount: 0,
+    topCategoryName: null,
+    topCategoryAmount: 0,
+    categoryBreakdown: const [],
+    memberBreakdown: const [],
+  );
+
+  @override
+  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
+    String groupId,
+  ) async => const [];
+
+  @override
   Future<GroupNotificationPreference> fetchNotificationPreference(
     String groupId,
   ) async => GroupNotificationPreference.defaults(groupId);
@@ -1070,10 +1090,11 @@ class FakeGroupRepository implements GroupRepository {
   Future<List<GroupActivity>> fetchActivities(String groupId) async => const [];
 
   @override
-  Future<List<GroupNotification>> fetchNotifications({String? category}) async =>
-      category == null
-          ? notifications
-          : notifications.where((item) => item.category == category).toList();
+  Future<List<GroupNotification>> fetchNotifications({
+    String? category,
+  }) async => category == null
+      ? notifications
+      : notifications.where((item) => item.category == category).toList();
 
   @override
   Future<void> markNotificationRead(String notificationId) async {

@@ -1019,6 +1019,110 @@ class GroupMockDataSource {
     );
   }
 
+  Future<GroupMonthlyStats> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  }) async {
+    _requireGroup(groupId);
+    final start = DateTime(month.year, month.month);
+    final end = DateTime(month.year, month.month + 1);
+    final records = _recordsForGroup(groupId).where((record) {
+      final date = record.transaction.transactionDate;
+      return record.transaction.splitStatus == GroupSplitStatus.posted &&
+          !date.isBefore(start) &&
+          date.isBefore(end);
+    }).toList();
+
+    final categoryTotals = <String, ({int amount, int count})>{};
+    final memberTotals = <String, ({int share, int paid, int count})>{};
+    for (final record in records) {
+      final category = record.transaction.categoryName ?? 'Uncategorized';
+      final categoryValue = categoryTotals[category] ?? (amount: 0, count: 0);
+      categoryTotals[category] = (
+        amount: categoryValue.amount + record.transaction.totalAmount,
+        count: categoryValue.count + 1,
+      );
+      final users = <String>{
+        ...record.shares.map((share) => share.userId),
+        ...record.payers.map((payer) => payer.userId),
+      };
+      for (final userId in users) {
+        final current = memberTotals[userId] ?? (share: 0, paid: 0, count: 0);
+        final share = record.shares
+            .where((item) => item.userId == userId)
+            .fold<int>(0, (sum, item) => sum + item.shareAmount);
+        final paid = record.payers
+            .where((item) => item.userId == userId)
+            .fold<int>(0, (sum, item) => sum + item.paidAmount);
+        memberTotals[userId] = (
+          share: current.share + share,
+          paid: current.paid + paid,
+          count: current.count + 1,
+        );
+      }
+    }
+
+    final names = {
+      for (final member in _members[groupId] ?? const <SpendingGroupMember>[])
+        member.userId: member.resolvedName,
+    };
+    final categories = categoryTotals.entries.toList()
+      ..sort((left, right) => right.value.amount.compareTo(left.value.amount));
+    final members = memberTotals.entries.toList()
+      ..sort((left, right) => right.value.share.compareTo(left.value.share));
+    return GroupMonthlyStats(
+      groupId: groupId,
+      month: start,
+      totalSpent: records.fold<int>(
+        0,
+        (sum, record) => sum + record.transaction.totalAmount,
+      ),
+      transactionCount: records.length,
+      topCategoryName: categories.isEmpty ? null : categories.first.key,
+      topCategoryAmount: categories.isEmpty ? 0 : categories.first.value.amount,
+      categoryBreakdown: categories
+          .map(
+            (item) => GroupCategorySpending(
+              categoryName: item.key,
+              totalAmount: item.value.amount,
+              transactionCount: item.value.count,
+            ),
+          )
+          .toList(growable: false),
+      memberBreakdown: members
+          .map(
+            (item) => GroupMemberBreakdown(
+              userId: item.key,
+              displayName: names[item.key] ?? item.key,
+              shareAmount: item.value.share,
+              paidAmount: item.value.paid,
+              balance: item.value.share - item.value.paid,
+              transactionCount: item.value.count,
+            ),
+          )
+          .toList(growable: false),
+    );
+  }
+
+  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
+    String groupId,
+  ) async {
+    _requireGroup(groupId);
+    return (_settlements[groupId] ?? const <GroupSettlementSuggestion>[])
+        .where((item) => item.status != GroupSettlementStatus.pending)
+        .map(
+          (item) => GroupSettlementHistoryEntry(
+            id: item.id,
+            fromName: item.fromDisplayName ?? item.fromUserId,
+            toName: item.toDisplayName ?? item.toUserId,
+            amount: item.amount,
+            status: item.status.value,
+            updatedAt: item.updatedAt,
+          ),
+        )
+        .toList(growable: false);
+  }
+
   Future<void> markSettlementPaid(String settlementId) async {
     final match = _findSettlement(settlementId);
     if (match.item.fromUserId != currentUserId ||

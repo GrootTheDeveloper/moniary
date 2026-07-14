@@ -3,14 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
+import '../../../../core/supabase/app_exception.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
+import 'debt_settlement_screen.dart';
+import 'group_detail_screen.dart';
 import 'group_activity_center_screen.dart';
 import 'group_budget_screen.dart';
 import 'group_notification_preferences_screen.dart';
 import 'group_photo_album_screen.dart';
 import 'group_public_profile_screen.dart';
 import 'group_recurring_transactions_screen.dart';
+import 'group_summary_screen.dart';
 
 class GroupToolsScreen extends ConsumerWidget {
   const GroupToolsScreen({required this.groupId, super.key});
@@ -52,6 +57,15 @@ class GroupToolsScreen extends ConsumerWidget {
                   subtitle: context.l10n.groupToolsRecurringSubtitle,
                   onTap: () => context.push(
                     GroupRecurringTransactionsScreen.routePath,
+                    extra: groupId,
+                  ),
+                ),
+                _ToolTile(
+                  icon: Icons.insights_outlined,
+                  title: context.l10n.groupSummaryTitle,
+                  subtitle: context.l10n.groupToolsSummarySubtitle,
+                  onTap: () => context.push(
+                    GroupSummaryScreen.routePath,
                     extra: groupId,
                   ),
                 ),
@@ -104,12 +118,88 @@ class GroupToolsScreen extends ConsumerWidget {
                       extra: groupId,
                     ),
                   ),
+                _ToolTile(
+                  icon: Icons.logout_outlined,
+                  title: context.l10n.groupLeave,
+                  subtitle: context.l10n.groupToolsLeaveSubtitle,
+                  iconColor: colors.danger,
+                  onTap: () => _leaveGroup(context, ref),
+                ),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _leaveGroup(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.groupLeaveConfirmTitle),
+        content: Text(context.l10n.groupLeaveConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(context.l10n.groupLeave),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .leaveGroup(groupId);
+      if (context.mounted) context.go('/groups');
+    } catch (error) {
+      if (!context.mounted) return;
+      final code = error is AppException ? error.code : null;
+      final shouldOpenSettlements =
+          code == 'GROUP_LEAVE_UNRESOLVED' ||
+          code == 'GROUP_LEAVE_DISPUTED_SETTLEMENT';
+      final shouldOpenGroup =
+          code == 'GROUP_LEAVE_INCOMPLETE_TRANSACTION' ||
+          code == 'GROUP_OWNER_TRANSFER_REQUIRED';
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(context.l10n.groupLeaveBlockedTitle),
+          content: Text(userFriendlyMessage(context, error)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(context.l10n.commonCancel),
+            ),
+            if (shouldOpenSettlements || shouldOpenGroup)
+              FilledButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                  if (shouldOpenSettlements) {
+                    context.push(
+                      DebtSettlementScreen.routePath,
+                      extra: groupId,
+                    );
+                  } else {
+                    context.push(GroupDetailScreen.routePath, extra: groupId);
+                  }
+                },
+                child: Text(
+                  shouldOpenSettlements
+                      ? context.l10n.groupLeaveViewSettlements
+                      : context.l10n.groupLeaveViewGroup,
+                ),
+              ),
+          ],
+        ),
+      );
+    }
   }
 }
 
@@ -142,16 +232,18 @@ class _ToolTile extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.iconColor,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) => ListTile(
-    leading: Icon(icon, color: context.moniaryColors.primary),
+    leading: Icon(icon, color: iconColor ?? context.moniaryColors.primary),
     title: Text(title),
     subtitle: Text(subtitle),
     trailing: const Icon(Icons.chevron_right),

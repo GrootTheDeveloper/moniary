@@ -24,6 +24,7 @@ import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../application/account/account_actions_controller.dart';
 import '../application/privacy_controller.dart';
+import '../../notifications/presentation/widgets/notification_bell_button.dart';
 import 'export/export_data_screen.dart';
 import 'import/import_data_screen.dart';
 import 'notifications/notification_settings_screen.dart';
@@ -396,7 +397,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final colors = context.moniaryColors;
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.profileTitle)),
+      appBar: AppBar(
+        title: Text(context.l10n.profileTitle),
+        actions: const [NotificationBellButton()],
+      ),
       body: ColoredBox(
         color: colors.background,
         child: SafeArea(

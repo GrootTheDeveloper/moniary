@@ -77,6 +77,22 @@ final groupSettlementOverviewProvider =
           .fetchSettlementOverview(groupId);
     });
 
+final groupMonthlyStatsProvider =
+    FutureProvider.family<
+      GroupMonthlyStats,
+      ({String groupId, DateTime month})
+    >((ref, key) {
+      return ref
+          .watch(groupRepositoryProvider)
+          .fetchMonthlyStats(groupId: key.groupId, month: key.month);
+    });
+
+final groupSettlementHistoryProvider =
+    FutureProvider.family<List<GroupSettlementHistoryEntry>, String>(
+      (ref, groupId) =>
+          ref.watch(groupRepositoryProvider).fetchSettlementHistory(groupId),
+    );
+
 final groupReactionsProvider =
     FutureProvider.family<List<GroupReactionSummary>, String>((
       ref,

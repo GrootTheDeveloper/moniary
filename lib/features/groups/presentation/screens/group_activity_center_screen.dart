@@ -169,6 +169,14 @@ class _ActivityRow extends StatelessWidget {
         return Icons.logout_outlined;
       case 'member_invitation_declined':
         return Icons.person_off_outlined;
+      case 'member_removed':
+        return Icons.person_remove_outlined;
+      case 'owner_transferred':
+        return Icons.swap_horiz_outlined;
+      case 'settlement_disputed':
+        return Icons.report_problem_outlined;
+      case 'leave_blocked_unresolved':
+        return Icons.warning_amber_outlined;
       default:
         return Icons.bolt_outlined;
     }
@@ -187,6 +195,14 @@ class _ActivityRow extends StatelessWidget {
         return context.l10n.groupActivityMemberLeft;
       case 'member_invitation_declined':
         return context.l10n.groupActivityInvitationDeclined;
+      case 'member_removed':
+        return context.l10n.groupActivityMemberRemoved;
+      case 'owner_transferred':
+        return context.l10n.groupActivityOwnerTransferred;
+      case 'settlement_disputed':
+        return context.l10n.groupActivitySettlementDisputed;
+      case 'leave_blocked_unresolved':
+        return context.l10n.groupActivityLeaveBlocked;
       default:
         return type.replaceAll('_', ' ');
     }
@@ -344,6 +360,14 @@ class _NotificationRow extends ConsumerWidget {
         return context.l10n.groupNotificationDebtSettled;
       case 'group_invite':
         return context.l10n.groupNotificationGroupInvite;
+      case 'settlement_marked_paid':
+        return context.l10n.groupNotificationSettlementMarkedPaid;
+      case 'settlement_completed':
+        return context.l10n.groupNotificationSettlementCompleted;
+      case 'settlement_disputed':
+        return context.l10n.groupNotificationSettlementDisputed;
+      case 'member_removed':
+        return context.l10n.groupNotificationMemberRemoved;
       case 'member_left':
         return context.l10n.groupNotificationMemberLeft;
       case 'member_leave_blocked_warning':

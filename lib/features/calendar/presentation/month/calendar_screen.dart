@@ -33,6 +33,8 @@ import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/placeholder_card.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../settings/application/privacy_controller.dart';
+import '../../../notifications/application/notification_controller.dart';
+import '../../../notifications/presentation/screens/notification_center_screen.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -86,6 +88,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 extra: visibleMonth,
                               ),
                               onTransactionTap: _openTransactionDetail,
+                              onNotificationTap: () => context.push(
+                                NotificationCenterScreen.routePath,
+                              ),
                               walletsAsync: walletsAsync,
                               monthAsync: monthAsync,
                             ),
@@ -245,6 +250,7 @@ class _SeamlessHeader extends ConsumerWidget {
     required this.onFriendsTap,
     required this.onRecapTap,
     required this.onTransactionTap,
+    required this.onNotificationTap,
     required this.walletsAsync,
     required this.monthAsync,
   });
@@ -254,6 +260,7 @@ class _SeamlessHeader extends ConsumerWidget {
   final VoidCallback onFriendsTap;
   final VoidCallback onRecapTap;
   final Future<void> Function(TransactionEntry transaction) onTransactionTap;
+  final VoidCallback onNotificationTap;
   final AsyncValue<List<Wallet>> walletsAsync;
   final AsyncValue<CalendarMonthData> monthAsync;
 
@@ -264,6 +271,7 @@ class _SeamlessHeader extends ConsumerWidget {
     final pendingFriendRequestCount = ref.watch(
       pendingIncomingFriendRequestCountProvider,
     );
+    final unreadNotificationCount = ref.watch(unreadNotificationCountProvider);
     final colors = context.moniaryColors;
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
@@ -327,6 +335,16 @@ class _SeamlessHeader extends ConsumerWidget {
                     icon: Icons.people_outline,
                     onTap: onFriendsTap,
                     badge: pendingFriendRequestCount,
+                  ),
+                  const SizedBox(width: 7),
+                  _HeaderCircleButton(
+                    tooltip: context.l10n.notificationsTitle,
+                    label: context.l10n.notificationsTitle,
+                    icon: unreadNotificationCount > 0
+                        ? Icons.notifications_active_outlined
+                        : Icons.notifications_none_outlined,
+                    onTap: onNotificationTap,
+                    badge: unreadNotificationCount,
                   ),
                   const SizedBox(width: 7),
                   _HeaderCircleButton(

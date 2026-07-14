@@ -100,6 +100,7 @@ floating global action that pushes `/assistant`; it is not a fifth shell tab.
 | `/groups/transaction/detail` | `GroupTransactionDetailScreen` | Transaction ID; fade |
 | `/groups/activity-center` | `GroupActivityCenterScreen` | Optional group ID; without one it opens the notifications-only view |
 | `/group-tools` | `GroupToolsScreen` | Group ID; finance, community, and group settings tools |
+| `/group-summary` | `GroupSummaryScreen` | Group ID; monthly spending, member breakdown, and settlement history |
 | `/group-photo-album` | `GroupPhotoAlbumScreen` | Group ID; private transaction photo gallery |
 | `/group-budget` | `GroupBudgetScreen` | Group ID; owner/admin write, members read |
 | `/group-notification-preferences` | `GroupNotificationPreferencesScreen` | Group ID; current member's preferences |
@@ -119,6 +120,7 @@ notifications inbox. The friend token route falls back to `FriendsScreen`.
 
 | Route | Screen |
 |---|---|
+| `/notifications` | `NotificationCenterScreen` |
 | `/active-sessions` | `ActiveSessionsScreen` |
 | `/delete-account` | `DeleteAccountScreen` |
 | `/delete-account-help` | `DeleteAccountHelpScreen` |

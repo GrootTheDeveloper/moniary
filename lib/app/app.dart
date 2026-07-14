@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_links/app_links.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,6 +9,7 @@ import '../core/constants/app_constants.dart';
 import '../core/deeplinks/app_deep_link.dart';
 import '../core/deeplinks/pending_deep_link_controller.dart';
 import '../core/preferences/preferences_providers.dart';
+import '../core/notifications/notification_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/settings/presentation/privacy/app_lock_screen.dart';
@@ -16,6 +18,7 @@ import '../shared/utils/app_logger.dart';
 import 'app_router.dart';
 import 'app_theme.dart';
 import '../features/settings/application/privacy_controller.dart';
+import '../features/notifications/data/repositories/notification_repository_impl.dart';
 
 class MoniaryApp extends ConsumerStatefulWidget {
   const MoniaryApp({super.key});
@@ -35,6 +38,7 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeDeepLinks();
+      _initializePushNotifications();
     });
   }
 
@@ -105,5 +109,38 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
 
     ref.read(pendingDeepLinkProvider.notifier).set(routeLocation);
     router.go(LoginScreen.routePath);
+  }
+
+  Future<void> _initializePushNotifications() async {
+    if (ref.read(useMockDataModeProvider)) return;
+    final service = ref.read(fcmPushNotificationServiceProvider);
+    await service.initialize(
+      onToken: (token) => ref
+          .read(notificationRepositoryProvider)
+          .registerDevice(
+            token: token,
+            platform: defaultTargetPlatform == TargetPlatform.iOS
+                ? 'ios'
+                : 'android',
+            locale: ref.read(preferredLocaleProvider),
+            timezone: AppConstants.defaultTimezone,
+          ),
+      onTap: (_) async {
+        // The inbox is the safe fallback when a push arrives before auth or
+        // app-lock routing has completed. The in-app tile then opens the
+        // exact Group/Friends target with the normal repository boundary.
+        final router = ref.read(appRouterProvider);
+        if (ref.read(currentSessionProvider) == null) {
+          router.go(LoginScreen.routePath);
+          return;
+        }
+        final privacyState = ref.read(privacyControllerProvider);
+        if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
+          router.go(AppLockScreen.routePath);
+          return;
+        }
+        router.go('/notifications');
+      },
+    );
   }
 }

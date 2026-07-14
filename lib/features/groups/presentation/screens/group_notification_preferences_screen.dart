@@ -102,6 +102,39 @@ class _GroupNotificationPreferencesScreenState
               ),
               const SizedBox(height: 18),
               Text(
+                context.l10n.groupNotificationQuietHoursSection,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 6),
+              Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text(context.l10n.groupNotificationQuietStart),
+                      subtitle: Text(_hourLabel(value.quietHoursStart)),
+                      trailing: const Icon(Icons.schedule_outlined),
+                      onTap: () => _pickQuietHour(isStart: true),
+                    ),
+                    ListTile(
+                      title: Text(context.l10n.groupNotificationQuietEnd),
+                      subtitle: Text(_hourLabel(value.quietHoursEnd)),
+                      trailing: const Icon(Icons.schedule_outlined),
+                      onTap: () => _pickQuietHour(isStart: false),
+                    ),
+                    if (value.quietHoursStart != null ||
+                        value.quietHoursEnd != null)
+                      TextButton.icon(
+                        onPressed: () => setState(
+                          () => _draft = value.copyWith(clearQuietHours: true),
+                        ),
+                        icon: const Icon(Icons.clear_outlined),
+                        label: Text(context.l10n.groupNotificationQuietClear),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
                 context.l10n.groupNotificationCommunitySection,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
@@ -156,20 +189,55 @@ class _GroupNotificationPreferencesScreenState
   void _update(GroupNotificationPreference value) =>
       setState(() => _draft = value);
 
+  String _hourLabel(int? hour) {
+    if (hour == null) return context.l10n.groupNotificationQuietNotSet;
+    return '${hour.toString().padLeft(2, '0')}:00';
+  }
+
+  Future<void> _pickQuietHour({required bool isStart}) async {
+    final value = _draft;
+    if (value == null) return;
+    final currentHour = isStart
+        ? value.quietHoursStart ?? 22
+        : value.quietHoursEnd ?? 7;
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: currentHour, minute: 0),
+    );
+    if (picked == null || !mounted) return;
+    _update(
+      isStart
+          ? value.copyWith(quietHoursStart: picked.hour)
+          : value.copyWith(quietHoursEnd: picked.hour),
+    );
+  }
+
   Future<void> _save() async {
+    final value = _draft;
+    if (value == null) return;
+    if ((value.quietHoursStart == null) != (value.quietHoursEnd == null)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.groupNotificationQuietPairRequired),
+        ),
+      );
+      return;
+    }
     try {
       await ref
           .read(groupActionControllerProvider.notifier)
-          .saveNotificationPreference(_draft!);
-      if (mounted)
+          .saveNotificationPreference(value);
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(context.l10n.commonSaved)));
+      }
     } catch (error) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(userFriendlyMessage(context, error))),
         );
+      }
     }
   }
 }

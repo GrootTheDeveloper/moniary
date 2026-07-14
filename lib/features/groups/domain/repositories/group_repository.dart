@@ -63,6 +63,15 @@ abstract interface class GroupRepository {
 
   Future<GroupSettlementOverview> fetchSettlementOverview(String groupId);
 
+  Future<GroupMonthlyStats> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  });
+
+  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
+    String groupId,
+  );
+
   Future<void> markSettlementPaid(String settlementId);
 
   Future<void> confirmSettlementReceived(String settlementId);

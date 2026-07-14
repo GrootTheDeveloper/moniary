@@ -10,8 +10,8 @@ import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/spending_group.dart';
-import 'create_group_screen.dart';
 import 'group_activity_center_screen.dart';
+import 'create_group_screen.dart';
 import 'group_detail_screen.dart';
 import 'group_invitations_screen.dart';
 
