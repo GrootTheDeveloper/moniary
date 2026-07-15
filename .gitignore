@@ -57,12 +57,17 @@ README.md
 key.properties
 *.jks
 *.keystore
+*firebase-adminsdk*.json
+google-services.json
+GoogleService-Info.plist
 .env
 *.env
 # Local Firebase client configuration sources. Public identifiers are imported
 # into ignored mobile.env; private server credentials never belong here.
 **/GoogleService-Info.plist
 **/google-services.json
+tool/env/*.json
+!tool/env/dev.example.json
 .gemini/
 
 # Local-only notes

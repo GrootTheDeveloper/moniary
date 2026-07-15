@@ -54,9 +54,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/brand/
-    - assets/demo_transactions/
-    - assets/demo_avatars/
     - assets/mascot/
+    - assets/mascot/generated/frames/
     - assets/fonts/OFL-Manrope.txt
     - assets/fonts/OFL-Newsreader.txt
     - assets/fonts/OFL-JetBrainsMono.txt

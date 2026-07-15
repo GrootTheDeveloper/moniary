@@ -1470,6 +1470,26 @@ Giao dịch này đã có khoản nợ được xác nhận. Nếu chỉnh sửa
 
 ## 23. Implementation Order
 
+## Current UX extensions
+
+- Group tools now include owner/admin group settings with server-guarded edit
+  and archive actions. Archiving is blocked while balances, pending expenses,
+  or settlement disputes remain.
+- Members can save one private payment QR image on their profile. A member of
+  the same active group can open that QR from a settlement card; the storage
+  object is not public and is protected by storage policies.
+- The activity center now includes a personalized next-step card, an upcoming
+  recurring-expense cue, a latest-transaction spotlight with quick reactions,
+  and a deep link to comments/details.
+- Monthly summary includes a contribution spotlight derived from existing
+  member activity; it is a lightweight recognition cue, not a ranking or
+  financial permission.
+
+The migration `20260715030000_group_collaboration_and_payment_qr.sql` adds the
+payment QR field, guarded group lifecycle RPCs, and private storage policies.
+Migration `20260715030001_payment_qr_profile_privacy_hardening.sql` restricts
+shared profile reads to active members only.
+
 Implement in this order:
 
 ### Phase 1 — Foundation
@@ -1522,6 +1542,26 @@ Implement in this order:
 ---
 
 ## 24. Deliverable Requirements
+
+## Current finance/community controls (2026-07-15)
+
+- Groups have an immutable-safe base currency policy. New foreign-currency
+  transactions keep the original amount and exchange rate, while the ledger,
+  balances, budgets, and charts use the converted base amount.
+- Recurring items can opt into server-side auto-posting. Posting is guarded by
+  a unique `(recurring_transaction_id, scheduled_for)` key and runs in one
+  transaction, so retries do not duplicate expenses.
+- Public profiles expose description, type, statistics, and avatar separately.
+  Avatar exposure is opt-in and only accepts a `public-group-avatars/` path;
+  private group avatar paths are never returned by the public RPC.
+- Administrative changes are recorded in `group_audit_logs`; only owner/admin
+  roles can read the audit RPC.
+- Group participation includes member polls and admin-created savings
+  challenges with member contributions. A settled-balance badge is derived in
+  the monthly summary when all member balances are zero.
+
+Migrations for these controls are `20260715040000_group_finance_controls.sql`
+and `20260715050000_group_polls_and_savings_challenges.sql`.
 
 After implementation, report back with:
 

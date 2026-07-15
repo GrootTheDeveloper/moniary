@@ -59,3 +59,74 @@ class GroupStatsOverview {
   final int memberCount;
   final int currentUserBalance;
 }
+
+class GroupAuditLog {
+  const GroupAuditLog({
+    required this.id,
+    required this.groupId,
+    required this.action,
+    required this.createdAt,
+    this.actorUserId,
+    this.targetUserId,
+    this.targetTransactionId,
+    this.metadata = const {},
+  });
+
+  final String id;
+  final String groupId;
+  final String? actorUserId;
+  final String action;
+  final String? targetUserId;
+  final String? targetTransactionId;
+  final Map<String, dynamic> metadata;
+  final DateTime createdAt;
+}
+
+class GroupPollOption {
+  const GroupPollOption({
+    required this.id,
+    required this.label,
+    this.voteCount = 0,
+  });
+  final String id;
+  final String label;
+  final int voteCount;
+}
+
+class GroupPoll {
+  const GroupPoll({
+    required this.id,
+    required this.groupId,
+    required this.title,
+    required this.options,
+    required this.isClosed,
+    required this.createdAt,
+  });
+  final String id;
+  final String groupId;
+  final String title;
+  final List<GroupPollOption> options;
+  final bool isClosed;
+  final DateTime createdAt;
+}
+
+class GroupSavingsChallenge {
+  const GroupSavingsChallenge({
+    required this.id,
+    required this.groupId,
+    required this.title,
+    required this.targetAmount,
+    required this.startDate,
+    required this.endDate,
+    required this.totalContributed,
+    required this.isActive,
+  });
+  final String id;
+  final String groupId;
+  final String title;
+  final int targetAmount;
+  final DateTime startDate;
+  final DateTime endDate;
+  final int totalContributed;
+  final bool isActive;
+}

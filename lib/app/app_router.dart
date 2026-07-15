@@ -33,9 +33,12 @@ import '../features/groups/presentation/screens/add_group_transaction_screen.dar
 import '../features/groups/presentation/screens/create_group_screen.dart';
 import '../features/groups/presentation/screens/debt_settlement_screen.dart';
 import '../features/groups/presentation/screens/group_activity_center_screen.dart';
+import '../features/groups/presentation/screens/group_audit_log_screen.dart';
+import '../features/groups/presentation/screens/group_participation_screen.dart';
 import '../features/groups/presentation/screens/group_budget_screen.dart';
 import '../features/groups/presentation/screens/group_recurring_transactions_screen.dart';
 import '../features/groups/presentation/screens/group_summary_screen.dart';
+import '../features/groups/presentation/screens/group_settings_screen.dart';
 import '../features/groups/presentation/screens/group_tools_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
 import '../features/groups/presentation/screens/group_notification_preferences_screen.dart';
@@ -58,6 +61,7 @@ import '../features/journal/presentation/recording_streak_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/notifications/presentation/screens/notification_center_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
+import '../features/profile/presentation/payment_qr_screen.dart';
 import '../features/profile/presentation/timezone_picker_screen.dart';
 import '../features/profile/presentation/currency_picker_screen.dart';
 import '../features/profile/presentation/profile_survey_screen.dart';
@@ -633,6 +637,36 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: GroupSettingsScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupSettingsScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupAuditLogScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupAuditLogScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupParticipationScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupParticipationScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
         path: FriendsScreen.routePath,
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
@@ -652,6 +686,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           state: state,
           child: const FriendQrScreen(),
         ),
+      ),
+      GoRoute(
+        path: PaymentQrScreen.routePath,
+        pageBuilder: (context, state) {
+          final args = state.extra as PaymentQrRouteArgs?;
+          return buildSlideTransitionPage(
+            state: state,
+            child: PaymentQrScreen(member: args),
+          );
+        },
       ),
       GoRoute(
         path: FriendInviteAcceptScreen.routePath,

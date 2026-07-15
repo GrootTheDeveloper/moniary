@@ -1,7 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../categories/data/repositories/category_repository.dart';
 import '../../categories/domain/models/category.dart';
@@ -12,31 +9,16 @@ import '../domain/monthly_budget.dart';
 import 'budget_limit_data_source.dart';
 
 final budgetRepositoryProvider = Provider<BudgetRepository>((ref) {
-  return BudgetRepositoryImpl.forEnvironment(
-    client: ref.watch(supabaseClientProvider),
-    useMockData: ref.watch(useMockDataModeProvider),
+  return BudgetRepositoryImpl(
+    dataSource: SupabaseBudgetLimitDataSource(
+      ref.watch(supabaseClientProvider),
+    ),
     categoryRepository: ref.watch(categoryRepositoryProvider),
     transactionRepository: ref.watch(transactionRepositoryProvider),
   );
 });
 
 class BudgetRepositoryImpl implements BudgetRepository {
-  factory BudgetRepositoryImpl.forEnvironment({
-    required SupabaseClient client,
-    required bool useMockData,
-    required CategoryRepository categoryRepository,
-    required TransactionRepository transactionRepository,
-  }) {
-    final shouldUseMockData = useMockData || !AppConstants.hasSupabaseConfig;
-    return BudgetRepositoryImpl(
-      dataSource: shouldUseMockData
-          ? MockBudgetLimitDataSource()
-          : SupabaseBudgetLimitDataSource(client),
-      categoryRepository: categoryRepository,
-      transactionRepository: transactionRepository,
-    );
-  }
-
   BudgetRepositoryImpl({
     required BudgetLimitDataSource dataSource,
     required CategoryRepository categoryRepository,

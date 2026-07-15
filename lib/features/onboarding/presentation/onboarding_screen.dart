@@ -661,7 +661,7 @@ class _ReceiptScanIllustrationState extends State<_ReceiptScanIllustration>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Mock store name
+            // Receipt store line
             Row(
               children: [
                 Icon(Icons.local_cafe_outlined, size: 8, color: colors.primary),
@@ -692,7 +692,7 @@ class _ReceiptScanIllustrationState extends State<_ReceiptScanIllustration>
               ),
             ),
             const Spacer(),
-            // Mock barcode
+            // Receipt barcode
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
@@ -924,7 +924,7 @@ class _PhotoDiaryIllustrationState extends State<_PhotoDiaryIllustration>
   late final Animation<double> _streakScale;
   late final Animation<double> _streakOpacity;
 
-  // Cells data (10 filled cells with specific categories and mock photos)
+  // Cells data (10 filled cells with specific categories and photo previews)
   static const _filledCells = {0, 2, 3, 5, 7, 9, 11, 13, 14, 17};
   static const _cellColors = [
     Color(0xFF8E9B8F), // sage

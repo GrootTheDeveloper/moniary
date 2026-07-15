@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
@@ -11,13 +10,7 @@ import '../domain/facebook_account_link.dart';
 import '../domain/google_account_link.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  final client = AppConstants.hasSupabaseConfig
-      ? ref.watch(supabaseClientProvider)
-      : null;
-  return AuthRepository(
-    client,
-    useMockData: ref.watch(useMockDataModeProvider),
-  );
+  return AuthRepository(ref.watch(supabaseClientProvider));
 });
 
 class AuthRepository {
@@ -66,10 +59,8 @@ class AuthRepository {
   }
 
   Future<void> signOut() async {
-    if (_useMockData) return;
-
     try {
-      await _requiredClient.auth.signOut();
+      await _client.auth.signOut();
     } catch (e, st) {
       AppLogger.error('Sign-out failed', e, st);
       if (e is AppException) rethrow;
@@ -400,7 +391,7 @@ class AuthRepository {
     if (_useMockData) return true;
     final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
     try {
-      await _requiredClient.auth.resetPasswordForEmail(
+      await _client.auth.resetPasswordForEmail(
         email,
         redirectTo: kIsWeb
             ? null
@@ -479,7 +470,7 @@ class AuthRepository {
 
   Future<void> _initializeUserIfPossible() async {
     try {
-      await _requiredClient.rpc('initialize_user');
+      await _client.rpc('initialize_user');
     } catch (e, st) {
       AppLogger.error('initialize_user RPC failed (non-blocking)', e, st);
     }
@@ -500,30 +491,14 @@ class AuthRepository {
     required String email,
     required String loginProvider,
   }) async {
-    final userId = _requiredClient.auth.currentUser?.id;
+    final userId = _client.auth.currentUser?.id;
     if (userId == null) {
       throw const AppException('Missing auth user', code: 'AUTH_REQUIRED');
     }
 
-    await _requiredClient
+    await _client
         .from('profiles')
         .update({'email': email, 'login_provider': loginProvider})
         .eq('id', userId);
-  }
-
-  Session _mockSession() {
-    const user = User(
-      id: 'mock-user-id',
-      appMetadata: {},
-      userMetadata: {},
-      aud: 'authenticated',
-      createdAt: '2026-05-28T00:00:00Z',
-    );
-    return Session(
-      accessToken: 'mockAccessToken',
-      tokenType: 'bearer',
-      expiresIn: 3600,
-      user: user,
-    );
   }
 }

@@ -4,6 +4,12 @@
 # working directory name when running `supabase init`.
 project_id = "moniary"
 
+# The notification dispatcher is called by a Database Webhook, not by a
+# signed-in mobile client. The function performs its own shared-secret check
+# through x-notification-dispatch-secret.
+[functions.notification-dispatcher]
+verify_jwt = false
+
 [api]
 enabled = true
 # Port to use for the API URL.

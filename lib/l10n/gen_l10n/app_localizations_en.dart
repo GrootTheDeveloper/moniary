@@ -167,9 +167,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginSubtitle => 'Personal expense manager';
 
   @override
-  String get loginAnonymous => 'Continue as guest';
-
-  @override
   String get loginTerms =>
       'By continuing, you agree to Moniary\'s terms of use and privacy policy.';
 
@@ -325,9 +322,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingFinish => 'Continue';
-
-  @override
-  String get onboardingMonthMock => 'May';
 
   @override
   String get onboardingPillCapture => 'Capture & save';
@@ -2078,10 +2072,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileProtectAccount => 'Protect your account';
-
-  @override
-  String get profileAnonymousWarning =>
-      'You are using a guest account. Link Email or Google to keep your data when switching devices.';
 
   @override
   String get profileLinkNow => 'Link now';
@@ -4245,6 +4235,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupTransactionTotal => 'Total amount';
 
   @override
+  String get groupTransactionCurrency => 'Transaction currency';
+
+  @override
+  String groupTransactionCurrencySubtitle(String currency) {
+    return 'Group base currency: $currency';
+  }
+
+  @override
+  String get groupTransactionExchangeRate => 'Exchange rate to base';
+
+  @override
+  String groupTransactionExchangeRateSubtitle(String from, String to) {
+    return '1 $from = ? $to';
+  }
+
+  @override
+  String get groupTransactionExchangeRateInvalid =>
+      'Enter a valid positive exchange rate.';
+
+  @override
   String get groupTransactionCategory => 'Category';
 
   @override
@@ -4331,6 +4341,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupTransactionNoData => 'No group transactions yet.';
+
+  @override
+  String get groupTransactionSearchHint =>
+      'Search content, category, or creator';
+
+  @override
+  String get groupTransactionFilterAll => 'All';
+
+  @override
+  String get groupTransactionFilterNoResults =>
+      'No matching transactions found.';
+
+  @override
+  String get groupTransactionLoadMore => 'Load more transactions';
 
   @override
   String get groupTransactionLoadError => 'Could not load group transactions.';
@@ -4542,6 +4566,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'Shows aggregate counts and total spending only.';
 
   @override
+  String get groupPublicProfileShowDescription => 'Show description';
+
+  @override
+  String get groupPublicProfileShowDescriptionSubtitle =>
+      'The group description is visible to anyone with the public link.';
+
+  @override
+  String get groupPublicProfileShowType => 'Show group type';
+
+  @override
+  String get groupPublicProfileShowAvatar => 'Show group avatar';
+
+  @override
+  String get groupPublicProfileShowAvatarSubtitle =>
+      'Only a separately uploaded public-safe image is eligible; private group media is never exposed.';
+
+  @override
   String get groupPublicProfileShareTitle => 'Share public page';
 
   @override
@@ -4608,6 +4649,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupRecurringActive => 'Active';
+
+  @override
+  String get groupRecurringAutoPost => 'Automatically post when due';
+
+  @override
+  String get groupRecurringAutoPostSubtitle =>
+      'Creates an equal-split transaction in the group\'s base currency.';
 
   @override
   String get groupRecurringDeleteTitle => 'Delete recurring transaction?';
@@ -4696,6 +4744,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupSummaryNoHistory => 'No settlement history yet.';
+
+  @override
+  String get groupSummaryChartsTitle => 'Spending at a glance';
+
+  @override
+  String get groupSummaryTrendTitle => 'Six-month spending trend';
+
+  @override
+  String get groupSettlementBadgeTitle => 'All settled';
+
+  @override
+  String get groupSettlementBadgeSubtitle =>
+      'The group has no outstanding balance this month.';
 
   @override
   String groupSummaryTransactionCount(int count) {
@@ -5748,20 +5809,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'You will be signed out immediately. During the next 30 days, sign in with the same method to restore your account before its data is permanently deleted.';
 
   @override
-  String get deleteGuestDataTitle => 'Delete guest account data';
-
-  @override
-  String get deleteGuestDataBody =>
-      'Guest account data is stored only on this device and will be deleted immediately. Language, currency, and first-run preferences will be kept.';
-
-  @override
-  String get deleteGuestDataUnderstand =>
-      'I understand that guest account data on this device will be deleted immediately.';
-
-  @override
-  String get deleteGuestDataAction => 'Delete guest data';
-
-  @override
   String get deleteAccountExportTitle => 'Keep a copy before deletion';
 
   @override
@@ -5969,6 +6016,211 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get friendRateLimited =>
       'Too many friend requests. Please try again later.';
+
+  @override
+  String get paymentQrTitle => 'Payment QR';
+
+  @override
+  String get paymentQrProfileSubtitle =>
+      'Save it once so group members can open it when paying you.';
+
+  @override
+  String get paymentQrMyTitle => 'My payment QR';
+
+  @override
+  String get paymentQrDescription =>
+      'Members in the same group can open this code when they need to pay you.';
+
+  @override
+  String paymentQrMemberDescription(String name) {
+    return 'Payment QR for $name.';
+  }
+
+  @override
+  String get paymentQrAdd => 'Save QR image';
+
+  @override
+  String get paymentQrReplace => 'Replace QR image';
+
+  @override
+  String get paymentQrRemove => 'Remove QR';
+
+  @override
+  String get paymentQrPrivacyNote =>
+      'Your QR is private and only visible to members of a shared group.';
+
+  @override
+  String get paymentQrSaved => 'Payment QR saved.';
+
+  @override
+  String get paymentQrRemoved => 'Payment QR removed.';
+
+  @override
+  String get paymentQrViewForPayment => 'Open QR to pay';
+
+  @override
+  String get paymentQrEmptyOwner =>
+      'You have not saved a payment QR image yet.';
+
+  @override
+  String get paymentQrEmptyMember =>
+      'This member has not saved a payment QR image.';
+
+  @override
+  String get groupSettingsTitle => 'Group settings';
+
+  @override
+  String get groupSettingsSubtitle =>
+      'Edit group details and archive only after balances are settled.';
+
+  @override
+  String get groupSettingsName => 'Group name';
+
+  @override
+  String get groupSettingsDescription => 'Description';
+
+  @override
+  String get groupSettingsType => 'Group type';
+
+  @override
+  String get groupSettingsBaseCurrency => 'Group base currency';
+
+  @override
+  String get groupSettingsBaseCurrencySubtitle =>
+      'All balances and budgets are kept in this currency. Foreign transactions need an explicit rate.';
+
+  @override
+  String get groupSettingsSave => 'Save changes';
+
+  @override
+  String get groupSettingsSaved => 'Group details updated.';
+
+  @override
+  String get groupSettingsArchiveTitle => 'Archive group';
+
+  @override
+  String get groupSettingsArchiveSubtitle =>
+      'The group will leave the active list and stop accepting new expenses. Unresolved balances block this action.';
+
+  @override
+  String get groupSettingsArchiveAction => 'Archive group';
+
+  @override
+  String get groupSettingsArchiveConfirmTitle => 'Archive this group?';
+
+  @override
+  String get groupSettingsArchiveConfirmMessage =>
+      'Archive the group only after every member has completed payment.';
+
+  @override
+  String get groupSettingsArchiveBlocked =>
+      'The group cannot be archived while balances, pending expenses, or disputes remain.';
+
+  @override
+  String get groupSettingsAdminRequired =>
+      'Only the group owner or an admin can perform this action.';
+
+  @override
+  String get groupAuditLogTitle => 'Admin audit log';
+
+  @override
+  String get groupAuditLogSubtitle =>
+      'Review changes to members, transactions, and group settings.';
+
+  @override
+  String get groupAuditLogEmpty =>
+      'No administrative activity has been recorded yet.';
+
+  @override
+  String get groupAuditSystem => 'System';
+
+  @override
+  String get groupParticipationTitle => 'Group participation';
+
+  @override
+  String get groupParticipationSubtitle =>
+      'Vote together and turn shared goals into progress.';
+
+  @override
+  String get groupPollsTitle => 'Polls';
+
+  @override
+  String get groupPollsEmpty => 'No polls yet.';
+
+  @override
+  String get groupPollCreate => 'Create poll';
+
+  @override
+  String get groupPollQuestion => 'Question';
+
+  @override
+  String get groupPollOptionsHint => 'Options, one per line';
+
+  @override
+  String get groupChallengesTitle => 'Savings challenges';
+
+  @override
+  String get groupChallengesEmpty => 'No savings challenge yet.';
+
+  @override
+  String get groupChallengeCreate => 'Create challenge';
+
+  @override
+  String get groupChallengeName => 'Challenge name';
+
+  @override
+  String get groupChallengeTarget => 'Target amount';
+
+  @override
+  String get groupChallengeContribute => 'Contribute';
+
+  @override
+  String get groupPulsePersonalTitle => 'Your next step';
+
+  @override
+  String get groupPulsePersonalMessage =>
+      'There is one item waiting for you so the group can keep moving smoothly.';
+
+  @override
+  String get groupPulseUpcomingTitle => 'A shared date is coming';
+
+  @override
+  String groupPulseUpcomingMessage(String title) {
+    return '$title is due soon. Prepare together so nobody misses it.';
+  }
+
+  @override
+  String get groupPulseTogetherTitle => 'Keep the group moving';
+
+  @override
+  String get groupPulseTogetherMessage =>
+      'Open the activity stream so everyone can update and respond.';
+
+  @override
+  String get groupPulseAllClearTitle => 'The group is in a good place';
+
+  @override
+  String get groupPulseAllClearMessage =>
+      'Nothing is waiting. Add a new expense so everyone can see the next step.';
+
+  @override
+  String get groupSpotlightTitle => 'Latest touchpoint';
+
+  @override
+  String get groupSpotlightComment => 'View and respond';
+
+  @override
+  String get groupSummaryContributionTitle => 'Contribution spotlight';
+
+  @override
+  String groupSummaryContributionMessage(String name) {
+    return '$name is helping the group keep a steady rhythm this month.';
+  }
+
+  @override
+  String groupSummaryContributionCount(int count) {
+    return '$count activities';
+  }
 
   @override
   String get groupSplitExact => 'Exact amounts';
@@ -6181,4 +6433,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pushNotificationCategorySubtitle =>
       'Notifications remain in the inbox for 30 days.';
+
+  @override
+  String get loginAnonymous => 'Continue as guest';
+
+  @override
+  String get onboardingMonthMock => 'May';
+
+  @override
+  String get profileAnonymousWarning =>
+      'You are using a guest account. Link Email or Google to keep your data when switching devices.';
+
+  @override
+  String get deleteGuestDataTitle => 'Delete guest account data';
+
+  @override
+  String get deleteGuestDataBody =>
+      'Guest account data is stored only on this device and will be deleted immediately. Language, currency, and first-run preferences will be kept.';
+
+  @override
+  String get deleteGuestDataUnderstand =>
+      'I understand that guest account data on this device will be deleted immediately.';
+
+  @override
+  String get deleteGuestDataAction => 'Delete guest data';
 }

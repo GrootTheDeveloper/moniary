@@ -103,8 +103,7 @@ class ImportController extends Notifier<ImportState> {
     try {
       final session = ref.read(currentSessionProvider);
       final profileId = session?.user.id;
-      final usesMockData = ref.read(useMockDataModeProvider);
-      if (!usesMockData && profileId == null) {
+      if (profileId == null) {
         throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
       }
 

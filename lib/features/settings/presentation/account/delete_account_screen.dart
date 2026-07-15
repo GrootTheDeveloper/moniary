@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_constants.dart';
-import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/error_helpers.dart';
@@ -41,9 +40,9 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
     super.dispose();
   }
 
-  bool _isConfirmed({required bool isGuest}) =>
+  bool get _isConfirmed =>
       _understood &&
-      (isGuest || _reason != null) &&
+      _reason != null &&
       _confirmationController.text.trim().toUpperCase() ==
           context.l10n.deleteAccountConfirmationPhrase.toUpperCase();
 
@@ -51,7 +50,6 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
   Widget build(BuildContext context) {
     final action = ref.watch(accountActionsControllerProvider);
     final summary = ref.watch(dataTransparencySummaryProvider);
-    final isGuest = ref.watch(guestModeEnabledProvider);
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -65,13 +63,7 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          isGuest
-              ? context.l10n.deleteGuestDataTitle
-              : context.l10n.deleteAccountTitle,
-        ),
-      ),
+      appBar: AppBar(title: Text(context.l10n.deleteAccountTitle)),
       body: SafeArea(
         child: Stack(
           children: [
@@ -79,12 +71,8 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
               children: [
                 SettingsDangerCard(
-                  title: isGuest
-                      ? context.l10n.deleteGuestDataTitle
-                      : context.l10n.deleteAccountGraceTitle,
-                  body: isGuest
-                      ? context.l10n.deleteGuestDataBody
-                      : context.l10n.deleteAccountGraceBody,
+                  title: context.l10n.deleteAccountGraceTitle,
+                  body: context.l10n.deleteAccountGraceBody,
                 ),
                 const SizedBox(height: 16),
                 _DeleteStepSection(
@@ -109,53 +97,49 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
                     ),
                   ),
                 ),
-                if (!isGuest) ...[
-                  const SizedBox(height: 16),
-                  _DeleteStepSection(
-                    number: 3,
-                    title: context.l10n.deleteAccountReasonTitle,
-                    subtitle: context.l10n.deleteAccountDetailsHelper,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final reason in AccountDeletionReason.values)
-                              _ReasonChip(
-                                label: _reasonLabel(context, reason),
-                                selected: _reason == reason,
-                                enabled: !action.isLoading,
-                                onSelected: () =>
-                                    setState(() => _reason = reason),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-                        TextField(
-                          controller: _detailsController,
-                          enabled: !action.isLoading,
-                          minLines: 3,
-                          maxLines: 5,
-                          maxLength: 500,
-                          decoration: InputDecoration(
-                            labelText: context.l10n.deleteAccountDetailsLabel,
-                            hintText: context.l10n.deleteAccountDetailsHint,
-                            helperText: context.l10n.deleteAccountDetailsHelper,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
                 const SizedBox(height: 16),
                 _DeleteStepSection(
-                  number: isGuest ? 3 : 4,
+                  number: 3,
+                  title: context.l10n.deleteAccountReasonTitle,
+                  subtitle: context.l10n.deleteAccountDetailsHelper,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final reason in AccountDeletionReason.values)
+                            _ReasonChip(
+                              label: _reasonLabel(context, reason),
+                              selected: _reason == reason,
+                              enabled: !action.isLoading,
+                              onSelected: () =>
+                                  setState(() => _reason = reason),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      TextField(
+                        controller: _detailsController,
+                        enabled: !action.isLoading,
+                        minLines: 3,
+                        maxLines: 5,
+                        maxLength: 500,
+                        decoration: InputDecoration(
+                          labelText: context.l10n.deleteAccountDetailsLabel,
+                          hintText: context.l10n.deleteAccountDetailsHint,
+                          helperText: context.l10n.deleteAccountDetailsHelper,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _DeleteStepSection(
+                  number: 4,
                   title: context.l10n.deleteAccountConfirm,
-                  subtitle: isGuest
-                      ? context.l10n.deleteGuestDataUnderstand
-                      : context.l10n.deleteAccountGraceUnderstand,
+                  subtitle: context.l10n.deleteAccountGraceUnderstand,
                   child: Column(
                     children: [
                       CheckboxListTile(
@@ -163,11 +147,7 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
                         contentPadding: EdgeInsets.zero,
                         controlAffinity: ListTileControlAffinity.leading,
                         activeColor: AppTheme.danger,
-                        title: Text(
-                          isGuest
-                              ? context.l10n.deleteGuestDataUnderstand
-                              : context.l10n.deleteAccountGraceUnderstand,
-                        ),
+                        title: Text(context.l10n.deleteAccountGraceUnderstand),
                         onChanged: action.isLoading
                             ? null
                             : (value) =>
@@ -196,9 +176,7 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
               right: 20,
               bottom: 18,
               child: FilledButton.icon(
-                onPressed: !action.isLoading && _isConfirmed(isGuest: isGuest)
-                    ? () => _submit(isGuest: isGuest)
-                    : null,
+                onPressed: !action.isLoading && _isConfirmed ? _submit : null,
                 style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
                 icon: action.isLoading
                     ? const SizedBox(
@@ -207,11 +185,7 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.delete_forever_outlined),
-                label: Text(
-                  isGuest
-                      ? context.l10n.deleteGuestDataAction
-                      : context.l10n.deleteAccountScheduleAction,
-                ),
+                label: Text(context.l10n.deleteAccountScheduleAction),
               ),
             ),
           ],
@@ -220,49 +194,42 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
     );
   }
 
-  Future<void> _submit({required bool isGuest}) async {
+  Future<void> _submit() async {
     FocusScope.of(context).unfocus();
-    if (isGuest) {
-      // Guest reset is completed by the dedicated controller later in this flow.
-      await ref
-          .read(accountActionsControllerProvider.notifier)
-          .deleteGuestData();
-    } else {
-      bool authenticated;
-      try {
-        authenticated = await ref
-            .read(privacyControllerProvider.notifier)
-            .authenticateUser(
-              context.l10n.biometricReasonDeleteAccount,
-              allowUnavailable: true,
-            );
-      } catch (error, stackTrace) {
-        AppLogger.error(
-          'Account deletion authentication failed',
-          error,
-          stackTrace,
+    bool authenticated;
+    try {
+      authenticated = await ref
+          .read(privacyControllerProvider.notifier)
+          .authenticateUser(
+            context.l10n.biometricReasonDeleteAccount,
+            allowUnavailable: true,
+          );
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Account deletion authentication failed',
+        error,
+        stackTrace,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
         );
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(userFriendlyMessage(context, error))),
-          );
-        }
-        return;
       }
-      if (!authenticated || !mounted) return;
-
-      await ref
-          .read(accountActionsControllerProvider.notifier)
-          .requestSoftDelete(
-            reason: _reason!,
-            details: _detailsController.text,
-            feedbackContext: DeletionFeedbackContext(
-              appVersion: AppConstants.appVersion,
-              platform: defaultTargetPlatform.name,
-              locale: Localizations.localeOf(context).toLanguageTag(),
-            ),
-          );
+      return;
     }
+    if (!authenticated || !mounted) return;
+
+    await ref
+        .read(accountActionsControllerProvider.notifier)
+        .requestSoftDelete(
+          reason: _reason!,
+          details: _detailsController.text,
+          feedbackContext: DeletionFeedbackContext(
+            appVersion: AppConstants.appVersion,
+            platform: defaultTargetPlatform.name,
+            locale: Localizations.localeOf(context).toLanguageTag(),
+          ),
+        );
 
     if (!mounted || ref.read(accountActionsControllerProvider).hasError) return;
     context.go(LoginScreen.routePath);

@@ -39,6 +39,9 @@ class _GroupPublicProfileScreenState
   final _slugController = TextEditingController();
   bool? _enabled;
   bool? _showStats;
+  bool? _showDescription;
+  bool? _showGroupType;
+  bool? _showAvatar;
   bool _initialized = false;
 
   @override
@@ -81,12 +84,24 @@ class _GroupPublicProfileScreenState
                   _slugController.text = profile.slug ?? '';
                   _enabled = profile.isEnabled;
                   _showStats = profile.showStats;
+                  _showDescription = profile.showDescription;
+                  _showGroupType = profile.showGroupType;
+                  _showAvatar = profile.showAvatar;
                 },
                 enabled: _enabled ?? profile.isEnabled,
                 showStats: _showStats ?? profile.showStats,
+                showDescription: _showDescription ?? profile.showDescription,
+                showGroupType: _showGroupType ?? profile.showGroupType,
+                showAvatar: _showAvatar ?? profile.showAvatar,
                 onEnabledChanged: (value) => setState(() => _enabled = value),
                 onShowStatsChanged: (value) =>
                     setState(() => _showStats = value),
+                onShowDescriptionChanged: (value) =>
+                    setState(() => _showDescription = value),
+                onShowGroupTypeChanged: (value) =>
+                    setState(() => _showGroupType = value),
+                onShowAvatarChanged: (value) =>
+                    setState(() => _showAvatar = value),
                 onSave: () => _save(profile),
               ),
       ),
@@ -110,6 +125,9 @@ class _GroupPublicProfileScreenState
               clearSlug: slug.isEmpty,
               isEnabled: _enabled,
               showStats: _showStats,
+              showDescription: _showDescription,
+              showGroupType: _showGroupType,
+              showAvatar: _showAvatar,
             ),
           );
       if (mounted) {
@@ -135,8 +153,14 @@ class _SettingsView extends StatelessWidget {
     required this.onInitialize,
     required this.enabled,
     required this.showStats,
+    required this.showDescription,
+    required this.showGroupType,
+    required this.showAvatar,
     required this.onEnabledChanged,
     required this.onShowStatsChanged,
+    required this.onShowDescriptionChanged,
+    required this.onShowGroupTypeChanged,
+    required this.onShowAvatarChanged,
     required this.onSave,
   });
 
@@ -146,8 +170,14 @@ class _SettingsView extends StatelessWidget {
   final VoidCallback onInitialize;
   final bool enabled;
   final bool showStats;
+  final bool showDescription;
+  final bool showGroupType;
+  final bool showAvatar;
   final ValueChanged<bool> onEnabledChanged;
   final ValueChanged<bool> onShowStatsChanged;
+  final ValueChanged<bool> onShowDescriptionChanged;
+  final ValueChanged<bool> onShowGroupTypeChanged;
+  final ValueChanged<bool> onShowAvatarChanged;
   final VoidCallback onSave;
 
   @override
@@ -179,6 +209,28 @@ class _SettingsView extends StatelessWidget {
           subtitle: Text(context.l10n.groupPublicProfileShowStatsSubtitle),
           value: showStats,
           onChanged: enabled ? onShowStatsChanged : null,
+        ),
+        SwitchListTile.adaptive(
+          contentPadding: EdgeInsets.zero,
+          title: Text(context.l10n.groupPublicProfileShowDescription),
+          subtitle: Text(
+            context.l10n.groupPublicProfileShowDescriptionSubtitle,
+          ),
+          value: showDescription,
+          onChanged: enabled ? onShowDescriptionChanged : null,
+        ),
+        SwitchListTile.adaptive(
+          contentPadding: EdgeInsets.zero,
+          title: Text(context.l10n.groupPublicProfileShowType),
+          value: showGroupType,
+          onChanged: enabled ? onShowGroupTypeChanged : null,
+        ),
+        SwitchListTile.adaptive(
+          contentPadding: EdgeInsets.zero,
+          title: Text(context.l10n.groupPublicProfileShowAvatar),
+          subtitle: Text(context.l10n.groupPublicProfileShowAvatarSubtitle),
+          value: showAvatar,
+          onChanged: enabled ? onShowAvatarChanged : null,
         ),
         const SizedBox(height: 18),
         FilledButton(onPressed: onSave, child: Text(context.l10n.commonSave)),
@@ -243,10 +295,7 @@ class _PublicView extends StatelessWidget {
       children: [
         Center(
           child: SupabaseImage(
-            // Group avatars live in private storage and are only available to
-            // active members. Public pages intentionally use a safe fallback
-            // until a separate public asset path is provisioned.
-            imagePath: null,
+            imagePath: profile.showAvatar ? profile.avatarPath : null,
             width: 92,
             height: 92,
             borderRadius: BorderRadius.circular(46),
@@ -260,9 +309,20 @@ class _PublicView extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         if (profile.description?.trim().isNotEmpty == true) ...[
-          const SizedBox(height: 10),
-          Text(profile.description!, textAlign: TextAlign.center),
+          if (profile.showDescription) ...[
+            const SizedBox(height: 10),
+            Text(profile.description!, textAlign: TextAlign.center),
+          ],
         ],
+        if (profile.showGroupType && profile.groupType?.isNotEmpty == true)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              profile.groupType!,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colors.textSecondary),
+            ),
+          ),
         if (profile.showStats) ...[
           const SizedBox(height: 24),
           Card(

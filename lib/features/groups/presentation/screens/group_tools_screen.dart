@@ -10,12 +10,15 @@ import '../../application/group_controller.dart';
 import 'debt_settlement_screen.dart';
 import 'group_detail_screen.dart';
 import 'group_activity_center_screen.dart';
+import 'group_audit_log_screen.dart';
 import 'group_budget_screen.dart';
 import 'group_notification_preferences_screen.dart';
 import 'group_photo_album_screen.dart';
+import 'group_participation_screen.dart';
 import 'group_public_profile_screen.dart';
 import 'group_recurring_transactions_screen.dart';
 import 'group_summary_screen.dart';
+import 'group_settings_screen.dart';
 
 class GroupToolsScreen extends ConsumerWidget {
   const GroupToolsScreen({required this.groupId, super.key});
@@ -93,6 +96,15 @@ class GroupToolsScreen extends ConsumerWidget {
                     extra: groupId,
                   ),
                 ),
+                _ToolTile(
+                  icon: Icons.how_to_vote_outlined,
+                  title: context.l10n.groupParticipationTitle,
+                  subtitle: context.l10n.groupParticipationSubtitle,
+                  onTap: () => context.push(
+                    GroupParticipationScreen.routePath,
+                    extra: groupId,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 18),
@@ -115,6 +127,26 @@ class GroupToolsScreen extends ConsumerWidget {
                     subtitle: context.l10n.groupToolsPublicProfileSubtitle,
                     onTap: () => context.push(
                       GroupPublicProfileScreen.routePath,
+                      extra: groupId,
+                    ),
+                  ),
+                if (detail.canInvite)
+                  _ToolTile(
+                    icon: Icons.history_outlined,
+                    title: context.l10n.groupAuditLogTitle,
+                    subtitle: context.l10n.groupAuditLogSubtitle,
+                    onTap: () => context.push(
+                      GroupAuditLogScreen.routePath,
+                      extra: groupId,
+                    ),
+                  ),
+                if (detail.canInvite)
+                  _ToolTile(
+                    icon: Icons.tune_outlined,
+                    title: context.l10n.groupSettingsTitle,
+                    subtitle: context.l10n.groupSettingsSubtitle,
+                    onTap: () => context.push(
+                      GroupSettingsScreen.routePath,
                       extra: groupId,
                     ),
                   ),

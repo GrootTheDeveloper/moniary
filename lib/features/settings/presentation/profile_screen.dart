@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../core/preferences/preferences_providers.dart';
-import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/timezone_utils.dart';
@@ -32,6 +31,7 @@ import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../../profile/presentation/currency_picker_screen.dart';
 import '../../profile/domain/currency_data.dart';
+import '../../profile/presentation/payment_qr_screen.dart';
 import '../application/account/account_actions_controller.dart';
 import '../application/privacy_controller.dart';
 import '../../notifications/presentation/widgets/notification_bell_button.dart';
@@ -432,7 +432,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final state = ref.watch(accountActionsControllerProvider);
     final privacyState = ref.watch(privacyControllerProvider);
     final requestHistory = ref.watch(privacyRequestHistoryProvider);
-    final isGuest = ref.watch(guestModeEnabledProvider);
     final pendingFriendRequestCount = ref.watch(
       pendingIncomingFriendRequestCountProvider,
     );
@@ -470,7 +469,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   final provider = profile.loginProvider;
                   final isAnonymous = provider == 'anonymous';
                   final accountMode = _ProfileAccountMode.from(
-                    isGuest: isGuest,
                     provider: provider,
                   );
                   final name = profile.fullName?.trim().isNotEmpty == true
@@ -608,6 +606,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 context.push(CurrencyPickerScreen.routePath),
                           ),
                           _SettingsTile(
+                            icon: Icons.qr_code_2_outlined,
+                            title: context.l10n.paymentQrTitle,
+                            subtitle: context.l10n.paymentQrProfileSubtitle,
+                            onTap: () =>
+                                context.push(PaymentQrScreen.routePath),
+                          ),
+                          _SettingsTile(
                             icon: Icons.schedule_outlined,
                             title: context.l10n.profileChangeTimezone,
                             subtitle: timezoneDisplayLabel(profile.timezone),
@@ -642,11 +647,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           if (accountMode.needsAccountProtectionCard)
                             _AccountModeBanner(
                               mode: accountMode,
-                              onAction: accountMode == _ProfileAccountMode.guest
-                                  ? () {
-                                      _switchFromGuestToLogin();
-                                    }
-                                  : _showLinkAccountSheet,
+                              onAction: _showLinkAccountSheet,
                             ),
                         ],
                       ),
@@ -741,12 +742,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           _SettingsTile(
                             icon: Icons.delete_forever_outlined,
-                            title: isGuest
-                                ? context.l10n.deleteGuestDataTitle
-                                : context.l10n.profileDeleteAccount,
-                            subtitle: isGuest
-                                ? context.l10n.deleteGuestDataBody
-                                : context.l10n.profileDeleteSubtitle,
+                            title: context.l10n.profileDeleteAccount,
+                            subtitle: context.l10n.profileDeleteSubtitle,
                             destructive: true,
                             onTap: state.isLoading
                                 ? null
@@ -1058,13 +1055,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       await ref.read(preferredLocaleProvider.notifier).setLocale(selected);
     }
   }
-
-  Future<void> _switchFromGuestToLogin() async {
-    await ref.read(authControllerProvider.notifier).signOut();
-    if (mounted) {
-      context.go(LoginScreen.routePath);
-    }
-  }
 }
 
 class _ProfileHeader extends StatelessWidget {
@@ -1360,15 +1350,10 @@ class _SetupStep extends StatelessWidget {
 }
 
 enum _ProfileAccountMode {
-  guest,
   supabaseAnonymous,
   authenticated;
 
-  static _ProfileAccountMode from({
-    required bool isGuest,
-    required String provider,
-  }) {
-    if (isGuest) return _ProfileAccountMode.guest;
+  static _ProfileAccountMode from({required String provider}) {
     if (provider == 'anonymous') return _ProfileAccountMode.supabaseAnonymous;
     return _ProfileAccountMode.authenticated;
   }
@@ -1378,7 +1363,6 @@ enum _ProfileAccountMode {
 
   Color get accentColor {
     return switch (this) {
-      _ProfileAccountMode.guest => AppTheme.amber,
       _ProfileAccountMode.supabaseAnonymous => AppTheme.mint,
       _ProfileAccountMode.authenticated => AppTheme.success,
     };
@@ -1386,7 +1370,6 @@ enum _ProfileAccountMode {
 
   IconData get icon {
     return switch (this) {
-      _ProfileAccountMode.guest => Icons.person_outlined,
       _ProfileAccountMode.supabaseAnonymous => Icons.warning_amber_outlined,
       _ProfileAccountMode.authenticated => Icons.verified_user_outlined,
     };
@@ -1394,7 +1377,6 @@ enum _ProfileAccountMode {
 
   String title(BuildContext context) {
     return switch (this) {
-      _ProfileAccountMode.guest => context.l10n.profileAnonymous,
       _ProfileAccountMode.supabaseAnonymous =>
         context.l10n.profileProtectAccount,
       _ProfileAccountMode.authenticated => context.l10n.profileAccount,
@@ -1403,7 +1385,6 @@ enum _ProfileAccountMode {
 
   String body(BuildContext context) {
     return switch (this) {
-      _ProfileAccountMode.guest => context.l10n.profileAnonymousWarning,
       _ProfileAccountMode.supabaseAnonymous =>
         context.l10n.profileLinkAccountSubtitle,
       _ProfileAccountMode.authenticated => '',
@@ -1412,7 +1393,6 @@ enum _ProfileAccountMode {
 
   String actionLabel(BuildContext context) {
     return switch (this) {
-      _ProfileAccountMode.guest => context.l10n.loginSignIn,
       _ProfileAccountMode.supabaseAnonymous => context.l10n.profileLinkNow,
       _ProfileAccountMode.authenticated => context.l10n.profileAccount,
     };

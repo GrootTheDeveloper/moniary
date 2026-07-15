@@ -113,7 +113,6 @@ class AuthController extends AsyncNotifier<void> {
     try {
       await _unregisterPushDevice();
       await ref.read(authRepositoryProvider).signOut();
-      ref.read(mockSessionProvider.notifier).setSession(null);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -520,10 +519,6 @@ class AuthController extends AsyncNotifier<void> {
 
   void _applySignedInSession(Session? session) {
     if (session == null) return;
-
-    if (session.user.id == 'mock-user-id') {
-      ref.read(mockSessionProvider.notifier).setSession(session);
-    }
     ref.invalidate(currentProfileProvider);
   }
 }

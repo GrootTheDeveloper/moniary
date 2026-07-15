@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../shared/utils/app_logger.dart';
@@ -13,42 +12,24 @@ import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
 import '../../domain/repositories/group_repository.dart';
-import '../datasources/group_mock_data_source.dart';
 import '../datasources/group_supabase_data_source.dart';
 import '../models/group_model_mapper.dart';
 
 final groupRepositoryProvider = Provider<GroupRepository>((ref) {
   final client = ref.watch(supabaseClientProvider);
-  final useMockData =
-      ref.watch(useMockDataModeProvider) || !AppConstants.hasSupabaseConfig;
-  final currentUserId = ref.watch(currentSessionProvider)?.user.id ?? '';
-  return GroupRepositoryImpl(
-    client,
-    useMockData: useMockData,
-    mockDataSource: GroupMockDataSource(currentUserId: currentUserId),
-  );
+  return GroupRepositoryImpl(client);
 });
 
 class GroupRepositoryImpl implements GroupRepository {
-  GroupRepositoryImpl(
-    SupabaseClient client, {
-    required bool useMockData,
-    required GroupMockDataSource mockDataSource,
-  }) : _client = client,
-       _useMockData = useMockData,
-       _mock = mockDataSource,
-       _remote = GroupSupabaseDataSource(client);
+  GroupRepositoryImpl(SupabaseClient client)
+    : _client = client,
+      _remote = GroupSupabaseDataSource(client);
 
   final SupabaseClient _client;
-  final bool _useMockData;
-  final GroupMockDataSource _mock;
   final GroupSupabaseDataSource _remote;
 
   @override
   String get currentUserId {
-    if (_useMockData) {
-      return _mock.currentUserId;
-    }
     final userId = _client.auth.currentUser?.id;
     if (userId == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
@@ -58,9 +39,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<List<SpendingGroup>> fetchGroups() async {
-    if (_useMockData) {
-      return _mock.fetchGroups();
-    }
     return _guard('fetch groups', () async {
       final groups = await _remote.fetchGroups();
       final result = <SpendingGroup>[];
@@ -114,9 +92,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<SpendingGroupDetail> fetchGroupDetail(String groupId) async {
-    if (_useMockData) {
-      return _mock.fetchGroupDetail(groupId);
-    }
     return _guard('fetch group detail', () async {
       final group = GroupModelMapper.group(await _remote.fetchGroup(groupId));
       final members = (await _remote.fetchMembers(
@@ -147,13 +122,6 @@ class GroupRepositoryImpl implements GroupRepository {
     String? type,
     String? avatarFilePath,
   }) async {
-    if (_useMockData) {
-      return _mock.createGroup(
-        name: name,
-        description: description,
-        type: type,
-      );
-    }
     return _guard('create group', () async {
       final groupId = await _remote.createGroup(
         name: name,
@@ -171,10 +139,60 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<void> updateGroup({
+    required String groupId,
+    required String name,
+    String? description,
+    String? type,
+  }) {
+    return _guard(
+      'update group details',
+      () => _remote.updateGroup(
+        groupId: groupId,
+        name: name,
+        description: description,
+        type: type,
+      ),
+    );
+  }
+
+  @override
+  Future<void> setGroupArchived({
+    required String groupId,
+    required bool archived,
+  }) {
+    return _guard(
+      'update group archive status',
+      () => _remote.setGroupArchived(groupId: groupId, archived: archived),
+    );
+  }
+
+  @override
+  Future<void> updateGroupAvatar({
+    required String groupId,
+    required String filePath,
+  }) {
+    return _guard('update group avatar', () async {
+      await _remote.uploadGroupAvatar(groupId: groupId, filePath: filePath);
+    });
+  }
+
+  @override
+  Future<void> updateGroupCurrency({
+    required String groupId,
+    required String baseCurrency,
+  }) {
+    return _guard(
+      'update group base currency',
+      () => _remote.updateGroupCurrency(
+        groupId: groupId,
+        baseCurrency: baseCurrency,
+      ),
+    );
+  }
+
+  @override
   Future<String> createInviteLink(String groupId) {
-    if (_useMockData) {
-      return _mock.createInviteLink(groupId);
-    }
     return _guard(
       'create group invite link',
       () => _remote.createInviteLink(groupId),
@@ -183,7 +201,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<GroupInvitePreview> fetchInvitePreview(String token) {
-    if (_useMockData) return _mock.fetchInvitePreview(token);
     return _guard('fetch group invite preview', () async {
       final row = await _remote.fetchInvitePreview(token.trim());
       return GroupInvitePreview(
@@ -201,7 +218,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<GroupInviteAcceptResult> acceptInvite(String token) {
-    if (_useMockData) return _mock.acceptInvite(token);
     return _guard('accept group invite link', () async {
       final row = await _remote.acceptInvite(token.trim());
       return GroupInviteAcceptResult(
@@ -213,7 +229,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<void> revokeInviteLink(String token) {
-    if (_useMockData) return _mock.revokeInviteLink(token);
     return _guard(
       'revoke group invite link',
       () => _remote.revokeInviteLink(token.trim()),
@@ -222,7 +237,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<List<GroupDirectInvite>> fetchDirectInvites() {
-    if (_useMockData) return _mock.fetchDirectInvites();
     return _guard('fetch direct group invites', () async {
       return (await _remote.fetchDirectInvites()).map((row) {
         return GroupDirectInvite(
@@ -243,7 +257,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<GroupInviteAcceptResult> acceptDirectInvite(String inviteId) {
-    if (_useMockData) return _mock.acceptDirectInvite(inviteId);
     return _guard('accept direct group invite', () async {
       final row = await _remote.acceptDirectInvite(inviteId);
       return GroupInviteAcceptResult(
@@ -255,7 +268,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<void> declineDirectInvite(String inviteId) {
-    if (_useMockData) return _mock.declineDirectInvite(inviteId);
     return _guard(
       'decline direct group invite',
       () => _remote.declineDirectInvite(inviteId),
@@ -264,9 +276,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<void> declineInvite(String token) {
-    if (_useMockData) {
-      return _mock.declineInvite(token);
-    }
     return _guard('decline group invite', () => _remote.declineInvite(token));
   }
 
@@ -275,9 +284,6 @@ class GroupRepositoryImpl implements GroupRepository {
     required String groupId,
     required String username,
   }) {
-    if (_useMockData) {
-      return _mock.inviteByUsername(groupId: groupId, username: username);
-    }
     return _guard(
       'invite group member',
       () => _remote.inviteByUsername(groupId: groupId, username: username),
@@ -289,9 +295,6 @@ class GroupRepositoryImpl implements GroupRepository {
     required String groupId,
     required String userId,
   }) {
-    if (_useMockData) {
-      return _mock.inviteByUserId(groupId: groupId, userId: userId);
-    }
     return _guard(
       'invite group member by user id',
       () => _remote.inviteByUserId(groupId: groupId, userId: userId),
@@ -300,9 +303,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<List<GroupTransaction>> fetchTransactions(String groupId) {
-    if (_useMockData) {
-      return _mock.fetchTransactions(groupId);
-    }
     return _guard('fetch group transactions', () async {
       return (await _remote.fetchTransactions(
         groupId,
@@ -311,10 +311,33 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<GroupTransactionPage> fetchTransactionsPage({
+    required String groupId,
+    required int offset,
+    required int limit,
+    String query = '',
+    String? status,
+  }) async {
+    return _guard('fetch group transactions page', () async {
+      final rows = await _remote.fetchTransactionsPage(
+        groupId: groupId,
+        offset: offset,
+        limit: limit,
+        query: query,
+        status: status,
+      );
+      final items = rows
+          .map(GroupModelMapper.transaction)
+          .toList(growable: false);
+      return GroupTransactionPage(
+        items: items.take(limit).toList(growable: false),
+        hasMore: items.length > limit,
+      );
+    });
+  }
+
+  @override
   Future<GroupTransactionDetail> fetchTransactionDetail(String transactionId) {
-    if (_useMockData) {
-      return _mock.fetchTransactionDetail(transactionId);
-    }
     return _guard('fetch group transaction detail', () async {
       final transactionRow = await _remote.fetchTransaction(transactionId);
       final groupId = transactionRow['group_id'] as String;
@@ -343,9 +366,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<String> createTransaction(GroupTransactionDraft draft) async {
-    if (_useMockData) {
-      return _mock.createTransaction(draft);
-    }
     return _guard('create group transaction', () async {
       final id = await _remote.createTransaction(draft);
       if (draft.imageFilePath != null) {
@@ -373,12 +393,6 @@ class GroupRepositoryImpl implements GroupRepository {
     required String transactionId,
     required GroupTransactionDraft draft,
   }) async {
-    if (_useMockData) {
-      return _mock.updateTransaction(
-        transactionId: transactionId,
-        draft: draft,
-      );
-    }
     return _guard('update group transaction', () async {
       await _remote.updateTransaction(
         transactionId: transactionId,
@@ -405,9 +419,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<void> deleteTransaction(String transactionId) {
-    if (_useMockData) {
-      return _mock.deleteTransaction(transactionId);
-    }
     return _guard(
       'delete group transaction',
       () => _remote.deleteTransaction(transactionId),
@@ -419,12 +430,6 @@ class GroupRepositoryImpl implements GroupRepository {
     required String transactionId,
     required int shareAmount,
   }) {
-    if (_useMockData) {
-      return _mock.submitMemberAmount(
-        transactionId: transactionId,
-        shareAmount: shareAmount,
-      );
-    }
     return _guard(
       'submit group member amount',
       () => _remote.submitMemberAmount(
@@ -436,9 +441,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<GroupSettlementOverview> fetchSettlementOverview(String groupId) {
-    if (_useMockData) {
-      return _mock.fetchSettlementOverview(groupId);
-    }
     return _guard('fetch group settlements', () async {
       final detail = await fetchGroupDetail(groupId);
       final names = {
@@ -467,9 +469,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<GroupStatsOverview> fetchStats(String groupId) {
-    if (_useMockData) {
-      return _mock.fetchStats(groupId);
-    }
     return _guard('fetch group stats', () async {
       final detail = await fetchGroupDetail(groupId);
       final transactions = await fetchTransactions(groupId);
@@ -487,9 +486,6 @@ class GroupRepositoryImpl implements GroupRepository {
   Future<GroupNotificationPreference> fetchNotificationPreference(
     String groupId,
   ) {
-    if (_useMockData) {
-      return _mock.fetchNotificationPreference(groupId);
-    }
     return _guard('fetch group notification preference', () async {
       return GroupModelMapper.notificationPreference(
         await _remote.fetchNotificationPreference(groupId),
@@ -501,9 +497,6 @@ class GroupRepositoryImpl implements GroupRepository {
   Future<void> updateNotificationPreference(
     GroupNotificationPreference preference,
   ) {
-    if (_useMockData) {
-      return _mock.updateNotificationPreference(preference);
-    }
     return _guard(
       'update group notification preference',
       () => _remote.updateNotificationPreference(preference),
@@ -514,9 +507,6 @@ class GroupRepositoryImpl implements GroupRepository {
   Future<List<GroupReactionSummary>> fetchReactionSummaries(
     String transactionId,
   ) {
-    if (_useMockData) {
-      return _mock.fetchReactionSummaries(transactionId);
-    }
     return _guard('fetch group transaction reactions', () async {
       return (await _remote.fetchReactionSummaries(
         transactionId,
@@ -529,9 +519,6 @@ class GroupRepositoryImpl implements GroupRepository {
     required String transactionId,
     required String emoji,
   }) {
-    if (_useMockData) {
-      return _mock.toggleReaction(transactionId: transactionId, emoji: emoji);
-    }
     return _guard(
       'toggle group transaction reaction',
       () => _remote.toggleReaction(transactionId: transactionId, emoji: emoji),
@@ -543,9 +530,6 @@ class GroupRepositoryImpl implements GroupRepository {
     required String groupId,
     required DateTime month,
   }) async {
-    if (_useMockData) {
-      return _mock.fetchMonthlyStats(groupId: groupId, month: month);
-    }
     return _guard('fetch group monthly stats', () async {
       final row = await _remote.fetchMonthlyStats(
         groupId: groupId,
@@ -557,9 +541,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<GroupBudget> fetchBudget(String groupId) {
-    if (_useMockData) {
-      return _mock.fetchBudget(groupId);
-    }
     return _guard('fetch group budget', () async {
       return GroupModelMapper.budget(await _remote.fetchBudget(groupId));
     });
@@ -567,9 +548,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<void> updateBudget(GroupBudget budget) {
-    if (_useMockData) {
-      return _mock.updateBudget(budget);
-    }
     return _guard('update group budget', () => _remote.updateBudget(budget));
   }
 
@@ -665,9 +643,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<GroupPublicProfile> fetchPublicProfile(String groupId) {
-    if (_useMockData) {
-      return _mock.fetchPublicProfile(groupId);
-    }
     return _guard('fetch group public profile', () async {
       return GroupModelMapper.publicProfile(
         await _remote.fetchPublicProfile(groupId),
@@ -677,9 +652,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<void> updatePublicProfile(GroupPublicProfile profile) {
-    if (_useMockData) {
-      return _mock.updatePublicProfile(profile);
-    }
     return _guard(
       'update group public profile',
       () => _remote.updatePublicProfile(profile),
@@ -690,7 +662,6 @@ class GroupRepositoryImpl implements GroupRepository {
   Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
     String groupId,
   ) async {
-    if (_useMockData) return _mock.fetchSettlementHistory(groupId);
     return _guard('fetch group settlement history', () async {
       final rows = await _remote.fetchSettlementHistory(groupId);
       return rows
@@ -710,9 +681,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<void> markSettlementPaid(String settlementId) {
-    if (_useMockData) {
-      return _mock.markSettlementPaid(settlementId);
-    }
     return _guard(
       'mark group settlement paid',
       () => _remote.markSettlementPaid(settlementId),
@@ -721,9 +689,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<void> confirmSettlementReceived(String settlementId) {
-    if (_useMockData) {
-      return _mock.confirmSettlementReceived(settlementId);
-    }
     return _guard(
       'confirm group settlement received',
       () => _remote.confirmSettlementReceived(settlementId),
@@ -735,12 +700,6 @@ class GroupRepositoryImpl implements GroupRepository {
     required String settlementId,
     required String reason,
   }) {
-    if (_useMockData) {
-      return _mock.disputeSettlement(
-        settlementId: settlementId,
-        reason: reason,
-      );
-    }
     return _guard(
       'dispute group settlement',
       () =>
@@ -750,9 +709,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<void> resetDisputedSettlement(String settlementId) {
-    if (_useMockData) {
-      return _mock.resetDisputedSettlement(settlementId);
-    }
     return _guard(
       'reset disputed group settlement',
       () => _remote.resetDisputedSettlement(settlementId),
@@ -761,9 +717,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<void> removeMember({required String groupId, required String userId}) {
-    if (_useMockData) {
-      return _mock.removeMember(groupId: groupId, userId: userId);
-    }
     return _guard(
       'remove group member',
       () => _remote.removeMember(groupId: groupId, userId: userId),
@@ -772,9 +725,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<void> leaveGroup(String groupId) {
-    if (_useMockData) {
-      return _mock.leaveGroup(groupId);
-    }
     return _guard('leave group', () => _remote.leaveGroup(groupId));
   }
 
@@ -783,12 +733,6 @@ class GroupRepositoryImpl implements GroupRepository {
     required String groupId,
     required String newOwnerUserId,
   }) {
-    if (_useMockData) {
-      return _mock.transferOwnership(
-        groupId: groupId,
-        newOwnerUserId: newOwnerUserId,
-      );
-    }
     return _guard(
       'transfer group ownership',
       () => _remote.transferOwnership(
@@ -803,9 +747,6 @@ class GroupRepositoryImpl implements GroupRepository {
     required String transactionId,
     required String content,
   }) {
-    if (_useMockData) {
-      return _mock.addComment(transactionId: transactionId, content: content);
-    }
     return _guard(
       'add group transaction comment',
       () => _remote.addComment(transactionId: transactionId, content: content),
@@ -814,9 +755,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<List<GroupReactionSummary>> fetchReactions(String transactionId) {
-    if (_useMockData) {
-      return _mock.fetchReactions(transactionId);
-    }
     return _guard('fetch group transaction reactions', () async {
       final rows = await _remote.fetchReactions(transactionId);
       return rows.map(GroupModelMapper.reaction).toList();
@@ -829,13 +767,6 @@ class GroupRepositoryImpl implements GroupRepository {
     required String transactionId,
     required String content,
   }) {
-    if (_useMockData) {
-      return _mock.updateComment(
-        commentId: commentId,
-        transactionId: transactionId,
-        content: content,
-      );
-    }
     return _guard(
       'update group transaction comment',
       () => _remote.updateComment(commentId: commentId, content: content),
@@ -847,12 +778,6 @@ class GroupRepositoryImpl implements GroupRepository {
     required String commentId,
     required String transactionId,
   }) {
-    if (_useMockData) {
-      return _mock.deleteComment(
-        commentId: commentId,
-        transactionId: transactionId,
-      );
-    }
     return _guard(
       'delete group transaction comment',
       () => _remote.deleteComment(commentId),
@@ -861,9 +786,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<List<GroupActivity>> fetchActivities(String groupId) {
-    if (_useMockData) {
-      return _mock.fetchActivities(groupId);
-    }
     return _guard('fetch group activities', () async {
       final rows = await _remote.fetchActivities(groupId);
       return rows.map(GroupModelMapper.activity).toList();
@@ -871,10 +793,144 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<List<GroupAuditLog>> fetchAuditLogs(String groupId) {
+    return _guard('fetch group audit logs', () async {
+      final rows = await _remote.fetchAuditLogs(groupId);
+      return rows
+          .map(
+            (row) => GroupAuditLog(
+              id: row['id'] as String,
+              groupId: row['group_id'] as String,
+              actorUserId: row['actor_user_id'] as String?,
+              action: row['action'] as String,
+              targetUserId: row['target_user_id'] as String?,
+              targetTransactionId: row['target_transaction_id'] as String?,
+              metadata: Map<String, dynamic>.from(
+                row['metadata'] as Map? ?? const {},
+              ),
+              createdAt: DateTime.parse(row['created_at'] as String),
+            ),
+          )
+          .toList(growable: false);
+    });
+  }
+
+  @override
+  Future<List<GroupPoll>> fetchPolls(String groupId) async {
+    return _guard('fetch group polls', () async {
+      final rows = await _remote.fetchPolls(groupId);
+      return rows
+          .map((row) {
+            final options = (row['options'] as List? ?? const [])
+                .map((item) => Map<String, dynamic>.from(item as Map))
+                .map(
+                  (item) => GroupPollOption(
+                    id: item['id'] as String,
+                    label: item['label'] as String,
+                    voteCount: (item['vote_count'] as num?)?.toInt() ?? 0,
+                  ),
+                )
+                .toList(growable: false);
+            return GroupPoll(
+              id: row['id'] as String,
+              groupId: row['group_id'] as String,
+              title: row['title'] as String,
+              options: options,
+              isClosed: row['is_closed'] as bool? ?? false,
+              createdAt: DateTime.parse(row['created_at'] as String),
+            );
+          })
+          .toList(growable: false);
+    });
+  }
+
+  @override
+  Future<String> createPoll({
+    required String groupId,
+    required String title,
+    required List<String> options,
+  }) {
+    return _guard(
+      'create group poll',
+      () =>
+          _remote.createPoll(groupId: groupId, title: title, options: options),
+    );
+  }
+
+  @override
+  Future<void> votePoll({required String pollId, required String optionId}) {
+    return _guard(
+      'vote in group poll',
+      () => _remote.votePoll(pollId: pollId, optionId: optionId),
+    );
+  }
+
+  @override
+  Future<List<GroupSavingsChallenge>> fetchSavingsChallenges(
+    String groupId,
+  ) async {
+    return _guard('fetch savings challenges', () async {
+      final rows = await _remote.fetchSavingsChallenges(groupId);
+      return rows
+          .map((row) {
+            final contributions = row['contributions'] as List? ?? const [];
+            final total = contributions.fold<int>(
+              0,
+              (sum, item) => sum + ((item as Map)['amount'] as num).toInt(),
+            );
+            return GroupSavingsChallenge(
+              id: row['id'] as String,
+              groupId: row['group_id'] as String,
+              title: row['title'] as String,
+              targetAmount: (row['target_amount'] as num).toInt(),
+              startDate: DateTime.parse(row['start_date'] as String),
+              endDate: DateTime.parse(row['end_date'] as String),
+              totalContributed: total,
+              isActive: row['is_active'] as bool? ?? true,
+            );
+          })
+          .toList(growable: false);
+    });
+  }
+
+  @override
+  Future<String> createSavingsChallenge({
+    required String groupId,
+    required String title,
+    required int targetAmount,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) {
+    return _guard(
+      'create savings challenge',
+      () => _remote.createSavingsChallenge(
+        groupId: groupId,
+        title: title,
+        targetAmount: targetAmount,
+        startDate: startDate,
+        endDate: endDate,
+      ),
+    );
+  }
+
+  @override
+  Future<void> addSavingsContribution({
+    required String challengeId,
+    required int amount,
+    String? note,
+  }) {
+    return _guard(
+      'add savings contribution',
+      () => _remote.addSavingsContribution(
+        challengeId: challengeId,
+        amount: amount,
+        note: note,
+      ),
+    );
+  }
+
+  @override
   Future<List<GroupNotification>> fetchNotifications({String? category}) {
-    if (_useMockData) {
-      return _mock.fetchNotifications(category: category);
-    }
     return _guard('fetch group notifications', () async {
       final rows = await _remote.fetchNotifications(category: category);
       return rows.map(GroupModelMapper.notification).toList();
@@ -883,9 +939,6 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<void> markNotificationRead(String notificationId) {
-    if (_useMockData) {
-      return _mock.markNotificationRead(notificationId);
-    }
     return _guard(
       'mark group notification read',
       () => _remote.markNotificationRead(notificationId),
@@ -893,12 +946,15 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<void> markAllNotificationsRead() {
+    return _guard(
+      'mark all group notifications read',
+      _remote.markAllNotificationsRead,
+    );
+  }
+
+  @override
   Future<GroupPublicProfile> fetchPublicGroupProfile(String slug) {
-    if (_useMockData) {
-      return Future.error(
-        const AppException('Public profile unavailable in demo mode'),
-      );
-    }
     return _guard('fetch public group profile', () async {
       final row = await _remote.fetchPublicGroupProfile(slug);
       if (row == null) {
@@ -919,6 +975,9 @@ class GroupRepositoryImpl implements GroupRepository {
       groupId: groupId,
       isEnabled: row['is_enabled'] as bool? ?? true,
       showStats: row['show_stats'] as bool? ?? false,
+      showDescription: row['show_description'] as bool? ?? false,
+      showGroupType: row['show_group_type'] as bool? ?? false,
+      showAvatar: row['show_avatar'] as bool? ?? false,
       slug: row['slug'] as String?,
       groupName: row['group_name'] as String?,
       avatarPath: row['avatar_path'] as String?,
@@ -979,7 +1038,6 @@ class GroupRepositoryImpl implements GroupRepository {
   Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
     String groupId,
   ) async {
-    if (_useMockData) return const [];
     return _guard('fetch recurring group transactions', () async {
       final rows = await _remote.fetchRecurringTransactions(groupId);
       return rows.map(_recurringFromRow).toList(growable: false);
@@ -994,8 +1052,8 @@ class GroupRepositoryImpl implements GroupRepository {
     required String frequency,
     required DateTime nextRunAt,
     required int notifyDaysBefore,
+    bool autoPost = false,
   }) {
-    if (_useMockData) return Future.value('mock-recurring-id');
     return _guard(
       'create recurring group transaction',
       () => _remote.createRecurringTransaction(
@@ -1005,6 +1063,7 @@ class GroupRepositoryImpl implements GroupRepository {
         frequency: frequency,
         nextRunAt: nextRunAt,
         notifyDaysBefore: notifyDaysBefore,
+        autoPost: autoPost,
       ),
     );
   }
@@ -1018,8 +1077,8 @@ class GroupRepositoryImpl implements GroupRepository {
     required DateTime nextRunAt,
     required int notifyDaysBefore,
     required bool isActive,
+    bool autoPost = false,
   }) {
-    if (_useMockData) return Future.value();
     return _guard(
       'update recurring group transaction',
       () => _remote.updateRecurringTransaction(
@@ -1030,13 +1089,13 @@ class GroupRepositoryImpl implements GroupRepository {
         nextRunAt: nextRunAt,
         notifyDaysBefore: notifyDaysBefore,
         isActive: isActive,
+        autoPost: autoPost,
       ),
     );
   }
 
   @override
   Future<void> deleteRecurringTransaction(String id) {
-    if (_useMockData) return Future.value();
     return _guard(
       'delete recurring group transaction',
       () => _remote.deleteRecurringTransaction(id),
@@ -1054,6 +1113,7 @@ class GroupRepositoryImpl implements GroupRepository {
       nextRunAt: DateTime.parse(row['next_run_at'] as String),
       notifyDaysBefore: (row['notify_days_before'] as num).toInt(),
       isActive: row['is_active'] as bool,
+      autoPost: row['auto_post'] as bool? ?? false,
       createdAt: DateTime.parse(row['created_at'] as String),
     );
   }

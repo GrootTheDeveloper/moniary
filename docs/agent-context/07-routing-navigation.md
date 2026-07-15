@@ -102,7 +102,10 @@ floating global action that pushes `/assistant`; it is not a fifth shell tab.
 | `/groups/transaction/detail` | `GroupTransactionDetailScreen` | Transaction ID; fade |
 | `/groups/activity-center` | `GroupActivityCenterScreen` | Optional group ID; without one it opens the notifications-only view |
 | `/group-tools` | `GroupToolsScreen` | Group ID; finance, community, and group settings tools |
+| `/group-settings` | `GroupSettingsScreen` | Group ID; owner/admin edit and guarded archive |
 | `/group-summary` | `GroupSummaryScreen` | Group ID; monthly spending, member breakdown, and settlement history |
+| `/group-participation` | `GroupParticipationScreen` | Group ID; polls and savings challenges |
+| `/group-audit-log` | `GroupAuditLogScreen` | Group ID; owner/admin audit trail |
 | `/group-photo-album` | `GroupPhotoAlbumScreen` | Group ID; private transaction photo gallery |
 | `/group-budget` | `GroupBudgetScreen` | Group ID; owner/admin write, members read |
 | `/group-notification-preferences` | `GroupNotificationPreferencesScreen` | Group ID; current member's preferences |
@@ -112,6 +115,7 @@ floating global action that pushes `/assistant`; it is not a fifth shell tab.
 | `/friends` | `FriendsScreen` | Friend list/requests |
 | `/friends/add` | `AddFriendScreen` | Search/add |
 | `/friends/qr` | `FriendQrScreen` | Display or scan a friend invite QR code |
+| `/payment-qr` | `PaymentQrScreen` | Own payment QR management or member QR view |
 | `/friends/invite/:token` | `FriendInviteAcceptScreen` | Path token |
 
 Invalid/missing required group extras fall back to `GroupsScreen`; the group

@@ -27,6 +27,22 @@ final groupTransactionsProvider =
       return ref.watch(groupRepositoryProvider).fetchTransactions(groupId);
     });
 
+final groupTransactionsPageProvider =
+    FutureProvider.family<
+      GroupTransactionPage,
+      ({String groupId, int offset, String query, String? status})
+    >((ref, key) {
+      return ref
+          .watch(groupRepositoryProvider)
+          .fetchTransactionsPage(
+            groupId: key.groupId,
+            offset: key.offset,
+            limit: 40,
+            query: key.query,
+            status: key.status,
+          );
+    });
+
 final publicGroupProfileProvider =
     FutureProvider.family<GroupPublicProfile, String>((ref, slug) {
       return ref.watch(groupRepositoryProvider).fetchPublicGroupProfile(slug);
@@ -56,6 +72,25 @@ final groupMonthlyStatsProvider =
           .fetchMonthlyStats(groupId: key.groupId, month: key.month);
     });
 
+final groupMonthlyTrendProvider =
+    FutureProvider.family<List<GroupMonthlyStats>, String>((
+      ref,
+      groupId,
+    ) async {
+      final repository = ref.watch(groupRepositoryProvider);
+      final now = DateTime.now();
+      final months = List.generate(
+        6,
+        (index) => DateTime(now.year, now.month - (5 - index)),
+      );
+      return Future.wait(
+        months.map(
+          (month) =>
+              repository.fetchMonthlyStats(groupId: groupId, month: month),
+        ),
+      );
+    });
+
 final groupSettlementHistoryProvider =
     FutureProvider.family<List<GroupSettlementHistoryEntry>, String>(
       (ref, groupId) =>
@@ -81,6 +116,21 @@ final groupActivitiesProvider =
     FutureProvider.family<List<GroupActivity>, String>((ref, groupId) {
       return ref.watch(groupRepositoryProvider).fetchActivities(groupId);
     });
+
+final groupAuditLogsProvider =
+    FutureProvider.family<List<GroupAuditLog>, String>(
+      (ref, groupId) =>
+          ref.watch(groupRepositoryProvider).fetchAuditLogs(groupId),
+    );
+
+final groupPollsProvider = FutureProvider.family<List<GroupPoll>, String>(
+  (ref, groupId) => ref.watch(groupRepositoryProvider).fetchPolls(groupId),
+);
+final groupSavingsChallengesProvider =
+    FutureProvider.family<List<GroupSavingsChallenge>, String>(
+      (ref, groupId) =>
+          ref.watch(groupRepositoryProvider).fetchSavingsChallenges(groupId),
+    );
 
 final groupNotificationsProvider = FutureProvider<List<GroupNotification>>((
   ref,
@@ -229,6 +279,7 @@ class GroupActionController extends AsyncNotifier<void> {
     required String frequency,
     required DateTime nextRunAt,
     required int notifyDaysBefore,
+    bool autoPost = false,
   }) {
     return _run(() async {
       final id = await ref
@@ -240,6 +291,7 @@ class GroupActionController extends AsyncNotifier<void> {
             frequency: frequency,
             nextRunAt: nextRunAt,
             notifyDaysBefore: notifyDaysBefore,
+            autoPost: autoPost,
           );
       ref.invalidate(groupRecurringTransactionsProvider(groupId));
       return id;
@@ -255,6 +307,7 @@ class GroupActionController extends AsyncNotifier<void> {
     required DateTime nextRunAt,
     required int notifyDaysBefore,
     required bool isActive,
+    bool autoPost = false,
   }) {
     return _run(() async {
       await ref
@@ -267,6 +320,7 @@ class GroupActionController extends AsyncNotifier<void> {
             nextRunAt: nextRunAt,
             notifyDaysBefore: notifyDaysBefore,
             isActive: isActive,
+            autoPost: autoPost,
           );
       ref.invalidate(groupRecurringTransactionsProvider(groupId));
     });
@@ -279,6 +333,73 @@ class GroupActionController extends AsyncNotifier<void> {
     return _run(() async {
       await ref.read(groupRepositoryProvider).deleteRecurringTransaction(id);
       ref.invalidate(groupRecurringTransactionsProvider(groupId));
+    });
+  }
+
+  Future<void> votePoll({
+    required String groupId,
+    required String pollId,
+    required String optionId,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .votePoll(pollId: pollId, optionId: optionId);
+      ref.invalidate(groupPollsProvider(groupId));
+    });
+  }
+
+  Future<String> createPoll({
+    required String groupId,
+    required String title,
+    required List<String> options,
+  }) {
+    return _run(() async {
+      final id = await ref
+          .read(groupRepositoryProvider)
+          .createPoll(groupId: groupId, title: title, options: options);
+      ref.invalidate(groupPollsProvider(groupId));
+      return id;
+    });
+  }
+
+  Future<String> createSavingsChallenge({
+    required String groupId,
+    required String title,
+    required int targetAmount,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) {
+    return _run(() async {
+      final id = await ref
+          .read(groupRepositoryProvider)
+          .createSavingsChallenge(
+            groupId: groupId,
+            title: title,
+            targetAmount: targetAmount,
+            startDate: startDate,
+            endDate: endDate,
+          );
+      ref.invalidate(groupSavingsChallengesProvider(groupId));
+      return id;
+    });
+  }
+
+  Future<void> addSavingsContribution({
+    required String groupId,
+    required String challengeId,
+    required int amount,
+    String? note,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .addSavingsContribution(
+            challengeId: challengeId,
+            amount: amount,
+            note: note,
+          );
+      ref.invalidate(groupSavingsChallengesProvider(groupId));
     });
   }
 
@@ -299,6 +420,65 @@ class GroupActionController extends AsyncNotifier<void> {
           );
       ref.invalidate(groupsControllerProvider);
       return id;
+    });
+  }
+
+  Future<void> updateGroup({
+    required String groupId,
+    required String name,
+    String? description,
+    String? type,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .updateGroup(
+            groupId: groupId,
+            name: name,
+            description: description,
+            type: type,
+          );
+      ref.invalidate(groupsControllerProvider);
+      ref.invalidate(groupDetailProvider(groupId));
+    });
+  }
+
+  Future<void> updateGroupAvatar({
+    required String groupId,
+    required String filePath,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .updateGroupAvatar(groupId: groupId, filePath: filePath);
+      ref.invalidate(groupsControllerProvider);
+      ref.invalidate(groupDetailProvider(groupId));
+    });
+  }
+
+  Future<void> updateGroupCurrency({
+    required String groupId,
+    required String baseCurrency,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .updateGroupCurrency(groupId: groupId, baseCurrency: baseCurrency);
+      ref.invalidate(groupsControllerProvider);
+      ref.invalidate(groupDetailProvider(groupId));
+    });
+  }
+
+  Future<void> setGroupArchived({
+    required String groupId,
+    required bool archived,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .setGroupArchived(groupId: groupId, archived: archived);
+      ref.invalidate(groupsControllerProvider);
+      ref.invalidate(groupDetailProvider(groupId));
     });
   }
 
@@ -539,6 +719,14 @@ class GroupActionController extends AsyncNotifier<void> {
       await ref
           .read(groupRepositoryProvider)
           .markNotificationRead(notificationId);
+      ref.invalidate(groupNotificationsProvider);
+      ref.invalidate(communityNotificationsProvider);
+    });
+  }
+
+  Future<void> markAllNotificationsRead() {
+    return _run(() async {
+      await ref.read(groupRepositoryProvider).markAllNotificationsRead();
       ref.invalidate(groupNotificationsProvider);
       ref.invalidate(communityNotificationsProvider);
     });

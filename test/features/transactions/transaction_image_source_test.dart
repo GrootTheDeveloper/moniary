@@ -11,32 +11,17 @@ void main() {
       expect(transactionImagePathForDisplay(transaction), '/tmp/receipt.jpg');
     });
 
-    test('uses a transaction-like demo image when no image is available', () {
-      final transaction = _transaction(categoryId: 'mock-cat-shopping');
+    test('returns an empty path when no real image is available', () {
+      final transaction = _transaction();
 
-      expect(
-        transactionImagePathForDisplay(transaction),
-        'asset://assets/demo_transactions/shopping.png',
-      );
-    });
-
-    test('uses salary image for income fallback thumbnails', () {
-      final transaction = _transaction(
-        type: TransactionType.income,
-        categoryId: 'custom-income',
-      );
-
-      expect(
-        transactionFallbackAssetPath(transaction),
-        'assets/demo_transactions/salary.png',
-      );
+      expect(transactionImagePathForDisplay(transaction), isEmpty);
     });
   });
 }
 
 TransactionEntry _transaction({
   String? imagePath,
-  String categoryId = 'mock-cat-food',
+  String categoryId = 'cat-food',
   TransactionType type = TransactionType.expense,
 }) {
   return TransactionEntry(
