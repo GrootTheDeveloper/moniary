@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
@@ -9,6 +10,8 @@ import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/widgets/moniary_design.dart';
 import '../application/assistant_controller.dart';
 import '../domain/assistant_models.dart';
+import 'assistant_intro_screen.dart';
+import 'assistant_permission_screen.dart';
 import 'assistant_question_catalog.dart';
 
 class AssistantConversationScreen extends ConsumerStatefulWidget {
@@ -44,19 +47,57 @@ class _AssistantConversationScreenState
 
   @override
   Widget build(BuildContext context) {
+    final accessAsync = ref.watch(assistantAccessProvider);
     final conversation = ref.watch(assistantConversationProvider);
     ref.listen(assistantConversationProvider, (_, _) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
     });
 
+    return accessAsync.when(
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (_, _) =>
+          Scaffold(body: Center(child: Text(context.l10n.errorGeneric))),
+      data: (access) {
+        if (!access.introSeen || !access.enabled) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            context.go(
+              access.introSeen
+                  ? AssistantPermissionScreen.routePath
+                  : AssistantIntroScreen.routePath,
+            );
+          });
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return _buildConversation(context, conversation);
+      },
+    );
+  }
+
+  Widget _buildConversation(
+    BuildContext context,
+    AsyncValue<AssistantConversationState> conversation,
+  ) {
+    final chat = conversation.value;
+    final isSending = chat?.isSending ?? conversation.isLoading;
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.assistantTitle),
         actions: [
           IconButton(
+            tooltip: context.l10n.assistantPermissionTitle,
+            onPressed: () => context.push(AssistantPermissionScreen.routePath),
+            icon: const Icon(Icons.tune_outlined),
+          ),
+          IconButton(
             tooltip: context.l10n.commonDelete,
-            onPressed: () =>
-                ref.read(assistantConversationProvider.notifier).clear(),
+            onPressed: chat?.messages.isEmpty == true
+                ? null
+                : () =>
+                      ref.read(assistantConversationProvider.notifier).clear(),
             icon: const Icon(Icons.delete_sweep_outlined),
           ),
         ],
@@ -65,13 +106,14 @@ class _AssistantConversationScreenState
         minimum: const EdgeInsets.fromLTRB(18, 8, 18, 14),
         child: TextField(
           controller: _controller,
+          enabled: !isSending,
           textInputAction: TextInputAction.send,
           onSubmitted: (_) => _send(),
           decoration: InputDecoration(
             hintText: context.l10n.assistantInputHint,
             suffixIcon: IconButton.filled(
               tooltip: context.l10n.assistantInputHint,
-              onPressed: conversation.isLoading ? null : _send,
+              onPressed: isSending ? null : _send,
               icon: const Icon(Icons.arrow_upward),
             ),
           ),
@@ -81,7 +123,8 @@ class _AssistantConversationScreenState
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) =>
             Center(child: Text(context.l10n.assistantAnalysisError)),
-        data: (messages) {
+        data: (chat) {
+          final messages = chat.messages;
           if (messages.isEmpty) {
             return Center(
               child: Padding(
@@ -97,9 +140,17 @@ class _AssistantConversationScreenState
           return ListView.separated(
             controller: _scrollController,
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-            itemCount: messages.length,
+            itemCount: messages.length + (chat.isSending ? 1 : 0),
             separatorBuilder: (_, _) => const SizedBox(height: 14),
             itemBuilder: (context, index) {
+              if (index == messages.length) {
+                return const _AssistantResponseShell(
+                  child: SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                );
+              }
               final message = messages[index];
               if (message.isUser) {
                 return Align(
@@ -130,7 +181,19 @@ class _AssistantConversationScreenState
                   child: Text(context.l10n.assistantAnalysisError),
                 );
               }
-              return _InsightCard(insight: message.insight!);
+              final assistantText = message.assistantText?.trim();
+              if (message.insight != null) {
+                return _InsightCard(
+                  insight: message.insight!,
+                  commentaryText: assistantText,
+                );
+              }
+              if (assistantText != null && assistantText.isNotEmpty) {
+                return _AssistantResponseShell(
+                  child: _AssistantMessageText(assistantText),
+                );
+              }
+              return const SizedBox.shrink();
             },
           );
         },
@@ -176,9 +239,10 @@ class _AssistantConversationScreenState
 }
 
 class _InsightCard extends ConsumerWidget {
-  const _InsightCard({required this.insight});
+  const _InsightCard({required this.insight, this.commentaryText});
 
   final AssistantInsight insight;
+  final String? commentaryText;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -191,6 +255,10 @@ class _InsightCard extends ConsumerWidget {
       AssistantQuestionKind.topCategory => snapshot.topCategoryAmount,
       AssistantQuestionKind.recurringExpenses => snapshot.recurringAmount,
       AssistantQuestionKind.savingSuggestion => snapshot.suggestedSaving,
+      AssistantQuestionKind.greeting ||
+      AssistantQuestionKind.userIdentity ||
+      AssistantQuestionKind.assistantIdentity ||
+      AssistantQuestionKind.unsupported => 0,
     };
 
     return _AssistantResponseShell(
@@ -215,10 +283,12 @@ class _InsightCard extends ConsumerWidget {
           ],
           Text(
             content,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: context.moniaryColors.textPrimary,
-              height: 1.55,
-            ),
+            style: _assistantMessageTextStyle(context),
+            softWrap: true,
+            maxLines: null,
+            overflow: TextOverflow.visible,
+            textWidthBasis: TextWidthBasis.parent,
+            strutStyle: _assistantMessageStrut(context),
           ),
           if (insight.kind == AssistantQuestionKind.topCategory &&
               snapshot.topCategoryName != null) ...[
@@ -226,6 +296,20 @@ class _InsightCard extends ConsumerWidget {
             MoniaryProgressBar(
               value: snapshot.topCategoryShare,
               color: context.moniaryColors.primary,
+            ),
+          ],
+          if (commentaryText?.trim().isNotEmpty == true) ...[
+            const SizedBox(height: 14),
+            Divider(color: context.moniaryColors.outline),
+            const SizedBox(height: 10),
+            Text(
+              commentaryText!.trim(),
+              style: _assistantMessageTextStyle(context),
+              softWrap: true,
+              maxLines: null,
+              overflow: TextOverflow.visible,
+              textWidthBasis: TextWidthBasis.parent,
+              strutStyle: _assistantMessageStrut(context),
             ),
           ],
         ],
@@ -283,12 +367,12 @@ class _InsightCard extends ConsumerWidget {
         );
       case AssistantQuestionKind.recurringExpenses:
         final label = snapshot.recurringLabel;
-        if (label == null || snapshot.recurringCount < 2) {
+        if (label == null || snapshot.recurringAmount <= 0) {
           return context.l10n.assistantNoData;
         }
         return context.l10n.assistantRecurringAnswer(
           label,
-          snapshot.recurringCount,
+          math.max(1, snapshot.recurringCount),
           ref.formatAmount(snapshot.recurringAmount),
         );
       case AssistantQuestionKind.savingSuggestion:
@@ -300,6 +384,11 @@ class _InsightCard extends ConsumerWidget {
           category,
           ref.formatAmount(math.max(0, snapshot.suggestedSaving)),
         );
+      case AssistantQuestionKind.greeting:
+      case AssistantQuestionKind.userIdentity:
+      case AssistantQuestionKind.assistantIdentity:
+      case AssistantQuestionKind.unsupported:
+        return context.l10n.assistantNoData;
     }
   }
 }
@@ -311,10 +400,14 @@ class _AssistantResponseShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final maxBubbleWidth = math.min(
+      MediaQuery.sizeOf(context).width - 56,
+      320.0,
+    );
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 330),
+        constraints: BoxConstraints(maxWidth: maxBubbleWidth),
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: context.moniaryColors.surface.withValues(alpha: 0.88),
@@ -337,4 +430,42 @@ class _AssistantResponseShell extends StatelessWidget {
       ),
     );
   }
+}
+
+class _AssistantMessageText extends StatelessWidget {
+  const _AssistantMessageText(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: _assistantMessageTextStyle(context),
+      softWrap: true,
+      maxLines: null,
+      overflow: TextOverflow.visible,
+      textWidthBasis: TextWidthBasis.parent,
+      strutStyle: _assistantMessageStrut(context),
+    );
+  }
+}
+
+TextStyle _assistantMessageTextStyle(BuildContext context) {
+  return Theme.of(context).textTheme.bodyLarge?.copyWith(
+        color: context.moniaryColors.textPrimary,
+        height: 1.55,
+      ) ??
+      TextStyle(
+        color: context.moniaryColors.textPrimary,
+        fontSize: 15,
+        height: 1.55,
+      );
+}
+
+StrutStyle _assistantMessageStrut(BuildContext context) {
+  return StrutStyle.fromTextStyle(
+    _assistantMessageTextStyle(context),
+    forceStrutHeight: true,
+  );
 }

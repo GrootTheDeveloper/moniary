@@ -55,16 +55,16 @@ flutter:
     - assets/demo_avatars/
     - assets/mascot/
     - assets/fonts/OFL-Manrope.txt
-    - assets/fonts/OFL-InstrumentSerif.txt
+    - assets/fonts/OFL-Newsreader.txt
     - assets/fonts/OFL-JetBrainsMono.txt
   fonts:
     - family: Manrope
       fonts:
         - asset: assets/fonts/Manrope-Variable.ttf
-    - family: Instrument Serif
+    - family: Newsreader
       fonts:
-        - asset: assets/fonts/InstrumentSerif-Regular.ttf
-        - asset: assets/fonts/InstrumentSerif-Italic.ttf
+        - asset: assets/fonts/Newsreader-Regular.ttf
+        - asset: assets/fonts/Newsreader-Italic.ttf
           style: italic
     - family: JetBrains Mono
       fonts:

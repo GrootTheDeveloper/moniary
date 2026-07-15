@@ -1,7 +1,7 @@
 # Auth, Permissions & Security
 
 **Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
-**Last source audit**: `2026-07-10`
+**Last source audit**: `2026-07-15`
 
 ## Authentication
 
@@ -64,6 +64,11 @@ client-side `user_id` filters are not a security boundary.
 ## Secrets
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `OCR_API_URL` are compile-time
-Dart defines. Edge Function secrets such as `RESEND_API_KEY` belong in the
-Supabase environment. Never commit access tokens, service-role keys, signing
-secrets, or production credentials.
+Dart defines. Edge Function secrets such as `RESEND_API_KEY`,
+`GEMINI_API_KEY`, `GEMINI_MODEL`, and `GEMINI_BLOCKED_KEY_SHA256` belong in
+the Supabase environment. Never commit access tokens, service-role keys,
+signing secrets, AI provider keys, database URLs, or production credentials.
+
+The financial assistant must call Gemini only from the `assistant-chat` Edge
+Function. The Flutter client must not contain Gemini keys or call the Gemini
+API directly.

@@ -1,0 +1,3 @@
+-- Remote migration history placeholder.
+-- The linked Supabase project has this migration version recorded with no
+-- statements in supabase_migrations.schema_migrations.

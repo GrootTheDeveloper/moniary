@@ -42,7 +42,7 @@ void _registerFontLicenses() {
   LicenseRegistry.addLicense(() async* {
     for (final entry in const <(String, String)>[
       ('Manrope', 'assets/fonts/OFL-Manrope.txt'),
-      ('Instrument Serif', 'assets/fonts/OFL-InstrumentSerif.txt'),
+      ('Newsreader', 'assets/fonts/OFL-Newsreader.txt'),
       ('JetBrains Mono', 'assets/fonts/OFL-JetBrainsMono.txt'),
     ]) {
       final license = await rootBundle.loadString(entry.$2);
