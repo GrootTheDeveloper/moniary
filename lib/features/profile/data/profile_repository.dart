@@ -10,29 +10,15 @@ import '../../../../shared/utils/app_logger.dart';
 import '../domain/user_profile.dart';
 
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
-  return ProfileRepository(
-    ref.watch(supabaseClientProvider),
-    useMockData: ref.watch(useMockDataModeProvider),
-  );
+  return ProfileRepository(ref.watch(supabaseClientProvider));
 });
 
 class ProfileRepository {
-  ProfileRepository(this._client, {bool useMockData = false})
-    : _useMockData = useMockData || !AppConstants.hasSupabaseConfig;
+  ProfileRepository(this._client);
 
   final SupabaseClient _client;
-  final bool _useMockData;
-
-  static UserProfile? _mockProfile;
-
-  void resetMockProfile() {
-    if (_useMockData) _mockProfile = null;
-  }
 
   String get _userId {
-    if (_useMockData) {
-      return 'mock-user-id';
-    }
     final uid = _client.auth.currentSession?.user.id;
     if (uid == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
@@ -41,20 +27,6 @@ class ProfileRepository {
   }
 
   Future<UserProfile?> fetchCurrentProfile() async {
-    if (_useMockData) {
-      _mockProfile ??= UserProfile(
-        id: 'mock-user-id',
-        fullName: '',
-        email: 'guest@moniary.app',
-        avatarUrl: null,
-        loginProvider: 'anonymous',
-        timezone: AppConstants.defaultTimezone,
-        username: 'mock-user',
-        surveyCompleted: false,
-        paymentQrPath: null,
-      );
-      return _mockProfile;
-    }
     try {
       final uid = _userId;
 
@@ -98,22 +70,6 @@ class ProfileRepository {
     required String timezone,
     String? avatarImagePath,
   }) async {
-    if (_useMockData) {
-      _mockProfile = UserProfile(
-        id: 'mock-user-id',
-        fullName: fullName,
-        email: _mockProfile?.email ?? 'guest@moniary.app',
-        avatarUrl: avatarImagePath ?? _mockProfile?.avatarUrl,
-        loginProvider: _mockProfile?.loginProvider ?? 'anonymous',
-        timezone: timezone,
-        username: username,
-        occupation: _mockProfile?.occupation,
-        preferredCurrency: _mockProfile?.preferredCurrency ?? 'VND',
-        surveyCompleted: _mockProfile?.surveyCompleted ?? false,
-        paymentQrPath: _mockProfile?.paymentQrPath,
-      );
-      return _mockProfile!;
-    }
     try {
       final uid = _userId;
       final avatarUrl = avatarImagePath == null
@@ -161,30 +117,6 @@ class ProfileRepository {
     required String occupation,
     required String preferredCurrency,
   }) async {
-    if (_useMockData) {
-      final profile = _mockProfile ?? await fetchCurrentProfile();
-      if (profile == null) {
-        throw const AppException(
-          'Profile is not available',
-          code: 'PROFILE_NOT_FOUND',
-        );
-      }
-      _mockProfile = UserProfile(
-        id: profile.id,
-        fullName: profile.fullName,
-        email: profile.email,
-        avatarUrl: profile.avatarUrl,
-        loginProvider: profile.loginProvider,
-        timezone: profile.timezone,
-        username: profile.username,
-        occupation: occupation,
-        preferredCurrency: preferredCurrency,
-        surveyCompleted: true,
-        paymentQrPath: profile.paymentQrPath,
-      );
-      return _mockProfile!;
-    }
-
     try {
       final uid = _userId;
       try {
@@ -223,13 +155,6 @@ class ProfileRepository {
     required String walletName,
     required double initialBalance,
   }) async {
-    if (_useMockData) {
-      return completeSurvey(
-        occupation: occupation,
-        preferredCurrency: preferredCurrency,
-      );
-    }
-
     try {
       final row = await _client.rpc(
         'complete_profile_survey',
@@ -256,38 +181,7 @@ class ProfileRepository {
     }
   }
 
-  void setMockEmailAndProvider({
-    required String email,
-    required String loginProvider,
-  }) {
-    _mockProfile = UserProfile(
-      id: 'mock-user-id',
-      fullName: _mockProfile?.fullName ?? '',
-      email: email,
-      avatarUrl: _mockProfile?.avatarUrl,
-      loginProvider: loginProvider,
-      timezone: _mockProfile?.timezone ?? AppConstants.defaultTimezone,
-      username: _mockProfile?.username ?? 'mock-user',
-      occupation: _mockProfile?.occupation,
-      preferredCurrency: _mockProfile?.preferredCurrency ?? 'VND',
-      surveyCompleted: _mockProfile?.surveyCompleted ?? false,
-      paymentQrPath: _mockProfile?.paymentQrPath,
-    );
-  }
-
   Future<UserProfile> savePaymentQrImage(String imagePath) async {
-    if (_useMockData) {
-      final profile = _mockProfile ?? await fetchCurrentProfile();
-      if (profile == null) {
-        throw const AppException(
-          'Profile is not available',
-          code: 'PROFILE_NOT_FOUND',
-        );
-      }
-      _mockProfile = _copyWithPaymentQr(profile, imagePath);
-      return _mockProfile!;
-    }
-
     try {
       final uid = _userId;
       final qrPath = await _uploadPaymentQrImage(
@@ -315,18 +209,6 @@ class ProfileRepository {
   }
 
   Future<UserProfile> clearPaymentQrImage() async {
-    if (_useMockData) {
-      final profile = _mockProfile ?? await fetchCurrentProfile();
-      if (profile == null) {
-        throw const AppException(
-          'Profile is not available',
-          code: 'PROFILE_NOT_FOUND',
-        );
-      }
-      _mockProfile = _copyWithPaymentQr(profile, null);
-      return _mockProfile!;
-    }
-
     try {
       final uid = _userId;
       final row = await _client
@@ -420,21 +302,5 @@ class ProfileRepository {
         code: 'PAYMENT_QR_UPLOAD_FAILED',
       );
     }
-  }
-
-  UserProfile _copyWithPaymentQr(UserProfile profile, String? path) {
-    return UserProfile(
-      id: profile.id,
-      fullName: profile.fullName,
-      email: profile.email,
-      avatarUrl: profile.avatarUrl,
-      loginProvider: profile.loginProvider,
-      timezone: profile.timezone,
-      username: profile.username,
-      occupation: profile.occupation,
-      preferredCurrency: profile.preferredCurrency,
-      surveyCompleted: profile.surveyCompleted,
-      paymentQrPath: path,
-    );
   }
 }

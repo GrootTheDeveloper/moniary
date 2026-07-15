@@ -125,9 +125,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginSubtitle => 'Personal expense manager';
 
   @override
-  String get loginAnonymous => 'Continue as guest';
-
-  @override
   String get loginTerms =>
       'By continuing, you agree to Moniary\'s terms of use and privacy policy.';
 
@@ -181,12 +178,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginSocialDivider => 'Or sign in with';
 
   @override
-  String get loginDemoCta => 'DEMO';
-
-  @override
-  String get loginGuestCta => 'Try it now — no account needed →';
-
-  @override
   String get loginPasswordResetSent =>
       'Password reset instructions were sent by email.';
 
@@ -229,9 +220,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingFinish => 'Continue';
-
-  @override
-  String get onboardingMonthMock => 'May';
 
   @override
   String get onboardingPillCapture => 'Capture & save';
@@ -1210,7 +1198,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileUserDefault => 'Moniary User';
 
   @override
-  String get profileAnonymous => 'Guest account';
+  String get profileAnonymous => 'No email';
 
   @override
   String get profileMyData => 'My Data';
@@ -1984,10 +1972,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileProtectAccount => 'Protect your account';
 
   @override
-  String get profileAnonymousWarning =>
-      'You are using a guest account. Link Email or Google to keep your data when switching devices.';
-
-  @override
   String get profileLinkNow => 'Link now';
 
   @override
@@ -1995,7 +1979,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileLinkAccountSubtitle =>
-      'Your account is currently a guest account. Link Email or Google to save your data and sign in across devices.';
+      'Link Email or Google to sign in across devices.';
 
   @override
   String get profileNewPassword => 'New password';
@@ -2098,7 +2082,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timezonePickerUseDevice => 'Use device timezone';
 
   @override
-  String get profileAnonymousBadge => 'Guest account';
+  String get profileAnonymousBadge => 'Unlinked account';
 
   @override
   String profileVerifiedBadge(String provider) {
@@ -5654,20 +5638,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteAccountGraceBody =>
       'You will be signed out immediately. During the next 30 days, sign in with the same method to restore your account before its data is permanently deleted.';
-
-  @override
-  String get deleteGuestDataTitle => 'Delete guest account data';
-
-  @override
-  String get deleteGuestDataBody =>
-      'Guest account data is stored only on this device and will be deleted immediately. Language, currency, and first-run preferences will be kept.';
-
-  @override
-  String get deleteGuestDataUnderstand =>
-      'I understand that guest account data on this device will be deleted immediately.';
-
-  @override
-  String get deleteGuestDataAction => 'Delete guest data';
 
   @override
   String get deleteAccountExportTitle => 'Keep a copy before deletion';

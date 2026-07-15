@@ -126,9 +126,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginSubtitle => 'Quản lý chi tiêu cá nhân';
 
   @override
-  String get loginAnonymous => 'Tiếp tục với tài khoản khách';
-
-  @override
   String get loginTerms =>
       'Bằng cách tiếp tục, bạn đồng ý với các điều khoản sử dụng và chính sách bảo mật của Moniary.';
 
@@ -182,12 +179,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginSocialDivider => 'Hoặc đăng nhập bằng';
 
   @override
-  String get loginDemoCta => 'DEMO';
-
-  @override
-  String get loginGuestCta => 'Dùng thử ngay — không cần tài khoản →';
-
-  @override
   String get loginPasswordResetSent =>
       'Đã gửi hướng dẫn đặt lại mật khẩu qua email.';
 
@@ -230,9 +221,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get onboardingFinish => 'Tiếp tục';
-
-  @override
-  String get onboardingMonthMock => 'Tháng 5';
 
   @override
   String get onboardingPillCapture => 'Chụp & lưu';
@@ -1210,7 +1198,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileUserDefault => 'Người dùng Moniary';
 
   @override
-  String get profileAnonymous => 'Tài khoản khách';
+  String get profileAnonymous => 'Chưa có email';
 
   @override
   String get profileMyData => 'Dữ liệu của tôi';
@@ -1979,10 +1967,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileProtectAccount => 'Bảo vệ tài khoản của bạn';
 
   @override
-  String get profileAnonymousWarning =>
-      'Bạn đang dùng tài khoản khách. Hãy liên kết Email hoặc Google để giữ dữ liệu khi đổi thiết bị.';
-
-  @override
   String get profileLinkNow => 'Liên kết ngay';
 
   @override
@@ -1990,7 +1974,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profileLinkAccountSubtitle =>
-      'Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email hoặc Google để lưu dữ liệu và đăng nhập trên nhiều thiết bị.';
+      'Liên kết Email hoặc Google để đăng nhập trên nhiều thiết bị.';
 
   @override
   String get profileNewPassword => 'Mật khẩu mới';
@@ -2093,7 +2077,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get timezonePickerUseDevice => 'Dùng múi giờ thiết bị';
 
   @override
-  String get profileAnonymousBadge => 'Tài khoản khách';
+  String get profileAnonymousBadge => 'Tài khoản chưa liên kết';
 
   @override
   String profileVerifiedBadge(String provider) {
@@ -5656,20 +5640,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get deleteAccountGraceBody =>
       'Bạn sẽ được đăng xuất ngay. Trong 30 ngày, hãy đăng nhập bằng đúng phương thức hiện tại nếu muốn khôi phục tài khoản trước khi dữ liệu bị xóa vĩnh viễn.';
-
-  @override
-  String get deleteGuestDataTitle => 'Xóa dữ liệu tài khoản khách';
-
-  @override
-  String get deleteGuestDataBody =>
-      'Dữ liệu tài khoản khách chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và hướng dẫn ban đầu vẫn được giữ lại.';
-
-  @override
-  String get deleteGuestDataUnderstand =>
-      'Tôi hiểu dữ liệu tài khoản khách trên thiết bị sẽ bị xóa ngay.';
-
-  @override
-  String get deleteGuestDataAction => 'Xóa dữ liệu khách';
 
   @override
   String get deleteAccountExportTitle => 'Giữ một bản sao trước khi xóa';

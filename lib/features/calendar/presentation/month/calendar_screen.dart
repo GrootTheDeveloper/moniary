@@ -435,7 +435,6 @@ class _SeamlessHeader extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: _IncomeExpensePill(
-                      label: context.l10n.calendarIncome,
                       amount: monthData.totalIncome,
                       color: colors.success,
                       icon: Icons.south_west_outlined,
@@ -444,7 +443,6 @@ class _SeamlessHeader extends ConsumerWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: _IncomeExpensePill(
-                      label: context.l10n.calendarExpense,
                       amount: monthData.totalExpense,
                       color: colors.danger,
                       icon: Icons.north_east_outlined,
@@ -733,13 +731,11 @@ class _IconPill extends StatelessWidget {
 
 class _IncomeExpensePill extends ConsumerWidget {
   const _IncomeExpensePill({
-    required this.label,
     required this.amount,
     required this.color,
     required this.icon,
   });
 
-  final String label;
   final double amount;
   final Color color;
   final IconData icon;
@@ -760,7 +756,6 @@ class _IncomeExpensePill extends ConsumerWidget {
           const SizedBox(width: 6),
           Flexible(
             child: ObscurableAmountText(
-              prefixText: '$label: ',
               amountText: _formatMoney(
                 context,
                 ref,
@@ -1448,42 +1443,15 @@ class _PhotoFrame extends StatelessWidget {
               height: size,
               borderRadius: radius,
               fallbackIcon: Icons.receipt_long_outlined,
-              fallbackBuilder: (context) => _CalendarAssetFallback(
-                assetPath: transactionFallbackAssetPath(transaction),
+              fallbackBuilder: (context) => _CalendarReceiptFallback(
                 size: size,
-                fallback: _CalendarReceiptFallback(
-                  size: size,
-                  accentColor: borderColor,
-                ),
+                accentColor: borderColor,
               ),
             ),
             ?child,
           ],
         ),
       ),
-    );
-  }
-}
-
-class _CalendarAssetFallback extends StatelessWidget {
-  const _CalendarAssetFallback({
-    required this.assetPath,
-    required this.size,
-    required this.fallback,
-  });
-
-  final String assetPath;
-  final double size;
-  final Widget fallback;
-
-  @override
-  Widget build(BuildContext context) {
-    return Image.asset(
-      assetPath,
-      width: size,
-      height: size,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => fallback,
     );
   }
 }

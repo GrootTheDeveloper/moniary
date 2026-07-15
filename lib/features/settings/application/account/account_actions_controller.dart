@@ -9,18 +9,6 @@ import '../../domain/export/export_filters.dart';
 import '../../domain/export/export_history_entry.dart';
 import '../../domain/privacy_requests/privacy_request_history_entry.dart';
 import '../../domain/account/deletion_feedback.dart';
-import '../../../categories/data/repositories/category_repository.dart';
-import '../../../profile/data/profile_repository.dart';
-import '../../../transactions/data/repositories/transaction_repository.dart';
-import '../../../wallets/data/repositories/wallet_repository.dart';
-import '../../../auth/data/auth_repository.dart';
-import '../../../profile/application/profile_setup_controller.dart';
-import '../../../wallets/application/wallets_controller.dart';
-import '../../../categories/application/categories_controller.dart';
-import '../privacy_controller.dart';
-import '../../data/repositories/import_repository.dart';
-import '../../data/repositories/privacy_repository.dart';
-import '../../../../core/supabase/supabase_providers.dart';
 
 final exportHistoryProvider = FutureProvider<List<ExportHistoryEntry>>((ref) {
   return ref.watch(accountRepositoryProvider).fetchExportHistory();
@@ -107,29 +95,6 @@ class AccountActionsController extends AsyncNotifier<void> {
           );
     });
     return deletedAt;
-  }
-
-  Future<void> deleteGuestData() async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      await ref.read(transactionRepositoryProvider).clearMockUserData();
-      ref.read(walletRepositoryProvider).clearMockUserData();
-      ref.read(categoryRepositoryProvider).clearMockUserData();
-      ref.read(profileRepositoryProvider).resetMockProfile();
-      await ref.read(importRepositoryProvider).clearLocalHistory();
-      await ref.read(accountRepositoryProvider).clearLocalUserFiles();
-      await ref.read(privacyRepositoryProvider).resetUserPreferences();
-      await ref.read(authRepositoryProvider).signOut();
-      ref.read(mockSessionProvider.notifier).setSession(null);
-      ref.invalidate(currentProfileProvider);
-      ref.invalidate(walletsControllerProvider);
-      ref.invalidate(categoriesControllerProvider);
-      ref.invalidate(transactionRepositoryProvider);
-      ref.invalidate(privacyControllerProvider);
-      ref.invalidate(exportHistoryProvider);
-      ref.invalidate(privacyRequestHistoryProvider);
-      ref.invalidate(dataTransparencySummaryProvider);
-    });
   }
 
   Future<void> restoreAccount() async {

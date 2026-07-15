@@ -71,9 +71,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
     profileAsync.whenData((profile) {
       final profileName = profile?.fullName?.trim() ?? '';
-      if (_nameController.text.isEmpty &&
-          profileName.isNotEmpty &&
-          profileName.toLowerCase() != 'guest') {
+      if (_nameController.text.isEmpty && profileName.isNotEmpty) {
         _nameController.text = profileName;
       }
 

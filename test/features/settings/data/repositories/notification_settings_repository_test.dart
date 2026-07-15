@@ -29,6 +29,19 @@ class FakeNotificationSettingsDataSource
   }
 }
 
+class InMemoryNotificationSettingsRepository
+    implements NotificationSettingsRepository {
+  NotificationSettings _settings = const NotificationSettings();
+
+  @override
+  Future<NotificationSettings> getSettings() async => _settings;
+
+  @override
+  Future<void> updateSettings(NotificationSettings settings) async {
+    _settings = settings.normalized();
+  }
+}
+
 void main() {
   group('SupabaseNotificationSettingsRepository', () {
     test('buildSettingsPayload includes user_id for upsert', () {
@@ -137,11 +150,11 @@ void main() {
     });
   });
 
-  group('MockNotificationSettingsRepository', () {
-    late MockNotificationSettingsRepository repository;
+  group('InMemoryNotificationSettingsRepository', () {
+    late InMemoryNotificationSettingsRepository repository;
 
     setUp(() {
-      repository = MockNotificationSettingsRepository();
+      repository = InMemoryNotificationSettingsRepository();
     });
 
     test('getSettings returns default initially', () async {

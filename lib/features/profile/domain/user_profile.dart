@@ -27,8 +27,7 @@ class UserProfile {
 
   bool get needsSetup {
     final name = fullName?.trim() ?? '';
-    // Assumption: default displayName from Supabase trigger is 'guest'
-    return name.isEmpty || name.toLowerCase() == 'guest';
+    return name.isEmpty;
   }
 
   bool get needsSurvey => !surveyCompleted;

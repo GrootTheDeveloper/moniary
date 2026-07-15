@@ -40,7 +40,7 @@ class WidgetUpdateService {
 
   /// Fetch latest real data from database and update the iOS Home Screen Widget.
   Future<void> updateWidget() async {
-    // Skip if running inside unit/widget tests where platform channels are not mocked
+    // Skip if running inside unit/widget tests without platform channel handlers.
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       return;
     }

@@ -189,8 +189,7 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
   }
 
   Future<void> _initializePushNotifications() async {
-    if (ref.read(useMockDataModeProvider) ||
-        ref.read(currentSessionProvider) == null) {
+    if (ref.read(currentSessionProvider) == null) {
       return;
     }
     final service = ref.read(fcmPushNotificationServiceProvider);

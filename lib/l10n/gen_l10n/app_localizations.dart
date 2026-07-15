@@ -314,12 +314,6 @@ abstract class AppLocalizations {
   /// **'Quản lý chi tiêu cá nhân'**
   String get loginSubtitle;
 
-  /// No description provided for @loginAnonymous.
-  ///
-  /// In vi, this message translates to:
-  /// **'Tiếp tục với tài khoản khách'**
-  String get loginAnonymous;
-
   /// No description provided for @loginTerms.
   ///
   /// In vi, this message translates to:
@@ -422,18 +416,6 @@ abstract class AppLocalizations {
   /// **'Hoặc đăng nhập bằng'**
   String get loginSocialDivider;
 
-  /// No description provided for @loginDemoCta.
-  ///
-  /// In vi, this message translates to:
-  /// **'DEMO'**
-  String get loginDemoCta;
-
-  /// No description provided for @loginGuestCta.
-  ///
-  /// In vi, this message translates to:
-  /// **'Dùng thử ngay — không cần tài khoản →'**
-  String get loginGuestCta;
-
   /// No description provided for @loginPasswordResetSent.
   ///
   /// In vi, this message translates to:
@@ -511,12 +493,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Tiếp tục'**
   String get onboardingFinish;
-
-  /// No description provided for @onboardingMonthMock.
-  ///
-  /// In vi, this message translates to:
-  /// **'Tháng 5'**
-  String get onboardingMonthMock;
 
   /// No description provided for @onboardingPillCapture.
   ///
@@ -2321,7 +2297,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileAnonymous.
   ///
   /// In vi, this message translates to:
-  /// **'Tài khoản khách'**
+  /// **'Chưa có email'**
   String get profileAnonymous;
 
   /// No description provided for @profileMyData.
@@ -3698,12 +3674,6 @@ abstract class AppLocalizations {
   /// **'Bảo vệ tài khoản của bạn'**
   String get profileProtectAccount;
 
-  /// No description provided for @profileAnonymousWarning.
-  ///
-  /// In vi, this message translates to:
-  /// **'Bạn đang dùng tài khoản khách. Hãy liên kết Email hoặc Google để giữ dữ liệu khi đổi thiết bị.'**
-  String get profileAnonymousWarning;
-
   /// No description provided for @profileLinkNow.
   ///
   /// In vi, this message translates to:
@@ -3719,7 +3689,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileLinkAccountSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email hoặc Google để lưu dữ liệu và đăng nhập trên nhiều thiết bị.'**
+  /// **'Liên kết Email hoặc Google để đăng nhập trên nhiều thiết bị.'**
   String get profileLinkAccountSubtitle;
 
   /// No description provided for @profileNewPassword.
@@ -3905,7 +3875,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileAnonymousBadge.
   ///
   /// In vi, this message translates to:
-  /// **'Tài khoản khách'**
+  /// **'Tài khoản chưa liên kết'**
   String get profileAnonymousBadge;
 
   /// No description provided for @profileVerifiedBadge.
@@ -10111,30 +10081,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bạn sẽ được đăng xuất ngay. Trong 30 ngày, hãy đăng nhập bằng đúng phương thức hiện tại nếu muốn khôi phục tài khoản trước khi dữ liệu bị xóa vĩnh viễn.'**
   String get deleteAccountGraceBody;
-
-  /// No description provided for @deleteGuestDataTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Xóa dữ liệu tài khoản khách'**
-  String get deleteGuestDataTitle;
-
-  /// No description provided for @deleteGuestDataBody.
-  ///
-  /// In vi, this message translates to:
-  /// **'Dữ liệu tài khoản khách chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và hướng dẫn ban đầu vẫn được giữ lại.'**
-  String get deleteGuestDataBody;
-
-  /// No description provided for @deleteGuestDataUnderstand.
-  ///
-  /// In vi, this message translates to:
-  /// **'Tôi hiểu dữ liệu tài khoản khách trên thiết bị sẽ bị xóa ngay.'**
-  String get deleteGuestDataUnderstand;
-
-  /// No description provided for @deleteGuestDataAction.
-  ///
-  /// In vi, this message translates to:
-  /// **'Xóa dữ liệu khách'**
-  String get deleteGuestDataAction;
 
   /// No description provided for @deleteAccountExportTitle.
   ///

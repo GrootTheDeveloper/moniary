@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class AppConstants {
   const AppConstants._();
 
@@ -46,11 +44,12 @@ class AppConstants {
   );
   static const ocrRequestTimeout = Duration(seconds: 30);
 
-  /// Call once at app startup. In release mode, crash if Supabase env is missing.
+  /// Call once at app startup. The app is production-data only, so missing
+  /// Supabase config is a startup error in every build mode.
   static void assertSupabaseConfig() {
-    if (kReleaseMode && !hasSupabaseConfig) {
+    if (!hasSupabaseConfig) {
       throw StateError(
-        'SUPABASE_URL and SUPABASE_ANON_KEY must be set via --dart-define for release builds.',
+        'SUPABASE_URL and SUPABASE_ANON_KEY must be set via --dart-define before app startup.',
       );
     }
   }

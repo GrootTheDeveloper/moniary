@@ -8,13 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../shared/utils/app_logger.dart';
-import '../../../categories/data/repositories/category_repository.dart';
-import '../../../transactions/data/repositories/transaction_repository.dart';
-import '../../../wallets/data/repositories/wallet_repository.dart';
 import '../../domain/export/export_filters.dart';
 import '../../domain/export/export_file_text.dart';
 import '../../domain/export/export_history_entry.dart';
@@ -31,7 +27,6 @@ final accountRepositoryProvider = Provider<AccountRepository>((ref) {
   return AccountRepository(
     ref.watch(supabaseClientProvider),
     currentUserId: session?.user.id,
-    useMockData: ref.watch(useMockDataModeProvider),
   );
 });
 
@@ -43,15 +38,12 @@ class AccountRepository {
     String? currentUserId,
     Directory? documentsDirectory,
     Directory? exportDirectory,
-    bool useMockData = false,
   }) : _currentUserId = currentUserId,
-       _useMockData = useMockData || !AppConstants.hasSupabaseConfig,
        _documentsDirectory = documentsDirectory,
        _exportDirectory = exportDirectory;
 
   final SupabaseClient _client;
   final String? _currentUserId;
-  final bool _useMockData;
   final Directory? _documentsDirectory;
   final Directory? _exportDirectory;
 
@@ -284,31 +276,6 @@ class AccountRepository {
   }
 
   Future<DataTransparencySummary> fetchDataTransparencySummary() async {
-    if (_useMockData) {
-      final txs = TransactionRepository.mockTransactions;
-      final wallets = WalletRepository.mockWallets;
-      final categories = CategoryRepository.mockCategories;
-
-      final transactionDates = txs.map((t) => t.transactionDate).toList()
-        ..sort();
-
-      return DataTransparencySummary(
-        transactionCount: txs.length,
-        walletCount: wallets.length,
-        categoryCount: categories.length,
-        photoTransactionCount: txs
-            .where((row) => row.imagePath?.isNotEmpty == true)
-            .length,
-        exportFileCount: 0,
-        oldestTransactionDate: transactionDates.isEmpty
-            ? null
-            : transactionDates.first,
-        newestTransactionDate: transactionDates.isEmpty
-            ? null
-            : transactionDates.last,
-        latestExportDate: null,
-      );
-    }
     final session = _client.auth.currentSession;
     if (session == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
@@ -365,12 +332,6 @@ class AccountRepository {
     String? details,
     required DeletionFeedbackContext feedbackContext,
   }) async {
-    if (_useMockData) {
-      throw const AppException(
-        'Cloud account deletion is unavailable in guest mode',
-        code: 'GUEST_ACCOUNT_DELETE_UNAVAILABLE',
-      );
-    }
     final session = _client.auth.currentSession;
     if (session == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
@@ -411,8 +372,6 @@ class AccountRepository {
   }
 
   Future<void> restoreAccount() async {
-    if (_useMockData) return;
-
     final session = _client.auth.currentSession;
     if (session == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
@@ -425,8 +384,6 @@ class AccountRepository {
   }
 
   Future<AccountDeletionStatus> fetchAccountDeletionStatus() async {
-    if (_useMockData) return AccountDeletionStatus.active;
-
     final session = _client.auth.currentSession;
     if (session == null) return AccountDeletionStatus.active;
 
@@ -453,7 +410,6 @@ class AccountRepository {
   }
 
   Future<void> revokeSession(String sessionId) async {
-    if (_useMockData) return;
     final session = _client.auth.currentSession;
     if (session == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
@@ -462,19 +418,6 @@ class AccountRepository {
   }
 
   Future<List<ActiveSession>> getActiveSessions() async {
-    if (_useMockData) {
-      return [
-        ActiveSession(
-          id: 'mock-session-id',
-          createdAt: DateTime.now().subtract(const Duration(days: 1)),
-          updatedAt: DateTime.now(),
-          userAgent:
-              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
-          ip: '127.0.0.1',
-        ),
-      ];
-    }
-
     final session = _client.auth.currentSession;
     if (session == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
@@ -488,13 +431,9 @@ class AccountRepository {
   }
 
   Future<void> createDeletionRequest({required String reason}) async {
-    if (_useMockData) {
-      // Mock bypass
-    } else {
-      final session = _client.auth.currentSession;
-      if (session == null) {
-        throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
-      }
+    final session = _client.auth.currentSession;
+    if (session == null) {
+      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
     }
 
     final timestamp = DateTime.now();
@@ -513,13 +452,9 @@ class AccountRepository {
     required String requestType,
     required String message,
   }) async {
-    if (_useMockData) {
-      // Mock bypass
-    } else {
-      final session = _client.auth.currentSession;
-      if (session == null) {
-        throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
-      }
+    final session = _client.auth.currentSession;
+    if (session == null) {
+      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
     }
 
     final timestamp = DateTime.now();
@@ -549,10 +484,6 @@ class AccountRepository {
   }
 
   String _requireExportUserId() {
-    if (_useMockData) {
-      return _currentUserId ?? 'mock-user-id';
-    }
-
     final userId = _currentUserId ?? _client.auth.currentSession?.user.id;
     if (userId == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
@@ -564,35 +495,6 @@ class AccountRepository {
     String userId, {
     ExportFilters filters = const ExportFilters(),
   }) async {
-    if (_useMockData) {
-      final txs = TransactionRepository.mockTransactions;
-      return txs
-          .where((t) {
-            if (filters.startDate != null &&
-                t.transactionDate.isBefore(filters.startDate!)) {
-              return false;
-            }
-            if (filters.endDate != null &&
-                t.transactionDate.isAfter(filters.endDate!)) {
-              return false;
-            }
-            return true;
-          })
-          .map(
-            (t) => {
-              'id': t.id,
-              'amount': t.amount,
-              'type': t.type.name,
-              'note': t.note,
-              'image_path': t.imagePath,
-              'transaction_date': t.transactionDate.toIso8601String(),
-              'created_at': t.transactionDate.toIso8601String(),
-              'wallet': {'name': t.walletName},
-              'category': {'name': t.categoryName},
-            },
-          )
-          .toList();
-    }
     var query = _client
         .from('transactions')
         .select('''
@@ -635,21 +537,6 @@ class AccountRepository {
   }
 
   Future<List<Map<String, dynamic>>> _fetchWalletRows(String userId) async {
-    if (_useMockData) {
-      return WalletRepository.mockWallets
-          .map(
-            (w) => {
-              'id': w.id,
-              'name': w.name,
-              'type': w.type.name,
-              'initial_balance': w.initialBalance,
-              'is_default': w.isDefault,
-              'is_active': w.isActive,
-              'created_at': w.createdAt.toIso8601String(),
-            },
-          )
-          .toList();
-    }
     final rows = await _client
         .from('wallets')
         .select('id,name,type,initial_balance,is_default,is_active,created_at')
@@ -660,20 +547,6 @@ class AccountRepository {
   }
 
   Future<List<Map<String, dynamic>>> _fetchCategoryRows(String userId) async {
-    if (_useMockData) {
-      return CategoryRepository.mockCategories
-          .map(
-            (c) => {
-              'id': c.id,
-              'name': c.name,
-              'type': c.type.name,
-              'is_default': c.isDefault,
-              'is_active': c.isActive,
-              'created_at': c.createdAt.toIso8601String(),
-            },
-          )
-          .toList();
-    }
     final rows = await _client
         .from('categories')
         .select('id,name,type,is_default,is_active,created_at')

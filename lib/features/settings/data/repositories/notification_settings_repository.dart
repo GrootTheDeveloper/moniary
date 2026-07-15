@@ -112,28 +112,8 @@ class SupabaseNotificationSettingsRepository
   }
 }
 
-class MockNotificationSettingsRepository
-    implements NotificationSettingsRepository {
-  NotificationSettings _settings = const NotificationSettings();
-
-  @override
-  Future<NotificationSettings> getSettings() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return _settings;
-  }
-
-  @override
-  Future<void> updateSettings(NotificationSettings settings) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    _settings = settings.normalized();
-  }
-}
-
 final notificationSettingsRepositoryProvider =
     Provider<NotificationSettingsRepository>((ref) {
-      if (ref.watch(useMockDataModeProvider)) {
-        return MockNotificationSettingsRepository();
-      }
       return SupabaseNotificationSettingsRepository(
         SupabaseNotificationSettingsDataSource(
           ref.watch(supabaseClientProvider),

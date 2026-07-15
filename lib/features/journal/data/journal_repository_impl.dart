@@ -1,7 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../transactions/data/repositories/transaction_repository.dart';
 import '../../transactions/domain/models/transaction_entry.dart';
@@ -10,28 +7,15 @@ import '../domain/journal_repository.dart';
 import 'journal_collection_data_source.dart';
 
 final journalRepositoryProvider = Provider<JournalRepository>((ref) {
-  return JournalRepositoryImpl.forEnvironment(
-    client: ref.watch(supabaseClientProvider),
-    useMockData: ref.watch(useMockDataModeProvider),
+  return JournalRepositoryImpl(
+    collectionDataSource: SupabaseJournalCollectionDataSource(
+      ref.watch(supabaseClientProvider),
+    ),
     transactionRepository: ref.watch(transactionRepositoryProvider),
   );
 });
 
 class JournalRepositoryImpl implements JournalRepository {
-  factory JournalRepositoryImpl.forEnvironment({
-    required SupabaseClient client,
-    required bool useMockData,
-    required TransactionRepository transactionRepository,
-  }) {
-    final shouldUseMockData = useMockData || !AppConstants.hasSupabaseConfig;
-    return JournalRepositoryImpl(
-      collectionDataSource: shouldUseMockData
-          ? MockJournalCollectionDataSource()
-          : SupabaseJournalCollectionDataSource(client),
-      transactionRepository: transactionRepository,
-    );
-  }
-
   JournalRepositoryImpl({
     required JournalCollectionDataSource collectionDataSource,
     required TransactionRepository transactionRepository,
