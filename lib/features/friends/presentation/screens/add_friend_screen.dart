@@ -59,20 +59,23 @@ class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
                 TextField(
                   controller: _usernameController,
                   textInputAction: TextInputAction.search,
+                  textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
                     hintText: context.l10n.friendSearchHint,
                     prefixIcon: Padding(
                       padding: const EdgeInsets.only(left: 16, right: 8),
                       child: Text(
                         '@',
-                        style: context.moniaryTypography.displaySmall.copyWith(
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
                           color: context.moniaryColors.primary,
                         ),
                       ),
                     ),
                     prefixIconConstraints: const BoxConstraints(
-                      minWidth: 48,
-                      minHeight: 48,
+                      minWidth: 40,
+                      minHeight: 24,
                     ),
                   ),
                   onSubmitted: (_) => _search(),
