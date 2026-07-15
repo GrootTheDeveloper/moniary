@@ -31,6 +31,7 @@ import 'app_router.dart';
 import 'app_theme.dart';
 import '../features/settings/application/privacy_controller.dart';
 import '../features/notifications/data/repositories/notification_repository_impl.dart';
+import '../features/notifications/presentation/screens/notification_center_screen.dart';
 
 class MoniaryApp extends ConsumerStatefulWidget {
   const MoniaryApp({super.key});
@@ -329,15 +330,21 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
         // exact Group/Friends target with the normal repository boundary.
         final router = ref.read(appRouterProvider);
         if (ref.read(currentSessionProvider) == null) {
+          ref
+              .read(pendingDeepLinkProvider.notifier)
+              .set(NotificationCenterScreen.routePath);
           router.go(LoginScreen.routePath);
           return;
         }
         final privacyState = ref.read(privacyControllerProvider);
         if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
+          ref
+              .read(pendingDeepLinkProvider.notifier)
+              .set(NotificationCenterScreen.routePath);
           router.go(AppLockScreen.routePath);
           return;
         }
-        router.go('/notifications');
+        router.go(NotificationCenterScreen.routePath);
       },
     );
   }

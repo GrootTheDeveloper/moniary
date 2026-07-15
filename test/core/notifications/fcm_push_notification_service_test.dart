@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -54,14 +55,45 @@ class _FakePushMessagingGateway implements PushMessagingGateway {
   }
 }
 
+class _FakeLocalNotificationGateway implements LocalNotificationGateway {
+  Future<void> Function(String? payload)? tapHandler;
+  String? lastPayload;
+
+  @override
+  void setNotificationTapHandler(
+    Future<void> Function(String? payload)? handler,
+  ) {
+    tapHandler = handler;
+  }
+
+  @override
+  Future<void> showIncomingNotification({
+    required int id,
+    required String title,
+    required String body,
+    required String category,
+    required String channelName,
+    required String channelDescription,
+    String? payload,
+  }) async {
+    lastPayload = payload;
+  }
+
+  Future<void> tap([String? payload]) async {
+    await tapHandler?.call(payload ?? lastPayload);
+  }
+}
+
 void main() {
   late _FakePushMessagingGateway gateway;
+  late _FakeLocalNotificationGateway localNotifications;
   late FcmPushNotificationService service;
 
   setUp(() {
     gateway = _FakePushMessagingGateway();
+    localNotifications = _FakeLocalNotificationGateway();
     service = FcmPushNotificationService(
-      LocalNotificationService.instance,
+      localNotifications,
       messaging: gateway,
       initializeFirebase: () async {},
       firebaseConfigured: true,
@@ -194,4 +226,51 @@ void main() {
       expect(registeredTokens, ['fcm-token']);
     },
   );
+
+  test('foreground notification tap preserves its routing payload', () async {
+    final tappedPayloads = <Map<String, dynamic>>[];
+    await service.initialize(
+      onToken: (_) async {},
+      onTap: (data) async => tappedPayloads.add(data),
+    );
+
+    gateway.foregroundController.add(
+      RemoteMessage(
+        messageId: 'message-1',
+        notification: const RemoteNotification(title: 'Update', body: 'Open'),
+        data: const {
+          'notification_id': 'notification-1',
+          'category': 'group',
+          'group_id': 'group-1',
+        },
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(
+      jsonDecode(localNotifications.lastPayload!)['notification_id'],
+      'notification-1',
+    );
+    await localNotifications.tap();
+
+    expect(tappedPayloads, [
+      {
+        'notification_id': 'notification-1',
+        'category': 'group',
+        'group_id': 'group-1',
+      },
+    ]);
+  });
+
+  test('invalid foreground payload is ignored safely', () async {
+    final tappedPayloads = <Map<String, dynamic>>[];
+    await service.initialize(
+      onToken: (_) async {},
+      onTap: (data) async => tappedPayloads.add(data),
+    );
+
+    await localNotifications.tap('{invalid-json');
+
+    expect(tappedPayloads, isEmpty);
+  });
 }

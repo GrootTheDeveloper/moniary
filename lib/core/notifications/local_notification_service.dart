@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
@@ -5,10 +7,26 @@ import 'package:timezone/timezone.dart' as tz;
 import '../../shared/utils/app_logger.dart';
 import '../constants/app_constants.dart';
 
+abstract interface class LocalNotificationGateway {
+  void setNotificationTapHandler(
+    Future<void> Function(String? payload)? handler,
+  );
+
+  Future<void> showIncomingNotification({
+    required int id,
+    required String title,
+    required String body,
+    required String category,
+    required String channelName,
+    required String channelDescription,
+    String? payload,
+  });
+}
+
 /// Wraps [FlutterLocalNotificationsPlugin] to schedule on-device reminders.
 ///
 /// Everything here is delivered locally by the OS; no data leaves the device.
-class LocalNotificationService {
+class LocalNotificationService implements LocalNotificationGateway {
   LocalNotificationService._();
 
   static final LocalNotificationService instance = LocalNotificationService._();
@@ -27,6 +45,7 @@ class LocalNotificationService {
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
   bool _initialized = false;
+  Future<void> Function(String? payload)? _notificationTapHandler;
 
   Future<void> init() async {
     if (_initialized) return;
@@ -54,6 +73,9 @@ class LocalNotificationService {
         android: androidSettings,
         iOS: darwinSettings,
       ),
+      onDidReceiveNotificationResponse: (response) {
+        unawaited(_dispatchNotificationTap(response.payload));
+      },
     );
     final android = _plugin
         .resolvePlatformSpecificImplementation<
@@ -94,6 +116,13 @@ class LocalNotificationService {
       );
     }
     _initialized = true;
+  }
+
+  @override
+  void setNotificationTapHandler(
+    Future<void> Function(String? payload)? handler,
+  ) {
+    _notificationTapHandler = handler;
   }
 
   /// Requests OS permission to post notifications. Returns whether it was
@@ -169,6 +198,7 @@ class LocalNotificationService {
     required String category,
     required String channelName,
     required String channelDescription,
+    String? payload,
   }) async {
     await init();
     final channelId = switch (category) {
@@ -191,7 +221,22 @@ class LocalNotificationService {
         ),
         iOS: DarwinNotificationDetails(threadIdentifier: channelId),
       ),
+      payload: payload,
     );
+  }
+
+  Future<void> _dispatchNotificationTap(String? payload) async {
+    final handler = _notificationTapHandler;
+    if (handler == null) return;
+    try {
+      await handler(payload);
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Local notification tap handler failed',
+        error,
+        stackTrace,
+      );
+    }
   }
 
   tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {

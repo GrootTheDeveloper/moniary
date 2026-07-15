@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -111,7 +112,7 @@ class FcmPushNotificationService {
        _isIos =
            isIos ?? (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS);
 
-  final LocalNotificationService _localNotifications;
+  final LocalNotificationGateway _localNotifications;
   final Future<void> Function()? _initializeFirebaseOverride;
   final bool _firebaseConfigured;
   final bool _supportedPlatform;
@@ -147,6 +148,7 @@ class FcmPushNotificationService {
     _onToken = onToken;
     _onTap = onTap;
     _signedOut = false;
+    _localNotifications.setNotificationTapHandler(_handleLocalNotificationTap);
 
     try {
       await _ensureFirebaseReady();
@@ -366,7 +368,23 @@ class FcmPushNotificationService {
       channelDescription:
           data['channel_description'] as String? ??
           'Moniary notification updates.',
+      payload: jsonEncode(data),
     );
+  }
+
+  Future<void> _handleLocalNotificationTap(String? payload) async {
+    if (_signedOut || payload == null || payload.trim().isEmpty) return;
+    try {
+      final decoded = jsonDecode(payload);
+      if (decoded is! Map) return;
+      await _onTap?.call(Map<String, dynamic>.from(decoded));
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Foreground notification payload is invalid',
+        error,
+        stackTrace,
+      );
+    }
   }
 
   void dispose() {
@@ -374,5 +392,6 @@ class FcmPushNotificationService {
     unawaited(_tokenRefreshSubscription?.cancel());
     unawaited(_foregroundSubscription?.cancel());
     unawaited(_openedSubscription?.cancel());
+    _localNotifications.setNotificationTapHandler(null);
   }
 }
