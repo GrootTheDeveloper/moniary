@@ -227,6 +227,7 @@ class GroupRecurringTransaction {
     required this.notifyDaysBefore,
     required this.isActive,
     required this.createdAt,
+    this.autoPost = false,
   });
 
   final String id;
@@ -238,6 +239,7 @@ class GroupRecurringTransaction {
   final DateTime nextRunAt;
   final int notifyDaysBefore;
   final bool isActive;
+  final bool autoPost;
   final DateTime createdAt;
 
   GroupRecurringTransaction copyWith({
@@ -282,6 +284,9 @@ class GroupPublicProfile {
     required this.groupId,
     required this.isEnabled,
     required this.showStats,
+    this.showDescription = false,
+    this.showGroupType = false,
+    this.showAvatar = false,
     this.slug,
     this.groupName,
     this.avatarPath,
@@ -295,6 +300,9 @@ class GroupPublicProfile {
   final String groupId;
   final bool isEnabled;
   final bool showStats;
+  final bool showDescription;
+  final bool showGroupType;
+  final bool showAvatar;
   final String? slug;
   final String? groupName;
   final String? avatarPath;
@@ -307,6 +315,9 @@ class GroupPublicProfile {
   GroupPublicProfile copyWith({
     bool? isEnabled,
     bool? showStats,
+    bool? showDescription,
+    bool? showGroupType,
+    bool? showAvatar,
     String? slug,
     bool clearSlug = false,
     String? groupName,
@@ -321,6 +332,9 @@ class GroupPublicProfile {
       groupId: groupId,
       isEnabled: isEnabled ?? this.isEnabled,
       showStats: showStats ?? this.showStats,
+      showDescription: showDescription ?? this.showDescription,
+      showGroupType: showGroupType ?? this.showGroupType,
+      showAvatar: showAvatar ?? this.showAvatar,
       slug: clearSlug ? null : slug ?? this.slug,
       groupName: groupName ?? this.groupName,
       avatarPath: avatarPath ?? this.avatarPath,

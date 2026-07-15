@@ -1706,6 +1706,13 @@
   "groupTransactionCaption": "Caption",
   "groupTransactionNote": "Ghi chú",
   "groupTransactionTotal": "Tổng tiền",
+  "groupTransactionCurrency": "Tiền tệ giao dịch",
+  "groupTransactionCurrencySubtitle": "Tiền tệ chung của nhóm: {currency}",
+  "@groupTransactionCurrencySubtitle": {"placeholders": {"currency": {"type": "String"}}},
+  "groupTransactionExchangeRate": "Tỷ giá quy đổi về tiền tệ chung",
+  "groupTransactionExchangeRateSubtitle": "1 {from} = ? {to}",
+  "@groupTransactionExchangeRateSubtitle": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
+  "groupTransactionExchangeRateInvalid": "Hãy nhập tỷ giá dương hợp lệ.",
   "groupTransactionCategory": "Danh mục",
   "groupTransactionImage": "Ảnh hóa đơn",
   "groupTransactionImageOptional": "Ảnh không bắt buộc nhưng được khuyến khích.",
@@ -1733,6 +1740,10 @@
   "groupTransactionMismatchStatus": "Tổng tiền chưa khớp",
   "groupTransactionPostedStatus": "Đã đăng",
   "groupTransactionNoData": "Chưa có giao dịch nhóm.",
+  "groupTransactionSearchHint": "Tìm theo nội dung, danh mục hoặc người đăng",
+  "groupTransactionFilterAll": "Tất cả",
+  "groupTransactionFilterNoResults": "Không tìm thấy giao dịch phù hợp.",
+  "groupTransactionLoadMore": "Tải thêm giao dịch",
   "groupTransactionLoadError": "Không tải được giao dịch nhóm.",
   "groupTransactionHistorySubtitle": "{payer} trả · Chia {count} người",
   "@groupTransactionHistorySubtitle": {"placeholders": {"payer": {"type": "String"}, "count": {"type": "int"}}},
@@ -1801,6 +1812,11 @@
   "groupPublicProfileSettingsSubtitle": "Chỉ thông tin an toàn của nhóm được hiển thị công khai.",
   "groupPublicProfileEnabled": "Bật trang công khai",
   "groupPublicProfileShowStatsSubtitle": "Chỉ hiển thị số lượng tổng hợp và tổng chi tiêu.",
+  "groupPublicProfileShowDescription": "Hiển thị mô tả",
+  "groupPublicProfileShowDescriptionSubtitle": "Mô tả nhóm sẽ hiển thị cho bất kỳ ai có đường dẫn công khai.",
+  "groupPublicProfileShowType": "Hiển thị loại nhóm",
+  "groupPublicProfileShowAvatar": "Hiển thị ảnh nhóm",
+  "groupPublicProfileShowAvatarSubtitle": "Chỉ ảnh public-safe được tải riêng mới đủ điều kiện; ảnh riêng tư của nhóm không bao giờ bị lộ.",
   "groupPublicProfileShareTitle": "Chia sẻ trang công khai",
   "groupPublicProfileCopy": "Sao chép link",
   "groupPublicProfileCopied": "Đã sao chép link trang công khai.",
@@ -1823,6 +1839,8 @@
   "groupRecurringNextRun": "Lần chạy tiếp theo",
   "groupRecurringNotifyBefore": "Báo trước số ngày",
   "groupRecurringActive": "Đang hoạt động",
+  "groupRecurringAutoPost": "Tự động ghi nhận khi đến hạn",
+  "groupRecurringAutoPostSubtitle": "Tạo giao dịch chia đều theo tiền tệ chung của nhóm.",
   "groupRecurringDeleteTitle": "Xoá giao dịch định kỳ?",
   "groupRecurringDeleteMessage": "Giao dịch định kỳ này sẽ bị xoá vĩnh viễn.",
   "groupToolsTitle": "Công cụ nhóm",
@@ -1849,6 +1867,10 @@
   "groupSummarySettlementHistory": "Lịch sử tất toán",
   "groupSummaryNoData": "Chưa có dữ liệu trong tháng này.",
   "groupSummaryNoHistory": "Chưa có lịch sử tất toán.",
+  "groupSummaryChartsTitle": "Tổng quan chi tiêu",
+  "groupSummaryTrendTitle": "Xu hướng chi tiêu 6 tháng",
+  "groupSettlementBadgeTitle": "Đã tất toán",
+  "groupSettlementBadgeSubtitle": "Nhóm không còn số dư cần thanh toán trong tháng này.",
   "groupSummaryTransactionCount": "{count} giao dịch",
   "@groupSummaryTransactionCount": {"placeholders": {"count": {"type": "int"}}},
   "groupSummaryMemberAmounts": "Chịu {share} · Đã trả {paid}",
@@ -2395,6 +2417,94 @@
   "friendQrSwitchCamera": "Đổi camera",
   "friendQrInvalid": "Đây không phải mã QR kết bạn Moniary hợp lệ.",
   "friendRateLimited": "Bạn đã gửi quá nhiều lời mời kết bạn. Vui lòng thử lại sau.",
+  "paymentQrTitle": "Mã QR nhận tiền",
+  "paymentQrProfileSubtitle": "Lưu một lần để thành viên nhóm mở khi thanh toán.",
+  "paymentQrMyTitle": "Mã QR của tôi",
+  "paymentQrDescription": "Thành viên trong cùng nhóm có thể mở mã này khi cần chuyển tiền cho bạn.",
+  "paymentQrMemberDescription": "Mã QR nhận tiền của {name}.",
+  "@paymentQrMemberDescription": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentQrAdd": "Lưu ảnh mã QR",
+  "paymentQrReplace": "Thay ảnh mã QR",
+  "paymentQrRemove": "Xóa mã QR",
+  "paymentQrPrivacyNote": "Mã QR được lưu riêng tư và chỉ hiển thị cho thành viên cùng nhóm.",
+  "paymentQrSaved": "Đã lưu mã QR nhận tiền.",
+  "paymentQrRemoved": "Đã xóa mã QR nhận tiền.",
+  "paymentQrViewForPayment": "Mở QR để thanh toán",
+  "paymentQrEmptyOwner": "Bạn chưa lưu ảnh mã QR nhận tiền.",
+  "paymentQrEmptyMember": "Thành viên này chưa lưu mã QR nhận tiền.",
+  "groupSettingsTitle": "Cài đặt nhóm",
+  "groupSettingsSubtitle": "Chỉnh thông tin nhóm và chỉ đóng nhóm sau khi đã tất toán.",
+  "groupSettingsName": "Tên nhóm",
+  "groupSettingsDescription": "Mô tả",
+  "groupSettingsType": "Loại nhóm",
+  "groupSettingsBaseCurrency": "Tiền tệ chung của nhóm",
+  "groupSettingsBaseCurrencySubtitle": "Tất toán và ngân sách dùng tiền tệ này. Giao dịch ngoại tệ cần nhập tỷ giá rõ ràng.",
+  "groupSettingsSave": "Lưu thay đổi",
+  "groupSettingsSaved": "Đã cập nhật thông tin nhóm.",
+  "groupSettingsArchiveTitle": "Đóng nhóm",
+  "groupSettingsArchiveSubtitle": "Nhóm sẽ ẩn khỏi danh sách và không nhận giao dịch mới. Công nợ chưa xử lý sẽ chặn thao tác này.",
+  "groupSettingsArchiveAction": "Đóng nhóm",
+  "groupSettingsArchiveConfirmTitle": "Đóng nhóm này?",
+  "groupSettingsArchiveConfirmMessage": "Chỉ nên đóng nhóm sau khi mọi thành viên đã hoàn tất thanh toán.",
+  "groupSettingsArchiveBlocked": "Chưa thể đóng nhóm vì vẫn còn công nợ, giao dịch chờ xử lý hoặc tranh chấp.",
+  "groupSettingsAdminRequired": "Chỉ chủ nhóm hoặc quản trị viên mới có quyền thực hiện thao tác này.",
+  "groupAuditLogTitle": "Nhật ký quản trị",
+  "groupAuditLogSubtitle": "Theo dõi thay đổi thành viên, giao dịch và cài đặt nhóm.",
+  "groupAuditLogEmpty": "Chưa có hoạt động quản trị nào được ghi nhận.",
+  "groupAuditSystem": "Hệ thống",
+  "groupParticipationTitle": "Hoạt động cùng nhóm",
+  "groupParticipationSubtitle": "Cùng bình chọn và biến mục tiêu chung thành tiến độ.",
+  "groupPollsTitle": "Bình chọn",
+  "groupPollsEmpty": "Chưa có bình chọn.",
+  "groupPollCreate": "Tạo bình chọn",
+  "groupPollQuestion": "Câu hỏi",
+  "groupPollOptionsHint": "Các lựa chọn, mỗi dòng một lựa chọn",
+  "groupChallengesTitle": "Thử thách tiết kiệm",
+  "groupChallengesEmpty": "Chưa có thử thách tiết kiệm.",
+  "groupChallengeCreate": "Tạo thử thách",
+  "groupChallengeName": "Tên thử thách",
+  "groupChallengeTarget": "Số tiền mục tiêu",
+  "groupChallengeContribute": "Đóng góp",
+  "groupPulsePersonalTitle": "Việc tiếp theo của bạn",
+  "groupPulsePersonalMessage": "Có một khoản cần bạn xử lý để nhóm tiếp tục nhẹ nhàng hơn.",
+  "groupPulseUpcomingTitle": "Sắp đến lịch chung",
+  "groupPulseUpcomingMessage": "{title} sắp đến hạn. Cùng chuẩn bị trước để không bỏ lỡ.",
+  "@groupPulseUpcomingMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "groupPulseTogetherTitle": "Cùng giữ nhịp nhóm",
+  "groupPulseTogetherMessage": "Mở dòng hoạt động để mọi người cùng cập nhật và phản hồi.",
+  "groupPulseAllClearTitle": "Nhóm đang rất ổn",
+  "groupPulseAllClearMessage": "Không còn khoản chờ xử lý. Thêm một khoản chi mới để cả nhóm cùng thấy tiến độ.",
+  "groupSpotlightTitle": "Điểm chạm mới nhất",
+  "groupSpotlightComment": "Xem và phản hồi",
+  "groupSummaryContributionTitle": "Đóng góp nổi bật",
+  "groupSummaryContributionMessage": "{name} đang giúp nhóm giữ nhịp đều đặn trong tháng này.",
+  "@groupSummaryContributionMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupSummaryContributionCount": "{count} hoạt động",
+  "@groupSummaryContributionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupSplitExact": "Số tiền cụ thể",
   "groupParticipantsTitle": "Người tham gia khoản chi",
   "groupSettlementDisputeTitle": "Báo cáo vấn đề thanh toán",

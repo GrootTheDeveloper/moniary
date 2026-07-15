@@ -13,6 +13,9 @@ class GroupTransaction {
     required this.transactionDate,
     required this.createdAt,
     required this.updatedAt,
+    this.currencyCode = 'VND',
+    this.exchangeRateToBase = 1,
+    int? baseTotalAmount,
     this.categoryId,
     this.categoryName,
     this.caption,
@@ -20,12 +23,15 @@ class GroupTransaction {
     this.imagePath,
     this.creatorName,
     this.hasCompletedSettlement = false,
-  });
+  }) : baseTotalAmount = baseTotalAmount ?? totalAmount;
 
   final String id;
   final String groupId;
   final String createdBy;
   final int totalAmount;
+  final String currencyCode;
+  final double exchangeRateToBase;
+  final int baseTotalAmount;
   final String? categoryId;
   final String? categoryName;
   final String? caption;
@@ -40,6 +46,17 @@ class GroupTransaction {
   final DateTime updatedAt;
   final String? creatorName;
   final bool hasCompletedSettlement;
+
+  // The base amount is the only amount used for balances and budgets.
+  // Legacy rows default to totalAmount.
+  int get resolvedBaseTotalAmount => baseTotalAmount;
+}
+
+class GroupTransactionPage {
+  const GroupTransactionPage({required this.items, required this.hasMore});
+
+  final List<GroupTransaction> items;
+  final bool hasMore;
 }
 
 class GroupTransactionPayer {
@@ -136,6 +153,8 @@ class GroupTransactionDraft {
     this.caption,
     this.note,
     this.imageFilePath,
+    this.currencyCode = 'VND',
+    this.exchangeRateToBase = 1,
   });
 
   final String groupId;
@@ -145,6 +164,8 @@ class GroupTransactionDraft {
   final String? caption;
   final String? note;
   final String? imageFilePath;
+  final String currencyCode;
+  final double exchangeRateToBase;
   final GroupSplitMode splitMode;
   final GroupPaymentMode paymentMode;
   final Map<String, int> payerAmounts;

@@ -1706,6 +1706,13 @@
   "groupTransactionCaption": "Caption",
   "groupTransactionNote": "Note",
   "groupTransactionTotal": "Total amount",
+  "groupTransactionCurrency": "Transaction currency",
+  "groupTransactionCurrencySubtitle": "Group base currency: {currency}",
+  "@groupTransactionCurrencySubtitle": {"placeholders": {"currency": {"type": "String"}}},
+  "groupTransactionExchangeRate": "Exchange rate to base",
+  "groupTransactionExchangeRateSubtitle": "1 {from} = ? {to}",
+  "@groupTransactionExchangeRateSubtitle": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
+  "groupTransactionExchangeRateInvalid": "Enter a valid positive exchange rate.",
   "groupTransactionCategory": "Category",
   "groupTransactionImage": "Receipt image",
   "groupTransactionImageOptional": "An image is optional but recommended.",
@@ -1733,6 +1740,10 @@
   "groupTransactionMismatchStatus": "Amounts do not match",
   "groupTransactionPostedStatus": "Posted",
   "groupTransactionNoData": "No group transactions yet.",
+  "groupTransactionSearchHint": "Search content, category, or creator",
+  "groupTransactionFilterAll": "All",
+  "groupTransactionFilterNoResults": "No matching transactions found.",
+  "groupTransactionLoadMore": "Load more transactions",
   "groupTransactionLoadError": "Could not load group transactions.",
   "groupTransactionHistorySubtitle": "{payer} paid · Split {count} people",
   "@groupTransactionHistorySubtitle": {"placeholders": {"payer": {"type": "String"}, "count": {"type": "int"}}},
@@ -1801,6 +1812,11 @@
   "groupPublicProfileSettingsSubtitle": "Only safe group information is shown publicly.",
   "groupPublicProfileEnabled": "Enable public profile",
   "groupPublicProfileShowStatsSubtitle": "Shows aggregate counts and total spending only.",
+  "groupPublicProfileShowDescription": "Show description",
+  "groupPublicProfileShowDescriptionSubtitle": "The group description is visible to anyone with the public link.",
+  "groupPublicProfileShowType": "Show group type",
+  "groupPublicProfileShowAvatar": "Show group avatar",
+  "groupPublicProfileShowAvatarSubtitle": "Only a separately uploaded public-safe image is eligible; private group media is never exposed.",
   "groupPublicProfileShareTitle": "Share public page",
   "groupPublicProfileCopy": "Copy link",
   "groupPublicProfileCopied": "Public page link copied.",
@@ -1823,6 +1839,8 @@
   "groupRecurringNextRun": "Next run",
   "groupRecurringNotifyBefore": "Notify days before",
   "groupRecurringActive": "Active",
+  "groupRecurringAutoPost": "Automatically post when due",
+  "groupRecurringAutoPostSubtitle": "Creates an equal-split transaction in the group's base currency.",
   "groupRecurringDeleteTitle": "Delete recurring transaction?",
   "groupRecurringDeleteMessage": "This recurring transaction will be permanently removed.",
   "groupToolsTitle": "Group tools",
@@ -1849,6 +1867,10 @@
   "groupSummarySettlementHistory": "Settlement history",
   "groupSummaryNoData": "No data for this month.",
   "groupSummaryNoHistory": "No settlement history yet.",
+  "groupSummaryChartsTitle": "Spending at a glance",
+  "groupSummaryTrendTitle": "Six-month spending trend",
+  "groupSettlementBadgeTitle": "All settled",
+  "groupSettlementBadgeSubtitle": "The group has no outstanding balance this month.",
   "groupSummaryTransactionCount": "{count} transactions",
   "@groupSummaryTransactionCount": {"placeholders": {"count": {"type": "int"}}},
   "groupSummaryMemberAmounts": "Share {share} · Paid {paid}",
@@ -2395,6 +2417,94 @@
   "friendQrSwitchCamera": "Switch camera",
   "friendQrInvalid": "This is not a valid Moniary friend QR code.",
   "friendRateLimited": "Too many friend requests. Please try again later.",
+  "paymentQrTitle": "Payment QR",
+  "paymentQrProfileSubtitle": "Save it once so group members can open it when paying you.",
+  "paymentQrMyTitle": "My payment QR",
+  "paymentQrDescription": "Members in the same group can open this code when they need to pay you.",
+  "paymentQrMemberDescription": "Payment QR for {name}.",
+  "@paymentQrMemberDescription": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentQrAdd": "Save QR image",
+  "paymentQrReplace": "Replace QR image",
+  "paymentQrRemove": "Remove QR",
+  "paymentQrPrivacyNote": "Your QR is private and only visible to members of a shared group.",
+  "paymentQrSaved": "Payment QR saved.",
+  "paymentQrRemoved": "Payment QR removed.",
+  "paymentQrViewForPayment": "Open QR to pay",
+  "paymentQrEmptyOwner": "You have not saved a payment QR image yet.",
+  "paymentQrEmptyMember": "This member has not saved a payment QR image.",
+  "groupSettingsTitle": "Group settings",
+  "groupSettingsSubtitle": "Edit group details and archive only after balances are settled.",
+  "groupSettingsName": "Group name",
+  "groupSettingsDescription": "Description",
+  "groupSettingsType": "Group type",
+  "groupSettingsBaseCurrency": "Group base currency",
+  "groupSettingsBaseCurrencySubtitle": "All balances and budgets are kept in this currency. Foreign transactions need an explicit rate.",
+  "groupSettingsSave": "Save changes",
+  "groupSettingsSaved": "Group details updated.",
+  "groupSettingsArchiveTitle": "Archive group",
+  "groupSettingsArchiveSubtitle": "The group will leave the active list and stop accepting new expenses. Unresolved balances block this action.",
+  "groupSettingsArchiveAction": "Archive group",
+  "groupSettingsArchiveConfirmTitle": "Archive this group?",
+  "groupSettingsArchiveConfirmMessage": "Archive the group only after every member has completed payment.",
+  "groupSettingsArchiveBlocked": "The group cannot be archived while balances, pending expenses, or disputes remain.",
+  "groupSettingsAdminRequired": "Only the group owner or an admin can perform this action.",
+  "groupAuditLogTitle": "Admin audit log",
+  "groupAuditLogSubtitle": "Review changes to members, transactions, and group settings.",
+  "groupAuditLogEmpty": "No administrative activity has been recorded yet.",
+  "groupAuditSystem": "System",
+  "groupParticipationTitle": "Group participation",
+  "groupParticipationSubtitle": "Vote together and turn shared goals into progress.",
+  "groupPollsTitle": "Polls",
+  "groupPollsEmpty": "No polls yet.",
+  "groupPollCreate": "Create poll",
+  "groupPollQuestion": "Question",
+  "groupPollOptionsHint": "Options, one per line",
+  "groupChallengesTitle": "Savings challenges",
+  "groupChallengesEmpty": "No savings challenge yet.",
+  "groupChallengeCreate": "Create challenge",
+  "groupChallengeName": "Challenge name",
+  "groupChallengeTarget": "Target amount",
+  "groupChallengeContribute": "Contribute",
+  "groupPulsePersonalTitle": "Your next step",
+  "groupPulsePersonalMessage": "There is one item waiting for you so the group can keep moving smoothly.",
+  "groupPulseUpcomingTitle": "A shared date is coming",
+  "groupPulseUpcomingMessage": "{title} is due soon. Prepare together so nobody misses it.",
+  "@groupPulseUpcomingMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "groupPulseTogetherTitle": "Keep the group moving",
+  "groupPulseTogetherMessage": "Open the activity stream so everyone can update and respond.",
+  "groupPulseAllClearTitle": "The group is in a good place",
+  "groupPulseAllClearMessage": "Nothing is waiting. Add a new expense so everyone can see the next step.",
+  "groupSpotlightTitle": "Latest touchpoint",
+  "groupSpotlightComment": "View and respond",
+  "groupSummaryContributionTitle": "Contribution spotlight",
+  "groupSummaryContributionMessage": "{name} is helping the group keep a steady rhythm this month.",
+  "@groupSummaryContributionMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupSummaryContributionCount": "{count} activities",
+  "@groupSummaryContributionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupSplitExact": "Exact amounts",
   "groupParticipantsTitle": "Participants in this expense",
   "groupSettlementDisputeTitle": "Report a settlement issue",

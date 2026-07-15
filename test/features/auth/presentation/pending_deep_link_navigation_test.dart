@@ -98,6 +98,38 @@ class FakeProfileRepository implements ProfileRepository {
   Future<UserProfile?> fetchCurrentProfile() async => _profile;
 
   @override
+  Future<UserProfile> savePaymentQrImage(String imagePath) async {
+    _profile = UserProfile(
+      id: _profile.id,
+      fullName: _profile.fullName,
+      email: _profile.email,
+      avatarUrl: _profile.avatarUrl,
+      loginProvider: _profile.loginProvider,
+      timezone: _profile.timezone,
+      username: _profile.username,
+      surveyCompleted: _profile.surveyCompleted,
+      paymentQrPath: imagePath,
+    );
+    return _profile;
+  }
+
+  @override
+  Future<UserProfile> clearPaymentQrImage() async {
+    _profile = UserProfile(
+      id: _profile.id,
+      fullName: _profile.fullName,
+      email: _profile.email,
+      avatarUrl: _profile.avatarUrl,
+      loginProvider: _profile.loginProvider,
+      timezone: _profile.timezone,
+      username: _profile.username,
+      surveyCompleted: _profile.surveyCompleted,
+      paymentQrPath: null,
+    );
+    return _profile;
+  }
+
+  @override
   Future<UserProfile> upsertProfile({
     required String fullName,
     required String username,
