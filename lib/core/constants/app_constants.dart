@@ -16,8 +16,18 @@ class AppConstants {
   static const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
   // --- FCM/APNs (provided through dart-define; never commit real values) ---
-  static const firebaseApiKey = String.fromEnvironment('FIREBASE_API_KEY');
-  static const firebaseAppId = String.fromEnvironment('FIREBASE_APP_ID');
+  // Firebase API keys identify a client app; iOS and Android app IDs are
+  // always platform-specific even when both apps share one Firebase project.
+  static const firebaseIosApiKey = String.fromEnvironment(
+    'FIREBASE_IOS_API_KEY',
+  );
+  static const firebaseIosAppId = String.fromEnvironment('FIREBASE_IOS_APP_ID');
+  static const firebaseAndroidApiKey = String.fromEnvironment(
+    'FIREBASE_ANDROID_API_KEY',
+  );
+  static const firebaseAndroidAppId = String.fromEnvironment(
+    'FIREBASE_ANDROID_APP_ID',
+  );
   static const firebaseMessagingSenderId = String.fromEnvironment(
     'FIREBASE_MESSAGING_SENDER_ID',
   );
@@ -32,11 +42,29 @@ class AppConstants {
   static bool get hasSupabaseConfig =>
       supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
 
-  static bool get hasFirebaseConfig =>
-      firebaseApiKey.isNotEmpty &&
-      firebaseAppId.isNotEmpty &&
+  static bool hasFirebaseConfigFor(TargetPlatform platform) =>
+      (platform == TargetPlatform.iOS || platform == TargetPlatform.android) &&
+      firebaseApiKeyFor(platform).isNotEmpty &&
+      firebaseAppIdFor(platform).isNotEmpty &&
       firebaseMessagingSenderId.isNotEmpty &&
-      firebaseProjectId.isNotEmpty;
+      firebaseProjectId.isNotEmpty &&
+      (platform != TargetPlatform.iOS || firebaseIosBundleId.isNotEmpty);
+
+  static bool get hasFirebaseConfig =>
+      !kIsWeb && hasFirebaseConfigFor(defaultTargetPlatform);
+
+  static String firebaseApiKeyFor(TargetPlatform platform) =>
+      switch (platform) {
+        TargetPlatform.iOS => firebaseIosApiKey,
+        TargetPlatform.android => firebaseAndroidApiKey,
+        _ => '',
+      };
+
+  static String firebaseAppIdFor(TargetPlatform platform) => switch (platform) {
+    TargetPlatform.iOS => firebaseIosAppId,
+    TargetPlatform.android => firebaseAndroidAppId,
+    _ => '',
+  };
 
   static const supabaseLoginCallbackUrl =
       'io.supabase.moniary://login-callback';

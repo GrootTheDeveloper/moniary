@@ -8,6 +8,42 @@ import '../constants/app_constants.dart';
 import '../../shared/utils/app_logger.dart';
 import 'local_notification_service.dart';
 
+@visibleForTesting
+FirebaseOptions firebaseOptionsForPlatform(
+  TargetPlatform platform, {
+  String iosApiKey = AppConstants.firebaseIosApiKey,
+  String iosAppId = AppConstants.firebaseIosAppId,
+  String iosBundleId = AppConstants.firebaseIosBundleId,
+  String androidApiKey = AppConstants.firebaseAndroidApiKey,
+  String androidAppId = AppConstants.firebaseAndroidAppId,
+  String messagingSenderId = AppConstants.firebaseMessagingSenderId,
+  String projectId = AppConstants.firebaseProjectId,
+}) {
+  final isIos = platform == TargetPlatform.iOS;
+  final isAndroid = platform == TargetPlatform.android;
+  if (!isIos && !isAndroid) {
+    throw UnsupportedError('Firebase push is supported only on iOS/Android.');
+  }
+
+  final apiKey = isIos ? iosApiKey : androidApiKey;
+  final appId = isIos ? iosAppId : androidAppId;
+  if (apiKey.isEmpty ||
+      appId.isEmpty ||
+      messagingSenderId.isEmpty ||
+      projectId.isEmpty ||
+      (isIos && iosBundleId.isEmpty)) {
+    throw StateError('Firebase configuration is incomplete for $platform.');
+  }
+
+  return FirebaseOptions(
+    apiKey: apiKey,
+    appId: appId,
+    messagingSenderId: messagingSenderId,
+    projectId: projectId,
+    iosBundleId: isIos ? iosBundleId : null,
+  );
+}
+
 abstract interface class PushMessagingGateway {
   Stream<String> get tokenRefreshes;
   Stream<RemoteMessage> get foregroundMessages;
@@ -202,13 +238,7 @@ class FcmPushNotificationService {
       await _initializeFirebaseOverride();
     } else if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
-        options: const FirebaseOptions(
-          apiKey: AppConstants.firebaseApiKey,
-          appId: AppConstants.firebaseAppId,
-          messagingSenderId: AppConstants.firebaseMessagingSenderId,
-          projectId: AppConstants.firebaseProjectId,
-          iosBundleId: AppConstants.firebaseIosBundleId,
-        ),
+        options: firebaseOptionsForPlatform(defaultTargetPlatform),
       );
     }
 

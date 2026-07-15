@@ -59,6 +59,10 @@ key.properties
 *.keystore
 .env
 *.env
+# Local Firebase client configuration sources. Public identifiers are imported
+# into ignored mobile.env; private server credentials never belong here.
+**/GoogleService-Info.plist
+**/google-services.json
 .gemini/
 
 # Local-only notes

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moniary/core/notifications/fcm_push_notification_service.dart';
 import 'package:moniary/core/notifications/local_notification_service.dart';
@@ -72,6 +73,52 @@ void main() {
   tearDown(() async {
     service.dispose();
     await gateway.dispose();
+  });
+
+  test('Firebase options select the platform-specific client app', () {
+    final iosOptions = firebaseOptionsForPlatform(
+      TargetPlatform.iOS,
+      iosApiKey: 'ios-api-key',
+      iosAppId: 'ios-app-id',
+      iosBundleId: 'com.moniary.moniary',
+      androidApiKey: 'android-api-key',
+      androidAppId: 'android-app-id',
+      messagingSenderId: 'sender-id',
+      projectId: 'project-id',
+    );
+    final androidOptions = firebaseOptionsForPlatform(
+      TargetPlatform.android,
+      iosApiKey: 'ios-api-key',
+      iosAppId: 'ios-app-id',
+      iosBundleId: 'com.moniary.moniary',
+      androidApiKey: 'android-api-key',
+      androidAppId: 'android-app-id',
+      messagingSenderId: 'sender-id',
+      projectId: 'project-id',
+    );
+
+    expect(iosOptions.apiKey, 'ios-api-key');
+    expect(iosOptions.appId, 'ios-app-id');
+    expect(iosOptions.iosBundleId, 'com.moniary.moniary');
+    expect(androidOptions.apiKey, 'android-api-key');
+    expect(androidOptions.appId, 'android-app-id');
+    expect(androidOptions.iosBundleId, isNull);
+  });
+
+  test('Firebase options reject incomplete platform configuration', () {
+    expect(
+      () => firebaseOptionsForPlatform(
+        TargetPlatform.android,
+        iosApiKey: 'ios-api-key',
+        iosAppId: 'ios-app-id',
+        iosBundleId: 'com.moniary.moniary',
+        androidApiKey: '',
+        androidAppId: 'android-app-id',
+        messagingSenderId: 'sender-id',
+        projectId: 'project-id',
+      ),
+      throwsStateError,
+    );
   });
 
   test('iOS token registration waits until APNs token is available', () async {

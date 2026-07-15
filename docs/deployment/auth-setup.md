@@ -13,8 +13,10 @@ public mobile configuration in it:
 SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 SUPABASE_ANON_KEY=sb_publishable_YOUR_KEY
 OCR_API_URL=https://your-ocr-api.example.com
-FIREBASE_API_KEY=YOUR_FIREBASE_WEB_API_KEY
-FIREBASE_APP_ID=1:YOUR_SENDER_ID:ios:YOUR_IOS_APP_ID
+FIREBASE_IOS_API_KEY=YOUR_FIREBASE_IOS_API_KEY
+FIREBASE_IOS_APP_ID=1:YOUR_SENDER_ID:ios:YOUR_IOS_APP_ID
+FIREBASE_ANDROID_API_KEY=YOUR_FIREBASE_ANDROID_API_KEY
+FIREBASE_ANDROID_APP_ID=1:YOUR_SENDER_ID:android:YOUR_ANDROID_APP_ID
 FIREBASE_MESSAGING_SENDER_ID=YOUR_SENDER_ID
 FIREBASE_PROJECT_ID=YOUR_FIREBASE_PROJECT_ID
 FIREBASE_IOS_BUNDLE_ID=com.moniary.moniary
@@ -139,15 +141,18 @@ Facebook is intentionally hidden until all of the following are complete:
 
 ### Firebase/APNs push setup
 
-Push notifications are optional at compile time, but they are enabled only
-when all five public `FIREBASE_*` values from `mobile.env.example` are present
-and non-placeholder values. Use the iOS Firebase app whose bundle ID is
-`com.moniary.moniary`:
+Push notifications are optional at compile time. They are enabled only when
+the current platform's API key and app ID plus the shared sender/project IDs
+from `mobile.env.example` are present and non-placeholder values. The iOS and
+Android client apps must belong to the same Firebase project and both use the
+application identifier `com.moniary.moniary`:
 
 1. In Apple Developer, enable **Push Notifications** for the App ID and
    regenerate the development and distribution provisioning profiles.
-2. In Firebase Console > Project settings, register the iOS app and copy its
-   API key, app ID, sender ID, project ID, and bundle ID into `mobile.env`.
+2. In Firebase Console > Project settings, register both platform apps. Copy
+   the iOS API key/app ID, Android API key/app ID, shared sender/project IDs,
+   and iOS bundle ID into `mobile.env`. Never use one platform's app ID for the
+   other platform.
 3. In Firebase Console > Cloud Messaging, upload an APNs authentication key
    (`.p8`) with its Key ID and Apple Team ID. Keep the `.p8` private; it never
    belongs in `mobile.env`, Supabase tables, or Git.
