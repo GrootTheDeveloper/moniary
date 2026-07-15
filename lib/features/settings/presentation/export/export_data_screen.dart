@@ -165,7 +165,7 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
       ExportFormat.csv =>
         await ref
             .read(accountActionsControllerProvider.notifier)
-            .exportCsv(filters: _filters),
+            .exportCsv(filters: _filters, text: exportText),
       ExportFormat.xlsx =>
         await ref
             .read(accountActionsControllerProvider.notifier)
@@ -467,8 +467,8 @@ class _DatePill extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: context.moniaryColors.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
             ),

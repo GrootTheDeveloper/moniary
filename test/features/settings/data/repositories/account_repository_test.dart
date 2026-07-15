@@ -109,11 +109,12 @@ void main() {
   test('exportTransactionsCsv writes a file for the signed-in user', () async {
     final file = await repository.exportTransactionsCsv(
       filters: const ExportFilters(dataTypes: {}),
+      text: testExportFileText,
     );
 
     expect(file.path, endsWith('.csv'));
     expect(await file.exists(), isTrue);
-    expect(await file.readAsString(), contains('data_type'));
+    expect(await file.readAsString(), contains('Data type'));
 
     final history = await repository.fetchExportHistory();
     expect(history, hasLength(1));
@@ -164,6 +165,7 @@ void main() {
           endDate: end,
           dataTypes: const {},
         ),
+        text: testExportFileText,
       );
 
       final historyFile = File('${tempDir.path}/moniary_export_history.json');

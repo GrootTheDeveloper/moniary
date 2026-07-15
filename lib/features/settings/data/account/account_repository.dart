@@ -49,28 +49,14 @@ class AccountRepository {
 
   Future<File> exportTransactionsCsv({
     ExportFilters filters = const ExportFilters(),
+    required ExportFileText text,
   }) async {
     final userId = _requireExportUserId();
     final exportRows = await _buildExportRows(userId, filters: filters);
 
     final csv = StringBuffer()
       ..writeln(
-        [
-          'data_type',
-          'id',
-          'name',
-          'type',
-          'amount',
-          'wallet',
-          'category',
-          'note',
-          'transaction_date',
-          'image_path',
-          'created_at',
-          'initial_balance',
-          'is_default',
-          'is_active',
-        ].map(_csvCell).join(','),
+        text.xlsxHeaders.map(_csvCell).join(','),
       );
 
     for (final row in exportRows) {
