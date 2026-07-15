@@ -955,7 +955,10 @@ class _RequestRow extends StatelessWidget {
     final colors = context.moniaryColors;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < 300;
+        // Scale the threshold with text size so large fonts fall back to the
+        // stacked layout instead of overflowing the horizontal row.
+        final compact =
+            constraints.maxWidth < MediaQuery.textScalerOf(context).scale(300);
         final identity = Row(
           children: [
             ClipOval(
@@ -1142,15 +1145,20 @@ class _EmptyFriendsState extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          // Wrap (not Row) so the buttons flow onto a second line instead of
+          // overflowing — a fixed-width Row here crashes with unbounded-width
+          // constraints at large text scales.
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 10,
+            runSpacing: 10,
             children: [
               FilledButton.icon(
                 onPressed: onAdd,
                 icon: const Icon(Icons.person_add_alt_1_rounded),
                 label: Text(context.l10n.friendAdd),
               ),
-              const SizedBox(width: 10),
               IconButton.outlined(
                 tooltip: context.l10n.friendShareInviteLink,
                 onPressed: onShare,
