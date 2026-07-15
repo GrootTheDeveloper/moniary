@@ -27,7 +27,7 @@ class GroupSupabaseDataSource {
     final rows = await client
         .from('group_members')
         .select(
-          '*, profile:profiles!group_members_user_id_profiles_fkey(full_name,username,avatar_url)',
+          '*, profile:profiles!group_members_user_id_profiles_fkey(full_name,username,avatar_url,payment_qr_path)',
         )
         .eq('group_id', groupId)
         .order('joined_at');
@@ -43,6 +43,38 @@ class GroupSupabaseDataSource {
         .eq('group_id', groupId)
         .neq('split_status', 'cancelled')
         .order('transaction_date', ascending: false);
+    return _rows(rows);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchTransactionsPage({
+    required String groupId,
+    required int offset,
+    required int limit,
+    String query = '',
+    String? status,
+  }) async {
+    var request = client
+        .from('group_transactions')
+        .select(
+          '*, creator:profiles!group_transactions_created_by_profiles_fkey(full_name)',
+        )
+        .eq('group_id', groupId)
+        .neq('split_status', 'cancelled');
+    final normalizedQuery = query.trim();
+    if (normalizedQuery.isNotEmpty) {
+      final escaped = normalizedQuery.replaceAll(',', '');
+      request = request.or(
+        'caption.ilike.%$escaped%,category_name_snapshot.ilike.%$escaped%,note.ilike.%$escaped%',
+      );
+    }
+    if (status == 'posted') {
+      request = request.eq('split_status', 'posted');
+    } else if (status == 'pending') {
+      request = request.neq('split_status', 'posted');
+    }
+    final rows = await request
+        .order('transaction_date', ascending: false)
+        .range(offset, offset + limit);
     return _rows(rows);
   }
 
@@ -151,6 +183,43 @@ class GroupSupabaseDataSource {
     return result as String;
   }
 
+  Future<void> updateGroup({
+    required String groupId,
+    required String name,
+    String? description,
+    String? type,
+  }) {
+    return client.rpc(
+      'update_expense_group',
+      params: {
+        'p_group_id': groupId,
+        'p_name': name,
+        'p_description': description,
+        'p_type': type,
+      },
+    );
+  }
+
+  Future<void> setGroupArchived({
+    required String groupId,
+    required bool archived,
+  }) {
+    return client.rpc(
+      'set_expense_group_archived',
+      params: {'p_group_id': groupId, 'p_archived': archived},
+    );
+  }
+
+  Future<void> updateGroupCurrency({
+    required String groupId,
+    required String baseCurrency,
+  }) {
+    return client.rpc(
+      'update_group_currency',
+      params: {'p_group_id': groupId, 'p_base_currency': baseCurrency},
+    );
+  }
+
   Future<String> createInviteLink(String groupId) async {
     final result = await client.rpc(
       'create_group_invite_link',
@@ -234,6 +303,8 @@ class GroupSupabaseDataSource {
         'p_payer_amounts': draft.payerAmounts,
         'p_participant_ids': draft.participantIds,
         'p_share_amounts': draft.shareAmounts,
+        'p_currency_code': draft.currencyCode,
+        'p_exchange_rate_to_base': draft.exchangeRateToBase,
       },
     );
     return result as String;
@@ -257,6 +328,8 @@ class GroupSupabaseDataSource {
         'p_payer_amounts': draft.payerAmounts,
         'p_participant_ids': draft.participantIds,
         'p_share_amounts': draft.shareAmounts,
+        'p_currency_code': draft.currencyCode,
+        'p_exchange_rate_to_base': draft.exchangeRateToBase,
       },
     );
   }
@@ -392,6 +465,86 @@ class GroupSupabaseDataSource {
     return _rows(rows);
   }
 
+  Future<List<Map<String, dynamic>>> fetchAuditLogs(String groupId) async {
+    final rows = await client.rpc(
+      'list_group_audit_logs',
+      params: {'p_group_id': groupId, 'p_limit': 100, 'p_offset': 0},
+    );
+    return _rows(rows);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchPolls(String groupId) async {
+    final rows = await client
+        .from('group_polls')
+        .select('*, options:group_poll_options(id,label,vote_count)')
+        .eq('group_id', groupId)
+        .order('created_at', ascending: false);
+    return _rows(rows);
+  }
+
+  Future<String> createPoll({
+    required String groupId,
+    required String title,
+    required List<String> options,
+  }) async {
+    final result = await client.rpc(
+      'create_group_poll',
+      params: {'p_group_id': groupId, 'p_title': title, 'p_options': options},
+    );
+    return result as String;
+  }
+
+  Future<void> votePoll({required String pollId, required String optionId}) {
+    return client.rpc(
+      'vote_group_poll',
+      params: {'p_poll_id': pollId, 'p_option_id': optionId},
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSavingsChallenges(
+    String groupId,
+  ) async {
+    final rows = await client
+        .from('group_savings_challenges')
+        .select('*, contributions:group_savings_contributions(amount)')
+        .eq('group_id', groupId)
+        .order('end_date');
+    return _rows(rows);
+  }
+
+  Future<String> createSavingsChallenge({
+    required String groupId,
+    required String title,
+    required int targetAmount,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    final result = await client.rpc(
+      'create_group_savings_challenge',
+      params: {
+        'p_group_id': groupId,
+        'p_title': title,
+        'p_target_amount': targetAmount,
+        'p_start_date': startDate.toIso8601String().split('T').first,
+        'p_end_date': endDate.toIso8601String().split('T').first,
+      },
+    );
+    return result as String;
+  }
+
+  Future<void> addSavingsContribution({
+    required String challengeId,
+    required int amount,
+    String? note,
+  }) {
+    return client.from('group_savings_contributions').insert({
+      'challenge_id': challengeId,
+      'amount': amount,
+      'note': note,
+      'user_id': client.auth.currentUser!.id,
+    });
+  }
+
   Future<List<Map<String, dynamic>>> fetchNotifications({
     String? category,
   }) async {
@@ -404,9 +557,13 @@ class GroupSupabaseDataSource {
 
   Future<void> markNotificationRead(String notificationId) {
     return client.rpc(
-      'mark_group_notification_read',
+      'mark_notification_read',
       params: {'p_notification_id': notificationId},
     );
+  }
+
+  Future<void> markAllNotificationsRead() {
+    return client.rpc('mark_all_notifications_read');
   }
 
   Future<Map<String, dynamic>?> fetchBudget(String groupId) async {
@@ -474,6 +631,9 @@ class GroupSupabaseDataSource {
       'slug': profile.slug,
       'is_enabled': profile.isEnabled,
       'show_stats': profile.showStats,
+      'show_description': profile.showDescription,
+      'show_group_type': profile.showGroupType,
+      'show_avatar': profile.showAvatar,
     }, onConflict: 'group_id');
   }
 
@@ -504,6 +664,7 @@ class GroupSupabaseDataSource {
     required String frequency,
     required DateTime nextRunAt,
     required int notifyDaysBefore,
+    required bool autoPost,
   }) async {
     final result = await client.rpc(
       'create_group_recurring_transaction',
@@ -514,6 +675,7 @@ class GroupSupabaseDataSource {
         'p_frequency': frequency,
         'p_next_run_at': nextRunAt.toUtc().toIso8601String(),
         'p_notify_days_before': notifyDaysBefore,
+        'p_auto_post': autoPost,
       },
     );
     return result as String;
@@ -527,6 +689,7 @@ class GroupSupabaseDataSource {
     required DateTime nextRunAt,
     required int notifyDaysBefore,
     required bool isActive,
+    required bool autoPost,
   }) {
     return client.rpc(
       'update_group_recurring_transaction',
@@ -538,6 +701,7 @@ class GroupSupabaseDataSource {
         'p_next_run_at': nextRunAt.toUtc().toIso8601String(),
         'p_notify_days_before': notifyDaysBefore,
         'p_is_active': isActive,
+        'p_auto_post': autoPost,
       },
     );
   }

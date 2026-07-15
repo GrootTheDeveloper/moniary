@@ -51,6 +51,7 @@ class ProfileRepository {
         timezone: AppConstants.defaultTimezone,
         username: 'mock-user',
         surveyCompleted: false,
+        paymentQrPath: null,
       );
       return _mockProfile;
     }
@@ -109,6 +110,7 @@ class ProfileRepository {
         occupation: _mockProfile?.occupation,
         preferredCurrency: _mockProfile?.preferredCurrency ?? 'VND',
         surveyCompleted: _mockProfile?.surveyCompleted ?? false,
+        paymentQrPath: _mockProfile?.paymentQrPath,
       );
       return _mockProfile!;
     }
@@ -178,6 +180,7 @@ class ProfileRepository {
         occupation: occupation,
         preferredCurrency: preferredCurrency,
         surveyCompleted: true,
+        paymentQrPath: profile.paymentQrPath,
       );
       return _mockProfile!;
     }
@@ -268,7 +271,82 @@ class ProfileRepository {
       occupation: _mockProfile?.occupation,
       preferredCurrency: _mockProfile?.preferredCurrency ?? 'VND',
       surveyCompleted: _mockProfile?.surveyCompleted ?? false,
+      paymentQrPath: _mockProfile?.paymentQrPath,
     );
+  }
+
+  Future<UserProfile> savePaymentQrImage(String imagePath) async {
+    if (_useMockData) {
+      final profile = _mockProfile ?? await fetchCurrentProfile();
+      if (profile == null) {
+        throw const AppException(
+          'Profile is not available',
+          code: 'PROFILE_NOT_FOUND',
+        );
+      }
+      _mockProfile = _copyWithPaymentQr(profile, imagePath);
+      return _mockProfile!;
+    }
+
+    try {
+      final uid = _userId;
+      final qrPath = await _uploadPaymentQrImage(
+        uid: uid,
+        imagePath: imagePath,
+      );
+      final row = await _client
+          .from('profiles')
+          .update({'payment_qr_path': qrPath})
+          .eq('id', uid)
+          .select()
+          .single();
+      return UserProfile.fromMap(row);
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Failed to save payment QR profile', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to save payment QR profile', e, st);
+      throw const AppException(
+        'Failed to save payment QR',
+        code: 'PAYMENT_QR_SAVE_FAILED',
+      );
+    }
+  }
+
+  Future<UserProfile> clearPaymentQrImage() async {
+    if (_useMockData) {
+      final profile = _mockProfile ?? await fetchCurrentProfile();
+      if (profile == null) {
+        throw const AppException(
+          'Profile is not available',
+          code: 'PROFILE_NOT_FOUND',
+        );
+      }
+      _mockProfile = _copyWithPaymentQr(profile, null);
+      return _mockProfile!;
+    }
+
+    try {
+      final uid = _userId;
+      final row = await _client
+          .from('profiles')
+          .update({'payment_qr_path': null})
+          .eq('id', uid)
+          .select()
+          .single();
+      return UserProfile.fromMap(row);
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Failed to clear payment QR profile', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to clear payment QR profile', e, st);
+      throw const AppException(
+        'Failed to clear payment QR',
+        code: 'PAYMENT_QR_CLEAR_FAILED',
+      );
+    }
   }
 
   Future<String> _uploadAvatarImage({
@@ -306,5 +384,57 @@ class ProfileRepository {
         code: 'AVATAR_UPLOAD_FAILED',
       );
     }
+  }
+
+  Future<String> _uploadPaymentQrImage({
+    required String uid,
+    required String imagePath,
+  }) async {
+    if (imagePath.startsWith('payment-qr/') || imagePath.startsWith('http')) {
+      return imagePath;
+    }
+
+    try {
+      final bytes = await File(imagePath).readAsBytes();
+      const fileName = 'qr.jpg';
+      final path = 'payment-qr/$uid/$fileName';
+      await _client.storage
+          .from(AppConstants.storageBucket)
+          .uploadBinary(
+            path,
+            bytes,
+            fileOptions: const FileOptions(
+              contentType: 'image/jpeg',
+              upsert: true,
+            ),
+          );
+      return path;
+    } on StorageException catch (e, st) {
+      AppLogger.error('Failed to upload payment QR', e, st);
+      throw AppException(e.message, code: e.statusCode);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to upload payment QR', e, st);
+      throw const AppException(
+        'Failed to upload payment QR',
+        code: 'PAYMENT_QR_UPLOAD_FAILED',
+      );
+    }
+  }
+
+  UserProfile _copyWithPaymentQr(UserProfile profile, String? path) {
+    return UserProfile(
+      id: profile.id,
+      fullName: profile.fullName,
+      email: profile.email,
+      avatarUrl: profile.avatarUrl,
+      loginProvider: profile.loginProvider,
+      timezone: profile.timezone,
+      username: profile.username,
+      occupation: profile.occupation,
+      preferredCurrency: profile.preferredCurrency,
+      surveyCompleted: profile.surveyCompleted,
+      paymentQrPath: path,
+    );
   }
 }

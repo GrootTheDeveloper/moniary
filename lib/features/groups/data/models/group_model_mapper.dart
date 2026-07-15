@@ -23,6 +23,7 @@ class GroupModelMapper {
       avatarPath: row['avatar_path'] as String?,
       description: row['description'] as String?,
       type: row['type'] as String?,
+      baseCurrency: row['base_currency'] as String? ?? 'VND',
       createdBy: row['created_by'] as String,
       status: GroupStatusValue.fromValue(row['status'] as String? ?? 'active'),
       createdAt: _date(row['created_at']),
@@ -49,6 +50,9 @@ class GroupModelMapper {
       displayName: profile?['full_name'] as String?,
       username: profile?['username'] as String?,
       avatarPath: profile?['avatar_url'] as String?,
+      paymentQrPath: row['status'] == 'active'
+          ? (profile?['payment_qr_path'] as String?)
+          : null,
     );
   }
 
@@ -58,7 +62,11 @@ class GroupModelMapper {
       id: row['id'] as String,
       groupId: row['group_id'] as String,
       createdBy: row['created_by'] as String,
-      totalAmount: _money(row['total_amount']),
+      totalAmount: _money(row['original_total_amount'] ?? row['total_amount']),
+      currencyCode: row['currency_code'] as String? ?? 'VND',
+      exchangeRateToBase:
+          (row['exchange_rate_to_base'] as num?)?.toDouble() ?? 1,
+      baseTotalAmount: (row['base_total_amount'] as num?)?.toInt(),
       categoryId: row['category_id'] as String?,
       categoryName: row['category_name_snapshot'] as String?,
       caption: row['caption'] as String?,

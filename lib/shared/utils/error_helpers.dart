@@ -81,6 +81,10 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupOwnerTransferRequired;
       case 'GROUP_COMMENT_REQUIRED':
         return l10n.groupCommentRequired;
+      case 'GROUP_ARCHIVE_UNRESOLVED':
+        return l10n.groupSettingsArchiveBlocked;
+      case 'GROUP_ADMIN_REQUIRED':
+        return l10n.groupSettingsAdminRequired;
       case 'GROUP_CREATOR_ONLY':
         return l10n.groupTransactionCreatorOnly;
       case 'FRIEND_USER_NOT_FOUND':

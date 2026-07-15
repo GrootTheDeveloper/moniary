@@ -152,4 +152,48 @@ void main() {
       isTrue,
     );
   });
+
+  test('marking all notifications read clears the mock inbox badge', () async {
+    final user = GroupMockDataSource(currentUserId: 'mock-user-id');
+    await user.fetchGroups();
+
+    final before = await user.fetchNotifications();
+    expect(before.any((notification) => !notification.isRead), isTrue);
+
+    await user.markAllNotificationsRead();
+
+    final after = await user.fetchNotifications();
+    expect(after.every((notification) => notification.isRead), isTrue);
+  });
+
+  test('group admins can edit details and archive a settled group', () async {
+    final owner = GroupMockDataSource(currentUserId: 'owner');
+    final groupId = await owner.createGroup(
+      name: 'Weekend plan',
+      description: 'Old description',
+    );
+
+    await owner.updateGroup(
+      groupId: groupId,
+      name: 'Weekend reset',
+      description: 'New description',
+      type: 'trip',
+    );
+    final updated = await owner.fetchGroupDetail(groupId);
+    expect(updated.group.name, 'Weekend reset');
+    expect(updated.group.description, 'New description');
+    expect(updated.group.type, 'trip');
+
+    await owner.setGroupArchived(groupId: groupId, archived: true);
+    expect(
+      (await owner.fetchGroupDetail(groupId)).group.status,
+      GroupStatus.archived,
+    );
+
+    await owner.setGroupArchived(groupId: groupId, archived: false);
+    expect(
+      (await owner.fetchGroupDetail(groupId)).group.status,
+      GroupStatus.active,
+    );
+  });
 }

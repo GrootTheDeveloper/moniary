@@ -49,6 +49,7 @@ class _AddGroupTransactionScreenState
   final _amountController = TextEditingController();
   final _captionController = TextEditingController();
   final _noteController = TextEditingController();
+  final _rateController = TextEditingController(text: '1');
   final Map<String, TextEditingController> _payerControllers = {};
   final Map<String, TextEditingController> _shareControllers = {};
   final Set<String> _selectedPayerIds = {};
@@ -57,12 +58,14 @@ class _AddGroupTransactionScreenState
   GroupPaymentMode _paymentMode = GroupPaymentMode.everyonePaid;
   String? _categoryId;
   String? _categoryName;
+  String _currencyCode = 'VND';
   String? _imageFilePath;
   List<OcrLineItem> _ocrItems = const [];
   String? _ocrCategoryKey;
   bool _participantsInitialized = false;
   bool _ocrLoading = false;
   bool _hasOcrSuggestions = false;
+  bool _currencyInitialized = false;
 
   bool get _editing => widget.args.initialDetail != null;
 
@@ -73,6 +76,8 @@ class _AddGroupTransactionScreenState
     if (initial != null) {
       final transaction = initial.transaction;
       _amountController.text = transaction.totalAmount.toString();
+      _currencyCode = transaction.currencyCode;
+      _rateController.text = transaction.exchangeRateToBase.toString();
       _captionController.text = transaction.caption ?? '';
       _noteController.text = transaction.note ?? '';
       _splitMode = transaction.splitMode;
@@ -82,13 +87,17 @@ class _AddGroupTransactionScreenState
       for (final payer in initial.payers) {
         _selectedPayerIds.add(payer.userId);
         _payerControllers[payer.userId] = TextEditingController(
-          text: payer.paidAmount.toString(),
+          text: (payer.paidAmount / transaction.exchangeRateToBase)
+              .round()
+              .toString(),
         );
       }
       for (final share in initial.shares) {
         _selectedParticipantIds.add(share.userId);
         _shareControllers[share.userId] = TextEditingController(
-          text: share.shareAmount.toString(),
+          text: (share.shareAmount / transaction.exchangeRateToBase)
+              .round()
+              .toString(),
         );
       }
       _participantsInitialized = true;
@@ -100,6 +109,7 @@ class _AddGroupTransactionScreenState
     _amountController.dispose();
     _captionController.dispose();
     _noteController.dispose();
+    _rateController.dispose();
     for (final controller in _payerControllers.values) {
       controller.dispose();
     }
@@ -127,6 +137,10 @@ class _AddGroupTransactionScreenState
         error: (error, _) =>
             Center(child: Text(userFriendlyMessage(context, error))),
         data: (detail) {
+          if (!_currencyInitialized) {
+            _currencyInitialized = true;
+            if (!_editing) _currencyCode = detail.group.baseCurrency;
+          }
           _ensureMemberControllers(detail.activeMembers);
           _resolveOcrCategory(categoriesAsync.asData?.value ?? const []);
           return ListView(
@@ -166,6 +180,50 @@ class _AddGroupTransactionScreenState
                   prefixIcon: const Icon(Icons.payments_outlined),
                 ),
               ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: _currencyCode,
+                decoration: InputDecoration(
+                  labelText: context.l10n.groupTransactionCurrency,
+                  helperText: context.l10n.groupTransactionCurrencySubtitle(
+                    detail.group.baseCurrency,
+                  ),
+                ),
+                items:
+                    {
+                          detail.group.baseCurrency,
+                          'VND',
+                          'USD',
+                          'EUR',
+                          'SGD',
+                          'JPY',
+                        }
+                        .map(
+                          (code) =>
+                              DropdownMenuItem(value: code, child: Text(code)),
+                        )
+                        .toList(),
+                onChanged: (value) => setState(
+                  () => _currencyCode = value ?? detail.group.baseCurrency,
+                ),
+              ),
+              if (_currencyCode != detail.group.baseCurrency) ...[
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _rateController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.groupTransactionExchangeRate,
+                    helperText: context.l10n
+                        .groupTransactionExchangeRateSubtitle(
+                          _currencyCode,
+                          detail.group.baseCurrency,
+                        ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 12),
               categoriesAsync.when(
                 loading: () => const LinearProgressIndicator(),
@@ -439,6 +497,25 @@ class _AddGroupTransactionScreenState
       return;
     }
     final payerAmounts = _payerAmounts(totalAmount);
+    final rate = double.tryParse(_rateController.text.trim()) ?? 0;
+    if (rate <= 0 || !rate.isFinite) {
+      _showMessage(context.l10n.groupTransactionExchangeRateInvalid);
+      return;
+    }
+    final baseTotalAmount = (totalAmount * rate).round();
+    final basePayerAmounts = _convertAmounts(
+      payerAmounts,
+      sourceTotal: totalAmount,
+      targetTotal: baseTotalAmount,
+    );
+    final rawShares = _splitMode == GroupSplitMode.exact
+        ? _shareAmounts()
+        : const <String, int>{};
+    final baseShareAmounts = _convertAmounts(
+      rawShares,
+      sourceTotal: totalAmount,
+      targetTotal: baseTotalAmount,
+    );
     try {
       const GroupSplitCalculator().validateDraft(
         totalAmount: totalAmount,
@@ -469,7 +546,9 @@ class _AddGroupTransactionScreenState
 
     final draft = GroupTransactionDraft(
       groupId: widget.args.groupId,
-      totalAmount: totalAmount,
+      totalAmount: baseTotalAmount,
+      currencyCode: _currencyCode,
+      exchangeRateToBase: rate,
       categoryId: _categoryId,
       categoryName: _categoryName,
       caption: _captionController.text,
@@ -477,11 +556,9 @@ class _AddGroupTransactionScreenState
       imageFilePath: _imageFilePath,
       splitMode: _splitMode,
       paymentMode: _paymentMode,
-      payerAmounts: payerAmounts,
+      payerAmounts: basePayerAmounts,
       participantIds: _selectedParticipantIds.toList(growable: false),
-      shareAmounts: _splitMode == GroupSplitMode.exact
-          ? _shareAmounts()
-          : const {},
+      shareAmounts: baseShareAmounts,
     );
     try {
       if (_editing) {
@@ -527,6 +604,26 @@ class _AddGroupTransactionScreenState
     for (final id in _selectedParticipantIds)
       id: _parseMoney(_shareControllers[id]?.text ?? ''),
   };
+
+  Map<String, int> _convertAmounts(
+    Map<String, int> values, {
+    required int sourceTotal,
+    required int targetTotal,
+  }) {
+    if (values.isEmpty || sourceTotal <= 0) return values;
+    final converted = <String, int>{
+      for (final entry in values.entries)
+        entry.key: (entry.value * targetTotal / sourceTotal).round(),
+    };
+    final difference =
+        targetTotal -
+        converted.values.fold<int>(0, (sum, value) => sum + value);
+    if (difference != 0) {
+      final key = converted.keys.last;
+      converted[key] = converted[key]! + difference;
+    }
+    return converted;
+  }
 
   int _parseMoney(String input) =>
       int.tryParse(input.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;

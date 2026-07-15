@@ -13,6 +13,7 @@ import '../../application/group_controller.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/spending_group.dart';
+import '../../../profile/presentation/payment_qr_screen.dart';
 
 class DebtSettlementScreen extends ConsumerWidget {
   const DebtSettlementScreen({required this.groupId, super.key});
@@ -223,6 +224,7 @@ class _SettlementContent extends StatelessWidget {
                       currentUserId: currentUserId,
                       fromAvatarPath: _avatarFor(active[index].fromUserId),
                       toAvatarPath: _avatarFor(active[index].toUserId),
+                      toQrPath: _paymentQrFor(active[index].toUserId),
                       onDispute: () => onDispute(active[index]),
                     ),
                     if (index != active.length - 1) const SizedBox(height: 12),
@@ -247,6 +249,13 @@ class _SettlementContent extends StatelessWidget {
   String? _avatarFor(String userId) {
     for (final member in detail.members) {
       if (member.userId == userId) return member.avatarPath;
+    }
+    return null;
+  }
+
+  String? _paymentQrFor(String userId) {
+    for (final member in detail.members) {
+      if (member.userId == userId) return member.paymentQrPath;
     }
     return null;
   }
@@ -327,6 +336,7 @@ class _SettlementCard extends ConsumerWidget {
     required this.currentUserId,
     required this.fromAvatarPath,
     required this.toAvatarPath,
+    required this.toQrPath,
     required this.onDispute,
   });
 
@@ -334,6 +344,7 @@ class _SettlementCard extends ConsumerWidget {
   final String currentUserId;
   final String? fromAvatarPath;
   final String? toAvatarPath;
+  final String? toQrPath;
   final VoidCallback onDispute;
 
   @override
@@ -424,6 +435,26 @@ class _SettlementCard extends ConsumerWidget {
                 label: Text(context.l10n.groupSettlementDisputeAction),
               ),
             ),
+          if (item.fromUserId == currentUserId && toQrPath != null) ...[
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () => context.push(
+                  PaymentQrScreen.routePath,
+                  extra: PaymentQrRouteArgs(
+                    imagePath: toQrPath,
+                    name: _displayName(
+                      context,
+                      item.toUserId,
+                      item.toDisplayName,
+                    ),
+                  ),
+                ),
+                icon: const Icon(Icons.qr_code_2_outlined, size: 16),
+                label: Text(context.l10n.paymentQrViewForPayment),
+              ),
+            ),
+          ],
         ],
       ),
     );

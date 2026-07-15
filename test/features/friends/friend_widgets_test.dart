@@ -823,6 +823,9 @@ class FakeGroupRepository implements GroupRepository {
   ) async => const [];
 
   @override
+  Future<void> markAllNotificationsRead() async {}
+
+  @override
   Future<GroupNotificationPreference> fetchNotificationPreference(
     String groupId,
   ) async => GroupNotificationPreference.defaults(groupId);
@@ -844,6 +847,55 @@ class FakeGroupRepository implements GroupRepository {
       GroupPublicProfile.defaults('public-group');
 
   @override
+  Future<List<GroupAuditLog>> fetchAuditLogs(String groupId) async => const [];
+
+  @override
+  Future<List<GroupPoll>> fetchPolls(String groupId) async => const [];
+
+  @override
+  Future<String> createPoll({
+    required String groupId,
+    required String title,
+    required List<String> options,
+  }) async => 'mock-poll';
+
+  @override
+  Future<void> votePoll({
+    required String pollId,
+    required String optionId,
+  }) async {}
+
+  @override
+  Future<List<GroupSavingsChallenge>> fetchSavingsChallenges(
+    String groupId,
+  ) async => const [];
+
+  @override
+  Future<String> createSavingsChallenge({
+    required String groupId,
+    required String title,
+    required int targetAmount,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async => 'mock-challenge';
+
+  @override
+  Future<void> addSavingsContribution({
+    required String challengeId,
+    required int amount,
+    String? note,
+  }) async {}
+
+  @override
+  Future<GroupTransactionPage> fetchTransactionsPage({
+    required String groupId,
+    required int offset,
+    required int limit,
+    String query = '',
+    String? status,
+  }) async => const GroupTransactionPage(items: [], hasMore: false);
+
+  @override
   Future<List<GroupRecurringTransaction>> fetchRecurringTransactions(
     String groupId,
   ) async => const [];
@@ -856,6 +908,7 @@ class FakeGroupRepository implements GroupRepository {
     required String frequency,
     required DateTime nextRunAt,
     required int notifyDaysBefore,
+    bool autoPost = false,
   }) async => 'mock-recurring-id';
 
   @override
@@ -867,6 +920,7 @@ class FakeGroupRepository implements GroupRepository {
     required DateTime nextRunAt,
     required int notifyDaysBefore,
     required bool isActive,
+    bool autoPost = false,
   }) async {}
 
   @override
@@ -900,6 +954,32 @@ class FakeGroupRepository implements GroupRepository {
   }) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> updateGroup({
+    required String groupId,
+    required String name,
+    String? description,
+    String? type,
+  }) async {}
+
+  @override
+  Future<void> setGroupArchived({
+    required String groupId,
+    required bool archived,
+  }) async {}
+
+  @override
+  Future<void> updateGroupAvatar({
+    required String groupId,
+    required String filePath,
+  }) async {}
+
+  @override
+  Future<void> updateGroupCurrency({
+    required String groupId,
+    required String baseCurrency,
+  }) async {}
 
   @override
   Future<String> createInviteLink(String groupId) {

@@ -10,6 +10,7 @@ class UserProfile {
     this.occupation,
     this.preferredCurrency = 'VND',
     this.surveyCompleted = true,
+    this.paymentQrPath,
   });
 
   final String id;
@@ -22,6 +23,7 @@ class UserProfile {
   final String? occupation;
   final String preferredCurrency;
   final bool surveyCompleted;
+  final String? paymentQrPath;
 
   bool get needsSetup {
     final name = fullName?.trim() ?? '';
@@ -43,6 +45,7 @@ class UserProfile {
       occupation: map['occupation'] as String?,
       preferredCurrency: (map['preferred_currency'] as String?) ?? 'VND',
       surveyCompleted: map['survey_completed_at'] != null,
+      paymentQrPath: map['payment_qr_path'] as String?,
     );
   }
 }

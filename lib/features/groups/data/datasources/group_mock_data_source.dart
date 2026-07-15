@@ -475,6 +475,134 @@ class GroupMockDataSource {
     return id;
   }
 
+  Future<void> updateGroup({
+    required String groupId,
+    required String name,
+    String? description,
+    String? type,
+  }) async {
+    _requireAdmin(groupId);
+    final group = _groups[groupId];
+    if (group == null) {
+      throw const AppException('Group not found', code: 'NOT_FOUND');
+    }
+    final trimmedName = name.trim();
+    if (trimmedName.isEmpty) {
+      throw const AppException(
+        'Group name required',
+        code: 'GROUP_NAME_REQUIRED',
+      );
+    }
+    _groups[groupId] = SpendingGroup(
+      id: group.id,
+      name: trimmedName,
+      avatarPath: group.avatarPath,
+      description: _blankToNull(description),
+      type: _blankToNull(type),
+      createdBy: group.createdBy,
+      status: group.status,
+      createdAt: group.createdAt,
+      updatedAt: DateTime.now(),
+      memberCount: group.memberCount,
+      memberAvatarPaths: group.memberAvatarPaths,
+      transactionCount: group.transactionCount,
+      totalSpent: group.totalSpent,
+      currentUserBalance: group.currentUserBalance,
+      hasUnresolvedSettlements: group.hasUnresolvedSettlements,
+    );
+  }
+
+  Future<void> setGroupArchived({
+    required String groupId,
+    required bool archived,
+  }) async {
+    _requireAdmin(groupId);
+    final group = _groups[groupId];
+    if (group == null) {
+      throw const AppException('Group not found', code: 'NOT_FOUND');
+    }
+    final hasIncomplete = _recordsForGroup(groupId).any(
+      (record) =>
+          record.transaction.splitStatus != GroupSplitStatus.posted &&
+          record.transaction.splitStatus != GroupSplitStatus.cancelled,
+    );
+    final hasUnresolved = _groupBalances(
+      groupId,
+    ).values.any((value) => value != 0);
+    final hasPendingSettlement =
+        _settlements[groupId]?.any(
+          (item) => item.status != GroupSettlementStatus.completed,
+        ) ??
+        false;
+    if (archived && (hasIncomplete || hasUnresolved || hasPendingSettlement)) {
+      throw const AppException(
+        'Group still has unresolved items',
+        code: 'GROUP_ARCHIVE_UNRESOLVED',
+      );
+    }
+    _groups[groupId] = SpendingGroup(
+      id: group.id,
+      name: group.name,
+      avatarPath: group.avatarPath,
+      description: group.description,
+      type: group.type,
+      createdBy: group.createdBy,
+      status: archived ? GroupStatus.archived : GroupStatus.active,
+      createdAt: group.createdAt,
+      updatedAt: DateTime.now(),
+      memberCount: group.memberCount,
+      memberAvatarPaths: group.memberAvatarPaths,
+      transactionCount: group.transactionCount,
+      totalSpent: group.totalSpent,
+      currentUserBalance: group.currentUserBalance,
+      hasUnresolvedSettlements: group.hasUnresolvedSettlements,
+    );
+  }
+
+  Future<void> updateGroupAvatar({
+    required String groupId,
+    required String filePath,
+  }) async {
+    _requireAdmin(groupId);
+    final group = _groups[groupId];
+    if (group == null) {
+      throw const AppException('Group not found', code: 'NOT_FOUND');
+    }
+    _groups[groupId] = SpendingGroup(
+      id: group.id,
+      name: group.name,
+      avatarPath: filePath,
+      description: group.description,
+      type: group.type,
+      createdBy: group.createdBy,
+      status: group.status,
+      createdAt: group.createdAt,
+      updatedAt: DateTime.now(),
+      memberCount: group.memberCount,
+      memberAvatarPaths: group.memberAvatarPaths,
+      transactionCount: group.transactionCount,
+      totalSpent: group.totalSpent,
+      currentUserBalance: group.currentUserBalance,
+      hasUnresolvedSettlements: group.hasUnresolvedSettlements,
+    );
+  }
+
+  Future<void> updateGroupCurrency({
+    required String groupId,
+    required String baseCurrency,
+  }) async {
+    _requireAdmin(groupId);
+    final group = _groups[groupId];
+    if (group == null) {
+      throw const AppException('Group not found', code: 'NOT_FOUND');
+    }
+    final normalized = baseCurrency.trim().toUpperCase();
+    if (!RegExp(r'^[A-Z]{3}$').hasMatch(normalized)) {
+      throw const AppException('Invalid currency', code: 'CURRENCY_INVALID');
+    }
+    _groups[groupId] = group.copyWith(baseCurrency: normalized);
+  }
+
   Future<String> createInviteLink(String groupId) async {
     _requireAdmin(groupId);
     for (final invite in _inviteLinks.values) {
@@ -739,6 +867,40 @@ class GroupMockDataSource {
     return List.unmodifiable(result);
   }
 
+  Future<List<GroupTransaction>> fetchTransactionsPage({
+    required String groupId,
+    required int offset,
+    required int limit,
+    String query = '',
+    String? status,
+  }) async {
+    final normalized = query.trim().toLowerCase();
+    final values = _recordsForGroup(groupId)
+        .map((record) => record.transaction)
+        .where((transaction) {
+          if (status == 'posted' &&
+              transaction.splitStatus != GroupSplitStatus.posted) {
+            return false;
+          }
+          if (status == 'pending' &&
+              (transaction.splitStatus == GroupSplitStatus.posted ||
+                  transaction.splitStatus == GroupSplitStatus.cancelled)) {
+            return false;
+          }
+          if (normalized.isEmpty) return true;
+          return [
+            transaction.caption,
+            transaction.categoryName,
+            transaction.note,
+            transaction.creatorName,
+          ].whereType<String>().join(' ').toLowerCase().contains(normalized);
+        })
+        .toList(growable: false);
+    final start = offset.clamp(0, values.length);
+    final end = (start + limit + 1).clamp(start, values.length);
+    return values.sublist(start, end);
+  }
+
   Future<GroupTransactionDetail> fetchTransactionDetail(
     String transactionId,
   ) async {
@@ -793,7 +955,10 @@ class GroupMockDataSource {
       id: id,
       groupId: draft.groupId,
       createdBy: currentUserId,
-      totalAmount: draft.totalAmount,
+      totalAmount: (draft.totalAmount / draft.exchangeRateToBase).round(),
+      baseTotalAmount: draft.totalAmount,
+      currencyCode: draft.currencyCode,
+      exchangeRateToBase: draft.exchangeRateToBase,
       categoryId: draft.categoryId,
       categoryName: draft.categoryName,
       caption: _blankToNull(draft.caption),
@@ -847,6 +1012,9 @@ class GroupMockDataSource {
         groupId: replacement.transaction.groupId,
         createdBy: currentUserId,
         totalAmount: replacement.transaction.totalAmount,
+        baseTotalAmount: replacement.transaction.baseTotalAmount,
+        currencyCode: replacement.transaction.currencyCode,
+        exchangeRateToBase: replacement.transaction.exchangeRateToBase,
         categoryId: replacement.transaction.categoryId,
         categoryName: replacement.transaction.categoryName,
         caption: replacement.transaction.caption,
@@ -1435,6 +1603,54 @@ class GroupMockDataSource {
     return List.unmodifiable((_activities[groupId] ?? const []).reversed);
   }
 
+  Future<List<GroupAuditLog>> fetchAuditLogs(String groupId) async {
+    _requireActiveMember(groupId);
+    return const [];
+  }
+
+  Future<List<GroupPoll>> fetchPolls(String groupId) async {
+    _requireActiveMember(groupId);
+    return const [];
+  }
+
+  Future<String> createPoll({
+    required String groupId,
+    required String title,
+    required List<String> options,
+  }) async {
+    _requireActiveMember(groupId);
+    return _id('poll');
+  }
+
+  Future<void> votePoll({
+    required String pollId,
+    required String optionId,
+  }) async {}
+
+  Future<List<GroupSavingsChallenge>> fetchSavingsChallenges(
+    String groupId,
+  ) async {
+    _requireActiveMember(groupId);
+    return const [];
+  }
+
+  Future<String> createSavingsChallenge({
+    required String groupId,
+    required String title,
+    required int targetAmount,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    _requireAdmin(groupId);
+    return _id('challenge');
+  }
+
+  Future<void> addSavingsContribution({
+    required String challengeId,
+    required int amount,
+    String? note,
+  }) async {}
+
   Future<List<GroupNotification>> fetchNotifications({String? category}) async {
     _seedDemoNotificationsIfNeeded();
     final items = category == null
@@ -1458,6 +1674,24 @@ class GroupMockDataSource {
       inviteToken: n.inviteToken,
       category: n.category,
     );
+  }
+
+  Future<void> markAllNotificationsRead() async {
+    for (var index = 0; index < _notifications.length; index++) {
+      final notification = _notifications[index];
+      if (notification.isRead) continue;
+      _notifications[index] = GroupNotification(
+        id: notification.id,
+        groupId: notification.groupId,
+        groupName: notification.groupName,
+        type: notification.type,
+        isRead: true,
+        createdAt: notification.createdAt,
+        groupTransactionId: notification.groupTransactionId,
+        inviteToken: notification.inviteToken,
+        category: notification.category,
+      );
+    }
   }
 
   void _logActivity({

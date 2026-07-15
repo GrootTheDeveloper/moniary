@@ -11,6 +11,7 @@ class SpendingGroup {
     this.avatarPath,
     this.description,
     this.type,
+    this.baseCurrency = 'VND',
     this.memberCount = 0,
     this.memberAvatarPaths = const [],
     this.transactionCount = 0,
@@ -24,6 +25,7 @@ class SpendingGroup {
   final String? avatarPath;
   final String? description;
   final String? type;
+  final String baseCurrency;
   final String createdBy;
   final GroupStatus status;
   final DateTime createdAt;
@@ -43,6 +45,7 @@ class SpendingGroup {
     int? totalSpent,
     int? currentUserBalance,
     bool? hasUnresolvedSettlements,
+    String? baseCurrency,
   }) {
     return SpendingGroup(
       id: id,
@@ -61,6 +64,7 @@ class SpendingGroup {
       currentUserBalance: currentUserBalance ?? this.currentUserBalance,
       hasUnresolvedSettlements:
           hasUnresolvedSettlements ?? this.hasUnresolvedSettlements,
+      baseCurrency: baseCurrency ?? this.baseCurrency,
     );
   }
 }
@@ -77,6 +81,7 @@ class SpendingGroupMember {
     this.displayName,
     this.username,
     this.avatarPath,
+    this.paymentQrPath,
   });
 
   final String id;
@@ -89,6 +94,7 @@ class SpendingGroupMember {
   final String? displayName;
   final String? username;
   final String? avatarPath;
+  final String? paymentQrPath;
 
   bool get isActive => status == GroupMemberStatus.active;
   String get resolvedName => displayName?.trim().isNotEmpty == true

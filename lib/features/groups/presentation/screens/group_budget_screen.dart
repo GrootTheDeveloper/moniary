@@ -66,7 +66,7 @@ class _GroupBudgetScreenState extends ConsumerState<GroupBudgetScreen> {
               )
               .fold<int>(
                 0,
-                (sum, transaction) => sum + transaction.totalAmount,
+                (sum, transaction) => sum + transaction.baseTotalAmount,
               );
           final spent = spentThisMonth ?? 0;
           final progress = budget.hasLimit

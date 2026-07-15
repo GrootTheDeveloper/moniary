@@ -22,6 +22,7 @@ import '../../journal/presentation/monthly_recap_screen.dart';
 import '../../journal/presentation/recording_streak_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
+import '../../profile/presentation/payment_qr_screen.dart';
 import '../application/account/account_actions_controller.dart';
 import '../application/privacy_controller.dart';
 import '../../notifications/presentation/widgets/notification_bell_button.dart';
@@ -531,6 +532,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             onTap: () => context.push(
                               NotificationSettingsScreen.routePath,
                             ),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.qr_code_2_outlined,
+                            title: context.l10n.paymentQrTitle,
+                            subtitle: context.l10n.paymentQrProfileSubtitle,
+                            onTap: () =>
+                                context.push(PaymentQrScreen.routePath),
                           ),
                           _SettingsTile(
                             icon: Icons.lock_outlined,

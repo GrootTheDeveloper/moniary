@@ -171,6 +171,79 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<void> updateGroup({
+    required String groupId,
+    required String name,
+    String? description,
+    String? type,
+  }) {
+    if (_useMockData) {
+      return _mock.updateGroup(
+        groupId: groupId,
+        name: name,
+        description: description,
+        type: type,
+      );
+    }
+    return _guard(
+      'update group details',
+      () => _remote.updateGroup(
+        groupId: groupId,
+        name: name,
+        description: description,
+        type: type,
+      ),
+    );
+  }
+
+  @override
+  Future<void> setGroupArchived({
+    required String groupId,
+    required bool archived,
+  }) {
+    if (_useMockData) {
+      return _mock.setGroupArchived(groupId: groupId, archived: archived);
+    }
+    return _guard(
+      'update group archive status',
+      () => _remote.setGroupArchived(groupId: groupId, archived: archived),
+    );
+  }
+
+  @override
+  Future<void> updateGroupAvatar({
+    required String groupId,
+    required String filePath,
+  }) {
+    if (_useMockData) {
+      return _mock.updateGroupAvatar(groupId: groupId, filePath: filePath);
+    }
+    return _guard('update group avatar', () async {
+      await _remote.uploadGroupAvatar(groupId: groupId, filePath: filePath);
+    });
+  }
+
+  @override
+  Future<void> updateGroupCurrency({
+    required String groupId,
+    required String baseCurrency,
+  }) {
+    if (_useMockData) {
+      return _mock.updateGroupCurrency(
+        groupId: groupId,
+        baseCurrency: baseCurrency,
+      );
+    }
+    return _guard(
+      'update group base currency',
+      () => _remote.updateGroupCurrency(
+        groupId: groupId,
+        baseCurrency: baseCurrency,
+      ),
+    );
+  }
+
+  @override
   Future<String> createInviteLink(String groupId) {
     if (_useMockData) {
       return _mock.createInviteLink(groupId);
@@ -299,6 +372,45 @@ class GroupRepositoryImpl implements GroupRepository {
       return (await _remote.fetchTransactions(
         groupId,
       )).map(GroupModelMapper.transaction).toList();
+    });
+  }
+
+  @override
+  Future<GroupTransactionPage> fetchTransactionsPage({
+    required String groupId,
+    required int offset,
+    required int limit,
+    String query = '',
+    String? status,
+  }) async {
+    if (_useMockData) {
+      final rows = await _mock.fetchTransactionsPage(
+        groupId: groupId,
+        offset: offset,
+        limit: limit,
+        query: query,
+        status: status,
+      );
+      return GroupTransactionPage(
+        items: rows.take(limit).toList(growable: false),
+        hasMore: rows.length > limit,
+      );
+    }
+    return _guard('fetch group transactions page', () async {
+      final rows = await _remote.fetchTransactionsPage(
+        groupId: groupId,
+        offset: offset,
+        limit: limit,
+        query: query,
+        status: status,
+      );
+      final items = rows
+          .map(GroupModelMapper.transaction)
+          .toList(growable: false);
+      return GroupTransactionPage(
+        items: items.take(limit).toList(growable: false),
+        hasMore: items.length > limit,
+      );
     });
   }
 
@@ -626,6 +738,166 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<List<GroupAuditLog>> fetchAuditLogs(String groupId) {
+    if (_useMockData) return _mock.fetchAuditLogs(groupId);
+    return _guard('fetch group audit logs', () async {
+      final rows = await _remote.fetchAuditLogs(groupId);
+      return rows
+          .map(
+            (row) => GroupAuditLog(
+              id: row['id'] as String,
+              groupId: row['group_id'] as String,
+              actorUserId: row['actor_user_id'] as String?,
+              action: row['action'] as String,
+              targetUserId: row['target_user_id'] as String?,
+              targetTransactionId: row['target_transaction_id'] as String?,
+              metadata: Map<String, dynamic>.from(
+                row['metadata'] as Map? ?? const {},
+              ),
+              createdAt: DateTime.parse(row['created_at'] as String),
+            ),
+          )
+          .toList(growable: false);
+    });
+  }
+
+  @override
+  Future<List<GroupPoll>> fetchPolls(String groupId) async {
+    if (_useMockData) return _mock.fetchPolls(groupId);
+    return _guard('fetch group polls', () async {
+      final rows = await _remote.fetchPolls(groupId);
+      return rows
+          .map((row) {
+            final options = (row['options'] as List? ?? const [])
+                .map((item) => Map<String, dynamic>.from(item as Map))
+                .map(
+                  (item) => GroupPollOption(
+                    id: item['id'] as String,
+                    label: item['label'] as String,
+                    voteCount: (item['vote_count'] as num?)?.toInt() ?? 0,
+                  ),
+                )
+                .toList(growable: false);
+            return GroupPoll(
+              id: row['id'] as String,
+              groupId: row['group_id'] as String,
+              title: row['title'] as String,
+              options: options,
+              isClosed: row['is_closed'] as bool? ?? false,
+              createdAt: DateTime.parse(row['created_at'] as String),
+            );
+          })
+          .toList(growable: false);
+    });
+  }
+
+  @override
+  Future<String> createPoll({
+    required String groupId,
+    required String title,
+    required List<String> options,
+  }) {
+    if (_useMockData) {
+      return _mock.createPoll(groupId: groupId, title: title, options: options);
+    }
+    return _guard(
+      'create group poll',
+      () =>
+          _remote.createPoll(groupId: groupId, title: title, options: options),
+    );
+  }
+
+  @override
+  Future<void> votePoll({required String pollId, required String optionId}) {
+    if (_useMockData) return _mock.votePoll(pollId: pollId, optionId: optionId);
+    return _guard(
+      'vote in group poll',
+      () => _remote.votePoll(pollId: pollId, optionId: optionId),
+    );
+  }
+
+  @override
+  Future<List<GroupSavingsChallenge>> fetchSavingsChallenges(
+    String groupId,
+  ) async {
+    if (_useMockData) return _mock.fetchSavingsChallenges(groupId);
+    return _guard('fetch savings challenges', () async {
+      final rows = await _remote.fetchSavingsChallenges(groupId);
+      return rows
+          .map((row) {
+            final contributions = row['contributions'] as List? ?? const [];
+            final total = contributions.fold<int>(
+              0,
+              (sum, item) => sum + ((item as Map)['amount'] as num).toInt(),
+            );
+            return GroupSavingsChallenge(
+              id: row['id'] as String,
+              groupId: row['group_id'] as String,
+              title: row['title'] as String,
+              targetAmount: (row['target_amount'] as num).toInt(),
+              startDate: DateTime.parse(row['start_date'] as String),
+              endDate: DateTime.parse(row['end_date'] as String),
+              totalContributed: total,
+              isActive: row['is_active'] as bool? ?? true,
+            );
+          })
+          .toList(growable: false);
+    });
+  }
+
+  @override
+  Future<String> createSavingsChallenge({
+    required String groupId,
+    required String title,
+    required int targetAmount,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) {
+    if (_useMockData) {
+      return _mock.createSavingsChallenge(
+        groupId: groupId,
+        title: title,
+        targetAmount: targetAmount,
+        startDate: startDate,
+        endDate: endDate,
+      );
+    }
+    return _guard(
+      'create savings challenge',
+      () => _remote.createSavingsChallenge(
+        groupId: groupId,
+        title: title,
+        targetAmount: targetAmount,
+        startDate: startDate,
+        endDate: endDate,
+      ),
+    );
+  }
+
+  @override
+  Future<void> addSavingsContribution({
+    required String challengeId,
+    required int amount,
+    String? note,
+  }) {
+    if (_useMockData) {
+      return _mock.addSavingsContribution(
+        challengeId: challengeId,
+        amount: amount,
+        note: note,
+      );
+    }
+    return _guard(
+      'add savings contribution',
+      () => _remote.addSavingsContribution(
+        challengeId: challengeId,
+        amount: amount,
+        note: note,
+      ),
+    );
+  }
+
+  @override
   Future<List<GroupNotification>> fetchNotifications({String? category}) {
     if (_useMockData) {
       return _mock.fetchNotifications(category: category);
@@ -644,6 +916,15 @@ class GroupRepositoryImpl implements GroupRepository {
     return _guard(
       'mark group notification read',
       () => _remote.markNotificationRead(notificationId),
+    );
+  }
+
+  @override
+  Future<void> markAllNotificationsRead() {
+    if (_useMockData) return _mock.markAllNotificationsRead();
+    return _guard(
+      'mark all group notifications read',
+      _remote.markAllNotificationsRead,
     );
   }
 
@@ -755,6 +1036,9 @@ class GroupRepositoryImpl implements GroupRepository {
       groupId: groupId,
       isEnabled: row['is_enabled'] as bool? ?? true,
       showStats: row['show_stats'] as bool? ?? false,
+      showDescription: row['show_description'] as bool? ?? false,
+      showGroupType: row['show_group_type'] as bool? ?? false,
+      showAvatar: row['show_avatar'] as bool? ?? false,
       slug: row['slug'] as String?,
       groupName: row['group_name'] as String?,
       avatarPath: row['avatar_path'] as String?,
@@ -830,6 +1114,7 @@ class GroupRepositoryImpl implements GroupRepository {
     required String frequency,
     required DateTime nextRunAt,
     required int notifyDaysBefore,
+    bool autoPost = false,
   }) {
     if (_useMockData) return Future.value('mock-recurring-id');
     return _guard(
@@ -841,6 +1126,7 @@ class GroupRepositoryImpl implements GroupRepository {
         frequency: frequency,
         nextRunAt: nextRunAt,
         notifyDaysBefore: notifyDaysBefore,
+        autoPost: autoPost,
       ),
     );
   }
@@ -854,6 +1140,7 @@ class GroupRepositoryImpl implements GroupRepository {
     required DateTime nextRunAt,
     required int notifyDaysBefore,
     required bool isActive,
+    bool autoPost = false,
   }) {
     if (_useMockData) return Future.value();
     return _guard(
@@ -866,6 +1153,7 @@ class GroupRepositoryImpl implements GroupRepository {
         nextRunAt: nextRunAt,
         notifyDaysBefore: notifyDaysBefore,
         isActive: isActive,
+        autoPost: autoPost,
       ),
     );
   }
@@ -890,6 +1178,7 @@ class GroupRepositoryImpl implements GroupRepository {
       nextRunAt: DateTime.parse(row['next_run_at'] as String),
       notifyDaysBefore: (row['notify_days_before'] as num).toInt(),
       isActive: row['is_active'] as bool,
+      autoPost: row['auto_post'] as bool? ?? false,
       createdAt: DateTime.parse(row['created_at'] as String),
     );
   }

@@ -73,6 +73,7 @@ class GroupRecurringTransactionsScreen extends ConsumerWidget {
           frequency: result.frequency,
           nextRunAt: result.nextRunAt,
           notifyDaysBefore: result.notifyDaysBefore,
+          autoPost: result.autoPost,
         );
       } else {
         await controller.updateRecurringTransaction(
@@ -84,6 +85,7 @@ class GroupRecurringTransactionsScreen extends ConsumerWidget {
           nextRunAt: result.nextRunAt,
           notifyDaysBefore: result.notifyDaysBefore,
           isActive: result.isActive,
+          autoPost: result.autoPost,
         );
       }
     } catch (error) {
@@ -179,6 +181,7 @@ class _RecurringFormValue {
     required this.nextRunAt,
     required this.notifyDaysBefore,
     required this.isActive,
+    required this.autoPost,
   });
   final String title;
   final int amount;
@@ -186,6 +189,7 @@ class _RecurringFormValue {
   final DateTime nextRunAt;
   final int notifyDaysBefore;
   final bool isActive;
+  final bool autoPost;
 }
 
 class _RecurringForm extends StatefulWidget {
@@ -203,6 +207,7 @@ class _RecurringFormState extends State<_RecurringForm> {
   late String _frequency;
   late int _notifyDays;
   late bool _active;
+  late bool _autoPost;
 
   @override
   void initState() {
@@ -214,6 +219,7 @@ class _RecurringFormState extends State<_RecurringForm> {
     _frequency = item?.frequency ?? 'monthly';
     _notifyDays = item?.notifyDaysBefore ?? 1;
     _active = item?.isActive ?? true;
+    _autoPost = item?.autoPost ?? false;
   }
 
   @override
@@ -300,6 +306,13 @@ class _RecurringFormState extends State<_RecurringForm> {
               value: _active,
               onChanged: (value) => setState(() => _active = value),
             ),
+          SwitchListTile.adaptive(
+            contentPadding: EdgeInsets.zero,
+            title: Text(context.l10n.groupRecurringAutoPost),
+            subtitle: Text(context.l10n.groupRecurringAutoPostSubtitle),
+            value: _autoPost,
+            onChanged: (value) => setState(() => _autoPost = value),
+          ),
         ],
       ),
     ),
@@ -325,6 +338,7 @@ class _RecurringFormState extends State<_RecurringForm> {
         nextRunAt: _date,
         notifyDaysBefore: _notifyDays,
         isActive: _active,
+        autoPost: _autoPost,
       ),
     );
   }

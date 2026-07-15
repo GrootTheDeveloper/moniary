@@ -3721,6 +3721,26 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupTransactionTotal => 'Tổng tiền';
 
   @override
+  String get groupTransactionCurrency => 'Tiền tệ giao dịch';
+
+  @override
+  String groupTransactionCurrencySubtitle(String currency) {
+    return 'Tiền tệ chung của nhóm: $currency';
+  }
+
+  @override
+  String get groupTransactionExchangeRate => 'Tỷ giá quy đổi về tiền tệ chung';
+
+  @override
+  String groupTransactionExchangeRateSubtitle(String from, String to) {
+    return '1 $from = ? $to';
+  }
+
+  @override
+  String get groupTransactionExchangeRateInvalid =>
+      'Hãy nhập tỷ giá dương hợp lệ.';
+
+  @override
   String get groupTransactionCategory => 'Danh mục';
 
   @override
@@ -3805,6 +3825,20 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupTransactionNoData => 'Chưa có giao dịch nhóm.';
+
+  @override
+  String get groupTransactionSearchHint =>
+      'Tìm theo nội dung, danh mục hoặc người đăng';
+
+  @override
+  String get groupTransactionFilterAll => 'Tất cả';
+
+  @override
+  String get groupTransactionFilterNoResults =>
+      'Không tìm thấy giao dịch phù hợp.';
+
+  @override
+  String get groupTransactionLoadMore => 'Tải thêm giao dịch';
 
   @override
   String get groupTransactionLoadError => 'Không tải được giao dịch nhóm.';
@@ -3963,6 +3997,23 @@ class AppLocalizationsVi extends AppLocalizations {
       'Chỉ hiển thị số lượng tổng hợp và tổng chi tiêu.';
 
   @override
+  String get groupPublicProfileShowDescription => 'Hiển thị mô tả';
+
+  @override
+  String get groupPublicProfileShowDescriptionSubtitle =>
+      'Mô tả nhóm sẽ hiển thị cho bất kỳ ai có đường dẫn công khai.';
+
+  @override
+  String get groupPublicProfileShowType => 'Hiển thị loại nhóm';
+
+  @override
+  String get groupPublicProfileShowAvatar => 'Hiển thị ảnh nhóm';
+
+  @override
+  String get groupPublicProfileShowAvatarSubtitle =>
+      'Chỉ ảnh public-safe được tải riêng mới đủ điều kiện; ảnh riêng tư của nhóm không bao giờ bị lộ.';
+
+  @override
   String get groupPublicProfileShareTitle => 'Chia sẻ trang công khai';
 
   @override
@@ -4029,6 +4080,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupRecurringActive => 'Đang hoạt động';
+
+  @override
+  String get groupRecurringAutoPost => 'Tự động ghi nhận khi đến hạn';
+
+  @override
+  String get groupRecurringAutoPostSubtitle =>
+      'Tạo giao dịch chia đều theo tiền tệ chung của nhóm.';
 
   @override
   String get groupRecurringDeleteTitle => 'Xoá giao dịch định kỳ?';
@@ -4117,6 +4175,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupSummaryNoHistory => 'Chưa có lịch sử tất toán.';
+
+  @override
+  String get groupSummaryChartsTitle => 'Tổng quan chi tiêu';
+
+  @override
+  String get groupSummaryTrendTitle => 'Xu hướng chi tiêu 6 tháng';
+
+  @override
+  String get groupSettlementBadgeTitle => 'Đã tất toán';
+
+  @override
+  String get groupSettlementBadgeSubtitle =>
+      'Nhóm không còn số dư cần thanh toán trong tháng này.';
 
   @override
   String groupSummaryTransactionCount(int count) {
@@ -5237,6 +5308,209 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get friendRateLimited =>
       'Bạn đã gửi quá nhiều lời mời kết bạn. Vui lòng thử lại sau.';
+
+  @override
+  String get paymentQrTitle => 'Mã QR nhận tiền';
+
+  @override
+  String get paymentQrProfileSubtitle =>
+      'Lưu một lần để thành viên nhóm mở khi thanh toán.';
+
+  @override
+  String get paymentQrMyTitle => 'Mã QR của tôi';
+
+  @override
+  String get paymentQrDescription =>
+      'Thành viên trong cùng nhóm có thể mở mã này khi cần chuyển tiền cho bạn.';
+
+  @override
+  String paymentQrMemberDescription(String name) {
+    return 'Mã QR nhận tiền của $name.';
+  }
+
+  @override
+  String get paymentQrAdd => 'Lưu ảnh mã QR';
+
+  @override
+  String get paymentQrReplace => 'Thay ảnh mã QR';
+
+  @override
+  String get paymentQrRemove => 'Xóa mã QR';
+
+  @override
+  String get paymentQrPrivacyNote =>
+      'Mã QR được lưu riêng tư và chỉ hiển thị cho thành viên cùng nhóm.';
+
+  @override
+  String get paymentQrSaved => 'Đã lưu mã QR nhận tiền.';
+
+  @override
+  String get paymentQrRemoved => 'Đã xóa mã QR nhận tiền.';
+
+  @override
+  String get paymentQrViewForPayment => 'Mở QR để thanh toán';
+
+  @override
+  String get paymentQrEmptyOwner => 'Bạn chưa lưu ảnh mã QR nhận tiền.';
+
+  @override
+  String get paymentQrEmptyMember => 'Thành viên này chưa lưu mã QR nhận tiền.';
+
+  @override
+  String get groupSettingsTitle => 'Cài đặt nhóm';
+
+  @override
+  String get groupSettingsSubtitle =>
+      'Chỉnh thông tin nhóm và chỉ đóng nhóm sau khi đã tất toán.';
+
+  @override
+  String get groupSettingsName => 'Tên nhóm';
+
+  @override
+  String get groupSettingsDescription => 'Mô tả';
+
+  @override
+  String get groupSettingsType => 'Loại nhóm';
+
+  @override
+  String get groupSettingsBaseCurrency => 'Tiền tệ chung của nhóm';
+
+  @override
+  String get groupSettingsBaseCurrencySubtitle =>
+      'Tất toán và ngân sách dùng tiền tệ này. Giao dịch ngoại tệ cần nhập tỷ giá rõ ràng.';
+
+  @override
+  String get groupSettingsSave => 'Lưu thay đổi';
+
+  @override
+  String get groupSettingsSaved => 'Đã cập nhật thông tin nhóm.';
+
+  @override
+  String get groupSettingsArchiveTitle => 'Đóng nhóm';
+
+  @override
+  String get groupSettingsArchiveSubtitle =>
+      'Nhóm sẽ ẩn khỏi danh sách và không nhận giao dịch mới. Công nợ chưa xử lý sẽ chặn thao tác này.';
+
+  @override
+  String get groupSettingsArchiveAction => 'Đóng nhóm';
+
+  @override
+  String get groupSettingsArchiveConfirmTitle => 'Đóng nhóm này?';
+
+  @override
+  String get groupSettingsArchiveConfirmMessage =>
+      'Chỉ nên đóng nhóm sau khi mọi thành viên đã hoàn tất thanh toán.';
+
+  @override
+  String get groupSettingsArchiveBlocked =>
+      'Chưa thể đóng nhóm vì vẫn còn công nợ, giao dịch chờ xử lý hoặc tranh chấp.';
+
+  @override
+  String get groupSettingsAdminRequired =>
+      'Chỉ chủ nhóm hoặc quản trị viên mới có quyền thực hiện thao tác này.';
+
+  @override
+  String get groupAuditLogTitle => 'Nhật ký quản trị';
+
+  @override
+  String get groupAuditLogSubtitle =>
+      'Theo dõi thay đổi thành viên, giao dịch và cài đặt nhóm.';
+
+  @override
+  String get groupAuditLogEmpty =>
+      'Chưa có hoạt động quản trị nào được ghi nhận.';
+
+  @override
+  String get groupAuditSystem => 'Hệ thống';
+
+  @override
+  String get groupParticipationTitle => 'Hoạt động cùng nhóm';
+
+  @override
+  String get groupParticipationSubtitle =>
+      'Cùng bình chọn và biến mục tiêu chung thành tiến độ.';
+
+  @override
+  String get groupPollsTitle => 'Bình chọn';
+
+  @override
+  String get groupPollsEmpty => 'Chưa có bình chọn.';
+
+  @override
+  String get groupPollCreate => 'Tạo bình chọn';
+
+  @override
+  String get groupPollQuestion => 'Câu hỏi';
+
+  @override
+  String get groupPollOptionsHint => 'Các lựa chọn, mỗi dòng một lựa chọn';
+
+  @override
+  String get groupChallengesTitle => 'Thử thách tiết kiệm';
+
+  @override
+  String get groupChallengesEmpty => 'Chưa có thử thách tiết kiệm.';
+
+  @override
+  String get groupChallengeCreate => 'Tạo thử thách';
+
+  @override
+  String get groupChallengeName => 'Tên thử thách';
+
+  @override
+  String get groupChallengeTarget => 'Số tiền mục tiêu';
+
+  @override
+  String get groupChallengeContribute => 'Đóng góp';
+
+  @override
+  String get groupPulsePersonalTitle => 'Việc tiếp theo của bạn';
+
+  @override
+  String get groupPulsePersonalMessage =>
+      'Có một khoản cần bạn xử lý để nhóm tiếp tục nhẹ nhàng hơn.';
+
+  @override
+  String get groupPulseUpcomingTitle => 'Sắp đến lịch chung';
+
+  @override
+  String groupPulseUpcomingMessage(String title) {
+    return '$title sắp đến hạn. Cùng chuẩn bị trước để không bỏ lỡ.';
+  }
+
+  @override
+  String get groupPulseTogetherTitle => 'Cùng giữ nhịp nhóm';
+
+  @override
+  String get groupPulseTogetherMessage =>
+      'Mở dòng hoạt động để mọi người cùng cập nhật và phản hồi.';
+
+  @override
+  String get groupPulseAllClearTitle => 'Nhóm đang rất ổn';
+
+  @override
+  String get groupPulseAllClearMessage =>
+      'Không còn khoản chờ xử lý. Thêm một khoản chi mới để cả nhóm cùng thấy tiến độ.';
+
+  @override
+  String get groupSpotlightTitle => 'Điểm chạm mới nhất';
+
+  @override
+  String get groupSpotlightComment => 'Xem và phản hồi';
+
+  @override
+  String get groupSummaryContributionTitle => 'Đóng góp nổi bật';
+
+  @override
+  String groupSummaryContributionMessage(String name) {
+    return '$name đang giúp nhóm giữ nhịp đều đặn trong tháng này.';
+  }
+
+  @override
+  String groupSummaryContributionCount(int count) {
+    return '$count hoạt động';
+  }
 
   @override
   String get groupSplitExact => 'Số tiền cụ thể';
