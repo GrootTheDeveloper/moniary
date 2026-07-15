@@ -67,20 +67,6 @@ abstract interface class GroupRepository {
 
   Future<GroupStatsOverview> fetchStats(String groupId);
 
-  Future<List<GroupNotification>> fetchNotifications();
-
-  Future<void> markNotificationRead(String notificationId);
-
-  Future<List<GroupActivity>> fetchActivities(String groupId);
-
-  Future<GroupNotificationPreference> fetchNotificationPreference(
-    String groupId,
-  );
-
-  Future<void> updateNotificationPreference(
-    GroupNotificationPreference preference,
-  );
-
   Future<List<GroupReactionSummary>> fetchReactionSummaries(
     String transactionId,
   );
@@ -150,6 +136,20 @@ abstract interface class GroupRepository {
     required String commentId,
     required String transactionId,
   });
+
+  Future<List<GroupActivity>> fetchActivities(String groupId);
+
+  Future<List<GroupNotification>> fetchNotifications({String? category});
+
+  Future<void> markNotificationRead(String notificationId);
+
+  Future<GroupNotificationPreference> fetchNotificationPreference(
+    String groupId,
+  );
+
+  Future<void> updateNotificationPreference(
+    GroupNotificationPreference preference,
+  );
 
   Future<GroupPublicProfile> fetchPublicGroupProfile(String slug);
 

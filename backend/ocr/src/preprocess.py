@@ -35,7 +35,8 @@ def deskew(image: np.ndarray) -> np.ndarray:
         return image
 
     angles: list[float] = []
-    for x1, y1, x2, y2 in lines[:, 0]:
+    # OpenCV returns either (N, 1, 4) or (N, 4) depending on the build.
+    for x1, y1, x2, y2 in np.asarray(lines).reshape(-1, 4):
         angle = math.degrees(math.atan2(y2 - y1, x2 - x1))
         if -45 <= angle <= 45:
             angles.append(angle)
@@ -109,4 +110,3 @@ def preprocess(image_path: str) -> str:
     if not written:
         raise ValueError(f"Cannot write preprocessed image: {output_path}")
     return str(output_path)
-

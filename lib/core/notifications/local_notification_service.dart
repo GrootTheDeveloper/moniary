@@ -16,6 +16,10 @@ class LocalNotificationService {
   static const _channelId = 'moniary_reminders';
   static const _channelName = 'Reminders';
   static const _channelDescription = 'Daily reminder to log your spending.';
+  static const _personalChannelId = 'moniary_personal';
+  static const _groupChannelId = 'moniary_group';
+  static const _communityChannelId = 'moniary_community';
+  static const _systemChannelId = 'moniary_system';
 
   /// Stable id so re-scheduling replaces the previous daily reminder.
   static const dailyReminderId = 1001;
@@ -51,6 +55,44 @@ class LocalNotificationService {
         iOS: darwinSettings,
       ),
     );
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (android != null) {
+      await android.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _personalChannelId,
+          'Personal / Cá nhân',
+          description: 'Personal Moniary notifications.',
+          importance: Importance.high,
+        ),
+      );
+      await android.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _groupChannelId,
+          'Group',
+          description: 'Moniary group notifications.',
+          importance: Importance.high,
+        ),
+      );
+      await android.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _communityChannelId,
+          'Community / Cộng đồng',
+          description: 'Moniary community notifications.',
+          importance: Importance.high,
+        ),
+      );
+      await android.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _systemChannelId,
+          'System / Hệ thống',
+          description: 'Moniary system notifications.',
+          importance: Importance.high,
+        ),
+      );
+    }
     _initialized = true;
   }
 
@@ -115,6 +157,41 @@ class LocalNotificationService {
   Future<void> cancelDailyReminder() async {
     await init();
     await _plugin.cancel(dailyReminderId);
+  }
+
+  /// Presents a safe foreground notification. The caller supplies already
+  /// localized, privacy-safe copy; no personal names or amounts should be
+  /// passed here because this can appear on the lock screen.
+  Future<void> showIncomingNotification({
+    required int id,
+    required String title,
+    required String body,
+    required String category,
+    required String channelName,
+    required String channelDescription,
+  }) async {
+    await init();
+    final channelId = switch (category) {
+      'personal' => _personalChannelId,
+      'group' => _groupChannelId,
+      'community' => _communityChannelId,
+      _ => _systemChannelId,
+    };
+    await _plugin.show(
+      id,
+      title,
+      body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channelId,
+          channelName,
+          channelDescription: channelDescription,
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(threadIdentifier: channelId),
+      ),
+    );
   }
 
   tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {

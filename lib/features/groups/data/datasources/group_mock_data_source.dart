@@ -1093,9 +1093,13 @@ class GroupMockDataSource {
     );
   }
 
-  Future<List<GroupNotification>> fetchNotifications() async {
+  Future<List<GroupNotification>> fetchNotifications({String? category}) async {
     _seedDemoNotificationsIfNeeded();
-    return List.unmodifiable(_notifications[currentUserId] ?? const []);
+    final items = _notifications[currentUserId] ?? const [];
+    final filtered = category == null
+        ? items
+        : items.where((item) => item.category == category).toList();
+    return List.unmodifiable(filtered);
   }
 
   void _seedDemoNotificationsIfNeeded() {
@@ -1145,6 +1149,7 @@ class GroupMockDataSource {
       createdAt: item.createdAt,
       groupTransactionId: item.groupTransactionId,
       inviteToken: item.inviteToken,
+      category: item.category,
     );
   }
 
@@ -1295,29 +1300,6 @@ class GroupMockDataSource {
     );
   }
 
-  Future<void> updateRecurringTransactionActive({
-    required String recurringTransactionId,
-    required bool isActive,
-  }) async {
-    final existing = _recurringTransactions[recurringTransactionId];
-    if (existing == null) {
-      throw const AppException('Not found', code: 'NOT_FOUND');
-    }
-    _requireActiveMember(existing.groupId);
-    _recurringTransactions[recurringTransactionId] = GroupRecurringTransaction(
-      id: existing.id,
-      groupId: existing.groupId,
-      createdBy: existing.createdBy,
-      title: existing.title,
-      amount: existing.amount,
-      frequency: existing.frequency,
-      nextRunAt: existing.nextRunAt,
-      notifyDaysBefore: existing.notifyDaysBefore,
-      isActive: isActive,
-      createdAt: existing.createdAt,
-    );
-  }
-
   Future<GroupPublicProfile> fetchPublicProfile(String groupId) async {
     _requireActiveMember(groupId);
     return _publicProfiles[groupId] ??
@@ -1338,6 +1320,110 @@ class GroupMockDataSource {
       'public_profile_updated',
       metadata: {'enabled': profile.isEnabled},
     );
+  }
+
+  Future<GroupMonthlyStats> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  }) async {
+    _requireGroup(groupId);
+    final start = DateTime(month.year, month.month);
+    final end = DateTime(month.year, month.month + 1);
+    final records = _recordsForGroup(groupId).where((record) {
+      final date = record.transaction.transactionDate;
+      return record.transaction.splitStatus == GroupSplitStatus.posted &&
+          !date.isBefore(start) &&
+          date.isBefore(end);
+    }).toList();
+
+    final categoryTotals = <String, ({int amount, int count})>{};
+    final memberTotals = <String, ({int share, int paid, int count})>{};
+    for (final record in records) {
+      final category = record.transaction.categoryName ?? 'Uncategorized';
+      final categoryValue = categoryTotals[category] ?? (amount: 0, count: 0);
+      categoryTotals[category] = (
+        amount: categoryValue.amount + record.transaction.totalAmount,
+        count: categoryValue.count + 1,
+      );
+      final users = <String>{
+        ...record.shares.map((share) => share.userId),
+        ...record.payers.map((payer) => payer.userId),
+      };
+      for (final userId in users) {
+        final current = memberTotals[userId] ?? (share: 0, paid: 0, count: 0);
+        final share = record.shares
+            .where((item) => item.userId == userId)
+            .fold<int>(0, (sum, item) => sum + item.shareAmount);
+        final paid = record.payers
+            .where((item) => item.userId == userId)
+            .fold<int>(0, (sum, item) => sum + item.paidAmount);
+        memberTotals[userId] = (
+          share: current.share + share,
+          paid: current.paid + paid,
+          count: current.count + 1,
+        );
+      }
+    }
+
+    final names = {
+      for (final member in _members[groupId] ?? const <SpendingGroupMember>[])
+        member.userId: member.resolvedName,
+    };
+    final categories = categoryTotals.entries.toList()
+      ..sort((left, right) => right.value.amount.compareTo(left.value.amount));
+    final members = memberTotals.entries.toList()
+      ..sort((left, right) => right.value.share.compareTo(left.value.share));
+    return GroupMonthlyStats(
+      groupId: groupId,
+      month: start,
+      totalSpent: records.fold<int>(
+        0,
+        (sum, record) => sum + record.transaction.totalAmount,
+      ),
+      transactionCount: records.length,
+      topCategoryName: categories.isEmpty ? null : categories.first.key,
+      topCategoryAmount: categories.isEmpty ? 0 : categories.first.value.amount,
+      categoryBreakdown: categories
+          .map(
+            (item) => GroupCategorySpending(
+              categoryName: item.key,
+              totalAmount: item.value.amount,
+              transactionCount: item.value.count,
+            ),
+          )
+          .toList(growable: false),
+      memberBreakdown: members
+          .map(
+            (item) => GroupMemberBreakdown(
+              userId: item.key,
+              displayName: names[item.key] ?? item.key,
+              shareAmount: item.value.share,
+              paidAmount: item.value.paid,
+              balance: item.value.share - item.value.paid,
+              transactionCount: item.value.count,
+            ),
+          )
+          .toList(growable: false),
+    );
+  }
+
+  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
+    String groupId,
+  ) async {
+    _requireGroup(groupId);
+    return (_settlements[groupId] ?? const <GroupSettlementSuggestion>[])
+        .where((item) => item.status != GroupSettlementStatus.pending)
+        .map(
+          (item) => GroupSettlementHistoryEntry(
+            id: item.id,
+            fromName: item.fromDisplayName ?? item.fromUserId,
+            toName: item.toDisplayName ?? item.toUserId,
+            amount: item.amount,
+            status: item.status.value,
+            updatedAt: item.updatedAt,
+          ),
+        )
+        .toList(growable: false);
   }
 
   Future<void> markSettlementPaid(String settlementId) async {
@@ -1472,6 +1558,12 @@ class GroupMockDataSource {
   Future<void> leaveGroup(String groupId) async {
     final detail = await fetchGroupDetail(groupId);
     final balance = _groupBalances(groupId)[currentUserId] ?? 0;
+    final incompleteTransaction = _recordsForGroup(groupId).any(
+      (record) =>
+          record.transaction.createdBy == currentUserId &&
+          record.transaction.splitStatus != GroupSplitStatus.posted &&
+          record.transaction.splitStatus != GroupSplitStatus.cancelled,
+    );
     final unresolved =
         _settlements[groupId]?.any(
           (item) =>
@@ -1480,6 +1572,12 @@ class GroupMockDataSource {
               item.status != GroupSettlementStatus.completed,
         ) ??
         false;
+    if (incompleteTransaction) {
+      throw const AppException(
+        'Incomplete group transaction',
+        code: 'GROUP_LEAVE_INCOMPLETE_TRANSACTION',
+      );
+    }
     if (balance != 0 || unresolved) {
       _recordActivity(groupId, 'leave_blocked_unresolved');
       _notifyActiveMembers(
@@ -1522,6 +1620,7 @@ class GroupMockDataSource {
       avatarPath: member.avatarPath,
     );
     _recordActivity(groupId, 'member_left');
+    _notifyActiveMembers(groupId, 'member_left', excludeCurrentUser: true);
   }
 
   Future<void> transferOwnership({

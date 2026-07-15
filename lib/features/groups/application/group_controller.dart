@@ -46,6 +46,22 @@ final groupSettlementOverviewProvider =
           .fetchSettlementOverview(groupId);
     });
 
+final groupMonthlyStatsProvider =
+    FutureProvider.family<
+      GroupMonthlyStats,
+      ({String groupId, DateTime month})
+    >((ref, key) {
+      return ref
+          .watch(groupRepositoryProvider)
+          .fetchMonthlyStats(groupId: key.groupId, month: key.month);
+    });
+
+final groupSettlementHistoryProvider =
+    FutureProvider.family<List<GroupSettlementHistoryEntry>, String>(
+      (ref, groupId) =>
+          ref.watch(groupRepositoryProvider).fetchSettlementHistory(groupId),
+    );
+
 final groupReactionsProvider =
     FutureProvider.family<List<GroupReactionSummary>, String>((
       ref,
@@ -69,7 +85,17 @@ final groupActivitiesProvider =
 final groupNotificationsProvider = FutureProvider<List<GroupNotification>>((
   ref,
 ) {
-  return ref.watch(groupRepositoryProvider).fetchNotifications();
+  return ref
+      .watch(groupRepositoryProvider)
+      .fetchNotifications(category: 'group');
+});
+
+final communityNotificationsProvider = FutureProvider<List<GroupNotification>>((
+  ref,
+) {
+  return ref
+      .watch(groupRepositoryProvider)
+      .fetchNotifications(category: 'community');
 });
 
 final groupNotificationPreferenceProvider =
@@ -162,8 +188,20 @@ final pendingGroupInviteCountProvider = Provider<int>((ref) {
 });
 
 final unreadGroupNotificationCountProvider = Provider<int>((ref) {
+  final group = ref.watch(groupNotificationsProvider);
+  final community = ref.watch(communityNotificationsProvider);
+  int unread(AsyncValue<List<GroupNotification>> value) => value.when(
+    data: (notifications) =>
+        notifications.where((notification) => !notification.isRead).length,
+    loading: () => 0,
+    error: (_, _) => 0,
+  );
+  return unread(group) + unread(community);
+});
+
+final unreadCommunityNotificationCountProvider = Provider<int>((ref) {
   return ref
-      .watch(groupNotificationsProvider)
+      .watch(communityNotificationsProvider)
       .when(
         data: (notifications) =>
             notifications.where((notification) => !notification.isRead).length,
@@ -519,6 +557,7 @@ class GroupActionController extends AsyncNotifier<void> {
           .read(groupRepositoryProvider)
           .markNotificationRead(notificationId);
       ref.invalidate(groupNotificationsProvider);
+      ref.invalidate(communityNotificationsProvider);
     });
   }
 

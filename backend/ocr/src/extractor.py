@@ -5,7 +5,7 @@ from pathlib import Path
 
 from src.cleaner import clean_text
 from src.classifier import classify_category
-from src.models import OCRTextLine, ReceiptData
+from src.models import OCRTextLine, ReceiptData, ReceiptItem
 from src.ocr import recognize_image
 from src.preprocess import preprocess
 from src.rules.header import extract_header
@@ -35,7 +35,7 @@ def extract_receipt_with_metadata(image_path: str) -> ExtractedReceipt:
         lines = [line for line in cleaned_text.splitlines() if line.strip()]
 
         header = extract_header(lines)
-        items = extract_items(lines)
+        items = [ReceiptItem.model_validate(item) for item in extract_items(lines)]
         totals = extract_totals(lines)
         suggested_category, _ = classify_category(header.get("merchant"), items)
         data = ReceiptData(

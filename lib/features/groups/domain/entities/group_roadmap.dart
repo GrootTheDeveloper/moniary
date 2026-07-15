@@ -8,6 +8,8 @@ class GroupNotificationPreference {
     required this.debtNotifications,
     required this.inviteNotifications,
     required this.mentionNotifications,
+    this.communityComments = true,
+    this.communityReactions = true,
     this.quietHoursStart,
     this.quietHoursEnd,
   });
@@ -18,6 +20,8 @@ class GroupNotificationPreference {
   final bool debtNotifications;
   final bool inviteNotifications;
   final bool mentionNotifications;
+  final bool communityComments;
+  final bool communityReactions;
   final int? quietHoursStart;
   final int? quietHoursEnd;
 
@@ -27,6 +31,8 @@ class GroupNotificationPreference {
     bool? debtNotifications,
     bool? inviteNotifications,
     bool? mentionNotifications,
+    bool? communityComments,
+    bool? communityReactions,
     int? quietHoursStart,
     int? quietHoursEnd,
     bool clearQuietHours = false,
@@ -39,6 +45,8 @@ class GroupNotificationPreference {
       debtNotifications: debtNotifications ?? this.debtNotifications,
       inviteNotifications: inviteNotifications ?? this.inviteNotifications,
       mentionNotifications: mentionNotifications ?? this.mentionNotifications,
+      communityComments: communityComments ?? this.communityComments,
+      communityReactions: communityReactions ?? this.communityReactions,
       quietHoursStart: clearQuietHours
           ? null
           : quietHoursStart ?? this.quietHoursStart,

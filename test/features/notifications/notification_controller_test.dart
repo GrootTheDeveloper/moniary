@@ -1,0 +1,107 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:moniary/features/notifications/application/notification_controller.dart';
+import 'package:moniary/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:moniary/features/notifications/domain/entities/app_notification.dart';
+import 'package:moniary/features/notifications/domain/repositories/notification_repository.dart';
+
+class _FakeNotificationRepository implements NotificationRepository {
+  _FakeNotificationRepository(this.items);
+
+  List<AppNotification> items;
+
+  @override
+  Future<List<AppNotification>> fetchNotifications({
+    AppNotificationCategory? category,
+  }) async {
+    return items
+        .where((item) => category == null || item.category == category)
+        .toList();
+  }
+
+  @override
+  Future<void> markRead(String notificationId) async {
+    items = items
+        .map(
+          (item) =>
+              item.id == notificationId ? item.copyWith(isRead: true) : item,
+        )
+        .toList();
+  }
+
+  @override
+  Future<void> markAllRead() async {
+    items = items.map((item) => item.copyWith(isRead: true)).toList();
+  }
+
+  @override
+  Future<void> registerDevice({
+    required String token,
+    required String platform,
+    required String locale,
+    required String timezone,
+  }) async {}
+
+  @override
+  Future<void> unregisterDevice(String token) async {}
+}
+
+void main() {
+  test('unread count is calculated from all categories', () async {
+    final repository = _FakeNotificationRepository([
+      AppNotification(
+        id: 'personal',
+        category: AppNotificationCategory.personal,
+        type: 'friend_request',
+        isRead: false,
+        createdAt: DateTime(2026, 7, 14),
+      ),
+      AppNotification(
+        id: 'group',
+        category: AppNotificationCategory.group,
+        type: 'transaction_posted',
+        isRead: false,
+        createdAt: DateTime(2026, 7, 14),
+      ),
+      AppNotification(
+        id: 'read',
+        category: AppNotificationCategory.community,
+        type: 'comment_added',
+        isRead: true,
+        createdAt: DateTime(2026, 7, 14),
+      ),
+    ]);
+    final container = ProviderContainer(
+      overrides: [notificationRepositoryProvider.overrideWithValue(repository)],
+    );
+    addTearDown(container.dispose);
+
+    await container.read(notificationsProvider.future);
+
+    expect(container.read(unreadNotificationCountProvider), 2);
+  });
+
+  test('mark all read invalidates the notification query', () async {
+    final repository = _FakeNotificationRepository([
+      AppNotification(
+        id: 'one',
+        category: AppNotificationCategory.personal,
+        type: 'friend_request',
+        isRead: false,
+        createdAt: DateTime(2026, 7, 14),
+      ),
+    ]);
+    final container = ProviderContainer(
+      overrides: [notificationRepositoryProvider.overrideWithValue(repository)],
+    );
+    addTearDown(container.dispose);
+
+    await container.read(notificationsProvider.future);
+    await container
+        .read(notificationActionControllerProvider.notifier)
+        .markAllRead();
+    await container.read(notificationsProvider.future);
+
+    expect(container.read(unreadNotificationCountProvider), 0);
+  });
+}

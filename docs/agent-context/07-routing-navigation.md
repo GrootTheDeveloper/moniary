@@ -99,6 +99,14 @@ floating global action that pushes `/assistant`; it is not a fifth shell tab.
 | `/groups/settlements` | `DebtSettlementScreen` | Group ID |
 | `/groups/transaction/detail` | `GroupTransactionDetailScreen` | Transaction ID; fade |
 | `/groups/activity-center` | `GroupActivityCenterScreen` | Optional group ID; without one it opens the notifications-only view |
+| `/group-tools` | `GroupToolsScreen` | Group ID; finance, community, and group settings tools |
+| `/group-summary` | `GroupSummaryScreen` | Group ID; monthly spending, member breakdown, and settlement history |
+| `/group-photo-album` | `GroupPhotoAlbumScreen` | Group ID; private transaction photo gallery |
+| `/group-budget` | `GroupBudgetScreen` | Group ID; owner/admin write, members read |
+| `/group-notification-preferences` | `GroupNotificationPreferencesScreen` | Group ID; current member's preferences |
+| `/group-public-profile` | `GroupPublicProfileScreen` | Group ID; owner/admin settings |
+| `/group-recurring-transactions` | `GroupRecurringTransactionsScreen` | Group ID; recurring expense CRUD through RPC |
+| `/public-group/:slug` | `GroupPublicProfileScreen.public` | Public-safe aggregate profile route |
 | `/friends` | `FriendsScreen` | Friend list/requests |
 | `/friends/add` | `AddFriendScreen` | Search/add |
 | `/friends/qr` | `FriendQrScreen` | Display or scan a friend invite QR code |
@@ -112,6 +120,7 @@ notifications inbox. The friend token route falls back to `FriendsScreen`.
 
 | Route | Screen |
 |---|---|
+| `/notifications` | `NotificationCenterScreen` |
 | `/active-sessions` | `ActiveSessionsScreen` |
 | `/delete-account` | `DeleteAccountScreen` |
 | `/delete-account-help` | `DeleteAccountHelpScreen` |

@@ -56,6 +56,9 @@ than assuming public URLs.
 
 - `scheduled-reports`: builds scheduled financial emails and calls Resend when
   `RESEND_API_KEY` is configured.
+- `notification-dispatcher`: reads the notification outbox and sends
+  privacy-safe FCM HTTP v1 messages to registered Android/iOS devices. It
+  honors global and Group/Community mute preferences and retries failures.
 - `soft-delete-account`: starts the account-deletion grace flow.
 - `delete-account`: performs deletion.
 - `garbage-collect`: cleanup support.

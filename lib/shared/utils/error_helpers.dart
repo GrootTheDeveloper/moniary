@@ -77,6 +77,10 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupMemberActionForbidden;
       case 'GROUP_LEAVE_UNRESOLVED':
         return l10n.groupLeaveBlocked;
+      case 'GROUP_LEAVE_INCOMPLETE_TRANSACTION':
+        return l10n.groupLeaveIncompleteTransaction;
+      case 'GROUP_LEAVE_DISPUTED_SETTLEMENT':
+        return l10n.groupLeaveDisputedSettlement;
       case 'GROUP_OWNER_TRANSFER_REQUIRED':
         return l10n.groupOwnerTransferRequired;
       case 'GROUP_OWNER_REQUIRED':

@@ -3890,6 +3890,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bạn ơi! bạn còn vài khoản thu chi chưa được xử lý kìa.';
 
   @override
+  String get groupLeaveIncompleteTransaction =>
+      'Hãy hoàn tất hoặc huỷ các giao dịch nhóm chưa xong trước khi rời nhóm.';
+
+  @override
+  String get groupLeaveDisputedSettlement =>
+      'Hãy xử lý khoản tất toán đang tranh chấp trước khi rời nhóm.';
+
+  @override
   String get groupOwnerTransferRequired =>
       'Bạn cần chuyển quyền owner hoặc thêm một owner khác trước khi rời nhóm.';
 
@@ -3911,6 +3919,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupTransferOwnershipDone => 'Đã chuyển quyền owner của nhóm.';
+
+  @override
+  String get groupLeaveBlockedTitle => 'Chưa thể rời nhóm';
+
+  @override
+  String get groupLeaveViewSettlements => 'Xem khoản tất toán';
+
+  @override
+  String get groupLeaveViewGroup => 'Xem giao dịch nhóm';
 
   @override
   String get groupInviteTitle => 'Mời thành viên';
@@ -4183,6 +4200,25 @@ class AppLocalizationsVi extends AppLocalizations {
       'Đặt giới hạn chi tiêu chung mỗi tháng cho nhóm.';
 
   @override
+  String get groupBudgetProgressTitle => 'Tiến độ ngân sách tháng này';
+
+  @override
+  String get groupBudgetNoLimit => 'Chưa đặt giới hạn ngân sách.';
+
+  @override
+  String get groupBudgetOverLimit => 'Nhóm đã vượt giới hạn ngân sách.';
+
+  @override
+  String groupBudgetSpentOfLimit(String spent, String limit) {
+    return 'Đã chi $spent trên $limit';
+  }
+
+  @override
+  String groupBudgetThresholdNotice(int percent) {
+    return 'Cảnh báo khi đạt $percent% ngân sách.';
+  }
+
+  @override
   String get groupBudgetMonthlyLimit => 'Giới hạn mỗi tháng';
 
   @override
@@ -4274,38 +4310,41 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupNotificationMentions => 'Lượt nhắc tên';
 
   @override
-  String get groupPublicProfileTitle => 'Trang công khai';
+  String get groupNotificationCommunitySection => 'Cập nhật cộng đồng';
 
   @override
-  String get groupPublicProfileComingSoon =>
-      'Chia sẻ công khai chưa hoạt động. Các cài đặt này sẽ được lưu để dùng khi tính năng ra mắt.';
+  String get groupNotificationComments => 'Bình luận và trả lời';
 
   @override
-  String get groupPublicProfileEnable => 'Bật trang công khai';
+  String get groupNotificationReactions => 'Lượt reaction';
 
   @override
-  String get groupPublicProfileEnableHelp =>
-      'Cho phép nhóm có một trang công khai để chia sẻ';
+  String get groupNotificationQuietHoursSection => 'Khung giờ yên lặng';
+
+  @override
+  String get groupNotificationQuietStart => 'Bắt đầu từ';
+
+  @override
+  String get groupNotificationQuietEnd => 'Kết thúc lúc';
+
+  @override
+  String get groupNotificationQuietNotSet => 'Không giới hạn';
+
+  @override
+  String get groupNotificationQuietClear => 'Xóa khung giờ yên lặng';
+
+  @override
+  String get groupNotificationQuietPairRequired =>
+      'Hãy chọn đủ giờ bắt đầu và kết thúc.';
 
   @override
   String get groupPublicProfileShowStats => 'Hiển thị thống kê nhóm';
 
   @override
-  String get groupPublicProfileShowStatsHelp =>
-      'Bao gồm thống kê chi tiêu trên trang công khai';
-
-  @override
   String get groupPublicProfileSlug => 'Slug công khai';
 
   @override
-  String get groupPublicProfileSlugHint => 'ten-nhom-cua-toi';
-
-  @override
-  String get groupPublicProfileSlugInvalid =>
-      'Liên kết phải 3-80 ký tự: chữ thường, số, dấu gạch ngang';
-
-  @override
-  String get groupPublicProfileSaved => 'Đã cập nhật trang công khai';
+  String get groupPublicProfileTitle => 'Trang công khai nhóm';
 
   @override
   String get groupPublicProfileSettingsTitle => 'Cài đặt trang công khai';
@@ -4320,6 +4359,18 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get groupPublicProfileShowStatsSubtitle =>
       'Chỉ hiển thị số lượng tổng hợp và tổng chi tiêu.';
+
+  @override
+  String get groupPublicProfileShareTitle => 'Chia sẻ trang công khai';
+
+  @override
+  String get groupPublicProfileCopy => 'Sao chép link';
+
+  @override
+  String get groupPublicProfileCopied => 'Đã sao chép link trang công khai.';
+
+  @override
+  String get groupPublicProfilePreview => 'Xem trước';
 
   @override
   String get groupPublicProfileInvalidSlug =>
@@ -4385,6 +4436,102 @@ class AppLocalizationsVi extends AppLocalizations {
       'Giao dịch định kỳ này sẽ bị xoá vĩnh viễn.';
 
   @override
+  String get groupToolsTitle => 'Công cụ nhóm';
+
+  @override
+  String get groupToolsSubtitle =>
+      'Quản lý nhóm mà vẫn luôn thấy rõ dòng tiền chung.';
+
+  @override
+  String get groupToolsFinanceSection => 'Tài chính';
+
+  @override
+  String get groupToolsCommunitySection => 'Cộng đồng';
+
+  @override
+  String get groupToolsSettingsSection => 'Cài đặt';
+
+  @override
+  String get groupToolsBudgetSubtitle =>
+      'Giới hạn chi tiêu tháng và ngưỡng cảnh báo.';
+
+  @override
+  String get groupToolsSummarySubtitle =>
+      'Tổng hợp chi tiêu theo tháng, thành viên và lịch sử tất toán.';
+
+  @override
+  String get groupToolsRecurringSubtitle => 'Khoản chi định kỳ và lời nhắc.';
+
+  @override
+  String get groupToolsActivitySubtitle =>
+      'Dòng hoạt động, thông báo nhóm và cập nhật cộng đồng.';
+
+  @override
+  String get groupToolsAlbumSubtitle =>
+      'Ảnh hoá đơn gắn với các khoản chi nhóm.';
+
+  @override
+  String get groupToolsNotificationsSubtitle =>
+      'Chọn cập nhật nhóm và cộng đồng bạn muốn nhận.';
+
+  @override
+  String get groupToolsPublicProfileSubtitle =>
+      'Kiểm soát trang công khai an toàn của nhóm.';
+
+  @override
+  String get groupToolsLeaveSubtitle =>
+      'Chỉ rời nhóm sau khi xử lý xong công nợ và giao dịch đang chờ.';
+
+  @override
+  String get groupSummaryTitle => 'Tổng quan tài chính';
+
+  @override
+  String get groupSummarySubtitle =>
+      'Theo dõi chi tiêu và các khoản tất toán của nhóm theo từng tháng.';
+
+  @override
+  String get groupSummaryPreviousMonth => 'Tháng trước';
+
+  @override
+  String get groupSummaryNextMonth => 'Tháng sau';
+
+  @override
+  String get groupSummaryTotalSpent => 'Tổng chi';
+
+  @override
+  String get groupSummaryTransactions => 'Giao dịch';
+
+  @override
+  String get groupSummaryCategories => 'Theo danh mục';
+
+  @override
+  String get groupSummaryMembers => 'Theo thành viên';
+
+  @override
+  String get groupSummarySettlementHistory => 'Lịch sử tất toán';
+
+  @override
+  String get groupSummaryNoData => 'Chưa có dữ liệu trong tháng này.';
+
+  @override
+  String get groupSummaryNoHistory => 'Chưa có lịch sử tất toán.';
+
+  @override
+  String groupSummaryTransactionCount(int count) {
+    return '$count giao dịch';
+  }
+
+  @override
+  String groupSummaryMemberAmounts(String share, String paid) {
+    return 'Chịu $share · Đã trả $paid';
+  }
+
+  @override
+  String groupSummarySettlementPair(String from, String to) {
+    return '$from trả $to';
+  }
+
+  @override
   String get groupActivityTransactionReacted =>
       'đã thả cảm xúc vào một giao dịch';
 
@@ -4405,6 +4552,22 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupActivityInvitationDeclined => 'đã từ chối lời mời vào nhóm';
 
   @override
+  String get groupActivityMemberRemoved => 'đã xóa một thành viên khỏi nhóm';
+
+  @override
+  String groupActivityOwnerTransferred(String actor) {
+    return '$actor đã chuyển quyền owner của nhóm.';
+  }
+
+  @override
+  String get groupActivitySettlementDisputed =>
+      'đã báo cáo tranh chấp khoản tất toán';
+
+  @override
+  String get groupActivityLeaveBlocked =>
+      'đã cố rời nhóm khi còn việc chưa xử lý';
+
+  @override
   String get groupNotificationTransactionPosted => 'Có giao dịch mới';
 
   @override
@@ -4416,6 +4579,51 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupNotificationGroupInvite => 'Bạn có lời mời vào nhóm mới';
+
+  @override
+  String get groupNotificationSettlementMarkedPaid =>
+      'Một khoản tất toán đã được đánh dấu đã trả';
+
+  @override
+  String get groupNotificationSettlementCompleted =>
+      'Một khoản tất toán đã hoàn tất';
+
+  @override
+  String get groupNotificationSettlementDisputed =>
+      'Một khoản tất toán đang bị tranh chấp';
+
+  @override
+  String get groupNotificationMemberRemoved =>
+      'Một thành viên đã bị xóa khỏi nhóm';
+
+  @override
+  String get groupActivityTabGroupNotifications => 'Nhóm';
+
+  @override
+  String get groupActivityTabCommunityNotifications => 'Cộng đồng';
+
+  @override
+  String get communityNotificationsEmptyState => 'Chưa có thông báo cộng đồng';
+
+  @override
+  String get groupNotificationMemberLeft => 'Một thành viên đã rời nhóm';
+
+  @override
+  String get groupNotificationLeaveBlocked =>
+      'Một thành viên cố rời nhóm khi còn khoản chưa xử lý';
+
+  @override
+  String get groupNotificationCommentAdded => 'Có bình luận mới';
+
+  @override
+  String get groupNotificationReactionAdded =>
+      'Có người đã thả cảm xúc vào giao dịch';
+
+  @override
+  String get groupNotificationMention => 'Bạn được nhắc tên trong cộng đồng';
+
+  @override
+  String get groupNotificationGeneric => 'Có cập nhật mới trong nhóm.';
 
   @override
   String get groupTransactionCreator => 'Người đăng';
@@ -4577,9 +4785,6 @@ class AppLocalizationsVi extends AppLocalizations {
       'Quyền owner của nhóm đã được chuyển.';
 
   @override
-  String get groupNotificationGeneric => 'Có cập nhật mới trong nhóm.';
-
-  @override
   String get groupActivitiesTitle => 'Hoạt động nhóm';
 
   @override
@@ -4596,11 +4801,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String groupActivityTransactionPosted(String actor) {
     return '$actor đã đăng giao dịch nhóm.';
-  }
-
-  @override
-  String groupActivityOwnerTransferred(String actor) {
-    return '$actor đã chuyển quyền owner của nhóm.';
   }
 
   @override
@@ -5520,13 +5720,45 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get scanSuggestionNotice =>
-      'Các trường có nhãn AI đề xuất được điền từ hóa đơn. Hãy kiểm tra trước khi lưu.';
+      'Thông tin trên hóa đơn đã được tự động điền. Hãy kiểm tra trước khi lưu.';
 
   @override
-  String get scanAiSuggestion => 'AI đề xuất';
+  String get scanAiSuggestion => 'Từ hóa đơn';
 
   @override
-  String get scanSuggestionNeedsReview => 'AI đề xuất - nên kiểm tra lại';
+  String get scanSuggestionNeedsReview => 'Từ hóa đơn - nên kiểm tra lại';
+
+  @override
+  String get scanDetectedSummary => 'Thông tin nhận diện từ hóa đơn';
+
+  @override
+  String scanDetectedItemsCount(int count) {
+    return 'Đã nhận diện $count mặt hàng';
+  }
+
+  @override
+  String get scanPaymentMethod => 'Phương thức thanh toán';
+
+  @override
+  String get scanPaymentCash => 'Tiền mặt';
+
+  @override
+  String get scanPaymentCard => 'Thẻ';
+
+  @override
+  String get scanPaymentTransfer => 'Chuyển khoản';
+
+  @override
+  String get scanPaymentOther => 'Khác';
+
+  @override
+  String scanCurrency(String currency) {
+    return 'Loại tiền: $currency';
+  }
+
+  @override
+  String get scanValidationNotice =>
+      'Một số thông tin nhận diện có thể cần bạn kiểm tra nhanh.';
 
   @override
   String get friendQrTitle => 'QR kết bạn';
@@ -5695,4 +5927,79 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get mascotFedResponse => 'Ngon quá! Heo no bụng rồi, cảm ơn nha! 💖🐷';
+
+  @override
+  String get notificationsTitle => 'Thông báo';
+
+  @override
+  String get notificationsFilterAll => 'Tất cả';
+
+  @override
+  String get notificationsCategoryPersonal => 'Cá nhân';
+
+  @override
+  String get notificationsCategoryGroup => 'Group';
+
+  @override
+  String get notificationsCategoryCommunity => 'Cộng đồng';
+
+  @override
+  String get notificationsCategorySystem => 'Hệ thống';
+
+  @override
+  String get notificationsMarkAllRead => 'Đã đọc hết';
+
+  @override
+  String get notificationsEmpty => 'Chưa có thông báo trong 30 ngày qua';
+
+  @override
+  String get notificationFriendRequest => 'Bạn có lời mời kết bạn mới';
+
+  @override
+  String get notificationFriendAccepted => 'Lời mời kết bạn đã được chấp nhận';
+
+  @override
+  String get notificationGroupTransaction => 'Có giao dịch mới trong group';
+
+  @override
+  String get notificationAmountRequired => 'Bạn cần nhập phần tiền của mình';
+
+  @override
+  String get notificationGroupInvite => 'Bạn được mời vào một group';
+
+  @override
+  String get notificationDebtSettled =>
+      'Một khoản nợ trong group đã được tất toán';
+
+  @override
+  String get notificationCommunityComment => 'Có bình luận mới trong cộng đồng';
+
+  @override
+  String get notificationCommunityReaction =>
+      'Có người tương tác với giao dịch';
+
+  @override
+  String get notificationCommunityMention =>
+      'Bạn được nhắc tên trong cộng đồng';
+
+  @override
+  String get notificationGeneric => 'Bạn có cập nhật mới';
+
+  @override
+  String get pushNotificationSectionTitle => 'Thông báo trên điện thoại';
+
+  @override
+  String get pushNotificationSectionDesc =>
+      'Chọn loại thông báo được phép hiển thị khi Moniary không mở.';
+
+  @override
+  String get pushNotificationAllTitle => 'Cho phép thông báo đẩy';
+
+  @override
+  String get pushNotificationAllSubtitle =>
+      'Tắt chỉ chặn thông báo trên điện thoại; lịch sử vẫn ở trong inbox.';
+
+  @override
+  String get pushNotificationCategorySubtitle =>
+      'Thông báo vẫn được lưu trong inbox trong 30 ngày.';
 }

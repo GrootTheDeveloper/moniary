@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_enums.dart';
@@ -34,6 +35,9 @@ class _GroupBudgetScreenState extends ConsumerState<GroupBudgetScreen> {
   Widget build(BuildContext context) {
     final budgetAsync = ref.watch(groupBudgetProvider(widget.groupId));
     final detailAsync = ref.watch(groupDetailProvider(widget.groupId));
+    final transactionsAsync = ref.watch(
+      groupTransactionsProvider(widget.groupId),
+    );
     final colors = context.moniaryColors;
     return Scaffold(
       backgroundColor: colors.backgroundSoft,
@@ -52,6 +56,23 @@ class _GroupBudgetScreenState extends ConsumerState<GroupBudgetScreen> {
           }
           final role = detailAsync.asData?.value.currentUserRole;
           final canEdit = role == GroupRole.owner || role == GroupRole.admin;
+          final now = DateTime.now();
+          final spentThisMonth = transactionsAsync.asData?.value
+              .where(
+                (transaction) =>
+                    transaction.splitStatus == GroupSplitStatus.posted &&
+                    transaction.transactionDate.year == now.year &&
+                    transaction.transactionDate.month == now.month,
+              )
+              .fold<int>(
+                0,
+                (sum, transaction) => sum + transaction.totalAmount,
+              );
+          final spent = spentThisMonth ?? 0;
+          final progress = budget.hasLimit
+              ? (spent / budget.monthlyLimit).clamp(0.0, 1.0).toDouble()
+              : 0.0;
+          final isOverLimit = budget.hasLimit && spent > budget.monthlyLimit;
           return ListView(
             padding: const EdgeInsets.fromLTRB(24, 18, 24, 36),
             children: [
@@ -60,6 +81,51 @@ class _GroupBudgetScreenState extends ConsumerState<GroupBudgetScreen> {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 22),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(context.l10n.groupBudgetProgressTitle),
+                      const SizedBox(height: 8),
+                      Text(
+                        budget.hasLimit
+                            ? context.l10n.groupBudgetSpentOfLimit(
+                                ref.formatAmount(spent),
+                                ref.formatAmount(budget.monthlyLimit),
+                              )
+                            : context.l10n.groupBudgetNoLimit,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      if (budget.hasLimit) ...[
+                        const SizedBox(height: 12),
+                        LinearProgressIndicator(
+                          value: progress,
+                          color: isOverLimit ? colors.danger : colors.primary,
+                          backgroundColor: colors.outline.withValues(
+                            alpha: 0.35,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          isOverLimit
+                              ? context.l10n.groupBudgetOverLimit
+                              : context.l10n.groupBudgetThresholdNotice(
+                                  budget.warningThresholdPercent,
+                                ),
+                          style: TextStyle(
+                            color: isOverLimit
+                                ? colors.danger
+                                : colors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
               TextField(
                 controller: _limitController,
                 enabled: canEdit,
