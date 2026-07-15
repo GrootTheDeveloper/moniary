@@ -466,9 +466,12 @@ class TransactionRepository {
         );
       }
       if (filter.subscription != null) {
+        // A subscription transaction is any auto-posted one (source =
+        // 'recurring'). This is more reliable than recurring_transaction_id,
+        // which is only set on transactions created after that column existed.
         query = filter.subscription == TransactionSubscriptionFilter.subscription
-            ? query.not('recurring_transaction_id', 'is', null)
-            : query.isFilter('recurring_transaction_id', null);
+            ? query.eq('source', 'recurring')
+            : query.not('source', 'eq', 'recurring');
       }
       if (filter.dateFrom != null) {
         query = query.gte(

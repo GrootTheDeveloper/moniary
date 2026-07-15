@@ -7,6 +7,7 @@ import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
+import '../../../shared/widgets/confirm_action_dialog.dart';
 import '../../calendar/application/month/calendar_month_provider.dart';
 import '../../categories/application/categories_controller.dart';
 import '../../categories/domain/models/category.dart';
@@ -98,7 +99,7 @@ class RecurringTransactionsScreen extends ConsumerWidget {
     if (generatedCount > 0) {
       deleteGenerated = await showDialog<bool>(
         context: context,
-        builder: (dialogContext) => _ActionDialog<bool>(
+        builder: (dialogContext) => ConfirmActionDialog<bool>(
           icon: Icons.delete_outline_rounded,
           iconColor: dialogContext.moniaryColors.danger,
           title: dialogContext.l10n.recurringDeleteTitle,
@@ -106,15 +107,15 @@ class RecurringTransactionsScreen extends ConsumerWidget {
             generatedCount,
           ),
           actions: [
-            _DialogAction(
+            ConfirmAction(
               dialogContext.l10n.recurringDeleteKeepTx,
               false,
-              style: _DialogActionStyle.neutral,
+              style: ConfirmActionStyle.neutral,
             ),
-            _DialogAction(
+            ConfirmAction(
               dialogContext.l10n.recurringDeleteRemoveTx,
               true,
-              style: _DialogActionStyle.danger,
+              style: ConfirmActionStyle.danger,
             ),
           ],
         ),
@@ -123,16 +124,16 @@ class RecurringTransactionsScreen extends ConsumerWidget {
     } else {
       final confirmed = await showDialog<bool>(
         context: context,
-        builder: (dialogContext) => _ActionDialog<bool>(
+        builder: (dialogContext) => ConfirmActionDialog<bool>(
           icon: Icons.delete_outline_rounded,
           iconColor: dialogContext.moniaryColors.danger,
           title: dialogContext.l10n.recurringDeleteTitle,
           message: dialogContext.l10n.recurringDeleteMessage,
           actions: [
-            _DialogAction(
+            ConfirmAction(
               dialogContext.l10n.commonDelete,
               true,
-              style: _DialogActionStyle.danger,
+              style: ConfirmActionStyle.danger,
             ),
           ],
         ),
@@ -553,12 +554,12 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
   Future<bool> _confirmRegenerate(BuildContext context, int count) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => _ActionDialog<bool>(
+      builder: (dialogContext) => ConfirmActionDialog<bool>(
         icon: Icons.autorenew,
         title: dialogContext.l10n.recurringApplyTitle,
         message: dialogContext.l10n.recurringApplyMessage(count),
         actions: [
-          _DialogAction(dialogContext.l10n.recurringApplyDelete, true),
+          ConfirmAction(dialogContext.l10n.recurringApplyDelete, true),
         ],
       ),
     );
@@ -748,96 +749,3 @@ class _Message extends StatelessWidget {
   );
 }
 
-enum _DialogActionStyle { primary, danger, neutral }
-
-class _DialogAction<T> {
-  const _DialogAction(this.label, this.value, {this.style = _DialogActionStyle.primary});
-
-  final String label;
-  final T value;
-  final _DialogActionStyle style;
-}
-
-/// Centered icon + title + message with full-width stacked action buttons and
-/// a trailing Cancel. Pops with the chosen action's value, or null on cancel.
-class _ActionDialog<T> extends StatelessWidget {
-  const _ActionDialog({
-    required this.icon,
-    required this.title,
-    required this.message,
-    required this.actions,
-    this.iconColor,
-  });
-
-  final IconData icon;
-  final Color? iconColor;
-  final String title;
-  final String message;
-  final List<_DialogAction<T>> actions;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.moniaryColors;
-    final accent = iconColor ?? colors.primary;
-    return AlertDialog(
-      backgroundColor: colors.surface,
-      icon: Container(
-        width: 52,
-        height: 52,
-        decoration: BoxDecoration(
-          color: accent.withValues(alpha: 0.12),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, color: accent),
-      ),
-      title: Text(title, textAlign: TextAlign.center),
-      content: Text(
-        message,
-        textAlign: TextAlign.center,
-        style: TextStyle(color: colors.textDim, height: 1.4),
-      ),
-      actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      actions: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final action in actions) ...[
-              SizedBox(
-                width: double.infinity,
-                child: _button(context, action),
-              ),
-              const SizedBox(height: 8),
-            ],
-            SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(context.l10n.commonCancel),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _button(BuildContext context, _DialogAction<T> action) {
-    final colors = context.moniaryColors;
-    void onPressed() => Navigator.pop(context, action.value);
-    return switch (action.style) {
-      _DialogActionStyle.primary => FilledButton(
-        onPressed: onPressed,
-        child: Text(action.label),
-      ),
-      _DialogActionStyle.danger => FilledButton(
-        onPressed: onPressed,
-        style: FilledButton.styleFrom(backgroundColor: colors.danger),
-        child: Text(action.label),
-      ),
-      _DialogActionStyle.neutral => OutlinedButton(
-        onPressed: onPressed,
-        child: Text(action.label),
-      ),
-    };
-  }
-}
