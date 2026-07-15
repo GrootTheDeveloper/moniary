@@ -15,14 +15,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class _FakeSupabaseClient extends Fake implements SupabaseClient {}
 
 class _EmailLinkAuthRepository extends AuthRepository {
-  _EmailLinkAuthRepository() : super(null, useMockData: true);
+  _EmailLinkAuthRepository() : super(_FakeSupabaseClient());
 
   String? linkedPassword;
 
   @override
-  Future<bool> completeEmailAccountLink({required String password}) async {
+  Future<void> completeEmailAccountLink({required String password}) async {
     linkedPassword = password;
-    return true;
   }
 }
 
@@ -66,7 +65,7 @@ void main() {
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({
-      'pending_email_account_link_user_id': 'mock-user-id',
+      'pending_email_account_link_user_id': 'test-user-id',
       'pending_email_account_link_email': 'bee@moniary.app',
     });
     final preferences = await SharedPreferences.getInstance();
@@ -91,7 +90,7 @@ void main() {
 
   testWidgets('sets password and clears pending email link', (tester) async {
     SharedPreferences.setMockInitialValues({
-      'pending_email_account_link_user_id': 'mock-user-id',
+      'pending_email_account_link_user_id': 'test-user-id',
       'pending_email_account_link_email': 'bee@moniary.app',
     });
     final preferences = await SharedPreferences.getInstance();

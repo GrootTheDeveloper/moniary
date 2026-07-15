@@ -47,10 +47,9 @@ Use the same file for a release archive:
 flutter build ipa --release --dart-define-from-file=mobile.env
 ```
 
-The app shows a debug warning on the login screen if these Supabase values were
-not compiled into the build. In mock mode all social buttons remain available
-for UI testing. In Supabase mode the app shows only providers enabled by the
-two `ENABLE_*_AUTH` build flags.
+The app fails startup when Supabase values are not compiled into the build.
+Social buttons are shown only when enabled by the two `ENABLE_*_AUTH` build
+flags.
 
 ## 2. Supabase URL configuration
 
@@ -70,8 +69,8 @@ is disabled.
 
 ## 3. Anonymous sign-in protection
 
-Anonymous sign-in remains enabled because guest data can be upgraded in place
-to email or Google. Supabase CAPTCHA protection also covers direct email
+Anonymous sign-in remains enabled because anonymous data can be upgraded in
+place to email, Google, or Facebook. Supabase CAPTCHA protection also covers direct email
 sign-in, sign-up, and password-reset requests, so every protected flow must
 submit a fresh Turnstile token:
 
@@ -96,9 +95,8 @@ For local Supabase, export the server-only secret before `supabase start`:
 export SUPABASE_AUTH_CAPTCHA_SECRET=YOUR_PRIVATE_TURNSTILE_SECRET
 ```
 
-The app refuses live anonymous or direct email authentication when the public
-Turnstile configuration is missing. Mock mode intentionally skips CAPTCHA and
-never creates a Supabase Auth user.
+The app refuses anonymous or direct email authentication when the public
+Turnstile configuration is missing. There is no mock bypass.
 
 ## 4. Email signup
 

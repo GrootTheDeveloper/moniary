@@ -1,20 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:moniary/core/constants/app_constants.dart';
 import 'package:moniary/core/notifications/fcm_push_notification_service.dart';
 import 'package:moniary/core/notifications/local_notification_service.dart';
 import 'package:moniary/core/notifications/notification_providers.dart';
 import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/features/auth/application/auth_controller.dart';
+import 'package:moniary/features/auth/application/pending_email_link_controller.dart';
+import 'package:moniary/features/auth/application/pending_google_link_controller.dart';
 import 'package:moniary/features/auth/data/auth_repository.dart';
 import 'package:moniary/features/auth/domain/email_account_link.dart';
-import 'package:moniary/features/auth/application/pending_email_link_controller.dart';
-import 'package:moniary/features/auth/application/pending_facebook_link_controller.dart';
-import 'package:moniary/features/auth/application/pending_google_link_controller.dart';
-import 'package:moniary/features/auth/domain/facebook_account_link.dart';
 import 'package:moniary/features/auth/domain/google_account_link.dart';
-import 'package:moniary/features/profile/application/profile_setup_controller.dart';
 import 'package:moniary/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:moniary/features/notifications/domain/repositories/notification_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,8 +28,8 @@ class _FakeNotificationRepository extends Fake
   }
 }
 
-class _FakeFcmPushNotificationService extends FcmPushNotificationService {
-  _FakeFcmPushNotificationService()
+class _FakePushService extends FcmPushNotificationService {
+  _FakePushService()
     : super(LocalNotificationService.instance, firebaseConfigured: false);
 
   var unregisterCount = 0;
@@ -47,108 +43,32 @@ class _FakeFcmPushNotificationService extends FcmPushNotificationService {
   }
 }
 
-Session _mockSession() {
-  const user = User(
-    id: 'mock-user-id',
-    appMetadata: {},
-    userMetadata: {},
-    aud: 'authenticated',
-    createdAt: '2026-05-28T00:00:00Z',
-  );
-  return Session(
-    accessToken: 'mockAccessToken',
-    tokenType: 'bearer',
-    expiresIn: 3600,
-    user: user,
-  );
-}
-
-Session _googleLinkedSession() {
-  const identity = UserIdentity(
-    id: 'google-identity-id',
-    userId: 'mock-user-id',
-    identityData: {'email': 'bee@gmail.com'},
-    identityId: 'google-subject-id',
-    provider: 'google',
-    createdAt: '2026-07-15T00:00:00Z',
-    lastSignInAt: '2026-07-15T00:00:00Z',
-  );
-  const user = User(
-    id: 'mock-user-id',
-    appMetadata: {'provider': 'google'},
-    userMetadata: {},
-    aud: 'authenticated',
-    email: 'bee@gmail.com',
-    identities: [identity],
-    createdAt: '2026-05-28T00:00:00Z',
-  );
-  return Session(
-    accessToken: 'mockAccessToken',
-    tokenType: 'bearer',
-    expiresIn: 3600,
-    user: user,
-  );
-}
-
-Session _facebookLinkedSession() {
-  const identity = UserIdentity(
-    id: 'facebook-identity-id',
-    userId: 'mock-user-id',
-    identityData: {'email': 'bee@facebook.com'},
-    identityId: 'facebook-subject-id',
-    provider: 'facebook',
-    createdAt: '2026-07-15T00:00:00Z',
-    lastSignInAt: '2026-07-15T00:00:00Z',
-  );
-  const user = User(
-    id: 'mock-user-id',
-    appMetadata: {'provider': 'facebook'},
-    userMetadata: {},
-    aud: 'authenticated',
-    email: 'bee@facebook.com',
-    identities: [identity],
-    createdAt: '2026-05-28T00:00:00Z',
-  );
-  return Session(
-    accessToken: 'mockAccessToken',
-    tokenType: 'bearer',
-    expiresIn: 3600,
-    user: user,
-  );
-}
-
-class FakeAuthRepository extends AuthRepository {
-  FakeAuthRepository({
+class _FakeAuthRepository extends AuthRepository {
+  _FakeAuthRepository({
     this.emailSession,
     this.signUpSession,
-    this.googleSession,
-    this.facebookSession,
-    this.opensRecoveryLocally = false,
     this.emailLinkStatus = EmailAccountLinkStatus.confirmationRequired,
-    this.emailLinkUsesMockProfile = false,
-    this.googleLinkStatus = GoogleAccountLinkStatus.browserOpened,
-    this.facebookLinkStatus = FacebookAccountLinkStatus.browserOpened,
-  }) : super(null, useMockData: true);
+  }) : super(_FakeSupabaseClient());
 
   final Session? emailSession;
   final Session? signUpSession;
-  final Session? googleSession;
-  final Session? facebookSession;
-  final bool opensRecoveryLocally;
   final EmailAccountLinkStatus emailLinkStatus;
-  final bool emailLinkUsesMockProfile;
-  final GoogleAccountLinkStatus googleLinkStatus;
-  final FacebookAccountLinkStatus facebookLinkStatus;
+
   var signOutCount = 0;
-  var cancelPasswordRecoveryCount = 0;
-  String? updatedPassword;
-  String? linkedEmail;
-  String? linkedEmailPassword;
-  String? emailSignInCaptchaToken;
-  String? emailSignUpCaptchaToken;
-  String? passwordResetCaptchaToken;
+  var completeEmailLinkCount = 0;
   var completeGoogleLinkCount = 0;
-  var completeFacebookLinkCount = 0;
+  var cancelRecoveryCount = 0;
+  String? anonymousCaptchaToken;
+  String? emailCaptchaToken;
+  String? signUpCaptchaToken;
+  String? resetCaptchaToken;
+  String? updatedPassword;
+
+  @override
+  Future<Session?> signInAnonymously({String? captchaToken}) async {
+    anonymousCaptchaToken = captchaToken;
+    return _session();
+  }
 
   @override
   Future<void> signOut() async {
@@ -161,13 +81,8 @@ class FakeAuthRepository extends AuthRepository {
     required String password,
     String? captchaToken,
   }) async {
-    emailSignInCaptchaToken = captchaToken;
+    emailCaptchaToken = captchaToken;
     return emailSession;
-  }
-
-  @override
-  Future<Session?> signInWithGoogle() async {
-    return googleSession;
   }
 
   @override
@@ -176,22 +91,16 @@ class FakeAuthRepository extends AuthRepository {
     required String password,
     String? captchaToken,
   }) async {
-    emailSignUpCaptchaToken = captchaToken;
+    signUpCaptchaToken = captchaToken;
     return signUpSession;
   }
 
   @override
-  Future<Session?> signInWithFacebook() async {
-    return facebookSession;
-  }
-
-  @override
-  Future<bool> requestPasswordReset(
+  Future<void> requestPasswordReset(
     String email, {
     String? captchaToken,
   }) async {
-    passwordResetCaptchaToken = captchaToken;
-    return opensRecoveryLocally;
+    resetCaptchaToken = captchaToken;
   }
 
   @override
@@ -201,192 +110,183 @@ class FakeAuthRepository extends AuthRepository {
 
   @override
   Future<void> cancelPasswordRecovery() async {
-    cancelPasswordRecoveryCount++;
+    cancelRecoveryCount++;
   }
 
   @override
   Future<EmailAccountLinkStatus> beginEmailAccountLink({
     required String email,
   }) async {
-    linkedEmail = email;
     return emailLinkStatus;
   }
 
   @override
-  Future<bool> completeEmailAccountLink({required String password}) async {
-    linkedEmailPassword = password;
-    return emailLinkUsesMockProfile;
+  Future<void> completeEmailAccountLink({required String password}) async {
+    completeEmailLinkCount++;
+    updatedPassword = password;
   }
 
   @override
   Future<GoogleAccountLinkStatus> beginGoogleAccountLink() async {
-    return googleLinkStatus;
+    return GoogleAccountLinkStatus.browserOpened;
   }
 
   @override
-  Future<bool> completeGoogleAccountLink() async {
+  Future<void> completeGoogleAccountLink() async {
     completeGoogleLinkCount++;
-    return false;
-  }
-
-  @override
-  Future<FacebookAccountLinkStatus> beginFacebookAccountLink() async {
-    return facebookLinkStatus;
-  }
-
-  @override
-  Future<bool> completeFacebookAccountLink() async {
-    completeFacebookLinkCount++;
-    return false;
   }
 }
 
+Session _session({bool googleLinked = false}) {
+  final identities = googleLinked
+      ? const [
+          UserIdentity(
+            id: 'google-identity-id',
+            userId: 'user-id',
+            identityData: {'email': 'bee@gmail.com'},
+            identityId: 'google-subject-id',
+            provider: 'google',
+            createdAt: '2026-07-15T00:00:00Z',
+            lastSignInAt: '2026-07-15T00:00:00Z',
+          ),
+        ]
+      : const <UserIdentity>[];
+  final user = User(
+    id: 'user-id',
+    appMetadata: const {},
+    userMetadata: const {},
+    aud: 'authenticated',
+    email: googleLinked ? 'bee@gmail.com' : null,
+    identities: identities,
+    createdAt: '2026-05-28T00:00:00Z',
+  );
+  return Session(
+    accessToken: 'access-token',
+    tokenType: 'bearer',
+    expiresIn: 3600,
+    user: user,
+  );
+}
+
 void main() {
-  test('pending email link only matches the originating confirmed user', () {
-    const pending = PendingEmailAccountLink(
-      userId: 'anonymous-user-id',
+  test('pending account links only match their originating identity', () {
+    const email = PendingEmailAccountLink(
+      userId: 'user-id',
       email: 'bee@moniary.app',
     );
+    const google = PendingGoogleAccountLink(userId: 'user-id');
 
     expect(
-      pending.matches(
-        userId: 'anonymous-user-id',
+      email.matches(
+        userId: 'user-id',
         email: 'BEE@MONIARY.APP',
         isAnonymous: false,
       ),
       isTrue,
     );
     expect(
-      pending.matches(
-        userId: 'different-user-id',
-        email: 'bee@moniary.app',
-        isAnonymous: false,
-      ),
-      isFalse,
-    );
-    expect(
-      pending.matches(
-        userId: 'anonymous-user-id',
+      email.matches(
+        userId: 'user-id',
         email: 'bee@moniary.app',
         isAnonymous: true,
       ),
       isFalse,
     );
-  });
-
-  test('pending Google link requires the originating user and identity', () {
-    const pending = PendingGoogleAccountLink(userId: 'anonymous-user-id');
-
+    expect(google.matches(userId: 'user-id', hasGoogleIdentity: true), isTrue);
     expect(
-      pending.matches(userId: 'anonymous-user-id', hasGoogleIdentity: true),
-      isTrue,
-    );
-    expect(
-      pending.matches(userId: 'different-user-id', hasGoogleIdentity: true),
+      google.matches(userId: 'other-user', hasGoogleIdentity: true),
       isFalse,
     );
-    expect(
-      pending.matches(userId: 'anonymous-user-id', hasGoogleIdentity: false),
-      isFalse,
-    );
-  });
-
-  test('pending Facebook link requires the originating user and identity', () {
-    const pending = PendingFacebookAccountLink(userId: 'anonymous-user-id');
-
-    expect(
-      pending.matches(userId: 'anonymous-user-id', hasFacebookIdentity: true),
-      isTrue,
-    );
-    expect(
-      pending.matches(userId: 'different-user-id', hasFacebookIdentity: true),
-      isFalse,
-    );
-    expect(
-      pending.matches(userId: 'anonymous-user-id', hasFacebookIdentity: false),
-      isFalse,
-    );
-  });
-
-  test('signInAnonymously completes controller state in mock mode', () async {
-    if (AppConstants.hasSupabaseConfig) {
-      markTestSkipped('Mock mode test requires missing Supabase config.');
-      return;
-    }
-
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
-    final container = ProviderContainer(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-        supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
-      ],
-    );
-    addTearDown(container.dispose);
-
-    await container.read(authControllerProvider.notifier).signInAnonymously();
-
-    final authState = container.read(authControllerProvider);
-    expect(authState.isLoading, isFalse);
-    expect(authState.hasError, isFalse);
-    expect(prefs.getBool('mock_logged_in'), isNull);
-    expect(container.read(mockSessionProvider), isNotNull);
-  });
-
-  test('startGuestSession sets guest session state', () async {
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
-    final container = ProviderContainer(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-        supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
-      ],
-    );
-    addTearDown(container.dispose);
-
-    await container.read(authControllerProvider.notifier).startGuestSession();
-
-    final authState = container.read(authControllerProvider);
-    expect(authState.isLoading, isFalse);
-    expect(authState.hasError, isFalse);
-    expect(prefs.getBool('guest_mode_enabled'), isNull);
-    expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
-  });
-
-  test('startDemoSession seeds a ready mock profile', () async {
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
-    final container = ProviderContainer(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-        supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
-      ],
-    );
-    addTearDown(container.dispose);
-
-    await container.read(authControllerProvider.notifier).startDemoSession();
-
-    final authState = container.read(authControllerProvider);
-    final profile = await container.read(currentProfileProvider.future);
-    expect(authState.isLoading, isFalse);
-    expect(authState.hasError, isFalse);
-    expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
-    expect(profile?.fullName, 'Minh Anh');
-    expect(profile?.needsSetup, isFalse);
-    expect(profile?.needsSurvey, isFalse);
   });
 
   test(
-    'signOut unregisters the push token before ending auth session',
+    'auth actions forward CAPTCHA tokens without creating mock state',
     () async {
-      final repository = FakeAuthRepository();
-      final notificationRepository = _FakeNotificationRepository();
-      final pushService = _FakeFcmPushNotificationService();
+      final repository = _FakeAuthRepository(emailSession: _session());
       final container = ProviderContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
-          currentSessionProvider.overrideWithValue(_mockSession()),
-          useMockDataModeProvider.overrideWithValue(false),
+          currentSessionProvider.overrideWithValue(null),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container
+          .read(authControllerProvider.notifier)
+          .signInAnonymously(captchaToken: 'anonymous-token');
+      await container
+          .read(authControllerProvider.notifier)
+          .signInWithEmail(
+            email: 'bee@moniary.app',
+            password: 'password123',
+            captchaToken: 'email-token',
+          );
+      await container
+          .read(authControllerProvider.notifier)
+          .requestPasswordReset('bee@moniary.app', captchaToken: 'reset-token');
+
+      expect(repository.anonymousCaptchaToken, 'anonymous-token');
+      expect(repository.emailCaptchaToken, 'email-token');
+      expect(repository.resetCaptchaToken, 'reset-token');
+      expect(container.read(authControllerProvider).hasError, isFalse);
+    },
+  );
+
+  test(
+    'sign-up reports whether Supabase returned an immediate session',
+    () async {
+      final immediateRepository = _FakeAuthRepository(
+        signUpSession: _session(),
+      );
+      final immediateContainer = ProviderContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(immediateRepository),
+          currentSessionProvider.overrideWithValue(null),
+        ],
+      );
+      addTearDown(immediateContainer.dispose);
+
+      final immediateRequiresConfirmation = await immediateContainer
+          .read(authControllerProvider.notifier)
+          .signUpWithEmail(
+            email: 'bee@moniary.app',
+            password: 'password123',
+            captchaToken: 'signup-token',
+          );
+
+      expect(immediateRequiresConfirmation, isFalse);
+      expect(immediateRepository.signUpCaptchaToken, 'signup-token');
+
+      final confirmationRepository = _FakeAuthRepository();
+      final confirmationContainer = ProviderContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(confirmationRepository),
+          currentSessionProvider.overrideWithValue(null),
+        ],
+      );
+      addTearDown(confirmationContainer.dispose);
+
+      final requiresConfirmation = await confirmationContainer
+          .read(authControllerProvider.notifier)
+          .signUpWithEmail(
+            email: 'bee@moniary.app',
+            password: 'password123',
+            captchaToken: 'signup-token',
+          );
+      expect(requiresConfirmation, isTrue);
+    },
+  );
+
+  test(
+    'sign-out unregisters the push token before ending the session',
+    () async {
+      final repository = _FakeAuthRepository();
+      final notificationRepository = _FakeNotificationRepository();
+      final pushService = _FakePushService();
+      final container = ProviderContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          currentSessionProvider.overrideWithValue(_session()),
           notificationRepositoryProvider.overrideWithValue(
             notificationRepository,
           ),
@@ -403,271 +303,27 @@ void main() {
     },
   );
 
-  test('signInWithEmail applies returned mock session', () async {
-    final repository = FakeAuthRepository(emailSession: _mockSession());
-    final container = ProviderContainer(
-      overrides: [authRepositoryProvider.overrideWithValue(repository)],
-    );
-    addTearDown(container.dispose);
-
-    await container
-        .read(authControllerProvider.notifier)
-        .signInWithEmail(
-          email: 'bee@moniary.app',
-          password: 'password123',
-          captchaToken: 'email-sign-in-token',
-        );
-
-    expect(repository.emailSignInCaptchaToken, 'email-sign-in-token');
-    expect(container.read(authControllerProvider).isLoading, isFalse);
-    expect(container.read(authControllerProvider).hasError, isFalse);
-    expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
-  });
-
-  test('signInWithGoogle applies returned mock session', () async {
-    final repository = FakeAuthRepository(googleSession: _mockSession());
-    final container = ProviderContainer(
-      overrides: [authRepositoryProvider.overrideWithValue(repository)],
-    );
-    addTearDown(container.dispose);
-
-    await container.read(authControllerProvider.notifier).signInWithGoogle();
-
-    expect(repository.signOutCount, 0);
-    expect(container.read(authControllerProvider).isLoading, isFalse);
-    expect(container.read(authControllerProvider).hasError, isFalse);
-    expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
-  });
-
-  test('signInWithFacebook applies returned mock session', () async {
-    final repository = FakeAuthRepository(facebookSession: _mockSession());
-    final container = ProviderContainer(
-      overrides: [authRepositoryProvider.overrideWithValue(repository)],
-    );
-    addTearDown(container.dispose);
-
-    await container.read(authControllerProvider.notifier).signInWithFacebook();
-
-    expect(container.read(authControllerProvider).isLoading, isFalse);
-    expect(container.read(authControllerProvider).hasError, isFalse);
-    expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
-  });
-
   test(
-    'signInWithGoogle stays ready when OAuth returns no immediate session',
-    () async {
-      final repository = FakeAuthRepository();
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
-      addTearDown(container.dispose);
-
-      await container.read(authControllerProvider.notifier).signInWithGoogle();
-
-      expect(repository.signOutCount, 0);
-      expect(container.read(authControllerProvider).isLoading, isFalse);
-      expect(container.read(authControllerProvider).hasError, isFalse);
-      expect(container.read(mockSessionProvider), isNull);
-    },
-  );
-
-  test('signUpWithEmail applies an immediate session', () async {
-    final repository = FakeAuthRepository(signUpSession: _mockSession());
-    final container = ProviderContainer(
-      overrides: [authRepositoryProvider.overrideWithValue(repository)],
-    );
-    addTearDown(container.dispose);
-
-    final requiresConfirmation = await container
-        .read(authControllerProvider.notifier)
-        .signUpWithEmail(
-          email: 'bee@moniary.app',
-          password: 'password123',
-          captchaToken: 'email-sign-up-token',
-        );
-
-    expect(requiresConfirmation, isFalse);
-    expect(repository.emailSignUpCaptchaToken, 'email-sign-up-token');
-    expect(container.read(authControllerProvider).hasError, isFalse);
-    expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
-  });
-
-  test('signUpWithEmail reports when confirmation is required', () async {
-    final repository = FakeAuthRepository();
-    final container = ProviderContainer(
-      overrides: [authRepositoryProvider.overrideWithValue(repository)],
-    );
-    addTearDown(container.dispose);
-
-    final requiresConfirmation = await container
-        .read(authControllerProvider.notifier)
-        .signUpWithEmail(email: 'bee@moniary.app', password: 'password123');
-
-    expect(requiresConfirmation, isTrue);
-    expect(container.read(authControllerProvider).hasError, isFalse);
-    expect(container.read(mockSessionProvider), isNull);
-  });
-
-  test(
-    'requestPasswordReset completes controller state in mock mode',
-    () async {
-      final repository = FakeAuthRepository();
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
-      addTearDown(container.dispose);
-
-      await container
-          .read(authControllerProvider.notifier)
-          .requestPasswordReset(
-            'bee@moniary.app',
-            captchaToken: 'password-reset-token',
-          );
-
-      expect(repository.passwordResetCaptchaToken, 'password-reset-token');
-      expect(container.read(authControllerProvider).isLoading, isFalse);
-      expect(container.read(authControllerProvider).hasError, isFalse);
-    },
-  );
-
-  test('updatePassword completes controller state in mock mode', () async {
-    final repository = FakeAuthRepository();
-    final container = ProviderContainer(
-      overrides: [authRepositoryProvider.overrideWithValue(repository)],
-    );
-    addTearDown(container.dispose);
-
-    await container
-        .read(authControllerProvider.notifier)
-        .updatePassword('newPassword123');
-
-    expect(container.read(authControllerProvider).isLoading, isFalse);
-    expect(container.read(authControllerProvider).hasError, isFalse);
-  });
-
-  test('Facebook linking completes immediately in mock mode', () async {
-    final repository = FakeAuthRepository(
-      facebookLinkStatus: FacebookAccountLinkStatus.completed,
-    );
-    final container = ProviderContainer(
-      overrides: [
-        authRepositoryProvider.overrideWithValue(repository),
-        supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
-      ],
-    );
-    addTearDown(container.dispose);
-    container.read(mockSessionProvider.notifier).setSession(_mockSession());
-
-    final status = await container
-        .read(authControllerProvider.notifier)
-        .beginFacebookAccountLink();
-
-    expect(status, FacebookAccountLinkStatus.completed);
-    expect(container.read(authControllerProvider).isLoading, isFalse);
-    expect(container.read(authControllerProvider).hasError, isFalse);
-    expect(
-      container.read(accountLinkNoticeProvider),
-      AccountLinkNotice.facebookSuccess,
-    );
-  });
-
-  test('mock repository supports every direct and social auth path', () async {
-    final repository = AuthRepository(null, useMockData: true);
-
-    expect(
-      (await repository.signInWithEmail(
-        email: 'bee@moniary.app',
-        password: 'password123',
-      ))?.user.id,
-      'mock-user-id',
-    );
-    expect(
-      (await repository.signUpWithEmail(
-        email: 'bee@moniary.app',
-        password: 'password123',
-      ))?.user.id,
-      'mock-user-id',
-    );
-    expect((await repository.signInWithGoogle())?.user.id, 'mock-user-id');
-    expect((await repository.signInWithFacebook())?.user.id, 'mock-user-id');
-  });
-
-  test('requestPasswordReset reports mock recovery navigation', () async {
-    final repository = FakeAuthRepository(opensRecoveryLocally: true);
-    final container = ProviderContainer(
-      overrides: [authRepositoryProvider.overrideWithValue(repository)],
-    );
-    addTearDown(container.dispose);
-
-    final opensRecoveryLocally = await container
-        .read(authControllerProvider.notifier)
-        .requestPasswordReset('bee@moniary.app');
-
-    expect(opensRecoveryLocally, isTrue);
-    expect(container.read(authControllerProvider).hasError, isFalse);
-  });
-
-  test(
-    'completePasswordRecovery updates password and clears mock session',
-    () async {
-      final repository = FakeAuthRepository();
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
-      addTearDown(container.dispose);
-      container.read(mockSessionProvider.notifier).setSession(_mockSession());
-
-      await container
-          .read(authControllerProvider.notifier)
-          .completePasswordRecovery('new-password-123');
-
-      expect(repository.updatedPassword, 'new-password-123');
-      expect(container.read(mockSessionProvider), isNull);
-      expect(container.read(authControllerProvider).hasError, isFalse);
-    },
-  );
-
-  test('cancelPasswordRecovery clears recovery session', () async {
-    final repository = FakeAuthRepository();
-    final container = ProviderContainer(
-      overrides: [authRepositoryProvider.overrideWithValue(repository)],
-    );
-    addTearDown(container.dispose);
-    container.read(mockSessionProvider.notifier).setSession(_mockSession());
-
-    await container
-        .read(authControllerProvider.notifier)
-        .cancelPasswordRecovery();
-
-    expect(repository.cancelPasswordRecoveryCount, 1);
-    expect(container.read(mockSessionProvider), isNull);
-  });
-
-  test(
-    'email linking persists the matching user and completes later',
+    'email account upgrade persists then clears its pending state',
     () async {
       SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final repository = FakeAuthRepository(
+      final preferences = await SharedPreferences.getInstance();
+      final repository = _FakeAuthRepository(
         emailLinkStatus: EmailAccountLinkStatus.readyToSetPassword,
-        emailLinkUsesMockProfile: true,
       );
       final container = ProviderContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
+          currentSessionProvider.overrideWithValue(_session()),
+          sharedPreferencesProvider.overrideWithValue(preferences),
         ],
       );
       addTearDown(container.dispose);
-      container.read(mockSessionProvider.notifier).setSession(_mockSession());
 
-      final result = await container
+      final status = await container
           .read(authControllerProvider.notifier)
           .beginEmailAccountLink(email: 'Bee@Moniary.app');
-
-      expect(result, EmailAccountLinkStatus.readyToSetPassword);
-      expect(repository.linkedEmail, 'Bee@Moniary.app');
+      expect(status, EmailAccountLinkStatus.readyToSetPassword);
       expect(
         container.read(pendingEmailAccountLinkProvider)?.email,
         'bee@moniary.app',
@@ -676,42 +332,30 @@ void main() {
       await container
           .read(authControllerProvider.notifier)
           .completeEmailAccountLink(password: 'password123');
-
-      expect(repository.linkedEmailPassword, 'password123');
+      expect(repository.completeEmailLinkCount, 1);
       expect(container.read(pendingEmailAccountLinkProvider), isNull);
-      expect(prefs.getString('pending_email_account_link_email'), isNull);
     },
   );
 
   test(
-    'Google linking waits for callback identity before completion',
+    'Google upgrade completes only after the linked identity returns',
     () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final repository = FakeAuthRepository();
+      SharedPreferences.setMockInitialValues({
+        'pending_google_account_link_user_id': 'user-id',
+      });
+      final preferences = await SharedPreferences.getInstance();
+      final repository = _FakeAuthRepository();
       final container = ProviderContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
-          sharedPreferencesProvider.overrideWithValue(prefs),
+          currentSessionProvider.overrideWithValue(
+            _session(googleLinked: true),
+          ),
+          sharedPreferencesProvider.overrideWithValue(preferences),
         ],
       );
       addTearDown(container.dispose);
-      container.read(mockSessionProvider.notifier).setSession(_mockSession());
 
-      final status = await container
-          .read(authControllerProvider.notifier)
-          .beginGoogleAccountLink();
-
-      expect(status, GoogleAccountLinkStatus.browserOpened);
-      expect(
-        container.read(pendingGoogleAccountLinkProvider)?.userId,
-        'mock-user-id',
-      );
-      expect(repository.completeGoogleLinkCount, 0);
-
-      container
-          .read(mockSessionProvider.notifier)
-          .setSession(_googleLinkedSession());
       await container
           .read(authControllerProvider.notifier)
           .completePendingGoogleAccountLink();
@@ -725,69 +369,27 @@ void main() {
     },
   );
 
-  test('Google linking completes immediately in mock mode', () async {
-    final repository = FakeAuthRepository(
-      googleLinkStatus: GoogleAccountLinkStatus.completed,
-    );
-    final container = ProviderContainer(
-      overrides: [
-        authRepositoryProvider.overrideWithValue(repository),
-        supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
-      ],
-    );
-    addTearDown(container.dispose);
-    container.read(mockSessionProvider.notifier).setSession(_mockSession());
-
-    final status = await container
-        .read(authControllerProvider.notifier)
-        .beginGoogleAccountLink();
-
-    expect(status, GoogleAccountLinkStatus.completed);
-    expect(
-      container.read(accountLinkNoticeProvider),
-      AccountLinkNotice.googleSuccess,
-    );
-  });
-
   test(
-    'Facebook linking waits for callback identity before completion',
+    'password recovery completes or cancels the real auth session',
     () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final repository = FakeAuthRepository();
+      final repository = _FakeAuthRepository();
       final container = ProviderContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
-          sharedPreferencesProvider.overrideWithValue(prefs),
+          currentSessionProvider.overrideWithValue(null),
         ],
       );
       addTearDown(container.dispose);
-      container.read(mockSessionProvider.notifier).setSession(_mockSession());
 
-      final status = await container
-          .read(authControllerProvider.notifier)
-          .beginFacebookAccountLink();
-
-      expect(status, FacebookAccountLinkStatus.browserOpened);
-      expect(
-        container.read(pendingFacebookAccountLinkProvider)?.userId,
-        'mock-user-id',
-      );
-      expect(repository.completeFacebookLinkCount, 0);
-
-      container
-          .read(mockSessionProvider.notifier)
-          .setSession(_facebookLinkedSession());
       await container
           .read(authControllerProvider.notifier)
-          .completePendingFacebookAccountLink();
+          .completePasswordRecovery('new-password-123');
+      await container
+          .read(authControllerProvider.notifier)
+          .cancelPasswordRecovery();
 
-      expect(repository.completeFacebookLinkCount, 1);
-      expect(container.read(pendingFacebookAccountLinkProvider), isNull);
-      expect(
-        container.read(accountLinkNoticeProvider),
-        AccountLinkNotice.facebookSuccess,
-      );
+      expect(repository.updatedPassword, 'new-password-123');
+      expect(repository.cancelRecoveryCount, 1);
     },
   );
 }

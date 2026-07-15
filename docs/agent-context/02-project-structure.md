@@ -33,7 +33,7 @@ Not every small feature needs every layer, but code must preserve the direction
 - `presentation/`: screens, sheets, feature widgets.
 - `application/`: Riverpod controllers, notifiers, and query providers.
 - `domain/`: entities, immutable models, repository interfaces, pure services.
-- `data/`: repository implementations, Supabase/mock data sources, local file
+- `data/`: repository implementations, Supabase data sources, local file
   storage, and external services.
 
 Small presentation-only features may omit layers. New database/API access must

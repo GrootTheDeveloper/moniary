@@ -5,19 +5,15 @@
 
 ## Authentication
 
-Supabase Auth is initialized with PKCE when real configuration is present.
+Supabase Auth is initialized with PKCE and mandatory configuration.
 `AuthRepository` supports:
 
 - email/password sign-in and sign-up;
 - password-reset request and recovery completion with a new password;
 - Google and Facebook OAuth;
 - anonymous Supabase sign-in;
-- explicit guest/mock session;
-- linking email or Google identity to an existing account;
+- linking email, Google, or Facebook identity to an existing anonymous account;
 - sign-out and user initialization.
-
-In mock/guest mode these flows return or maintain a synthetic
-`mock-user-id` session and must not access configured user data.
 
 Anonymous-to-email upgrades are two-phase. The app first updates only the
 email and stores the originating user ID plus normalized email locally. After
@@ -35,13 +31,12 @@ Live anonymous sign-in is fail-closed behind Cloudflare Turnstile: the mobile
 widget obtains a short-lived token and `AuthRepository` forwards it to Supabase
 for server-side verification. Local/hosted Auth limits anonymous creation to
 5 attempts per hour per IP. A nightly `pg_cron` job removes anonymous Auth
-users inactive for 30 days; upgraded email/OAuth users are preserved. Mock mode
-does not invoke Turnstile or create a remote Auth user.
+users inactive for 30 days; upgraded email/OAuth users are preserved.
 
 ## Session and route security
 
 - Supabase auth changes are exposed as a `StreamProvider`.
-- `currentSessionProvider` prefers the mock session, then the Supabase session.
+- `currentSessionProvider` exposes the current Supabase session.
 - Account soft-deletion state and app-lock state refresh global redirects.
 - Pending friend deep links are held in a Riverpod notifier until login/profile
   setup is complete.
@@ -59,7 +54,7 @@ does not invoke Turnstile or create a remote Auth user.
 Supabase Flutter consumes the PKCE recovery callback and emits
 `AuthChangeEvent.passwordRecovery`. The app routes that event to the public
 `/reset-password` form, updates the password, and clears the temporary recovery
-session before returning to login. Mock mode opens the same form directly.
+session before returning to login.
 
 Platform intent/URL registration and provider dashboard redirect allowlists must
 remain aligned with these values.

@@ -362,12 +362,6 @@ abstract class AppLocalizations {
   /// **'Không thể mở trình duyệt đăng nhập bảo mật.'**
   String get authErrorBrowserLaunch;
 
-  /// No description provided for @authMockModeWarning.
-  ///
-  /// In vi, this message translates to:
-  /// **'Đang chạy chế độ mock. Bản build này chưa kết nối Supabase nên đăng nhập không phải dữ liệu thật.'**
-  String get authMockModeWarning;
-
   /// No description provided for @loginTitle.
   ///
   /// In vi, this message translates to:
@@ -475,12 +469,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Hoặc đăng nhập bằng'**
   String get loginSocialDivider;
-
-  /// No description provided for @loginDemoCta.
-  ///
-  /// In vi, this message translates to:
-  /// **'DEMO'**
-  String get loginDemoCta;
 
   /// No description provided for @loginGuestCta.
   ///

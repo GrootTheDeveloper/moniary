@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
@@ -14,36 +15,19 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 class AuthRepository {
-  AuthRepository(this._client, {bool? useMockData})
-    : _useMockData = useMockData ?? !AppConstants.hasSupabaseConfig;
+  AuthRepository(this._client);
 
-  final SupabaseClient? _client;
-  final bool _useMockData;
-
-  SupabaseClient get _requiredClient {
-    final client = _client;
-    if (client == null) {
-      throw const AppException(
-        'Supabase client is not available',
-        code: 'SUPABASE_CLIENT_UNAVAILABLE',
-      );
-    }
-    return client;
-  }
+  final SupabaseClient _client;
 
   Future<Session?> signInAnonymously({String? captchaToken}) async {
-    if (_useMockData) {
-      return _mockSession();
-    }
-
     final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
 
     try {
-      await _requiredClient.auth.signInAnonymously(
+      final response = await _client.auth.signInAnonymously(
         captchaToken: normalizedCaptchaToken,
       );
       await _initializeUserIfPossible();
-      return null;
+      return response.session;
     } on AuthException catch (e, st) {
       AppLogger.error('Anonymous sign-in failed', e, st);
       throw _mapAuthException(e);
@@ -52,10 +36,6 @@ class AuthRepository {
       if (e is AppException) rethrow;
       throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
     }
-  }
-
-  Future<Session> startGuestSession() async {
-    return _mockSession();
   }
 
   Future<void> signOut() async {
@@ -71,12 +51,8 @@ class AuthRepository {
   Future<EmailAccountLinkStatus> beginEmailAccountLink({
     required String email,
   }) async {
-    if (_useMockData) {
-      return EmailAccountLinkStatus.readyToSetPassword;
-    }
-
     try {
-      final response = await _requiredClient.auth.updateUser(
+      final response = await _client.auth.updateUser(
         UserAttributes(email: email),
         emailRedirectTo: AppConstants.supabaseLoginCallbackUrl,
       );
@@ -95,11 +71,9 @@ class AuthRepository {
     }
   }
 
-  Future<bool> completeEmailAccountLink({required String password}) async {
-    if (_useMockData) return true;
-
+  Future<void> completeEmailAccountLink({required String password}) async {
     try {
-      final user = (await _requiredClient.auth.getUser()).user;
+      final user = (await _client.auth.getUser()).user;
       final email = user?.email?.trim();
       if (user == null || user.isAnonymous || email == null || email.isEmpty) {
         throw const AppException(
@@ -108,10 +82,9 @@ class AuthRepository {
         );
       }
 
-      await _requiredClient.auth.updateUser(UserAttributes(password: password));
+      await _client.auth.updateUser(UserAttributes(password: password));
       await _initializeUserIfPossible();
       await _updateProfileLoginProvider(email: email, loginProvider: 'email');
-      return false;
     } on AuthException catch (e, st) {
       AppLogger.error('Completing email account linking failed', e, st);
       throw _mapAuthException(e);
@@ -127,12 +100,8 @@ class AuthRepository {
   }
 
   Future<GoogleAccountLinkStatus> beginGoogleAccountLink() async {
-    if (_useMockData) {
-      return GoogleAccountLinkStatus.completed;
-    }
-
     try {
-      final launched = await _requiredClient.auth.linkIdentity(
+      final launched = await _client.auth.linkIdentity(
         OAuthProvider.google,
         redirectTo: kIsWeb ? null : AppConstants.supabaseLoginCallbackUrl,
         authScreenLaunchMode: kIsWeb
@@ -160,11 +129,9 @@ class AuthRepository {
     }
   }
 
-  Future<bool> completeGoogleAccountLink() async {
-    if (_useMockData) return true;
-
+  Future<void> completeGoogleAccountLink() async {
     try {
-      final user = (await _requiredClient.auth.getUser()).user;
+      final user = (await _client.auth.getUser()).user;
       final hasGoogleIdentity =
           user?.identities?.any((identity) => identity.provider == 'google') ??
           false;
@@ -177,7 +144,6 @@ class AuthRepository {
       }
       await _initializeUserIfPossible();
       await _updateProfileLoginProvider(email: email, loginProvider: 'google');
-      return false;
     } on AuthException catch (e, st) {
       AppLogger.error('Completing Google account linking failed', e, st);
       throw _mapAuthException(e);
@@ -193,12 +159,8 @@ class AuthRepository {
   }
 
   Future<FacebookAccountLinkStatus> beginFacebookAccountLink() async {
-    if (_useMockData) {
-      return FacebookAccountLinkStatus.completed;
-    }
-
     try {
-      final launched = await _requiredClient.auth.linkIdentity(
+      final launched = await _client.auth.linkIdentity(
         OAuthProvider.facebook,
         redirectTo: kIsWeb ? null : AppConstants.supabaseLoginCallbackUrl,
         authScreenLaunchMode: kIsWeb
@@ -229,11 +191,9 @@ class AuthRepository {
     }
   }
 
-  Future<bool> completeFacebookAccountLink() async {
-    if (_useMockData) return true;
-
+  Future<void> completeFacebookAccountLink() async {
     try {
-      final user = (await _requiredClient.auth.getUser()).user;
+      final user = (await _client.auth.getUser()).user;
       final facebookIdentity = user?.identities
           ?.where((identity) => identity.provider == 'facebook')
           .firstOrNull;
@@ -255,7 +215,6 @@ class AuthRepository {
         email: email,
         loginProvider: 'facebook',
       );
-      return false;
     } on AuthException catch (e, st) {
       AppLogger.error('Completing Facebook account linking failed', e, st);
       throw _mapAuthException(e);
@@ -285,15 +244,12 @@ class AuthRepository {
     OAuthProvider provider, {
     required String providerName,
   }) async {
-    if (_useMockData) {
-      return _mockSession();
-    }
     try {
       // Clear a verifier left behind by an interrupted PKCE flow before
       // starting a fresh browser session.
-      await _requiredClient.auth.signOut(scope: SignOutScope.local);
+      await _client.auth.signOut(scope: SignOutScope.local);
 
-      final launched = await _requiredClient.auth.signInWithOAuth(
+      final launched = await _client.auth.signInWithOAuth(
         provider,
         redirectTo: kIsWeb ? null : AppConstants.supabaseLoginCallbackUrl,
         authScreenLaunchMode: kIsWeb
@@ -327,13 +283,10 @@ class AuthRepository {
     required String password,
     String? captchaToken,
   }) async {
-    if (_useMockData) {
-      return _mockSession();
-    }
     final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
     try {
       AppLogger.info('Attempting email sign-in');
-      final response = await _requiredClient.auth.signInWithPassword(
+      final response = await _client.auth.signInWithPassword(
         email: email,
         password: password,
         captchaToken: normalizedCaptchaToken,
@@ -358,10 +311,9 @@ class AuthRepository {
     required String password,
     String? captchaToken,
   }) async {
-    if (_useMockData) return _mockSession();
     final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
     try {
-      final response = await _requiredClient.auth.signUp(
+      final response = await _client.auth.signUp(
         email: email,
         password: password,
         emailRedirectTo: AppConstants.supabaseLoginCallbackUrl,
@@ -384,11 +336,10 @@ class AuthRepository {
     }
   }
 
-  Future<bool> requestPasswordReset(
+  Future<void> requestPasswordReset(
     String email, {
     String? captchaToken,
   }) async {
-    if (_useMockData) return true;
     final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
     try {
       await _client.auth.resetPasswordForEmail(
@@ -398,7 +349,6 @@ class AuthRepository {
             : AppConstants.supabasePasswordResetCallbackUrl,
         captchaToken: normalizedCaptchaToken,
       );
-      return false;
     } on AuthException catch (e, st) {
       AppLogger.error('Password reset request failed', e, st);
       throw _mapAuthException(e);
@@ -415,11 +365,9 @@ class AuthRepository {
   }
 
   Future<void> updatePassword(String password) async {
-    if (_useMockData) return;
-
     try {
-      await _requiredClient.auth.updateUser(UserAttributes(password: password));
-      await _requiredClient.auth.signOut(scope: SignOutScope.local);
+      await _client.auth.updateUser(UserAttributes(password: password));
+      await _client.auth.signOut(scope: SignOutScope.local);
     } on AuthException catch (e, st) {
       AppLogger.error('Password update failed', e, st);
       throw _mapAuthException(e);
@@ -436,10 +384,8 @@ class AuthRepository {
   }
 
   Future<void> cancelPasswordRecovery() async {
-    if (_useMockData) return;
-
     try {
-      await _requiredClient.auth.signOut(scope: SignOutScope.local);
+      await _client.auth.signOut(scope: SignOutScope.local);
     } catch (e, st) {
       AppLogger.error('Password recovery cancellation failed', e, st);
       if (e is AppException) rethrow;

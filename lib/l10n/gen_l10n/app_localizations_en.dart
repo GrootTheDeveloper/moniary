@@ -157,10 +157,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not open the secure sign-in browser.';
 
   @override
-  String get authMockModeWarning =>
-      'Mock mode is active. This build is not connected to Supabase, so authentication is not real.';
-
-  @override
   String get loginTitle => 'Moniary';
 
   @override
@@ -215,9 +211,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginSocialDivider => 'Or sign in with';
-
-  @override
-  String get loginDemoCta => 'DEMO';
 
   @override
   String get loginGuestCta => 'Try it now — no account needed →';

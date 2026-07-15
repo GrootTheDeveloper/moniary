@@ -13,7 +13,7 @@ cụ thể của task luôn có ưu tiên cao hơn.
 2. Kiểm tra `git status --short`; giữ nguyên thay đổi không liên quan của user.
 3. Trace code từ route/screen đến provider/controller, repository, data source,
    migration và test.
-4. Xác định cả Supabase mode và guest/mock mode.
+4. Xác định Supabase session/RLS và anonymous-account behavior liên quan.
 5. Ghi rõ assumption nếu behavior không thể suy ra từ code/test.
 
 ## Thêm hoặc mở rộng feature
@@ -22,7 +22,7 @@ cụ thể của task luôn có ưu tiên cao hơn.
 2. Chọn layer/path theo `16-directory-guide.md`; không bắt buộc tạo đủ bốn
    folder nếu feature nhỏ.
 3. Định nghĩa domain model/repository contract trước khi UI cần dữ liệu mới.
-4. Data implementation phải preserve `useMockDataModeProvider`.
+4. Data implementation phải dùng Supabase và fail closed khi thiếu cấu hình.
 5. Mutation đi qua controller; query dùng provider và invalidate đúng family key.
 6. UI dùng theme tokens và l10n; có loading/empty/error/retry phù hợp.
 7. Thêm route an toàn với typed extra/fallback và cập nhật route docs.
@@ -34,7 +34,7 @@ cụ thể của task luôn có ưu tiên cao hơn.
 
 1. Reproduce bằng test hoặc mô tả state/data cụ thể.
 2. Fix root cause ở đúng layer, không vá bằng raw UI/backend call.
-3. Kiểm tra lỗi có xảy ra ở cả Supabase và mock/guest hay không.
+3. Kiểm tra lỗi ở session email/OAuth và anonymous Supabase nếu có liên quan.
 4. Với mutation, kiểm tra invalidation, async mounted, error mapping và partial
    success.
 5. Thêm regression test nếu có pattern test phù hợp.

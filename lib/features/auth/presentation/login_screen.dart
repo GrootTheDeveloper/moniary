@@ -25,7 +25,6 @@ import '../application/account_status_controller.dart';
 import '../application/auth_controller.dart';
 import '../application/post_auth_decision_provider.dart';
 import 'auth_captcha_dialog.dart';
-import 'password_reset_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -72,9 +71,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final colors = context.moniaryColors;
     final authAction = ref.watch(authControllerProvider);
     final isBusy = authAction.isLoading || _isResolvingPostAuth;
-    final useMockData = ref.watch(useMockDataModeProvider);
-    final showGoogleAuth = useMockData || AppConstants.googleAuthEnabled;
-    final showFacebookAuth = useMockData || AppConstants.facebookAuthEnabled;
+    final showGoogleAuth = AppConstants.googleAuthEnabled;
+    final showFacebookAuth = AppConstants.facebookAuthEnabled;
     final showSocialAuth = showGoogleAuth || showFacebookAuth;
 
     ref.listen(currentSessionProvider, (previous, next) {
@@ -163,38 +161,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           textAlign: TextAlign.center,
                           style: context.moniaryTypography.displaySmall,
                         ),
-                        if (kDebugMode && !AppConstants.hasSupabaseConfig) ...[
-                          const SizedBox(height: 14),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: colors.warning.withValues(alpha: 0.14),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: colors.warning.withValues(alpha: 0.5),
-                              ),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(
-                                  Icons.info_outline,
-                                  size: 18,
-                                  color: colors.textPrimary,
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    context.l10n.authMockModeWarning,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                         const SizedBox(height: 22),
                         TextFormField(
                           key: const ValueKey('login_email_field'),
@@ -401,30 +367,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ],
                         const Spacer(),
-                        OutlinedButton(
-                          key: const ValueKey('login_demo_button'),
-                          onPressed: isBusy
-                              ? null
-                              : () => _enterApp(
-                                  () => ref
-                                      .read(authControllerProvider.notifier)
-                                      .startDemoSession(),
-                                ),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(44),
-                            foregroundColor: colors.primary,
-                            side: BorderSide(
-                              color: colors.primary.withValues(alpha: 0.5),
-                            ),
-                            textStyle: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                          child: Text(context.l10n.loginDemoCta),
-                        ),
-                        const SizedBox(height: 6),
                         TextButton(
                           key: const ValueKey('login_guest_button'),
                           onPressed: isBusy ? null : _signInAnonymously,
@@ -485,16 +427,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final email = _emailController.text.trim();
     final password = _passwordController.text;
-    String? captchaToken;
-
-    if (!ref.read(useMockDataModeProvider)) {
-      captchaToken = await _requestAuthCaptcha(
-        _isSignUp
-            ? AuthCaptchaAction.emailSignUp
-            : AuthCaptchaAction.emailSignIn,
-      );
-      if (!mounted || captchaToken == null) return;
-    }
+    final captchaToken = await _requestAuthCaptcha(
+      _isSignUp ? AuthCaptchaAction.emailSignUp : AuthCaptchaAction.emailSignIn,
+    );
+    if (!mounted || captchaToken == null) return;
 
     if (_isSignUp) {
       try {
@@ -544,23 +480,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    String? captchaToken;
-    if (!ref.read(useMockDataModeProvider)) {
-      captchaToken = await _requestAuthCaptcha(
-        AuthCaptchaAction.passwordReset,
-      );
-      if (!mounted || captchaToken == null) return;
-    }
+    final captchaToken = await _requestAuthCaptcha(
+      AuthCaptchaAction.passwordReset,
+    );
+    if (!mounted || captchaToken == null) return;
 
     try {
-      final opensRecoveryLocally = await ref
+      await ref
           .read(authControllerProvider.notifier)
           .requestPasswordReset(email, captchaToken: captchaToken);
       if (!mounted) return;
-      if (opensRecoveryLocally) {
-        context.go(PasswordResetScreen.routePath);
-        return;
-      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.loginPasswordResetSent)),
       );
@@ -589,14 +518,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _signInAnonymously() async {
-    final useMockData = ref.read(useMockDataModeProvider);
-    if (useMockData) {
-      await _enterApp(
-        () => ref.read(authControllerProvider.notifier).signInAnonymously(),
-      );
-      return;
-    }
-
     final captchaToken = await _requestAuthCaptcha(
       AuthCaptchaAction.anonymousSignIn,
     );

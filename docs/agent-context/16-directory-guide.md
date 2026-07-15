@@ -90,10 +90,10 @@ Ví dụ:
 
 - Repository implementation: `data/repositories/` hoặc trực tiếp `data/`
   theo cấu trúc sẵn có của feature.
-- Supabase/mock data source: `data/datasources/` hoặc cặp class trong một file
+- Supabase data source: `data/datasources/` hoặc cặp class trong một file
   data source.
 - File/export/external service: `data/<area>/`.
-- Luôn preserve `useMockDataModeProvider` cho module có backend state.
+- Không thêm demo/mock fallback cho module có backend state.
 
 ## Path hiện hành cần dùng
 

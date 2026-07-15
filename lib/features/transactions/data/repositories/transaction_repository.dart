@@ -49,22 +49,6 @@ class TransactionRepository {
     String? walletId,
     String? categoryId,
   }) async {
-    if (_useMockData) {
-      final results = _mockTransactions.where((t) {
-        final inRange =
-            !t.transactionDate.isBefore(start) &&
-            t.transactionDate.isBefore(end);
-        final matchWallet = walletId == null || t.walletId == walletId;
-        final matchCat = categoryId == null || t.categoryId == categoryId;
-        return inRange && matchWallet && matchCat;
-      }).toList();
-
-  Future<List<TransactionEntry>> fetchTransactionsForRange({
-    required DateTime start,
-    required DateTime end,
-    String? walletId,
-    String? categoryId,
-  }) async {
     try {
       final uid = _userId;
 

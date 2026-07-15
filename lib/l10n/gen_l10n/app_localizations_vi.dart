@@ -157,10 +157,6 @@ class AppLocalizationsVi extends AppLocalizations {
       'Không thể mở trình duyệt đăng nhập bảo mật.';
 
   @override
-  String get authMockModeWarning =>
-      'Đang chạy chế độ mock. Bản build này chưa kết nối Supabase nên đăng nhập không phải dữ liệu thật.';
-
-  @override
   String get loginTitle => 'Moniary';
 
   @override
@@ -215,9 +211,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get loginSocialDivider => 'Hoặc đăng nhập bằng';
-
-  @override
-  String get loginDemoCta => 'DEMO';
 
   @override
   String get loginGuestCta => 'Dùng thử ngay — không cần tài khoản →';

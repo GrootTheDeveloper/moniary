@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/constants/app_constants.dart';
 import '../../../core/notifications/notification_providers.dart';
 import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
@@ -14,7 +13,6 @@ import '../domain/google_account_link.dart';
 import 'pending_email_link_controller.dart';
 import 'pending_facebook_link_controller.dart';
 import 'pending_google_link_controller.dart';
-import '../../profile/data/profile_repository.dart';
 import '../../profile/application/profile_setup_controller.dart';
 
 final authControllerProvider = AsyncNotifierProvider<AuthController, void>(
@@ -57,55 +55,6 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> startGuestSession() async {
-    if (_isProcessing) return;
-    _isProcessing = true;
-    state = const AsyncLoading();
-    try {
-      final mockSession = await ref
-          .read(authRepositoryProvider)
-          .startGuestSession();
-      ref.read(mockSessionProvider.notifier).setSession(mockSession);
-      state = const AsyncData(null);
-    } catch (e, st) {
-      state = AsyncError(e, st);
-      rethrow;
-    } finally {
-      _isProcessing = false;
-    }
-  }
-
-  Future<void> startDemoSession() async {
-    if (_isProcessing) return;
-    _isProcessing = true;
-    state = const AsyncLoading();
-    try {
-      final mockSession = await ref
-          .read(authRepositoryProvider)
-          .startGuestSession();
-      ref.read(mockSessionProvider.notifier).setSession(mockSession);
-
-      final profileRepository = ref.read(profileRepositoryProvider);
-      await profileRepository.upsertProfile(
-        fullName: 'Minh Anh',
-        username: 'minhanh',
-        timezone: AppConstants.defaultTimezone,
-      );
-      await profileRepository.completeSurvey(
-        occupation: 'demo',
-        preferredCurrency: 'VND',
-      );
-
-      ref.invalidate(currentProfileProvider);
-      state = const AsyncData(null);
-    } catch (e, st) {
-      state = AsyncError(e, st);
-      rethrow;
-    } finally {
-      _isProcessing = false;
-    }
-  }
-
   Future<void> signOut() async {
     if (_isProcessing) return;
     _isProcessing = true;
@@ -123,7 +72,6 @@ class AuthController extends AsyncNotifier<void> {
   }
 
   Future<void> _unregisterPushDevice() async {
-    if (ref.read(useMockDataModeProvider)) return;
     await ref
         .read(fcmPushNotificationServiceProvider)
         .unregisterCurrentToken(
@@ -173,17 +121,9 @@ class AuthController extends AsyncNotifier<void> {
           code: 'AUTH_LINK_EMAIL_NOT_PENDING',
         );
       }
-      final usesMockProfile = await ref
+      await ref
           .read(authRepositoryProvider)
           .completeEmailAccountLink(password: password);
-      if (usesMockProfile) {
-        ref
-            .read(profileRepositoryProvider)
-            .setMockEmailAndProvider(
-              email: pendingLink.email,
-              loginProvider: 'email',
-            );
-      }
       await ref.read(pendingEmailAccountLinkProvider.notifier).clear();
       ref.invalidate(currentProfileProvider);
       state = const AsyncData(null);
@@ -208,22 +148,9 @@ class AuthController extends AsyncNotifier<void> {
       final result = await ref
           .read(authRepositoryProvider)
           .beginGoogleAccountLink();
-      if (result == GoogleAccountLinkStatus.completed) {
-        ref
-            .read(profileRepositoryProvider)
-            .setMockEmailAndProvider(
-              email: 'mock-google@gmail.com',
-              loginProvider: 'google',
-            );
-        ref.invalidate(currentProfileProvider);
-        ref
-            .read(accountLinkNoticeProvider.notifier)
-            .show(AccountLinkNotice.googleSuccess);
-      } else {
-        await ref
-            .read(pendingGoogleAccountLinkProvider.notifier)
-            .save(session.user.id);
-      }
+      await ref
+          .read(pendingGoogleAccountLinkProvider.notifier)
+          .save(session.user.id);
       state = const AsyncData(null);
       return result;
     } catch (e, st) {
@@ -290,22 +217,9 @@ class AuthController extends AsyncNotifier<void> {
       final result = await ref
           .read(authRepositoryProvider)
           .beginFacebookAccountLink();
-      if (result == FacebookAccountLinkStatus.completed) {
-        ref
-            .read(profileRepositoryProvider)
-            .setMockEmailAndProvider(
-              email: 'mock-facebook@facebook.com',
-              loginProvider: 'facebook',
-            );
-        ref.invalidate(currentProfileProvider);
-        ref
-            .read(accountLinkNoticeProvider.notifier)
-            .show(AccountLinkNotice.facebookSuccess);
-      } else {
-        await ref
-            .read(pendingFacebookAccountLinkProvider.notifier)
-            .save(session.user.id);
-      }
+      await ref
+          .read(pendingFacebookAccountLinkProvider.notifier)
+          .save(session.user.id);
       state = const AsyncData(null);
       return result;
     } catch (e, st) {
@@ -449,19 +363,18 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<bool> requestPasswordReset(
+  Future<void> requestPasswordReset(
     String email, {
     String? captchaToken,
   }) async {
-    if (_isProcessing) return false;
+    if (_isProcessing) return;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      final opensRecoveryLocally = await ref
+      await ref
           .read(authRepositoryProvider)
           .requestPasswordReset(email, captchaToken: captchaToken);
       state = const AsyncData(null);
-      return opensRecoveryLocally;
     } catch (e, st) {
       state = AsyncError(e, st);
       rethrow;
@@ -476,7 +389,6 @@ class AuthController extends AsyncNotifier<void> {
     state = const AsyncLoading();
     try {
       await ref.read(authRepositoryProvider).updatePassword(password);
-      ref.read(mockSessionProvider.notifier).setSession(null);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -492,7 +404,6 @@ class AuthController extends AsyncNotifier<void> {
     state = const AsyncLoading();
     try {
       await ref.read(authRepositoryProvider).cancelPasswordRecovery();
-      ref.read(mockSessionProvider.notifier).setSession(null);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);

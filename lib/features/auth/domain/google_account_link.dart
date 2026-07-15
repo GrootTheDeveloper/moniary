@@ -1,4 +1,4 @@
-enum GoogleAccountLinkStatus { browserOpened, completed }
+enum GoogleAccountLinkStatus { browserOpened }
 
 class PendingGoogleAccountLink {
   const PendingGoogleAccountLink({required this.userId});

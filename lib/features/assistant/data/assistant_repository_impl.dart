@@ -24,7 +24,6 @@ final assistantRepositoryProvider = Provider<AssistantRepository>((ref) {
     walletRepository: ref.watch(walletRepositoryProvider),
     budgetRepository: ref.watch(budgetRepositoryProvider),
     client: ref.watch(supabaseClientProvider),
-    useMockData: ref.watch(useMockDataModeProvider),
   );
 });
 
@@ -35,13 +34,11 @@ class AssistantRepositoryImpl implements AssistantRepository {
     required WalletRepository walletRepository,
     required BudgetRepository budgetRepository,
     required SupabaseClient client,
-    bool useMockData = false,
   }) : _preferences = preferences,
        _transactions = transactionRepository,
        _wallets = walletRepository,
        _budgets = budgetRepository,
-       _client = client,
-       _useMockData = useMockData;
+       _client = client;
 
   static const _introSeenKey = 'assistant_intro_seen';
   static const _enabledKey = 'assistant_enabled';
@@ -54,11 +51,10 @@ class AssistantRepositoryImpl implements AssistantRepository {
   final WalletRepository _wallets;
   final BudgetRepository _budgets;
   final SupabaseClient _client;
-  final bool _useMockData;
 
   @override
   Future<AssistantAccess> loadAccess() async {
-    if (_useMockData || _session == null) {
+    if (_session == null) {
       return _loadLocalAccess(allowLegacyFallback: true);
     }
 
@@ -83,7 +79,7 @@ class AssistantRepositoryImpl implements AssistantRepository {
   @override
   Future<void> saveAccess(AssistantAccess access) async {
     await _saveLocalAccess(access);
-    if (_useMockData || _session == null) return;
+    if (_session == null) return;
 
     final userId = _session!.user.id;
     try {
@@ -213,7 +209,7 @@ class AssistantRepositoryImpl implements AssistantRepository {
     FinancialAssistantSnapshot? snapshot,
     String? profileName,
   }) async {
-    if (_useMockData || _session == null) return null;
+    if (_session == null) return null;
 
     try {
       final response = await _client.functions.invoke(
@@ -286,7 +282,7 @@ class AssistantRepositoryImpl implements AssistantRepository {
   }
 
   String _scopedKey(String key) {
-    final userId = _useMockData ? 'guest' : (_session?.user.id ?? 'guest');
+    final userId = _session?.user.id ?? 'local';
     return 'assistant.$userId.$key';
   }
 
@@ -304,7 +300,7 @@ class AssistantRepositoryImpl implements AssistantRepository {
   }
 
   Future<_RecurringCandidate?> _configuredRecurringCandidate() async {
-    if (_useMockData || _session == null) return null;
+    if (_session == null) return null;
     try {
       final rows = await _client
           .from('recurring_transactions')

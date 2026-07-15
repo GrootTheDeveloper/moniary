@@ -7,9 +7,12 @@ import 'package:moniary/features/auth/data/auth_repository.dart';
 import 'package:moniary/features/auth/presentation/login_screen.dart';
 import 'package:moniary/features/auth/presentation/password_reset_screen.dart';
 import 'package:moniary/l10n/gen_l10n/app_localizations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class _FakeSupabaseClient extends Fake implements SupabaseClient {}
 
 class _RecoveryAuthRepository extends AuthRepository {
-  _RecoveryAuthRepository() : super(null, useMockData: true);
+  _RecoveryAuthRepository() : super(_FakeSupabaseClient());
 
   String? updatedPassword;
 

@@ -1,4 +1,4 @@
-enum FacebookAccountLinkStatus { browserOpened, completed }
+enum FacebookAccountLinkStatus { browserOpened }
 
 class PendingFacebookAccountLink {
   const PendingFacebookAccountLink({required this.userId});

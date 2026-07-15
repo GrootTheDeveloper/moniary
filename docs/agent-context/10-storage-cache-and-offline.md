@@ -18,16 +18,11 @@ Current preference areas include:
 These preferences are device-local and are not a substitute for synced domain
 data.
 
-## Guest/mock data mode
+## Runtime data mode
 
-`useMockDataModeProvider` is true when Supabase configuration is missing or the
-resolved session is the explicit mock guest. Core finance, profile, groups,
-friends, budgets, journal collections, notification settings, and account flows
-provide mock behavior.
-
-Most mock repositories/data sources keep static or instance in-memory state.
-That state can survive some provider rebuilds but is lost on process restart.
-Mock mode is a development/guest experience, not durable offline sync.
+The app is production-data only. Supabase configuration is mandatory at
+startup, and all authenticated or anonymous sessions use backend repositories.
+There is no guest/mock repository fallback.
 
 ## Local files
 
@@ -39,7 +34,7 @@ The application documents/download directories are used for:
 - exported CSV/XLSX/PDF files;
 - permanently saved journal recap PNGs.
 
-Journal sharing and mock transaction images may use the temporary directory.
+Journal sharing may use the temporary directory.
 Repositories must surface unreadable/corrupt history files rather than silently
 replacing them.
 
@@ -49,7 +44,6 @@ replacing them.
 - Contents include transaction images, profile avatars, group avatars, and group
   transaction images.
 - Display paths are resolved to signed URLs with the configured one-hour TTL.
-- Mock transaction images are copied to local temporary storage where needed.
 
 ## Offline expectations
 
