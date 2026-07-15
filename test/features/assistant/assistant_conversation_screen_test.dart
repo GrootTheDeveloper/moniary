@@ -17,6 +17,72 @@ import 'package:moniary/shared/utils/currency_formatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  testWidgets('shows starter suggestions before the first message', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    final l10n = await AppLocalizations.delegate.load(const Locale('vi'));
+    final router = GoRouter(
+      initialLocation: AssistantConversationScreen.routePath,
+      routes: [
+        GoRoute(
+          path: AssistantConversationScreen.routePath,
+          builder: (context, state) => const AssistantConversationScreen(),
+        ),
+        GoRoute(
+          path: AssistantPermissionScreen.routePath,
+          builder: (context, state) =>
+              const Scaffold(body: Text('Permission screen')),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(preferences),
+          currentSessionProvider.overrideWithValue(null),
+          currentProfileProvider.overrideWith(
+            (ref) async => const UserProfile(
+              id: 'user-1',
+              fullName: 'Nguyen Minh An',
+              email: 'an@example.com',
+              avatarUrl: null,
+              loginProvider: 'email',
+              timezone: 'Asia/Ho_Chi_Minh',
+            ),
+          ),
+          assistantRepositoryProvider.overrideWithValue(
+            _CommentaryAssistantRepository(),
+          ),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.lightTheme,
+          routerConfig: router,
+          locale: const Locale('vi'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(l10n.assistantSuggestionsTitle.toUpperCase()),
+      findsOneWidget,
+    );
+    expect(find.text(l10n.assistantQuestionMonthly), findsOneWidget);
+
+    await tester.tap(find.text(l10n.assistantQuestionMonthly));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(formatCurrency(700000, currencyCode: 'VND', locale: 'vi')),
+      findsOneWidget,
+    );
+  });
+
   testWidgets(
     'renders verified insight card even when AI commentary is available',
     (tester) async {
