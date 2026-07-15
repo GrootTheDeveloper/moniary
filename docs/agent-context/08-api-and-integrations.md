@@ -1,7 +1,7 @@
 # API & Integrations
 
 **Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
-**Last source audit**: `2026-07-12`
+**Last source audit**: `2026-07-15`
 
 ## Supabase
 
@@ -54,11 +54,13 @@ than assuming public URLs.
 
 ### Edge Functions
 
-- `scheduled-reports`: builds scheduled financial emails and calls Resend when
-  `RESEND_API_KEY` is configured.
+- `scheduled-reports`: claims timezone-aware report periods with bounded
+  retries, aggregates totals in Postgres, and sends through a verified Resend
+  sender with a stable idempotency key.
 - `notification-dispatcher`: reads the notification outbox and sends
   privacy-safe FCM HTTP v1 messages to registered Android/iOS devices. It
-  honors global and Group/Community mute preferences and retries failures.
+  honors global and Group/Community mute preferences, uses leased outbox
+  claims, records per-device receipts, and dead-letters bounded failures.
 - `soft-delete-account`: starts the account-deletion grace flow.
 - `garbage-collect`: scheduler-only permanent cleanup after the 30-day grace
   period. It transfers group ownership when needed, scrubs the retained shared
