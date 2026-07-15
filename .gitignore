@@ -63,6 +63,7 @@ key.properties
 
 # Local-only notes
 HANDOFF.md
+test_recording/
 
 # Local Claude Code dev config (launch.json, settings.local.json)
 .claude/
