@@ -17,6 +17,7 @@ import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/password_reset_screen.dart';
 import '../features/auth/application/pending_email_link_controller.dart';
 import '../features/auth/application/auth_controller.dart';
+import '../features/auth/application/pending_facebook_link_controller.dart';
 import '../features/auth/application/pending_google_link_controller.dart';
 import '../features/auth/presentation/email_account_link_completion_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
@@ -47,6 +48,7 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
   Uri? _lastHandledDeepLink;
   DateTime? _lastHandledDeepLinkAt;
   ProviderSubscription? _sessionSubscription;
+  bool _isCompletingFacebookLink = false;
   bool _isCompletingGoogleLink = false;
 
   @override
@@ -91,6 +93,26 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
           if (!mounted) return;
           ref.read(appRouterProvider).go(PasswordResetScreen.routePath);
         });
+      });
+    });
+
+    ref.listen(authStateChangesProvider, (previous, next) {
+      next.whenData((authState) {
+        final pendingLink = ref.read(pendingFacebookAccountLinkProvider);
+        final user = authState.session?.user;
+        if (pendingLink == null || user == null) return;
+        final hasFacebookIdentity =
+            user.identities?.any(
+              (identity) => identity.provider == 'facebook',
+            ) ??
+            false;
+        if (!pendingLink.matches(
+          userId: user.id,
+          hasFacebookIdentity: hasFacebookIdentity,
+        )) {
+          return;
+        }
+        unawaited(_completePendingFacebookLink());
       });
     });
 
@@ -161,6 +183,26 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
       );
     } finally {
       _isCompletingGoogleLink = false;
+    }
+    if (!mounted) return;
+    ref.read(appRouterProvider).go(ProfileScreen.routePath);
+  }
+
+  Future<void> _completePendingFacebookLink() async {
+    if (_isCompletingFacebookLink) return;
+    _isCompletingFacebookLink = true;
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .completePendingFacebookAccountLink();
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to complete Facebook account link',
+        error,
+        stackTrace,
+      );
+    } finally {
+      _isCompletingFacebookLink = false;
     }
     if (!mounted) return;
     ref.read(appRouterProvider).go(ProfileScreen.routePath);

@@ -7,6 +7,7 @@ import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../domain/email_account_link.dart';
+import '../domain/facebook_account_link.dart';
 import '../domain/google_account_link.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
@@ -200,17 +201,80 @@ class AuthRepository {
     }
   }
 
-  Future<bool> linkFacebookAccount() async {
+  Future<FacebookAccountLinkStatus> beginFacebookAccountLink() async {
     if (_useMockData) {
-      return true;
+      return FacebookAccountLinkStatus.completed;
     }
 
     try {
-      await _requiredClient.auth.linkIdentity(OAuthProvider.facebook);
-      return false;
+      final launched = await _requiredClient.auth.linkIdentity(
+        OAuthProvider.facebook,
+        redirectTo: kIsWeb ? null : AppConstants.supabaseLoginCallbackUrl,
+        authScreenLaunchMode: kIsWeb
+            ? LaunchMode.platformDefault
+            : LaunchMode.externalApplication,
+      );
+      if (!launched) {
+        throw const AppException(
+          'OAuth browser could not be opened',
+          code: 'AUTH_OAUTH_LAUNCH_FAILED',
+        );
+      }
+      return FacebookAccountLinkStatus.browserOpened;
+    } on AuthException catch (e, st) {
+      AppLogger.error('Starting Facebook account linking failed', e, st);
+      throw _mapAuthException(e);
+    } on AppException {
+      rethrow;
     } catch (e, st) {
-      AppLogger.error('Facebook account linking failed', e, st);
-      if (e is AppException) rethrow;
+      AppLogger.error('Starting Facebook account linking failed', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
+      throw const AppException(
+        'errorGeneric',
+        code: 'AUTH_LINK_FACEBOOK_FAILED',
+      );
+    }
+  }
+
+  Future<bool> completeFacebookAccountLink() async {
+    if (_useMockData) return true;
+
+    try {
+      final user = (await _requiredClient.auth.getUser()).user;
+      final facebookIdentity = user?.identities
+          ?.where((identity) => identity.provider == 'facebook')
+          .firstOrNull;
+      final identityEmailValue = facebookIdentity?.identityData?['email'];
+      final identityEmail = identityEmailValue is String
+          ? identityEmailValue
+          : null;
+      final email = user?.email?.trim().isNotEmpty == true
+          ? user!.email!.trim()
+          : identityEmail?.trim();
+      if (facebookIdentity == null || email == null || email.isEmpty) {
+        throw const AppException(
+          'Facebook identity linking has not completed',
+          code: 'AUTH_LINK_FACEBOOK_NOT_COMPLETED',
+        );
+      }
+      await _initializeUserIfPossible();
+      await _updateProfileLoginProvider(
+        email: email,
+        loginProvider: 'facebook',
+      );
+      return false;
+    } on AuthException catch (e, st) {
+      AppLogger.error('Completing Facebook account linking failed', e, st);
+      throw _mapAuthException(e);
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      AppLogger.error('Completing Facebook account linking failed', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
       throw const AppException(
         'errorGeneric',
         code: 'AUTH_LINK_FACEBOOK_FAILED',

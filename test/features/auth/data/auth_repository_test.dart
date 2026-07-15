@@ -6,6 +6,7 @@ import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/features/auth/data/auth_repository.dart';
 import 'package:moniary/features/auth/domain/email_account_link.dart';
 import 'package:moniary/features/auth/domain/google_account_link.dart';
+import 'package:moniary/features/auth/domain/facebook_account_link.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -158,22 +159,21 @@ void main() {
     expect(usesMockProfile, isTrue);
   });
 
-  test(
-    'linkFacebookAccount reports mock profile update in mock mode',
-    () async {
-      if (AppConstants.hasSupabaseConfig) {
-        markTestSkipped('Mock mode test requires missing Supabase config.');
-        return;
-      }
+  test('Facebook account linking completes immediately in mock mode', () async {
+    if (AppConstants.hasSupabaseConfig) {
+      markTestSkipped('Mock mode test requires missing Supabase config.');
+      return;
+    }
 
-      SharedPreferences.setMockInitialValues({});
-      final repository = AuthRepository(FakeSupabaseClient());
+    SharedPreferences.setMockInitialValues({});
+    final repository = AuthRepository(FakeSupabaseClient());
 
-      final usesMockProfile = await repository.linkFacebookAccount();
+    final status = await repository.beginFacebookAccountLink();
+    final usesMockProfile = await repository.completeFacebookAccountLink();
 
-      expect(usesMockProfile, isTrue);
-    },
-  );
+    expect(status, FacebookAccountLinkStatus.completed);
+    expect(usesMockProfile, isTrue);
+  });
 
   test('mock Facebook sign-in creates a session only when selected', () async {
     if (AppConstants.hasSupabaseConfig) {

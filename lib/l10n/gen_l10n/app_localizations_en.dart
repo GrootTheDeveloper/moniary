@@ -2091,7 +2091,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileLinkAccountSubtitle =>
-      'Your account is currently a guest account. Link Email or Google to save your data and sign in across devices.';
+      'Your account is currently a guest account. Link Email, Google, or Facebook to save your data and sign in across devices.';
 
   @override
   String get profileNewPassword => 'New password';
@@ -2151,8 +2151,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Google returned to Moniary, but account linking could not be completed. Tap Link now to retry.';
 
   @override
+  String get profileLinkFacebookSuccess =>
+      'Facebook account linked successfully.';
+
+  @override
+  String get profileLinkFacebookCompletionError =>
+      'Facebook returned to Moniary, but account linking could not be completed. Tap Link now to retry.';
+
+  @override
   String get authErrorGoogleLinkIncomplete =>
       'Complete Google authorization before linking the account.';
+
+  @override
+  String get authErrorFacebookLinkIncomplete =>
+      'Complete Facebook authorization before linking the account.';
 
   @override
   String profileLinkGoogleError(String error) {

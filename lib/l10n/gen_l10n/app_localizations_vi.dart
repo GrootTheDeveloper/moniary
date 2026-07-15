@@ -2085,7 +2085,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profileLinkAccountSubtitle =>
-      'Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email hoặc Google để lưu dữ liệu và đăng nhập trên nhiều thiết bị.';
+      'Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email, Google hoặc Facebook để lưu dữ liệu và đăng nhập trên nhiều thiết bị.';
 
   @override
   String get profileNewPassword => 'Mật khẩu mới';
@@ -2146,8 +2146,20 @@ class AppLocalizationsVi extends AppLocalizations {
       'Google đã quay lại Moniary nhưng chưa thể hoàn tất liên kết. Hãy nhấn Liên kết ngay để thử lại.';
 
   @override
+  String get profileLinkFacebookSuccess =>
+      'Đã liên kết tài khoản Facebook thành công.';
+
+  @override
+  String get profileLinkFacebookCompletionError =>
+      'Facebook đã quay lại Moniary nhưng chưa thể hoàn tất liên kết. Hãy nhấn Liên kết ngay để thử lại.';
+
+  @override
   String get authErrorGoogleLinkIncomplete =>
       'Hãy hoàn tất xác thực Google trước khi liên kết tài khoản.';
+
+  @override
+  String get authErrorFacebookLinkIncomplete =>
+      'Hãy hoàn tất xác thực Facebook trước khi liên kết tài khoản.';
 
   @override
   String profileLinkGoogleError(String error) {

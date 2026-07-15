@@ -14,8 +14,10 @@ import '../../../shared/widgets/supabase_image.dart';
 import '../../profile/presentation/timezone_picker_screen.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/application/pending_email_link_controller.dart';
+import '../../auth/application/pending_facebook_link_controller.dart';
 import '../../auth/application/pending_google_link_controller.dart';
 import '../../auth/domain/email_account_link.dart';
+import '../../auth/domain/facebook_account_link.dart';
 import '../../auth/domain/google_account_link.dart';
 import '../../auth/presentation/email_account_link_completion_screen.dart';
 import '../../auth/presentation/login_screen.dart';
@@ -150,13 +152,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
-  Future<void> _linkFacebookAccount(VoidCallback refreshSheet) async {
+  Future<FacebookAccountLinkStatus?> _linkFacebookAccount(
+    VoidCallback refreshSheet,
+  ) async {
     _setLinkingLoading(true, refreshSheet);
     final messenger = ScaffoldMessenger.of(context);
 
     try {
-      await ref.read(authControllerProvider.notifier).linkFacebookAccount();
-      if (mounted) {
+      final result = await ref
+          .read(authControllerProvider.notifier)
+          .beginFacebookAccountLink();
+      if (mounted && result == FacebookAccountLinkStatus.browserOpened) {
         messenger.showSnackBar(
           SnackBar(
             content: Text(context.l10n.profileLinkFacebookBrowser),
@@ -164,6 +170,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
+      return result;
     } catch (e, st) {
       AppLogger.error('Failed to link Facebook account from profile', e, st);
       if (mounted) {
@@ -178,6 +185,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
+      return null;
     } finally {
       _setLinkingLoading(false, refreshSheet);
     }
@@ -211,6 +219,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           hasGoogleIdentity: hasGoogleIdentity,
         )) {
       _retryPendingGoogleLink();
+      return;
+    }
+
+    final pendingFacebookLink = ref.read(pendingFacebookAccountLinkProvider);
+    final hasFacebookIdentity =
+        user?.identities?.any((identity) => identity.provider == 'facebook') ??
+        false;
+    if (pendingFacebookLink != null &&
+        user != null &&
+        pendingFacebookLink.matches(
+          userId: user.id,
+          hasFacebookIdentity: hasFacebookIdentity,
+        )) {
+      _retryPendingFacebookLink();
       return;
     }
 
@@ -365,7 +387,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         onPressed: () async {
-                          await _linkFacebookAccount(refreshSheet);
+                          final result = await _linkFacebookAccount(
+                            refreshSheet,
+                          );
+                          if (result != null && context.mounted) {
+                            Navigator.pop(context);
+                          }
                         },
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -768,19 +795,46 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
+  Future<void> _retryPendingFacebookLink() async {
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .completePendingFacebookAccountLink();
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to retry pending Facebook link',
+        error,
+        stackTrace,
+      );
+    }
+  }
+
   void _scheduleAccountLinkNotice(AccountLinkNotice? notice) {
     if (notice == null || _accountLinkNoticeScheduled) return;
     _accountLinkNoticeScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final isSuccess = notice == AccountLinkNotice.googleSuccess;
+      final (message, isSuccess) = switch (notice) {
+        AccountLinkNotice.googleSuccess => (
+          context.l10n.profileLinkGoogleSuccess,
+          true,
+        ),
+        AccountLinkNotice.googleFailure => (
+          context.l10n.profileLinkGoogleCompletionError,
+          false,
+        ),
+        AccountLinkNotice.facebookSuccess => (
+          context.l10n.profileLinkFacebookSuccess,
+          true,
+        ),
+        AccountLinkNotice.facebookFailure => (
+          context.l10n.profileLinkFacebookCompletionError,
+          false,
+        ),
+      };
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            isSuccess
-                ? context.l10n.profileLinkGoogleSuccess
-                : context.l10n.profileLinkGoogleCompletionError,
-          ),
+          content: Text(message),
           backgroundColor: isSuccess ? AppTheme.success : AppTheme.danger,
         ),
       );

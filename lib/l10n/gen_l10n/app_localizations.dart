@@ -3875,7 +3875,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileLinkAccountSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email hoặc Google để lưu dữ liệu và đăng nhập trên nhiều thiết bị.'**
+  /// **'Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email, Google hoặc Facebook để lưu dữ liệu và đăng nhập trên nhiều thiết bị.'**
   String get profileLinkAccountSubtitle;
 
   /// No description provided for @profileNewPassword.
@@ -3974,11 +3974,29 @@ abstract class AppLocalizations {
   /// **'Google đã quay lại Moniary nhưng chưa thể hoàn tất liên kết. Hãy nhấn Liên kết ngay để thử lại.'**
   String get profileLinkGoogleCompletionError;
 
+  /// No description provided for @profileLinkFacebookSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã liên kết tài khoản Facebook thành công.'**
+  String get profileLinkFacebookSuccess;
+
+  /// No description provided for @profileLinkFacebookCompletionError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Facebook đã quay lại Moniary nhưng chưa thể hoàn tất liên kết. Hãy nhấn Liên kết ngay để thử lại.'**
+  String get profileLinkFacebookCompletionError;
+
   /// No description provided for @authErrorGoogleLinkIncomplete.
   ///
   /// In vi, this message translates to:
   /// **'Hãy hoàn tất xác thực Google trước khi liên kết tài khoản.'**
   String get authErrorGoogleLinkIncomplete;
+
+  /// No description provided for @authErrorFacebookLinkIncomplete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy hoàn tất xác thực Facebook trước khi liên kết tài khoản.'**
+  String get authErrorFacebookLinkIncomplete;
 
   /// No description provided for @profileLinkGoogleError.
   ///

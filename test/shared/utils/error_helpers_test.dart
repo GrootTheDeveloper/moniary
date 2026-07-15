@@ -103,4 +103,21 @@ void main() {
       'Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng bắt đầu lại.',
     );
   });
+
+  testWidgets('maps incomplete Facebook linking to retry guidance', (
+    tester,
+  ) async {
+    final message = await messageFor(
+      tester,
+      const AppException(
+        'Facebook identity linking has not completed',
+        code: 'AUTH_LINK_FACEBOOK_NOT_COMPLETED',
+      ),
+    );
+
+    expect(
+      message,
+      'Hãy hoàn tất xác thực Facebook trước khi liên kết tài khoản.',
+    );
+  });
 }

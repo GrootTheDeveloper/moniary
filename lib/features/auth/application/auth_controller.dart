@@ -7,8 +7,10 @@ import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../data/auth_repository.dart';
 import '../domain/email_account_link.dart';
+import '../domain/facebook_account_link.dart';
 import '../domain/google_account_link.dart';
 import 'pending_email_link_controller.dart';
+import 'pending_facebook_link_controller.dart';
 import 'pending_google_link_controller.dart';
 import '../../profile/data/profile_repository.dart';
 import '../../profile/application/profile_setup_controller.dart';
@@ -265,28 +267,81 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> linkFacebookAccount() async {
-    if (_isProcessing) return;
+  Future<FacebookAccountLinkStatus> beginFacebookAccountLink() async {
+    if (_isProcessing) return FacebookAccountLinkStatus.browserOpened;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      final usesMockProfile = await ref
+      final session = ref.read(currentSessionProvider);
+      if (session == null) {
+        throw const AppException('errorNotLoggedIn', code: 'AUTH_REQUIRED');
+      }
+      final result = await ref
           .read(authRepositoryProvider)
-          .linkFacebookAccount();
-
-      ref.invalidate(currentProfileProvider);
-
-      if (usesMockProfile) {
+          .beginFacebookAccountLink();
+      if (result == FacebookAccountLinkStatus.completed) {
         ref
             .read(profileRepositoryProvider)
             .setMockEmailAndProvider(
               email: 'mock-facebook@facebook.com',
               loginProvider: 'facebook',
             );
+        ref.invalidate(currentProfileProvider);
+        ref
+            .read(accountLinkNoticeProvider.notifier)
+            .show(AccountLinkNotice.facebookSuccess);
+      } else {
+        await ref
+            .read(pendingFacebookAccountLinkProvider.notifier)
+            .save(session.user.id);
       }
       state = const AsyncData(null);
+      return result;
     } catch (e, st) {
-      AppLogger.error('linkFacebookAccount failed', e, st);
+      AppLogger.error('beginFacebookAccountLink failed', e, st);
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> completePendingFacebookAccountLink() async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      final pendingLink = ref.read(pendingFacebookAccountLinkProvider);
+      final session = ref.read(currentSessionProvider);
+      final hasFacebookIdentity =
+          session?.user.identities?.any(
+            (identity) => identity.provider == 'facebook',
+          ) ??
+          false;
+      if (pendingLink == null ||
+          session == null ||
+          !pendingLink.matches(
+            userId: session.user.id,
+            hasFacebookIdentity: hasFacebookIdentity,
+          )) {
+        throw const AppException(
+          'Facebook identity linking has not completed',
+          code: 'AUTH_LINK_FACEBOOK_NOT_COMPLETED',
+        );
+      }
+
+      await ref.read(authRepositoryProvider).completeFacebookAccountLink();
+      await ref.read(pendingFacebookAccountLinkProvider.notifier).clear();
+      ref.invalidate(currentProfileProvider);
+      ref
+          .read(accountLinkNoticeProvider.notifier)
+          .show(AccountLinkNotice.facebookSuccess);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      AppLogger.error('completePendingFacebookAccountLink failed', e, st);
+      ref
+          .read(accountLinkNoticeProvider.notifier)
+          .show(AccountLinkNotice.facebookFailure);
       state = AsyncError(e, st);
       rethrow;
     } finally {

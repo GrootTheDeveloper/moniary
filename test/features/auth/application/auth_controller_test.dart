@@ -7,7 +7,9 @@ import 'package:moniary/features/auth/application/auth_controller.dart';
 import 'package:moniary/features/auth/data/auth_repository.dart';
 import 'package:moniary/features/auth/domain/email_account_link.dart';
 import 'package:moniary/features/auth/application/pending_email_link_controller.dart';
+import 'package:moniary/features/auth/application/pending_facebook_link_controller.dart';
 import 'package:moniary/features/auth/application/pending_google_link_controller.dart';
+import 'package:moniary/features/auth/domain/facebook_account_link.dart';
 import 'package:moniary/features/auth/domain/google_account_link.dart';
 import 'package:moniary/features/profile/application/profile_setup_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -58,6 +60,33 @@ Session _googleLinkedSession() {
   );
 }
 
+Session _facebookLinkedSession() {
+  const identity = UserIdentity(
+    id: 'facebook-identity-id',
+    userId: 'mock-user-id',
+    identityData: {'email': 'bee@facebook.com'},
+    identityId: 'facebook-subject-id',
+    provider: 'facebook',
+    createdAt: '2026-07-15T00:00:00Z',
+    lastSignInAt: '2026-07-15T00:00:00Z',
+  );
+  const user = User(
+    id: 'mock-user-id',
+    appMetadata: {'provider': 'facebook'},
+    userMetadata: {},
+    aud: 'authenticated',
+    email: 'bee@facebook.com',
+    identities: [identity],
+    createdAt: '2026-05-28T00:00:00Z',
+  );
+  return Session(
+    accessToken: 'mockAccessToken',
+    tokenType: 'bearer',
+    expiresIn: 3600,
+    user: user,
+  );
+}
+
 class FakeAuthRepository extends AuthRepository {
   FakeAuthRepository({
     this.emailSession,
@@ -68,6 +97,7 @@ class FakeAuthRepository extends AuthRepository {
     this.emailLinkStatus = EmailAccountLinkStatus.confirmationRequired,
     this.emailLinkUsesMockProfile = false,
     this.googleLinkStatus = GoogleAccountLinkStatus.browserOpened,
+    this.facebookLinkStatus = FacebookAccountLinkStatus.browserOpened,
   }) : super(null, useMockData: true);
 
   final Session? emailSession;
@@ -78,6 +108,7 @@ class FakeAuthRepository extends AuthRepository {
   final EmailAccountLinkStatus emailLinkStatus;
   final bool emailLinkUsesMockProfile;
   final GoogleAccountLinkStatus googleLinkStatus;
+  final FacebookAccountLinkStatus facebookLinkStatus;
   var signOutCount = 0;
   var cancelPasswordRecoveryCount = 0;
   String? updatedPassword;
@@ -87,6 +118,7 @@ class FakeAuthRepository extends AuthRepository {
   String? emailSignUpCaptchaToken;
   String? passwordResetCaptchaToken;
   var completeGoogleLinkCount = 0;
+  var completeFacebookLinkCount = 0;
 
   @override
   Future<void> signOut() async {
@@ -166,6 +198,17 @@ class FakeAuthRepository extends AuthRepository {
     completeGoogleLinkCount++;
     return false;
   }
+
+  @override
+  Future<FacebookAccountLinkStatus> beginFacebookAccountLink() async {
+    return facebookLinkStatus;
+  }
+
+  @override
+  Future<bool> completeFacebookAccountLink() async {
+    completeFacebookLinkCount++;
+    return false;
+  }
 }
 
 void main() {
@@ -214,6 +257,23 @@ void main() {
     );
     expect(
       pending.matches(userId: 'anonymous-user-id', hasGoogleIdentity: false),
+      isFalse,
+    );
+  });
+
+  test('pending Facebook link requires the originating user and identity', () {
+    const pending = PendingFacebookAccountLink(userId: 'anonymous-user-id');
+
+    expect(
+      pending.matches(userId: 'anonymous-user-id', hasFacebookIdentity: true),
+      isTrue,
+    );
+    expect(
+      pending.matches(userId: 'different-user-id', hasFacebookIdentity: true),
+      isFalse,
+    );
+    expect(
+      pending.matches(userId: 'anonymous-user-id', hasFacebookIdentity: false),
       isFalse,
     );
   });
@@ -428,26 +488,31 @@ void main() {
     expect(container.read(authControllerProvider).hasError, isFalse);
   });
 
-  test(
-    'linkFacebookAccount reports mock profile update in mock mode',
-    () async {
-      final repository = FakeAuthRepository();
-      final container = ProviderContainer(
-        overrides: [
-          authRepositoryProvider.overrideWithValue(repository),
-          supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
-        ],
-      );
-      addTearDown(container.dispose);
+  test('Facebook linking completes immediately in mock mode', () async {
+    final repository = FakeAuthRepository(
+      facebookLinkStatus: FacebookAccountLinkStatus.completed,
+    );
+    final container = ProviderContainer(
+      overrides: [
+        authRepositoryProvider.overrideWithValue(repository),
+        supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.read(mockSessionProvider.notifier).setSession(_mockSession());
 
-      await container
-          .read(authControllerProvider.notifier)
-          .linkFacebookAccount();
+    final status = await container
+        .read(authControllerProvider.notifier)
+        .beginFacebookAccountLink();
 
-      expect(container.read(authControllerProvider).isLoading, isFalse);
-      expect(container.read(authControllerProvider).hasError, isFalse);
-    },
-  );
+    expect(status, FacebookAccountLinkStatus.completed);
+    expect(container.read(authControllerProvider).isLoading, isFalse);
+    expect(container.read(authControllerProvider).hasError, isFalse);
+    expect(
+      container.read(accountLinkNoticeProvider),
+      AccountLinkNotice.facebookSuccess,
+    );
+  });
 
   test('mock repository supports every direct and social auth path', () async {
     final repository = AuthRepository(null, useMockData: true);
@@ -626,4 +691,46 @@ void main() {
       AccountLinkNotice.googleSuccess,
     );
   });
+
+  test(
+    'Facebook linking waits for callback identity before completion',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final repository = FakeAuthRepository();
+      final container = ProviderContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+        ],
+      );
+      addTearDown(container.dispose);
+      container.read(mockSessionProvider.notifier).setSession(_mockSession());
+
+      final status = await container
+          .read(authControllerProvider.notifier)
+          .beginFacebookAccountLink();
+
+      expect(status, FacebookAccountLinkStatus.browserOpened);
+      expect(
+        container.read(pendingFacebookAccountLinkProvider)?.userId,
+        'mock-user-id',
+      );
+      expect(repository.completeFacebookLinkCount, 0);
+
+      container
+          .read(mockSessionProvider.notifier)
+          .setSession(_facebookLinkedSession());
+      await container
+          .read(authControllerProvider.notifier)
+          .completePendingFacebookAccountLink();
+
+      expect(repository.completeFacebookLinkCount, 1);
+      expect(container.read(pendingFacebookAccountLinkProvider), isNull);
+      expect(
+        container.read(accountLinkNoticeProvider),
+        AccountLinkNotice.facebookSuccess,
+      );
+    },
+  );
 }

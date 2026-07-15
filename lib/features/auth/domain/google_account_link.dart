@@ -10,4 +10,9 @@ class PendingGoogleAccountLink {
   }
 }
 
-enum AccountLinkNotice { googleSuccess, googleFailure }
+enum AccountLinkNotice {
+  googleSuccess,
+  googleFailure,
+  facebookSuccess,
+  facebookFailure,
+}
