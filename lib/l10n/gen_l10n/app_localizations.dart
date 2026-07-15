@@ -4016,6 +4016,18 @@ abstract class AppLocalizations {
   /// **'Hiện linh vật hoạt hình trên thanh điều hướng dưới cùng.'**
   String get profileMascotSubtitle;
 
+  /// No description provided for @profileAssistantChatTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trợ lý tài chính'**
+  String get profileAssistantChatTitle;
+
+  /// No description provided for @profileAssistantChatSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiện nút trò chuyện với trợ lý AI trên các màn hình chính.'**
+  String get profileAssistantChatSubtitle;
+
   /// No description provided for @profileLanguage.
   ///
   /// In vi, this message translates to:

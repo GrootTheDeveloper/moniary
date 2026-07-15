@@ -1015,6 +1015,8 @@
   "profileChangeTimezone": "Thay đổi múi giờ",
   "profileMascotTitle": "Linh vật ứng dụng",
   "profileMascotSubtitle": "Hiện linh vật hoạt hình trên thanh điều hướng dưới cùng.",
+  "profileAssistantChatTitle": "Trợ lý tài chính",
+  "profileAssistantChatSubtitle": "Hiện nút trò chuyện với trợ lý AI trên các màn hình chính.",
   "profileLanguage": "Ngôn ngữ",
   "currencyPickerTitle": "Chọn tiền tệ",
   "currencyPickerSearch": "Tìm tiền tệ...",

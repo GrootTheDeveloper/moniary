@@ -2179,6 +2179,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Show the animated mascot on the bottom navigation bar.';
 
   @override
+  String get profileAssistantChatTitle => 'Financial assistant';
+
+  @override
+  String get profileAssistantChatSubtitle =>
+      'Show the AI assistant chat button on the main screens.';
+
+  @override
   String get profileLanguage => 'Language';
 
   @override

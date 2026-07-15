@@ -1015,6 +1015,8 @@
   "profileChangeTimezone": "Change Timezone",
   "profileMascotTitle": "App Mascot",
   "profileMascotSubtitle": "Show the animated mascot on the bottom navigation bar.",
+  "profileAssistantChatTitle": "Financial assistant",
+  "profileAssistantChatSubtitle": "Show the AI assistant chat button on the main screens.",
   "profileLanguage": "Language",
   "currencyPickerTitle": "Select Currency",
   "currencyPickerSearch": "Search currency...",

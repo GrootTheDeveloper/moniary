@@ -95,6 +95,20 @@ class MascotEnabledNotifier extends Notifier<bool> {
   }
 }
 
+class AssistantChatEnabledNotifier extends Notifier<bool> {
+  static const _key = 'assistant_chat_enabled';
+
+  @override
+  bool build() {
+    return ref.read(sharedPreferencesProvider).getBool(_key) ?? true;
+  }
+
+  Future<void> setEnabled(bool value) async {
+    state = value;
+    await ref.read(sharedPreferencesProvider).setBool(_key, value);
+  }
+}
+
 class FirstDayOfWeekNotifier extends Notifier<int> {
   static const _key = 'first_day_of_week';
 

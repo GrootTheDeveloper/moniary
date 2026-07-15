@@ -646,6 +646,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 .read(mascotEnabledProvider.notifier)
                                 .setEnabled(value),
                           ),
+                          _AssistantChatToggleTile(
+                            enabled: ref.watch(assistantChatEnabledProvider),
+                            onChanged: (value) => ref
+                                .read(assistantChatEnabledProvider.notifier)
+                                .setEnabled(value),
+                          ),
                           if (accountMode.needsAccountProtectionCard)
                             _AccountModeBanner(
                               mode: accountMode,
@@ -1544,6 +1550,66 @@ class _MascotToggleTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     context.l10n.profileMascotSubtitle,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Switch(value: enabled, onChanged: onChanged),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AssistantChatToggleTile extends StatelessWidget {
+  const _AssistantChatToggleTile({
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return InkWell(
+      onTap: () => onChanged(!enabled),
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 60),
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 14),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: colors.textPrimary.withValues(alpha: 0.12),
+            ),
+          ),
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 34,
+              child: Icon(
+                Icons.chat_bubble_outline,
+                color: colors.primary,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.profileAssistantChatTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    context.l10n.profileAssistantChatSubtitle,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],

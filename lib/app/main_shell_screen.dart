@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'app_theme.dart';
+import '../core/preferences/preferences_providers.dart';
 import '../core/providers/camera_provider.dart';
 import '../features/assistant/presentation/assistant_home_screen.dart';
 import '../features/calendar/application/month/calendar_month_provider.dart';
@@ -48,6 +49,7 @@ class MainShellScreen extends ConsumerWidget {
       3 => MoniaryTab.profile,
       _ => MoniaryTab.calendar,
     };
+    final assistantChatEnabled = ref.watch(assistantChatEnabledProvider);
 
     return Scaffold(
       body: Stack(
@@ -60,15 +62,16 @@ class MainShellScreen extends ConsumerWidget {
             height: 0,
             child: RecurringAutoPostRunner(),
           ),
-          Positioned(
-            right: 18,
-            bottom: 18,
-            child: _AssistantChatBubble(
-              color: colors.button,
-              foregroundColor: colors.surfaceRaised,
-              onPressed: () => context.push(AssistantHomeScreen.routePath),
+          if (assistantChatEnabled)
+            Positioned(
+              right: 18,
+              bottom: 18,
+              child: _AssistantChatBubble(
+                color: colors.button,
+                foregroundColor: colors.surfaceRaised,
+                onPressed: () => context.push(AssistantHomeScreen.routePath),
+              ),
             ),
-          ),
           Positioned(
             left: 0,
             right: 0,

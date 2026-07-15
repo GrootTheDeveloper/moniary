@@ -2174,6 +2174,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Hiện linh vật hoạt hình trên thanh điều hướng dưới cùng.';
 
   @override
+  String get profileAssistantChatTitle => 'Trợ lý tài chính';
+
+  @override
+  String get profileAssistantChatSubtitle =>
+      'Hiện nút trò chuyện với trợ lý AI trên các màn hình chính.';
+
+  @override
   String get profileLanguage => 'Ngôn ngữ';
 
   @override
