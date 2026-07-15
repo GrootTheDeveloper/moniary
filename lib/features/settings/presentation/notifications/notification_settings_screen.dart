@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/notifications/local_notification_service.dart';
+import '../../../../core/notifications/notification_providers.dart';
+import '../../../../core/preferences/preferences_providers.dart';
 import '../../application/notification_settings_controller.dart';
 import '../../application/reminder_controller.dart';
 import '../../domain/models/reminder_settings.dart';
 import '../../../notifications/application/notification_delivery_preferences_controller.dart';
+import '../../../notifications/data/repositories/notification_repository_impl.dart';
 
 class NotificationSettingsScreen extends ConsumerWidget {
   const NotificationSettingsScreen({super.key});
@@ -69,7 +75,8 @@ class _PushNotificationSection extends ConsumerWidget {
                   title: context.l10n.pushNotificationAllTitle,
                   subtitle: context.l10n.pushNotificationAllSubtitle,
                   value: preferences.pushEnabled,
-                  onChanged: controller.setPushEnabled,
+                  onChanged: (value) =>
+                      _togglePush(context, ref, controller, value),
                 ),
                 const _SettingsDivider(),
                 _PushCategoryTile(
@@ -104,6 +111,45 @@ class _PushNotificationSection extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _togglePush(
+    BuildContext context,
+    WidgetRef ref,
+    NotificationDeliveryPreferencesController controller,
+    bool value,
+  ) async {
+    if (!value) {
+      await controller.setPushEnabled(false);
+      return;
+    }
+
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    final granted = await LocalNotificationService.instance.requestPermission();
+    if (!granted) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.reminderPermissionDenied)),
+      );
+      return;
+    }
+
+    await controller.setPushEnabled(true);
+    await ref
+        .read(fcmPushNotificationServiceProvider)
+        .initialize(
+          onToken: (token) => ref
+              .read(notificationRepositoryProvider)
+              .registerDevice(
+                token: token,
+                platform: defaultTargetPlatform == TargetPlatform.iOS
+                    ? 'ios'
+                    : 'android',
+                locale: ref.read(preferredLocaleProvider),
+                timezone: AppConstants.defaultTimezone,
+              ),
+          onTap: (_) async {},
+        );
   }
 }
 
