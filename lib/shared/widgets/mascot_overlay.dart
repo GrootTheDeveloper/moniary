@@ -19,7 +19,7 @@ const _walkDuration = Duration(seconds: 6);
 const _frameDuration = Duration(milliseconds: 130);
 const _actionFrameHeight = 58.0;
 const _actionFrameWidth = 68.0;
-const _baseBottom = 0.0; // mascot feet align with the bottom nav top border
+const _baseBottom = 8.0; // mascot feet align 8px above the bottom nav top border
 const _buttonWidth = 68.0; // matches _CameraActionButton in bottom_nav_bar.dart
 const _jumpHeight = 24.0; // lifts the mascot's feet up to the button's top edge
 
@@ -98,6 +98,8 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
   String? _speechText;
   bool _speechVisible = false;
   Timer? _speechDismissTimer;
+
+  bool _autoGreetingShown = false;
 
   final math.Random _rng = math.Random();
 
@@ -307,6 +309,31 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
     );
   }
 
+  void _showGreetingQuote(MascotData data) {
+    final text = MascotDialogueGenerator.generate(
+      context,
+      allTimeEmpty: data.allTimeEmpty,
+      budgetCategories: data.budgetCategories,
+      todayTransactions: data.todayTransactions,
+      monthTransactions: data.monthTransactions,
+      streakDays: data.streakDays,
+      isTap: false,
+    );
+    if (!mounted) return;
+    setState(() {
+      _speechText = text;
+      _speechVisible = true;
+    });
+
+    _speechDismissTimer?.cancel();
+    _speechDismissTimer = Timer(
+      const Duration(seconds: _speechDismissSeconds),
+      () {
+        if (mounted) setState(() => _speechVisible = false);
+      },
+    );
+  }
+
   // ── Feed animation trigger & callback ───────────────────────────────────────
   void _startFeedAnimation() {
     HapticFeedback.mediumImpact();
@@ -401,6 +428,20 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
 
     final mascotDataAsync = ref.watch(mascotDataProvider);
     final data = mascotDataAsync.asData?.value;
+
+    ref.listen<AsyncValue<MascotData>>(mascotDataProvider, (previous, next) {
+      if (_autoGreetingShown) return;
+      next.whenOrNull(
+        data: (data) {
+          _autoGreetingShown = true;
+          Timer(const Duration(milliseconds: 1500), () {
+            if (mounted) {
+              _showGreetingQuote(data);
+            }
+          });
+        },
+      );
+    });
 
     final isOverBudget =
         data?.budgetCategories.any((c) => c.isOverLimit) ?? false;
@@ -655,16 +696,19 @@ class _SpeechBubble extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: _speechBubbleMaxWidth),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
-        color: colors.surface.withValues(alpha: 0.98),
+        color: colors.surface,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x11000000),
-            blurRadius: 8,
-            offset: Offset(0, 3),
+            color: colors.textPrimary.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: colors.outline, width: 0.8),
+        border: Border.all(
+          color: colors.textPrimary.withValues(alpha: 0.12),
+          width: 1.0,
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -395,7 +395,7 @@ class _DateTimeTile extends StatelessWidget {
                 ).format(value),
                 style: Theme.of(
                   context,
-                ).textTheme.bodyLarge?.copyWith(color: Colors.white),
+                ).textTheme.bodyLarge?.copyWith(color: context.moniaryColors.textPrimary),
               ),
             ),
             const Icon(Icons.chevron_right_outlined),

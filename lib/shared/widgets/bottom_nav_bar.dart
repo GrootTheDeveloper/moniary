@@ -212,6 +212,7 @@ class _NavItem extends StatelessWidget {
                 Text(
                   label.toUpperCase(),
                   maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: context.moniaryTypography.metadataStrong.copyWith(
                     color: color,
                     fontSize: 8.5,

@@ -30,11 +30,19 @@ class _AssistantConversationScreenState
     extends ConsumerState<AssistantConversationScreen> {
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
+  final _focusNode = FocusNode();
   bool _launched = false;
 
   @override
   void initState() {
     super.initState();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        Future.delayed(const Duration(milliseconds: 200), () {
+          if (mounted) _scrollToEnd();
+        });
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) => _askLaunch());
   }
 
@@ -42,6 +50,7 @@ class _AssistantConversationScreenState
   void dispose() {
     _controller.dispose();
     _scrollController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -106,6 +115,7 @@ class _AssistantConversationScreenState
         minimum: const EdgeInsets.fromLTRB(18, 8, 18, 14),
         child: TextField(
           controller: _controller,
+          focusNode: _focusNode,
           enabled: !isSending,
           textInputAction: TextInputAction.send,
           onSubmitted: (_) => _send(),
@@ -138,10 +148,25 @@ class _AssistantConversationScreenState
             separatorBuilder: (_, _) => const SizedBox(height: 14),
             itemBuilder: (context, index) {
               if (index == messages.length) {
-                return const _AssistantResponseShell(
-                  child: SizedBox.square(
-                    dimension: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                final isVi = Localizations.localeOf(context).languageCode == 'vi';
+                return _AssistantResponseShell(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox.square(
+                        dimension: 16,
+                        child: CircularProgressIndicator(strokeWidth: 1.8),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        isVi ? 'Đang phân tích...' : 'Analyzing...',
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w500,
+                          color: context.moniaryColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 );
               }

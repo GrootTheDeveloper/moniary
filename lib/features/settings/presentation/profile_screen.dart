@@ -248,6 +248,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
+            final colors = context.moniaryColors;
             void refreshSheet() {
               if (context.mounted) {
                 setSheetState(() {});
@@ -284,8 +285,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       context.l10n.profileLinkAccountSubtitle,
-                      style: const TextStyle(
-                        color: Colors.white54,
+                      style: TextStyle(
+                        color: colors.textSecondary,
                         fontSize: 13,
                       ),
                     ),
@@ -293,16 +294,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: colors.textPrimary),
                       decoration: InputDecoration(
                         labelText: context.l10n.loginEmail,
-                        labelStyle: const TextStyle(color: Colors.white54),
-                        prefixIcon: const Icon(
+                        labelStyle: TextStyle(color: colors.textSecondary),
+                        prefixIcon: Icon(
                           Icons.email_outlined,
-                          color: Colors.white54,
+                          color: colors.textSecondary,
                         ),
                         filled: true,
-                        fillColor: AppTheme.surfaceRaised,
+                        fillColor: colors.surfaceRaised,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide.none,
@@ -372,15 +373,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           side: const BorderSide(color: AppTheme.outline),
                         ),
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.g_mobiledata_outlined,
                           size: 28,
-                          color: Colors.white,
+                          color: colors.textPrimary,
                         ),
                         label: Text(
                           context.l10n.profileLinkGoogle,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: colors.textPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -402,15 +403,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           side: const BorderSide(color: AppTheme.outline),
                         ),
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.facebook_outlined,
                           size: 24,
-                          color: Colors.white,
+                          color: colors.textPrimary,
                         ),
                         label: Text(
                           context.l10n.profileLinkFacebook,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: colors.textPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
