@@ -433,49 +433,46 @@ class _FriendsTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 84,
-      child: Stack(
-        alignment: Alignment.center,
+      child: Row(
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: _IconSquareButton(
-              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-              onPressed: onBack,
-              icon: Icons.arrow_back_ios_new_rounded,
+          _IconSquareButton(
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            onPressed: onBack,
+            icon: Icons.arrow_back_ios_new_rounded,
+          ),
+          Expanded(
+            child: Center(
+              child: _TitleWithBadge(
+                title: context.l10n.friendsTitle,
+                badge: pendingRequestCount,
+              ),
             ),
           ),
-          _TitleWithBadge(
-            title: context.l10n.friendsTitle,
-            badge: pendingRequestCount,
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _IconSquareButton(
-                  tooltip: context.l10n.friendQrTitle,
-                  onPressed: onQr,
-                  icon: Icons.qr_code_scanner_outlined,
-                ),
-                const SizedBox(width: 8),
-                _IconSquareButton(
-                  tooltip: context.l10n.friendIncomingRequests,
-                  onPressed: onRequests,
-                  icon: pendingRequestCount > 0
-                      ? Icons.mark_email_unread_outlined
-                      : Icons.mark_email_read_outlined,
-                  badge: pendingRequestCount,
-                ),
-                const SizedBox(width: 8),
-                _IconSquareButton(
-                  tooltip: context.l10n.friendAdd,
-                  onPressed: onAdd,
-                  icon: Icons.person_add_alt_1_rounded,
-                  filled: true,
-                ),
-              ],
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _IconSquareButton(
+                tooltip: context.l10n.friendQrTitle,
+                onPressed: onQr,
+                icon: Icons.qr_code_scanner_outlined,
+              ),
+              const SizedBox(width: 8),
+              _IconSquareButton(
+                tooltip: context.l10n.friendIncomingRequests,
+                onPressed: onRequests,
+                icon: pendingRequestCount > 0
+                    ? Icons.mark_email_unread_outlined
+                    : Icons.mark_email_read_outlined,
+                badge: pendingRequestCount,
+              ),
+              const SizedBox(width: 8),
+              _IconSquareButton(
+                tooltip: context.l10n.friendAdd,
+                onPressed: onAdd,
+                icon: Icons.person_add_alt_1_rounded,
+                filled: true,
+              ),
+            ],
           ),
         ],
       ),
@@ -495,11 +492,15 @@ class _TitleWithBadge extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          title,
-          style: context.moniaryTypography.displaySmall.copyWith(
-            fontSize: 22,
-            color: colors.textPrimary,
+        Flexible(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.moniaryTypography.displaySmall.copyWith(
+              fontSize: 22,
+              color: colors.textPrimary,
+            ),
           ),
         ),
         if (badge > 0) ...[

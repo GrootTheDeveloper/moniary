@@ -268,6 +268,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                           }
                         },
                       ),
+                      const SizedBox(height: 24),
                       const Spacer(),
                       FilledButton(
                         onPressed: isLoading ? null : _submit,

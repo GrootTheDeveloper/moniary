@@ -613,37 +613,39 @@ class _HeaderCircleButton extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Material(
-              color: fill,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: border, width: 1.15),
-              ),
-              child: InkWell(
-                onTap: onTap,
-                borderRadius: BorderRadius.circular(12),
-                child: SizedBox(
-                  width: 38,
-                  height: 38,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: [
-                      Icon(
-                        icon,
-                        color: colors.textPrimary.withValues(alpha: 0.66),
-                        size: 18,
-                      ),
-                      if (badge > 0)
-                        Positioned(
-                          top: -5,
-                          right: -5,
-                          child: _HeaderActionBadge(count: badge),
+            Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: [
+                Material(
+                  color: fill,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: border, width: 1.15),
+                  ),
+                  child: InkWell(
+                    onTap: onTap,
+                    borderRadius: BorderRadius.circular(12),
+                    child: SizedBox(
+                      width: 38,
+                      height: 38,
+                      child: Center(
+                        child: Icon(
+                          icon,
+                          color: colors.textPrimary.withValues(alpha: 0.66),
+                          size: 18,
                         ),
-                    ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                if (badge > 0)
+                  Positioned(
+                    top: -6,
+                    right: -6,
+                    child: _HeaderActionBadge(count: badge),
+                  ),
+              ],
             ),
             const SizedBox(height: 6),
             Text(
@@ -670,10 +672,12 @@ class _HeaderActionBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: context.moniaryColors.primary,
+        color: colors.primary,
         borderRadius: BorderRadius.circular(99),
+        border: Border.all(color: colors.backgroundSoft, width: 1.5),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),

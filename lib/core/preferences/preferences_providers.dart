@@ -25,6 +25,11 @@ final mascotEnabledProvider = NotifierProvider<MascotEnabledNotifier, bool>(
   MascotEnabledNotifier.new,
 );
 
+final assistantChatEnabledProvider =
+    NotifierProvider<AssistantChatEnabledNotifier, bool>(
+      AssistantChatEnabledNotifier.new,
+    );
+
 final firstDayOfWeekProvider = NotifierProvider<FirstDayOfWeekNotifier, int>(
   FirstDayOfWeekNotifier.new,
 );
