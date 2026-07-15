@@ -157,6 +157,10 @@ and non-placeholder values. Use the iOS Firebase app whose bundle ID is
    email, and private key only as Supabase Edge Function secrets. Do not reuse
    the public mobile API key as a server credential.
 
+Complete the server-side checklist in
+[`push-notifications.md`](push-notifications.md) before expecting a registered
+device to receive real background notifications.
+
 The Xcode project already declares Push Notifications and remote-notification
 background mode for Debug, Profile, and Release. On first authenticated launch,
 the device should request permission and create an active row in

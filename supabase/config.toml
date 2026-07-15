@@ -368,6 +368,11 @@ verify_jwt = true
 [functions.garbage-collect]
 verify_jwt = false
 
+# This scheduler-only function authenticates with a separate high-entropy
+# header loaded from Supabase Vault. The public anon key is never sufficient.
+[functions.notification-dispatcher]
+verify_jwt = false
+
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
