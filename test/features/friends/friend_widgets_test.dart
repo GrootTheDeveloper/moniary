@@ -27,6 +27,10 @@ import 'package:moniary/features/groups/presentation/screens/group_detail_screen
 import 'package:moniary/features/groups/presentation/screens/invite_member_screen.dart';
 import 'package:moniary/features/groups/presentation/screens/group_invitations_screen.dart';
 import 'package:moniary/features/groups/presentation/screens/group_list_screen.dart';
+import 'package:moniary/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:moniary/features/notifications/domain/entities/app_notification.dart';
+import 'package:moniary/features/notifications/domain/repositories/notification_repository.dart';
+import 'package:moniary/features/notifications/presentation/screens/notification_center_screen.dart';
 import 'package:moniary/l10n/gen_l10n/app_localizations.dart';
 
 void main() {
@@ -101,6 +105,7 @@ void main() {
 
   Widget groupRouterApp({
     required FakeGroupRepository groupRepository,
+    NotificationRepository? notificationRepository,
     String initialLocation = GroupListScreen.routePath,
     String detailGroupId = 'group-1',
   }) {
@@ -121,6 +126,10 @@ void main() {
           builder: (context, state) =>
               GroupDetailScreen(groupId: detailGroupId),
         ),
+        GoRoute(
+          path: NotificationCenterScreen.routePath,
+          builder: (context, state) => const NotificationCenterScreen(),
+        ),
       ],
     );
     return ProviderScope(
@@ -128,6 +137,10 @@ void main() {
         sharedPreferencesProvider.overrideWithValue(prefs),
         friendRepositoryProvider.overrideWithValue(FakeFriendRepository()),
         groupRepositoryProvider.overrideWithValue(groupRepository),
+        if (notificationRepository != null)
+          notificationRepositoryProvider.overrideWithValue(
+            notificationRepository,
+          ),
       ],
       child: MaterialApp.router(
         locale: const Locale('vi'),
@@ -251,9 +264,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final iconRect = tester.getRect(
-      find.byIcon(Icons.people_outline_rounded),
-    );
+    final iconRect = tester.getRect(find.byIcon(Icons.people_outline_rounded));
     final titleRect = tester.getRect(find.text('Bạn chưa có bạn bè nào.'));
     final subtitleRect = tester.getRect(
       find.text('Thêm bạn bè để mời vào nhóm chi tiêu nhanh hơn.'),
@@ -588,8 +599,36 @@ void main() {
         ),
       ],
     );
+    final notificationRepository = FakeNotificationRepository(
+      notifications: [
+        AppNotification(
+          id: 'notification-1',
+          category: AppNotificationCategory.group,
+          type: 'transaction_posted',
+          isRead: false,
+          createdAt: DateTime(2026, 7, 1),
+          groupId: 'group-1',
+          groupName: 'Chuyến đi Đà Lạt',
+          groupTransactionId: 'transaction-1',
+        ),
+        AppNotification(
+          id: 'notification-2',
+          category: AppNotificationCategory.group,
+          type: 'debt_settled',
+          isRead: false,
+          createdAt: DateTime(2026, 7, 2),
+          groupId: 'group-2',
+          groupName: 'Nhà chung',
+        ),
+      ],
+    );
 
-    await tester.pumpWidget(groupRouterApp(groupRepository: groupRepository));
+    await tester.pumpWidget(
+      groupRouterApp(
+        groupRepository: groupRepository,
+        notificationRepository: notificationRepository,
+      ),
+    );
     await tester.pumpAndSettle();
 
     final notificationButton = find.byTooltip('Thông báo');
@@ -599,8 +638,11 @@ void main() {
     await tester.tap(notificationButton);
     await tester.pumpAndSettle();
 
-    expect(find.text('Có giao dịch mới'), findsOneWidget);
-    expect(find.text('Một khoản nợ đã được tất toán'), findsOneWidget);
+    expect(find.text('Có giao dịch mới trong group'), findsOneWidget);
+    expect(
+      find.text('Một khoản nợ trong group đã được tất toán'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('GroupActivityCenterScreen mở thông báo không cần nhóm', (
@@ -1415,4 +1457,46 @@ class FakeGroupRepository implements GroupRepository {
 
   @override
   Future<void> deleteRecurringTransaction(String id) async {}
+}
+
+class FakeNotificationRepository implements NotificationRepository {
+  FakeNotificationRepository({required this.notifications});
+
+  final List<AppNotification> notifications;
+
+  @override
+  Future<List<AppNotification>> fetchNotifications({
+    AppNotificationCategory? category,
+  }) async {
+    if (category == null) return List.unmodifiable(notifications);
+    return List.unmodifiable(
+      notifications.where((item) => item.category == category),
+    );
+  }
+
+  @override
+  Future<void> markRead(String notificationId) async {
+    final index = notifications.indexWhere((item) => item.id == notificationId);
+    if (index != -1) {
+      notifications[index] = notifications[index].copyWith(isRead: true);
+    }
+  }
+
+  @override
+  Future<void> markAllRead() async {
+    for (var index = 0; index < notifications.length; index++) {
+      notifications[index] = notifications[index].copyWith(isRead: true);
+    }
+  }
+
+  @override
+  Future<void> registerDevice({
+    required String token,
+    required String platform,
+    required String locale,
+    required String timezone,
+  }) async {}
+
+  @override
+  Future<void> unregisterDevice(String token) async {}
 }
