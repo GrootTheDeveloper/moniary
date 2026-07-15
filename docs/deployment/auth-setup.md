@@ -22,8 +22,6 @@ FIREBASE_PROJECT_ID=YOUR_FIREBASE_PROJECT_ID
 FIREBASE_IOS_BUNDLE_ID=com.moniary.moniary
 ENABLE_GOOGLE_AUTH=true
 ENABLE_FACEBOOK_AUTH=false
-TURNSTILE_SITE_KEY=YOUR_PUBLIC_TURNSTILE_SITE_KEY
-TURNSTILE_BASE_URL=https://auth.example.com/
 ```
 
 Run on a physical iPhone with:
@@ -67,36 +65,20 @@ Keep **Allow manual linking** enabled. Anonymous-to-Google/Facebook account
 upgrades use Supabase identity linking and will be rejected when this setting
 is disabled.
 
-## 3. Anonymous sign-in protection
+## 3. Authentication abuse controls
 
 Anonymous sign-in remains enabled because anonymous data can be upgraded in
-place to email, Google, or Facebook. Supabase CAPTCHA protection also covers direct email
-sign-in, sign-up, and password-reset requests, so every protected flow must
-submit a fresh Turnstile token:
+place to email, Google, or Facebook. CAPTCHA is disabled, so the mobile build
+does not require a site key or verification base URL. In Supabase Dashboard,
+keep Authentication > Bot and Abuse Protection > CAPTCHA disabled; otherwise
+Supabase will reject password and anonymous authentication requests that do
+not contain a token.
 
-1. In Cloudflare Dashboard, create a Turnstile widget in **Managed** mode.
-2. Add a domain you control, such as `auth.example.com`, to the widget's
-   hostname allowlist. `TURNSTILE_BASE_URL` must be an HTTPS URL on that exact
-   hostname; the URL is used as the embedded widget origin.
-3. Put only the public **Site Key** and base URL in `mobile.env`. Rebuild the
-   app because Dart defines are compile-time values.
-4. In Supabase Dashboard, open Authentication > Bot and Abuse Protection,
-   enable CAPTCHA, choose **Cloudflare Turnstile**, and paste the private
-   **Secret Key**. Never put that secret in `mobile.env` or Git.
-5. In Authentication > Rate Limits, set anonymous sign-ins to no more than
-   **5 per hour per IP address**.
-6. Apply `supabase/migrations/20260715120000_cleanup_stale_anonymous_users.sql`.
+1. In Authentication > Rate Limits, keep sign-in/sign-up limits conservative
+   and set anonymous sign-ins to no more than **5 per hour per IP address**.
+2. Apply `supabase/migrations/20260715120000_cleanup_stale_anonymous_users.sql`.
    It deletes anonymous Auth users inactive for 30 days every night. Upgraded
    email/OAuth accounts are not anonymous and are preserved.
-
-For local Supabase, export the server-only secret before `supabase start`:
-
-```bash
-export SUPABASE_AUTH_CAPTCHA_SECRET=YOUR_PRIVATE_TURNSTILE_SECRET
-```
-
-The app refuses anonymous or direct email authentication when the public
-Turnstile configuration is missing. There is no mock bypass.
 
 ## 4. Email signup
 
@@ -179,8 +161,8 @@ confirm a new active token is registered.
 Test each path from a fresh install or after signing out:
 
 - email signup, confirmation link, and email/password sign-in;
-- anonymous sign-in cannot proceed before Turnstile succeeds, and repeated
-  attempts hit the configured Supabase rate limit;
+- anonymous sign-in succeeds without CAPTCHA, and repeated attempts hit the
+  configured Supabase rate limit;
 - password-reset email, cold/warm callback, new-password confirmation, and
   sign-in with the new password;
 - anonymous-to-email upgrade, email callback on the same device, password

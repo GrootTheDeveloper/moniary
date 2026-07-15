@@ -13,11 +13,21 @@ import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
 import '../../domain/repositories/group_repository.dart';
+import '../datasources/group_mock_data_source.dart';
 import '../datasources/group_supabase_data_source.dart';
 import '../models/group_model_mapper.dart';
+import 'group_mock_repository.dart';
 
 final groupRepositoryProvider = Provider<GroupRepository>((ref) {
   final client = ref.watch(supabaseClientProvider);
+  if (ref.watch(useMockDataModeProvider)) {
+    return GroupMockRepository(
+      GroupMockDataSource(
+        currentUserId:
+            ref.watch(currentSessionProvider)?.user.id ?? 'mock-user-id',
+      ),
+    );
+  }
   return GroupRepositoryImpl(client);
 });
 
@@ -729,6 +739,22 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<void> updateMemberRole({
+    required String groupId,
+    required String userId,
+    required GroupRole role,
+  }) {
+    return _guard(
+      'update group member role',
+      () => _remote.updateMemberRole(
+        groupId: groupId,
+        userId: userId,
+        role: role,
+      ),
+    );
+  }
+
+  @override
   Future<void> leaveGroup(String groupId) {
     return _guard('leave group', () => _remote.leaveGroup(groupId));
   }
@@ -860,6 +886,25 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<void> updateCommunityPost({
+    required String postId,
+    required String content,
+  }) {
+    return _guard(
+      'update group community post',
+      () => _remote.updateCommunityPost(postId: postId, content: content),
+    );
+  }
+
+  @override
+  Future<void> deleteCommunityPost(String postId) {
+    return _guard(
+      'delete group community post',
+      () => _remote.deleteCommunityPost(postId),
+    );
+  }
+
+  @override
   Future<void> addCommunityPostComment({
     required String postId,
     required String content,
@@ -867,6 +912,28 @@ class GroupRepositoryImpl implements GroupRepository {
     return _guard(
       'add group community comment',
       () => _remote.addCommunityPostComment(postId: postId, content: content),
+    );
+  }
+
+  @override
+  Future<void> updateCommunityPostComment({
+    required String commentId,
+    required String content,
+  }) {
+    return _guard(
+      'update group community post comment',
+      () => _remote.updateCommunityPostComment(
+        commentId: commentId,
+        content: content,
+      ),
+    );
+  }
+
+  @override
+  Future<void> deleteCommunityPostComment(String commentId) {
+    return _guard(
+      'delete group community post comment',
+      () => _remote.deleteCommunityPostComment(commentId),
     );
   }
 
@@ -920,6 +987,16 @@ class GroupRepositoryImpl implements GroupRepository {
                   ),
                 )
                 .toList(growable: false);
+            final votes = (row['votes'] as List? ?? const []).map(
+              (item) => Map<String, dynamic>.from(item as Map),
+            );
+            String? selectedOptionId;
+            for (final vote in votes) {
+              if (vote['user_id'] == currentUserId) {
+                selectedOptionId = vote['option_id'] as String?;
+                break;
+              }
+            }
             return GroupPoll(
               id: row['id'] as String,
               groupId: row['group_id'] as String,
@@ -927,6 +1004,7 @@ class GroupRepositoryImpl implements GroupRepository {
               options: options,
               isClosed: row['is_closed'] as bool? ?? false,
               createdAt: DateTime.parse(row['created_at'] as String),
+              selectedOptionId: selectedOptionId,
             );
           })
           .toList(growable: false);
@@ -1213,6 +1291,8 @@ class GroupRepositoryImpl implements GroupRepository {
     } on PostgrestException catch (error, stackTrace) {
       AppLogger.error(operation, error, stackTrace);
       if (error.message.startsWith('GROUP_') ||
+          error.message.startsWith('CHALLENGE_') ||
+          error.message.startsWith('POLL_') ||
           error.message == 'AUTH_REQUIRED' ||
           error.message == 'NOT_FOUND') {
         throw AppException(error.message, code: error.message);

@@ -89,12 +89,6 @@ class AppConstants {
     defaultValue: false,
   );
 
-  static const turnstileSiteKey = String.fromEnvironment('TURNSTILE_SITE_KEY');
-  static const turnstileBaseUrl = String.fromEnvironment('TURNSTILE_BASE_URL');
-
-  static bool get hasTurnstileConfig =>
-      turnstileSiteKey.isNotEmpty && turnstileBaseUrl.isNotEmpty;
-
   // --- OCR ---
   static const ocrApiUrl = String.fromEnvironment(
     'OCR_API_URL',
@@ -103,12 +97,12 @@ class AppConstants {
   );
   static const ocrRequestTimeout = Duration(seconds: 30);
 
-  /// Call once at app startup. The app is production-data only, so missing
-  /// Supabase config is a startup error in every build mode.
+  /// Call once at app startup. Debug builds can use the in-memory mock mode;
+  /// release builds must always provide real Supabase credentials.
   static void assertSupabaseConfig() {
-    if (!hasSupabaseConfig) {
+    if (kReleaseMode && !hasSupabaseConfig) {
       throw StateError(
-        'SUPABASE_URL and SUPABASE_ANON_KEY must be set via --dart-define before app startup.',
+        'SUPABASE_URL and SUPABASE_ANON_KEY must be set via --dart-define for release builds.',
       );
     }
   }

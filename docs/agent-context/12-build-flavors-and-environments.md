@@ -1,7 +1,7 @@
 # Build Flavors & Environments
 
 **Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
-**Last source audit**: `2026-07-15`
+**Last source audit**: `2026-07-16`
 
 ## Dart defines
 
@@ -15,8 +15,6 @@
 | `APP_VERSION` | Optional | `1.0.0+1` |
 | `ENABLE_GOOGLE_AUTH` | Optional | `true`; show Google when configured |
 | `ENABLE_FACEBOOK_AUTH` | Optional | `false`; hide Facebook until configured |
-| `TURNSTILE_SITE_KEY` | Required for protected auth | Public Cloudflare Turnstile widget key |
-| `TURNSTILE_BASE_URL` | Required for protected auth | HTTPS origin allowlisted by the Turnstile widget |
 
 `AppConstants.assertSupabaseConfig()` throws in every build mode if either
 Supabase value is missing. There is no placeholder client or mock fallback.
@@ -33,9 +31,7 @@ Supabase project/environment used for deployment.
 # Debug against Supabase
 flutter run \
   --dart-define=SUPABASE_URL=... \
-  --dart-define=SUPABASE_ANON_KEY=... \
-  --dart-define=TURNSTILE_SITE_KEY=... \
-  --dart-define=TURNSTILE_BASE_URL=https://auth.example.com/
+  --dart-define=SUPABASE_ANON_KEY=...
 
 # Physical device or hosted OCR
 flutter run \

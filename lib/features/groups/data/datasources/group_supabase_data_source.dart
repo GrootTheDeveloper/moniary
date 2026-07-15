@@ -473,6 +473,21 @@ class GroupSupabaseDataSource {
     );
   }
 
+  Future<void> updateMemberRole({
+    required String groupId,
+    required String userId,
+    required GroupRole role,
+  }) {
+    return client.rpc(
+      'update_group_member_role',
+      params: {
+        'p_group_id': groupId,
+        'p_user_id': userId,
+        'p_role': role.value,
+      },
+    );
+  }
+
   Future<void> leaveGroup(String groupId) {
     return client
         .rpc('leave_expense_group', params: {'p_group_id': groupId})
@@ -600,6 +615,23 @@ class GroupSupabaseDataSource {
     return row['id'] as String;
   }
 
+  Future<void> updateCommunityPost({
+    required String postId,
+    required String content,
+  }) {
+    return client
+        .from('group_community_posts')
+        .update({'content': content.trim()})
+        .eq('id', postId);
+  }
+
+  Future<void> deleteCommunityPost(String postId) {
+    return client
+        .from('group_community_posts')
+        .update({'deleted_at': DateTime.now().toUtc().toIso8601String()})
+        .eq('id', postId);
+  }
+
   Future<String> createCommunityMedia({
     required String groupId,
     required String postId,
@@ -645,6 +677,23 @@ class GroupSupabaseDataSource {
     });
   }
 
+  Future<void> updateCommunityPostComment({
+    required String commentId,
+    required String content,
+  }) {
+    return client
+        .from('group_community_post_comments')
+        .update({'content': content.trim()})
+        .eq('id', commentId);
+  }
+
+  Future<void> deleteCommunityPostComment(String commentId) {
+    return client
+        .from('group_community_post_comments')
+        .delete()
+        .eq('id', commentId);
+  }
+
   Future<void> toggleCommunityPostReaction({
     required String postId,
     required String emoji,
@@ -666,7 +715,10 @@ class GroupSupabaseDataSource {
   Future<List<Map<String, dynamic>>> fetchPolls(String groupId) async {
     final rows = await client
         .from('group_polls')
-        .select('*, options:group_poll_options(id,label,vote_count)')
+        .select(
+          '*, options:group_poll_options(id,label,vote_count), '
+          'votes:group_poll_votes(user_id,option_id)',
+        )
         .eq('group_id', groupId)
         .order('created_at', ascending: false);
     return _rows(rows);
@@ -727,12 +779,14 @@ class GroupSupabaseDataSource {
     required int amount,
     String? note,
   }) {
-    return client.from('group_savings_contributions').insert({
-      'challenge_id': challengeId,
-      'amount': amount,
-      'note': note,
-      'user_id': client.auth.currentUser!.id,
-    });
+    return client.rpc(
+      'add_group_savings_contribution',
+      params: {
+        'p_challenge_id': challengeId,
+        'p_amount': amount,
+        'p_note': note,
+      },
+    );
   }
 
   Future<List<Map<String, dynamic>>> fetchNotifications({

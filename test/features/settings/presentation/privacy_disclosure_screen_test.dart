@@ -14,7 +14,7 @@ Widget _localizedApp(Widget home) {
 }
 
 void main() {
-  testWidgets('third-party services disclose Google, Meta, and Cloudflare', (
+  testWidgets('third-party services disclose configured auth providers', (
     tester,
   ) async {
     await tester.pumpWidget(_localizedApp(const ThirdPartyServicesScreen()));
@@ -26,21 +26,16 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     expect(find.text('Facebook (Meta)'), findsOneWidget);
-    await tester.scrollUntilVisible(
-      find.text('Cloudflare Turnstile'),
-      220,
-      scrollable: find.byType(Scrollable).first,
-    );
-    expect(find.text('Cloudflare Turnstile'), findsOneWidget);
+    expect(find.text('Cloudflare Turnstile'), findsNothing);
   });
 
-  testWidgets('privacy policy discloses auth providers and CAPTCHA', (
+  testWidgets('privacy policy discloses authentication providers', (
     tester,
   ) async {
     await tester.pumpWidget(_localizedApp(const PrivacyPolicyScreen()));
 
     final disclosure = find.textContaining(
-      'When you choose Google or Facebook (Meta) sign-in',
+      'When you choose email, Google, or Facebook (Meta) sign-in',
     );
     await tester.scrollUntilVisible(
       disclosure,
@@ -53,10 +48,10 @@ void main() {
       'email, Google, or Facebook (Meta)',
     );
     await tester.scrollUntilVisible(
-      personalInfo,
+      personalInfo.last,
       300,
       scrollable: find.byType(Scrollable).first,
     );
-    expect(personalInfo, findsOneWidget);
+    expect(personalInfo, findsWidgets);
   });
 }

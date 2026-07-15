@@ -101,6 +101,7 @@ class GroupPoll {
     required this.options,
     required this.isClosed,
     required this.createdAt,
+    this.selectedOptionId,
   });
   final String id;
   final String groupId;
@@ -108,6 +109,7 @@ class GroupPoll {
   final List<GroupPollOption> options;
   final bool isClosed;
   final DateTime createdAt;
+  final String? selectedOptionId;
 }
 
 class GroupSavingsChallenge {

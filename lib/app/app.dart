@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/constants/app_constants.dart';
@@ -31,7 +32,8 @@ import 'app_router.dart';
 import 'app_theme.dart';
 import '../features/settings/application/privacy_controller.dart';
 import '../features/notifications/data/repositories/notification_repository_impl.dart';
-import '../features/notifications/presentation/screens/notification_center_screen.dart';
+import '../features/notifications/application/notification_delivery_preferences_controller.dart';
+import '../features/notifications/presentation/notification_route_resolver.dart';
 
 class MoniaryApp extends ConsumerStatefulWidget {
   const MoniaryApp({super.key});
@@ -325,6 +327,29 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
       return;
     }
     final service = ref.read(fcmPushNotificationServiceProvider);
+    var pushEnabled = false;
+    try {
+      final preferences = await ref.read(
+        notificationDeliveryPreferencesControllerProvider.future,
+      );
+      pushEnabled = preferences.pushEnabled;
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to load push preferences during startup',
+        error,
+        stackTrace,
+      );
+    }
+    var deviceTimezone = AppConstants.defaultTimezone;
+    try {
+      deviceTimezone = await FlutterTimezone.getLocalTimezone();
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to detect timezone for push registration',
+        error,
+        stackTrace,
+      );
+    }
     await service.initialize(
       onToken: (token) => ref
           .read(notificationRepositoryProvider)
@@ -334,30 +359,26 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
                 ? 'ios'
                 : 'android',
             locale: ref.read(preferredLocaleProvider),
-            timezone: AppConstants.defaultTimezone,
+            timezone: deviceTimezone,
           ),
-      onTap: (_) async {
-        // The inbox is the safe fallback when a push arrives before auth or
-        // app-lock routing has completed. The in-app tile then opens the
-        // exact Group/Friends target with the normal repository boundary.
+      onTap: (payload) async {
+        final destination = NotificationRouteResolver.resolvePayload(payload);
         final router = ref.read(appRouterProvider);
         if (ref.read(currentSessionProvider) == null) {
-          ref
-              .read(pendingDeepLinkProvider.notifier)
-              .set(NotificationCenterScreen.routePath);
+          ref.read(pendingDeepLinkProvider.notifier).set(destination);
           router.go(LoginScreen.routePath);
           return;
         }
         final privacyState = ref.read(privacyControllerProvider);
         if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
-          ref
-              .read(pendingDeepLinkProvider.notifier)
-              .set(NotificationCenterScreen.routePath);
+          ref.read(pendingDeepLinkProvider.notifier).set(destination);
           router.go(AppLockScreen.routePath);
           return;
         }
-        router.go(NotificationCenterScreen.routePath);
+        router.go(destination);
       },
+      requestPermission: false,
+      registerDevice: pushEnabled,
     );
   }
 }

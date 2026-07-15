@@ -36,15 +36,33 @@ class AuthController extends AsyncNotifier<void> {
     });
   }
 
-  Future<void> signInAnonymously({String? captchaToken}) async {
+  Future<void> signInAnonymously() async {
     if (_isProcessing) return;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
       final session = await ref
           .read(authRepositoryProvider)
-          .signInAnonymously(captchaToken: captchaToken);
+          .signInAnonymously();
 
+      _applySignedInSession(session);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> startGuestSession() async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      final session = await ref
+          .read(authRepositoryProvider)
+          .startGuestSession();
       _applySignedInSession(session);
       state = const AsyncData(null);
     } catch (e, st) {
@@ -62,6 +80,7 @@ class AuthController extends AsyncNotifier<void> {
     try {
       await _unregisterPushDevice();
       await ref.read(authRepositoryProvider).signOut();
+      ref.read(mockSessionProvider.notifier).setSession(null);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -312,7 +331,6 @@ class AuthController extends AsyncNotifier<void> {
   Future<void> signInWithEmail({
     required String email,
     required String password,
-    String? captchaToken,
   }) async {
     if (_isProcessing) return;
     _isProcessing = true;
@@ -320,11 +338,7 @@ class AuthController extends AsyncNotifier<void> {
     try {
       final session = await ref
           .read(authRepositoryProvider)
-          .signInWithEmail(
-            email: email,
-            password: password,
-            captchaToken: captchaToken,
-          );
+          .signInWithEmail(email: email, password: password);
 
       _applySignedInSession(session);
       state = const AsyncData(null);
@@ -339,7 +353,6 @@ class AuthController extends AsyncNotifier<void> {
   Future<bool> signUpWithEmail({
     required String email,
     required String password,
-    String? captchaToken,
   }) async {
     if (_isProcessing) return true;
     _isProcessing = true;
@@ -347,11 +360,7 @@ class AuthController extends AsyncNotifier<void> {
     try {
       final session = await ref
           .read(authRepositoryProvider)
-          .signUpWithEmail(
-            email: email,
-            password: password,
-            captchaToken: captchaToken,
-          );
+          .signUpWithEmail(email: email, password: password);
       _applySignedInSession(session);
       state = const AsyncData(null);
       return session == null;
@@ -363,17 +372,12 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> requestPasswordReset(
-    String email, {
-    String? captchaToken,
-  }) async {
+  Future<void> requestPasswordReset(String email) async {
     if (_isProcessing) return;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      await ref
-          .read(authRepositoryProvider)
-          .requestPasswordReset(email, captchaToken: captchaToken);
+      await ref.read(authRepositoryProvider).requestPasswordReset(email);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -430,6 +434,9 @@ class AuthController extends AsyncNotifier<void> {
 
   void _applySignedInSession(Session? session) {
     if (session == null) return;
+    if (session.user.id == 'mock-user-id') {
+      ref.read(mockSessionProvider.notifier).setSession(session);
+    }
     ref.invalidate(currentProfileProvider);
   }
 }

@@ -41,7 +41,6 @@ dependencies:
   timezone: ^0.10.1
   firebase_core: ^4.12.1
   firebase_messaging: ^16.4.3
-  cloudflare_turnstile: ^3.7.2
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +55,8 @@ flutter:
     - assets/brand/
     - assets/mascot/
     - assets/mascot/generated/frames/
+    - assets/demo_transactions/
+    - assets/demo_avatars/
     - assets/fonts/OFL-Manrope.txt
     - assets/fonts/OFL-Newsreader.txt
     - assets/fonts/OFL-JetBrainsMono.txt

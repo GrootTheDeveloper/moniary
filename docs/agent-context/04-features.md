@@ -113,13 +113,28 @@
   lifecycle RPC.
 - **Member and settlement controls**: owners can transfer ownership; owners and
   admins can remove permitted members only after their balances and settlements
-  are resolved. Settlement participants can open a dispute with a reason.
+  are resolved. Owners can promote or demote active members between `admin` and
+  `member` from the dedicated member screen. Settlement participants can open a
+  dispute with a reason.
 - **Community UX**: the Community branch is a member-only feed with a real
   composer for text and multi-photo posts. Polls, savings challenges, member
-  activities, settlement milestones, and recent group transactions are shown
-  as feed cards. The private Album combines transaction receipts with
-  standalone memory/receipt media; media remains accessible only to active
-  group members through the private storage bucket.
+  posts, reactions, and comments are shown as feed cards. Expense transactions
+  stay on Group Home, while system/member activities stay in the management
+  audit log. Post/comment authors and group admins can edit or delete permitted
+  content. Poll votes retain the current member's persisted choice. Savings
+  contributions are integer-only, cannot exceed the locked remaining target,
+  and automatically complete the challenge. The private Album combines
+  transaction receipts with standalone memory/receipt media; media remains
+  accessible only to active group members through the private storage bucket.
+- **Community creation stability**: post, poll, and challenge forms open
+  directly from the stable screen tree; no delayed bottom-sheet-to-dialog
+  overlay chain is used. Money inputs use a shared locale-aware integer
+  formatter and keep integer domain values.
+- **Scoped notification inbox**: Group Shell notification tabs query the same
+  unified notification model as the global inbox, filtered by `group_id`.
+  Group badge/read-all actions affect only that group. Community updates are
+  delivered to this inbox and are not rendered as success/activity cards in
+  the Community feed.
 - **Screens**: group list/detail/create, invite member, shared-invite
   acceptance, direct-invitations inbox, activity/notifications center,
   Community feed/composer, private album upload, add/detail transaction, member
@@ -213,8 +228,9 @@
 ## Auth, Onboarding, and Splash
 
 - **Auth methods**: email sign-in/sign-up/password reset, Google/Facebook
-  OAuth, and CAPTCHA-protected Supabase anonymous sign-in. There is no demo or
-  mock authentication path.
+  OAuth, and Supabase anonymous sign-in. CAPTCHA is disabled. Debug Mock Mode
+  accepts the seeded demo credentials `a@gmail.com` / `12345678`; configured
+  builds continue to use real Supabase authentication.
 - **Account linking**: email upgrade sends confirmation first, persists the
   originating user/email pair, and only sets a password after the callback;
   Google identity linking persists the originating user, verifies the returned

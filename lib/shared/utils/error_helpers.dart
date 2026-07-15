@@ -23,8 +23,6 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.errorNotFound;
       case 'AUTH_NETWORK_ERROR':
         return l10n.errorConnection;
-      case 'AUTH_CAPTCHA_REQUIRED':
-        return l10n.anonymousCaptchaRequired;
       case 'AUTH_SIGN_IN_FAILED':
       case 'AUTH_SIGN_UP_FAILED':
       case 'AUTH_SIGN_OUT_FAILED':
@@ -108,6 +106,7 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupMemberRemoveUnresolved;
       case 'GROUP_MEMBER_REMOVE_FORBIDDEN':
       case 'GROUP_OWNER_TARGET_INVALID':
+      case 'GROUP_MEMBER_ROLE_FORBIDDEN':
         return l10n.groupMemberActionForbidden;
       case 'GROUP_LEAVE_UNRESOLVED':
         return l10n.groupLeaveBlocked;
@@ -125,6 +124,10 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupCommentRequired;
       case 'GROUP_COMMENT_OWNER_REQUIRED':
         return l10n.groupActionFailed;
+      case 'GROUP_COMMUNITY_POST_REQUIRED':
+        return l10n.groupCommunityPostEmpty;
+      case 'GROUP_COMMUNITY_POST_FORBIDDEN':
+        return l10n.groupMemberActionForbidden;
       case 'GROUP_ARCHIVE_UNRESOLVED':
         return l10n.groupSettingsArchiveBlocked;
       case 'GROUP_ADMIN_REQUIRED':
@@ -133,6 +136,13 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupTransactionCreatorOnly;
       case 'GROUP_TRANSACTION_SETTLEMENT_LOCKED':
         return l10n.groupTransactionSettlementLocked;
+      case 'CHALLENGE_NOT_ACTIVE':
+      case 'CHALLENGE_NOT_AVAILABLE':
+        return l10n.groupCommunityChallengeClosed;
+      case 'CHALLENGE_CONTRIBUTION_INVALID':
+        return l10n.groupCommunityContributionInvalid;
+      case 'CHALLENGE_CONTRIBUTION_EXCEEDS_REMAINING':
+        return l10n.groupCommunityContributionExceedsRemaining;
       case 'FRIEND_USER_NOT_FOUND':
         return l10n.friendUserNotFound;
       case 'FRIEND_CANNOT_ADD_SELF':
@@ -199,7 +209,6 @@ String? _authErrorMessage(BuildContext context, String? code) {
     'weak_password' => l10n.authErrorWeakPassword,
     'signup_disabled' => l10n.authErrorSignupDisabled,
     'AUTH_OAUTH_LAUNCH_FAILED' => l10n.authErrorBrowserLaunch,
-    'captcha_failed' => l10n.anonymousCaptchaFailed,
     _ => null,
   };
 }

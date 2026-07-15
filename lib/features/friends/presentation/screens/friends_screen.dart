@@ -9,6 +9,7 @@ import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/friend_controller.dart';
 import '../../domain/entities/friend_profile.dart';
@@ -155,7 +156,12 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                     actionLoading: action.isLoading,
                     onAdd: () => context.push(AddFriendScreen.routePath),
                     onShare: () => _shareInviteLink(context, ref),
-                    onRemove: (friend) => _showFriendActions(
+                    onFriendTap: (friend) => _showFriendDetail(
+                      context: context,
+                      friend: friend,
+                      onRemove: () => _confirmRemove(context, ref, friend),
+                    ),
+                    onFriendAction: (friend) => _showFriendActions(
                       context: context,
                       friend: friend,
                       onRemove: () => _confirmRemove(context, ref, friend),
@@ -215,9 +221,13 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     WidgetRef ref,
     FriendRequest request,
   ) async {
-    await ref
-        .read(friendActionControllerProvider.notifier)
-        .acceptRequest(request.id);
+    try {
+      await ref
+          .read(friendActionControllerProvider.notifier)
+          .acceptRequest(request.id);
+    } catch (_) {
+      return;
+    }
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
@@ -229,9 +239,13 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     WidgetRef ref,
     FriendRequest request,
   ) async {
-    await ref
-        .read(friendActionControllerProvider.notifier)
-        .declineRequest(request.id);
+    try {
+      await ref
+          .read(friendActionControllerProvider.notifier)
+          .declineRequest(request.id);
+    } catch (_) {
+      return;
+    }
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
@@ -326,9 +340,13 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     WidgetRef ref,
     FriendRequest request,
   ) async {
-    await ref
-        .read(friendActionControllerProvider.notifier)
-        .cancelRequest(request.id);
+    try {
+      await ref
+          .read(friendActionControllerProvider.notifier)
+          .cancelRequest(request.id);
+    } catch (_) {
+      return;
+    }
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.l10n.friendRequestCancelled)),
@@ -388,7 +406,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.surface,
+        backgroundColor: context.moniaryColors.surface,
         title: Text(context.l10n.friendRemoveTitle),
         content: Text(context.l10n.friendRemoveMessage(friend.displayName)),
         actions: [
@@ -404,13 +422,31 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
       ),
     );
     if (confirmed != true) return;
-    await ref
-        .read(friendActionControllerProvider.notifier)
-        .removeFriend(friend.userId);
+    try {
+      await ref
+          .read(friendActionControllerProvider.notifier)
+          .removeFriend(friend.userId);
+    } catch (_) {
+      return;
+    }
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(context.l10n.friendRemoved)));
+  }
+
+  Future<void> _showFriendDetail({
+    required BuildContext context,
+    required FriendProfile friend,
+    required VoidCallback onRemove,
+  }) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: context.moniaryColors.surface,
+      showDragHandle: true,
+      builder: (context) =>
+          _FriendDetailSheet(friend: friend, onRemove: onRemove),
+    );
   }
 }
 
@@ -438,7 +474,7 @@ class _FriendsTopBar extends StatelessWidget {
           _IconSquareButton(
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             onPressed: onBack,
-            icon: Icons.arrow_back_ios_new_rounded,
+            icon: Icons.arrow_back_ios_new_outlined,
           ),
           Expanded(
             child: Center(
@@ -469,7 +505,7 @@ class _FriendsTopBar extends StatelessWidget {
               _IconSquareButton(
                 tooltip: context.l10n.friendAdd,
                 onPressed: onAdd,
-                icon: Icons.person_add_alt_1_rounded,
+                icon: Icons.person_add_alt_1_outlined,
                 filled: true,
               ),
             ],
@@ -541,8 +577,8 @@ class _IconSquareButton extends StatelessWidget {
           onTap: onPressed,
           borderRadius: BorderRadius.circular(13),
           child: Container(
-            width: 42,
-            height: 42,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(13),
               border: filled ? null : Border.all(color: colors.outline),
@@ -584,7 +620,7 @@ class _FriendRequestBadge extends StatelessWidget {
         child: Text(
           count > 99 ? '99+' : '$count',
           style: context.moniaryTypography.metadataStrong.copyWith(
-            color: AppTheme.surfaceRaised,
+            color: context.moniaryColors.surfaceRaised,
             fontSize: 9,
             letterSpacing: 0,
           ),
@@ -613,7 +649,11 @@ class _SearchField extends StatelessWidget {
       ),
       decoration: InputDecoration(
         hintText: context.l10n.friendSearchPlaceholder,
-        prefixIcon: Icon(Icons.search_rounded, color: colors.textDim, size: 22),
+        prefixIcon: Icon(
+          Icons.search_outlined,
+          color: colors.textDim,
+          size: 22,
+        ),
         filled: true,
         fillColor: colors.surface.withValues(alpha: 0.72),
         contentPadding: const EdgeInsets.symmetric(
@@ -641,7 +681,8 @@ class _FriendsSection extends StatelessWidget {
     required this.actionLoading,
     required this.onAdd,
     required this.onShare,
-    required this.onRemove,
+    required this.onFriendTap,
+    required this.onFriendAction,
   });
 
   final List<FriendProfile> friends;
@@ -650,7 +691,8 @@ class _FriendsSection extends StatelessWidget {
   final bool actionLoading;
   final VoidCallback onAdd;
   final VoidCallback onShare;
-  final ValueChanged<FriendProfile> onRemove;
+  final ValueChanged<FriendProfile> onFriendTap;
+  final ValueChanged<FriendProfile> onFriendAction;
 
   @override
   Widget build(BuildContext context) {
@@ -678,7 +720,10 @@ class _FriendsSection extends StatelessWidget {
             _FriendRow(
               friend: friends[index],
               showDivider: index != friends.length - 1,
-              onTap: actionLoading ? null : () => onRemove(friends[index]),
+              onTap: actionLoading ? null : () => onFriendTap(friends[index]),
+              onMore: actionLoading
+                  ? null
+                  : () => onFriendAction(friends[index]),
             ),
       ],
     );
@@ -690,11 +735,13 @@ class _FriendRow extends StatelessWidget {
     required this.friend,
     required this.showDivider,
     required this.onTap,
+    required this.onMore,
   });
 
   final FriendProfile friend;
   final bool showDivider;
   final VoidCallback? onTap;
+  final VoidCallback? onMore;
 
   @override
   Widget build(BuildContext context) {
@@ -703,7 +750,7 @@ class _FriendRow extends StatelessWidget {
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 320;
         return Material(
-          color: Colors.transparent,
+          color: colors.surface.withValues(alpha: 0),
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(12),
@@ -726,7 +773,7 @@ class _FriendRow extends StatelessWidget {
                       imagePath: friend.avatarPath,
                       width: 48,
                       height: 48,
-                      fallbackIcon: Icons.person_outline_rounded,
+                      fallbackIcon: Icons.person_outline,
                       fallbackBuilder: (context) =>
                           _AvatarFallback(friend: friend),
                     ),
@@ -773,6 +820,17 @@ class _FriendRow extends StatelessWidget {
                     const SizedBox(width: 10),
                     _FriendBalance(profile: friend),
                   ],
+                  const SizedBox(width: 4),
+                  IconButton(
+                    tooltip: context.l10n.friendActions,
+                    onPressed: onMore,
+                    icon: const Icon(Icons.more_vert_outlined),
+                    constraints: const BoxConstraints.tightFor(
+                      width: 44,
+                      height: 44,
+                    ),
+                    padding: EdgeInsets.zero,
+                  ),
                 ],
               ),
             ),
@@ -839,8 +897,8 @@ class _FriendBalance extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text(
-            amount,
+          ObscurableAmountText(
+            amountText: amount,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: context.moniaryTypography.metadataStrong.copyWith(
@@ -892,13 +950,13 @@ class _RequestSection extends StatelessWidget {
                 _RequestIconButton(
                   tooltip: context.l10n.friendDecline,
                   onPressed: actionLoading ? null : () => onDecline(request),
-                  icon: const Icon(Icons.close_rounded),
+                  icon: const Icon(Icons.close_outlined),
                 ),
                 const SizedBox(width: 6),
                 _RequestIconButton(
                   tooltip: context.l10n.friendAccept,
                   onPressed: actionLoading ? null : () => onAccept(request),
-                  icon: const Icon(Icons.check_rounded),
+                  icon: const Icon(Icons.check_outlined),
                   filled: true,
                 ),
               ],
@@ -1054,20 +1112,20 @@ class _RequestIconButton extends StatelessWidget {
             tooltip: tooltip,
             onPressed: onPressed,
             icon: icon,
-            constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+            constraints: const BoxConstraints.tightFor(width: 44, height: 44),
             padding: EdgeInsets.zero,
             style: IconButton.styleFrom(
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              tapTargetSize: MaterialTapTargetSize.padded,
             ),
           )
         : IconButton(
             tooltip: tooltip,
             onPressed: onPressed,
             icon: icon,
-            constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+            constraints: const BoxConstraints.tightFor(width: 44, height: 44),
             padding: EdgeInsets.zero,
             style: IconButton.styleFrom(
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              tapTargetSize: MaterialTapTargetSize.padded,
             ),
           );
 
@@ -1135,7 +1193,7 @@ class _EmptyFriendsState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.people_outline_rounded, size: 56, color: colors.textDim),
+          Icon(Icons.people_outline, size: 56, color: colors.textDim),
           const SizedBox(height: 16),
           Text(
             context.l10n.friendNoFriends,
@@ -1162,18 +1220,179 @@ class _EmptyFriendsState extends StatelessWidget {
             children: [
               FilledButton.icon(
                 onPressed: onAdd,
-                icon: const Icon(Icons.person_add_alt_1_rounded),
+                icon: const Icon(Icons.person_add_alt_1_outlined),
                 label: Text(context.l10n.friendAdd),
               ),
               IconButton.outlined(
                 tooltip: context.l10n.friendShareInviteLink,
                 onPressed: onShare,
-                icon: const Icon(Icons.ios_share_rounded),
+                icon: const Icon(Icons.ios_share_outlined),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+}
+
+class _FriendDetailSheet extends ConsumerWidget {
+  const _FriendDetailSheet({required this.friend, required this.onRemove});
+
+  final FriendProfile friend;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.moniaryColors;
+    final balance = friend.currentUserBalance;
+    final balanceText = balance == 0
+        ? ref.formatAmount(0)
+        : '${balance > 0 ? '+' : '-'}${ref.formatAmount(balance.abs())}';
+    final since = friend.friendsSince == null
+        ? context.l10n.commonUnknown
+        : MaterialLocalizations.of(
+            context,
+          ).formatMediumDate(friend.friendsSince!);
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              context.l10n.friendDetailTitle,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: colors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                ClipOval(
+                  child: SupabaseImage(
+                    imagePath: friend.avatarPath,
+                    width: 64,
+                    height: 64,
+                    fallbackIcon: Icons.person_outline,
+                    fallbackBuilder: (context) =>
+                        _AvatarFallback(friend: friend),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        friend.displayName,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      if (friend.displayUsername.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          friend.displayUsername,
+                          style: context.moniaryTypography.metadata.copyWith(
+                            color: colors.textDim,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            _FriendDetailValue(
+              label: context.l10n.friendFriendsSince,
+              value: since,
+            ),
+            const SizedBox(height: 12),
+            _FriendDetailValue(
+              label: context.l10n.friendSharedGroupsLabel,
+              value: '${friend.sharedGroupCount}',
+            ),
+            const SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    context.l10n.friendBalance,
+                    style: context.moniaryTypography.metadata.copyWith(
+                      color: colors.textDim,
+                    ),
+                  ),
+                ),
+                ObscurableAmountText(
+                  amountText: balanceText,
+                  style: context.moniaryTypography.metadataStrong.copyWith(
+                    color: balance > 0
+                        ? colors.success
+                        : balance < 0
+                        ? colors.danger
+                        : colors.textDim,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            OutlinedButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+                onRemove();
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: colors.danger,
+                side: BorderSide(color: colors.danger.withValues(alpha: 0.4)),
+              ),
+              icon: const Icon(Icons.person_remove_alt_1_outlined),
+              label: Text(context.l10n.friendRemove),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FriendDetailValue extends StatelessWidget {
+  const _FriendDetailValue({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: context.moniaryTypography.metadata.copyWith(
+              color: colors.textDim,
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: context.moniaryTypography.metadataStrong.copyWith(
+              color: colors.textPrimary,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

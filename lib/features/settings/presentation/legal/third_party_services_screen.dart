@@ -34,11 +34,6 @@ class ThirdPartyServicesScreen extends StatelessWidget {
               description: context.l10n.thirdPartyMetaDescription,
             ),
             _ServiceItem(
-              icon: Icons.verified_user_outlined,
-              title: context.l10n.thirdPartyCloudflareTitle,
-              description: context.l10n.thirdPartyCloudflareDescription,
-            ),
-            _ServiceItem(
               icon: Icons.auto_awesome_outlined,
               title: 'Google Gemini',
               description: context.l10n.thirdPartyGeminiDescription,

@@ -132,9 +132,9 @@ class _InviteBody extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: 24),
-        const Icon(
+        Icon(
           Icons.person_add_alt_1_outlined,
-          color: AppTheme.mint,
+          color: context.moniaryColors.primary,
           size: 64,
         ),
         const SizedBox(height: 20),
@@ -227,7 +227,7 @@ class _MessageState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Icon(icon, size: 64, color: AppTheme.mintSoft),
+          Icon(icon, size: 64, color: context.moniaryColors.primary),
           const SizedBox(height: 16),
           Text(
             title,

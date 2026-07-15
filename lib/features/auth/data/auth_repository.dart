@@ -17,15 +17,14 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 class AuthRepository {
   AuthRepository(this._client);
 
+  static const _mockLoginEmail = 'a@gmail.com';
+  static const _mockLoginPassword = '12345678';
+
   final SupabaseClient _client;
 
-  Future<Session?> signInAnonymously({String? captchaToken}) async {
-    final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
-
+  Future<Session?> signInAnonymously() async {
     try {
-      final response = await _client.auth.signInAnonymously(
-        captchaToken: normalizedCaptchaToken,
-      );
+      final response = await _client.auth.signInAnonymously();
       await _initializeUserIfPossible();
       return response.session;
     } on AuthException catch (e, st) {
@@ -38,7 +37,11 @@ class AuthRepository {
     }
   }
 
+  Future<Session> startGuestSession() async => _mockSession();
+
   Future<void> signOut() async {
+    if (!AppConstants.hasSupabaseConfig) return;
+
     try {
       await _client.auth.signOut();
     } catch (e, st) {
@@ -281,15 +284,24 @@ class AuthRepository {
   Future<Session?> signInWithEmail({
     required String email,
     required String password,
-    String? captchaToken,
   }) async {
-    final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
+    if (!AppConstants.hasSupabaseConfig) {
+      final normalizedEmail = email.trim().toLowerCase();
+      if (normalizedEmail == _mockLoginEmail &&
+          password == _mockLoginPassword) {
+        return _mockSession(email: _mockLoginEmail);
+      }
+      throw const AppException(
+        'Invalid mock credentials',
+        code: 'invalid_credentials',
+      );
+    }
+
     try {
       AppLogger.info('Attempting email sign-in');
       final response = await _client.auth.signInWithPassword(
         email: email,
         password: password,
-        captchaToken: normalizedCaptchaToken,
       );
       AppLogger.info('Email sign-in RPC success, initializing user...');
       await _initializeUserIfPossible();
@@ -309,15 +321,12 @@ class AuthRepository {
   Future<Session?> signUpWithEmail({
     required String email,
     required String password,
-    String? captchaToken,
   }) async {
-    final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
     try {
       final response = await _client.auth.signUp(
         email: email,
         password: password,
         emailRedirectTo: AppConstants.supabaseLoginCallbackUrl,
-        captchaToken: normalizedCaptchaToken,
       );
 
       if (response.session != null) {
@@ -336,18 +345,13 @@ class AuthRepository {
     }
   }
 
-  Future<void> requestPasswordReset(
-    String email, {
-    String? captchaToken,
-  }) async {
-    final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
+  Future<void> requestPasswordReset(String email) async {
     try {
       await _client.auth.resetPasswordForEmail(
         email,
         redirectTo: kIsWeb
             ? null
             : AppConstants.supabasePasswordResetCallbackUrl,
-        captchaToken: normalizedCaptchaToken,
       );
     } on AuthException catch (e, st) {
       AppLogger.error('Password reset request failed', e, st);
@@ -403,6 +407,23 @@ class AuthRepository {
     return AppException(error.message, code: error.code);
   }
 
+  Session _mockSession({String? email}) {
+    final user = User(
+      id: 'mock-user-id',
+      appMetadata: const {},
+      userMetadata: const {'full_name': 'Nguyen Minh An'},
+      aud: 'authenticated',
+      email: email,
+      createdAt: '2026-05-28T00:00:00Z',
+    );
+    return Session(
+      accessToken: 'mockAccessToken',
+      tokenType: 'bearer',
+      expiresIn: 3600,
+      user: user,
+    );
+  }
+
   bool _isNetworkError(Object error) {
     final message = error.toString().toLowerCase();
     return message.contains('socketexception') ||
@@ -420,17 +441,6 @@ class AuthRepository {
     } catch (e, st) {
       AppLogger.error('initialize_user RPC failed (non-blocking)', e, st);
     }
-  }
-
-  String _requireCaptchaToken(String? captchaToken) {
-    final normalizedCaptchaToken = captchaToken?.trim();
-    if (normalizedCaptchaToken == null || normalizedCaptchaToken.isEmpty) {
-      throw const AppException(
-        'CAPTCHA is required for this authentication action',
-        code: 'AUTH_CAPTCHA_REQUIRED',
-      );
-    }
-    return normalizedCaptchaToken;
   }
 
   Future<void> _updateProfileLoginProvider({

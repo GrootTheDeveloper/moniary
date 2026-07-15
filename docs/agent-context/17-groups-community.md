@@ -1,11 +1,34 @@
 # Groups & Community — Detailed Reference Specification
 
 **Document type**: `IMPLEMENTATION REFERENCE`
-**Current implementation audit**: `2026-07-10`
+**Current implementation audit**: `2026-07-16`
 
 The feature and its migration are implemented. Use `04-features.md`, current
 Dart source, and `20260611000000_groups_community.sql` for current-state facts.
 The requirements below remain useful for business rules and calculation intent.
+
+## Current Community and notification architecture (2026-07-16)
+
+- Community contains collaborative member content only: posts, multi-photo
+  posts, reactions, comments, polls, and savings challenges.
+- Group expenses remain on Home. System/member changes are audit-log entries
+  under management. They are not duplicated as Community feed cards.
+- Community creation actions open a single sheet or dialog directly. Do not
+  reintroduce delayed bottom-sheet-to-dialog transitions; they can invalidate
+  inherited widget dependencies while Flutter disposes the first overlay.
+- All money fields use `IntegerMoneyInputFormatter`, parse to integer values,
+  and display the active currency. Savings contributions use the locked
+  `add_group_savings_contribution` RPC; direct contribution inserts are denied.
+- Notifications use the unified `AppNotification` inbox. The Group Shell
+  passes `group_id` into pagination, unread summary, and read-all operations,
+  so one group's badge cannot include or clear another group's notifications.
+- Post/comment authors can edit or delete their own content. Owners/admins can
+  moderate it. Polls return the current member's persisted selected option.
+- Owners manage member roles from the dedicated members route. Only the owner
+  can promote/demote; existing ownership transfer remains an explicit action.
+
+The integrity/inbox schema update is
+`20260716030000_group_community_inbox_integrity.sql`.
 
 ## 1. Role and Objective
 

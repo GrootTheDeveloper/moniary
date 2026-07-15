@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../profile/data/profile_repository.dart';
@@ -28,6 +29,10 @@ final postAuthDecisionProvider = FutureProvider<PostAuthDecision>((ref) async {
 
   if (session == null) {
     return const PostAuthDecision(PostAuthDestination.noSession);
+  }
+
+  if (!AppConstants.hasSupabaseConfig && session.user.id == 'mock-user-id') {
+    return const PostAuthDecision(PostAuthDestination.home);
   }
 
   try {

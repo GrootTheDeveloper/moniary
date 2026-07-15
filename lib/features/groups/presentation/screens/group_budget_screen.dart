@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/utils/integer_money_input_formatter.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_roadmap.dart';
@@ -130,7 +130,11 @@ class _GroupBudgetScreenState extends ConsumerState<GroupBudgetScreen> {
                 controller: _limitController,
                 enabled: canEdit,
                 keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                inputFormatters: [
+                  IntegerMoneyInputFormatter(
+                    locale: Localizations.localeOf(context).toString(),
+                  ),
+                ],
                 decoration: InputDecoration(
                   labelText: context.l10n.groupBudgetMonthlyLimit,
                   suffixText: context.l10n.groupBudgetCurrencySuffix,
@@ -181,8 +185,8 @@ class _GroupBudgetScreenState extends ConsumerState<GroupBudgetScreen> {
   }
 
   Future<void> _save() async {
-    final limit = int.tryParse(_limitController.text.trim());
-    if (limit == null || limit < 0) {
+    final limit = parseIntegerMoney(_limitController.text);
+    if (_limitController.text.trim().isEmpty || limit < 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.groupBudgetInvalidLimit)),
       );

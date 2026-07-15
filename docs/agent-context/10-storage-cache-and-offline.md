@@ -20,9 +20,10 @@ data.
 
 ## Runtime data mode
 
-The app is production-data only. Supabase configuration is mandatory at
-startup, and all authenticated or anonymous sessions use backend repositories.
-There is no guest/mock repository fallback.
+Release builds require Supabase configuration. Debug builds without Supabase
+dart-defines use the in-memory mock repositories, including the Groups and
+Community demo data; no mock fallback is used when a configured Supabase
+session is active.
 
 ## Local files
 

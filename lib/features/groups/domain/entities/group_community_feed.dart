@@ -105,6 +105,7 @@ class GroupCommunityPost {
   bool get isPhotoPost => media.isNotEmpty || type == 'photo';
 
   GroupCommunityPost copyWith({
+    String? content,
     List<GroupCommunityReactionSummary>? reactions,
     List<GroupCommunityComment>? comments,
   }) {
@@ -113,7 +114,7 @@ class GroupCommunityPost {
       groupId: groupId,
       authorUserId: authorUserId,
       type: type,
-      content: content,
+      content: content ?? this.content,
       authorName: authorName,
       authorAvatarPath: authorAvatarPath,
       media: media,

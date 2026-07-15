@@ -58,15 +58,14 @@ class _FakeAuthRepository extends AuthRepository {
   var completeEmailLinkCount = 0;
   var completeGoogleLinkCount = 0;
   var cancelRecoveryCount = 0;
-  String? anonymousCaptchaToken;
-  String? emailCaptchaToken;
-  String? signUpCaptchaToken;
-  String? resetCaptchaToken;
+  var anonymousSignInCount = 0;
+  var emailSignInCount = 0;
+  var passwordResetCount = 0;
   String? updatedPassword;
 
   @override
-  Future<Session?> signInAnonymously({String? captchaToken}) async {
-    anonymousCaptchaToken = captchaToken;
+  Future<Session?> signInAnonymously() async {
+    anonymousSignInCount++;
     return _session();
   }
 
@@ -79,9 +78,8 @@ class _FakeAuthRepository extends AuthRepository {
   Future<Session?> signInWithEmail({
     required String email,
     required String password,
-    String? captchaToken,
   }) async {
-    emailCaptchaToken = captchaToken;
+    emailSignInCount++;
     return emailSession;
   }
 
@@ -89,18 +87,13 @@ class _FakeAuthRepository extends AuthRepository {
   Future<Session?> signUpWithEmail({
     required String email,
     required String password,
-    String? captchaToken,
   }) async {
-    signUpCaptchaToken = captchaToken;
     return signUpSession;
   }
 
   @override
-  Future<void> requestPasswordReset(
-    String email, {
-    String? captchaToken,
-  }) async {
-    resetCaptchaToken = captchaToken;
+  Future<void> requestPasswordReset(String email) async {
+    passwordResetCount++;
   }
 
   @override
@@ -199,38 +192,29 @@ void main() {
     );
   });
 
-  test(
-    'auth actions forward CAPTCHA tokens without creating mock state',
-    () async {
-      final repository = _FakeAuthRepository(emailSession: _session());
-      final container = ProviderContainer(
-        overrides: [
-          authRepositoryProvider.overrideWithValue(repository),
-          currentSessionProvider.overrideWithValue(null),
-        ],
-      );
-      addTearDown(container.dispose);
+  test('auth actions run without a security-verification token', () async {
+    final repository = _FakeAuthRepository(emailSession: _session());
+    final container = ProviderContainer(
+      overrides: [
+        authRepositoryProvider.overrideWithValue(repository),
+        currentSessionProvider.overrideWithValue(null),
+      ],
+    );
+    addTearDown(container.dispose);
 
-      await container
-          .read(authControllerProvider.notifier)
-          .signInAnonymously(captchaToken: 'anonymous-token');
-      await container
-          .read(authControllerProvider.notifier)
-          .signInWithEmail(
-            email: 'bee@moniary.app',
-            password: 'password123',
-            captchaToken: 'email-token',
-          );
-      await container
-          .read(authControllerProvider.notifier)
-          .requestPasswordReset('bee@moniary.app', captchaToken: 'reset-token');
+    await container.read(authControllerProvider.notifier).signInAnonymously();
+    await container
+        .read(authControllerProvider.notifier)
+        .signInWithEmail(email: 'bee@moniary.app', password: 'password123');
+    await container
+        .read(authControllerProvider.notifier)
+        .requestPasswordReset('bee@moniary.app');
 
-      expect(repository.anonymousCaptchaToken, 'anonymous-token');
-      expect(repository.emailCaptchaToken, 'email-token');
-      expect(repository.resetCaptchaToken, 'reset-token');
-      expect(container.read(authControllerProvider).hasError, isFalse);
-    },
-  );
+    expect(repository.anonymousSignInCount, 1);
+    expect(repository.emailSignInCount, 1);
+    expect(repository.passwordResetCount, 1);
+    expect(container.read(authControllerProvider).hasError, isFalse);
+  });
 
   test(
     'sign-up reports whether Supabase returned an immediate session',
@@ -248,14 +232,9 @@ void main() {
 
       final immediateRequiresConfirmation = await immediateContainer
           .read(authControllerProvider.notifier)
-          .signUpWithEmail(
-            email: 'bee@moniary.app',
-            password: 'password123',
-            captchaToken: 'signup-token',
-          );
+          .signUpWithEmail(email: 'bee@moniary.app', password: 'password123');
 
       expect(immediateRequiresConfirmation, isFalse);
-      expect(immediateRepository.signUpCaptchaToken, 'signup-token');
 
       final confirmationRepository = _FakeAuthRepository();
       final confirmationContainer = ProviderContainer(
@@ -268,11 +247,7 @@ void main() {
 
       final requiresConfirmation = await confirmationContainer
           .read(authControllerProvider.notifier)
-          .signUpWithEmail(
-            email: 'bee@moniary.app',
-            password: 'password123',
-            captchaToken: 'signup-token',
-          );
+          .signUpWithEmail(email: 'bee@moniary.app', password: 'password123');
       expect(requiresConfirmation, isTrue);
     },
   );

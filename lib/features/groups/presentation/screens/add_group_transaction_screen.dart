@@ -9,6 +9,7 @@ import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/utils/app_logger.dart';
+import '../../../../shared/utils/integer_money_input_formatter.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../../categories/application/categories_controller.dart';
 import '../../../categories/domain/models/category.dart';
@@ -174,6 +175,11 @@ class _AddGroupTransactionScreenState
               TextField(
                 controller: _amountController,
                 keyboardType: TextInputType.number,
+                inputFormatters: [
+                  IntegerMoneyInputFormatter(
+                    locale: Localizations.localeOf(context).toString(),
+                  ),
+                ],
                 decoration: InputDecoration(
                   labelText: context.l10n.groupTransactionTotal,
                   suffixText: ref.currencySymbol,
@@ -227,11 +233,24 @@ class _AddGroupTransactionScreenState
               const SizedBox(height: 12),
               categoriesAsync.when(
                 loading: () => const LinearProgressIndicator(),
-                error: (_, _) => Text(context.l10n.groupActionFailed),
+                error: (error, _) => Row(
+                  children: [
+                    Expanded(child: Text(userFriendlyMessage(context, error))),
+                    TextButton.icon(
+                      onPressed: () => ref
+                          .read(categoriesControllerProvider.notifier)
+                          .refresh(),
+                      icon: const Icon(Icons.refresh_outlined),
+                      label: Text(context.l10n.commonRetry),
+                    ),
+                  ],
+                ),
                 data: (categories) {
                   final expenseCategories = categories
                       .where(
-                        (category) => category.type == TransactionType.expense,
+                        (category) =>
+                            category.type == TransactionType.expense &&
+                            category.isActive,
                       )
                       .toList();
                   return DropdownButtonFormField<String>(
@@ -697,8 +716,7 @@ class _AddGroupTransactionScreenState
     return converted;
   }
 
-  int _parseMoney(String input) =>
-      int.tryParse(input.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+  int _parseMoney(String input) => parseIntegerMoney(input);
 
   String _splitErrorMessage(GroupSplitError error) => switch (error) {
     GroupSplitError.payerRequired => context.l10n.groupSelectPayer,

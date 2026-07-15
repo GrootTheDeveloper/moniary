@@ -118,4 +118,9 @@ class SpendingGroupDetail {
 
   bool get canInvite =>
       currentUserRole == GroupRole.owner || currentUserRole == GroupRole.admin;
+
+  bool get canManageMembers => canInvite;
+  bool get canCreateChallenge => canInvite;
+  bool get canEditFinanceControls => canInvite;
+  bool get canManageGroup => canInvite;
 }

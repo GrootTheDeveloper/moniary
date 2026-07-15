@@ -1,7 +1,7 @@
 # Auth, Permissions & Security
 
 **Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
-**Last source audit**: `2026-07-15`
+**Last source audit**: `2026-07-16`
 
 ## Authentication
 
@@ -15,6 +15,11 @@ Supabase Auth is initialized with PKCE and mandatory configuration.
 - linking email, Google, or Facebook identity to an existing anonymous account;
 - sign-out and user initialization.
 
+When Supabase compile-time configuration is absent in a debug build, the
+seeded demo credentials `a@gmail.com` / `12345678` create the same local mock
+session used by the in-memory feature repositories. Configured and release
+builds always send email/password credentials to Supabase Auth.
+
 Anonymous-to-email upgrades are two-phase. The app first updates only the
 email and stores the originating user ID plus normalized email locally. After
 Supabase confirms the email and returns the same user, the app opens a separate
@@ -27,11 +32,12 @@ pending record is bound to the originating user ID; after callback, the app
 verifies that the same user now has a Google identity before updating the
 profile and showing success. No fixed delay is used as a completion signal.
 
-Live anonymous sign-in is fail-closed behind Cloudflare Turnstile: the mobile
-widget obtains a short-lived token and `AuthRepository` forwards it to Supabase
-for server-side verification. Local/hosted Auth limits anonymous creation to
-5 attempts per hour per IP. A nightly `pg_cron` job removes anonymous Auth
-users inactive for 30 days; upgraded email/OAuth users are preserved.
+Email/password, password-reset, signup, and anonymous sign-in do not use
+CAPTCHA. The local Supabase configuration keeps CAPTCHA disabled, and hosted
+projects must match that setting. Local/hosted Auth should still rate-limit
+anonymous creation to 5 attempts per hour per IP. A nightly `pg_cron` job
+removes anonymous Auth users inactive for 30 days; upgraded email/OAuth users
+are preserved.
 
 ## Session and route security
 
@@ -82,11 +88,8 @@ client-side `user_id` filters are not a security boundary.
 
 ## Secrets
 
-`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `OCR_API_URL`, `TURNSTILE_SITE_KEY`, and
-`TURNSTILE_BASE_URL` are compile-time Dart defines. Anonymous sign-in, direct
-email sign-in/sign-up, and password reset pass a fresh Turnstile token when
-Supabase CAPTCHA protection is enabled. The Turnstile secret and
-Edge Function secrets such as `RESEND_API_KEY`,
+`SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `OCR_API_URL` are compile-time Dart
+defines. Edge Function secrets such as `RESEND_API_KEY`,
 `GEMINI_API_KEY`, `GEMINI_MODEL`, and `GEMINI_BLOCKED_KEY_SHA256` belong in
 the Supabase environment. Never commit access tokens, service-role keys,
 signing secrets, AI provider keys, database URLs, or production credentials.

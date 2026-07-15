@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../app/app_navigation.dart';
 import '../../../../app/app_theme.dart';
+import '../../../../app/app_navigation.dart';
 import '../../../../core/deeplinks/pending_deep_link_controller.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/app_logger.dart';
@@ -201,9 +201,9 @@ class _FriendInvitePromptBody extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Icon(
+        Icon(
           Icons.person_add_alt_1_outlined,
-          color: AppTheme.mint,
+          color: context.moniaryColors.primary,
           size: 52,
         ),
         const SizedBox(height: 12),
@@ -321,7 +321,7 @@ class _DialogMessage extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Icon(icon, size: 52, color: AppTheme.mintSoft),
+        Icon(icon, size: 52, color: context.moniaryColors.primary),
         const SizedBox(height: 14),
         Text(
           title,

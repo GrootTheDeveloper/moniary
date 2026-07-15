@@ -215,13 +215,6 @@ token_verifications = 30
 # Number of Web3 logins that can be made in a 5 minute interval per IP address.
 web3 = 30
 
-# Anonymous sign-in must be protected by the same Turnstile widget configured
-# in the mobile build. Keep the secret in an ignored Supabase environment file.
-[auth.captcha]
-enabled = true
-provider = "turnstile"
-secret = "env(SUPABASE_AUTH_CAPTCHA_SECRET)"
-
 [auth.email]
 # Allow/disallow new user signups via email to your project.
 enable_signup = true
@@ -376,11 +369,6 @@ verify_jwt = true
 # This scheduler-only function authenticates with a separate high-entropy
 # x-cron-secret header loaded from Supabase Vault, not a user JWT.
 [functions.garbage-collect]
-verify_jwt = false
-
-# This scheduler-only function authenticates with a separate high-entropy
-# header loaded from Supabase Vault. The public anon key is never sufficient.
-[functions.notification-dispatcher]
 verify_jwt = false
 
 # This scheduler-only function uses a separate Vault-backed private header.

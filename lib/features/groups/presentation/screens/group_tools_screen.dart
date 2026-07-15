@@ -26,7 +26,26 @@ class GroupToolsScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(context.l10n.groupManageTitle)),
       body: detailAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text(context.l10n.errorGeneric)),
+        error: (error, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  userFriendlyMessage(context, error),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: () => ref.invalidate(groupDetailProvider(groupId)),
+                  icon: const Icon(Icons.refresh_outlined),
+                  label: Text(context.l10n.commonRetry),
+                ),
+              ],
+            ),
+          ),
+        ),
         data: (detail) => ListView(
           padding: const EdgeInsets.fromLTRB(20, 18, 20, 32),
           children: [
@@ -55,15 +74,29 @@ class GroupToolsScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  IconButton(
-                    tooltip: context.l10n.groupTransactionsTab,
-                    onPressed: () => context.go(GroupRoutePaths.home(groupId)),
-                    icon: const Icon(Icons.receipt_long_outlined),
-                  ),
                 ],
               ),
             ),
             const SizedBox(height: 22),
+            _ToolsSection(
+              title: context.l10n.groupManagePeopleSection,
+              children: [
+                _ToolTile(
+                  icon: Icons.groups_outlined,
+                  title: context.l10n.groupMembersHeader,
+                  subtitle: context.l10n.groupManageMembersSubtitle,
+                  onTap: () => context.push(GroupRoutePaths.members(groupId)),
+                ),
+                if (detail.canInvite)
+                  _ToolTile(
+                    icon: Icons.person_add_outlined,
+                    title: context.l10n.groupInviteTitle,
+                    subtitle: context.l10n.groupManageInviteSubtitle,
+                    onTap: () => context.push(GroupRoutePaths.invite(groupId)),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 18),
             _ToolsSection(
               title: context.l10n.groupToolsFinanceSection,
               children: [
@@ -242,7 +275,7 @@ class _ToolTile extends StatelessWidget {
     leading: Icon(icon, color: iconColor ?? context.moniaryColors.primary),
     title: Text(title),
     subtitle: Text(subtitle),
-    trailing: const Icon(Icons.chevron_right),
+    trailing: const Icon(Icons.chevron_right_outlined),
     onTap: onTap,
   );
 }

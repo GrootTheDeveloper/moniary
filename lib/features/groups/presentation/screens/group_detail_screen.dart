@@ -454,7 +454,7 @@ class _GroupDetailContent extends StatelessWidget {
                       subtitle: context.l10n.groupMemberCount(
                         detail.activeMembers.length,
                       ),
-                      icon: Icons.people_outline_rounded,
+                      icon: Icons.people_outline,
                       child: settlementsAsync.when(
                         loading: () => const Padding(
                           padding: EdgeInsets.all(18),
@@ -488,7 +488,7 @@ class _GroupDetailContent extends StatelessWidget {
                 child: FloatingActionButton.extended(
                   heroTag: 'group-add-transaction',
                   onPressed: onAddTransaction,
-                  icon: const Icon(Icons.add_rounded, size: 20),
+                  icon: const Icon(Icons.add_outlined, size: 20),
                   label: Text(context.l10n.groupAddTransaction),
                 ),
               ),
@@ -527,7 +527,9 @@ class _GroupCollapsibleSection extends StatelessWidget {
         side: BorderSide(color: colors.outline.withValues(alpha: 0.8)),
       ),
       child: Theme(
-        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        data: Theme.of(
+          context,
+        ).copyWith(dividerColor: colors.surface.withValues(alpha: 0)),
         child: ExpansionTile(
           initiallyExpanded: initiallyExpanded,
           tilePadding: const EdgeInsets.symmetric(horizontal: 14),
@@ -562,7 +564,7 @@ class _DetailTopBar extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: _TopIconButton(
-              icon: Icons.chevron_left_rounded,
+              icon: Icons.arrow_back_outlined,
               label: MaterialLocalizations.of(context).backButtonTooltip,
               onTap: () => context.pop(),
             ),
@@ -578,7 +580,7 @@ class _DetailTopBar extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: _TopIconButton(
-              icon: Icons.more_vert_rounded,
+              icon: Icons.more_vert_outlined,
               label: context.l10n.groupMoreActions,
               onTap: onActions,
             ),
@@ -847,7 +849,7 @@ class _GroupHero extends ConsumerWidget {
                 Expanded(
                   child: FilledButton.tonalIcon(
                     onPressed: onSettle,
-                    icon: const Icon(Icons.swap_horiz_rounded, size: 16),
+                    icon: const Icon(Icons.swap_horiz_outlined, size: 16),
                     label: Text(context.l10n.groupSettleAction),
                   ),
                 ),
@@ -1124,7 +1126,7 @@ class _TransactionHistoryState extends ConsumerState<_TransactionHistory> {
               padding: const EdgeInsets.only(top: 8),
               child: OutlinedButton.icon(
                 onPressed: widget.onViewAll,
-                icon: const Icon(Icons.open_in_new_rounded, size: 16),
+                icon: const Icon(Icons.open_in_new_outlined, size: 16),
                 label: Text(context.l10n.groupTransactionViewAll),
               ),
             ),
@@ -1155,7 +1157,7 @@ class _TransactionRow extends ConsumerWidget {
         : context.l10n.groupUnknownMember;
 
     return Material(
-      color: Colors.transparent,
+      color: colors.surface.withValues(alpha: 0),
       child: InkWell(
         onTap: onTap,
         child: Container(

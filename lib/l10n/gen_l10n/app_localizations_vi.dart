@@ -216,35 +216,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginGuestCta => 'Dùng thử ngay — không cần tài khoản →';
 
   @override
-  String get anonymousCaptchaTitle => 'Xác minh trước khi tiếp tục';
-
-  @override
-  String get anonymousCaptchaDescription =>
-      'Hoàn tất bước kiểm tra bảo mật để tiếp tục an toàn.';
-
-  @override
-  String get anonymousCaptchaVerified => 'Đã xác minh';
-
-  @override
-  String get anonymousCaptchaRequired =>
-      'Hãy hoàn tất kiểm tra bảo mật trước khi tiếp tục.';
-
-  @override
-  String get anonymousCaptchaFailed => 'Xác minh thất bại. Vui lòng thử lại.';
-
-  @override
-  String get anonymousCaptchaExpired =>
-      'Phiên xác minh đã hết hạn. Vui lòng thực hiện lại.';
-
-  @override
-  String get anonymousCaptchaTimeout =>
-      'Bước kiểm tra bảo mật tải quá lâu. Hãy kiểm tra kết nối rồi thử lại.';
-
-  @override
-  String get anonymousCaptchaConfigRequired =>
-      'Bản build này chưa cấu hình bước xác minh bảo mật.';
-
-  @override
   String get loginPasswordResetSent =>
       'Đã gửi hướng dẫn đặt lại mật khẩu qua email.';
 
@@ -1083,6 +1054,32 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupMembersHeader => 'Thành viên';
+
+  @override
+  String get groupRoleOwner => 'Chủ nhóm';
+
+  @override
+  String get groupRoleAdmin => 'Quản trị viên';
+
+  @override
+  String get groupRoleMember => 'Thành viên';
+
+  @override
+  String get groupMemberActions => 'Thao tác với thành viên';
+
+  @override
+  String get groupPromoteAdminAction => 'Đặt làm quản trị viên';
+
+  @override
+  String get groupDemoteMemberAction => 'Chuyển thành thành viên';
+
+  @override
+  String groupMemberActionConfirm(String member, String action) {
+    return 'Thực hiện “$action” với $member?';
+  }
+
+  @override
+  String get groupMemberActionDone => 'Đã cập nhật thành viên.';
 
   @override
   String get groupExpenseHistory => 'Lịch sử chi tiêu';
@@ -3071,7 +3068,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get thirdPartyServicesSubtitle =>
-      'Xem app đang dùng Supabase, Google, Meta, Cloudflare, Google Gemini, Flutter/package và bộ nhớ thiết bị như thế nào.';
+      'Xem app đang dùng Supabase, Google, Meta, Google Gemini, Flutter/package và bộ nhớ thiết bị như thế nào.';
 
   @override
   String get thirdPartyHeroBody =>
@@ -3094,13 +3091,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get thirdPartyMetaDescription =>
       'Chỉ dùng khi bạn chọn đăng nhập bằng Facebook. Meta có thể cung cấp mã tài khoản, email, tên và ảnh đại diện theo các quyền bạn chấp thuận.';
-
-  @override
-  String get thirdPartyCloudflareTitle => 'Cloudflare Turnstile';
-
-  @override
-  String get thirdPartyCloudflareDescription =>
-      'Dùng để ngăn lạm dụng tự động đối với đăng nhập khách bằng cách xử lý các tín hiệu bảo mật cần thiết cho thử thách CAPTCHA.';
 
   @override
   String get thirdPartyGeminiDescription =>
@@ -3757,7 +3747,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyPolicyShareItem4 =>
-      'Khi bạn chọn đăng nhập bằng Google hoặc Facebook (Meta), nhà cung cấp đó và Supabase sẽ xử lý dữ liệu xác thực. Cloudflare Turnstile xử lý tín hiệu bảo mật cho đăng nhập khách được bảo vệ.';
+      'Khi bạn chọn đăng nhập bằng email, Google hoặc Facebook (Meta), Supabase và nhà cung cấp được chọn sẽ xử lý dữ liệu xác thực cần thiết để tạo và duy trì phiên đăng nhập.';
 
   @override
   String get privacyPolicyDeleteTitle => 'Xóa dữ liệu';
@@ -4496,6 +4486,17 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupManageAccessSection => 'Quyền và an toàn';
 
   @override
+  String get groupManagePeopleSection => 'Thành viên và lời mời';
+
+  @override
+  String get groupManageMembersSubtitle =>
+      'Xem thành viên, vai trò và quyền quản lý';
+
+  @override
+  String get groupManageInviteSubtitle =>
+      'Mời bạn bè, username hoặc chia sẻ liên kết';
+
+  @override
   String get groupActivityTabTimeline => 'Hoạt động';
 
   @override
@@ -5068,13 +5069,35 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupCommunityAllTab => 'Tất cả';
 
   @override
+  String get groupCommunityPostTab => 'Bài viết';
+
+  @override
   String get groupCommunityPollTab => 'Bình chọn';
+
+  @override
+  String get groupCommunityChallengeTab => 'Thử thách';
+
+  @override
+  String get groupCommunityExpenseTab => 'Chi tiêu';
 
   @override
   String get groupCommunityActivityTab => 'Hoạt động';
 
   @override
   String get groupCommunityPostText => 'Bài viết';
+
+  @override
+  String get groupCommunityPostActions => 'Thao tác với bài viết';
+
+  @override
+  String get groupCommunityEditPost => 'Chỉnh sửa bài viết';
+
+  @override
+  String get groupCommunityDeletePost => 'Xóa bài viết';
+
+  @override
+  String get groupCommunityDeletePostConfirm =>
+      'Bài viết và các tương tác liên quan sẽ không còn hiển thị. Bạn vẫn muốn xóa?';
 
   @override
   String get groupCommunityPostPhoto => 'Đăng ảnh';
@@ -5163,7 +5186,12 @@ class AppLocalizationsVi extends AppLocalizations {
       'Đặt mục tiêu tiết kiệm để các thành viên cùng đóng góp.';
 
   @override
-  String get groupCommunityChallengeDuration => 'Thời hạn mặc định: 30 ngày';
+  String get groupCommunityChallengeDuration => 'Chọn thời hạn thử thách';
+
+  @override
+  String groupCommunityDurationDays(int days) {
+    return '$days ngày';
+  }
 
   @override
   String get groupCommunityChallengeMembers =>
@@ -5204,7 +5232,21 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupCommunityContributionAmount => 'Số tiền đóng góp';
 
   @override
+  String groupCommunityContributionLimit(String amount) {
+    return 'Có thể đóng góp tối đa $amount';
+  }
+
+  @override
   String get groupCommunityContributionInvalid => 'Nhập số tiền lớn hơn 0.';
+
+  @override
+  String get groupCommunityContributionExceedsRemaining =>
+      'Số tiền đóng góp vượt quá mục tiêu còn lại.';
+
+  @override
+  String groupCommunityContributionTooHigh(String amount) {
+    return 'Số tiền vượt quá phần còn lại $amount.';
+  }
 
   @override
   String get groupCommunityPublish => 'Đăng lên nhóm';
@@ -5228,11 +5270,30 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupCommunityCommentEmpty => 'Chưa có bình luận';
 
   @override
+  String get groupCommunityCommentAdded => 'Đã thêm bình luận';
+
+  @override
+  String get groupCommunityCommentRequired => 'Hãy nhập nội dung bình luận.';
+
+  @override
+  String get groupCommunityCommentActions => 'Thao tác với bình luận';
+
+  @override
+  String get groupCommunityEditComment => 'Chỉnh sửa bình luận';
+
+  @override
+  String get groupCommunityDeleteComment => 'Xóa bình luận';
+
+  @override
+  String get groupCommunityDeleteCommentConfirm =>
+      'Bạn có chắc muốn xóa bình luận này? Hành động này không thể hoàn tác.';
+
+  @override
   String get groupCommunityActivityTransaction => 'đã thêm một khoản chi mới';
 
   @override
   String get groupCommunityActivitySettlement =>
-      'đã hoàn tất phần tất toán của mình 🎉';
+      'đã hoàn tất phần tất toán của mình';
 
   @override
   String get groupCommunityActivityMemberLeft => 'đã rời nhóm';
@@ -5258,6 +5319,31 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get groupCommunityNoFeed =>
       'Chưa có cập nhật. Hãy là người đầu tiên chia sẻ!';
+
+  @override
+  String get groupCommunityFilterEmpty =>
+      'Chưa có nội dung phù hợp với bộ lọc này.';
+
+  @override
+  String get groupCommunityAddExpense => 'Thêm khoản chi';
+
+  @override
+  String get groupCommunityViewSettlements => 'Công nợ';
+
+  @override
+  String get groupCommunitySummaryAction => 'Tóm tắt';
+
+  @override
+  String get groupCommunityOpenExpense => 'Mở chi tiết khoản chi';
+
+  @override
+  String get groupCommunityReactionLove => 'Thả tim';
+
+  @override
+  String get groupCommunityReactionLike => 'Thích';
+
+  @override
+  String get groupCommunityReactionCelebrate => 'Chúc mừng';
 
   @override
   String get groupCommunityOpenNotifications => 'Mở thông báo nhóm';
@@ -5536,6 +5622,21 @@ class AppLocalizationsVi extends AppLocalizations {
   String friendSharedGroups(int count) {
     return '$count nhóm chung';
   }
+
+  @override
+  String get friendSharedGroupsLabel => 'Nhóm chung';
+
+  @override
+  String get friendActions => 'Thao tác với bạn';
+
+  @override
+  String get friendDetailTitle => 'Thông tin bạn bè';
+
+  @override
+  String get friendFriendsSince => 'Bạn bè từ';
+
+  @override
+  String get friendBalance => 'Công nợ hiện tại';
 
   @override
   String get friendOwesYou => 'Nợ bạn';
@@ -6432,6 +6533,30 @@ class AppLocalizationsVi extends AppLocalizations {
   String get friendQrShare => 'Chia sẻ mã';
 
   @override
+  String get friendQrGenerate => 'Tạo mã QR';
+
+  @override
+  String get friendQrCopy => 'Sao chép link';
+
+  @override
+  String get friendQrCopied => 'Đã sao chép link kết bạn.';
+
+  @override
+  String get friendQrRevoke => 'Hủy mã hiện tại';
+
+  @override
+  String get friendQrRevokeConfirm =>
+      'Link cũ sẽ không còn sử dụng được. Bạn vẫn muốn hủy?';
+
+  @override
+  String get friendQrRevoked => 'Đã hủy mã kết bạn.';
+
+  @override
+  String friendInviteExpires(String date) {
+    return 'Có hiệu lực đến $date';
+  }
+
+  @override
   String get friendQrLoadError => 'Không thể khởi động camera.';
 
   @override
@@ -6933,7 +7058,69 @@ class AppLocalizationsVi extends AppLocalizations {
   String get notificationsMarkAllRead => 'Đã đọc hết';
 
   @override
+  String get notificationsMarkRead => 'Đánh dấu đã đọc';
+
+  @override
+  String get notificationsMarkUnread => 'Đánh dấu chưa đọc';
+
+  @override
+  String get notificationsReadStateSuccess =>
+      'Đã cập nhật trạng thái thông báo';
+
+  @override
+  String get notificationsReadStateError =>
+      'Chưa thể cập nhật trạng thái thông báo';
+
+  @override
   String get notificationsEmpty => 'Chưa có thông báo trong 30 ngày qua';
+
+  @override
+  String get notificationsEmptyCategory =>
+      'Chưa có thông báo thuộc mục này trong 30 ngày qua';
+
+  @override
+  String notificationsUnreadCount(int count) {
+    return '$count thông báo chưa đọc';
+  }
+
+  @override
+  String get notificationsAllCaughtUp => 'Bạn đã xem hết các cập nhật mới';
+
+  @override
+  String get notificationsRetentionHint =>
+      'Các cập nhật được lưu trong inbox 30 ngày';
+
+  @override
+  String get notificationsToday => 'Hôm nay';
+
+  @override
+  String get notificationsYesterday => 'Hôm qua';
+
+  @override
+  String get notificationsEarlier => 'Trước đó';
+
+  @override
+  String get notificationsLoadMore => 'Xem thêm thông báo';
+
+  @override
+  String get notificationsLoadMoreError =>
+      'Chưa thể tải thêm thông báo. Vui lòng thử lại.';
+
+  @override
+  String get notificationsMarkAllSuccess =>
+      'Đã đánh dấu tất cả thông báo là đã đọc';
+
+  @override
+  String get notificationsMarkAllError => 'Chưa thể cập nhật tất cả thông báo';
+
+  @override
+  String get notificationsOpenSettings => 'Mở cài đặt thông báo';
+
+  @override
+  String get notificationsUnreadSemantics => 'Chưa đọc';
+
+  @override
+  String get notificationsOpenSemantics => 'Mở chi tiết thông báo';
 
   @override
   String get notificationFriendRequest => 'Bạn có lời mời kết bạn mới';
@@ -6948,11 +7135,69 @@ class AppLocalizationsVi extends AppLocalizations {
   String get notificationAmountRequired => 'Bạn cần nhập phần tiền của mình';
 
   @override
+  String get notificationAmountMismatch =>
+      'Phần tiền của thành viên chưa khớp với tổng giao dịch';
+
+  @override
   String get notificationGroupInvite => 'Bạn được mời vào một group';
 
   @override
   String get notificationDebtSettled =>
       'Một khoản nợ trong group đã được tất toán';
+
+  @override
+  String get notificationSettlementMarkedPaid =>
+      'Một khoản quyết toán được đánh dấu đã thanh toán';
+
+  @override
+  String get notificationSettlementCompleted =>
+      'Quyết toán trong group đã hoàn tất';
+
+  @override
+  String get notificationSettlementDisputed =>
+      'Có tranh chấp mới về một khoản quyết toán';
+
+  @override
+  String get notificationSettlementDisputeReset =>
+      'Tranh chấp quyết toán đã được mở lại để xử lý';
+
+  @override
+  String get notificationMemberJoined => 'Có thành viên mới tham gia group';
+
+  @override
+  String get notificationMemberInviteAccepted =>
+      'Lời mời tham gia group đã được chấp nhận';
+
+  @override
+  String get notificationMemberInviteDeclined =>
+      'Lời mời tham gia group đã bị từ chối';
+
+  @override
+  String get notificationMemberLeft => 'Một thành viên đã rời group';
+
+  @override
+  String get notificationMemberRemoved =>
+      'Một thành viên đã được xóa khỏi group';
+
+  @override
+  String get notificationMemberRoleUpdated =>
+      'Vai trò của bạn trong group đã được cập nhật';
+
+  @override
+  String get notificationMemberLeaveBlocked =>
+      'Bạn cần xử lý các khoản đang chờ trước khi rời group';
+
+  @override
+  String get notificationOwnerTransferred =>
+      'Quyền sở hữu group đã được chuyển giao';
+
+  @override
+  String get notificationOwnerTransferRequired =>
+      'Bạn cần chuyển quyền sở hữu trước khi rời group';
+
+  @override
+  String get notificationRecurringDue =>
+      'Một giao dịch định kỳ trong group sắp đến hạn';
 
   @override
   String get notificationCommunityComment => 'Có bình luận mới trong cộng đồng';
@@ -6964,6 +7209,10 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get notificationCommunityMention =>
       'Bạn được nhắc tên trong cộng đồng';
+
+  @override
+  String get notificationChallengeContribution =>
+      'Có đóng góp mới cho thử thách tiết kiệm';
 
   @override
   String get notificationGeneric => 'Bạn có cập nhật mới';
@@ -6985,6 +7234,29 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get pushNotificationCategorySubtitle =>
       'Thông báo vẫn được lưu trong inbox trong 30 ngày.';
+
+  @override
+  String get pushNotificationUnavailable =>
+      'Bản build này chưa cấu hình Firebase cho thông báo đẩy.';
+
+  @override
+  String get pushNotificationPermissionAllowed =>
+      'Quyền hệ thống đã được bật trên thiết bị này.';
+
+  @override
+  String get pushNotificationPermissionDenied =>
+      'Quyền hệ thống đang bị tắt. Bạn có thể bật lại trong cài đặt thiết bị.';
+
+  @override
+  String get pushNotificationPermissionNotRequested =>
+      'Moniary chỉ xin quyền hệ thống sau khi bạn chủ động bật thông báo đẩy.';
+
+  @override
+  String get pushNotificationSaved => 'Đã lưu tùy chọn thông báo';
+
+  @override
+  String get pushNotificationSaveError =>
+      'Chưa thể lưu tùy chọn. Thay đổi đã được hoàn tác.';
 
   @override
   String get loginAnonymous => 'Tiếp tục với tài khoản khách';

@@ -9,6 +9,8 @@ import '../constants/app_constants.dart';
 import '../../shared/utils/app_logger.dart';
 import 'local_notification_service.dart';
 
+enum PushPermissionStatus { unavailable, notDetermined, denied, authorized }
+
 @visibleForTesting
 FirebaseOptions firebaseOptionsForPlatform(
   TargetPlatform platform, {
@@ -51,6 +53,7 @@ abstract interface class PushMessagingGateway {
   Stream<RemoteMessage> get openedMessages;
 
   Future<bool> requestPermission();
+  Future<PushPermissionStatus> getPermissionStatus();
   Future<String?> getToken();
   Future<String?> getApnsToken();
   Future<RemoteMessage?> getInitialMessage();
@@ -81,6 +84,17 @@ class FirebasePushMessagingGateway implements PushMessagingGateway {
     );
     return settings.authorizationStatus == AuthorizationStatus.authorized ||
         settings.authorizationStatus == AuthorizationStatus.provisional;
+  }
+
+  @override
+  Future<PushPermissionStatus> getPermissionStatus() async {
+    final settings = await _messaging.getNotificationSettings();
+    return switch (settings.authorizationStatus) {
+      AuthorizationStatus.authorized ||
+      AuthorizationStatus.provisional => PushPermissionStatus.authorized,
+      AuthorizationStatus.denied => PushPermissionStatus.denied,
+      AuthorizationStatus.notDetermined => PushPermissionStatus.notDetermined,
+    };
   }
 
   @override
@@ -139,9 +153,13 @@ class FcmPushNotificationService {
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS);
 
+  bool get isAvailable => _firebaseConfigured && _supportedPlatform;
+
   Future<void> initialize({
     required Future<void> Function(String token) onToken,
     required Future<void> Function(Map<String, dynamic> data) onTap,
+    bool requestPermission = true,
+    bool registerDevice = true,
   }) async {
     if (!_firebaseConfigured || !_supportedPlatform) return;
 
@@ -155,15 +173,52 @@ class FcmPushNotificationService {
       final messaging = _messaging;
       if (!_firebaseReady || messaging == null) return;
 
-      _permissionGranted = await _ensurePermission(messaging);
+      _permissionGranted = requestPermission
+          ? await _ensurePermission(messaging)
+          : await messaging.getPermissionStatus() ==
+                PushPermissionStatus.authorized;
       if (!_permissionGranted) {
         AppLogger.info('Push notification permission is not granted.');
         return;
       }
 
-      await _ensureCurrentTokenRegistered();
+      if (registerDevice) await _ensureCurrentTokenRegistered();
     } catch (error, stackTrace) {
       AppLogger.error('FCM initialization failed', error, stackTrace);
+    }
+  }
+
+  Future<PushPermissionStatus> permissionStatus() async {
+    if (!isAvailable) return PushPermissionStatus.unavailable;
+    try {
+      await _ensureFirebaseReady();
+      final messaging = _messaging;
+      if (messaging == null) return PushPermissionStatus.unavailable;
+      return messaging.getPermissionStatus();
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to read push permission status',
+        error,
+        stackTrace,
+      );
+      return PushPermissionStatus.unavailable;
+    }
+  }
+
+  Future<bool> requestPermissionAndRegister() async {
+    if (!isAvailable) return false;
+    _signedOut = false;
+    try {
+      await _ensureFirebaseReady();
+      final messaging = _messaging;
+      if (messaging == null) return false;
+      _permissionGranted = await _ensurePermission(messaging);
+      if (!_permissionGranted) return false;
+      await _ensureCurrentTokenRegistered();
+      return true;
+    } catch (error, stackTrace) {
+      AppLogger.error('Push permission request failed', error, stackTrace);
+      return false;
     }
   }
 
