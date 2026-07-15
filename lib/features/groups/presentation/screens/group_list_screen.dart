@@ -10,7 +10,7 @@ import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/spending_group.dart';
-import 'group_activity_center_screen.dart';
+import '../../../notifications/presentation/screens/notification_center_screen.dart';
 import 'create_group_screen.dart';
 import 'group_detail_screen.dart';
 import 'group_invitations_screen.dart';
@@ -220,7 +220,7 @@ class _GroupsHeader extends StatelessWidget {
               ? Icons.notifications_active_outlined
               : Icons.notifications_none_outlined,
           badge: unreadNotificationCount,
-          onTap: () => context.push(GroupActivityCenterScreen.routePath),
+          onTap: () => context.push(NotificationCenterScreen.routePath),
           foreground: colors.textPrimary,
           background: colors.surface.withValues(alpha: 0.58),
           border: colors.outline.withValues(alpha: 0.8),
