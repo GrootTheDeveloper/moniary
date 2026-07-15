@@ -20,12 +20,14 @@ import '../../friends/presentation/screens/friends_screen.dart';
 import '../../journal/presentation/journal_collections_screen.dart';
 import '../../journal/presentation/monthly_recap_screen.dart';
 import '../../journal/presentation/recording_streak_screen.dart';
+import '../../recurring/presentation/recurring_transactions_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../../profile/presentation/currency_picker_screen.dart';
 import '../../profile/domain/currency_data.dart';
 import '../application/account/account_actions_controller.dart';
 import '../application/privacy_controller.dart';
+import '../../notifications/presentation/widgets/notification_bell_button.dart';
 import 'export/export_data_screen.dart';
 import 'import/import_data_screen.dart';
 import 'notifications/notification_settings_screen.dart';
@@ -160,6 +162,39 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           SnackBar(
             content: Text(
               context.l10n.profileLinkAppleError(
+                userFriendlyMessage(context, e),
+              ),
+            ),
+            backgroundColor: AppTheme.danger,
+          ),
+        );
+      }
+    } finally {
+      _setLinkingLoading(false, refreshSheet);
+    }
+  }
+
+  Future<void> _linkFacebookAccount(VoidCallback refreshSheet) async {
+    _setLinkingLoading(true, refreshSheet);
+    final messenger = ScaffoldMessenger.of(context);
+
+    try {
+      await ref.read(authControllerProvider.notifier).linkFacebookAccount();
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.profileLinkFacebookBrowser),
+            backgroundColor: AppTheme.success,
+          ),
+        );
+      }
+    } catch (e, st) {
+      AppLogger.error('Failed to link Facebook account from profile', e, st);
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              context.l10n.profileLinkFacebookError(
                 userFriendlyMessage(context, e),
               ),
             ),
@@ -362,6 +397,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          await _linkFacebookAccount(refreshSheet);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          side: const BorderSide(color: AppTheme.outline),
+                        ),
+                        icon: const Icon(
+                          Icons.facebook_outlined,
+                          size: 24,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          context.l10n.profileLinkFacebook,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ],
                     const SizedBox(height: 12),
                   ],
@@ -398,7 +458,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final colors = context.moniaryColors;
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.profileTitle)),
+      appBar: AppBar(
+        title: Text(context.l10n.profileTitle),
+        actions: const [NotificationBellButton()],
+      ),
       body: ColoredBox(
         color: colors.background,
         child: SafeArea(
@@ -468,6 +531,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             title: context.l10n.starredTransactionsTitle,
                             subtitle: '',
                             onTap: () => context.push('/starred-transactions'),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.autorenew_outlined,
+                            title: context.l10n.recurringTitle,
+                            subtitle: context.l10n.recurringSubtitle,
+                            onTap: () => context.push(
+                              RecurringTransactionsScreen.routePath,
+                            ),
                           ),
                           _SettingsTile(
                             icon: Icons.auto_stories_outlined,

@@ -114,21 +114,27 @@ class GroupSupabaseDataSource {
     return _rows(rows);
   }
 
-  Future<List<Map<String, dynamic>>> fetchNotifications() async {
-    final rows = await client.rpc('list_group_notifications');
-    return _rows(rows);
-  }
-
-  Future<void> markNotificationRead(String notificationId) {
-    return client.rpc(
-      'mark_group_notification_read',
-      params: {'p_notification_id': notificationId},
+  Future<Map<String, dynamic>> fetchMonthlyStats({
+    required String groupId,
+    required DateTime month,
+  }) async {
+    final result = await client.rpc(
+      'get_group_monthly_stats',
+      params: {
+        'p_group_id': groupId,
+        'p_month':
+            '${month.year.toString().padLeft(4, '0')}-'
+            '${month.month.toString().padLeft(2, '0')}-01',
+      },
     );
+    return Map<String, dynamic>.from(result as Map);
   }
 
-  Future<List<Map<String, dynamic>>> fetchActivities(String groupId) async {
+  Future<List<Map<String, dynamic>>> fetchSettlementHistory(
+    String groupId,
+  ) async {
     final rows = await client.rpc(
-      'list_group_activities',
+      'list_group_settlement_history',
       params: {'p_group_id': groupId},
     );
     return _rows(rows);
@@ -158,6 +164,8 @@ class GroupSupabaseDataSource {
       'debt_notifications': preference.debtNotifications,
       'invite_notifications': preference.inviteNotifications,
       'mention_notifications': preference.mentionNotifications,
+      'community_comments': preference.communityComments,
+      'community_reactions': preference.communityReactions,
       'quiet_hours_start': preference.quietHoursStart,
       'quiet_hours_end': preference.quietHoursEnd,
     }, onConflict: 'group_id,user_id');
@@ -171,16 +179,6 @@ class GroupSupabaseDataSource {
       params: {'p_transaction_id': transactionId},
     );
     return _rows(rows);
-  }
-
-  Future<void> toggleReaction({
-    required String transactionId,
-    required String emoji,
-  }) {
-    return client.rpc(
-      'toggle_group_transaction_reaction',
-      params: {'p_transaction_id': transactionId, 'p_emoji': emoji},
-    );
   }
 
   Future<Map<String, dynamic>> fetchBudget(String groupId) async {
@@ -411,6 +409,14 @@ class GroupSupabaseDataSource {
               return;
             case 'unresolved':
               throw const PostgrestException(message: 'GROUP_LEAVE_UNRESOLVED');
+            case 'unresolved_transaction':
+              throw const PostgrestException(
+                message: 'GROUP_LEAVE_INCOMPLETE_TRANSACTION',
+              );
+            case 'disputed_settlement':
+              throw const PostgrestException(
+                message: 'GROUP_LEAVE_DISPUTED_SETTLEMENT',
+              );
             case 'owner_transfer_required':
               throw const PostgrestException(
                 message: 'GROUP_OWNER_TRANSFER_REQUIRED',
@@ -466,6 +472,41 @@ class GroupSupabaseDataSource {
       params: {'p_transaction_id': transactionId},
     );
     return _rows(rows);
+  }
+
+  Future<void> toggleReaction({
+    required String transactionId,
+    required String emoji,
+  }) {
+    return client.rpc(
+      'toggle_group_transaction_reaction',
+      params: {'p_transaction_id': transactionId, 'p_emoji': emoji},
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> fetchActivities(String groupId) async {
+    final rows = await client.rpc(
+      'list_group_activities',
+      params: {'p_group_id': groupId},
+    );
+    return _rows(rows);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchNotifications({
+    String? category,
+  }) async {
+    final rows = await client.rpc(
+      'list_group_notifications',
+      params: {'p_category': category},
+    );
+    return _rows(rows);
+  }
+
+  Future<void> markNotificationRead(String notificationId) {
+    return client.rpc(
+      'mark_group_notification_read',
+      params: {'p_notification_id': notificationId},
+    );
   }
 
   Future<Map<String, dynamic>?> fetchPublicGroupProfile(String slug) async {

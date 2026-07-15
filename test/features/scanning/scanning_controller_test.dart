@@ -43,7 +43,7 @@ void main() {
       addTearDown(container.dispose);
 
       expect(container.read(ocrServiceProvider), isA<FastApiOcrService>());
-      expect(AppConstants.ocrApiUrl, 'http://10.0.2.2:8000');
+      expect(AppConstants.ocrApiUrl, startsWith('https://'));
     });
 
     test('Initial state is ScanningStatus.empty', () {

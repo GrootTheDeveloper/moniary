@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../calendar/application/month/calendar_filter_provider.dart';
 import '../../data/repositories/transaction_repository.dart';
 import '../../domain/models/transaction_entry.dart';
+import '../../domain/models/transaction_search_filter.dart';
 
 final transactionsForDayProvider =
     FutureProvider.family<List<TransactionEntry>, DateTime>((ref, day) async {
@@ -31,6 +32,11 @@ final starredTransactionsProvider = FutureProvider<List<TransactionEntry>>((
 });
 
 final transactionSearchProvider =
-    FutureProvider.family<List<TransactionEntry>, String>((ref, query) async {
-      return ref.watch(transactionRepositoryProvider).searchTransactions(query);
+    FutureProvider.family<List<TransactionEntry>, TransactionSearchFilter>((
+      ref,
+      filter,
+    ) async {
+      return ref
+          .watch(transactionRepositoryProvider)
+          .searchTransactions(filter);
     });

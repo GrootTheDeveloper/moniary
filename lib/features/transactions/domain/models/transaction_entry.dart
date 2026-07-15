@@ -15,6 +15,7 @@ class TransactionEntry {
     required this.categoryName,
     required this.categoryColor,
     this.isImportant = false,
+    this.recurringTransactionId,
   });
 
   final String id;
@@ -30,6 +31,9 @@ class TransactionEntry {
   final String categoryName;
   final String? categoryColor;
   final bool isImportant;
+
+  /// Set when this transaction was auto-posted from a recurring rule.
+  final String? recurringTransactionId;
 
   bool get isExpense => type == TransactionType.expense;
   bool get isIncome => type == TransactionType.income;
@@ -54,6 +58,7 @@ class TransactionEntry {
       categoryName: (category['name'] ?? '') as String,
       categoryColor: category['color'] as String?,
       isImportant: map['is_important'] as bool? ?? false,
+      recurringTransactionId: map['recurring_transaction_id'] as String?,
     );
   }
 }

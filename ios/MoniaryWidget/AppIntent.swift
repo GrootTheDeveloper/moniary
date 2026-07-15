@@ -5,6 +5,7 @@
 //  Created by Mickey Nguyen on 14/7/26.
 //
 
+/*
 import WidgetKit
 import AppIntents
 
@@ -16,3 +17,4 @@ struct ConfigurationAppIntent: WidgetConfigurationIntent {
     @Parameter(title: "Favorite Emoji", default: "😃")
     var favoriteEmoji: String
 }
+*/

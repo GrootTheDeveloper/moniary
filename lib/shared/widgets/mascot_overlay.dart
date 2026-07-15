@@ -17,7 +17,8 @@ const _mascotHeight = 42.0;
 const _mascotAspectRatio = 353 / 291;
 const _walkDuration = Duration(seconds: 6);
 const _frameDuration = Duration(milliseconds: 130);
-const _baseBottom = 0.0; // aligned with the -10.0 bottom offset in the shell stack
+const _baseBottom =
+    0.0; // aligned with the -10.0 bottom offset in the shell stack
 const _buttonWidth = 68.0; // matches _CameraActionButton in bottom_nav_bar.dart
 const _jumpHeight = 24.0; // lifts the mascot's feet up to the button's top edge
 
@@ -261,15 +262,17 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
       Colors.green,
       Colors.blue,
       Colors.pink,
-      Colors.purple
+      Colors.purple,
     ];
     for (int i = 0; i < 16; i++) {
-      _particles.add(_Particle(
-        angle: _rng.nextDouble() * 2 * math.pi,
-        distance: 20.0 + _rng.nextDouble() * 45.0,
-        color: colorsList[_rng.nextInt(colorsList.length)],
-        size: 4.0 + _rng.nextDouble() * 6.0,
-      ));
+      _particles.add(
+        _Particle(
+          angle: _rng.nextDouble() * 2 * math.pi,
+          distance: 20.0 + _rng.nextDouble() * 45.0,
+          color: colorsList[_rng.nextInt(colorsList.length)],
+          size: 4.0 + _rng.nextDouble() * 6.0,
+        ),
+      );
     }
 
     setState(() {
@@ -332,7 +335,8 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
     final mascotDataAsync = ref.watch(mascotDataProvider);
     final data = mascotDataAsync.asData?.value;
 
-    final isOverBudget = data?.budgetCategories.any((c) => c.isOverLimit) ?? false;
+    final isOverBudget =
+        data?.budgetCategories.any((c) => c.isOverLimit) ?? false;
     final isHappy = (data?.streakDays ?? 0) >= 3;
 
     final targetDuration = isOverBudget
@@ -362,7 +366,8 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
       double.infinity,
     );
 
-    final showFeedButton = !_fedToday &&
+    final showFeedButton =
+        !_fedToday &&
         _speechVisible &&
         !_isEating &&
         _speechText != context.l10n.mascotFedResponse;
@@ -421,7 +426,9 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
                   final double t = _feedController.value;
                   final startY = bubbleBottom + 12;
                   final endY = bottomOffset + _mascotHeight / 2;
-                  return startY + (endY - startY) * t - 35 * math.sin(t * math.pi);
+                  return startY +
+                      (endY - startY) * t -
+                      35 * math.sin(t * math.pi);
                 }(),
                 left: () {
                   final double t = _feedController.value;
@@ -430,10 +437,7 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
                   return startX + (endX - startX) * t;
                 }(),
                 child: const IgnorePointer(
-                  child: Text(
-                    '🍎',
-                    style: TextStyle(fontSize: 16),
-                  ),
+                  child: Text('🍎', style: TextStyle(fontSize: 16)),
                 ),
               ),
 
@@ -448,10 +452,14 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: _particles.map((p) {
-                        final currentDist = p.distance * _confettiController.value;
+                        final currentDist =
+                            p.distance * _confettiController.value;
                         final dx = currentDist * math.cos(p.angle);
                         final dy = currentDist * math.sin(p.angle);
-                        final opacity = (1.0 - _confettiController.value).clamp(0.0, 1.0);
+                        final opacity = (1.0 - _confettiController.value).clamp(
+                          0.0,
+                          1.0,
+                        );
                         return Positioned(
                           left: 25 + dx - p.size / 2,
                           top: 25 + dy - p.size / 2,
@@ -462,7 +470,9 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
                               height: p.size,
                               decoration: BoxDecoration(
                                 color: p.color,
-                                shape: _rng.nextBool() ? BoxShape.circle : BoxShape.rectangle,
+                                shape: _rng.nextBool()
+                                    ? BoxShape.circle
+                                    : BoxShape.rectangle,
                               ),
                             ),
                           ),
@@ -500,28 +510,19 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
             const Positioned(
               top: -6,
               right: -6,
-              child: Text(
-                '💖',
-                style: TextStyle(fontSize: 11),
-              ),
+              child: Text('💖', style: TextStyle(fontSize: 11)),
             )
           else if (isOverBudget)
             const Positioned(
               top: -6,
               right: -6,
-              child: Text(
-                '😰',
-                style: TextStyle(fontSize: 11),
-              ),
+              child: Text('😰', style: TextStyle(fontSize: 11)),
             )
           else if (isHappy && !isOverBudget)
             const Positioned(
               top: -6,
               right: -6,
-              child: Text(
-                '✨',
-                style: TextStyle(fontSize: 11),
-              ),
+              child: Text('✨', style: TextStyle(fontSize: 11)),
             ),
         ],
       ),
@@ -561,11 +562,11 @@ class _SpeechBubble extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: _speechBubbleMaxWidth),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
-        color: colors.surfaceOverlay.withValues(alpha: 0.95),
+        color: colors.surface.withValues(alpha: 0.98),
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x22000000),
+            color: Color(0x11000000),
             blurRadius: 8,
             offset: Offset(0, 3),
           ),
@@ -590,11 +591,17 @@ class _SpeechBubble extends StatelessWidget {
             GestureDetector(
               onTap: onFeedTap,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 3.5,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.orange.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: Colors.orange.withValues(alpha: 0.3), width: 0.6),
+                  border: Border.all(
+                    color: Colors.orange.withValues(alpha: 0.3),
+                    width: 0.6,
+                  ),
                 ),
                 child: Text(
                   l10n.mascotFeedAction,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../domain/entities/spending_group.dart';
 
 class ParticipantSelector extends StatelessWidget {
@@ -37,7 +39,7 @@ class ParticipantSelector extends StatelessWidget {
   }
 }
 
-class ExactShareInputList extends StatelessWidget {
+class ExactShareInputList extends ConsumerWidget {
   const ExactShareInputList({
     required this.members,
     required this.selectedIds,
@@ -50,7 +52,7 @@ class ExactShareInputList extends StatelessWidget {
   final Map<String, TextEditingController> controllers;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final selectedMembers = members
         .where((member) => selectedIds.contains(member.userId))
         .toList(growable: false);
@@ -71,7 +73,7 @@ class ExactShareInputList extends StatelessWidget {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: member.resolvedName,
-                suffixText: context.l10n.transactionAmountSuffix,
+                suffixText: ref.currencySymbol,
               ),
             ),
           ),

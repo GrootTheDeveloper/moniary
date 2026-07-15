@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
@@ -19,6 +21,9 @@ class GroupPublicProfileScreen extends ConsumerStatefulWidget {
 
   static const routePath = '/group-public-profile';
   static const publicRoutePath = '/public-group/:slug';
+
+  static String publicRouteLocation(String slug) =>
+      '/public-group/${Uri.encodeComponent(slug)}';
 
   final String? groupId;
   final String? slug;
@@ -177,6 +182,50 @@ class _SettingsView extends StatelessWidget {
         ),
         const SizedBox(height: 18),
         FilledButton(onPressed: onSave, child: Text(context.l10n.commonSave)),
+        if (enabled && profile.slug?.isNotEmpty == true) ...[
+          const SizedBox(height: 20),
+          Text(
+            context.l10n.groupPublicProfileShareTitle,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          SelectableText(
+            'https://go.vuivethoima.id.vn${GroupPublicProfileScreen.publicRouteLocation(profile.slug!)}',
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton.icon(
+                onPressed: () async {
+                  await Clipboard.setData(
+                    ClipboardData(
+                      text:
+                          'https://go.vuivethoima.id.vn${GroupPublicProfileScreen.publicRouteLocation(profile.slug!)}',
+                    ),
+                  );
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(context.l10n.groupPublicProfileCopied),
+                      ),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.copy_outlined),
+                label: Text(context.l10n.groupPublicProfileCopy),
+              ),
+              OutlinedButton.icon(
+                onPressed: () => context.push(
+                  GroupPublicProfileScreen.publicRouteLocation(profile.slug!),
+                ),
+                icon: const Icon(Icons.open_in_new_outlined),
+                label: Text(context.l10n.groupPublicProfilePreview),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -194,7 +243,10 @@ class _PublicView extends StatelessWidget {
       children: [
         Center(
           child: SupabaseImage(
-            imagePath: profile.avatarPath,
+            // Group avatars live in private storage and are only available to
+            // active members. Public pages intentionally use a safe fallback
+            // until a separate public asset path is provisioned.
+            imagePath: null,
             width: 92,
             height: 92,
             borderRadius: BorderRadius.circular(46),

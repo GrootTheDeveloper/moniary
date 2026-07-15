@@ -119,6 +119,8 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
           const _SuggestionNotice(),
+          const SizedBox(height: 12),
+          _DetectedReceiptSummary(result: widget.args.result),
           const SizedBox(height: 18),
           TextField(
             controller: _merchantController,
@@ -478,6 +480,74 @@ class _SuggestionNotice extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _DetectedReceiptSummary extends StatelessWidget {
+  const _DetectedReceiptSummary({required this.result});
+
+  final OcrResult result;
+
+  @override
+  Widget build(BuildContext context) {
+    final paymentMethod = result.paymentMethod;
+    final hasDetails = result.items.isNotEmpty || paymentMethod != null;
+    if (!hasDetails && !result.needsReview) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceRaised,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.scanDetectedSummary,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          if (result.items.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(context.l10n.scanDetectedItemsCount(result.items.length)),
+          ],
+          if (paymentMethod != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.payments_outlined, size: 18),
+                const SizedBox(width: 8),
+                Text(
+                  '${context.l10n.scanPaymentMethod}: '
+                  '${_paymentLabel(context, paymentMethod)}',
+                ),
+              ],
+            ),
+          ],
+          const SizedBox(height: 8),
+          Text(context.l10n.scanCurrency(result.currency)),
+          if (result.needsReview) ...[
+            const SizedBox(height: 10),
+            Text(
+              context.l10n.scanValidationNotice,
+              style: const TextStyle(color: AppTheme.amber),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _paymentLabel(BuildContext context, String method) {
+    return switch (method) {
+      'cash' => context.l10n.scanPaymentCash,
+      'card' => context.l10n.scanPaymentCard,
+      'transfer' => context.l10n.scanPaymentTransfer,
+      _ => context.l10n.scanPaymentOther,
+    };
   }
 }
 

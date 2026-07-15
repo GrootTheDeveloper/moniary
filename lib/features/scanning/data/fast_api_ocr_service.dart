@@ -101,6 +101,11 @@ class FastApiOcrService implements OcrService {
     final date = _dateOrNull(data['date']);
     final address = _stringOrNull(data['address']);
     final category = _stringOrNull(data['suggested_category']);
+    final paymentMethod = _stringOrNull(data['payment_method']);
+    final currency = _stringOrNull(data['currency']) ?? 'VND';
+    final issues = validationIssues is List
+        ? validationIssues.whereType<String>().toList(growable: false)
+        : const <String>[];
 
     return OcrResult(
       merchantSuggestion: merchant == null
@@ -138,6 +143,8 @@ class FastApiOcrService implements OcrService {
               confidence: confidenceByField['category'] ?? 0.55,
               source: OcrSuggestionSource.classifier,
             ),
+      paymentMethod: paymentMethod,
+      currency: currency,
       items: items is List
           ? items
                 .whereType<Map<String, dynamic>>()
@@ -151,6 +158,8 @@ class FastApiOcrService implements OcrService {
       processingTime: Duration(
         milliseconds: _nonNegativeInt(payload['processing_ms']) ?? 0,
       ),
+      validationIssues: issues,
+      fieldConfidence: confidenceByField,
     );
   }
 

@@ -42,10 +42,12 @@ void main() {
                 'amount': 35.75,
               },
             ],
+            'payment_method': 'card',
+            'currency': 'VND',
             'total': 117.25,
             'suggested_category': 'food',
           },
-          'validation_issues': <String>[],
+          'validation_issues': ['Total không khớp subtotal'],
           'confidence': 0.92,
           'field_confidence': {
             'merchant': 0.82,
@@ -78,6 +80,10 @@ void main() {
     expect(result.items.single.name, 'Cà phê sữa');
     expect(result.items.single.quantity, 1.5);
     expect(result.items.single.price, 36);
+    expect(result.paymentMethod, 'card');
+    expect(result.currency, 'VND');
+    expect(result.validationIssues, ['Total không khớp subtotal']);
+    expect(result.needsReview, isTrue);
     expect(result.confidence, 0.92);
     expect(result.categoryKey, 'food');
     expect(result.categorySuggestion?.confidence, 0.79);

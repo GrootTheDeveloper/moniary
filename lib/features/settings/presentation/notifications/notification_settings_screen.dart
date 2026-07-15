@@ -5,6 +5,7 @@ import '../../../../app/app_theme.dart';
 import '../../application/notification_settings_controller.dart';
 import '../../application/reminder_controller.dart';
 import '../../domain/models/reminder_settings.dart';
+import '../../../notifications/application/notification_delivery_preferences_controller.dart';
 
 class NotificationSettingsScreen extends ConsumerWidget {
   const NotificationSettingsScreen({super.key});
@@ -18,11 +19,117 @@ class NotificationSettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
         children: const [
+          _PushNotificationSection(),
+          SizedBox(height: 28),
           _ReminderSection(),
           SizedBox(height: 28),
           _EmailReportsSection(),
         ],
       ),
+    );
+  }
+}
+
+class _PushNotificationSection extends ConsumerWidget {
+  const _PushNotificationSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(notificationDeliveryPreferencesControllerProvider);
+    final controller = ref.read(
+      notificationDeliveryPreferencesControllerProvider.notifier,
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.l10n.pushNotificationSectionTitle,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          context.l10n.pushNotificationSectionDesc,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppTheme.mint),
+        ),
+        const SizedBox(height: 20),
+        state.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (_, _) => _ErrorCard(
+            onRetry: () => ref.invalidate(
+              notificationDeliveryPreferencesControllerProvider,
+            ),
+          ),
+          data: (preferences) => _SettingsCard(
+            child: Column(
+              children: [
+                _NotificationTile(
+                  icon: Icons.notifications_outlined,
+                  title: context.l10n.pushNotificationAllTitle,
+                  subtitle: context.l10n.pushNotificationAllSubtitle,
+                  value: preferences.pushEnabled,
+                  onChanged: controller.setPushEnabled,
+                ),
+                const _SettingsDivider(),
+                _PushCategoryTile(
+                  icon: Icons.person_outline,
+                  title: context.l10n.notificationsCategoryPersonal,
+                  value: preferences.personalEnabled,
+                  enabled: preferences.pushEnabled,
+                  onChanged: (value) =>
+                      controller.setCategoryEnabled('personal', value),
+                ),
+                const _SettingsDivider(),
+                _PushCategoryTile(
+                  icon: Icons.groups_outlined,
+                  title: context.l10n.notificationsCategoryGroup,
+                  value: preferences.groupEnabled,
+                  enabled: preferences.pushEnabled,
+                  onChanged: (value) =>
+                      controller.setCategoryEnabled('group', value),
+                ),
+                const _SettingsDivider(),
+                _PushCategoryTile(
+                  icon: Icons.forum_outlined,
+                  title: context.l10n.notificationsCategoryCommunity,
+                  value: preferences.communityEnabled,
+                  enabled: preferences.pushEnabled,
+                  onChanged: (value) =>
+                      controller.setCategoryEnabled('community', value),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PushCategoryTile extends StatelessWidget {
+  const _PushCategoryTile({
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final IconData icon;
+  final String title;
+  final bool value;
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return _NotificationTile(
+      icon: icon,
+      title: title,
+      subtitle: context.l10n.pushNotificationCategorySubtitle,
+      value: value,
+      onChanged: enabled ? onChanged : null,
     );
   }
 }
@@ -223,7 +330,7 @@ class _NotificationTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool value;
-  final ValueChanged<bool> onChanged;
+  final ValueChanged<bool>? onChanged;
   final VoidCallback? onTap;
 
   @override

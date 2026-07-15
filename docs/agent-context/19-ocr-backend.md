@@ -57,8 +57,9 @@ export MAX_IMAGE_PX=2000
 - `POST /extract/base64`: accepts base64 image JSON.
 - Supported images: JPEG, PNG, WEBP, maximum 15 MB.
 
-Android emulator builds use `http://10.0.2.2:8000` by default. For a hosted
-backend:
+The app now defaults to the Azure Container Apps OCR endpoint. Local Android
+emulator development can override it with `http://10.0.2.2:8000`; any hosted
+backend can be selected with:
 
 ```bash
 flutter run --dart-define=OCR_API_URL=https://your-ocr-api.example.com

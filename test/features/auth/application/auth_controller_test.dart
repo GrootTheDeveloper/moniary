@@ -191,4 +191,103 @@ void main() {
       expect(container.read(mockSessionProvider), isNull);
     },
   );
+
+  test('signInWithFacebook applies returned mock session', () async {
+    final repository = FakeAuthRepository();
+    final container = ProviderContainer(
+      overrides: [authRepositoryProvider.overrideWithValue(repository)],
+    );
+    addTearDown(container.dispose);
+
+    await container.read(authControllerProvider.notifier).signInWithFacebook();
+
+    expect(container.read(authControllerProvider).isLoading, isFalse);
+    expect(container.read(authControllerProvider).hasError, isFalse);
+    expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
+  });
+
+  test('signUpWithEmail completes controller state in mock mode', () async {
+    final repository = FakeAuthRepository();
+    final container = ProviderContainer(
+      overrides: [authRepositoryProvider.overrideWithValue(repository)],
+    );
+    addTearDown(container.dispose);
+
+    await container
+        .read(authControllerProvider.notifier)
+        .signUpWithEmail(email: 'bee@moniary.app', password: 'password123');
+
+    expect(container.read(authControllerProvider).isLoading, isFalse);
+    expect(container.read(authControllerProvider).hasError, isFalse);
+  });
+
+  test(
+    'requestPasswordReset completes controller state in mock mode',
+    () async {
+      final repository = FakeAuthRepository();
+      final container = ProviderContainer(
+        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(container.dispose);
+
+      await container
+          .read(authControllerProvider.notifier)
+          .requestPasswordReset('bee@moniary.app');
+
+      expect(container.read(authControllerProvider).isLoading, isFalse);
+      expect(container.read(authControllerProvider).hasError, isFalse);
+    },
+  );
+
+  test('updatePassword completes controller state in mock mode', () async {
+    final repository = FakeAuthRepository();
+    final container = ProviderContainer(
+      overrides: [authRepositoryProvider.overrideWithValue(repository)],
+    );
+    addTearDown(container.dispose);
+
+    await container
+        .read(authControllerProvider.notifier)
+        .updatePassword('newPassword123');
+
+    expect(container.read(authControllerProvider).isLoading, isFalse);
+    expect(container.read(authControllerProvider).hasError, isFalse);
+  });
+
+  test('linkAppleAccount reports mock profile update in mock mode', () async {
+    final repository = FakeAuthRepository();
+    final container = ProviderContainer(
+      overrides: [
+        authRepositoryProvider.overrideWithValue(repository),
+        supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await container.read(authControllerProvider.notifier).linkAppleAccount();
+
+    expect(container.read(authControllerProvider).isLoading, isFalse);
+    expect(container.read(authControllerProvider).hasError, isFalse);
+  });
+
+  test(
+    'linkFacebookAccount reports mock profile update in mock mode',
+    () async {
+      final repository = FakeAuthRepository();
+      final container = ProviderContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container
+          .read(authControllerProvider.notifier)
+          .linkFacebookAccount();
+
+      expect(container.read(authControllerProvider).isLoading, isFalse);
+      expect(container.read(authControllerProvider).hasError, isFalse);
+    },
+  );
 }

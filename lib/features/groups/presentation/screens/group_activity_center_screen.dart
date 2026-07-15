@@ -7,6 +7,7 @@ import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_community.dart';
+import 'group_detail_screen.dart';
 import 'group_transaction_detail_screen.dart';
 
 class GroupActivityCenterScreen extends ConsumerWidget {
@@ -22,10 +23,12 @@ class GroupActivityCenterScreen extends ConsumerWidget {
     final tabs = <Tab>[
       if (groupId != null) Tab(text: context.l10n.groupActivityTabTimeline),
       Tab(text: context.l10n.groupActivityTabNotifications),
+      Tab(text: context.l10n.groupActivityTabCommunityNotifications),
     ];
     final views = <Widget>[
       if (groupId != null) _ActivityTimelineTab(groupId: groupId),
-      const _NotificationsTab(),
+      const _NotificationsTab(category: 'group'),
+      const _NotificationsTab(category: 'community'),
     ];
 
     return DefaultTabController(
@@ -166,6 +169,14 @@ class _ActivityRow extends StatelessWidget {
         return Icons.logout_outlined;
       case 'member_invitation_declined':
         return Icons.person_off_outlined;
+      case 'member_removed':
+        return Icons.person_remove_outlined;
+      case 'owner_transferred':
+        return Icons.swap_horiz_outlined;
+      case 'settlement_disputed':
+        return Icons.report_problem_outlined;
+      case 'leave_blocked_unresolved':
+        return Icons.warning_amber_outlined;
       default:
         return Icons.bolt_outlined;
     }
@@ -184,6 +195,14 @@ class _ActivityRow extends StatelessWidget {
         return context.l10n.groupActivityMemberLeft;
       case 'member_invitation_declined':
         return context.l10n.groupActivityInvitationDeclined;
+      case 'member_removed':
+        return context.l10n.groupActivityMemberRemoved;
+      case 'owner_transferred':
+        return context.l10n.groupActivityOwnerTransferred;
+      case 'settlement_disputed':
+        return context.l10n.groupActivitySettlementDisputed;
+      case 'leave_blocked_unresolved':
+        return context.l10n.groupActivityLeaveBlocked;
       default:
         return type.replaceAll('_', ' ');
     }
@@ -191,11 +210,15 @@ class _ActivityRow extends StatelessWidget {
 }
 
 class _NotificationsTab extends ConsumerWidget {
-  const _NotificationsTab();
+  const _NotificationsTab({required this.category});
+
+  final String category;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notificationsAsync = ref.watch(groupNotificationsProvider);
+    final notificationsAsync = category == 'community'
+        ? ref.watch(communityNotificationsProvider)
+        : ref.watch(groupNotificationsProvider);
     final colors = context.moniaryColors;
 
     return notificationsAsync.when(
@@ -211,7 +234,9 @@ class _NotificationsTab extends ConsumerWidget {
       ),
       data: (notifications) {
         return RefreshIndicator(
-          onRefresh: () async => ref.invalidate(groupNotificationsProvider),
+          onRefresh: () async => category == 'community'
+              ? ref.invalidate(communityNotificationsProvider)
+              : ref.invalidate(groupNotificationsProvider),
           child: notifications.isEmpty
               ? ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -220,7 +245,9 @@ class _NotificationsTab extends ConsumerWidget {
                       height: 320,
                       child: Center(
                         child: Text(
-                          context.l10n.groupNotificationsEmptyState,
+                          category == 'community'
+                              ? context.l10n.communityNotificationsEmptyState
+                              : context.l10n.groupNotificationsEmptyState,
                           style: TextStyle(color: colors.textDim),
                         ),
                       ),
@@ -315,6 +342,11 @@ class _NotificationRow extends ConsumerWidget {
         GroupTransactionDetailScreen.routePath,
         extra: transactionId,
       );
+    } else if (context.mounted) {
+      await context.push(
+        GroupDetailScreen.routePath,
+        extra: notification.groupId,
+      );
     }
   }
 
@@ -328,8 +360,28 @@ class _NotificationRow extends ConsumerWidget {
         return context.l10n.groupNotificationDebtSettled;
       case 'group_invite':
         return context.l10n.groupNotificationGroupInvite;
+      case 'settlement_marked_paid':
+        return context.l10n.groupNotificationSettlementMarkedPaid;
+      case 'settlement_completed':
+        return context.l10n.groupNotificationSettlementCompleted;
+      case 'settlement_disputed':
+        return context.l10n.groupNotificationSettlementDisputed;
+      case 'member_removed':
+        return context.l10n.groupNotificationMemberRemoved;
+      case 'member_left':
+        return context.l10n.groupNotificationMemberLeft;
+      case 'member_leave_blocked_warning':
+        return context.l10n.groupNotificationLeaveBlocked;
+      case 'comment_added':
+      case 'transaction_commented':
+        return context.l10n.groupNotificationCommentAdded;
+      case 'transaction_reacted':
+        return context.l10n.groupNotificationReactionAdded;
+      case 'comment_mention':
+      case 'mention':
+        return context.l10n.groupNotificationMention;
       default:
-        return type.replaceAll('_', ' ');
+        return context.l10n.groupNotificationGeneric;
     }
   }
 }

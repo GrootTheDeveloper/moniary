@@ -122,6 +122,24 @@ class AuthRepository {
     }
   }
 
+  Future<bool> linkFacebookAccount() async {
+    if (_useMockData) {
+      return true;
+    }
+
+    try {
+      await _requiredClient.auth.linkIdentity(OAuthProvider.facebook);
+      return false;
+    } catch (e, st) {
+      AppLogger.error('Facebook account linking failed', e, st);
+      if (e is AppException) rethrow;
+      throw const AppException(
+        'errorGeneric',
+        code: 'AUTH_LINK_FACEBOOK_FAILED',
+      );
+    }
+  }
+
   Future<Session?> signInWithGoogle() async {
     if (_useMockData) {
       return _mockSession();
@@ -242,6 +260,27 @@ class AuthRepository {
       throw const AppException(
         'errorGeneric',
         code: 'AUTH_PASSWORD_RESET_FAILED',
+      );
+    }
+  }
+
+  Future<void> updatePassword(String newPassword) async {
+    if (_useMockData) return;
+    try {
+      await _requiredClient.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+    } on AuthException catch (e, st) {
+      AppLogger.error('Password update failed', e, st);
+      throw _mapAuthException(e);
+    } catch (e, st) {
+      AppLogger.error('Password update failed (unexpected)', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
+      throw const AppException(
+        'errorGeneric',
+        code: 'AUTH_PASSWORD_UPDATE_FAILED',
       );
     }
   }

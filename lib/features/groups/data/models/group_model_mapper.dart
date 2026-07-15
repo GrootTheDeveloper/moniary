@@ -172,6 +172,7 @@ class GroupModelMapper {
       groupName: row['group_name'] as String? ?? '',
       groupTransactionId: row['group_transaction_id'] as String?,
       inviteToken: row['invite_token'] as String?,
+      category: row['category'] as String? ?? 'group',
       type: row['type'] as String,
       isRead: row['is_read'] as bool? ?? false,
       createdAt: _date(row['created_at']),
@@ -205,6 +206,8 @@ class GroupModelMapper {
       debtNotifications: row['debt_notifications'] as bool? ?? true,
       inviteNotifications: row['invite_notifications'] as bool? ?? true,
       mentionNotifications: row['mention_notifications'] as bool? ?? true,
+      communityComments: row['community_comments'] as bool? ?? true,
+      communityReactions: row['community_reactions'] as bool? ?? true,
       quietHoursStart: _nullableInt(row['quiet_hours_start']),
       quietHoursEnd: _nullableInt(row['quiet_hours_end']),
     );

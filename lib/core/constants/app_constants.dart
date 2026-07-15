@@ -15,15 +15,36 @@ class AppConstants {
   static const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
   static const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
+  // --- FCM/APNs (provided through dart-define; never commit real values) ---
+  static const firebaseApiKey = String.fromEnvironment('FIREBASE_API_KEY');
+  static const firebaseAppId = String.fromEnvironment('FIREBASE_APP_ID');
+  static const firebaseMessagingSenderId = String.fromEnvironment(
+    'FIREBASE_MESSAGING_SENDER_ID',
+  );
+  static const firebaseProjectId = String.fromEnvironment(
+    'FIREBASE_PROJECT_ID',
+  );
+  static const firebaseIosBundleId = String.fromEnvironment(
+    'FIREBASE_IOS_BUNDLE_ID',
+    defaultValue: 'com.moniary.moniary',
+  );
+
   static bool get hasSupabaseConfig =>
       supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
+
+  static bool get hasFirebaseConfig =>
+      firebaseApiKey.isNotEmpty &&
+      firebaseAppId.isNotEmpty &&
+      firebaseMessagingSenderId.isNotEmpty &&
+      firebaseProjectId.isNotEmpty;
 
   // --- OCR ---
   static const ocrApiUrl = String.fromEnvironment(
     'OCR_API_URL',
-    defaultValue: 'http://10.0.2.2:8000',
+    defaultValue:
+        'https://ca-moniary-ocr-ocr-eo5b67.happydesert-5a5977c3.southeastasia.azurecontainerapps.io',
   );
-  static const ocrRequestTimeout = Duration(seconds: 8);
+  static const ocrRequestTimeout = Duration(seconds: 30);
 
   /// Call once at app startup. In release mode, crash if Supabase env is missing.
   static void assertSupabaseConfig() {

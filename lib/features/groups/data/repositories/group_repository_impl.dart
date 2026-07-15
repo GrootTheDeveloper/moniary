@@ -484,41 +484,6 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
-  Future<List<GroupNotification>> fetchNotifications() {
-    if (_useMockData) {
-      return _mock.fetchNotifications();
-    }
-    return _guard('fetch group notifications', () async {
-      return (await _remote.fetchNotifications())
-          .map(GroupModelMapper.notification)
-          .toList();
-    });
-  }
-
-  @override
-  Future<void> markNotificationRead(String notificationId) {
-    if (_useMockData) {
-      return _mock.markNotificationRead(notificationId);
-    }
-    return _guard(
-      'mark group notification read',
-      () => _remote.markNotificationRead(notificationId),
-    );
-  }
-
-  @override
-  Future<List<GroupActivity>> fetchActivities(String groupId) {
-    if (_useMockData) {
-      return _mock.fetchActivities(groupId);
-    }
-    return _guard('fetch group activities', () async {
-      return (await _remote.fetchActivities(
-        groupId,
-      )).map(GroupModelMapper.activity).toList();
-    });
-  }
-
-  @override
   Future<GroupNotificationPreference> fetchNotificationPreference(
     String groupId,
   ) {
@@ -577,110 +542,16 @@ class GroupRepositoryImpl implements GroupRepository {
   Future<GroupMonthlyStats> fetchMonthlyStats({
     required String groupId,
     required DateTime month,
-  }) {
+  }) async {
+    if (_useMockData) {
+      return _mock.fetchMonthlyStats(groupId: groupId, month: month);
+    }
     return _guard('fetch group monthly stats', () async {
-      final detail = await fetchGroupDetail(groupId);
-      final transactions = await fetchTransactions(groupId);
-      final start = DateTime(month.year, month.month);
-      final end = DateTime(month.year, month.month + 1);
-      final posted = transactions
-          .where(
-            (item) =>
-                item.splitStatus == GroupSplitStatus.posted &&
-                !item.transactionDate.isBefore(start) &&
-                item.transactionDate.isBefore(end),
-          )
-          .toList();
-      final categories = <String, ({int amount, int count})>{};
-      final members = {
-        for (final member in detail.activeMembers)
-          member.userId: _MemberStats(member.resolvedName),
-      };
-      for (final transaction in posted) {
-        final category = transaction.categoryName?.trim().isNotEmpty == true
-            ? transaction.categoryName!
-            : 'Chưa chọn danh mục';
-        final currentCategory = categories[category] ?? (amount: 0, count: 0);
-        categories[category] = (
-          amount: currentCategory.amount + transaction.totalAmount,
-          count: currentCategory.count + 1,
-        );
-
-        final txDetail = await fetchTransactionDetail(transaction.id);
-        final touchedMembers = <String>{};
-        for (final share in txDetail.shares) {
-          final member = members.putIfAbsent(
-            share.userId,
-            () => _MemberStats(
-              share.displayName?.trim().isNotEmpty == true
-                  ? share.displayName!
-                  : share.userId,
-            ),
-          );
-          member.shareAmount += share.shareAmount;
-          touchedMembers.add(share.userId);
-        }
-        for (final payer in txDetail.payers) {
-          final member = members.putIfAbsent(
-            payer.userId,
-            () => _MemberStats(
-              payer.displayName?.trim().isNotEmpty == true
-                  ? payer.displayName!
-                  : payer.userId,
-            ),
-          );
-          member.paidAmount += payer.paidAmount;
-          touchedMembers.add(payer.userId);
-        }
-        for (final userId in touchedMembers) {
-          members[userId]?.transactionCount += 1;
-        }
-      }
-      final categoryBreakdown =
-          categories.entries
-              .map(
-                (entry) => GroupCategorySpending(
-                  categoryName: entry.key,
-                  totalAmount: entry.value.amount,
-                  transactionCount: entry.value.count,
-                ),
-              )
-              .toList()
-            ..sort(
-              (left, right) => right.totalAmount.compareTo(left.totalAmount),
-            );
-      final topCategory = categoryBreakdown.isEmpty
-          ? null
-          : categoryBreakdown.first;
-      final memberBreakdown =
-          members.entries
-              .map(
-                (entry) => GroupMemberBreakdown(
-                  userId: entry.key,
-                  displayName: entry.value.displayName,
-                  shareAmount: entry.value.shareAmount,
-                  paidAmount: entry.value.paidAmount,
-                  balance: entry.value.shareAmount - entry.value.paidAmount,
-                  transactionCount: entry.value.transactionCount,
-                ),
-              )
-              .toList()
-            ..sort(
-              (left, right) => right.shareAmount.compareTo(left.shareAmount),
-            );
-      return GroupMonthlyStats(
+      final row = await _remote.fetchMonthlyStats(
         groupId: groupId,
-        month: start,
-        totalSpent: posted.fold<int>(
-          0,
-          (sum, transaction) => sum + transaction.totalAmount,
-        ),
-        transactionCount: posted.length,
-        topCategoryName: topCategory?.categoryName,
-        topCategoryAmount: topCategory?.totalAmount ?? 0,
-        categoryBreakdown: categoryBreakdown,
-        memberBreakdown: memberBreakdown,
+        month: month,
       );
+      return _monthlyStatsFromRow(row, groupId: groupId);
     });
   }
 
@@ -700,29 +571,6 @@ class GroupRepositoryImpl implements GroupRepository {
       return _mock.updateBudget(budget);
     }
     return _guard('update group budget', () => _remote.updateBudget(budget));
-  }
-
-  @override
-  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
-    String groupId,
-  ) async {
-    final overview = await fetchSettlementOverview(groupId);
-    final result =
-        overview.suggestions
-            .where((item) => item.status != GroupSettlementStatus.pending)
-            .map(
-              (item) => GroupSettlementHistoryEntry(
-                id: item.id,
-                fromName: item.fromDisplayName ?? item.fromUserId,
-                toName: item.toDisplayName ?? item.toUserId,
-                amount: item.amount,
-                status: item.status.value,
-                updatedAt: item.updatedAt,
-              ),
-            )
-            .toList()
-          ..sort((left, right) => right.updatedAt.compareTo(left.updatedAt));
-    return result;
   }
 
   @override
@@ -836,6 +684,28 @@ class GroupRepositoryImpl implements GroupRepository {
       'update group public profile',
       () => _remote.updatePublicProfile(profile),
     );
+  }
+
+  @override
+  Future<List<GroupSettlementHistoryEntry>> fetchSettlementHistory(
+    String groupId,
+  ) async {
+    if (_useMockData) return _mock.fetchSettlementHistory(groupId);
+    return _guard('fetch group settlement history', () async {
+      final rows = await _remote.fetchSettlementHistory(groupId);
+      return rows
+          .map(
+            (row) => GroupSettlementHistoryEntry(
+              id: row['id'] as String,
+              fromName: row['from_name'] as String? ?? '',
+              toName: row['to_name'] as String? ?? '',
+              amount: (row['amount'] as num).toInt(),
+              status: row['status'] as String,
+              updatedAt: DateTime.parse(row['updated_at'] as String),
+            ),
+          )
+          .toList(growable: false);
+    });
   }
 
   @override
@@ -990,6 +860,39 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<List<GroupActivity>> fetchActivities(String groupId) {
+    if (_useMockData) {
+      return _mock.fetchActivities(groupId);
+    }
+    return _guard('fetch group activities', () async {
+      final rows = await _remote.fetchActivities(groupId);
+      return rows.map(GroupModelMapper.activity).toList();
+    });
+  }
+
+  @override
+  Future<List<GroupNotification>> fetchNotifications({String? category}) {
+    if (_useMockData) {
+      return _mock.fetchNotifications(category: category);
+    }
+    return _guard('fetch group notifications', () async {
+      final rows = await _remote.fetchNotifications(category: category);
+      return rows.map(GroupModelMapper.notification).toList();
+    });
+  }
+
+  @override
+  Future<void> markNotificationRead(String notificationId) {
+    if (_useMockData) {
+      return _mock.markNotificationRead(notificationId);
+    }
+    return _guard(
+      'mark group notification read',
+      () => _remote.markNotificationRead(notificationId),
+    );
+  }
+
+  @override
   Future<GroupPublicProfile> fetchPublicGroupProfile(String slug) {
     if (_useMockData) {
       return Future.error(
@@ -1025,6 +928,51 @@ class GroupRepositoryImpl implements GroupRepository {
       transactionCount: (row['transaction_count'] as num?)?.toInt(),
       totalSpent: (row['total_spent'] as num?)?.toInt(),
     );
+  }
+
+  GroupMonthlyStats _monthlyStatsFromRow(
+    Map<String, dynamic> row, {
+    required String groupId,
+  }) {
+    final categories = _jsonList(row['category_breakdown']);
+    final members = _jsonList(row['member_breakdown']);
+    return GroupMonthlyStats(
+      groupId: groupId,
+      month: DateTime.parse(row['month'] as String),
+      totalSpent: (row['total_spent'] as num?)?.toInt() ?? 0,
+      transactionCount: (row['transaction_count'] as num?)?.toInt() ?? 0,
+      topCategoryName: row['top_category_name'] as String?,
+      topCategoryAmount: (row['top_category_amount'] as num?)?.toInt() ?? 0,
+      categoryBreakdown: categories
+          .map(
+            (item) => GroupCategorySpending(
+              categoryName: item['category_name'] as String,
+              totalAmount: (item['total_amount'] as num).toInt(),
+              transactionCount: (item['transaction_count'] as num).toInt(),
+            ),
+          )
+          .toList(growable: false),
+      memberBreakdown: members
+          .map(
+            (item) => GroupMemberBreakdown(
+              userId: item['user_id'] as String,
+              displayName: item['display_name'] as String? ?? '',
+              shareAmount: (item['share_amount'] as num).toInt(),
+              paidAmount: (item['paid_amount'] as num).toInt(),
+              balance: (item['balance'] as num).toInt(),
+              transactionCount: (item['transaction_count'] as num).toInt(),
+            ),
+          )
+          .toList(growable: false),
+    );
+  }
+
+  List<Map<String, dynamic>> _jsonList(dynamic value) {
+    if (value is! List) return const [];
+    return value
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .toList(growable: false);
   }
 
   @override
@@ -1174,13 +1122,4 @@ class GroupRepositoryImpl implements GroupRepository {
         })
         .join(',');
   }
-}
-
-class _MemberStats {
-  _MemberStats(this.displayName);
-
-  final String displayName;
-  int shareAmount = 0;
-  int paidAmount = 0;
-  int transactionCount = 0;
 }

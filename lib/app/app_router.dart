@@ -12,6 +12,7 @@ import '../l10n/l10n_extension.dart';
 import '../core/preferences/preferences_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
+import '../features/auth/presentation/reset_password_screen.dart';
 import '../features/assistant/presentation/assistant_conversation_screen.dart';
 import '../features/assistant/presentation/assistant_home_screen.dart';
 import '../features/assistant/presentation/assistant_intro_screen.dart';
@@ -20,6 +21,7 @@ import '../features/assistant/presentation/assistant_question_catalog.dart';
 import '../features/assistant/presentation/assistant_question_library_screen.dart';
 import '../features/budgets/presentation/budget_category_detail_screen.dart';
 import '../features/budgets/presentation/budget_screen.dart';
+import '../features/recurring/presentation/recurring_transactions_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/friends/presentation/screens/add_friend_screen.dart';
 import '../features/friends/presentation/screens/friend_invite_accept_screen.dart';
@@ -32,6 +34,8 @@ import '../features/groups/presentation/screens/debt_settlement_screen.dart';
 import '../features/groups/presentation/screens/group_activity_center_screen.dart';
 import '../features/groups/presentation/screens/group_budget_screen.dart';
 import '../features/groups/presentation/screens/group_recurring_transactions_screen.dart';
+import '../features/groups/presentation/screens/group_summary_screen.dart';
+import '../features/groups/presentation/screens/group_tools_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
 import '../features/groups/presentation/screens/group_notification_preferences_screen.dart';
 import '../features/groups/presentation/screens/group_photo_album_screen.dart';
@@ -51,6 +55,7 @@ import '../features/journal/presentation/journal_export_screen.dart';
 import '../features/journal/presentation/monthly_recap_screen.dart';
 import '../features/journal/presentation/recording_streak_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
+import '../features/notifications/presentation/screens/notification_center_screen.dart';
 import '../features/profile/presentation/profile_setup_screen.dart';
 import '../features/profile/presentation/timezone_picker_screen.dart';
 import '../features/profile/presentation/currency_picker_screen.dart';
@@ -181,6 +186,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         LoginScreen.routePath,
         ProfileSetupScreen.routePath,
         ProfileSurveyScreen.routePath,
+        ResetPasswordScreen.routePath,
       };
       final isPublicGroupRoute = location.startsWith('/public-group/');
       final isPublicRoute =
@@ -240,6 +246,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: LoginScreen.routePath,
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: ResetPasswordScreen.routePath,
+        builder: (context, state) => const ResetPasswordScreen(),
       ),
       GoRoute(
         path: ProfileSetupScreen.routePath,
@@ -391,6 +401,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: BudgetScreen.routePath,
         pageBuilder: (context, state) =>
             buildSlideTransitionPage(state: state, child: const BudgetScreen()),
+      ),
+      GoRoute(
+        path: RecurringTransactionsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const RecurringTransactionsScreen(),
+        ),
       ),
       GoRoute(
         path: BudgetCategoryDetailScreen.routePath,
@@ -570,12 +587,39 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: NotificationCenterScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const NotificationCenterScreen(),
+        ),
+      ),
+      GoRoute(
         path: GroupRecurringTransactionsScreen.routePath,
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
               ? const GroupsScreen()
               : GroupRecurringTransactionsScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupSummaryScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupSummaryScreen(groupId: groupId);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupToolsScreen.routePath,
+        pageBuilder: (context, state) {
+          final groupId = state.extra as String?;
+          final child = groupId == null
+              ? const GroupsScreen()
+              : GroupToolsScreen(groupId: groupId);
           return buildSlideTransitionPage(state: state, child: child);
         },
       ),

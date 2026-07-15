@@ -1773,6 +1773,203 @@ class AppLocalizationsEn extends AppLocalizations {
   String get starredTransactionsTitle => 'Starred Transactions';
 
   @override
+  String get searchFilterType => 'Type';
+
+  @override
+  String get searchFilterAll => 'All';
+
+  @override
+  String get searchFilterIncome => 'Income';
+
+  @override
+  String get searchFilterExpense => 'Expense';
+
+  @override
+  String get searchFilterCategory => 'Category';
+
+  @override
+  String get searchFilterAllCategories => 'All categories';
+
+  @override
+  String get searchFilterDate => 'Date';
+
+  @override
+  String get searchFilterAmount => 'Amount';
+
+  @override
+  String get searchFilterAmountMin => 'Min';
+
+  @override
+  String get searchFilterAmountMax => 'Max';
+
+  @override
+  String get searchFilterApply => 'Apply';
+
+  @override
+  String get searchFilterClearAll => 'Clear filters';
+
+  @override
+  String get searchFilterImportance => 'Priority';
+
+  @override
+  String get searchImportanceImportant => 'Important';
+
+  @override
+  String get searchImportanceNotImportant => 'Not important';
+
+  @override
+  String get searchFilterSubscription => 'Subscription';
+
+  @override
+  String get searchSubscriptionYes => 'Subscriptions';
+
+  @override
+  String get searchSubscriptionNo => 'Non-subscription';
+
+  @override
+  String get searchAmountRangeError =>
+      'Max amount must be greater than the minimum';
+
+  @override
+  String get searchRecentClear => 'Clear';
+
+  @override
+  String get recurringTitle => 'Recurring & subscriptions';
+
+  @override
+  String get recurringSubtitle =>
+      'Subscriptions, salary, rent and other repeating items';
+
+  @override
+  String get recurringAdd => 'Add recurring';
+
+  @override
+  String get recurringEdit => 'Edit recurring';
+
+  @override
+  String get recurringEmpty => 'No recurring items yet';
+
+  @override
+  String get recurringAmount => 'Amount';
+
+  @override
+  String get recurringType => 'Type';
+
+  @override
+  String get recurringIncome => 'Income';
+
+  @override
+  String get recurringExpense => 'Expense';
+
+  @override
+  String get recurringWallet => 'Wallet';
+
+  @override
+  String get recurringCategory => 'Category';
+
+  @override
+  String get recurringNote => 'Note (optional)';
+
+  @override
+  String get recurringFrequency => 'Frequency';
+
+  @override
+  String get recurringInterval => 'Every';
+
+  @override
+  String get recurringDaily => 'Daily';
+
+  @override
+  String get recurringWeekly => 'Weekly';
+
+  @override
+  String get recurringMonthly => 'Monthly';
+
+  @override
+  String get recurringYearly => 'Yearly';
+
+  @override
+  String recurringEvery(int interval, String unit) {
+    return 'Every $interval × $unit';
+  }
+
+  @override
+  String get recurringStartDate => 'Start date';
+
+  @override
+  String get recurringNextRun => 'Next run';
+
+  @override
+  String get recurringNextRunLabel => 'Next';
+
+  @override
+  String get recurringEndDate => 'End date';
+
+  @override
+  String get recurringNoEndDate => 'No end date';
+
+  @override
+  String get recurringAutoPost => 'Auto-post transactions';
+
+  @override
+  String get recurringAutoPostHelp =>
+      'Automatically create the transaction on each run date';
+
+  @override
+  String get recurringActive => 'Active';
+
+  @override
+  String get recurringPaused => 'Paused';
+
+  @override
+  String get recurringDeleteTitle => 'Delete recurring item?';
+
+  @override
+  String get recurringDeleteMessage =>
+      'This recurring rule will be removed. Past transactions are kept.';
+
+  @override
+  String get recurringSaved => 'Recurring item saved';
+
+  @override
+  String get recurringAmountRequired => 'Enter an amount greater than 0';
+
+  @override
+  String get recurringNoWallets =>
+      'Create a wallet first to add recurring items';
+
+  @override
+  String get recurringNoCategories => 'Create a matching category first';
+
+  @override
+  String get recurringApplyTitle => 'Update subscription?';
+
+  @override
+  String recurringApplyMessage(int count) {
+    return 'Saving will delete the $count transaction(s) already created by this subscription and re-create them with the new details.';
+  }
+
+  @override
+  String get recurringApplyFutureOnly => 'Only apply from now on';
+
+  @override
+  String get recurringApplyUpdate => 'Update the created transactions';
+
+  @override
+  String get recurringApplyDelete => 'Delete all and re-create';
+
+  @override
+  String get recurringDeleteKeepTx => 'Keep transactions';
+
+  @override
+  String get recurringDeleteRemoveTx => 'Delete transactions too';
+
+  @override
+  String recurringDeleteGeneratedMessage(int count) {
+    return 'This subscription created $count transaction(s). What should happen to them?';
+  }
+
+  @override
   String get starredTransactionsEmpty => 'No starred transactions yet';
 
   @override
@@ -1813,6 +2010,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLinkApple => 'Link Apple';
 
   @override
+  String get profileLinkFacebook => 'Link Facebook';
+
+  @override
   String get profileLinkSuccess => 'Linked account successfully!';
 
   @override
@@ -1824,6 +2024,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Complete Apple linking in browser to return to Moniary.';
 
   @override
+  String get profileLinkFacebookBrowser =>
+      'Complete Facebook linking in browser to return to Moniary.';
+
+  @override
   String profileLinkGoogleError(String error) {
     return 'Google linking error: $error';
   }
@@ -1831,6 +2035,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String profileLinkAppleError(String error) {
     return 'Apple linking error: $error';
+  }
+
+  @override
+  String profileLinkFacebookError(String error) {
+    return 'Facebook linking error: $error';
   }
 
   @override
@@ -3700,6 +3909,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupLeaveBlocked => 'You still have unresolved group expenses.';
 
   @override
+  String get groupLeaveIncompleteTransaction =>
+      'Finish or cancel your incomplete group transactions before leaving.';
+
+  @override
+  String get groupLeaveDisputedSettlement =>
+      'Resolve the disputed settlement before leaving.';
+
+  @override
   String get groupOwnerTransferRequired =>
       'Transfer ownership or add another owner before leaving.';
 
@@ -3720,6 +3937,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupTransferOwnershipDone => 'Group ownership transferred.';
+
+  @override
+  String get groupLeaveBlockedTitle => 'You cannot leave yet';
+
+  @override
+  String get groupLeaveViewSettlements => 'View settlements';
+
+  @override
+  String get groupLeaveViewGroup => 'View group transactions';
 
   @override
   String get groupInviteTitle => 'Invite members';
@@ -3992,6 +4218,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'Set a shared monthly spending limit for this group.';
 
   @override
+  String get groupBudgetProgressTitle => 'This month\'s budget progress';
+
+  @override
+  String get groupBudgetNoLimit => 'No budget limit is set.';
+
+  @override
+  String get groupBudgetOverLimit => 'The group is over its budget limit.';
+
+  @override
+  String groupBudgetSpentOfLimit(String spent, String limit) {
+    return 'Spent $spent of $limit';
+  }
+
+  @override
+  String groupBudgetThresholdNotice(int percent) {
+    return 'Warning threshold: $percent% of the budget.';
+  }
+
+  @override
   String get groupBudgetMonthlyLimit => 'Monthly limit';
 
   @override
@@ -4083,38 +4328,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupNotificationMentions => 'Mentions';
 
   @override
-  String get groupPublicProfileTitle => 'Public profile';
+  String get groupNotificationCommunitySection => 'Community updates';
 
   @override
-  String get groupPublicProfileComingSoon =>
-      'Public sharing isn\'t live yet. These settings save your preferences for when it launches.';
+  String get groupNotificationComments => 'Comments and replies';
 
   @override
-  String get groupPublicProfileEnable => 'Enable public profile';
+  String get groupNotificationReactions => 'Reactions';
 
   @override
-  String get groupPublicProfileEnableHelp =>
-      'Allow this group to have a shareable public page';
+  String get groupNotificationQuietHoursSection => 'Quiet hours';
+
+  @override
+  String get groupNotificationQuietStart => 'Starts at';
+
+  @override
+  String get groupNotificationQuietEnd => 'Ends at';
+
+  @override
+  String get groupNotificationQuietNotSet => 'No limit';
+
+  @override
+  String get groupNotificationQuietClear => 'Clear quiet hours';
+
+  @override
+  String get groupNotificationQuietPairRequired =>
+      'Choose both a start and end time.';
 
   @override
   String get groupPublicProfileShowStats => 'Show group stats';
 
   @override
-  String get groupPublicProfileShowStatsHelp =>
-      'Include spending statistics on the public page';
-
-  @override
   String get groupPublicProfileSlug => 'Public slug';
 
   @override
-  String get groupPublicProfileSlugHint => 'my-group-name';
-
-  @override
-  String get groupPublicProfileSlugInvalid =>
-      'Link must be 3-80 chars: lowercase letters, numbers, hyphens';
-
-  @override
-  String get groupPublicProfileSaved => 'Public profile updated';
+  String get groupPublicProfileTitle => 'Public group profile';
 
   @override
   String get groupPublicProfileSettingsTitle => 'Public profile settings';
@@ -4129,6 +4377,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get groupPublicProfileShowStatsSubtitle =>
       'Shows aggregate counts and total spending only.';
+
+  @override
+  String get groupPublicProfileShareTitle => 'Share public page';
+
+  @override
+  String get groupPublicProfileCopy => 'Copy link';
+
+  @override
+  String get groupPublicProfileCopied => 'Public page link copied.';
+
+  @override
+  String get groupPublicProfilePreview => 'Preview';
 
   @override
   String get groupPublicProfileInvalidSlug =>
@@ -4194,6 +4454,102 @@ class AppLocalizationsEn extends AppLocalizations {
       'This recurring transaction will be permanently removed.';
 
   @override
+  String get groupToolsTitle => 'Group tools';
+
+  @override
+  String get groupToolsSubtitle =>
+      'Manage the group without losing sight of shared money.';
+
+  @override
+  String get groupToolsFinanceSection => 'Finance';
+
+  @override
+  String get groupToolsCommunitySection => 'Community';
+
+  @override
+  String get groupToolsSettingsSection => 'Settings';
+
+  @override
+  String get groupToolsBudgetSubtitle =>
+      'Monthly spending limit and warning threshold.';
+
+  @override
+  String get groupToolsSummarySubtitle =>
+      'Monthly spending, member breakdown, and settlement history.';
+
+  @override
+  String get groupToolsRecurringSubtitle => 'Scheduled expenses and reminders.';
+
+  @override
+  String get groupToolsActivitySubtitle =>
+      'Timeline, group notices, and community updates.';
+
+  @override
+  String get groupToolsAlbumSubtitle =>
+      'Receipt photos attached to group expenses.';
+
+  @override
+  String get groupToolsNotificationsSubtitle =>
+      'Choose the group and community updates you receive.';
+
+  @override
+  String get groupToolsPublicProfileSubtitle =>
+      'Control the safe public-facing group page.';
+
+  @override
+  String get groupToolsLeaveSubtitle =>
+      'Leave after balances and pending group transactions are resolved.';
+
+  @override
+  String get groupSummaryTitle => 'Financial summary';
+
+  @override
+  String get groupSummarySubtitle =>
+      'Track group spending and settlements month by month.';
+
+  @override
+  String get groupSummaryPreviousMonth => 'Previous month';
+
+  @override
+  String get groupSummaryNextMonth => 'Next month';
+
+  @override
+  String get groupSummaryTotalSpent => 'Total spent';
+
+  @override
+  String get groupSummaryTransactions => 'Transactions';
+
+  @override
+  String get groupSummaryCategories => 'By category';
+
+  @override
+  String get groupSummaryMembers => 'By member';
+
+  @override
+  String get groupSummarySettlementHistory => 'Settlement history';
+
+  @override
+  String get groupSummaryNoData => 'No data for this month.';
+
+  @override
+  String get groupSummaryNoHistory => 'No settlement history yet.';
+
+  @override
+  String groupSummaryTransactionCount(int count) {
+    return '$count transactions';
+  }
+
+  @override
+  String groupSummaryMemberAmounts(String share, String paid) {
+    return 'Share $share · Paid $paid';
+  }
+
+  @override
+  String groupSummarySettlementPair(String from, String to) {
+    return '$from pays $to';
+  }
+
+  @override
   String get groupActivityTransactionReacted => 'reacted to a transaction';
 
   @override
@@ -4212,6 +4568,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupActivityInvitationDeclined => 'declined a group invite';
 
   @override
+  String get groupActivityMemberRemoved => 'removed a member from the group';
+
+  @override
+  String get groupActivityOwnerTransferred => 'transferred group ownership';
+
+  @override
+  String get groupActivitySettlementDisputed => 'reported a settlement dispute';
+
+  @override
+  String get groupActivityLeaveBlocked =>
+      'tried to leave with unresolved items';
+
+  @override
   String get groupNotificationTransactionPosted => 'New transaction posted';
 
   @override
@@ -4223,6 +4592,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupNotificationGroupInvite => 'You have a new group invite';
+
+  @override
+  String get groupNotificationSettlementMarkedPaid =>
+      'A settlement was marked as paid';
+
+  @override
+  String get groupNotificationSettlementCompleted =>
+      'A settlement was completed';
+
+  @override
+  String get groupNotificationSettlementDisputed => 'A settlement is disputed';
+
+  @override
+  String get groupNotificationMemberRemoved =>
+      'A member was removed from the group';
+
+  @override
+  String get groupActivityTabGroupNotifications => 'Group';
+
+  @override
+  String get groupActivityTabCommunityNotifications => 'Community';
+
+  @override
+  String get communityNotificationsEmptyState =>
+      'No community notifications yet';
+
+  @override
+  String get groupNotificationMemberLeft => 'A member left the group';
+
+  @override
+  String get groupNotificationLeaveBlocked =>
+      'A member tried to leave with unresolved items';
+
+  @override
+  String get groupNotificationCommentAdded => 'A new comment was added';
+
+  @override
+  String get groupNotificationReactionAdded =>
+      'Someone reacted to a transaction';
+
+  @override
+  String get groupNotificationMention => 'You were mentioned in the community';
 
   @override
   String get groupTransactionCreator => 'Posted by';
@@ -4403,11 +4814,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String groupActivityTransactionPosted(String actor) {
     return '$actor posted a group transaction.';
-  }
-
-  @override
-  String groupActivityOwnerTransferred(String actor) {
-    return '$actor transferred group ownership.';
   }
 
   @override
@@ -5318,6 +5724,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginNeedAccount => 'Need an account? Sign up';
 
   @override
+  String get resetPasswordTitle => 'Set a new password';
+
+  @override
+  String get resetPasswordSubtitle => 'Enter a new password for your account.';
+
+  @override
+  String get resetPasswordConfirmLabel => 'Confirm new password';
+
+  @override
+  String get resetPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get resetPasswordSubmit => 'Reset password';
+
+  @override
+  String get resetPasswordSuccess => 'Your password has been updated.';
+
+  @override
+  String get authErrorInvalidCredentials => 'Incorrect email or password.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'Please confirm your email before signing in.';
+
+  @override
+  String get authErrorEmailAlreadyRegistered =>
+      'This email is already registered.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'This password is too weak. Try a longer one with numbers or symbols.';
+
+  @override
+  String get authErrorRateLimited =>
+      'Too many attempts. Please try again later.';
+
+  @override
+  String get authErrorUserBanned => 'This account has been suspended.';
+
+  @override
   String get cameraFallbackPermissionDenied =>
       'Camera permission denied. You can enter the transaction manually.';
 
@@ -5327,13 +5773,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanSuggestionNotice =>
-      'Fields marked as AI suggestions were filled from the receipt. Review them before saving.';
+      'Receipt details were filled automatically. Review them before saving.';
 
   @override
-  String get scanAiSuggestion => 'AI suggestion';
+  String get scanAiSuggestion => 'From receipt';
 
   @override
-  String get scanSuggestionNeedsReview => 'AI suggestion - review recommended';
+  String get scanSuggestionNeedsReview => 'From receipt - review recommended';
+
+  @override
+  String get scanDetectedSummary => 'Detected from receipt';
+
+  @override
+  String scanDetectedItemsCount(int count) {
+    return 'Items detected: $count';
+  }
+
+  @override
+  String get scanPaymentMethod => 'Payment method';
+
+  @override
+  String get scanPaymentCash => 'Cash';
+
+  @override
+  String get scanPaymentCard => 'Card';
+
+  @override
+  String get scanPaymentTransfer => 'Bank transfer';
+
+  @override
+  String get scanPaymentOther => 'Other';
+
+  @override
+  String scanCurrency(String currency) {
+    return 'Currency: $currency';
+  }
+
+  @override
+  String get scanValidationNotice =>
+      'Some extracted values may need a quick review.';
 
   @override
   String get friendQrTitle => 'Friend QR';
@@ -5501,4 +5979,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mascotFedResponse => 'Yummy! I\'m full and happy now! 💖🐷';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get notificationsFilterAll => 'All';
+
+  @override
+  String get notificationsCategoryPersonal => 'Personal';
+
+  @override
+  String get notificationsCategoryGroup => 'Group';
+
+  @override
+  String get notificationsCategoryCommunity => 'Community';
+
+  @override
+  String get notificationsCategorySystem => 'System';
+
+  @override
+  String get notificationsMarkAllRead => 'Mark all read';
+
+  @override
+  String get notificationsEmpty => 'No notifications in the last 30 days';
+
+  @override
+  String get notificationFriendRequest => 'You have a new friend request';
+
+  @override
+  String get notificationFriendAccepted => 'Your friend request was accepted';
+
+  @override
+  String get notificationGroupTransaction =>
+      'A new group transaction was posted';
+
+  @override
+  String get notificationAmountRequired => 'Your share amount is needed';
+
+  @override
+  String get notificationGroupInvite => 'You were invited to a group';
+
+  @override
+  String get notificationDebtSettled => 'A group debt was settled';
+
+  @override
+  String get notificationCommunityComment =>
+      'A new community comment was added';
+
+  @override
+  String get notificationCommunityReaction =>
+      'Someone reacted to a transaction';
+
+  @override
+  String get notificationCommunityMention =>
+      'You were mentioned in the community';
+
+  @override
+  String get notificationGeneric => 'You have a new update';
+
+  @override
+  String get pushNotificationSectionTitle => 'Phone notifications';
+
+  @override
+  String get pushNotificationSectionDesc =>
+      'Choose which notifications may appear when Moniary is not open.';
+
+  @override
+  String get pushNotificationAllTitle => 'Allow push notifications';
+
+  @override
+  String get pushNotificationAllSubtitle =>
+      'Turning this off only blocks phone alerts; history remains in the inbox.';
+
+  @override
+  String get pushNotificationCategorySubtitle =>
+      'Notifications remain in the inbox for 30 days.';
 }

@@ -4,6 +4,7 @@ class GroupNotification {
     required this.groupId,
     required this.groupName,
     required this.type,
+    this.category = 'group',
     required this.isRead,
     required this.createdAt,
     this.groupTransactionId,
@@ -16,6 +17,7 @@ class GroupNotification {
   final String? groupTransactionId;
   final String? inviteToken;
   final String type;
+  final String category;
   final bool isRead;
   final DateTime createdAt;
 }
