@@ -120,4 +120,20 @@ void main() {
       'Hãy hoàn tất xác thực Facebook trước khi liên kết tài khoản.',
     );
   });
+
+  testWidgets('maps an expired account restoration window', (tester) async {
+    final message = await messageFor(
+      tester,
+      const AppException(
+        'Account restoration window has expired',
+        code: 'ACCOUNT_RESTORE_EXPIRED',
+      ),
+    );
+
+    expect(
+      message,
+      'Thời hạn khôi phục 30 ngày đã kết thúc. '
+      'Tài khoản của bạn không thể khôi phục được nữa.',
+    );
+  });
 }

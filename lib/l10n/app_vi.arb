@@ -1201,6 +1201,7 @@
   "restoreAccountTitle": "Tài khoản đang chờ xóa",
   "restoreAccountBody": "Tài khoản của bạn đã bị vô hiệu hóa và đang trong thời gian ân hạn 30 ngày trước khi bị xóa vĩnh viễn.\n\nBạn có muốn khôi phục lại tài khoản không?",
   "restoreAccountButton": "Khôi phục tài khoản",
+  "accountRestoreExpired": "Thời hạn khôi phục 30 ngày đã kết thúc. Tài khoản của bạn không thể khôi phục được nữa.",
   "validationEmailRequired": "Email không được trống",
   "validationEmailInvalid": "Email không hợp lệ",
   "validationPasswordMinLength": "Mật khẩu phải từ {min} ký tự",

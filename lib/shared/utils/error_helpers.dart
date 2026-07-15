@@ -55,6 +55,8 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.authErrorGoogleLinkIncomplete;
       case 'AUTH_LINK_FACEBOOK_NOT_COMPLETED':
         return l10n.authErrorFacebookLinkIncomplete;
+      case 'ACCOUNT_RESTORE_EXPIRED':
+        return l10n.accountRestoreExpired;
       case 'GROUP_NAME_REQUIRED':
         return l10n.groupNameRequired;
       case 'GROUP_USER_NOT_FOUND':

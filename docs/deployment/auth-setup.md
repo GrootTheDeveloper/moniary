@@ -57,8 +57,9 @@ io.supabase.moniary://reset-password
 Set Site URL to the real production web URL if the product has one. Do not use
 localhost as the production Site URL.
 
-Keep **Allow manual linking** enabled. Anonymous-to-Google account upgrades use
-Supabase identity linking and will be rejected when this setting is disabled.
+Keep **Allow manual linking** enabled. Anonymous-to-Google/Facebook account
+upgrades use Supabase identity linking and will be rejected when this setting
+is disabled.
 
 ## 3. Anonymous sign-in protection
 
@@ -143,6 +144,8 @@ Test each path from a fresh install or after signing out:
 - Google browser launch, consent, callback, and authenticated home screen;
 - anonymous-to-Google linking, warm/cold callback, identity verification, and
   the final success notification;
+- anonymous-to-Facebook linking, warm/cold callback, identity verification,
+  and the final success notification;
 - cold-start callback while the app is terminated;
 - cancelled OAuth and a second attempt, which must not fail with a stale PKCE
   verifier;
@@ -150,7 +153,62 @@ Test each path from a fresh install or after signing out:
 
 Do not test Facebook while its Supabase provider or build flag is disabled.
 
-## 8. iOS release review
+## 8. Account deletion lifecycle
+
+Apply `20260715130000_account_deletion_lifecycle_hardening.sql`, then deploy
+only the two functions used by the 30-day grace-period flow:
+
+```bash
+supabase functions deploy soft-delete-account
+supabase functions deploy garbage-collect --no-verify-jwt
+```
+
+`delete-account` is intentionally not deployed: immediate hard deletion would
+bypass the advertised restoration period. Permanent deletion is performed only
+by `garbage-collect` after eligibility is rechecked in the database.
+
+Generate one high-entropy scheduler secret and store the exact same value in
+both locations below. Never add it to `mobile.env` or Git:
+
+```bash
+openssl rand -hex 32
+supabase secrets set GARBAGE_COLLECT_SECRET=PASTE_GENERATED_VALUE
+```
+
+In Supabase Vault, create exactly one secret for each name:
+
+```sql
+select vault.create_secret(
+  'https://YOUR_PROJECT_REF.supabase.co',
+  'project_url'
+);
+select vault.create_secret(
+  'PASTE_GENERATED_VALUE',
+  'garbage_collect_secret'
+);
+```
+
+The nightly cron calls the function with `x-cron-secret`. Calling it without
+that header must return `401`; a missing server secret must fail closed with
+`500`. Confirm the schedule and recent HTTP responses with:
+
+```sql
+select jobid, jobname, schedule, active
+from cron.job
+where jobname = 'garbage_collect_expired_accounts';
+
+select status_code, content, created
+from net._http_response
+order by created desc
+limit 10;
+```
+
+Device verification must cover: submit deletion feedback, global sign-out,
+sign back in during the grace period, restore successfully, request deletion
+again, and verify that restoration after 30 days is rejected. Use a disposable
+test account for the final cleanup test.
+
+## 9. iOS release review
 
 Before submitting an iOS release, verify that the available email/guest login
 experience satisfies App Review Guideline 4.8 as an equivalent privacy-focused

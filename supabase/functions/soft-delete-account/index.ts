@@ -30,15 +30,18 @@ Deno.serve(async (req) => {
 
   const userClient = createClient(supabaseUrl, anonKey, {
     global: { headers: { Authorization: authHeader } },
+    auth: { autoRefreshToken: false, persistSession: false },
   });
-  
+
   const { data: userData, error: userError } = await userClient.auth.getUser();
   if (userError || !userData.user) {
     return json({ error: 'Invalid user session' }, 401);
   }
 
   const userId = userData.user.id;
-  const adminClient = createClient(supabaseUrl, serviceRoleKey);
+  const adminClient = createClient(supabaseUrl, serviceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
 
   let payload: Record<string, unknown>;
   try {
@@ -77,39 +80,110 @@ Deno.serve(async (req) => {
   if (details && details.length > 500) {
     return json({ error: 'Deletion details are too long' }, 400);
   }
-  if (!appVersion || !platform || !locale) {
+  const validPlatforms = new Set([
+    'android',
+    'fuchsia',
+    'iOS',
+    'linux',
+    'macOS',
+    'windows',
+  ]);
+  if (
+    !appVersion || appVersion.length > 64 ||
+    !validPlatforms.has(platform) ||
+    !locale || locale.length > 32
+  ) {
     return json({ error: 'Missing feedback context' }, 400);
   }
 
-  const deletedAt = new Date().toISOString();
-
-  const { error: updateError } = await adminClient
+  const { data: existingProfile, error: profileError } = await adminClient
     .from('profiles')
-    .update({ deleted_at: deletedAt })
-    .eq('id', userId);
+    .select('deleted_at')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (profileError) {
+    return json({ error: profileError.message }, 500);
+  }
+  if (!existingProfile) {
+    return json({ error: 'Profile not found' }, 404);
+  }
+
+  const existingDeletedAt = typeof existingProfile.deleted_at === 'string'
+    ? existingProfile.deleted_at
+    : null;
+  if (existingDeletedAt) {
+    return json({
+      success: true,
+      deleted_at: existingDeletedAt,
+      feedbackRecorded: false,
+      alreadyPending: true,
+    });
+  }
+
+  const requestedDeletedAt = new Date().toISOString();
+  const { data: updatedProfile, error: updateError } = await adminClient
+    .from('profiles')
+    .update({ deleted_at: requestedDeletedAt })
+    .eq('id', userId)
+    .is('deleted_at', null)
+    .select('deleted_at')
+    .maybeSingle();
 
   if (updateError) {
     return json({ error: updateError.message }, 500);
   }
 
-  const { error: feedbackError } = await adminClient
-    .from('account_deletion_feedback')
-    .insert({
-      reason_code: reasonCode,
-      details: details || null,
-      app_version: appVersion,
-      platform,
-      locale,
-    });
+  // A concurrent request may have transitioned the same account first. Read
+  // back the canonical timestamp so the 30-day deadline is never extended.
+  let deletedAt = updatedProfile?.deleted_at as string | undefined;
+  if (!deletedAt) {
+    const { data: concurrentProfile, error: concurrentError } = await adminClient
+      .from('profiles')
+      .select('deleted_at')
+      .eq('id', userId)
+      .maybeSingle();
+    if (concurrentError || typeof concurrentProfile?.deleted_at !== 'string') {
+      return json({ error: concurrentError?.message ?? 'Deletion request failed' }, 500);
+    }
+    deletedAt = concurrentProfile.deleted_at;
+  }
 
-  if (feedbackError) {
-    console.error('Failed to store account deletion feedback', feedbackError);
+  let feedbackRecorded = false;
+  if (updatedProfile) {
+    const { error: feedbackError } = await adminClient
+      .from('account_deletion_feedback')
+      .insert({
+        reason_code: reasonCode,
+        details: details || null,
+        app_version: appVersion,
+        platform,
+        locale,
+      });
+
+    if (feedbackError) {
+      console.error('Failed to store account deletion feedback', feedbackError);
+    } else {
+      feedbackRecorded = true;
+    }
+  }
+
+  const accessToken = authHeader.replace(/^Bearer\s+/i, '').trim();
+  if (accessToken) {
+    const { error: signOutError } = await adminClient.auth.admin.signOut(
+      accessToken,
+      'global',
+    );
+    if (signOutError) {
+      console.error('Failed to revoke account sessions', signOutError);
+    }
   }
 
   return json({
     success: true,
     deleted_at: deletedAt,
-    feedbackRecorded: !feedbackError,
+    feedbackRecorded,
+    alreadyPending: !updatedProfile,
   });
 });
 

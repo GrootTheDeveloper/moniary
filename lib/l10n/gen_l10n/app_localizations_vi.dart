@@ -2678,6 +2678,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get restoreAccountButton => 'Khôi phục tài khoản';
 
   @override
+  String get accountRestoreExpired =>
+      'Thời hạn khôi phục 30 ngày đã kết thúc. Tài khoản của bạn không thể khôi phục được nữa.';
+
+  @override
   String get validationEmailRequired => 'Email không được trống';
 
   @override

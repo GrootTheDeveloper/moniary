@@ -17,7 +17,7 @@ Not every small feature needs every layer, but code must preserve the direction
 | `lib/l10n/` | Localization | Vietnamese/English ARB plus generated output |
 | `lib/shared/` | Shared presentation/utilities | design widgets, image/amount widgets, logger, formatters, error helpers |
 | `supabase/migrations/` | Versioned database schema | core finance, reports, account lifecycle, groups, friends, budgets, journal, profile survey, RLS and RPCs |
-| `supabase/functions/` | Edge Functions | `scheduled-reports`, `soft-delete-account`, `delete-account`, `garbage-collect` |
+| `supabase/functions/` | Edge Functions | assistant, reports, notifications, reversible account deletion, and scheduler-only permanent cleanup |
 | `backend/ocr/` | Receipt OCR API | FastAPI + Tesseract/OpenCV/regex implementation and pytest suite |
 | `test/` | Flutter tests | unit and widget tests organized by core/feature |
 | `docs/implementation/` | Historical stabilization plan | completed M01-M14 records, not the current roadmap |

@@ -60,11 +60,12 @@ than assuming public URLs.
   privacy-safe FCM HTTP v1 messages to registered Android/iOS devices. It
   honors global and Group/Community mute preferences and retries failures.
 - `soft-delete-account`: starts the account-deletion grace flow.
-- `delete-account`: performs deletion.
-- `garbage-collect`: cleanup support.
+- `garbage-collect`: scheduler-only permanent cleanup after the 30-day grace
+  period. It transfers group ownership when needed, scrubs the retained shared
+  ledger profile, removes personal storage, and deletes the Auth user.
 
-Scheduling SQL enables `pg_cron`; production secrets, URLs, and schedules remain
-environment operations.
+Scheduling SQL enables `pg_cron`; project URLs and scheduler secrets are read
+from Supabase Vault and are never committed to migrations.
 
 ## OCR service
 

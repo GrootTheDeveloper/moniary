@@ -406,7 +406,10 @@ class AccountRepository {
         code: 'ACCOUNT_DELETE_INVALID_RESPONSE',
       );
     }
-    await _client.auth.signOut();
+    // The Edge Function has already revoked every refresh token. Clear this
+    // device locally so a successful deletion request is not reported as a
+    // failure when the server-side session no longer exists.
+    await _client.auth.signOut(scope: SignOutScope.local);
     return deletedAt.toLocal();
   }
 
@@ -418,10 +421,25 @@ class AccountRepository {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
     }
 
-    await _client
-        .from('profiles')
-        .update({'deleted_at': null})
-        .eq('id', session.user.id);
+    try {
+      await _client.rpc('restore_deleted_account');
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Failed to restore account', e, st);
+      if (e.message.contains('ACCOUNT_RESTORE_EXPIRED')) {
+        throw const AppException(
+          'Account restoration window has expired',
+          code: 'ACCOUNT_RESTORE_EXPIRED',
+        );
+      }
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to restore account', e, st);
+      throw const AppException(
+        'Failed to restore account',
+        code: 'ACCOUNT_RESTORE_FAILED',
+      );
+    }
   }
 
   Future<AccountDeletionStatus> fetchAccountDeletionStatus() async {

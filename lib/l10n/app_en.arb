@@ -1201,6 +1201,7 @@
   "restoreAccountTitle": "Account Pending Deletion",
   "restoreAccountBody": "Your account has been deactivated and is in a 30-day grace period before permanent deletion.\n\nDo you want to restore your account?",
   "restoreAccountButton": "Restore Account",
+  "accountRestoreExpired": "The 30-day restoration window has expired. Your account can no longer be restored.",
   "validationEmailRequired": "Email is required",
   "validationEmailInvalid": "Invalid email",
   "validationPasswordMinLength": "Password must be at least {min} characters",

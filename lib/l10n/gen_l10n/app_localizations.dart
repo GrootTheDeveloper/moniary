@@ -4938,6 +4938,12 @@ abstract class AppLocalizations {
   /// **'Khôi phục tài khoản'**
   String get restoreAccountButton;
 
+  /// No description provided for @accountRestoreExpired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thời hạn khôi phục 30 ngày đã kết thúc. Tài khoản của bạn không thể khôi phục được nữa.'**
+  String get accountRestoreExpired;
+
   /// No description provided for @validationEmailRequired.
   ///
   /// In vi, this message translates to:

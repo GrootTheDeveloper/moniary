@@ -2684,6 +2684,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restoreAccountButton => 'Restore Account';
 
   @override
+  String get accountRestoreExpired =>
+      'The 30-day restoration window has expired. Your account can no longer be restored.';
+
+  @override
   String get validationEmailRequired => 'Email is required';
 
   @override
