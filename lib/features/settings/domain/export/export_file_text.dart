@@ -3,7 +3,7 @@ import 'export_filters.dart';
 class ExportFileText {
   const ExportFileText({
     required this.xlsxSheetName,
-    required this.xlsxHeaders,
+    required this.spreadsheetHeaders,
     required this.pdfTitle,
     required this.pdfGeneratedAtLabel,
     required this.pdfDataTypesLabel,
@@ -19,7 +19,7 @@ class ExportFileText {
   });
 
   final String xlsxSheetName;
-  final List<String> xlsxHeaders;
+  final List<String> spreadsheetHeaders;
   final String pdfTitle;
   final String pdfGeneratedAtLabel;
   final String pdfDataTypesLabel;

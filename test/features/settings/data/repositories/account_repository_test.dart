@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/features/settings/data/account/account_repository.dart';
+import 'package:moniary/features/settings/domain/data_transfer/spreadsheet_data_format.dart';
 import 'package:moniary/features/settings/domain/export/export_file_text.dart';
 import 'package:moniary/features/settings/domain/export/export_filters.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -12,7 +13,7 @@ class FakeSupabaseClient extends Fake implements SupabaseClient {}
 
 const testExportFileText = ExportFileText(
   xlsxSheetName: 'Transactions',
-  xlsxHeaders: [
+  spreadsheetHeaders: [
     'Data type',
     'ID',
     'Name',
@@ -114,7 +115,16 @@ void main() {
 
     expect(file.path, endsWith('.csv'));
     expect(await file.exists(), isTrue);
-    expect(await file.readAsString(), contains('Data type'));
+    final bytes = await file.readAsBytes();
+    expect(bytes.take(3), [0xef, 0xbb, 0xbf]);
+    final contents = utf8.decode(bytes);
+    // Dart's UTF-8 decoder consumes the BOM after the raw bytes verified it.
+    expect(contents, startsWith('"Data type"'));
+    expect(contents, contains('\r\n'));
+    expect(
+      testExportFileText.spreadsheetHeaders,
+      hasLength(SpreadsheetDataFormat.fullColumnKeys.length),
+    );
 
     final history = await repository.fetchExportHistory();
     expect(history, hasLength(1));
