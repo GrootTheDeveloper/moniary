@@ -809,6 +809,8 @@
   },
   "statsMillionShort": "m",
   "statsLargestTransactions": "Largest transactions",
+  "statsMonthlyTrend": "Monthly trend",
+  "statsOpenMoneyStory": "View Money Story",
   "starredTransactionsTitle": "Starred Transactions",
   "starredTransactionsEmpty": "No starred transactions yet",
   "searchFilterType": "Type",

@@ -3296,6 +3296,18 @@ abstract class AppLocalizations {
   /// **'Giao dịch lớn nhất'**
   String get statsLargestTransactions;
 
+  /// No description provided for @statsMonthlyTrend.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xu hướng theo tháng'**
+  String get statsMonthlyTrend;
+
+  /// No description provided for @statsOpenMoneyStory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem Money Story'**
+  String get statsOpenMoneyStory;
+
   /// No description provided for @starredTransactionsTitle.
   ///
   /// In vi, this message translates to:

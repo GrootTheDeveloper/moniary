@@ -809,6 +809,8 @@
   },
   "statsMillionShort": "tr",
   "statsLargestTransactions": "Giao dịch lớn nhất",
+  "statsMonthlyTrend": "Xu hướng theo tháng",
+  "statsOpenMoneyStory": "Xem Money Story",
   "starredTransactionsTitle": "Giao dịch quan trọng",
   "searchFilterType": "Loại",
   "searchFilterAll": "Tất cả",

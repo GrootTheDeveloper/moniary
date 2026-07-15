@@ -16,6 +16,7 @@ import '../../budgets/application/budget_controller.dart';
 import '../../budgets/domain/monthly_budget.dart';
 import '../../budgets/presentation/budget_screen.dart';
 import '../../calendar/application/month/calendar_month_provider.dart';
+import '../../journal/presentation/monthly_recap_screen.dart';
 import '../../transactions/data/repositories/transaction_repository.dart';
 import '../../transactions/domain/models/transaction_entry.dart';
 import '../../transactions/domain/models/transaction_mutation_result.dart';
@@ -28,6 +29,16 @@ final statisticsMonthProvider =
       return repo.fetchTransactionsForMonth(month);
     });
 
+final statisticsTrendProvider =
+    FutureProvider.family<List<TransactionEntry>, DateTime>((ref, month) async {
+      final repo = ref.watch(transactionRepositoryProvider);
+      final start = DateTime(month.year, month.month - 5, 1);
+      final end = DateTime(month.year, month.month + 1, 1);
+      return repo.fetchTransactionsForRange(start: start, end: end);
+    });
+
+enum _StatsViewMode { expense, income }
+
 class StatisticsView extends ConsumerStatefulWidget {
   const StatisticsView({super.key});
 
@@ -38,6 +49,7 @@ class StatisticsView extends ConsumerStatefulWidget {
 class _StatisticsViewState extends ConsumerState<StatisticsView> {
   late DateTime _selectedMonth;
   String? _touchedCategoryId;
+  _StatsViewMode _viewMode = _StatsViewMode.expense;
 
   @override
   void initState() {
@@ -66,6 +78,18 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     });
   }
 
+  void _setViewMode(_StatsViewMode mode) {
+    if (_viewMode == mode) return;
+    setState(() {
+      _viewMode = mode;
+      _touchedCategoryId = null;
+    });
+  }
+
+  void _openMoneyStory() {
+    context.push(MonthlyRecapScreen.routePath, extra: _selectedMonth);
+  }
+
   @override
   Widget build(BuildContext context) {
     final month = DateTime(_selectedMonth.year, _selectedMonth.month);
@@ -75,6 +99,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
       statisticsMonthProvider(previousMonth),
     );
     final budgetAsync = ref.watch(monthlyBudgetProvider(month));
+    final trendAsync = ref.watch(statisticsTrendProvider(month));
     final colors = context.moniaryColors;
 
     return Scaffold(
@@ -84,17 +109,22 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           month: month,
           transactions: transactions,
           previousTransactions: previousStatsAsync.value,
+          trendTransactions: trendAsync.value,
           budget: budgetAsync.value,
           touchedCategoryId: _touchedCategoryId,
+          viewMode: _viewMode,
           onChangeMonth: _changeMonth,
           onCategoryTap: _setTouchedCategory,
+          onChangeViewMode: _setViewMode,
           onRefresh: () async {
             ref.invalidate(statisticsMonthProvider(month));
             ref.invalidate(statisticsMonthProvider(previousMonth));
             ref.invalidate(monthlyBudgetProvider(month));
+            ref.invalidate(statisticsTrendProvider(month));
           },
           onOpenBudget: () => context.push(BudgetScreen.routePath),
           onOpenTransaction: _openTransactionDetail,
+          onOpenMoneyStory: _openMoneyStory,
         ),
         loading: () =>
             Center(child: CircularProgressIndicator(color: colors.primary)),
@@ -143,6 +173,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
       ref.invalidate(calendarMonthProvider(month));
       ref.invalidate(monthlyBudgetProvider(month));
     }
+    ref.invalidate(statisticsTrendProvider(_selectedMonth));
   }
 }
 
@@ -151,47 +182,72 @@ class _StatisticsBody extends StatelessWidget {
     required this.month,
     required this.transactions,
     required this.previousTransactions,
+    required this.trendTransactions,
     required this.budget,
     required this.touchedCategoryId,
+    required this.viewMode,
     required this.onChangeMonth,
     required this.onCategoryTap,
+    required this.onChangeViewMode,
     required this.onRefresh,
     required this.onOpenBudget,
     required this.onOpenTransaction,
+    required this.onOpenMoneyStory,
   });
 
   final DateTime month;
   final List<TransactionEntry> transactions;
   final List<TransactionEntry>? previousTransactions;
+  final List<TransactionEntry>? trendTransactions;
   final MonthlyBudget? budget;
   final String? touchedCategoryId;
+  final _StatsViewMode viewMode;
   final ValueChanged<int> onChangeMonth;
   final ValueChanged<String?> onCategoryTap;
+  final ValueChanged<_StatsViewMode> onChangeViewMode;
   final Future<void> Function() onRefresh;
   final VoidCallback onOpenBudget;
   final ValueChanged<TransactionEntry> onOpenTransaction;
+  final VoidCallback onOpenMoneyStory;
 
   @override
   Widget build(BuildContext context) {
     final expenseTransactions = transactions
         .where((transaction) => transaction.isExpense)
         .toList();
+    final incomeTransactions = transactions
+        .where((transaction) => transaction.isIncome)
+        .toList();
     final expense = expenseTransactions.fold<double>(
       0,
       (sum, transaction) => sum + transaction.amount,
     );
+    final income = incomeTransactions.fold<double>(
+      0,
+      (sum, transaction) => sum + transaction.amount,
+    );
+    final netBalance = income - expense;
     final previousExpense =
         previousTransactions
             ?.where((transaction) => transaction.isExpense)
             .fold<double>(0, (sum, transaction) => sum + transaction.amount) ??
         0;
-    final categories = _CategorySummary.fromTransactions(expenseTransactions);
+    final activeTransactions = viewMode == _StatsViewMode.expense
+        ? expenseTransactions
+        : incomeTransactions;
+    final categories = _CategorySummary.fromTransactions(activeTransactions);
     final selectedCategories = touchedCategoryId == null
         ? categories
         : categories
               .where((category) => category.categoryId == touchedCategoryId)
               .toList();
     final weekly = _WeeklySummary.fromTransactions(month, expenseTransactions);
+    final trend = _MonthlyTrendPoint.fromTransactions(
+      month,
+      trendTransactions ?? const [],
+    );
+    final largestExpenses = List<TransactionEntry>.from(expenseTransactions)
+      ..sort((a, b) => b.amount.compareTo(a.amount));
     final topCategory = categories.isEmpty ? null : categories.first;
     final insights = StatsInsightsLogic.generateInsights(
       context,
@@ -214,12 +270,15 @@ class _StatisticsBody extends StatelessWidget {
                   month: month,
                   onPrevious: () => onChangeMonth(-1),
                   onNext: () => onChangeMonth(1),
+                  onOpenMoneyStory: onOpenMoneyStory,
                 ),
                 const SizedBox(height: 28),
                 _StatsHero(
                   month: month,
                   expense: expense,
                   previousExpense: previousExpense,
+                  income: income,
+                  netBalance: netBalance,
                   budget: budget,
                   onOpenBudget: onOpenBudget,
                 ),
@@ -228,24 +287,44 @@ class _StatisticsBody extends StatelessWidget {
                   _InsightsSection(insights: insights),
                 ],
                 const SizedBox(height: 25),
-                if (categories.isEmpty)
+                if (transactions.isEmpty)
                   const _StatsEmpty()
                 else ...[
-                  _CategoryDonutSection(
-                    categories: categories,
-                    selectedCategoryId: touchedCategoryId,
-                    topCategory: topCategory,
-                    onCategoryTap: onCategoryTap,
-                  ),
-                  const SizedBox(height: 25),
-                  _WeeklySpendingSection(weeks: weekly),
-                  const SizedBox(height: 26),
-                  _CategoryListSection(
-                    categories: selectedCategories,
-                    isFiltered: touchedCategoryId != null,
-                    onShowAll: () => onCategoryTap(null),
-                    onOpenTransaction: onOpenTransaction,
-                  ),
+                  _ViewModeToggle(mode: viewMode, onChanged: onChangeViewMode),
+                  const SizedBox(height: 22),
+                  if (categories.isEmpty)
+                    _StatsInlineEmpty(message: context.l10n.statsEmptyTitle)
+                  else
+                    _CategoryDonutSection(
+                      categories: categories,
+                      selectedCategoryId: touchedCategoryId,
+                      topCategory: topCategory,
+                      onCategoryTap: onCategoryTap,
+                    ),
+                  if (expenseTransactions.isNotEmpty) ...[
+                    const SizedBox(height: 25),
+                    _WeeklySpendingSection(weeks: weekly),
+                  ],
+                  if (trend.any((point) => point.amount > 0)) ...[
+                    const SizedBox(height: 26),
+                    _MonthlyTrendSection(points: trend),
+                  ],
+                  if (largestExpenses.isNotEmpty) ...[
+                    const SizedBox(height: 26),
+                    _LargestTransactionsSection(
+                      transactions: largestExpenses.take(5).toList(),
+                      onOpenTransaction: onOpenTransaction,
+                    ),
+                  ],
+                  if (categories.isNotEmpty) ...[
+                    const SizedBox(height: 26),
+                    _CategoryListSection(
+                      categories: selectedCategories,
+                      isFiltered: touchedCategoryId != null,
+                      onShowAll: () => onCategoryTap(null),
+                      onOpenTransaction: onOpenTransaction,
+                    ),
+                  ],
                 ],
               ],
             ),
@@ -261,11 +340,13 @@ class _StatsHeader extends StatelessWidget {
     required this.month,
     required this.onPrevious,
     required this.onNext,
+    required this.onOpenMoneyStory,
   });
 
   final DateTime month;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
+  final VoidCallback onOpenMoneyStory;
 
   @override
   Widget build(BuildContext context) {
@@ -298,6 +379,12 @@ class _StatsHeader extends StatelessWidget {
         ),
         Row(
           children: [
+            _HeaderArrowButton(
+              icon: Icons.ios_share_outlined,
+              tooltip: context.l10n.statsOpenMoneyStory,
+              onTap: onOpenMoneyStory,
+            ),
+            const SizedBox(width: 7),
             _HeaderArrowButton(
               icon: Icons.arrow_back_ios_new_rounded,
               tooltip: MaterialLocalizations.of(context).previousPageTooltip,
@@ -357,6 +444,8 @@ class _StatsHero extends ConsumerWidget {
     required this.month,
     required this.expense,
     required this.previousExpense,
+    required this.income,
+    required this.netBalance,
     required this.budget,
     required this.onOpenBudget,
   });
@@ -364,6 +453,8 @@ class _StatsHero extends ConsumerWidget {
   final DateTime month;
   final double expense;
   final double previousExpense;
+  final double income;
+  final double netBalance;
   final MonthlyBudget? budget;
   final VoidCallback onOpenBudget;
 
@@ -403,6 +494,25 @@ class _StatsHero extends ConsumerWidget {
             fontSize: 11,
             fontWeight: FontWeight.w700,
           ),
+        ),
+        const SizedBox(height: 14),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _SecondaryStatPill(
+              label: context.l10n.statsTotalIncome,
+              amount: income,
+              signed: false,
+              color: colors.success,
+            ),
+            const SizedBox(width: 8),
+            _SecondaryStatPill(
+              label: context.l10n.statsNetBalance,
+              amount: netBalance,
+              signed: true,
+              color: netBalance >= 0 ? colors.success : colors.danger,
+            ),
+          ],
         ),
         const SizedBox(height: 17),
         Material(
@@ -452,6 +562,59 @@ class _StatsHero extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _SecondaryStatPill extends ConsumerWidget {
+  const _SecondaryStatPill({
+    required this.label,
+    required this.amount,
+    required this.color,
+    this.signed = false,
+  });
+
+  final String label;
+  final double amount;
+  final Color color;
+  final bool signed;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final amountText = signed
+        ? '${amount < 0 ? '-' : '+'}${ref.formatAmount(amount.abs())}'
+        : _money(ref, amount);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.09),
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label.toUpperCase(),
+            style: context.moniaryTypography.metadata.copyWith(
+              color: color,
+              fontSize: 7.5,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 3),
+          ObscurableAmountText(
+            amountText: amountText,
+            style: TextStyle(
+              color: color,
+              fontFamily: 'JetBrains Mono',
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -514,6 +677,102 @@ class _InsightCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ViewModeToggle extends StatelessWidget {
+  const _ViewModeToggle({required this.mode, required this.onChanged});
+
+  final _StatsViewMode mode;
+  final ValueChanged<_StatsViewMode> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: _controlFill(colors),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _controlBorder(colors)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _ViewModeSegment(
+              label: context.l10n.statsExpenseButton,
+              selected: mode == _StatsViewMode.expense,
+              onTap: () => onChanged(_StatsViewMode.expense),
+            ),
+          ),
+          Expanded(
+            child: _ViewModeSegment(
+              label: context.l10n.statsIncomeButton,
+              selected: mode == _StatsViewMode.income,
+              onTap: () => onChanged(_StatsViewMode.income),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ViewModeSegment extends StatelessWidget {
+  const _ViewModeSegment({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Material(
+      color: selected ? AppTheme.terracotta : Colors.transparent,
+      borderRadius: BorderRadius.circular(11),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(11),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 9),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: selected ? colors.backgroundSoft : colors.textDim,
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatsInlineEmpty extends StatelessWidget {
+  const _StatsInlineEmpty({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Text(
+        message,
+        textAlign: TextAlign.center,
+        style: Theme.of(
+          context,
+        ).textTheme.bodySmall?.copyWith(color: colors.textDim),
       ),
     );
   }
@@ -811,6 +1070,228 @@ class _WeekBar extends StatelessWidget {
   }
 }
 
+class _MonthlyTrendSection extends StatelessWidget {
+  const _MonthlyTrendSection({required this.points});
+
+  final List<_MonthlyTrendPoint> points;
+
+  @override
+  Widget build(BuildContext context) {
+    final maxAmount = points.fold<double>(
+      0,
+      (max, point) => point.amount > max ? point.amount : max,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(label: context.l10n.statsMonthlyTrend),
+        const SizedBox(height: 18),
+        SizedBox(
+          height: 112,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: points.asMap().entries.map((entry) {
+              final index = entry.key;
+              final point = entry.value;
+              final ratio = maxAmount <= 0 ? 0.0 : point.amount / maxAmount;
+              return Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    right: index == points.length - 1 ? 0 : 10,
+                  ),
+                  child: _TrendBar(point: point, ratio: ratio),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TrendBar extends StatelessWidget {
+  const _TrendBar({required this.point, required this.ratio});
+
+  final _MonthlyTrendPoint point;
+  final double ratio;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final locale = Localizations.localeOf(context).toString();
+    final color = point.isCurrent
+        ? AppTheme.terracotta
+        : Color.lerp(AppTheme.taupe, colors.backgroundSoft, 0.2)!;
+    final height = 23 + (ratio * 52);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Text(
+          _compactAmount(context, point.amount),
+          style: context.moniaryTypography.metadataStrong.copyWith(
+            color: point.isCurrent ? AppTheme.terracotta : colors.textDim,
+            fontSize: 9,
+            letterSpacing: 0,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          height: height,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          DateFormat.MMM(locale).format(point.month).toUpperCase(),
+          maxLines: 1,
+          style: context.moniaryTypography.metadata.copyWith(
+            color: point.isCurrent ? AppTheme.terracotta : colors.textDim,
+            fontSize: 8,
+            letterSpacing: 0.6,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LargestTransactionsSection extends StatelessWidget {
+  const _LargestTransactionsSection({
+    required this.transactions,
+    required this.onOpenTransaction,
+  });
+
+  final List<TransactionEntry> transactions;
+  final ValueChanged<TransactionEntry> onOpenTransaction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(label: context.l10n.statsLargestTransactions),
+        const SizedBox(height: 12),
+        ...transactions.asMap().entries.map((entry) {
+          final index = entry.key;
+          final transaction = entry.value;
+          return _LargestTransactionRow(
+            transaction: transaction,
+            color: _statColor(index, transaction.categoryColor),
+            onTap: () => onOpenTransaction(transaction),
+          );
+        }),
+      ],
+    );
+  }
+}
+
+class _LargestTransactionRow extends ConsumerWidget {
+  const _LargestTransactionRow({
+    required this.transaction,
+    required this.color,
+    required this.onTap,
+  });
+
+  final TransactionEntry transaction;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.moniaryColors;
+    final locale = Localizations.localeOf(context).toString();
+    final note = transaction.note?.trim() ?? '';
+    final title = note.isNotEmpty
+        ? note
+        : _categoryLabel(context, transaction.categoryName);
+    final subtitle =
+        '${_categoryLabel(context, transaction.categoryName)} · '
+        '${DateFormat.MMMd(locale).format(transaction.transactionDate)}';
+
+    return Column(
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 13),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: colors.textPrimary,
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w800,
+                              ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          subtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.moniaryTypography.metadata.copyWith(
+                            color: colors.textDim,
+                            fontSize: 8.5,
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  ObscurableAmountText(
+                    amountText: _money(ref, transaction.amount),
+                    style: TextStyle(
+                      color: colors.textPrimary,
+                      fontFamily: 'JetBrains Mono',
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Divider(height: 1, color: colors.outline.withValues(alpha: 0.72)),
+      ],
+    );
+  }
+}
+
 class _CategoryListSection extends StatelessWidget {
   const _CategoryListSection({
     required this.categories,
@@ -1069,6 +1550,41 @@ class _WeeklySummary {
       4,
       (index) => _WeeklySummary(index: index + 1, amount: buckets[index]),
     );
+  }
+}
+
+class _MonthlyTrendPoint {
+  const _MonthlyTrendPoint({
+    required this.month,
+    required this.amount,
+    required this.isCurrent,
+  });
+
+  final DateTime month;
+  final double amount;
+  final bool isCurrent;
+
+  static List<_MonthlyTrendPoint> fromTransactions(
+    DateTime month,
+    List<TransactionEntry> transactions,
+  ) {
+    return List.generate(6, (index) {
+      final offset = 5 - index;
+      final bucketMonth = DateTime(month.year, month.month - offset);
+      final amount = transactions
+          .where(
+            (transaction) =>
+                transaction.isExpense &&
+                transaction.transactionDate.year == bucketMonth.year &&
+                transaction.transactionDate.month == bucketMonth.month,
+          )
+          .fold<double>(0, (sum, transaction) => sum + transaction.amount);
+      return _MonthlyTrendPoint(
+        month: bucketMonth,
+        amount: amount,
+        isCurrent: offset == 0,
+      );
+    });
   }
 }
 

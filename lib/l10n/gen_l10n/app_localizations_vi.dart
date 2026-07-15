@@ -1768,6 +1768,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get statsLargestTransactions => 'Giao dịch lớn nhất';
 
   @override
+  String get statsMonthlyTrend => 'Xu hướng theo tháng';
+
+  @override
+  String get statsOpenMoneyStory => 'Xem Money Story';
+
+  @override
   String get starredTransactionsTitle => 'Giao dịch quan trọng';
 
   @override

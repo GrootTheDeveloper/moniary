@@ -1770,6 +1770,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statsLargestTransactions => 'Largest transactions';
 
   @override
+  String get statsMonthlyTrend => 'Monthly trend';
+
+  @override
+  String get statsOpenMoneyStory => 'View Money Story';
+
+  @override
   String get starredTransactionsTitle => 'Starred Transactions';
 
   @override
