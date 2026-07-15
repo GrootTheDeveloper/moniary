@@ -3051,15 +3051,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get thirdPartyServicesSubtitle =>
-      'See how the app uses Supabase, Google, Meta, Cloudflare, Flutter packages, and device storage.';
+      'See how the app uses Supabase, Google, Meta, Cloudflare, Google Gemini, Flutter packages, and device storage.';
 
   @override
   String get thirdPartyHeroBody =>
-      'This notice helps users understand which services the app relies on for sign-in, storage, and data operations.';
+      'This notice helps users understand which services the app relies on for sign-in, storage, data operations, and optional assistant features.';
 
   @override
   String get thirdPartySupabaseDescription =>
-      'Used for sign-in, database, transaction image storage, and the account-deletion edge function.';
+      'Used for sign-in, database, transaction image storage, account deletion, and the AI assistant edge function.';
 
   @override
   String get thirdPartyGoogleTitle => 'Google';
@@ -3081,6 +3081,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get thirdPartyCloudflareDescription =>
       'Used to prevent automated abuse of guest sign-in by processing the security signals needed to complete a CAPTCHA challenge.';
+
+  @override
+  String get thirdPartyGeminiDescription =>
+      'Used only when the AI assistant is enabled. Moniary sends the selected financial context through a Supabase Edge Function to generate assistant replies.';
 
   @override
   String get thirdPartyFlutterDescription =>
@@ -3727,11 +3731,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyShareItem2 =>
-      'Data is stored on secure infrastructure to provide login, data sync, and photo storage for the app.';
+      'Data is stored on secure infrastructure to provide login, data sync, photo storage, and enabled AI assistant features for the app.';
 
   @override
   String get privacyPolicyShareItem3 =>
-      'Moniary does not automatically read location, contacts, SMS, personal email, or bank data.';
+      'When the AI assistant is enabled, selected financial context may be sent through Supabase Edge Functions to Google Gemini to generate replies. Moniary does not automatically read location, contacts, SMS, personal email, or bank data.';
 
   @override
   String get privacyPolicyShareItem4 =>
@@ -5251,7 +5255,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get assistantPermissionDateRange =>
-      'AI only reads data from 01/01/2025 to today';
+      'AI uses the enabled data scopes needed for your current question';
 
   @override
   String get assistantAnalyzeAll => 'Analyze all data';
@@ -5292,7 +5296,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get assistantPrivacyNote =>
-      'Analysis uses your Moniary data and does not automatically send it to a third party.';
+      'When AI is enabled, selected Moniary context may be sent through Supabase to Google Gemini to generate replies.';
 
   @override
   String assistantGreeting(String name) {

@@ -38,10 +38,17 @@ class WidgetUpdateService {
   static const _appGroupId = 'group.com.moniary';
   static const _iOSWidgetName = 'MoniaryWidget';
 
-  /// Fetch latest real data from database and update iOS Home Screen Widget
+  /// Fetch latest real data from database and update the iOS Home Screen Widget.
   Future<void> updateWidget() async {
     // Skip if running inside unit/widget tests where platform channels are not mocked
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      return;
+    }
+
+    // This project currently ships only the iOS Widget Extension. Android does
+    // not define an AppWidgetProvider, so calling HomeWidget.updateWidget there
+    // makes the plugin look for `com.moniary.moniary.null`.
+    if (!Platform.isIOS) {
       return;
     }
 

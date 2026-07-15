@@ -1,7 +1,7 @@
 # Build Flavors & Environments
 
 **Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
-**Last source audit**: `2026-07-10`
+**Last source audit**: `2026-07-15`
 
 ## Dart defines
 
@@ -61,8 +61,21 @@ OCR has no mock result fallback.
 ## Backend setup
 
 - Supabase schema/functions: `supabase/`.
+- AI Chat runs through the `assistant-chat` Supabase Edge Function. Gemini
+  credentials are Edge Function secrets, not Flutter `--dart-define` values:
+  `GEMINI_API_KEY`, optional `GEMINI_MODEL`, and optional
+  `GEMINI_BLOCKED_KEY_SHA256` for comma-separated SHA-256 digests of exposed
+  keys that the function must refuse to use.
 - OCR installation and runbook: `docs/agent-context/19-ocr-backend.md`.
 - Detailed OCR implementation reference: `18-ocr-pipeline.md`.
+
+After rotating the Gemini key, keep the real value in local `.env` and push it
+to Supabase with:
+
+```bash
+supabase secrets set --env-file .env
+supabase functions deploy assistant-chat
+```
 
 Do not put real credentials in documentation, launch configurations committed to
 Git, or test fixtures.

@@ -39,6 +39,11 @@ class ThirdPartyServicesScreen extends StatelessWidget {
               description: context.l10n.thirdPartyCloudflareDescription,
             ),
             _ServiceItem(
+              icon: Icons.auto_awesome_outlined,
+              title: 'Google Gemini',
+              description: context.l10n.thirdPartyGeminiDescription,
+            ),
+            _ServiceItem(
               icon: Icons.flutter_dash_outlined,
               title: 'Flutter',
               description: context.l10n.thirdPartyFlutterDescription,

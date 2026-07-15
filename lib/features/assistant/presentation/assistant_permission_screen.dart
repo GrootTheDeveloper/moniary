@@ -7,7 +7,7 @@ import '../../../l10n/l10n_extension.dart';
 import '../../../shared/widgets/moniary_design.dart';
 import '../application/assistant_controller.dart';
 import '../domain/assistant_models.dart';
-import 'assistant_home_screen.dart';
+import 'assistant_conversation_screen.dart';
 
 class AssistantPermissionScreen extends ConsumerStatefulWidget {
   const AssistantPermissionScreen({super.key});
@@ -21,10 +21,17 @@ class AssistantPermissionScreen extends ConsumerStatefulWidget {
 
 class _AssistantPermissionScreenState
     extends ConsumerState<AssistantPermissionScreen> {
+  bool _loadedAccess = false;
   bool _enabled = true;
   bool _transactions = true;
   bool _wallets = true;
   bool _budgets = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadCurrentAccess());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +41,7 @@ class _AssistantPermissionScreenState
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(24, 10, 24, 18),
         child: FilledButton(
-          onPressed: !_enabled || action.isLoading ? null : _confirm,
+          onPressed: action.isLoading ? null : _confirm,
           child: action.isLoading
               ? const SizedBox.square(
                   dimension: 20,
@@ -68,7 +75,7 @@ class _AssistantPermissionScreenState
                 _enabled = value;
                 _transactions = value;
                 _wallets = value;
-                _budgets = false;
+                _budgets = value;
               }),
             ),
           ),
@@ -94,9 +101,8 @@ class _AssistantPermissionScreenState
             title: context.l10n.assistantBudgetsAccess,
             body: context.l10n.assistantBudgetsAccessBody,
             value: _budgets,
-            enabled: false,
-            badge: context.l10n.assistantUpcomingBadge,
-            onChanged: null,
+            enabled: _enabled,
+            onChanged: (value) => setState(() => _budgets = value),
           ),
           _PermissionTile(
             icon: Icons.savings_outlined,
@@ -130,6 +136,23 @@ class _AssistantPermissionScreenState
     );
   }
 
+  Future<void> _loadCurrentAccess() async {
+    if (_loadedAccess) return;
+    try {
+      final access = await ref.read(assistantAccessProvider.future);
+      if (!mounted) return;
+      setState(() {
+        _loadedAccess = true;
+        _enabled = access.enabled;
+        _transactions = access.transactions;
+        _wallets = access.wallets;
+        _budgets = access.budgets;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _loadedAccess = true);
+    }
+  }
+
   Future<void> _confirm() async {
     try {
       await ref
@@ -143,7 +166,12 @@ class _AssistantPermissionScreenState
               budgets: _budgets,
             ),
           );
-      if (mounted) context.go(AssistantHomeScreen.routePath);
+      if (!mounted) return;
+      context.go(
+        _enabled
+            ? AssistantConversationScreen.routePath
+            : AssistantPermissionScreen.routePath,
+      );
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(

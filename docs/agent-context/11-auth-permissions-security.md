@@ -1,7 +1,7 @@
 # Auth, Permissions & Security
 
 **Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
-**Last source audit**: `2026-07-10`
+**Last source audit**: `2026-07-15`
 
 ## Authentication
 
@@ -91,6 +91,11 @@ client-side `user_id` filters are not a security boundary.
 `TURNSTILE_BASE_URL` are compile-time Dart defines. Anonymous sign-in, direct
 email sign-in/sign-up, and password reset pass a fresh Turnstile token when
 Supabase CAPTCHA protection is enabled. The Turnstile secret and
-Edge Function secrets such as `RESEND_API_KEY` belong in the Supabase
-environment. Never commit access tokens, service-role keys, signing secrets,
-or production credentials.
+Edge Function secrets such as `RESEND_API_KEY`,
+`GEMINI_API_KEY`, `GEMINI_MODEL`, and `GEMINI_BLOCKED_KEY_SHA256` belong in
+the Supabase environment. Never commit access tokens, service-role keys,
+signing secrets, AI provider keys, database URLs, or production credentials.
+
+The financial assistant must call Gemini only from the `assistant-chat` Edge
+Function. The Flutter client must not contain Gemini keys or call the Gemini
+API directly.

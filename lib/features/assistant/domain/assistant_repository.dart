@@ -5,5 +5,17 @@ abstract interface class AssistantRepository {
 
   Future<void> saveAccess(AssistantAccess access);
 
-  Future<FinancialAssistantSnapshot> buildSnapshot(DateTime now);
+  Future<FinancialAssistantSnapshot> buildSnapshot(
+    AssistantSnapshotWindow window,
+  );
+
+  Future<String?> generateAnswer({
+    required String question,
+    required AssistantQuestionKind kind,
+    required String locale,
+    required String currencyCode,
+    required List<AssistantMessage> history,
+    FinancialAssistantSnapshot? snapshot,
+    String? profileName,
+  });
 }

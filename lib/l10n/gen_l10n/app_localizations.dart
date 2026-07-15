@@ -5577,19 +5577,19 @@ abstract class AppLocalizations {
   /// No description provided for @thirdPartyServicesSubtitle.
   ///
   /// In vi, this message translates to:
-  /// **'Xem app đang dùng Supabase, Google, Meta, Cloudflare, Flutter/package và bộ nhớ thiết bị như thế nào.'**
+  /// **'Xem app đang dùng Supabase, Google, Meta, Cloudflare, Google Gemini, Flutter/package và bộ nhớ thiết bị như thế nào.'**
   String get thirdPartyServicesSubtitle;
 
   /// No description provided for @thirdPartyHeroBody.
   ///
   /// In vi, this message translates to:
-  /// **'Thông báo này giúp người dùng hiểu app dựa vào dịch vụ nào để đăng nhập, lưu trữ và vận hành dữ liệu.'**
+  /// **'Thông báo này giúp người dùng hiểu app dựa vào dịch vụ nào để đăng nhập, lưu trữ, vận hành dữ liệu và cung cấp tính năng trợ lý tùy chọn.'**
   String get thirdPartyHeroBody;
 
   /// No description provided for @thirdPartySupabaseDescription.
   ///
   /// In vi, this message translates to:
-  /// **'Được dùng cho đăng nhập, cơ sở dữ liệu, storage ảnh giao dịch và edge function xóa tài khoản.'**
+  /// **'Được dùng cho đăng nhập, cơ sở dữ liệu, storage ảnh giao dịch, xóa tài khoản và edge function của trợ lý AI.'**
   String get thirdPartySupabaseDescription;
 
   /// No description provided for @thirdPartyGoogleTitle.
@@ -5627,6 +5627,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Dùng để ngăn lạm dụng tự động đối với đăng nhập khách bằng cách xử lý các tín hiệu bảo mật cần thiết cho thử thách CAPTCHA.'**
   String get thirdPartyCloudflareDescription;
+
+  /// No description provided for @thirdPartyGeminiDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ dùng khi bạn bật trợ lý AI. Moniary gửi ngữ cảnh tài chính đã chọn qua Supabase Edge Function để tạo câu trả lời.'**
+  String get thirdPartyGeminiDescription;
 
   /// No description provided for @thirdPartyFlutterDescription.
   ///
@@ -6717,13 +6723,13 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyShareItem2.
   ///
   /// In vi, this message translates to:
-  /// **'Dữ liệu được lưu trên hạ tầng bảo mật để cung cấp đăng nhập, đồng bộ dữ liệu và lưu trữ ảnh cho ứng dụng.'**
+  /// **'Dữ liệu được lưu trên hạ tầng bảo mật để cung cấp đăng nhập, đồng bộ dữ liệu, lưu trữ ảnh và các tính năng trợ lý AI đã bật.'**
   String get privacyPolicyShareItem2;
 
   /// No description provided for @privacyPolicyShareItem3.
   ///
   /// In vi, this message translates to:
-  /// **'Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.'**
+  /// **'Khi bật trợ lý AI, ngữ cảnh tài chính đã chọn có thể được gửi qua Supabase Edge Functions tới Google Gemini để tạo câu trả lời. Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.'**
   String get privacyPolicyShareItem3;
 
   /// No description provided for @privacyPolicyShareItem4.
@@ -9447,7 +9453,7 @@ abstract class AppLocalizations {
   /// No description provided for @assistantPermissionDateRange.
   ///
   /// In vi, this message translates to:
-  /// **'AI chỉ đọc dữ liệu từ 01/01/2025 đến hiện tại'**
+  /// **'AI chỉ dùng các phạm vi dữ liệu đã bật cần cho câu hỏi hiện tại'**
   String get assistantPermissionDateRange;
 
   /// No description provided for @assistantAnalyzeAll.
@@ -9519,7 +9525,7 @@ abstract class AppLocalizations {
   /// No description provided for @assistantPrivacyNote.
   ///
   /// In vi, this message translates to:
-  /// **'Phân tích diễn ra từ dữ liệu Moniary của bạn và không tự gửi dữ liệu cho bên thứ ba.'**
+  /// **'Khi bật AI, ngữ cảnh Moniary đã chọn có thể được gửi qua Supabase tới Google Gemini để tạo câu trả lời.'**
   String get assistantPrivacyNote;
 
   /// No description provided for @assistantGreeting.

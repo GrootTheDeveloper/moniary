@@ -360,14 +360,30 @@ class TransactionRepository {
     String? walletId,
     String? categoryId,
   }) async {
+    final start = DateTime(month.year, month.month, 1);
+    final end = DateTime(month.year, month.month + 1, 1);
+    return fetchTransactionsForRange(
+      start: start,
+      end: end,
+      walletId: walletId,
+      categoryId: categoryId,
+    );
+  }
+
+  Future<List<TransactionEntry>> fetchTransactionsForRange({
+    required DateTime start,
+    required DateTime end,
+    String? walletId,
+    String? categoryId,
+  }) async {
     if (_useMockData) {
       final results = _mockTransactions.where((t) {
-        final sameMonth =
-            t.transactionDate.year == month.year &&
-            t.transactionDate.month == month.month;
+        final inRange =
+            !t.transactionDate.isBefore(start) &&
+            t.transactionDate.isBefore(end);
         final matchWallet = walletId == null || t.walletId == walletId;
         final matchCat = categoryId == null || t.categoryId == categoryId;
-        return sameMonth && matchWallet && matchCat;
+        return inRange && matchWallet && matchCat;
       }).toList();
 
       // Sort by importance first, then by date
@@ -381,9 +397,6 @@ class TransactionRepository {
     }
     try {
       final uid = _userId;
-
-      final start = DateTime(month.year, month.month, 1);
-      final end = DateTime(month.year, month.month + 1, 1);
 
       var query = _baseSelect()
           .eq('user_id', uid)

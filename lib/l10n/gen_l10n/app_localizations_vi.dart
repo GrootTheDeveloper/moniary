@@ -3046,15 +3046,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get thirdPartyServicesSubtitle =>
-      'Xem app đang dùng Supabase, Google, Meta, Cloudflare, Flutter/package và bộ nhớ thiết bị như thế nào.';
+      'Xem app đang dùng Supabase, Google, Meta, Cloudflare, Google Gemini, Flutter/package và bộ nhớ thiết bị như thế nào.';
 
   @override
   String get thirdPartyHeroBody =>
-      'Thông báo này giúp người dùng hiểu app dựa vào dịch vụ nào để đăng nhập, lưu trữ và vận hành dữ liệu.';
+      'Thông báo này giúp người dùng hiểu app dựa vào dịch vụ nào để đăng nhập, lưu trữ, vận hành dữ liệu và cung cấp tính năng trợ lý tùy chọn.';
 
   @override
   String get thirdPartySupabaseDescription =>
-      'Được dùng cho đăng nhập, cơ sở dữ liệu, storage ảnh giao dịch và edge function xóa tài khoản.';
+      'Được dùng cho đăng nhập, cơ sở dữ liệu, storage ảnh giao dịch, xóa tài khoản và edge function của trợ lý AI.';
 
   @override
   String get thirdPartyGoogleTitle => 'Google';
@@ -3076,6 +3076,10 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get thirdPartyCloudflareDescription =>
       'Dùng để ngăn lạm dụng tự động đối với đăng nhập khách bằng cách xử lý các tín hiệu bảo mật cần thiết cho thử thách CAPTCHA.';
+
+  @override
+  String get thirdPartyGeminiDescription =>
+      'Chỉ dùng khi bạn bật trợ lý AI. Moniary gửi ngữ cảnh tài chính đã chọn qua Supabase Edge Function để tạo câu trả lời.';
 
   @override
   String get thirdPartyFlutterDescription =>
@@ -3720,11 +3724,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyPolicyShareItem2 =>
-      'Dữ liệu được lưu trên hạ tầng bảo mật để cung cấp đăng nhập, đồng bộ dữ liệu và lưu trữ ảnh cho ứng dụng.';
+      'Dữ liệu được lưu trên hạ tầng bảo mật để cung cấp đăng nhập, đồng bộ dữ liệu, lưu trữ ảnh và các tính năng trợ lý AI đã bật.';
 
   @override
   String get privacyPolicyShareItem3 =>
-      'Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.';
+      'Khi bật trợ lý AI, ngữ cảnh tài chính đã chọn có thể được gửi qua Supabase Edge Functions tới Google Gemini để tạo câu trả lời. Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.';
 
   @override
   String get privacyPolicyShareItem4 =>
@@ -5252,7 +5256,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get assistantPermissionDateRange =>
-      'AI chỉ đọc dữ liệu từ 01/01/2025 đến hiện tại';
+      'AI chỉ dùng các phạm vi dữ liệu đã bật cần cho câu hỏi hiện tại';
 
   @override
   String get assistantAnalyzeAll => 'Phân tích tất cả dữ liệu';
@@ -5293,7 +5297,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get assistantPrivacyNote =>
-      'Phân tích diễn ra từ dữ liệu Moniary của bạn và không tự gửi dữ liệu cho bên thứ ba.';
+      'Khi bật AI, ngữ cảnh Moniary đã chọn có thể được gửi qua Supabase tới Google Gemini để tạo câu trả lời.';
 
   @override
   String assistantGreeting(String name) {

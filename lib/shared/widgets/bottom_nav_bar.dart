@@ -130,6 +130,7 @@ class _CameraActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
+    const cameraColor = AppTheme.terracottaBright;
 
     return Semantics(
       button: true,
@@ -143,10 +144,11 @@ class _CameraActionButton extends StatelessWidget {
             color: colors.background,
           ),
           child: Material(
-            color: colors.button,
+            color: cameraColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
             ),
+            shadowColor: cameraColor.withValues(alpha: 0.28),
             child: InkWell(
               borderRadius: BorderRadius.circular(18),
               onTap: () {
@@ -157,9 +159,7 @@ class _CameraActionButton extends StatelessWidget {
               },
               child: Icon(
                 Icons.camera_alt_rounded,
-                color: Theme.of(
-                  context,
-                ).floatingActionButtonTheme.foregroundColor,
+                color: Colors.white,
                 size: 27,
               ),
             ),
