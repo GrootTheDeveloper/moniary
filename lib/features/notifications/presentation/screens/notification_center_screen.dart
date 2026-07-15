@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../friends/presentation/screens/friends_screen.dart';
 import '../../../groups/presentation/screens/group_detail_screen.dart';
@@ -105,9 +106,17 @@ class NotificationCenterScreen extends ConsumerWidget {
     AppNotification notification,
   ) async {
     if (!notification.isRead) {
-      await ref
-          .read(notificationActionControllerProvider.notifier)
-          .markRead(notification.id);
+      try {
+        await ref
+            .read(notificationActionControllerProvider.notifier)
+            .markRead(notification.id);
+      } catch (error, stackTrace) {
+        AppLogger.error(
+          'Failed to mark notification read before navigation',
+          error,
+          stackTrace,
+        );
+      }
     }
     if (!context.mounted) return;
 
