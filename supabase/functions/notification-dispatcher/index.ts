@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
 
     let rowFailed = false;
     for (const device of devices) {
-      const copy = notificationCopy(row.category, row.type, device.locale);
+      const copy = notificationCopy(row, device.locale);
       const response = await sendFcmMessage(
         serviceAccount.project_id,
         accessToken,
@@ -123,25 +123,38 @@ async function pushAllowed(client: ReturnType<typeof createClient>, row: OutboxR
   return !error && data === true;
 }
 
-function notificationCopy(category: string, type: string, locale: string) {
+function notificationCopy(row: OutboxRow, locale: string) {
+  const metadata = row.metadata ?? {};
   const vietnamese = locale?.toLowerCase().startsWith('vi');
+  const localizedTitle = stringValue(
+    vietnamese ? metadata.title_vi : metadata.title_en,
+  );
+  const localizedBody = stringValue(
+    vietnamese ? metadata.body_vi : metadata.body_en,
+  );
+  const customTitle = localizedTitle ?? stringValue(metadata.title);
+  const customBody = localizedBody ?? stringValue(metadata.body);
+  if (customTitle && customBody) {
+    return { title: customTitle, body: customBody };
+  }
+
   const labels = vietnamese
     ? { personal: 'Cá nhân', group: 'Group', community: 'Cộng đồng', system: 'Hệ thống' }
     : { personal: 'Personal', group: 'Group', community: 'Community', system: 'System' };
-  const categoryLabel = labels[category as keyof typeof labels] ?? labels.system;
+  const categoryLabel = labels[row.category as keyof typeof labels] ?? labels.system;
   const body = vietnamese
-    ? category === 'group'
+    ? row.category === 'group'
       ? 'Bạn có cập nhật mới trong group.'
-      : category === 'community'
+      : row.category === 'community'
         ? 'Bạn có cập nhật mới trong cộng đồng.'
-        : category === 'personal'
+        : row.category === 'personal'
           ? 'Bạn có thông báo cá nhân mới.'
           : 'Bạn có cập nhật mới từ Moniary.'
-    : category === 'group'
+    : row.category === 'group'
       ? 'You have a new group update.'
-      : category === 'community'
+      : row.category === 'community'
         ? 'You have a new community update.'
-        : category === 'personal'
+        : row.category === 'personal'
           ? 'You have a new personal notification.'
           : 'You have a new Moniary update.';
   return { title: `Moniary · ${categoryLabel}`, body };
@@ -168,6 +181,20 @@ async function sendFcmMessage(
   }
   if (typeof metadata.friend_request_id === 'string') {
     data.friend_request_id = metadata.friend_request_id;
+  }
+  if (typeof metadata.action_url === 'string' && metadata.action_url.trim()) {
+    data.action_url = metadata.action_url.trim();
+  }
+  if (
+    metadata.data &&
+    typeof metadata.data === 'object' &&
+    !Array.isArray(metadata.data)
+  ) {
+    for (const [key, value] of Object.entries(metadata.data)) {
+      if (/^[a-zA-Z0-9_:-]{1,40}$/.test(key)) {
+        data[`custom_${key}`] = String(value).slice(0, 500);
+      }
+    }
   }
 
   const response = await fetch(
@@ -288,6 +315,10 @@ function base64Url(value: string | ArrayBuffer) {
   let binary = '';
   for (const byte of bytes) binary += String.fromCharCode(byte);
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function stringValue(value: unknown) {
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
 
 function json(body: unknown, status = 200) {

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "734508208267",
+    "project_id": "moniary-6a8a7",
+    "storage_bucket": "moniary-6a8a7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:734508208267:android:bb246d1a3f2fd8cf5b048e",
+        "android_client_info": {
+          "package_name": "com.moniary.moniary"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCak2yihz80CVs_3k1p86Nqeck7r9ZxZc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

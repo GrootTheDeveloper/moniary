@@ -18,7 +18,7 @@ class FcmPushNotificationService {
     required Future<void> Function(String token) onToken,
     required Future<void> Function(Map<String, dynamic> data) onTap,
   }) async {
-    if (_initialized || !AppConstants.hasFirebaseConfig) return;
+    if (_initialized) return;
     if (kIsWeb ||
         (defaultTargetPlatform != TargetPlatform.android &&
             defaultTargetPlatform != TargetPlatform.iOS)) {
@@ -27,15 +27,19 @@ class FcmPushNotificationService {
 
     try {
       if (Firebase.apps.isEmpty) {
-        await Firebase.initializeApp(
-          options: const FirebaseOptions(
-            apiKey: AppConstants.firebaseApiKey,
-            appId: AppConstants.firebaseAppId,
-            messagingSenderId: AppConstants.firebaseMessagingSenderId,
-            projectId: AppConstants.firebaseProjectId,
-            iosBundleId: AppConstants.firebaseIosBundleId,
-          ),
-        );
+        if (AppConstants.hasFirebaseConfig) {
+          await Firebase.initializeApp(
+            options: const FirebaseOptions(
+              apiKey: AppConstants.firebaseApiKey,
+              appId: AppConstants.firebaseAppId,
+              messagingSenderId: AppConstants.firebaseMessagingSenderId,
+              projectId: AppConstants.firebaseProjectId,
+              iosBundleId: AppConstants.firebaseIosBundleId,
+            ),
+          );
+        } else {
+          await Firebase.initializeApp();
+        }
       }
 
       final messaging = FirebaseMessaging.instance;

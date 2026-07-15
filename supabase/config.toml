@@ -10,6 +10,10 @@ project_id = "moniary"
 [functions.notification-dispatcher]
 verify_jwt = false
 
+# Internal admin web uses a shared secret and does not rely on mobile auth.
+[functions.admin-notifications]
+verify_jwt = false
+
 [api]
 enabled = true
 # Port to use for the API URL.

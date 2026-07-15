@@ -260,6 +260,9 @@ class _NotificationTile extends StatelessWidget {
   }
 
   String _title(BuildContext context) {
+    final customTitle = _metadataString('title');
+    if (customTitle != null) return customTitle;
+
     return switch (notification.type) {
       'friend_request' => context.l10n.notificationFriendRequest,
       'friend_request_accepted' => context.l10n.notificationFriendAccepted,
@@ -277,6 +280,9 @@ class _NotificationTile extends StatelessWidget {
   }
 
   String _subtitle(BuildContext context) {
+    final customBody = _metadataString('body');
+    if (customBody != null) return customBody;
+
     final category = switch (notification.category) {
       AppNotificationCategory.personal =>
         context.l10n.notificationsCategoryPersonal,
@@ -291,6 +297,11 @@ class _NotificationTile extends StatelessWidget {
       return '$category · $groupName';
     }
     return category;
+  }
+
+  String? _metadataString(String key) {
+    final value = notification.metadata[key];
+    return value is String && value.trim().isNotEmpty ? value.trim() : null;
   }
 
   String _timeAgo(BuildContext context, DateTime dateTime) {
