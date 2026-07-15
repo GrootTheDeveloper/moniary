@@ -13,6 +13,11 @@ public mobile configuration in it:
 SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 SUPABASE_ANON_KEY=sb_publishable_YOUR_KEY
 OCR_API_URL=https://your-ocr-api.example.com
+FIREBASE_API_KEY=YOUR_FIREBASE_WEB_API_KEY
+FIREBASE_APP_ID=1:YOUR_SENDER_ID:ios:YOUR_IOS_APP_ID
+FIREBASE_MESSAGING_SENDER_ID=YOUR_SENDER_ID
+FIREBASE_PROJECT_ID=YOUR_FIREBASE_PROJECT_ID
+FIREBASE_IOS_BUNDLE_ID=com.moniary.moniary
 ENABLE_GOOGLE_AUTH=true
 ENABLE_FACEBOOK_AUTH=false
 TURNSTILE_SITE_KEY=YOUR_PUBLIC_TURNSTILE_SITE_KEY
@@ -131,6 +136,38 @@ Facebook is intentionally hidden until all of the following are complete:
 5. Set `ENABLE_FACEBOOK_AUTH=true` in `mobile.env` and rebuild the app.
 
 ## 7. Physical-device verification
+
+### Firebase/APNs push setup
+
+Push notifications are optional at compile time, but they are enabled only
+when all five public `FIREBASE_*` values from `mobile.env.example` are present
+and non-placeholder values. Use the iOS Firebase app whose bundle ID is
+`com.moniary.moniary`:
+
+1. In Apple Developer, enable **Push Notifications** for the App ID and
+   regenerate the development and distribution provisioning profiles.
+2. In Firebase Console > Project settings, register the iOS app and copy its
+   API key, app ID, sender ID, project ID, and bundle ID into `mobile.env`.
+3. In Firebase Console > Cloud Messaging, upload an APNs authentication key
+   (`.p8`) with its Key ID and Apple Team ID. Keep the `.p8` private; it never
+   belongs in `mobile.env`, Supabase tables, or Git.
+4. Rebuild the app with `--dart-define-from-file=mobile.env`. A hot restart
+   cannot change compile-time values or signing entitlements.
+5. For server delivery, store the Firebase service-account project ID, client
+   email, and private key only as Supabase Edge Function secrets. Do not reuse
+   the public mobile API key as a server credential.
+
+The Xcode project already declares Push Notifications and remote-notification
+background mode for Debug, Profile, and Release. On first authenticated launch,
+the device should request permission and create an active row in
+`notification_devices`. Signing out must deactivate that device row and delete
+the local FCM token. Requesting account deletion deactivates every device for
+the account immediately, including other phones.
+
+Verify all four device cases: permission denied, foreground receipt,
+background receipt/tap, and terminated-app tap. Then sign out, send again, and
+confirm that the signed-out phone receives nothing. Finally sign back in and
+confirm a new active token is registered.
 
 Test each path from a fresh install or after signing out:
 

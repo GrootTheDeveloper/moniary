@@ -8,71 +8,318 @@ import '../constants/app_constants.dart';
 import '../../shared/utils/app_logger.dart';
 import 'local_notification_service.dart';
 
+abstract interface class PushMessagingGateway {
+  Stream<String> get tokenRefreshes;
+  Stream<RemoteMessage> get foregroundMessages;
+  Stream<RemoteMessage> get openedMessages;
+
+  Future<bool> requestPermission();
+  Future<String?> getToken();
+  Future<String?> getApnsToken();
+  Future<RemoteMessage?> getInitialMessage();
+  Future<void> deleteToken();
+}
+
+class FirebasePushMessagingGateway implements PushMessagingGateway {
+  FirebasePushMessagingGateway(this._messaging);
+
+  final FirebaseMessaging _messaging;
+
+  @override
+  Stream<String> get tokenRefreshes => _messaging.onTokenRefresh;
+
+  @override
+  Stream<RemoteMessage> get foregroundMessages => FirebaseMessaging.onMessage;
+
+  @override
+  Stream<RemoteMessage> get openedMessages =>
+      FirebaseMessaging.onMessageOpenedApp;
+
+  @override
+  Future<bool> requestPermission() async {
+    final settings = await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    return settings.authorizationStatus == AuthorizationStatus.authorized ||
+        settings.authorizationStatus == AuthorizationStatus.provisional;
+  }
+
+  @override
+  Future<String?> getToken() => _messaging.getToken();
+
+  @override
+  Future<String?> getApnsToken() => _messaging.getAPNSToken();
+
+  @override
+  Future<RemoteMessage?> getInitialMessage() => _messaging.getInitialMessage();
+
+  @override
+  Future<void> deleteToken() => _messaging.deleteToken();
+}
+
 class FcmPushNotificationService {
-  FcmPushNotificationService(this._localNotifications);
+  FcmPushNotificationService(
+    this._localNotifications, {
+    PushMessagingGateway? messaging,
+    Future<void> Function()? initializeFirebase,
+    bool? firebaseConfigured,
+    bool? supportedPlatform,
+    bool? isIos,
+  }) : _messaging = messaging,
+       _initializeFirebaseOverride = initializeFirebase,
+       _firebaseConfigured =
+           firebaseConfigured ?? AppConstants.hasFirebaseConfig,
+       _supportedPlatform = supportedPlatform ?? _defaultSupportedPlatform,
+       _isIos =
+           isIos ?? (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS);
 
   final LocalNotificationService _localNotifications;
-  bool _initialized = false;
+  final Future<void> Function()? _initializeFirebaseOverride;
+  final bool _firebaseConfigured;
+  final bool _supportedPlatform;
+  final bool _isIos;
+
+  PushMessagingGateway? _messaging;
+  Future<void>? _initializing;
+  StreamSubscription<String>? _tokenRefreshSubscription;
+  StreamSubscription<RemoteMessage>? _foregroundSubscription;
+  StreamSubscription<RemoteMessage>? _openedSubscription;
+  Timer? _registrationRetry;
+  Future<bool>? _permissionRequest;
+  Future<void>? _registration;
+  Future<void> Function(String token)? _onToken;
+  Future<void> Function(Map<String, dynamic> data)? _onTap;
+  String? _lastRegisteredToken;
+  bool _firebaseReady = false;
+  bool _listenersReady = false;
+  bool _permissionGranted = false;
+  bool _signedOut = false;
+
+  static bool get _defaultSupportedPlatform =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
 
   Future<void> initialize({
     required Future<void> Function(String token) onToken,
     required Future<void> Function(Map<String, dynamic> data) onTap,
   }) async {
-    if (_initialized || !AppConstants.hasFirebaseConfig) return;
-    if (kIsWeb ||
-        (defaultTargetPlatform != TargetPlatform.android &&
-            defaultTargetPlatform != TargetPlatform.iOS)) {
-      return;
-    }
+    if (!_firebaseConfigured || !_supportedPlatform) return;
+
+    _onToken = onToken;
+    _onTap = onTap;
+    _signedOut = false;
 
     try {
-      if (Firebase.apps.isEmpty) {
-        await Firebase.initializeApp(
-          options: const FirebaseOptions(
-            apiKey: AppConstants.firebaseApiKey,
-            appId: AppConstants.firebaseAppId,
-            messagingSenderId: AppConstants.firebaseMessagingSenderId,
-            projectId: AppConstants.firebaseProjectId,
-            iosBundleId: AppConstants.firebaseIosBundleId,
-          ),
-        );
+      await _ensureFirebaseReady();
+      final messaging = _messaging;
+      if (!_firebaseReady || messaging == null) return;
+
+      _permissionGranted = await _ensurePermission(messaging);
+      if (!_permissionGranted) {
+        AppLogger.info('Push notification permission is not granted.');
+        return;
       }
 
-      final messaging = FirebaseMessaging.instance;
-      await messaging.requestPermission(alert: true, badge: true, sound: true);
-      final token = await messaging.getToken();
-      if (token != null && token.isNotEmpty) {
-        await _registerToken(onToken, token);
-      }
-      FirebaseMessaging.instance.onTokenRefresh.listen((value) {
-        unawaited(_registerToken(onToken, value));
-      });
-      FirebaseMessaging.onMessage.listen((message) {
-        unawaited(_presentForegroundMessage(message));
-      });
-      FirebaseMessaging.onMessageOpenedApp.listen((message) {
-        unawaited(onTap(message.data));
-      });
-      final initialMessage = await messaging.getInitialMessage();
-      if (initialMessage != null) await onTap(initialMessage.data);
-      _initialized = true;
+      await _ensureCurrentTokenRegistered();
     } catch (error, stackTrace) {
       AppLogger.error('FCM initialization failed', error, stackTrace);
     }
   }
 
-  Future<void> _registerToken(
-    Future<void> Function(String token) onToken,
-    String token,
-  ) async {
+  Future<void> unregisterCurrentToken({
+    required Future<void> Function(String token) onToken,
+  }) async {
+    if (!_firebaseConfigured || !_supportedPlatform) return;
+
+    _signedOut = true;
+    _registrationRetry?.cancel();
+    _registrationRetry = null;
+
+    final initializing = _initializing;
+    if (initializing != null) {
+      try {
+        await initializing;
+      } catch (_) {
+        // Initialization already logs its failure. There cannot be a token to
+        // unregister if Firebase never became ready.
+      }
+    }
+
+    final messaging = _messaging;
+    if (!_firebaseReady || messaging == null) return;
+
+    final tokens = <String>{};
+    final registeredToken = _lastRegisteredToken?.trim();
+    if (registeredToken?.isNotEmpty == true) tokens.add(registeredToken!);
     try {
-      await onToken(token);
+      final currentToken = (await messaging.getToken())?.trim();
+      if (currentToken?.isNotEmpty == true) tokens.add(currentToken!);
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to read FCM token during sign-out',
+        error,
+        stackTrace,
+      );
+    }
+
+    for (final token in tokens) {
+      try {
+        await onToken(token);
+      } catch (error, stackTrace) {
+        // Deleting the local FCM token below makes it unusable even when the
+        // Supabase unregister call is temporarily unavailable.
+        AppLogger.error('FCM token unregister failed', error, stackTrace);
+      }
+    }
+
+    try {
+      await messaging.deleteToken();
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to delete local FCM token', error, stackTrace);
+    }
+    _lastRegisteredToken = null;
+  }
+
+  Future<void> _ensureFirebaseReady() async {
+    if (_firebaseReady) return;
+    final existing = _initializing;
+    if (existing != null) return existing;
+
+    final future = _initializeFirebase();
+    _initializing = future;
+    try {
+      await future;
+    } finally {
+      if (identical(_initializing, future)) _initializing = null;
+    }
+  }
+
+  Future<void> _initializeFirebase() async {
+    if (_initializeFirebaseOverride != null) {
+      await _initializeFirebaseOverride();
+    } else if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: AppConstants.firebaseApiKey,
+          appId: AppConstants.firebaseAppId,
+          messagingSenderId: AppConstants.firebaseMessagingSenderId,
+          projectId: AppConstants.firebaseProjectId,
+          iosBundleId: AppConstants.firebaseIosBundleId,
+        ),
+      );
+    }
+
+    _messaging ??= FirebasePushMessagingGateway(FirebaseMessaging.instance);
+    final messaging = _messaging!;
+
+    if (!_listenersReady) {
+      _tokenRefreshSubscription = messaging.tokenRefreshes.listen((token) {
+        if (!_signedOut) unawaited(_registerToken(token));
+      });
+      _foregroundSubscription = messaging.foregroundMessages.listen((message) {
+        unawaited(_presentForegroundMessage(message));
+      });
+      _openedSubscription = messaging.openedMessages.listen((message) {
+        if (!_signedOut) unawaited(_onTap?.call(message.data));
+      });
+      _listenersReady = true;
+    }
+
+    final initialMessage = await messaging.getInitialMessage();
+    if (initialMessage != null && !_signedOut) {
+      await _onTap?.call(initialMessage.data);
+    }
+    _firebaseReady = true;
+  }
+
+  Future<bool> _ensurePermission(PushMessagingGateway messaging) async {
+    if (_permissionGranted) return true;
+    final existing = _permissionRequest;
+    if (existing != null) return existing;
+
+    final future = messaging.requestPermission();
+    _permissionRequest = future;
+    try {
+      return await future;
+    } finally {
+      if (identical(_permissionRequest, future)) _permissionRequest = null;
+    }
+  }
+
+  Future<void> _ensureCurrentTokenRegistered({
+    int retriesRemaining = 10,
+  }) async {
+    final existing = _registration;
+    if (existing != null) return existing;
+
+    final future = _registerCurrentToken(retriesRemaining: retriesRemaining);
+    _registration = future;
+    try {
+      await future;
+    } finally {
+      if (identical(_registration, future)) _registration = null;
+    }
+  }
+
+  Future<void> _registerCurrentToken({int retriesRemaining = 10}) async {
+    if (_signedOut || !_permissionGranted) return;
+    final messaging = _messaging;
+    if (messaging == null) return;
+
+    try {
+      if (_isIos) {
+        final apnsToken = await messaging.getApnsToken();
+        if (apnsToken == null || apnsToken.isEmpty) {
+          _scheduleRegistrationRetry(retriesRemaining);
+          return;
+        }
+      }
+
+      final token = await messaging.getToken();
+      if (token == null || token.trim().isEmpty) {
+        _scheduleRegistrationRetry(retriesRemaining);
+        return;
+      }
+      await _registerToken(token);
+    } catch (error, stackTrace) {
+      AppLogger.error('FCM token lookup failed', error, stackTrace);
+      _scheduleRegistrationRetry(retriesRemaining);
+    }
+  }
+
+  void _scheduleRegistrationRetry(int retriesRemaining) {
+    if (_signedOut || retriesRemaining <= 0) {
+      if (retriesRemaining <= 0) {
+        AppLogger.warning('APNs/FCM token was not ready after retrying.');
+      }
+      return;
+    }
+    _registrationRetry?.cancel();
+    _registrationRetry = Timer(const Duration(seconds: 1), () {
+      unawaited(
+        _ensureCurrentTokenRegistered(retriesRemaining: retriesRemaining - 1),
+      );
+    });
+  }
+
+  Future<void> _registerToken(String token) async {
+    if (_signedOut) return;
+    final normalizedToken = token.trim();
+    final onToken = _onToken;
+    if (normalizedToken.isEmpty || onToken == null) return;
+    try {
+      await onToken(normalizedToken);
+      _lastRegisteredToken = normalizedToken;
     } catch (error, stackTrace) {
       AppLogger.error('FCM token registration failed', error, stackTrace);
     }
   }
 
   Future<void> _presentForegroundMessage(RemoteMessage message) async {
+    if (_signedOut) return;
     final notification = message.notification;
     final title = notification?.title;
     final body = notification?.body;
@@ -90,5 +337,12 @@ class FcmPushNotificationService {
           data['channel_description'] as String? ??
           'Moniary notification updates.',
     );
+  }
+
+  void dispose() {
+    _registrationRetry?.cancel();
+    unawaited(_tokenRefreshSubscription?.cancel());
+    unawaited(_foregroundSubscription?.cancel());
+    unawaited(_openedSubscription?.cancel());
   }
 }

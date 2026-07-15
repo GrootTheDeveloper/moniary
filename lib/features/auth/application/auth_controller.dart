@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/app_constants.dart';
+import '../../../core/notifications/notification_providers.dart';
 import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
+import '../../notifications/data/repositories/notification_repository_impl.dart';
 import '../data/auth_repository.dart';
 import '../domain/email_account_link.dart';
 import '../domain/facebook_account_link.dart';
@@ -109,6 +111,7 @@ class AuthController extends AsyncNotifier<void> {
     _isProcessing = true;
     state = const AsyncLoading();
     try {
+      await _unregisterPushDevice();
       await ref.read(authRepositoryProvider).signOut();
       ref.read(mockSessionProvider.notifier).setSession(null);
       state = const AsyncData(null);
@@ -118,6 +121,15 @@ class AuthController extends AsyncNotifier<void> {
     } finally {
       _isProcessing = false;
     }
+  }
+
+  Future<void> _unregisterPushDevice() async {
+    if (ref.read(useMockDataModeProvider)) return;
+    await ref
+        .read(fcmPushNotificationServiceProvider)
+        .unregisterCurrentToken(
+          onToken: ref.read(notificationRepositoryProvider).unregisterDevice,
+        );
   }
 
   Future<EmailAccountLinkStatus> beginEmailAccountLink({

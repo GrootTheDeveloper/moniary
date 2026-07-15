@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moniary/core/constants/app_constants.dart';
+import 'package:moniary/core/notifications/fcm_push_notification_service.dart';
+import 'package:moniary/core/notifications/local_notification_service.dart';
+import 'package:moniary/core/notifications/notification_providers.dart';
 import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/features/auth/application/auth_controller.dart';
@@ -12,10 +15,37 @@ import 'package:moniary/features/auth/application/pending_google_link_controller
 import 'package:moniary/features/auth/domain/facebook_account_link.dart';
 import 'package:moniary/features/auth/domain/google_account_link.dart';
 import 'package:moniary/features/profile/application/profile_setup_controller.dart';
+import 'package:moniary/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:moniary/features/notifications/domain/repositories/notification_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class _FakeSupabaseClient extends Fake implements SupabaseClient {}
+
+class _FakeNotificationRepository extends Fake
+    implements NotificationRepository {
+  final unregisteredTokens = <String>[];
+
+  @override
+  Future<void> unregisterDevice(String token) async {
+    unregisteredTokens.add(token);
+  }
+}
+
+class _FakeFcmPushNotificationService extends FcmPushNotificationService {
+  _FakeFcmPushNotificationService()
+    : super(LocalNotificationService.instance, firebaseConfigured: false);
+
+  var unregisterCount = 0;
+
+  @override
+  Future<void> unregisterCurrentToken({
+    required Future<void> Function(String token) onToken,
+  }) async {
+    unregisterCount++;
+    await onToken('device-token');
+  }
+}
 
 Session _mockSession() {
   const user = User(
@@ -345,6 +375,33 @@ void main() {
     expect(profile?.needsSetup, isFalse);
     expect(profile?.needsSurvey, isFalse);
   });
+
+  test(
+    'signOut unregisters the push token before ending auth session',
+    () async {
+      final repository = FakeAuthRepository();
+      final notificationRepository = _FakeNotificationRepository();
+      final pushService = _FakeFcmPushNotificationService();
+      final container = ProviderContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          currentSessionProvider.overrideWithValue(_mockSession()),
+          useMockDataModeProvider.overrideWithValue(false),
+          notificationRepositoryProvider.overrideWithValue(
+            notificationRepository,
+          ),
+          fcmPushNotificationServiceProvider.overrideWithValue(pushService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(authControllerProvider.notifier).signOut();
+
+      expect(pushService.unregisterCount, 1);
+      expect(notificationRepository.unregisteredTokens, ['device-token']);
+      expect(repository.signOutCount, 1);
+    },
+  );
 
   test('signInWithEmail applies returned mock session', () async {
     final repository = FakeAuthRepository(emailSession: _mockSession());
