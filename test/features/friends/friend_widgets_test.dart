@@ -239,6 +239,73 @@ void main() {
     expect(find.byTooltip('Chia sẻ link kết bạn'), findsOneWidget);
   });
 
+  testWidgets('FriendsScreen empty state không bị chồng widget', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(393, 852));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = FakeFriendRepository();
+
+    await tester.pumpWidget(
+      app(const FriendsScreen(), friendRepository: repository),
+    );
+    await tester.pumpAndSettle();
+
+    final iconRect = tester.getRect(
+      find.byIcon(Icons.people_outline_rounded),
+    );
+    final titleRect = tester.getRect(find.text('Bạn chưa có bạn bè nào.'));
+    final subtitleRect = tester.getRect(
+      find.text('Thêm bạn bè để mời vào nhóm chi tiêu nhanh hơn.'),
+    );
+
+    // Each element must sit strictly below the previous one.
+    expect(
+      titleRect.top,
+      greaterThanOrEqualTo(iconRect.bottom),
+      reason: 'title overlaps the icon',
+    );
+    expect(
+      subtitleRect.top,
+      greaterThanOrEqualTo(titleRect.bottom),
+      reason: 'subtitle overlaps the title',
+    );
+  });
+
+  testWidgets('FriendsScreen empty state + outgoing request không crash', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(393, 852));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.binding.platformDispatcher.textScaleFactorTestValue = 2.0;
+    addTearDown(
+      tester.binding.platformDispatcher.clearTextScaleFactorTestValue,
+    );
+    final repository = FakeFriendRepository(
+      outgoing: [
+        FriendRequest(
+          id: 'outgoing-1',
+          fromUserId: 'mock-user-id',
+          toUserId: 'friend-outgoing',
+          otherUserId: 'friend-outgoing',
+          status: FriendRequestStatus.pending,
+          createdAt: DateTime(2026),
+          isIncoming: false,
+          fullName: 'hoang',
+          username: 'hoang',
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      app(const FriendsScreen(), friendRepository: repository),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Bạn chưa có bạn bè nào.'), findsOneWidget);
+  });
+
   testWidgets('AddFriendScreen hiển thị card chia sẻ link kết bạn', (
     tester,
   ) async {
