@@ -4,6 +4,34 @@ import '../../../../app/app_theme.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../domain/entities/friend_profile.dart';
 
+class _InitialAvatar extends StatelessWidget {
+  const _InitialAvatar({required this.name, required this.colors});
+
+  final String name;
+  final MoniaryColors colors;
+
+  @override
+  Widget build(BuildContext context) {
+    final trimmed = name.trim();
+    final initial = trimmed.isEmpty
+        ? '?'
+        : trimmed.substring(0, 1).toUpperCase();
+    return Container(
+      width: 48,
+      height: 48,
+      color: colors.primary.withValues(alpha: 0.14),
+      alignment: Alignment.center,
+      child: Text(
+        initial,
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          color: colors.primary,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+}
+
 class FriendProfileTile extends StatelessWidget {
   const FriendProfileTile({
     required this.profile,
@@ -41,7 +69,10 @@ class FriendProfileTile extends StatelessWidget {
                     imagePath: profile.avatarPath,
                     width: 48,
                     height: 48,
-                    fallbackIcon: Icons.person_outline,
+                    fallbackBuilder: (context) => _InitialAvatar(
+                      name: profile.displayName,
+                      colors: colors,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),

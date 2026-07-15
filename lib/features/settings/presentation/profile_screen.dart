@@ -25,8 +25,6 @@ import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../friends/application/friend_controller.dart';
 import '../../friends/presentation/screens/friends_screen.dart';
 import '../../journal/presentation/journal_collections_screen.dart';
-import '../../journal/presentation/monthly_recap_screen.dart';
-import '../../journal/presentation/recording_streak_screen.dart';
 import '../../recurring/presentation/recurring_transactions_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
@@ -521,12 +519,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 context.push(ExportDataScreen.routePath),
                           ),
                           _SettingsTile(
-                            icon: Icons.star_outlined,
-                            title: context.l10n.starredTransactionsTitle,
-                            subtitle: '',
-                            onTap: () => context.push('/starred-transactions'),
-                          ),
-                          _SettingsTile(
                             icon: Icons.autorenew_outlined,
                             title: context.l10n.recurringTitle,
                             subtitle: context.l10n.recurringSubtitle,
@@ -535,31 +527,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ),
                           _SettingsTile(
-                            icon: Icons.auto_stories_outlined,
-                            title: context.l10n.journalRecapTitle,
-                            subtitle: '',
-                            onTap: () {
-                              final now = DateTime.now();
-                              context.push(
-                                MonthlyRecapScreen.routePath,
-                                extra: DateTime(now.year, now.month),
-                              );
-                            },
-                          ),
-                          _SettingsTile(
                             icon: Icons.collections_bookmark_outlined,
                             title: context.l10n.journalCollectionsTitle,
                             subtitle: '',
                             onTap: () => context.push(
                               JournalCollectionsScreen.routePath,
                             ),
-                          ),
-                          _SettingsTile(
-                            icon: Icons.local_fire_department_outlined,
-                            title: context.l10n.journalStreakTitle,
-                            subtitle: '',
-                            onTap: () =>
-                                context.push(RecordingStreakScreen.routePath),
                           ),
                           _SettingsTile(
                             icon: Icons.auto_awesome_outlined,
@@ -574,18 +547,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       _SettingsGroup(
                         title: context.l10n.profileGeneralSection,
                         children: [
-                          _SettingsTile(
-                            icon: Icons.person_outlined,
-                            title: context.l10n.editProfileTitle,
-                            subtitle: email,
-                            onTap: () => _showEditProfileSheet(
-                              name: name,
-                              email: email,
-                              provider: provider,
-                              isAnonymous: isAnonymous,
-                              avatarUrl: profile.avatarUrl,
-                            ),
-                          ),
                           _SettingsTile(
                             icon: Icons.notifications_outlined,
                             title: context.l10n.notificationSettings,
@@ -906,51 +867,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ],
               ),
             ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _showEditProfileSheet({
-    required String name,
-    required String email,
-    required String provider,
-    required bool isAnonymous,
-    required String? avatarUrl,
-  }) {
-    showModalBottomSheet(
-      context: context,
-      useSafeArea: true,
-      backgroundColor: AppTheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _ProfileHeader(
-                title: name,
-                subtitle: email,
-                provider: provider,
-                isAnonymous: isAnonymous,
-                avatarUrl: avatarUrl,
-                onTap: () {},
-              ),
-              const SizedBox(height: 18),
-              FilledButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  context.push('${ProfileSetupScreen.routePath}?mode=edit');
-                },
-                icon: const Icon(Icons.edit_outlined),
-                label: Text(context.l10n.editProfileTitle),
-              ),
-            ],
           ),
         );
       },
