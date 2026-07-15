@@ -1,0 +1,10 @@
+{
+  "SUPABASE_URL": "https://your-project-ref.supabase.co",
+  "SUPABASE_ANON_KEY": "replace-with-your-supabase-anon-key",
+  "FIREBASE_API_KEY": "replace-with-firebase-api-key",
+  "FIREBASE_APP_ID": "replace-with-firebase-app-id",
+  "FIREBASE_MESSAGING_SENDER_ID": "replace-with-messaging-sender-id",
+  "FIREBASE_PROJECT_ID": "replace-with-firebase-project-id",
+  "FIREBASE_IOS_BUNDLE_ID": "com.moniary.moniary",
+  "OCR_API_URL": "https://your-ocr-api.example.com"
+}
