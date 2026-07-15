@@ -5,6 +5,14 @@ export type FcmFailure = {
   code: string;
 };
 
+export type FcmPayloadRow = {
+  notification_id: string;
+  category: string;
+  type: string;
+  group_id: string | null;
+  metadata: Record<string, unknown>;
+};
+
 type FcmErrorPayload = {
   error?: {
     status?: unknown;
@@ -52,4 +60,26 @@ export function classifyFcmFailure(
     return { kind: "retryable", code };
   }
   return { kind: "permanent", code };
+}
+
+export function buildFcmData(
+  row: FcmPayloadRow,
+  copy: { title: string; body: string },
+) {
+  const metadata = row.metadata ?? {};
+  const data: Record<string, string> = {
+    notification_id: row.notification_id,
+    category: row.category,
+    type: row.type,
+    channel_name: copy.title,
+    channel_description: copy.body,
+  };
+  if (row.group_id) data.group_id = row.group_id;
+  if (typeof metadata.group_transaction_id === "string") {
+    data.group_transaction_id = metadata.group_transaction_id;
+  }
+  if (typeof metadata.friend_request_id === "string") {
+    data.friend_request_id = metadata.friend_request_id;
+  }
+  return data;
 }

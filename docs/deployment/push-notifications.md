@@ -47,7 +47,8 @@ If a name already exists, update that secret instead of creating duplicates.
 
 ## 2. Apply and deploy
 
-Apply `20260715140000_notification_dispatcher_hardening.sql`, then deploy the
+Apply `20260715140000_notification_dispatcher_hardening.sql` and
+`20260715150000_notification_dispatch_payload_identity.sql`, then deploy the
 scheduler-only function without JWT verification. Its private header is the
 authentication boundary:
 

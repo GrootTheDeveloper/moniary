@@ -1,4 +1,8 @@
-import { classifyFcmFailure, constantTimeEqual } from "./logic.ts";
+import {
+  buildFcmData,
+  classifyFcmFailure,
+  constantTimeEqual,
+} from "./logic.ts";
 
 Deno.test("scheduler secret comparison requires an exact value", () => {
   if (!constantTimeEqual("a".repeat(64), "a".repeat(64))) {
@@ -39,5 +43,28 @@ Deno.test("transient FCM responses remain retryable", () => {
     if (classifyFcmFailure(status, null).kind !== "retryable") {
       throw new Error(`HTTP ${status} was not retryable`);
     }
+  }
+});
+
+Deno.test("push payload uses the source notification identity", () => {
+  const data = buildFcmData(
+    {
+      notification_id: "notification-id",
+      category: "group",
+      type: "transaction_posted",
+      group_id: "group-id",
+      metadata: { group_transaction_id: "transaction-id" },
+    },
+    { title: "Group", body: "New update" },
+  );
+
+  if (data.notification_id !== "notification-id") {
+    throw new Error("outbox identity leaked into the notification payload");
+  }
+  if (
+    data.group_id !== "group-id" ||
+    data.group_transaction_id !== "transaction-id"
+  ) {
+    throw new Error("notification target metadata was not preserved");
   }
 });

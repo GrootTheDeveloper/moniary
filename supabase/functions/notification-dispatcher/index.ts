@@ -3,7 +3,11 @@ import {
   type SupabaseClient,
 } from "https://esm.sh/@supabase/supabase-js@2";
 
-import { classifyFcmFailure, constantTimeEqual } from "./logic.ts";
+import {
+  buildFcmData,
+  classifyFcmFailure,
+  constantTimeEqual,
+} from "./logic.ts";
 
 type ServiceAccount = {
   project_id: string;
@@ -13,6 +17,7 @@ type ServiceAccount = {
 
 type OutboxRow = {
   id: string;
+  notification_id: string;
   user_id: string;
   category: string;
   type: string;
@@ -305,21 +310,7 @@ async function sendFcmMessage(
   row: OutboxRow,
   copy: { title: string; body: string },
 ) {
-  const metadata = row.metadata ?? {};
-  const data: Record<string, string> = {
-    notification_id: row.id,
-    category: row.category,
-    type: row.type,
-    channel_name: copy.title,
-    channel_description: copy.body,
-  };
-  if (row.group_id) data.group_id = row.group_id;
-  if (typeof metadata.group_transaction_id === "string") {
-    data.group_transaction_id = metadata.group_transaction_id;
-  }
-  if (typeof metadata.friend_request_id === "string") {
-    data.friend_request_id = metadata.friend_request_id;
-  }
+  const data = buildFcmData(row, copy);
 
   const response = await fetch(
     `https://fcm.googleapis.com/v1/projects/${
