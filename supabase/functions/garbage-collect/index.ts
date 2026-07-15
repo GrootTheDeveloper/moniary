@@ -1,9 +1,14 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  createClient,
+  type SupabaseClient,
+} from "https://esm.sh/@supabase/supabase-js@2";
+
+type EdgeSupabaseClient = SupabaseClient<any, "public", "public", any, any>;
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'content-type, x-cron-secret',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "content-type, x-cron-secret",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 const cleanupPrefixes = (userId: string) => [
@@ -13,26 +18,26 @@ const cleanupPrefixes = (userId: string) => [
 ];
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
-  if (req.method !== 'POST') {
-    return json({ error: 'Method not allowed' }, 405);
+  if (req.method !== "POST") {
+    return json({ error: "Method not allowed" }, 405);
   }
 
-  const expectedSecret = Deno.env.get('GARBAGE_COLLECT_SECRET');
+  const expectedSecret = Deno.env.get("GARBAGE_COLLECT_SECRET");
   if (!expectedSecret) {
-    return json({ error: 'Server cleanup secret is not configured' }, 500);
+    return json({ error: "Server cleanup secret is not configured" }, 500);
   }
-  const receivedSecret = req.headers.get('x-cron-secret') ?? '';
+  const receivedSecret = req.headers.get("x-cron-secret") ?? "";
   if (!(await secureEquals(receivedSecret, expectedSecret))) {
-    return json({ error: 'Unauthorized' }, 401);
+    return json({ error: "Unauthorized" }, 401);
   }
 
-  const supabaseUrl = Deno.env.get('SUPABASE_URL');
-  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !serviceRoleKey) {
-    return json({ error: 'Server is not configured' }, 500);
+    return json({ error: "Server is not configured" }, 500);
   }
 
   const adminClient = createClient(supabaseUrl, serviceRoleKey, {
@@ -44,11 +49,11 @@ Deno.serve(async (req) => {
   // Keep each invocation bounded so the Edge Function cannot time out while
   // processing a large backlog. The nightly job continues with the next batch.
   const { data: profiles, error: fetchError } = await adminClient
-    .from('profiles')
-    .select('id')
-    .not('deleted_at', 'is', null)
-    .lte('deleted_at', cutoff)
-    .order('deleted_at', { ascending: true })
+    .from("profiles")
+    .select("id")
+    .not("deleted_at", "is", null)
+    .lte("deleted_at", cutoff)
+    .order("deleted_at", { ascending: true })
     .limit(100);
 
   if (fetchError) {
@@ -62,7 +67,7 @@ Deno.serve(async (req) => {
     const userId = profile.id as string;
     try {
       const { error: prepareError } = await adminClient.rpc(
-        'prepare_account_for_hard_delete',
+        "prepare_account_for_hard_delete",
         { p_user_id: userId },
       );
       if (prepareError) throw prepareError;
@@ -94,12 +99,12 @@ Deno.serve(async (req) => {
 });
 
 async function removeStoragePrefix(
-  adminClient: ReturnType<typeof createClient>,
+  adminClient: EdgeSupabaseClient,
   prefix: string,
 ) {
   while (true) {
     const { data, error } = await adminClient.storage
-      .from('transaction-images')
+      .from("transaction-images")
       .list(prefix, { limit: 100, offset: 0 });
     if (error) throw error;
 
@@ -109,7 +114,7 @@ async function removeStoragePrefix(
     if (paths.length === 0) return;
 
     const { error: removeError } = await adminClient.storage
-      .from('transaction-images')
+      .from("transaction-images")
       .remove(paths);
     if (removeError) throw removeError;
   }
@@ -118,8 +123,8 @@ async function removeStoragePrefix(
 async function secureEquals(left: string, right: string) {
   const encoder = new TextEncoder();
   const [leftHash, rightHash] = await Promise.all([
-    crypto.subtle.digest('SHA-256', encoder.encode(left)),
-    crypto.subtle.digest('SHA-256', encoder.encode(right)),
+    crypto.subtle.digest("SHA-256", encoder.encode(left)),
+    crypto.subtle.digest("SHA-256", encoder.encode(right)),
   ]);
   const leftBytes = new Uint8Array(leftHash);
   const rightBytes = new Uint8Array(rightHash);
@@ -135,7 +140,7 @@ function json(body: Record<string, unknown>, status = 200) {
     status,
     headers: {
       ...corsHeaders,
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 }
@@ -143,12 +148,12 @@ function json(body: Record<string, unknown>, status = 200) {
 function readableError(error: unknown) {
   if (error instanceof Error) return error.message;
   if (
-    typeof error === 'object' &&
+    typeof error === "object" &&
     error !== null &&
-    'message' in error &&
-    typeof error.message === 'string'
+    "message" in error &&
+    typeof error.message === "string"
   ) {
     return error.message;
   }
-  return 'Could not delete account data';
+  return "Could not delete account data";
 }
