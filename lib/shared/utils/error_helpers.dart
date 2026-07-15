@@ -1,4 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../core/supabase/app_exception.dart';
 import '../../l10n/l10n_extension.dart';
 
@@ -7,6 +9,9 @@ import '../../l10n/l10n_extension.dart';
 String userFriendlyMessage(BuildContext context, Object error) {
   final l10n = context.l10n;
   if (error is AppException) {
+    final authMessage = _authErrorMessage(context, error.code);
+    if (authMessage != null) return authMessage;
+
     switch (error.code) {
       case 'AUTH_REQUIRED':
         return l10n.errorNotLoggedIn;
@@ -18,12 +23,13 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.errorNotFound;
       case 'AUTH_NETWORK_ERROR':
         return l10n.errorConnection;
+      case 'AUTH_CAPTCHA_REQUIRED':
+        return l10n.anonymousCaptchaRequired;
       case 'AUTH_SIGN_IN_FAILED':
       case 'AUTH_SIGN_UP_FAILED':
       case 'AUTH_SIGN_OUT_FAILED':
       case 'AUTH_LINK_EMAIL_FAILED':
       case 'AUTH_LINK_GOOGLE_FAILED':
-      case 'AUTH_LINK_APPLE_FAILED':
       case 'AUTH_LINK_FACEBOOK_FAILED':
       case 'AUTH_PASSWORD_UPDATE_FAILED':
         return l10n.errorGeneric;
@@ -42,6 +48,15 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.authErrorRateLimited;
       case 'user_banned':
         return l10n.authErrorUserBanned;
+      case 'AUTH_LINK_EMAIL_NOT_CONFIRMED':
+      case 'AUTH_LINK_EMAIL_NOT_PENDING':
+        return l10n.emailLinkNotConfirmed;
+      case 'AUTH_LINK_GOOGLE_NOT_COMPLETED':
+        return l10n.authErrorGoogleLinkIncomplete;
+      case 'AUTH_LINK_FACEBOOK_NOT_COMPLETED':
+        return l10n.authErrorFacebookLinkIncomplete;
+      case 'ACCOUNT_RESTORE_EXPIRED':
+        return l10n.accountRestoreExpired;
       case 'GROUP_NAME_REQUIRED':
         return l10n.groupNameRequired;
       case 'GROUP_USER_NOT_FOUND':
@@ -108,6 +123,10 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupCommentRequired;
       case 'GROUP_COMMENT_OWNER_REQUIRED':
         return l10n.groupActionFailed;
+      case 'GROUP_ARCHIVE_UNRESOLVED':
+        return l10n.groupSettingsArchiveBlocked;
+      case 'GROUP_ADMIN_REQUIRED':
+        return l10n.groupSettingsAdminRequired;
       case 'GROUP_CREATOR_ONLY':
         return l10n.groupTransactionCreatorOnly;
       case 'FRIEND_USER_NOT_FOUND':
@@ -147,10 +166,38 @@ String userFriendlyMessage(BuildContext context, Object error) {
 
     return l10n.errorGeneric;
   }
+  if (error is AuthException) {
+    return _authErrorMessage(context, error.code) ?? l10n.errorGeneric;
+  }
   if (_looksLikeNetworkError(error)) {
     return l10n.errorConnection;
   }
   return l10n.errorGeneric;
+}
+
+String? _authErrorMessage(BuildContext context, String? code) {
+  final l10n = context.l10n;
+  return switch (code) {
+    'invalid_credentials' => l10n.authErrorInvalidCredentials,
+    'email_not_confirmed' => l10n.authErrorEmailNotConfirmed,
+    'provider_disabled' ||
+    'oauth_provider_not_supported' ||
+    'email_provider_disabled' => l10n.authErrorProviderDisabled,
+    'bad_oauth_state' ||
+    'bad_oauth_callback' ||
+    'bad_code_verifier' ||
+    'flow_state_not_found' ||
+    'flow_state_expired' => l10n.authErrorOAuthCallback,
+    'over_request_rate_limit' ||
+    'over_email_send_rate_limit' => l10n.authErrorRateLimited,
+    'email_exists' ||
+    'user_already_exists' => l10n.authErrorEmailAlreadyRegistered,
+    'weak_password' => l10n.authErrorWeakPassword,
+    'signup_disabled' => l10n.authErrorSignupDisabled,
+    'AUTH_OAUTH_LAUNCH_FAILED' => l10n.authErrorBrowserLaunch,
+    'captcha_failed' => l10n.anonymousCaptchaFailed,
+    _ => null,
+  };
 }
 
 bool _looksLikeNetworkError(Object error) {

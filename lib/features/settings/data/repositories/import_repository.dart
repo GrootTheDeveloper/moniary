@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:moniary/core/constants/app_constants.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/shared/utils/app_logger.dart';
 import 'package:moniary/features/settings/domain/models/csv_transaction_row.dart';
@@ -22,18 +21,6 @@ class ImportRepository {
   /// Parses a CSV file and returns a list of [CsvTransactionRow].
   /// Expected columns: Date (YYYY-MM-DD), Amount, Type, Category, Note
   Future<List<CsvTransactionRow>> parseCsv(String filePath) async {
-    if (!AppConstants.hasSupabaseConfig && filePath == 'mock_test.csv') {
-      return [
-        CsvTransactionRow(
-          date: DateTime.now(),
-          amount: 50000.0,
-          typeStr: 'Chi',
-          categoryName: 'Ăn uống',
-          note: 'Mock transaction',
-          isValid: true,
-        ),
-      ];
-    }
     try {
       final file = File(filePath);
       if (!await file.exists()) {

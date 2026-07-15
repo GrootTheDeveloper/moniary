@@ -72,11 +72,11 @@ shared to other apps, or saved locally, nor device preferences/history outside
 the remote account. The final product must explain how users can remove those
 local/external copies.
 
-## Guest mode
+## Anonymous accounts
 
-Guest/mock data is largely process-local and is not intended as durable cloud
-storage. Guest users should be told that data can be lost on restart and is not
-synced to a Supabase account unless an explicit, tested migration flow exists.
+The no-credentials entry point creates a real Supabase anonymous account.
+Anonymous data is stored in the cloud, is subject to the documented inactivity
+cleanup period, and can be upgraded in place to email, Google, or Facebook.
 
 ## Before production publication
 

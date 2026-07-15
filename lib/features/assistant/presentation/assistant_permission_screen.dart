@@ -7,6 +7,7 @@ import '../../../l10n/l10n_extension.dart';
 import '../../../shared/widgets/moniary_design.dart';
 import '../application/assistant_controller.dart';
 import '../domain/assistant_models.dart';
+import '../../calendar/presentation/month/calendar_screen.dart';
 import 'assistant_conversation_screen.dart';
 
 class AssistantPermissionScreen extends ConsumerStatefulWidget {
@@ -37,7 +38,14 @@ class _AssistantPermissionScreenState
   Widget build(BuildContext context) {
     final action = ref.watch(assistantAccessControllerProvider);
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: Navigator.of(context).canPop()
+            ? const BackButton()
+            : IconButton(
+                icon: const Icon(Icons.close_rounded),
+                onPressed: () => context.go(CalendarScreen.routePath),
+              ),
+      ),
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(24, 10, 24, 18),
         child: FilledButton(

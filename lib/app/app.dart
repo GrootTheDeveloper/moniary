@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/constants/app_constants.dart';
 import '../core/preferences/preferences_providers.dart';
@@ -13,9 +14,16 @@ import '../core/deeplinks/pending_deep_link_controller.dart';
 import '../core/notifications/notification_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
+import '../features/auth/presentation/password_reset_screen.dart';
+import '../features/auth/application/pending_email_link_controller.dart';
+import '../features/auth/application/auth_controller.dart';
+import '../features/auth/application/pending_facebook_link_controller.dart';
+import '../features/auth/application/pending_google_link_controller.dart';
+import '../features/auth/presentation/email_account_link_completion_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/friends/presentation/widgets/friend_invite_prompt_host.dart';
 import '../features/settings/presentation/privacy/app_lock_screen.dart';
+import '../features/settings/presentation/profile_screen.dart';
 import '../features/splash/presentation/splash_screen.dart';
 import '../l10n/gen_l10n/app_localizations.dart';
 import '../shared/utils/app_logger.dart';
@@ -23,6 +31,7 @@ import 'app_router.dart';
 import 'app_theme.dart';
 import '../features/settings/application/privacy_controller.dart';
 import '../features/notifications/data/repositories/notification_repository_impl.dart';
+import '../features/notifications/presentation/screens/notification_center_screen.dart';
 
 class MoniaryApp extends ConsumerStatefulWidget {
   const MoniaryApp({super.key});
@@ -40,6 +49,8 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
   Uri? _lastHandledDeepLink;
   DateTime? _lastHandledDeepLinkAt;
   ProviderSubscription? _sessionSubscription;
+  bool _isCompletingFacebookLink = false;
+  bool _isCompletingGoogleLink = false;
 
   @override
   void initState() {
@@ -76,6 +87,75 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(authStateChangesProvider, (previous, next) {
+      next.whenData((authState) {
+        if (authState.event != AuthChangeEvent.passwordRecovery) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          ref.read(appRouterProvider).go(PasswordResetScreen.routePath);
+        });
+      });
+    });
+
+    ref.listen(authStateChangesProvider, (previous, next) {
+      next.whenData((authState) {
+        final pendingLink = ref.read(pendingFacebookAccountLinkProvider);
+        final user = authState.session?.user;
+        if (pendingLink == null || user == null) return;
+        final hasFacebookIdentity =
+            user.identities?.any(
+              (identity) => identity.provider == 'facebook',
+            ) ??
+            false;
+        if (!pendingLink.matches(
+          userId: user.id,
+          hasFacebookIdentity: hasFacebookIdentity,
+        )) {
+          return;
+        }
+        unawaited(_completePendingFacebookLink());
+      });
+    });
+
+    ref.listen(authStateChangesProvider, (previous, next) {
+      next.whenData((authState) {
+        final pendingLink = ref.read(pendingGoogleAccountLinkProvider);
+        final user = authState.session?.user;
+        if (pendingLink == null || user == null) return;
+        final hasGoogleIdentity =
+            user.identities?.any((identity) => identity.provider == 'google') ??
+            false;
+        if (!pendingLink.matches(
+          userId: user.id,
+          hasGoogleIdentity: hasGoogleIdentity,
+        )) {
+          return;
+        }
+        unawaited(_completePendingGoogleLink());
+      });
+    });
+
+    ref.listen(authStateChangesProvider, (previous, next) {
+      next.whenData((authState) {
+        final pendingLink = ref.read(pendingEmailAccountLinkProvider);
+        final user = authState.session?.user;
+        if (pendingLink == null || user == null) return;
+        if (!pendingLink.matches(
+          userId: user.id,
+          email: user.email,
+          isAnonymous: user.isAnonymous,
+        )) {
+          return;
+        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          ref
+              .read(appRouterProvider)
+              .go(EmailAccountLinkCompletionScreen.routePath);
+        });
+      });
+    });
+
     return MaterialApp.router(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
@@ -87,6 +167,46 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
       builder: (context, child) =>
           FriendInvitePromptHost(child: child ?? const SizedBox.shrink()),
     );
+  }
+
+  Future<void> _completePendingGoogleLink() async {
+    if (_isCompletingGoogleLink) return;
+    _isCompletingGoogleLink = true;
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .completePendingGoogleAccountLink();
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to complete Google account link',
+        error,
+        stackTrace,
+      );
+    } finally {
+      _isCompletingGoogleLink = false;
+    }
+    if (!mounted) return;
+    ref.read(appRouterProvider).go(ProfileScreen.routePath);
+  }
+
+  Future<void> _completePendingFacebookLink() async {
+    if (_isCompletingFacebookLink) return;
+    _isCompletingFacebookLink = true;
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .completePendingFacebookAccountLink();
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to complete Facebook account link',
+        error,
+        stackTrace,
+      );
+    } finally {
+      _isCompletingFacebookLink = false;
+    }
+    if (!mounted) return;
+    ref.read(appRouterProvider).go(ProfileScreen.routePath);
   }
 
   Future<void> _initializeDeepLinks() async {
@@ -189,8 +309,7 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
   }
 
   Future<void> _initializePushNotifications() async {
-    if (ref.read(useMockDataModeProvider) ||
-        ref.read(currentSessionProvider) == null) {
+    if (ref.read(currentSessionProvider) == null) {
       return;
     }
     final service = ref.read(fcmPushNotificationServiceProvider);
@@ -211,15 +330,21 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
         // exact Group/Friends target with the normal repository boundary.
         final router = ref.read(appRouterProvider);
         if (ref.read(currentSessionProvider) == null) {
+          ref
+              .read(pendingDeepLinkProvider.notifier)
+              .set(NotificationCenterScreen.routePath);
           router.go(LoginScreen.routePath);
           return;
         }
         final privacyState = ref.read(privacyControllerProvider);
         if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
+          ref
+              .read(pendingDeepLinkProvider.notifier)
+              .set(NotificationCenterScreen.routePath);
           router.go(AppLockScreen.routePath);
           return;
         }
-        router.go('/notifications');
+        router.go(NotificationCenterScreen.routePath);
       },
     );
   }

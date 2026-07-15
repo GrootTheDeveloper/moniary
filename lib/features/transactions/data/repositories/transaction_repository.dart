@@ -1,353 +1,26 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../shared/utils/app_logger.dart';
-import '../../../categories/data/repositories/category_repository.dart';
 import '../../../categories/domain/models/category.dart';
-import '../../../wallets/data/repositories/wallet_repository.dart';
-import '../../../wallets/domain/models/wallet.dart';
 import '../../domain/models/transaction_entry.dart';
 import '../../domain/models/transaction_search_filter.dart';
 
 final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
-  return TransactionRepository(
-    ref.watch(supabaseClientProvider),
-    useMockData: ref.watch(useMockDataModeProvider),
-  );
+  return TransactionRepository(ref.watch(supabaseClientProvider));
 });
 
 class TransactionRepository {
-  TransactionRepository(this._client, {bool useMockData = false})
-    : _useMockData = useMockData || !AppConstants.hasSupabaseConfig;
+  TransactionRepository(this._client);
 
   final SupabaseClient _client;
-  final bool _useMockData;
-
-  static List<TransactionEntry> get mockTransactions => _mockTransactions;
-
-  static final List<TransactionEntry> _mockTransactions = [
-    _mockTransaction(
-      id: 'mock-1',
-      amount: 45000,
-      note: 'Cà phê Cộng',
-      categoryId: 'mock-cat-food',
-      categoryName: 'Ăn uống',
-      categoryColor: '#F6B24D',
-      imageName: 'cafe',
-      day: 19,
-      hour: 8,
-      minute: 15,
-    ),
-    _mockTransaction(
-      id: 'mock-2',
-      amount: 58000,
-      note: 'Cơm trưa văn phòng',
-      categoryId: 'mock-cat-food',
-      categoryName: 'Ăn uống',
-      categoryColor: '#F6B24D',
-      imageName: 'lunch',
-      day: 19,
-      hour: 12,
-      minute: 5,
-    ),
-    _mockTransaction(
-      id: 'mock-3',
-      amount: 360000,
-      note: 'Shopping',
-      categoryId: 'mock-cat-shopping',
-      categoryName: 'Mua sắm',
-      categoryColor: '#E45CA6',
-      imageName: 'shopping',
-      day: DateTime.now().subtract(const Duration(days: 1)).day,
-      hour: 19,
-      minute: 5,
-      isImportant: true,
-    ),
-    _mockTransaction(
-      id: 'mock-4',
-      amount: 260000,
-      note: 'Ride',
-      categoryId: 'mock-cat-transport',
-      categoryName: 'Đi lại',
-      categoryColor: '#2563EB',
-      imageName: 'transport',
-      day: 8,
-      hour: 18,
-      minute: 20,
-    ),
-    _mockTransaction(
-      id: 'mock-5',
-      amount: 320000,
-      note: 'Ăn tối với Linh',
-      categoryId: 'mock-cat-food',
-      categoryName: 'Ăn uống',
-      categoryColor: '#F6B24D',
-      imageName: 'lunch',
-      day: 15,
-      hour: 20,
-      minute: 10,
-    ),
-    _mockTransaction(
-      id: 'mock-6',
-      amount: 38000,
-      note: 'Ăn sáng cùng team',
-      categoryId: 'mock-cat-food',
-      categoryName: 'Ăn uống',
-      categoryColor: '#F6B24D',
-      imageName: 'cafe',
-      day: 9,
-      hour: 8,
-      minute: 2,
-    ),
-    _mockTransaction(
-      id: 'mock-7',
-      amount: 690000,
-      note: 'Skin care',
-      categoryId: 'mock-cat-shopping',
-      categoryName: 'Mua sắm',
-      categoryColor: '#E45CA6',
-      imageName: 'shopping',
-      day: 15,
-      hour: 20,
-      minute: 15,
-      isImportant: true,
-    ),
-    _mockTransaction(
-      id: 'mock-8',
-      amount: 235000,
-      note: 'Weekend market',
-      categoryId: 'mock-cat-food',
-      categoryName: 'Ăn uống',
-      categoryColor: '#F6B24D',
-      imageName: 'market',
-      day: 8,
-      hour: 10,
-      minute: 25,
-    ),
-    _mockTransaction(
-      id: 'mock-9',
-      amount: 310000,
-      note: 'Grocery',
-      categoryId: 'mock-cat-food',
-      categoryName: 'Ăn uống',
-      categoryColor: '#F6B24D',
-      imageName: 'market',
-      day: 7,
-      hour: 18,
-      minute: 45,
-    ),
-    _mockTransaction(
-      id: 'mock-10',
-      amount: 260000,
-      note: 'Taxi home',
-      categoryId: 'mock-cat-transport',
-      categoryName: 'Đi lại',
-      categoryColor: '#2563EB',
-      imageName: 'transport',
-      day: 20,
-      hour: 21,
-      minute: 5,
-    ),
-    _mockTransaction(
-      id: 'mock-11',
-      amount: 275000,
-      note: 'Dinner',
-      categoryId: 'mock-cat-food',
-      categoryName: 'Ăn uống',
-      categoryColor: '#F6B24D',
-      imageName: 'lunch',
-      day: 6,
-      hour: 19,
-      minute: 35,
-    ),
-    _mockTransaction(
-      id: 'mock-12',
-      amount: 400000,
-      note: 'Stationery',
-      categoryId: 'mock-cat-shopping',
-      categoryName: 'Mua sắm',
-      categoryColor: '#E45CA6',
-      imageName: 'shopping',
-      day: 26,
-      hour: 14,
-      minute: 10,
-    ),
-    _mockTransaction(
-      id: 'mock-13',
-      amount: 220000,
-      note: 'Metro',
-      categoryId: 'mock-cat-transport',
-      categoryName: 'Đi lại',
-      categoryColor: '#2563EB',
-      imageName: 'transport',
-      day: 27,
-      hour: 8,
-      minute: 30,
-    ),
-    _mockTransaction(
-      id: 'mock-14',
-      amount: 385000,
-      note: 'Market',
-      categoryId: 'mock-cat-food',
-      categoryName: 'Ăn uống',
-      categoryColor: '#F6B24D',
-      imageName: 'market',
-      day: 5,
-      hour: 17,
-      minute: 30,
-    ),
-    _mockTransaction(
-      id: 'mock-15',
-      amount: 8250000,
-      type: TransactionType.income,
-      note: 'Salary',
-      categoryId: 'mock-cat-salary',
-      categoryName: 'Lương',
-      categoryColor: '#44D884',
-      imageName: 'salary',
-      day: 30,
-      hour: 9,
-    ),
-    _mockTransaction(
-      id: 'mock-16',
-      amount: 150000,
-      note: 'Lunch set',
-      categoryId: 'mock-cat-food',
-      categoryName: 'Ăn uống',
-      categoryColor: '#F6B24D',
-      imageName: 'lunch',
-      day: 4,
-      hour: 12,
-      minute: 5,
-    ),
-    _mockTransaction(
-      id: 'mock-17',
-      amount: 240000,
-      note: 'Airport ride',
-      categoryId: 'mock-cat-transport',
-      categoryName: 'Đi lại',
-      categoryColor: '#2563EB',
-      imageName: 'transport',
-      day: 2,
-      hour: 7,
-    ),
-    _mockTransaction(
-      id: 'mock-18',
-      amount: 124000,
-      note: 'Coffee beans',
-      categoryId: 'mock-cat-food',
-      categoryName: 'Ăn uống',
-      categoryColor: '#F6B24D',
-      imageName: 'cafe',
-      day: 3,
-      hour: 16,
-      minute: 40,
-    ),
-    _mockTransaction(
-      id: 'mock-19',
-      amount: 40000,
-      note: 'Bánh mì',
-      categoryId: 'mock-cat-food',
-      categoryName: 'Ăn uống',
-      categoryColor: '#F6B24D',
-      imageName: 'lunch',
-      day: 2,
-      hour: 7,
-      minute: 45,
-    ),
-    _mockTransaction(
-      id: 'mock-20',
-      amount: 160000,
-      note: 'Trà sữa',
-      categoryId: 'mock-cat-food',
-      categoryName: 'Ăn uống',
-      categoryColor: '#F6B24D',
-      imageName: 'cafe',
-      day: 1,
-      hour: 15,
-      minute: 25,
-    ),
-  ];
-
-  static TransactionEntry _mockTransaction({
-    required String id,
-    required double amount,
-    required String note,
-    required String categoryId,
-    required String categoryName,
-    required String categoryColor,
-    required String imageName,
-    required int day,
-    int hour = 12,
-    int minute = 0,
-    TransactionType type = TransactionType.expense,
-    bool isImportant = false,
-  }) {
-    return TransactionEntry(
-      id: id,
-      amount: amount,
-      type: type,
-      note: note,
-      imagePath: 'asset://assets/demo_transactions/$imageName.png',
-      transactionDate: _mockDate(day, hour, minute),
-      walletId: 'w1',
-      walletName: 'Cash Wallet',
-      walletColor: '#44D884',
-      categoryId: categoryId,
-      categoryName: categoryName,
-      categoryColor: categoryColor,
-      isImportant: isImportant,
-    );
-  }
-
-  static DateTime _mockDate(int day, int hour, int minute) {
-    final now = DateTime.now();
-    final lastDay = DateTime(now.year, now.month + 1, 0).day;
-    final safeDay = day.clamp(1, lastDay).toInt();
-    return DateTime(now.year, now.month, safeDay, hour, minute);
-  }
-
-  static String _mockImagePathForCategory(
-    String categoryId,
-    TransactionType type,
-  ) {
-    final imageName = switch (categoryId) {
-      'mock-cat-food' => 'market',
-      'mock-cat-transport' => 'transport',
-      'mock-cat-shopping' => 'shopping',
-      'mock-cat-salary' => 'salary',
-      _ when type == TransactionType.income => 'salary',
-      _ => 'market',
-    };
-    return 'asset://assets/demo_transactions/$imageName.png';
-  }
-
-  Future<void> clearMockUserData() async {
-    if (!_useMockData) return;
-    for (final transaction in List<TransactionEntry>.from(_mockTransactions)) {
-      final imagePath = transaction.imagePath;
-      if (imagePath == null ||
-          imagePath.startsWith('http') ||
-          imagePath.startsWith('asset://')) {
-        continue;
-      }
-      final image = File(imagePath);
-      if (await image.exists()) await image.delete();
-    }
-    _mockTransactions.clear();
-  }
 
   String get _userId {
-    if (_useMockData) {
-      return 'mock-user-id';
-    }
     final uid = _client.auth.currentSession?.user.id;
     if (uid == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
@@ -376,25 +49,6 @@ class TransactionRepository {
     String? walletId,
     String? categoryId,
   }) async {
-    if (_useMockData) {
-      final results = _mockTransactions.where((t) {
-        final inRange =
-            !t.transactionDate.isBefore(start) &&
-            t.transactionDate.isBefore(end);
-        final matchWallet = walletId == null || t.walletId == walletId;
-        final matchCat = categoryId == null || t.categoryId == categoryId;
-        return inRange && matchWallet && matchCat;
-      }).toList();
-
-      // Sort by importance first, then by date
-      results.sort((a, b) {
-        if (a.isImportant != b.isImportant) {
-          return b.isImportant ? 1 : -1;
-        }
-        return b.transactionDate.compareTo(a.transactionDate);
-      });
-      return results;
-    }
     try {
       final uid = _userId;
 
@@ -426,10 +80,6 @@ class TransactionRepository {
   }
 
   Future<List<TransactionEntry>> fetchStarredTransactions() async {
-    if (_useMockData) {
-      return _mockTransactions.where((t) => t.isImportant).toList()
-        ..sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
-    }
     try {
       final uid = _userId;
 
@@ -455,13 +105,6 @@ class TransactionRepository {
   ) async {
     final normalizedQuery = filter.query.trim().toLowerCase();
 
-    if (_useMockData) {
-      final results = _mockTransactions
-          .where((tx) => _matchesFilter(tx, filter, normalizedQuery))
-          .toList();
-      _sortStarredThenDate(results);
-      return results;
-    }
     try {
       final uid = _userId;
 
@@ -532,22 +175,6 @@ class TransactionRepository {
     String? walletId,
     String? categoryId,
   }) async {
-    if (_useMockData) {
-      return _mockTransactions.where((t) {
-        final sameDay =
-            t.transactionDate.year == day.year &&
-            t.transactionDate.month == day.month &&
-            t.transactionDate.day == day.day;
-        final matchWallet = walletId == null || t.walletId == walletId;
-        final matchCat = categoryId == null || t.categoryId == categoryId;
-        return sameDay && matchWallet && matchCat;
-      }).toList()..sort((a, b) {
-        if (a.isImportant != b.isImportant) {
-          return b.isImportant ? 1 : -1;
-        }
-        return b.transactionDate.compareTo(a.transactionDate);
-      });
-    }
     try {
       final uid = _userId;
 
@@ -582,15 +209,6 @@ class TransactionRepository {
   }
 
   Future<TransactionEntry> fetchTransactionById(String transactionId) async {
-    if (_useMockData) {
-      return _mockTransactions.firstWhere(
-        (t) => t.id == transactionId,
-        orElse: () => throw const AppException(
-          'Transaction not found',
-          code: 'NOT_FOUND',
-        ),
-      );
-    }
     try {
       final uid = _userId;
 
@@ -621,61 +239,6 @@ class TransactionRepository {
     bool isImportant = false,
     String? recurringTransactionId,
   }) async {
-    if (_useMockData) {
-      final id = 'mock-tx-${DateTime.now().millisecondsSinceEpoch}';
-
-      // Look up wallet and category mock lists
-      final wallets = WalletRepository.mockWallets;
-      final categories = CategoryRepository.mockCategories;
-
-      final w = wallets.firstWhere(
-        (element) => element.id == walletId,
-        orElse: () => Wallet(
-          id: walletId,
-          name: '',
-          type: WalletType.cash,
-          initialBalance: 0,
-          isDefault: false,
-          isActive: true,
-          createdAt: DateTime.now(),
-          icon: null,
-          color: null,
-        ),
-      );
-      final c = categories.firstWhere(
-        (element) => element.id == categoryId,
-        orElse: () => Category(
-          id: categoryId,
-          name: '',
-          type: type,
-          icon: null,
-          color: null,
-          isDefault: false,
-          isActive: true,
-          createdAt: DateTime.now(),
-        ),
-      );
-
-      _mockTransactions.add(
-        TransactionEntry(
-          id: id,
-          amount: amount,
-          type: type,
-          note: note,
-          imagePath: _mockImagePathForCategory(categoryId, type),
-          transactionDate: transactionDate,
-          walletId: walletId,
-          walletName: w.name,
-          walletColor: w.color,
-          categoryId: categoryId,
-          categoryName: c.name,
-          categoryColor: c.color,
-          isImportant: isImportant,
-          recurringTransactionId: recurringTransactionId,
-        ),
-      );
-      return id;
-    }
     try {
       final uid = _userId;
 
@@ -719,60 +282,6 @@ class TransactionRepository {
     String? note,
     bool isImportant = false,
   }) async {
-    if (_useMockData) {
-      final index = _mockTransactions.indexWhere((t) => t.id == transactionId);
-      if (index != -1) {
-        final wallets = WalletRepository.mockWallets;
-        final categories = CategoryRepository.mockCategories;
-
-        final w = wallets.firstWhere(
-          (element) => element.id == walletId,
-          orElse: () => Wallet(
-            id: walletId,
-            name: '',
-            type: WalletType.cash,
-            initialBalance: 0,
-            isDefault: false,
-            isActive: true,
-            createdAt: DateTime.now(),
-            icon: null,
-            color: null,
-          ),
-        );
-        final c = categories.firstWhere(
-          (element) => element.id == categoryId,
-          orElse: () => Category(
-            id: categoryId,
-            name: '',
-            type: type,
-            icon: null,
-            color: null,
-            isDefault: false,
-            isActive: true,
-            createdAt: DateTime.now(),
-          ),
-        );
-
-        _mockTransactions[index] = TransactionEntry(
-          id: transactionId,
-          amount: amount,
-          type: type,
-          note: note,
-          imagePath: _mockTransactions[index].imagePath,
-          transactionDate: transactionDate,
-          walletId: walletId,
-          walletName: w.name,
-          walletColor: w.color,
-          categoryId: categoryId,
-          categoryName: c.name,
-          categoryColor: c.color,
-          isImportant: isImportant,
-          recurringTransactionId:
-              _mockTransactions[index].recurringTransactionId,
-        );
-      }
-      return;
-    }
     try {
       final uid = _userId;
 
@@ -803,29 +312,6 @@ class TransactionRepository {
     String transactionId,
     bool isImportant,
   ) async {
-    if (_useMockData) {
-      final index = _mockTransactions.indexWhere((t) => t.id == transactionId);
-      if (index != -1) {
-        final t = _mockTransactions[index];
-        _mockTransactions[index] = TransactionEntry(
-          id: t.id,
-          amount: t.amount,
-          type: t.type,
-          note: t.note,
-          imagePath: t.imagePath,
-          transactionDate: t.transactionDate,
-          walletId: t.walletId,
-          walletName: t.walletName,
-          walletColor: t.walletColor,
-          categoryId: t.categoryId,
-          categoryName: t.categoryName,
-          categoryColor: t.categoryColor,
-          isImportant: isImportant,
-          recurringTransactionId: t.recurringTransactionId,
-        );
-      }
-      return;
-    }
     try {
       final uid = _userId;
 
@@ -845,10 +331,6 @@ class TransactionRepository {
   }
 
   Future<void> deleteTransaction(String transactionId) async {
-    if (_useMockData) {
-      _mockTransactions.removeWhere((t) => t.id == transactionId);
-      return;
-    }
     try {
       final uid = _userId;
 
@@ -888,11 +370,6 @@ class TransactionRepository {
 
   /// How many transactions were auto-posted from the given recurring rule.
   Future<int> countGeneratedTransactions(String recurringTransactionId) async {
-    if (_useMockData) {
-      return _mockTransactions
-          .where((t) => t.recurringTransactionId == recurringTransactionId)
-          .length;
-    }
     try {
       final rows = await _client
           .from('transactions')
@@ -921,56 +398,6 @@ class TransactionRepository {
     required String categoryId,
     String? note,
   }) async {
-    if (_useMockData) {
-      final wallet = WalletRepository.mockWallets.firstWhere(
-        (element) => element.id == walletId,
-        orElse: () => Wallet(
-          id: walletId,
-          name: '',
-          type: WalletType.cash,
-          initialBalance: 0,
-          isDefault: false,
-          isActive: true,
-          createdAt: DateTime.now(),
-          icon: null,
-          color: null,
-        ),
-      );
-      final category = CategoryRepository.mockCategories.firstWhere(
-        (element) => element.id == categoryId,
-        orElse: () => Category(
-          id: categoryId,
-          name: '',
-          type: type,
-          icon: null,
-          color: null,
-          isDefault: false,
-          isActive: true,
-          createdAt: DateTime.now(),
-        ),
-      );
-      for (var i = 0; i < _mockTransactions.length; i++) {
-        final t = _mockTransactions[i];
-        if (t.recurringTransactionId != recurringTransactionId) continue;
-        _mockTransactions[i] = TransactionEntry(
-          id: t.id,
-          amount: amount,
-          type: type,
-          note: note,
-          imagePath: t.imagePath,
-          transactionDate: t.transactionDate,
-          walletId: walletId,
-          walletName: wallet.name,
-          walletColor: wallet.color,
-          categoryId: categoryId,
-          categoryName: category.name,
-          categoryColor: category.color,
-          isImportant: t.isImportant,
-          recurringTransactionId: t.recurringTransactionId,
-        );
-      }
-      return;
-    }
     try {
       await _client
           .from('transactions')
@@ -997,12 +424,6 @@ class TransactionRepository {
   Future<void> deleteGeneratedTransactions(
     String recurringTransactionId,
   ) async {
-    if (_useMockData) {
-      _mockTransactions.removeWhere(
-        (t) => t.recurringTransactionId == recurringTransactionId,
-      );
-      return;
-    }
     try {
       await _client
           .from('transactions')
@@ -1023,12 +444,6 @@ class TransactionRepository {
     String transactionId,
     Uint8List bytes,
   ) async {
-    if (_useMockData) {
-      final directory = await getTemporaryDirectory();
-      final file = File('${directory.path}/$transactionId.jpg');
-      await file.writeAsBytes(bytes);
-      return file.path;
-    }
     try {
       final uid = _userId;
 
@@ -1061,29 +476,6 @@ class TransactionRepository {
     required String? imagePath,
     required String status,
   }) async {
-    if (_useMockData) {
-      final index = _mockTransactions.indexWhere((t) => t.id == transactionId);
-      if (index != -1) {
-        _mockTransactions[index] = TransactionEntry(
-          id: _mockTransactions[index].id,
-          amount: _mockTransactions[index].amount,
-          type: _mockTransactions[index].type,
-          note: _mockTransactions[index].note,
-          imagePath: imagePath,
-          transactionDate: _mockTransactions[index].transactionDate,
-          walletId: _mockTransactions[index].walletId,
-          walletName: _mockTransactions[index].walletName,
-          walletColor: _mockTransactions[index].walletColor,
-          categoryId: _mockTransactions[index].categoryId,
-          categoryName: _mockTransactions[index].categoryName,
-          categoryColor: _mockTransactions[index].categoryColor,
-          isImportant: _mockTransactions[index].isImportant,
-          recurringTransactionId:
-              _mockTransactions[index].recurringTransactionId,
-        );
-      }
-      return;
-    }
     try {
       final uid = _userId;
 
@@ -1103,9 +495,6 @@ class TransactionRepository {
   }
 
   Future<String> getSignedImageUrl(String path) async {
-    if (_useMockData) {
-      return path;
-    }
     try {
       // getSignedImageUrl does not need user session strictly for generating url,
       // but to be consistent with wrapping Má»ŒI public method and duplicate check,
@@ -1124,9 +513,6 @@ class TransactionRepository {
   }
 
   Future<bool> hasAnyTransactions() async {
-    if (_useMockData) {
-      return _mockTransactions.isNotEmpty;
-    }
     try {
       final uid = _userId;
       final rows = await _client
@@ -1165,55 +551,6 @@ class TransactionRepository {
         .cast<Map<String, dynamic>>()
         .map(TransactionEntry.fromMap)
         .toList();
-  }
-
-  bool _matchesFilter(
-    TransactionEntry transaction,
-    TransactionSearchFilter filter,
-    String normalizedQuery,
-  ) {
-    if (filter.type != null && transaction.type != filter.type) return false;
-    if (filter.categoryId != null &&
-        transaction.categoryId != filter.categoryId) {
-      return false;
-    }
-    if (filter.importance == TransactionImportanceFilter.important &&
-        !transaction.isImportant) {
-      return false;
-    }
-    if (filter.importance == TransactionImportanceFilter.notImportant &&
-        transaction.isImportant) {
-      return false;
-    }
-    if (filter.subscription == TransactionSubscriptionFilter.subscription &&
-        transaction.recurringTransactionId == null) {
-      return false;
-    }
-    if (filter.subscription == TransactionSubscriptionFilter.nonSubscription &&
-        transaction.recurringTransactionId != null) {
-      return false;
-    }
-    if (filter.dateFrom != null &&
-        transaction.transactionDate.isBefore(_startOfDay(filter.dateFrom!))) {
-      return false;
-    }
-    if (filter.dateTo != null &&
-        !transaction.transactionDate.isBefore(
-          _startOfDay(filter.dateTo!).add(const Duration(days: 1)),
-        )) {
-      return false;
-    }
-    if (filter.minAmount != null && transaction.amount < filter.minAmount!) {
-      return false;
-    }
-    if (filter.maxAmount != null && transaction.amount > filter.maxAmount!) {
-      return false;
-    }
-    if (normalizedQuery.isNotEmpty &&
-        !_matchesSearchQuery(transaction, normalizedQuery)) {
-      return false;
-    }
-    return true;
   }
 
   void _sortStarredThenDate(List<TransactionEntry> list) {

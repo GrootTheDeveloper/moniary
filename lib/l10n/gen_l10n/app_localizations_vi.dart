@@ -100,6 +100,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get commonConfirm => 'Xác nhận';
 
   @override
+  String get commonContinue => 'Tiếp tục';
+
+  @override
   String get errorGeneric => 'Đã xảy ra lỗi. Vui lòng thử lại.';
 
   @override
@@ -120,13 +123,44 @@ class AppLocalizationsVi extends AppLocalizations {
   String get errorConnection => 'Lỗi kết nối. Vui lòng thử lại.';
 
   @override
+  String get authErrorInvalidCredentials => 'Email hoặc mật khẩu không đúng.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'Vui lòng xác nhận email trước khi đăng nhập.';
+
+  @override
+  String get authErrorProviderDisabled =>
+      'Phương thức đăng nhập này chưa được cấu hình.';
+
+  @override
+  String get authErrorOAuthCallback =>
+      'Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng bắt đầu lại.';
+
+  @override
+  String get authErrorRateLimited =>
+      'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.';
+
+  @override
+  String get authErrorEmailAlreadyRegistered => 'Email này đã được đăng ký.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'Mật khẩu chưa đủ mạnh. Hãy thử mật khẩu dài hơn kèm số hoặc ký tự đặc biệt.';
+
+  @override
+  String get authErrorSignupDisabled =>
+      'Hệ thống hiện không cho phép đăng ký tài khoản mới.';
+
+  @override
+  String get authErrorBrowserLaunch =>
+      'Không thể mở trình duyệt đăng nhập bảo mật.';
+
+  @override
   String get loginTitle => 'Moniary';
 
   @override
   String get loginSubtitle => 'Quản lý chi tiêu cá nhân';
-
-  @override
-  String get loginAnonymous => 'Tiếp tục với tài khoản khách';
 
   @override
   String get loginTerms =>
@@ -140,9 +174,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get loginGoogle => 'Đăng nhập với Google';
-
-  @override
-  String get loginApple => 'Đăng nhập với Apple';
 
   @override
   String get loginFacebook => 'Đăng nhập với Facebook';
@@ -182,14 +213,68 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginSocialDivider => 'Hoặc đăng nhập bằng';
 
   @override
-  String get loginDemoCta => 'DEMO';
+  String get loginGuestCta => 'Dùng thử ngay — không cần tài khoản →';
 
   @override
-  String get loginGuestCta => 'Dùng thử ngay — không cần tài khoản →';
+  String get anonymousCaptchaTitle => 'Xác minh trước khi tiếp tục';
+
+  @override
+  String get anonymousCaptchaDescription =>
+      'Hoàn tất bước kiểm tra bảo mật để tiếp tục an toàn.';
+
+  @override
+  String get anonymousCaptchaVerified => 'Đã xác minh';
+
+  @override
+  String get anonymousCaptchaRequired =>
+      'Hãy hoàn tất kiểm tra bảo mật trước khi tiếp tục.';
+
+  @override
+  String get anonymousCaptchaFailed => 'Xác minh thất bại. Vui lòng thử lại.';
+
+  @override
+  String get anonymousCaptchaExpired =>
+      'Phiên xác minh đã hết hạn. Vui lòng thực hiện lại.';
+
+  @override
+  String get anonymousCaptchaTimeout =>
+      'Bước kiểm tra bảo mật tải quá lâu. Hãy kiểm tra kết nối rồi thử lại.';
+
+  @override
+  String get anonymousCaptchaConfigRequired =>
+      'Bản build này chưa cấu hình bước xác minh bảo mật.';
 
   @override
   String get loginPasswordResetSent =>
       'Đã gửi hướng dẫn đặt lại mật khẩu qua email.';
+
+  @override
+  String get passwordResetTitle => 'Đặt mật khẩu mới';
+
+  @override
+  String get passwordResetSubtitle =>
+      'Chọn mật khẩu mới cho tài khoản Moniary của bạn.';
+
+  @override
+  String get passwordResetSubmit => 'Cập nhật mật khẩu';
+
+  @override
+  String get passwordResetSuccess =>
+      'Đã cập nhật mật khẩu. Hãy đăng nhập bằng mật khẩu mới.';
+
+  @override
+  String get confirmPasswordLabel => 'Xác nhận mật khẩu';
+
+  @override
+  String get validationPasswordsMismatch => 'Mật khẩu xác nhận không khớp';
+
+  @override
+  String get signupLegalConsentLabel =>
+      'Tôi đã đọc và đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư của Moniary.';
+
+  @override
+  String get signupLegalConsentRequired =>
+      'Hãy đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư để tạo tài khoản.';
 
   @override
   String get splashLoading => 'Đang tải ứng dụng...';
@@ -230,9 +315,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get onboardingFinish => 'Tiếp tục';
-
-  @override
-  String get onboardingMonthMock => 'Tháng 5';
 
   @override
   String get onboardingPillCapture => 'Chụp & lưu';
@@ -1985,10 +2067,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileProtectAccount => 'Bảo vệ tài khoản của bạn';
 
   @override
-  String get profileAnonymousWarning =>
-      'Bạn đang dùng tài khoản khách. Hãy liên kết Email hoặc Google để giữ dữ liệu khi đổi thiết bị.';
-
-  @override
   String get profileLinkNow => 'Liên kết ngay';
 
   @override
@@ -1996,7 +2074,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profileLinkAccountSubtitle =>
-      'Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email hoặc Google để lưu dữ liệu và đăng nhập trên nhiều thiết bị.';
+      'Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email, Google hoặc Facebook để lưu dữ liệu và đăng nhập trên nhiều thiết bị.';
 
   @override
   String get profileNewPassword => 'Mật khẩu mới';
@@ -2005,10 +2083,34 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileLinkEmail => 'Liên kết Email';
 
   @override
-  String get profileLinkGoogle => 'Liên kết Google';
+  String profileLinkEmailConfirmationSent(String email) {
+    return 'Đã gửi liên kết xác nhận đến $email. Hãy mở liên kết trên thiết bị này để tiếp tục.';
+  }
 
   @override
-  String get profileLinkApple => 'Liên kết Apple';
+  String get emailLinkCompleteTitle => 'Bảo vệ tài khoản email';
+
+  @override
+  String emailLinkCompleteSubtitle(String email) {
+    return 'Email $email đã được xác nhận. Hãy tạo mật khẩu để hoàn tất nâng cấp tài khoản khách.';
+  }
+
+  @override
+  String get emailLinkCompleteSubmit => 'Hoàn tất nâng cấp tài khoản';
+
+  @override
+  String get emailLinkMissing =>
+      'Yêu cầu liên kết email này không còn khả dụng.';
+
+  @override
+  String get emailLinkNotConfirmed =>
+      'Hãy xác nhận liên kết email trước khi tạo mật khẩu.';
+
+  @override
+  String get emailLinkReturnProfile => 'Quay lại hồ sơ';
+
+  @override
+  String get profileLinkGoogle => 'Liên kết Google';
 
   @override
   String get profileLinkFacebook => 'Liên kết Facebook';
@@ -2021,21 +2123,36 @@ class AppLocalizationsVi extends AppLocalizations {
       'Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.';
 
   @override
-  String get profileLinkAppleBrowser =>
-      'Hoàn tất liên kết Apple trong trình duyệt để quay lại Moniary.';
-
-  @override
   String get profileLinkFacebookBrowser =>
       'Hoàn tất liên kết Facebook trong trình duyệt để quay lại Moniary.';
 
   @override
-  String profileLinkGoogleError(String error) {
-    return 'Lỗi liên kết Google: $error';
-  }
+  String get profileLinkGoogleSuccess =>
+      'Đã liên kết tài khoản Google thành công.';
 
   @override
-  String profileLinkAppleError(String error) {
-    return 'Lỗi liên kết Apple: $error';
+  String get profileLinkGoogleCompletionError =>
+      'Google đã quay lại Moniary nhưng chưa thể hoàn tất liên kết. Hãy nhấn Liên kết ngay để thử lại.';
+
+  @override
+  String get profileLinkFacebookSuccess =>
+      'Đã liên kết tài khoản Facebook thành công.';
+
+  @override
+  String get profileLinkFacebookCompletionError =>
+      'Facebook đã quay lại Moniary nhưng chưa thể hoàn tất liên kết. Hãy nhấn Liên kết ngay để thử lại.';
+
+  @override
+  String get authErrorGoogleLinkIncomplete =>
+      'Hãy hoàn tất xác thực Google trước khi liên kết tài khoản.';
+
+  @override
+  String get authErrorFacebookLinkIncomplete =>
+      'Hãy hoàn tất xác thực Facebook trước khi liên kết tài khoản.';
+
+  @override
+  String profileLinkGoogleError(String error) {
+    return 'Lỗi liên kết Google: $error';
   }
 
   @override
@@ -2550,6 +2667,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get restoreAccountButton => 'Khôi phục tài khoản';
 
   @override
+  String get accountRestoreExpired =>
+      'Thời hạn khôi phục 30 ngày đã kết thúc. Tài khoản của bạn không thể khôi phục được nữa.';
+
+  @override
   String get validationEmailRequired => 'Email không được trống';
 
   @override
@@ -2930,15 +3051,36 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get thirdPartyServicesSubtitle =>
-      'Xem app đang dùng Supabase, Google Gemini, Flutter/package và bộ nhớ thiết bị như thế nào.';
+      'Xem app đang dùng Supabase, Google, Meta, Cloudflare, Google Gemini, Flutter/package và bộ nhớ thiết bị như thế nào.';
 
   @override
   String get thirdPartyHeroBody =>
-      'Thông báo này giúp người dùng hiểu app dựa vào dịch vụ nào để đăng nhập, lưu trữ và vận hành dữ liệu.';
+      'Thông báo này giúp người dùng hiểu app dựa vào dịch vụ nào để đăng nhập, lưu trữ, vận hành dữ liệu và cung cấp tính năng trợ lý tùy chọn.';
 
   @override
   String get thirdPartySupabaseDescription =>
       'Được dùng cho đăng nhập, cơ sở dữ liệu, storage ảnh giao dịch, xóa tài khoản và edge function của trợ lý AI.';
+
+  @override
+  String get thirdPartyGoogleTitle => 'Google';
+
+  @override
+  String get thirdPartyGoogleDescription =>
+      'Chỉ dùng khi bạn chọn đăng nhập bằng Google. Google có thể cung cấp mã tài khoản, email, tên và ảnh đại diện theo các quyền bạn chấp thuận.';
+
+  @override
+  String get thirdPartyMetaTitle => 'Facebook (Meta)';
+
+  @override
+  String get thirdPartyMetaDescription =>
+      'Chỉ dùng khi bạn chọn đăng nhập bằng Facebook. Meta có thể cung cấp mã tài khoản, email, tên và ảnh đại diện theo các quyền bạn chấp thuận.';
+
+  @override
+  String get thirdPartyCloudflareTitle => 'Cloudflare Turnstile';
+
+  @override
+  String get thirdPartyCloudflareDescription =>
+      'Dùng để ngăn lạm dụng tự động đối với đăng nhập khách bằng cách xử lý các tín hiệu bảo mật cần thiết cho thử thách CAPTCHA.';
 
   @override
   String get thirdPartyGeminiDescription =>
@@ -3392,7 +3534,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get dataSafetyPersonalInfoStatus =>
-      'Có, khi đăng nhập email hoặc Google';
+      'Có, khi đăng nhập bằng email, Google hoặc Facebook (Meta)';
 
   @override
   String get dataSafetyPersonalInfoDesc =>
@@ -3594,6 +3736,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'Khi bật trợ lý AI, ngữ cảnh tài chính đã chọn có thể được gửi qua Supabase Edge Functions tới Google Gemini để tạo câu trả lời. Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.';
 
   @override
+  String get privacyPolicyShareItem4 =>
+      'Khi bạn chọn đăng nhập bằng Google hoặc Facebook (Meta), nhà cung cấp đó và Supabase sẽ xử lý dữ liệu xác thực. Cloudflare Turnstile xử lý tín hiệu bảo mật cho đăng nhập khách được bảo vệ.';
+
+  @override
   String get privacyPolicyDeleteTitle => 'Xóa dữ liệu';
 
   @override
@@ -3613,7 +3759,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyPolicySafetyItem1 =>
-      'Thông tin cá nhân: chỉ thu thập khi người dùng đăng nhập bằng email hoặc Google.';
+      'Thông tin cá nhân: được xử lý khi người dùng đăng nhập bằng email, Google hoặc Facebook (Meta).';
 
   @override
   String get privacyPolicySafetyItem2 =>
@@ -4084,6 +4230,26 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupTransactionTotal => 'Tổng tiền';
 
   @override
+  String get groupTransactionCurrency => 'Tiền tệ giao dịch';
+
+  @override
+  String groupTransactionCurrencySubtitle(String currency) {
+    return 'Tiền tệ chung của nhóm: $currency';
+  }
+
+  @override
+  String get groupTransactionExchangeRate => 'Tỷ giá quy đổi về tiền tệ chung';
+
+  @override
+  String groupTransactionExchangeRateSubtitle(String from, String to) {
+    return '1 $from = ? $to';
+  }
+
+  @override
+  String get groupTransactionExchangeRateInvalid =>
+      'Hãy nhập tỷ giá dương hợp lệ.';
+
+  @override
   String get groupTransactionCategory => 'Danh mục';
 
   @override
@@ -4172,6 +4338,20 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupTransactionNoData => 'Chưa có giao dịch nhóm.';
+
+  @override
+  String get groupTransactionSearchHint =>
+      'Tìm theo nội dung, danh mục hoặc người đăng';
+
+  @override
+  String get groupTransactionFilterAll => 'Tất cả';
+
+  @override
+  String get groupTransactionFilterNoResults =>
+      'Không tìm thấy giao dịch phù hợp.';
+
+  @override
+  String get groupTransactionLoadMore => 'Tải thêm giao dịch';
 
   @override
   String get groupTransactionLoadError => 'Không tải được giao dịch nhóm.';
@@ -4383,6 +4563,23 @@ class AppLocalizationsVi extends AppLocalizations {
       'Chỉ hiển thị số lượng tổng hợp và tổng chi tiêu.';
 
   @override
+  String get groupPublicProfileShowDescription => 'Hiển thị mô tả';
+
+  @override
+  String get groupPublicProfileShowDescriptionSubtitle =>
+      'Mô tả nhóm sẽ hiển thị cho bất kỳ ai có đường dẫn công khai.';
+
+  @override
+  String get groupPublicProfileShowType => 'Hiển thị loại nhóm';
+
+  @override
+  String get groupPublicProfileShowAvatar => 'Hiển thị ảnh nhóm';
+
+  @override
+  String get groupPublicProfileShowAvatarSubtitle =>
+      'Chỉ ảnh public-safe được tải riêng mới đủ điều kiện; ảnh riêng tư của nhóm không bao giờ bị lộ.';
+
+  @override
   String get groupPublicProfileShareTitle => 'Chia sẻ trang công khai';
 
   @override
@@ -4449,6 +4646,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupRecurringActive => 'Đang hoạt động';
+
+  @override
+  String get groupRecurringAutoPost => 'Tự động ghi nhận khi đến hạn';
+
+  @override
+  String get groupRecurringAutoPostSubtitle =>
+      'Tạo giao dịch chia đều theo tiền tệ chung của nhóm.';
 
   @override
   String get groupRecurringDeleteTitle => 'Xoá giao dịch định kỳ?';
@@ -4537,6 +4741,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupSummaryNoHistory => 'Chưa có lịch sử tất toán.';
+
+  @override
+  String get groupSummaryChartsTitle => 'Tổng quan chi tiêu';
+
+  @override
+  String get groupSummaryTrendTitle => 'Xu hướng chi tiêu 6 tháng';
+
+  @override
+  String get groupSettlementBadgeTitle => 'Đã tất toán';
+
+  @override
+  String get groupSettlementBadgeSubtitle =>
+      'Nhóm không còn số dư cần thanh toán trong tháng này.';
 
   @override
   String groupSummaryTransactionCount(int count) {
@@ -5593,20 +5810,6 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bạn sẽ được đăng xuất ngay. Trong 30 ngày, hãy đăng nhập bằng đúng phương thức hiện tại nếu muốn khôi phục tài khoản trước khi dữ liệu bị xóa vĩnh viễn.';
 
   @override
-  String get deleteGuestDataTitle => 'Xóa dữ liệu tài khoản khách';
-
-  @override
-  String get deleteGuestDataBody =>
-      'Dữ liệu tài khoản khách chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và hướng dẫn ban đầu vẫn được giữ lại.';
-
-  @override
-  String get deleteGuestDataUnderstand =>
-      'Tôi hiểu dữ liệu tài khoản khách trên thiết bị sẽ bị xóa ngay.';
-
-  @override
-  String get deleteGuestDataAction => 'Xóa dữ liệu khách';
-
-  @override
   String get deleteAccountExportTitle => 'Giữ một bản sao trước khi xóa';
 
   @override
@@ -5731,43 +5934,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginNeedAccount => 'Chưa có tài khoản? Đăng ký';
 
   @override
-  String get resetPasswordTitle => 'Đặt mật khẩu mới';
-
-  @override
-  String get resetPasswordSubtitle =>
-      'Nhập mật khẩu mới cho tài khoản của bạn.';
-
-  @override
-  String get resetPasswordConfirmLabel => 'Xác nhận mật khẩu mới';
-
-  @override
-  String get resetPasswordMismatch => 'Mật khẩu xác nhận không khớp';
-
-  @override
-  String get resetPasswordSubmit => 'Đặt lại mật khẩu';
-
-  @override
-  String get resetPasswordSuccess => 'Mật khẩu của bạn đã được cập nhật.';
-
-  @override
-  String get authErrorInvalidCredentials => 'Email hoặc mật khẩu không đúng.';
-
-  @override
-  String get authErrorEmailNotConfirmed =>
-      'Vui lòng xác nhận email trước khi đăng nhập.';
-
-  @override
-  String get authErrorEmailAlreadyRegistered => 'Email này đã được đăng ký.';
-
-  @override
-  String get authErrorWeakPassword =>
-      'Mật khẩu chưa đủ mạnh. Hãy thử mật khẩu dài hơn kèm số hoặc ký tự đặc biệt.';
-
-  @override
-  String get authErrorRateLimited =>
-      'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.';
-
-  @override
   String get authErrorUserBanned => 'Tài khoản này đã bị tạm khóa.';
 
   @override
@@ -5850,6 +6016,209 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get friendRateLimited =>
       'Bạn đã gửi quá nhiều lời mời kết bạn. Vui lòng thử lại sau.';
+
+  @override
+  String get paymentQrTitle => 'Mã QR nhận tiền';
+
+  @override
+  String get paymentQrProfileSubtitle =>
+      'Lưu một lần để thành viên nhóm mở khi thanh toán.';
+
+  @override
+  String get paymentQrMyTitle => 'Mã QR của tôi';
+
+  @override
+  String get paymentQrDescription =>
+      'Thành viên trong cùng nhóm có thể mở mã này khi cần chuyển tiền cho bạn.';
+
+  @override
+  String paymentQrMemberDescription(String name) {
+    return 'Mã QR nhận tiền của $name.';
+  }
+
+  @override
+  String get paymentQrAdd => 'Lưu ảnh mã QR';
+
+  @override
+  String get paymentQrReplace => 'Thay ảnh mã QR';
+
+  @override
+  String get paymentQrRemove => 'Xóa mã QR';
+
+  @override
+  String get paymentQrPrivacyNote =>
+      'Mã QR được lưu riêng tư và chỉ hiển thị cho thành viên cùng nhóm.';
+
+  @override
+  String get paymentQrSaved => 'Đã lưu mã QR nhận tiền.';
+
+  @override
+  String get paymentQrRemoved => 'Đã xóa mã QR nhận tiền.';
+
+  @override
+  String get paymentQrViewForPayment => 'Mở QR để thanh toán';
+
+  @override
+  String get paymentQrEmptyOwner => 'Bạn chưa lưu ảnh mã QR nhận tiền.';
+
+  @override
+  String get paymentQrEmptyMember => 'Thành viên này chưa lưu mã QR nhận tiền.';
+
+  @override
+  String get groupSettingsTitle => 'Cài đặt nhóm';
+
+  @override
+  String get groupSettingsSubtitle =>
+      'Chỉnh thông tin nhóm và chỉ đóng nhóm sau khi đã tất toán.';
+
+  @override
+  String get groupSettingsName => 'Tên nhóm';
+
+  @override
+  String get groupSettingsDescription => 'Mô tả';
+
+  @override
+  String get groupSettingsType => 'Loại nhóm';
+
+  @override
+  String get groupSettingsBaseCurrency => 'Tiền tệ chung của nhóm';
+
+  @override
+  String get groupSettingsBaseCurrencySubtitle =>
+      'Tất toán và ngân sách dùng tiền tệ này. Giao dịch ngoại tệ cần nhập tỷ giá rõ ràng.';
+
+  @override
+  String get groupSettingsSave => 'Lưu thay đổi';
+
+  @override
+  String get groupSettingsSaved => 'Đã cập nhật thông tin nhóm.';
+
+  @override
+  String get groupSettingsArchiveTitle => 'Đóng nhóm';
+
+  @override
+  String get groupSettingsArchiveSubtitle =>
+      'Nhóm sẽ ẩn khỏi danh sách và không nhận giao dịch mới. Công nợ chưa xử lý sẽ chặn thao tác này.';
+
+  @override
+  String get groupSettingsArchiveAction => 'Đóng nhóm';
+
+  @override
+  String get groupSettingsArchiveConfirmTitle => 'Đóng nhóm này?';
+
+  @override
+  String get groupSettingsArchiveConfirmMessage =>
+      'Chỉ nên đóng nhóm sau khi mọi thành viên đã hoàn tất thanh toán.';
+
+  @override
+  String get groupSettingsArchiveBlocked =>
+      'Chưa thể đóng nhóm vì vẫn còn công nợ, giao dịch chờ xử lý hoặc tranh chấp.';
+
+  @override
+  String get groupSettingsAdminRequired =>
+      'Chỉ chủ nhóm hoặc quản trị viên mới có quyền thực hiện thao tác này.';
+
+  @override
+  String get groupAuditLogTitle => 'Nhật ký quản trị';
+
+  @override
+  String get groupAuditLogSubtitle =>
+      'Theo dõi thay đổi thành viên, giao dịch và cài đặt nhóm.';
+
+  @override
+  String get groupAuditLogEmpty =>
+      'Chưa có hoạt động quản trị nào được ghi nhận.';
+
+  @override
+  String get groupAuditSystem => 'Hệ thống';
+
+  @override
+  String get groupParticipationTitle => 'Hoạt động cùng nhóm';
+
+  @override
+  String get groupParticipationSubtitle =>
+      'Cùng bình chọn và biến mục tiêu chung thành tiến độ.';
+
+  @override
+  String get groupPollsTitle => 'Bình chọn';
+
+  @override
+  String get groupPollsEmpty => 'Chưa có bình chọn.';
+
+  @override
+  String get groupPollCreate => 'Tạo bình chọn';
+
+  @override
+  String get groupPollQuestion => 'Câu hỏi';
+
+  @override
+  String get groupPollOptionsHint => 'Các lựa chọn, mỗi dòng một lựa chọn';
+
+  @override
+  String get groupChallengesTitle => 'Thử thách tiết kiệm';
+
+  @override
+  String get groupChallengesEmpty => 'Chưa có thử thách tiết kiệm.';
+
+  @override
+  String get groupChallengeCreate => 'Tạo thử thách';
+
+  @override
+  String get groupChallengeName => 'Tên thử thách';
+
+  @override
+  String get groupChallengeTarget => 'Số tiền mục tiêu';
+
+  @override
+  String get groupChallengeContribute => 'Đóng góp';
+
+  @override
+  String get groupPulsePersonalTitle => 'Việc tiếp theo của bạn';
+
+  @override
+  String get groupPulsePersonalMessage =>
+      'Có một khoản cần bạn xử lý để nhóm tiếp tục nhẹ nhàng hơn.';
+
+  @override
+  String get groupPulseUpcomingTitle => 'Sắp đến lịch chung';
+
+  @override
+  String groupPulseUpcomingMessage(String title) {
+    return '$title sắp đến hạn. Cùng chuẩn bị trước để không bỏ lỡ.';
+  }
+
+  @override
+  String get groupPulseTogetherTitle => 'Cùng giữ nhịp nhóm';
+
+  @override
+  String get groupPulseTogetherMessage =>
+      'Mở dòng hoạt động để mọi người cùng cập nhật và phản hồi.';
+
+  @override
+  String get groupPulseAllClearTitle => 'Nhóm đang rất ổn';
+
+  @override
+  String get groupPulseAllClearMessage =>
+      'Không còn khoản chờ xử lý. Thêm một khoản chi mới để cả nhóm cùng thấy tiến độ.';
+
+  @override
+  String get groupSpotlightTitle => 'Điểm chạm mới nhất';
+
+  @override
+  String get groupSpotlightComment => 'Xem và phản hồi';
+
+  @override
+  String get groupSummaryContributionTitle => 'Đóng góp nổi bật';
+
+  @override
+  String groupSummaryContributionMessage(String name) {
+    return '$name đang giúp nhóm giữ nhịp đều đặn trong tháng này.';
+  }
+
+  @override
+  String groupSummaryContributionCount(int count) {
+    return '$count hoạt động';
+  }
 
   @override
   String get groupSplitExact => 'Số tiền cụ thể';
@@ -6062,4 +6431,28 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get pushNotificationCategorySubtitle =>
       'Thông báo vẫn được lưu trong inbox trong 30 ngày.';
+
+  @override
+  String get loginAnonymous => 'Tiếp tục với tài khoản khách';
+
+  @override
+  String get onboardingMonthMock => 'Tháng 5';
+
+  @override
+  String get profileAnonymousWarning =>
+      'Bạn đang dùng tài khoản khách. Hãy liên kết Email hoặc Google để giữ dữ liệu khi đổi thiết bị.';
+
+  @override
+  String get deleteGuestDataTitle => 'Xóa dữ liệu tài khoản khách';
+
+  @override
+  String get deleteGuestDataBody =>
+      'Dữ liệu tài khoản khách chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và hướng dẫn ban đầu vẫn được giữ lại.';
+
+  @override
+  String get deleteGuestDataUnderstand =>
+      'Tôi hiểu dữ liệu tài khoản khách trên thiết bị sẽ bị xóa ngay.';
+
+  @override
+  String get deleteGuestDataAction => 'Xóa dữ liệu khách';
 }

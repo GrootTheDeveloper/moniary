@@ -16,8 +16,18 @@ class AppConstants {
   static const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
   // --- FCM/APNs (provided through dart-define; never commit real values) ---
-  static const firebaseApiKey = String.fromEnvironment('FIREBASE_API_KEY');
-  static const firebaseAppId = String.fromEnvironment('FIREBASE_APP_ID');
+  // Firebase API keys identify a client app; iOS and Android app IDs are
+  // always platform-specific even when both apps share one Firebase project.
+  static const firebaseIosApiKey = String.fromEnvironment(
+    'FIREBASE_IOS_API_KEY',
+  );
+  static const firebaseIosAppId = String.fromEnvironment('FIREBASE_IOS_APP_ID');
+  static const firebaseAndroidApiKey = String.fromEnvironment(
+    'FIREBASE_ANDROID_API_KEY',
+  );
+  static const firebaseAndroidAppId = String.fromEnvironment(
+    'FIREBASE_ANDROID_APP_ID',
+  );
   static const firebaseMessagingSenderId = String.fromEnvironment(
     'FIREBASE_MESSAGING_SENDER_ID',
   );
@@ -32,11 +42,49 @@ class AppConstants {
   static bool get hasSupabaseConfig =>
       supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
 
-  static bool get hasFirebaseConfig =>
-      firebaseApiKey.isNotEmpty &&
-      firebaseAppId.isNotEmpty &&
+  static bool hasFirebaseConfigFor(TargetPlatform platform) =>
+      (platform == TargetPlatform.iOS || platform == TargetPlatform.android) &&
+      firebaseApiKeyFor(platform).isNotEmpty &&
+      firebaseAppIdFor(platform).isNotEmpty &&
       firebaseMessagingSenderId.isNotEmpty &&
-      firebaseProjectId.isNotEmpty;
+      firebaseProjectId.isNotEmpty &&
+      (platform != TargetPlatform.iOS || firebaseIosBundleId.isNotEmpty);
+
+  static bool get hasFirebaseConfig =>
+      !kIsWeb && hasFirebaseConfigFor(defaultTargetPlatform);
+
+  static String firebaseApiKeyFor(TargetPlatform platform) =>
+      switch (platform) {
+        TargetPlatform.iOS => firebaseIosApiKey,
+        TargetPlatform.android => firebaseAndroidApiKey,
+        _ => '',
+      };
+
+  static String firebaseAppIdFor(TargetPlatform platform) => switch (platform) {
+    TargetPlatform.iOS => firebaseIosAppId,
+    TargetPlatform.android => firebaseAndroidAppId,
+    _ => '',
+  };
+
+  static const supabaseLoginCallbackUrl =
+      'io.supabase.moniary://login-callback';
+  static const supabasePasswordResetCallbackUrl =
+      'io.supabase.moniary://reset-password';
+
+  static const googleAuthEnabled = bool.fromEnvironment(
+    'ENABLE_GOOGLE_AUTH',
+    defaultValue: true,
+  );
+  static const facebookAuthEnabled = bool.fromEnvironment(
+    'ENABLE_FACEBOOK_AUTH',
+    defaultValue: false,
+  );
+
+  static const turnstileSiteKey = String.fromEnvironment('TURNSTILE_SITE_KEY');
+  static const turnstileBaseUrl = String.fromEnvironment('TURNSTILE_BASE_URL');
+
+  static bool get hasTurnstileConfig =>
+      turnstileSiteKey.isNotEmpty && turnstileBaseUrl.isNotEmpty;
 
   // --- OCR ---
   static const ocrApiUrl = String.fromEnvironment(
@@ -46,11 +94,12 @@ class AppConstants {
   );
   static const ocrRequestTimeout = Duration(seconds: 30);
 
-  /// Call once at app startup. In release mode, crash if Supabase env is missing.
+  /// Call once at app startup. The app is production-data only, so missing
+  /// Supabase config is a startup error in every build mode.
   static void assertSupabaseConfig() {
-    if (kReleaseMode && !hasSupabaseConfig) {
+    if (!hasSupabaseConfig) {
       throw StateError(
-        'SUPABASE_URL and SUPABASE_ANON_KEY must be set via --dart-define for release builds.',
+        'SUPABASE_URL and SUPABASE_ANON_KEY must be set via --dart-define before app startup.',
       );
     }
   }

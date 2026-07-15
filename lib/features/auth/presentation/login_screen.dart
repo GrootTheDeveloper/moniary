@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/preferences/preferences_providers.dart';
 
@@ -20,10 +19,12 @@ import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../../profile/presentation/profile_survey_screen.dart';
 import '../../settings/domain/account/account_deletion_status.dart';
+import '../../settings/presentation/legal/terms_of_use_screen.dart';
+import '../../settings/presentation/privacy/privacy_policy_screen.dart';
 import '../application/account_status_controller.dart';
 import '../application/auth_controller.dart';
 import '../application/post_auth_decision_provider.dart';
-import 'reset_password_screen.dart';
+import 'auth_captcha_dialog.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -36,13 +37,16 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _legalConsentKey = GlobalKey<FormFieldState<bool>>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _isRecoverySheetOpen = false;
   bool _isResolvingPostAuth = false;
   bool _isSignUp = false;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void initState() {
@@ -58,6 +62,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -66,6 +71,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final colors = context.moniaryColors;
     final authAction = ref.watch(authControllerProvider);
     final isBusy = authAction.isLoading || _isResolvingPostAuth;
+    final showGoogleAuth = AppConstants.googleAuthEnabled;
+    final showFacebookAuth = AppConstants.facebookAuthEnabled;
+    final showSocialAuth = showGoogleAuth || showFacebookAuth;
 
     ref.listen(currentSessionProvider, (previous, next) {
       if (previous == null && next != null) {
@@ -73,6 +81,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           if (mounted) _completeAuthentication();
         });
       }
+    });
+
+    ref.listen(authStateChangesProvider, (previous, next) {
+      next.whenOrNull(
+        error: (error, stackTrace) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _showAuthError(error, stackTrace);
+          });
+        },
+      );
     });
 
     return Scaffold(
@@ -145,6 +163,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         const SizedBox(height: 22),
                         TextFormField(
+                          key: const ValueKey('login_email_field'),
                           controller: _emailController,
                           enabled: !isBusy,
                           keyboardType: TextInputType.emailAddress,
@@ -163,6 +182,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         const SizedBox(height: 11),
                         TextFormField(
+                          key: const ValueKey('login_password_field'),
                           controller: _passwordController,
                           enabled: !isBusy,
                           obscureText: _obscurePassword,
@@ -171,8 +191,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ? AutofillHints.newPassword
                                 : AutofillHints.password,
                           ],
+                          textInputAction: _isSignUp
+                              ? TextInputAction.next
+                              : TextInputAction.done,
                           onFieldSubmitted: (_) {
-                            if (!isBusy) _submitEmail();
+                            if (!isBusy && !_isSignUp) _submitEmail();
                           },
                           decoration: InputDecoration(
                             labelText: context.l10n.loginPasswordLabel,
@@ -195,6 +218,41 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             return null;
                           },
                         ),
+                        if (_isSignUp) ...[
+                          const SizedBox(height: 11),
+                          TextFormField(
+                            key: const ValueKey('login_confirm_password_field'),
+                            controller: _confirmPasswordController,
+                            enabled: !isBusy,
+                            obscureText: _obscureConfirmPassword,
+                            autofillHints: const [AutofillHints.newPassword],
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (_) {
+                              if (!isBusy) _submitEmail();
+                            },
+                            decoration: InputDecoration(
+                              labelText: context.l10n.confirmPasswordLabel,
+                              suffixIcon: IconButton(
+                                onPressed: () => setState(
+                                  () => _obscureConfirmPassword =
+                                      !_obscureConfirmPassword,
+                                ),
+                                icon: Icon(
+                                  _obscureConfirmPassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value != _passwordController.text) {
+                                return context.l10n.validationPasswordsMismatch;
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
                         if (!_isSignUp)
                           Align(
                             alignment: Alignment.centerRight,
@@ -212,8 +270,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           )
                         else
-                          const SizedBox(height: 12),
+                          _SignupLegalConsent(
+                            formFieldKey: _legalConsentKey,
+                            enabled: !isBusy,
+                          ),
                         FilledButton(
+                          key: const ValueKey('login_email_submit_button'),
                           onPressed: isBusy ? null : _submitEmail,
                           child: isBusy
                               ? SizedBox.square(
@@ -240,10 +302,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                             TextButton(
+                              key: const ValueKey('login_auth_mode_toggle'),
                               onPressed: isBusy
                                   ? null
                                   : () => setState(() {
                                       _isSignUp = !_isSignUp;
+                                      _confirmPasswordController.clear();
+                                      _obscureConfirmPassword = true;
                                       _formKey.currentState?.reset();
                                     }),
                               style: TextButton.styleFrom(
@@ -261,83 +326,50 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
-                        _DividerLabel(label: context.l10n.loginSocialDivider),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _SocialButton(
-                              tooltip: context.l10n.loginGoogle,
-                              icon: Icons.g_mobiledata_outlined,
-                              onPressed: isBusy
-                                  ? null
-                                  : () => _enterApp(
-                                      () => ref
-                                          .read(authControllerProvider.notifier)
-                                          .signInWithGoogle(),
-                                    ),
-                            ),
-                            const SizedBox(width: 14),
-                            _SocialButton(
-                              tooltip: context.l10n.loginFacebook,
-                              icon: Icons.facebook_outlined,
-                              onPressed: isBusy
-                                  ? null
-                                  : () => _enterApp(
-                                      () => ref
-                                          .read(authControllerProvider.notifier)
-                                          .signInWithFacebook(),
-                                    ),
-                            ),
-                            const SizedBox(width: 14),
-                            _SocialButton(
-                              tooltip: context.l10n.loginApple,
-                              icon: Icons.apple,
-                              onPressed: isBusy
-                                  ? null
-                                  : () => _enterApp(
-                                      () => ref
-                                          .read(authControllerProvider.notifier)
-                                          .signInWithApple(),
-                                    ),
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        OutlinedButton(
-                          key: const ValueKey('login_demo_button'),
-                          onPressed: isBusy
-                              ? null
-                              : () => _enterApp(
-                                  () => ref
-                                      .read(authControllerProvider.notifier)
-                                      .startDemoSession(),
+                        if (showSocialAuth) ...[
+                          const SizedBox(height: 8),
+                          _DividerLabel(label: context.l10n.loginSocialDivider),
+                          const SizedBox(height: 16),
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 14,
+                            runSpacing: 14,
+                            children: [
+                              if (showGoogleAuth)
+                                _SocialButton(
+                                  tooltip: context.l10n.loginGoogle,
+                                  icon: Icons.g_mobiledata_outlined,
+                                  onPressed: isBusy
+                                      ? null
+                                      : () => _startSocialAuth(
+                                          () => ref
+                                              .read(
+                                                authControllerProvider.notifier,
+                                              )
+                                              .signInWithGoogle(),
+                                        ),
                                 ),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(44),
-                            foregroundColor: colors.primary,
-                            side: BorderSide(
-                              color: colors.primary.withValues(alpha: 0.5),
-                            ),
-                            textStyle: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 1.2,
-                            ),
+                              if (showFacebookAuth)
+                                _SocialButton(
+                                  tooltip: context.l10n.loginFacebook,
+                                  icon: Icons.facebook_outlined,
+                                  onPressed: isBusy
+                                      ? null
+                                      : () => _startSocialAuth(
+                                          () => ref
+                                              .read(
+                                                authControllerProvider.notifier,
+                                              )
+                                              .signInWithFacebook(),
+                                        ),
+                                ),
+                            ],
                           ),
-                          child: Text(context.l10n.loginDemoCta),
-                        ),
-                        const SizedBox(height: 6),
+                        ],
+                        const Spacer(),
                         TextButton(
                           key: const ValueKey('login_guest_button'),
-                          onPressed: isBusy
-                              ? null
-                              : () => _enterApp(
-                                  () => ref
-                                      .read(authControllerProvider.notifier)
-                                      .signInAnonymously(),
-                                ),
+                          onPressed: isBusy ? null : _signInAnonymously,
                           style: TextButton.styleFrom(
                             foregroundColor: colors.textSecondary,
                             minimumSize: const Size.fromHeight(48),
@@ -395,17 +427,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final email = _emailController.text.trim();
     final password = _passwordController.text;
+    final captchaToken = await _requestAuthCaptcha(
+      _isSignUp ? AuthCaptchaAction.emailSignUp : AuthCaptchaAction.emailSignIn,
+    );
+    if (!mounted || captchaToken == null) return;
 
     if (_isSignUp) {
       try {
-        await ref
+        final requiresEmailConfirmation = await ref
             .read(authControllerProvider.notifier)
-            .signUpWithEmail(email: email, password: password);
+            .signUpWithEmail(
+              email: email,
+              password: password,
+              captchaToken: captchaToken,
+            );
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.loginEmailConfirmationSent)),
-        );
-        setState(() => _isSignUp = false);
+        if (requiresEmailConfirmation) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.loginEmailConfirmationSent)),
+          );
+          setState(() {
+            _isSignUp = false;
+            _confirmPasswordController.clear();
+            _obscureConfirmPassword = true;
+          });
+        } else {
+          await _completeAuthentication();
+        }
       } catch (error, stackTrace) {
         _showAuthError(error, stackTrace);
       }
@@ -415,7 +463,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     await _enterApp(
       () => ref
           .read(authControllerProvider.notifier)
-          .signInWithEmail(email: email, password: password),
+          .signInWithEmail(
+            email: email,
+            password: password,
+            captchaToken: captchaToken,
+          ),
     );
   }
 
@@ -428,10 +480,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
+    final captchaToken = await _requestAuthCaptcha(
+      AuthCaptchaAction.passwordReset,
+    );
+    if (!mounted || captchaToken == null) return;
+
     try {
       await ref
           .read(authControllerProvider.notifier)
-          .requestPasswordReset(email);
+          .requestPasswordReset(email, captchaToken: captchaToken);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.loginPasswordResetSent)),
@@ -453,6 +510,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  Future<void> _startSocialAuth(Future<void> Function() signInAction) async {
+    if (_isSignUp && !(_legalConsentKey.currentState?.validate() ?? false)) {
+      return;
+    }
+    await _enterApp(signInAction);
+  }
+
+  Future<void> _signInAnonymously() async {
+    final captchaToken = await _requestAuthCaptcha(
+      AuthCaptchaAction.anonymousSignIn,
+    );
+    if (!mounted || captchaToken == null) return;
+    await _enterApp(
+      () => ref
+          .read(authControllerProvider.notifier)
+          .signInAnonymously(captchaToken: captchaToken),
+    );
+  }
+
+  Future<String?> _requestAuthCaptcha(AuthCaptchaAction action) async {
+    if (!AppConstants.hasTurnstileConfig) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.anonymousCaptchaConfigRequired)),
+      );
+      return null;
+    }
+
+    return showAuthCaptchaDialog(context, action: action);
+  }
+
   void _showAuthError(Object error, StackTrace stackTrace) {
     AppLogger.error('Authentication action failed', error, stackTrace);
     if (!mounted) return;
@@ -465,16 +552,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (_isResolvingPostAuth) return;
     _isResolvingPostAuth = true;
     if (mounted) setState(() {});
-
-    if (AppConstants.hasSupabaseConfig) {
-      final latestEvent = ref.read(authStateChangesProvider).value?.event;
-      if (latestEvent == AuthChangeEvent.passwordRecovery) {
-        _isResolvingPostAuth = false;
-        if (mounted) setState(() {});
-        context.go(ResetPasswordScreen.routePath);
-        return;
-      }
-    }
 
     late final PostAuthDecision decision;
     try {
@@ -631,6 +708,84 @@ class _DividerLabel extends StatelessWidget {
         ),
         Expanded(child: Divider(color: divider, height: 1)),
       ],
+    );
+  }
+}
+
+class _SignupLegalConsent extends StatelessWidget {
+  const _SignupLegalConsent({
+    required this.formFieldKey,
+    required this.enabled,
+  });
+
+  final GlobalKey<FormFieldState<bool>> formFieldKey;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+
+    return FormField<bool>(
+      key: formFieldKey,
+      initialValue: false,
+      validator: (accepted) =>
+          accepted == true ? null : context.l10n.signupLegalConsentRequired,
+      builder: (field) => Padding(
+        padding: const EdgeInsets.only(top: 4, bottom: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Checkbox(
+                  key: const ValueKey('signup_legal_consent_checkbox'),
+                  value: field.value ?? false,
+                  onChanged: enabled
+                      ? (value) => field.didChange(value ?? false)
+                      : null,
+                ),
+                Expanded(
+                  child: Text(
+                    context.l10n.signupLegalConsentLabel,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ],
+            ),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 4,
+              children: [
+                TextButton(
+                  key: const ValueKey('signup_terms_link'),
+                  onPressed: enabled
+                      ? () => context.push(TermsOfUseScreen.routePath)
+                      : null,
+                  child: Text(context.l10n.legalViewTermsOfUse),
+                ),
+                TextButton(
+                  key: const ValueKey('signup_privacy_link'),
+                  onPressed: enabled
+                      ? () => context.push(PrivacyPolicyScreen.routePath)
+                      : null,
+                  child: Text(context.l10n.legalViewPrivacyPolicy),
+                ),
+              ],
+            ),
+            if (field.hasError)
+              Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: Text(
+                  field.errorText!,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: colors.danger),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

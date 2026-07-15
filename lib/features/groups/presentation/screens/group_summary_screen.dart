@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
@@ -7,6 +8,7 @@ import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
+import '../../domain/entities/group_roadmap.dart';
 
 class GroupSummaryScreen extends ConsumerStatefulWidget {
   const GroupSummaryScreen({required this.groupId, super.key});
@@ -32,6 +34,7 @@ class _GroupSummaryScreenState extends ConsumerState<GroupSummaryScreen> {
   Widget build(BuildContext context) {
     final key = (groupId: widget.groupId, month: _month);
     final statsAsync = ref.watch(groupMonthlyStatsProvider(key));
+    final trendAsync = ref.watch(groupMonthlyTrendProvider(widget.groupId));
     final historyAsync = ref.watch(
       groupSettlementHistoryProvider(widget.groupId),
     );
@@ -83,6 +86,30 @@ class _GroupSummaryScreenState extends ConsumerState<GroupSummaryScreen> {
                   ),
                 ),
               ),
+              if (stats.transactionCount > 0 &&
+                  stats.memberBreakdown.every((member) => member.balance == 0))
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Card(
+                    color: context.moniaryColors.success.withValues(
+                      alpha: 0.12,
+                    ),
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.verified_outlined,
+                        color: context.moniaryColors.success,
+                      ),
+                      title: Text(context.l10n.groupSettlementBadgeTitle),
+                      subtitle: Text(context.l10n.groupSettlementBadgeSubtitle),
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 18),
+              if (stats.memberBreakdown.isNotEmpty) ...[
+                _ContributionSpotlight(stats: stats),
+                const SizedBox(height: 18),
+              ],
+              _SummaryCharts(stats: stats, trendAsync: trendAsync),
               const SizedBox(height: 18),
               _SectionTitle(text: context.l10n.groupSummaryCategories),
               const SizedBox(height: 8),
@@ -183,6 +210,210 @@ class _GroupSummaryScreenState extends ConsumerState<GroupSummaryScreen> {
     'payer_marked_paid' => context.l10n.groupSettlementPayerMarked,
     _ => context.l10n.groupSettlementPending,
   };
+}
+
+class _SummaryCharts extends ConsumerWidget {
+  const _SummaryCharts({required this.stats, required this.trendAsync});
+
+  final GroupMonthlyStats stats;
+  final AsyncValue<List<GroupMonthlyStats>> trendAsync;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.moniaryColors;
+    final categories = stats.categoryBreakdown;
+    final palette = [
+      colors.primary,
+      colors.success,
+      colors.warning,
+      colors.danger,
+      colors.textSecondary,
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.l10n.groupSummaryChartsTitle,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        if (categories.isNotEmpty)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SizedBox(
+                height: 190,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: PieChart(
+                        PieChartData(
+                          sectionsSpace: 2,
+                          centerSpaceRadius: 34,
+                          sections: [
+                            for (
+                              var index = 0;
+                              index < categories.length;
+                              index++
+                            )
+                              PieChartSectionData(
+                                value: categories[index].totalAmount.toDouble(),
+                                color: palette[index % palette.length],
+                                radius: 48,
+                                showTitle: false,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView(
+                        children: [
+                          for (
+                            var index = 0;
+                            index < categories.length;
+                            index++
+                          )
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 3),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 5,
+                                    backgroundColor:
+                                        palette[index % palette.length],
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(categories[index].categoryName),
+                                  ),
+                                  Text(
+                                    ref.formatAmount(
+                                      categories[index].totalAmount,
+                                    ),
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.labelSmall,
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        const SizedBox(height: 10),
+        trendAsync.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (_, _) => const SizedBox.shrink(),
+          data: (trend) => Card(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(context.l10n.groupSummaryTrendTitle),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 170,
+                    child: BarChart(
+                      BarChartData(
+                        alignment: BarChartAlignment.spaceAround,
+                        borderData: FlBorderData(show: false),
+                        gridData: const FlGridData(show: false),
+                        titlesData: FlTitlesData(
+                          leftTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                final index = value.toInt();
+                                if (index < 0 || index >= trend.length) {
+                                  return const SizedBox.shrink();
+                                }
+                                return SideTitleWidget(
+                                  meta: meta,
+                                  child: Text(
+                                    DateFormat('MM').format(trend[index].month),
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.labelSmall,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        barGroups: [
+                          for (var index = 0; index < trend.length; index++)
+                            BarChartGroupData(
+                              x: index,
+                              barRods: [
+                                BarChartRodData(
+                                  toY: trend[index].totalSpent.toDouble(),
+                                  color: colors.primary,
+                                  width: 18,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ContributionSpotlight extends StatelessWidget {
+  const _ContributionSpotlight({required this.stats});
+
+  final GroupMonthlyStats stats;
+
+  @override
+  Widget build(BuildContext context) {
+    final members = [...stats.memberBreakdown]
+      ..sort((left, right) {
+        final byTransactions = right.transactionCount.compareTo(
+          left.transactionCount,
+        );
+        if (byTransactions != 0) return byTransactions;
+        return right.paidAmount.compareTo(left.paidAmount);
+      });
+    final member = members.first;
+    return Card(
+      color: context.moniaryColors.primary.withValues(alpha: 0.08),
+      child: ListTile(
+        leading: const CircleAvatar(child: Icon(Icons.auto_awesome_outlined)),
+        title: Text(context.l10n.groupSummaryContributionTitle),
+        subtitle: Text(
+          context.l10n.groupSummaryContributionMessage(member.displayName),
+        ),
+        trailing: Text(
+          context.l10n.groupSummaryContributionCount(member.transactionCount),
+          textAlign: TextAlign.end,
+        ),
+      ),
+    );
+  }
 }
 
 class _MonthSelector extends StatelessWidget {

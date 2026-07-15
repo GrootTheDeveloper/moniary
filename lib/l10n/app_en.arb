@@ -49,20 +49,28 @@
   "commonSelect": "Select",
   "commonCreate": "Create",
   "commonConfirm": "Confirm",
+  "commonContinue": "Continue",
   "errorGeneric": "An error occurred. Please try again.",
   "errorLocalAuthUnavailable": "This device does not support biometric or screen-lock authentication.",
   "errorLocalAuthFailed": "Device authentication failed. Please try again.",
   "errorNotLoggedIn": "You are not logged in.",
   "errorNotFound": "Data not found.",
   "errorConnection": "Connection error. Please try again.",
+  "authErrorInvalidCredentials": "Incorrect email or password.",
+  "authErrorEmailNotConfirmed": "Please confirm your email before signing in.",
+  "authErrorProviderDisabled": "This sign-in provider is not configured yet.",
+  "authErrorOAuthCallback": "The sign-in callback expired or is invalid. Please start again.",
+  "authErrorRateLimited": "Too many attempts. Please try again later.",
+  "authErrorEmailAlreadyRegistered": "This email is already registered.",
+  "authErrorWeakPassword": "This password is too weak. Try a longer one with numbers or symbols.",
+  "authErrorSignupDisabled": "New account registration is currently disabled.",
+  "authErrorBrowserLaunch": "Could not open the secure sign-in browser.",
   "loginTitle": "Moniary",
   "loginSubtitle": "Personal expense manager",
-  "loginAnonymous": "Continue as guest",
   "loginTerms": "By continuing, you agree to Moniary's terms of use and privacy policy.",
   "loginFeatureSubtitle": "Track expenses with photos",
   "loginHeader": "Sign In",
   "loginGoogle": "Sign in with Google",
-  "loginApple": "Sign in with Apple",
   "loginFacebook": "Sign in with Facebook",
   "loginEmail": "Sign in with Email",
   "loginOr": "or",
@@ -75,9 +83,24 @@
   "loginRegisterNow": "Register now",
   "loginHaveAccount": "Already have an account?",
   "loginSocialDivider": "Or sign in with",
-  "loginDemoCta": "DEMO",
   "loginGuestCta": "Try it now — no account needed →",
+  "anonymousCaptchaTitle": "Verify before continuing",
+  "anonymousCaptchaDescription": "Complete this security check to continue securely.",
+  "anonymousCaptchaVerified": "Verification complete",
+  "anonymousCaptchaRequired": "Complete the security check before continuing.",
+  "anonymousCaptchaFailed": "Verification failed. Please try again.",
+  "anonymousCaptchaExpired": "Verification expired. Please complete it again.",
+  "anonymousCaptchaTimeout": "The security check took too long to load. Check your connection and try again.",
+  "anonymousCaptchaConfigRequired": "Security verification is not configured for this build.",
   "loginPasswordResetSent": "Password reset instructions were sent by email.",
+  "passwordResetTitle": "Set a new password",
+  "passwordResetSubtitle": "Choose a new password for your Moniary account.",
+  "passwordResetSubmit": "Update password",
+  "passwordResetSuccess": "Your password was updated. Sign in with the new password.",
+  "confirmPasswordLabel": "Confirm password",
+  "validationPasswordsMismatch": "Passwords do not match",
+  "signupLegalConsentLabel": "I have read and agree to Moniary's Terms of Use and Privacy Policy.",
+  "signupLegalConsentRequired": "Agree to the Terms of Use and Privacy Policy to create an account.",
   "splashLoading": "Loading app...",
   "splashRetry": "Retry",
   "splashError": "Cannot connect. Please check your network and try again.",
@@ -97,7 +120,6 @@
   "onboardingNext": "Next",
   "onboardingNextPage": "Next",
   "onboardingFinish": "Continue",
-  "onboardingMonthMock": "May",
   "onboardingPillCapture": "Capture & save",
   "onboardingPillCalendar": "Daily view",
   "onboardingPillStats": "Stats",
@@ -403,7 +425,13 @@
   "groupTitle": "Group expenses",
   "groupListTitle": "Groups",
   "groupListSection": "Your groups · {count}",
-  "@groupListSection": {"placeholders": {"count": {"type": "int"}}},
+  "@groupListSection": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupEmpty": "No expense groups yet",
   "groupEmptySubtitle": "Create a group to track bills and split expenses.",
   "groupCreate": "Create group",
@@ -421,7 +449,13 @@
   "groupDetailKindLabel": "Group",
   "groupMoreActions": "Group actions",
   "groupTransactionCount": "{count} expenses",
-  "@groupTransactionCount": {"placeholders": {"count": {"type": "int"}}},
+  "@groupTransactionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupLoadError": "Could not load group list.",
   "groupAddMember": "Add member",
   "groupMemberName": "Member name",
@@ -443,9 +477,21 @@
   "groupInvitationsEmptySubtitle": "Invitations sent through username or friends will appear here.",
   "groupInvitationsLoadError": "Could not load group invitations.",
   "groupInvitationInvitedBy": "{name} invited you to join.",
-  "@groupInvitationInvitedBy": {"placeholders": {"name": {"type": "String"}}},
+  "@groupInvitationInvitedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "groupInvitationExpiresAt": "Expires on {date}",
-  "@groupInvitationExpiresAt": {"placeholders": {"date": {"type": "String"}}},
+  "@groupInvitationExpiresAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "groupInvitationAccept": "Accept",
   "groupInvitationDecline": "Decline",
   "groupInvitationDeclinedSuccess": "Group invitation declined.",
@@ -854,8 +900,12 @@
   "recurringEvery": "Every {interval} × {unit}",
   "@recurringEvery": {
     "placeholders": {
-      "interval": { "type": "int" },
-      "unit": { "type": "String" }
+      "interval": {
+        "type": "int"
+      },
+      "unit": {
+        "type": "String"
+      }
     }
   },
   "recurringStartDate": "Start date",
@@ -876,7 +926,11 @@
   "recurringApplyTitle": "Update subscription?",
   "recurringApplyMessage": "Saving will delete the {count} transaction(s) already created by this subscription and re-create them with the new details.",
   "@recurringApplyMessage": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "recurringApplyFutureOnly": "Only apply from now on",
   "recurringApplyUpdate": "Update the created transactions",
@@ -885,7 +939,11 @@
   "recurringDeleteRemoveTx": "Delete transactions too",
   "recurringDeleteGeneratedMessage": "This subscription created {count} transaction(s). What should happen to them?",
   "@recurringDeleteGeneratedMessage": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "statsCategoryTransactions": "Transactions in this category",
   "statsDayTooltip": "Day {day}\n{amount}",
@@ -900,30 +958,46 @@
     }
   },
   "profileProtectAccount": "Protect your account",
-  "profileAnonymousWarning": "You are using a guest account. Link Email or Google to keep your data when switching devices.",
   "profileLinkNow": "Link now",
   "profileLinkAccountTitle": "Link account",
-  "profileLinkAccountSubtitle": "Your account is currently a guest account. Link Email or Google to save your data and sign in across devices.",
+  "profileLinkAccountSubtitle": "Your account is currently a guest account. Link Email, Google, or Facebook to save your data and sign in across devices.",
   "profileNewPassword": "New password",
   "profileLinkEmail": "Link Email",
-  "profileLinkGoogle": "Link Google",
-  "profileLinkApple": "Link Apple",
-  "profileLinkFacebook": "Link Facebook",
-  "profileLinkSuccess": "Linked account successfully!",
-  "profileLinkGoogleBrowser": "Complete Google linking in browser to return to Moniary.",
-  "profileLinkAppleBrowser": "Complete Apple linking in browser to return to Moniary.",
-  "profileLinkFacebookBrowser": "Complete Facebook linking in browser to return to Moniary.",
-  "profileLinkGoogleError": "Google linking error: {error}",
-  "profileLinkAppleError": "Apple linking error: {error}",
-  "profileLinkFacebookError": "Facebook linking error: {error}",
-  "@profileLinkGoogleError": {
+  "profileLinkEmailConfirmationSent": "A confirmation link was sent to {email}. Open it on this device to continue.",
+  "@profileLinkEmailConfirmationSent": {
     "placeholders": {
-      "error": {
+      "email": {
         "type": "String"
       }
     }
   },
-  "@profileLinkAppleError": {
+  "emailLinkCompleteTitle": "Protect your email account",
+  "emailLinkCompleteSubtitle": "Email {email} is confirmed. Create a password to finish upgrading your guest account.",
+  "@emailLinkCompleteSubtitle": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailLinkCompleteSubmit": "Finish account upgrade",
+  "emailLinkMissing": "This email-linking request is no longer available.",
+  "emailLinkNotConfirmed": "Confirm the email link before creating a password.",
+  "emailLinkReturnProfile": "Return to profile",
+  "profileLinkGoogle": "Link Google",
+  "profileLinkFacebook": "Link Facebook",
+  "profileLinkSuccess": "Linked account successfully!",
+  "profileLinkGoogleBrowser": "Complete Google linking in browser to return to Moniary.",
+  "profileLinkFacebookBrowser": "Complete Facebook linking in browser to return to Moniary.",
+  "profileLinkGoogleSuccess": "Google account linked successfully.",
+  "profileLinkGoogleCompletionError": "Google returned to Moniary, but account linking could not be completed. Tap Link now to retry.",
+  "profileLinkFacebookSuccess": "Facebook account linked successfully.",
+  "profileLinkFacebookCompletionError": "Facebook returned to Moniary, but account linking could not be completed. Tap Link now to retry.",
+  "authErrorGoogleLinkIncomplete": "Complete Google authorization before linking the account.",
+  "authErrorFacebookLinkIncomplete": "Complete Facebook authorization before linking the account.",
+  "profileLinkGoogleError": "Google linking error: {error}",
+  "profileLinkFacebookError": "Facebook linking error: {error}",
+  "@profileLinkGoogleError": {
     "placeholders": {
       "error": {
         "type": "String"
@@ -1160,6 +1234,7 @@
   "restoreAccountTitle": "Account Pending Deletion",
   "restoreAccountBody": "Your account has been deactivated and is in a 30-day grace period before permanent deletion.\n\nDo you want to restore your account?",
   "restoreAccountButton": "Restore Account",
+  "accountRestoreExpired": "The 30-day restoration window has expired. Your account can no longer be restored.",
   "validationEmailRequired": "Email is required",
   "validationEmailInvalid": "Invalid email",
   "validationPasswordMinLength": "Password must be at least {min} characters",
@@ -1314,9 +1389,15 @@
   "dataRetentionPolicyTitle": "Data Retention Policy",
   "dataRetentionPolicySubtitle": "See what is synced with your account, what stays on this device, and what happens after account deletion.",
   "thirdPartyServicesTitle": "Third-Party Services",
-  "thirdPartyServicesSubtitle": "See how the app uses Supabase, Google Gemini, Flutter packages, and device storage.",
-  "thirdPartyHeroBody": "This notice helps users understand which services the app relies on for sign-in, storage, and data operations.",
+  "thirdPartyServicesSubtitle": "See how the app uses Supabase, Google, Meta, Cloudflare, Google Gemini, Flutter packages, and device storage.",
+  "thirdPartyHeroBody": "This notice helps users understand which services the app relies on for sign-in, storage, data operations, and optional assistant features.",
   "thirdPartySupabaseDescription": "Used for sign-in, database, transaction image storage, account deletion, and the AI assistant edge function.",
+  "thirdPartyGoogleTitle": "Google",
+  "thirdPartyGoogleDescription": "Used only when you choose Google sign-in. Google may provide your account ID, email, name, and avatar under the permissions you approve.",
+  "thirdPartyMetaTitle": "Facebook (Meta)",
+  "thirdPartyMetaDescription": "Used only when you choose Facebook sign-in. Meta may provide your account ID, email, name, and avatar under the permissions you approve.",
+  "thirdPartyCloudflareTitle": "Cloudflare Turnstile",
+  "thirdPartyCloudflareDescription": "Used to prevent automated abuse of guest sign-in by processing the security signals needed to complete a CAPTCHA challenge.",
   "thirdPartyGeminiDescription": "Used only when the AI assistant is enabled. Moniary sends the selected financial context through a Supabase Edge Function to generate assistant replies.",
   "thirdPartyFlutterDescription": "The app's main UI framework, together with packages for navigation, state, camera, image picking, and file handling.",
   "thirdPartyDeviceStorageTitle": "Device storage",
@@ -1498,7 +1579,7 @@
   "supportChecklistSensitiveTitle": "Do not send overly sensitive data",
   "supportChecklistSensitiveDesc": "Do not send passwords, access codes, or sensitive receipt photos unless absolutely necessary.",
   "dataSafetyPersonalInfoTitle": "Personal info",
-  "dataSafetyPersonalInfoStatus": "Yes, when logging in with email or Google",
+  "dataSafetyPersonalInfoStatus": "Yes, when logging in with email, Google, or Facebook (Meta)",
   "dataSafetyPersonalInfoDesc": "Display name, email, avatar, and account ID used for login and data synchronization.",
   "dataSafetyFinancialInfoTitle": "Financial info",
   "dataSafetyFinancialInfoStatus": "Yes",
@@ -1556,12 +1637,13 @@
   "privacyPolicyShareItem1": "Moniary does not sell personal or financial data of users.",
   "privacyPolicyShareItem2": "Data is stored on secure infrastructure to provide login, data sync, photo storage, and enabled AI assistant features for the app.",
   "privacyPolicyShareItem3": "When the AI assistant is enabled, selected financial context may be sent through Supabase Edge Functions to Google Gemini to generate replies. Moniary does not automatically read location, contacts, SMS, personal email, or bank data.",
+  "privacyPolicyShareItem4": "When you choose Google or Facebook (Meta) sign-in, that provider and Supabase process authentication data. Cloudflare Turnstile processes security signals for protected guest sign-in.",
   "privacyPolicyDeleteTitle": "Data deletion",
   "privacyPolicyDeleteItem1": "Users can delete individual transactions within the app.",
   "privacyPolicyDeleteItem2": "Users can export CSV data before deleting their account.",
   "privacyPolicyDeleteItem3": "When deleting an account, Moniary requests deletion of profiles, wallets, categories, transactions, and photos belonging to the current account.",
   "privacyPolicySafetyTitle": "Data Safety Declaration",
-  "privacyPolicySafetyItem1": "Personal info: collected only when users log in with email or Google.",
+  "privacyPolicySafetyItem1": "Personal info: processed when users log in with email, Google, or Facebook (Meta).",
   "privacyPolicySafetyItem2": "Financial info: collected to store and display personal finances.",
   "privacyPolicySafetyItem3": "Photos: collected only when users actively take or select photos.",
   "privacyPolicySafetyItem4": "Location, Contacts, SMS: not collected in the current version.",
@@ -1584,8 +1666,7 @@
   "termsOfUseLiabilityTitle": "4. Limitation of liability",
   "termsOfUseLiabilityDesc": "Moniary is not a financial, accounting, tax, or legal advisory tool. In-app statistics are for reference only.",
   "termsOfUseChangesTitle": "5. Changes to terms",
-  "termsOfUseChangesDesc": "Terms may be updated when the app adds features or prepares for official release."
-,
+  "termsOfUseChangesDesc": "Terms may be updated when the app adds features or prepares for official release.",
   "transactionOcrExtracting": "Extracting data...",
   "exportSheetTransactions": "Transactions",
   "exportColumnDataType": "Data type",
@@ -1627,13 +1708,31 @@
   "groupChooseImage": "Choose image",
   "groupNameRequired": "Group name is required.",
   "groupTotalSpent": "Total spent {amount}",
-  "@groupTotalSpent": {"placeholders": {"amount": {"type": "String"}}},
+  "@groupTotalSpent": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "groupBalanceSettled": "Settled",
   "groupBalanceSettledShort": "Settled",
   "groupBalanceOwes": "You need to pay {amount}",
-  "@groupBalanceOwes": {"placeholders": {"amount": {"type": "String"}}},
+  "@groupBalanceOwes": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "groupBalanceReceives": "You will receive {amount}",
-  "@groupBalanceReceives": {"placeholders": {"amount": {"type": "String"}}},
+  "@groupBalanceReceives": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "groupBalanceReceiveShort": "To receive",
   "groupBalancePayShort": "To pay",
   "groupBalanceReceiveSummary": "You receive",
@@ -1643,7 +1742,16 @@
   "groupSettlementConfirmAll": "Confirm settled",
   "groupSettlementWaitingForPayers": "Waiting for payers to mark their payments first.",
   "groupSettlementOptimizedSubtitle": "{groupName} · Optimized {count} transactions",
-  "@groupSettlementOptimizedSubtitle": {"placeholders": {"groupName": {"type": "String"}, "count": {"type": "int"}}},
+  "@groupSettlementOptimizedSubtitle": {
+    "placeholders": {
+      "groupName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupUnresolvedBadge": "Unresolved",
   "groupOverviewTitle": "Overview",
   "groupTransactionsTitle": "Group transactions",
@@ -1659,7 +1767,13 @@
   "groupOwnerTransferTargetRequired": "Choose another active member to become owner.",
   "groupTransferOwnership": "Transfer owner",
   "groupTransferOwnershipConfirm": "Transfer group ownership to {member}?",
-  "@groupTransferOwnershipConfirm": {"placeholders": {"member": {"type": "String"}}},
+  "@groupTransferOwnershipConfirm": {
+    "placeholders": {
+      "member": {
+        "type": "String"
+      }
+    }
+  },
   "groupTransferOwnershipDone": "Group ownership transferred.",
   "groupLeaveBlockedTitle": "You cannot leave yet",
   "groupLeaveViewSettlements": "View settlements",
@@ -1679,7 +1793,16 @@
   "groupInviteLinkRevoked": "Group invite link revoked.",
   "groupInviteAcceptTitle": "Group invite",
   "groupInviteAcceptSubtitle": "{name} invited you to join {group}.",
-  "@groupInviteAcceptSubtitle": {"placeholders": {"name": {"type": "String"}, "group": {"type": "String"}}},
+  "@groupInviteAcceptSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
   "groupInvitePreviewNotice": "You have not joined yet. Only tap Join group if you want to accept this invite.",
   "groupInviteAcceptButton": "Join group",
   "groupInviteDismissButton": "Not now",
@@ -1695,7 +1818,13 @@
   "groupCopyInviteLink": "Copy link",
   "groupShareInviteLink": "Share link",
   "groupInviteShareMessage": "Join my Moniary expense group: {link}",
-  "@groupInviteShareMessage": {"placeholders": {"link": {"type": "String"}}},
+  "@groupInviteShareMessage": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "groupInviteSent": "Invite sent.",
   "groupUserNotFound": "User not found.",
   "groupNoFriends": "You do not have friends to invite yet.",
@@ -1708,6 +1837,28 @@
   "groupTransactionCaption": "Caption",
   "groupTransactionNote": "Note",
   "groupTransactionTotal": "Total amount",
+  "groupTransactionCurrency": "Transaction currency",
+  "groupTransactionCurrencySubtitle": "Group base currency: {currency}",
+  "@groupTransactionCurrencySubtitle": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "groupTransactionExchangeRate": "Exchange rate to base",
+  "groupTransactionExchangeRateSubtitle": "1 {from} = ? {to}",
+  "@groupTransactionExchangeRateSubtitle": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "groupTransactionExchangeRateInvalid": "Enter a valid positive exchange rate.",
   "groupTransactionCategory": "Category",
   "groupTransactionImage": "Receipt image",
   "groupTransactionImageOptional": "An image is optional but recommended.",
@@ -1735,9 +1886,22 @@
   "groupTransactionMismatchStatus": "Amounts do not match",
   "groupTransactionPostedStatus": "Posted",
   "groupTransactionNoData": "No group transactions yet.",
+  "groupTransactionSearchHint": "Search content, category, or creator",
+  "groupTransactionFilterAll": "All",
+  "groupTransactionFilterNoResults": "No matching transactions found.",
+  "groupTransactionLoadMore": "Load more transactions",
   "groupTransactionLoadError": "Could not load group transactions.",
   "groupTransactionHistorySubtitle": "{payer} paid · Split {count} people",
-  "@groupTransactionHistorySubtitle": {"placeholders": {"payer": {"type": "String"}, "count": {"type": "int"}}},
+  "@groupTransactionHistorySubtitle": {
+    "placeholders": {
+      "payer": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupTransactionDetailTitle": "Group transaction details",
   "groupActivityCenterTitle": "Group activity",
   "groupActivityTabTimeline": "Activity",
@@ -1755,9 +1919,24 @@
   "groupBudgetNoLimit": "No budget limit is set.",
   "groupBudgetOverLimit": "The group is over its budget limit.",
   "groupBudgetSpentOfLimit": "Spent {spent} of {limit}",
-  "@groupBudgetSpentOfLimit": {"placeholders": {"spent": {"type": "String"}, "limit": {"type": "String"}}},
+  "@groupBudgetSpentOfLimit": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
   "groupBudgetThresholdNotice": "Warning threshold: {percent}% of the budget.",
-  "@groupBudgetThresholdNotice": {"placeholders": {"percent": {"type": "int"}}},
+  "@groupBudgetThresholdNotice": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "groupBudgetMonthlyLimit": "Monthly limit",
   "groupBudgetWarningThreshold": "Warning threshold",
   "groupBudgetNotSet": "No budget set",
@@ -1803,6 +1982,11 @@
   "groupPublicProfileSettingsSubtitle": "Only safe group information is shown publicly.",
   "groupPublicProfileEnabled": "Enable public profile",
   "groupPublicProfileShowStatsSubtitle": "Shows aggregate counts and total spending only.",
+  "groupPublicProfileShowDescription": "Show description",
+  "groupPublicProfileShowDescriptionSubtitle": "The group description is visible to anyone with the public link.",
+  "groupPublicProfileShowType": "Show group type",
+  "groupPublicProfileShowAvatar": "Show group avatar",
+  "groupPublicProfileShowAvatarSubtitle": "Only a separately uploaded public-safe image is eligible; private group media is never exposed.",
   "groupPublicProfileShareTitle": "Share public page",
   "groupPublicProfileCopy": "Copy link",
   "groupPublicProfileCopied": "Public page link copied.",
@@ -1825,6 +2009,8 @@
   "groupRecurringNextRun": "Next run",
   "groupRecurringNotifyBefore": "Notify days before",
   "groupRecurringActive": "Active",
+  "groupRecurringAutoPost": "Automatically post when due",
+  "groupRecurringAutoPostSubtitle": "Creates an equal-split transaction in the group's base currency.",
   "groupRecurringDeleteTitle": "Delete recurring transaction?",
   "groupRecurringDeleteMessage": "This recurring transaction will be permanently removed.",
   "groupToolsTitle": "Group tools",
@@ -1851,12 +2037,40 @@
   "groupSummarySettlementHistory": "Settlement history",
   "groupSummaryNoData": "No data for this month.",
   "groupSummaryNoHistory": "No settlement history yet.",
+  "groupSummaryChartsTitle": "Spending at a glance",
+  "groupSummaryTrendTitle": "Six-month spending trend",
+  "groupSettlementBadgeTitle": "All settled",
+  "groupSettlementBadgeSubtitle": "The group has no outstanding balance this month.",
   "groupSummaryTransactionCount": "{count} transactions",
-  "@groupSummaryTransactionCount": {"placeholders": {"count": {"type": "int"}}},
+  "@groupSummaryTransactionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupSummaryMemberAmounts": "Share {share} · Paid {paid}",
-  "@groupSummaryMemberAmounts": {"placeholders": {"share": {"type": "String"}, "paid": {"type": "String"}}},
+  "@groupSummaryMemberAmounts": {
+    "placeholders": {
+      "share": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "String"
+      }
+    }
+  },
   "groupSummarySettlementPair": "{from} pays {to}",
-  "@groupSummarySettlementPair": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
+  "@groupSummarySettlementPair": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
   "groupActivityTransactionReacted": "reacted to a transaction",
   "groupActivityTransactionCommented": "commented on a transaction",
   "groupActivityMemberJoined": "joined the group",
@@ -1908,9 +2122,30 @@
   "groupSettlementDisputed": "Disputed",
   "groupSettlementEmpty": "No debt needs action.",
   "groupSettlementFromTo": "{from} pays {to}",
-  "@groupSettlementFromTo": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
+  "@groupSettlementFromTo": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
   "groupSharePaidBalance": "Share {share} • Paid {paid} • Balance {balance}",
-  "@groupSharePaidBalance": {"placeholders": {"share": {"type": "String"}, "paid": {"type": "String"}, "balance": {"type": "String"}}},
+  "@groupSharePaidBalance": {
+    "placeholders": {
+      "share": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "String"
+      },
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
   "groupCommentsTitle": "Comments",
   "groupCommentHint": "Write a comment...",
   "groupCommentSend": "Send",
@@ -1939,11 +2174,29 @@
   "groupActivitiesEmpty": "No group activity yet.",
   "groupActivitiesLoadError": "Could not load group activity.",
   "groupActivityTransactionCreated": "{actor} created a group transaction.",
-  "@groupActivityTransactionCreated": {"placeholders": {"actor": {"type": "String"}}},
+  "@groupActivityTransactionCreated": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
   "groupActivityTransactionPosted": "{actor} posted a group transaction.",
-  "@groupActivityTransactionPosted": {"placeholders": {"actor": {"type": "String"}}},
+  "@groupActivityTransactionPosted": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
   "groupActivityGeneric": "{actor} updated the group.",
-  "@groupActivityGeneric": {"placeholders": {"actor": {"type": "String"}}},
+  "@groupActivityGeneric": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
   "groupLeaveWarningActivity": "A member tried to leave before resolving group expenses. Please be careful.",
   "cancel": "Cancel",
   "retry": "Retry",
@@ -1955,16 +2208,34 @@
   "friendSearch": "Search",
   "friendSearchPrompt": "Enter a username to find a Moniary user.",
   "friendSearchEmpty": "No user found for “{query}”.",
-  "@friendSearchEmpty": {"placeholders": {"query": {"type": "String"}}},
+  "@friendSearchEmpty": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
   "friendSearchError": "Could not search friends. Please try again.",
   "friendSearchPlaceholder": "Search friends...",
   "friendLoadError": "Could not load friends.",
   "friendNoFriends": "You do not have friends yet.",
   "friendNoFriendsSubtitle": "Add friends to invite them to expense groups faster.",
   "friendListSection": "Friends · {count}",
-  "@friendListSection": {"placeholders": {"count": {"type": "int"}}},
+  "@friendListSection": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "friendSharedGroups": "{count} shared groups",
-  "@friendSharedGroups": {"placeholders": {"count": {"type": "int"}}},
+  "@friendSharedGroups": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "friendOwesYou": "Owes you",
   "friendYouOwe": "You owe",
   "friendBalanceSettled": "Settled",
@@ -1977,7 +2248,13 @@
   "friendRemove": "Remove friend",
   "friendRemoveTitle": "Remove friend?",
   "friendRemoveMessage": "Remove {name} from your friends?",
-  "@friendRemoveMessage": {"placeholders": {"name": {"type": "String"}}},
+  "@friendRemoveMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "friendRemoved": "Friend removed.",
   "friendRequestSent": "Friend request sent.",
   "friendRequestAccepted": "Friend request accepted.",
@@ -2001,8 +2278,12 @@
   "budgetSpentOfLimit": "{spent} / {limit} this month",
   "@budgetSpentOfLimit": {
     "placeholders": {
-      "spent": {"type": "String"},
-      "limit": {"type": "String"}
+      "spent": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
     }
   },
   "budgetAddCategory": "Set a limit for another category",
@@ -2105,7 +2386,13 @@
   "assistantPermissionConfirm": "Confirm",
   "assistantPrivacyNote": "When AI is enabled, selected Moniary context may be sent through Supabase to Google Gemini to generate replies.",
   "assistantGreeting": "Hello {name}",
-  "@assistantGreeting": {"placeholders": {"name": {"type": "String"}}},
+  "@assistantGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "assistantHomePrompt": "What can I help you with today?",
   "assistantInputHint": "Type your question",
   "assistantSuggestionsTitle": "Suggestions for you",
@@ -2123,12 +2410,22 @@
   "assistantQuestionRecurring": "Are there repeated expenses I may not have noticed?",
   "assistantQuestionSaving": "Where can I cut back to save more?",
   "assistantMonthlyAnswer": "You have spent {amount} this month.",
-  "@assistantMonthlyAnswer": {"placeholders": {"amount": {"type": "String"}}},
+  "@assistantMonthlyAnswer": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "assistantMonthlyCompare": "{direction} by {percent}% compared with last month.",
   "@assistantMonthlyCompare": {
     "placeholders": {
-      "direction": {"type": "String"},
-      "percent": {"type": "String"}
+      "direction": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
     }
   },
   "assistantDirectionMore": "More",
@@ -2136,59 +2433,113 @@
   "assistantWeeklyAnswer": "You spent {current} this week, {direction} by {percent}% from last week.",
   "@assistantWeeklyAnswer": {
     "placeholders": {
-      "current": {"type": "String"},
-      "direction": {"type": "String"},
-      "percent": {"type": "String"}
+      "current": {
+        "type": "String"
+      },
+      "direction": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
     }
   },
   "assistantDailyAnswer": "You spend an average of {amount} per day this month.",
-  "@assistantDailyAnswer": {"placeholders": {"amount": {"type": "String"}}},
+  "@assistantDailyAnswer": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "assistantTopCategoryAnswer": "{category} ranks first at {amount}, or {percent}% of total spending.",
   "@assistantTopCategoryAnswer": {
     "placeholders": {
-      "category": {"type": "String"},
-      "amount": {"type": "String"},
-      "percent": {"type": "String"}
+      "category": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
     }
   },
   "assistantRecurringAnswer": "“{label}” appears {count} times for a total of {amount}.",
   "@assistantRecurringAnswer": {
     "placeholders": {
-      "label": {"type": "String"},
-      "count": {"type": "int"},
-      "amount": {"type": "String"}
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "assistantSavingAnswer": "Reducing {category} by about 15% could save roughly {amount} this month.",
   "@assistantSavingAnswer": {
     "placeholders": {
-      "category": {"type": "String"},
-      "amount": {"type": "String"}
+      "category": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "assistantNoData": "There is not enough data to answer yet. Record a few more transactions and try again.",
   "assistantAnalysisError": "Analysis is unavailable right now. Please try again later.",
   "journalRecapTitle": "Money Story",
   "journalRecapMonth": "{month} Money Story",
-  "@journalRecapMonth": {"placeholders": {"month": {"type": "String"}}},
+  "@journalRecapMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
   "journalMoneyStoryMonth": "{month}",
-  "@journalMoneyStoryMonth": {"placeholders": {"month": {"type": "String"}}},
+  "@journalMoneyStoryMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
   "journalMoneyStoryExpenseLabel": "This month's spending",
   "journalRecordedCount": "You recorded {count} expenses",
-  "@journalRecordedCount": {"placeholders": {"count": {"type": "int"}}},
+  "@journalRecordedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "journalRecapSummary": "A total of {amount}. Your largest category was {category}.",
   "@journalRecapSummary": {
     "placeholders": {
-      "amount": {"type": "String"},
-      "category": {"type": "String"}
+      "amount": {
+        "type": "String"
+      },
+      "category": {
+        "type": "String"
+      }
     }
   },
   "journalHighestDay": "Highest-spend day",
   "journalHighestDayValue": "{date} — {amount} in one day",
   "@journalHighestDayValue": {
     "placeholders": {
-      "date": {"type": "String"},
-      "amount": {"type": "String"}
+      "date": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "journalComparedPrevious": "Compared with last month",
@@ -2202,35 +2553,85 @@
   "journalMoneyStoryNet": "Left over",
   "journalMoneyStoryAverageDay": "Average / recording day",
   "journalMoneyStoryActiveDays": "{count} recording days",
-  "@journalMoneyStoryActiveDays": {"placeholders": {"count": {"type": "int"}}},
+  "@journalMoneyStoryActiveDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryCategoryShare": "{category} took {percent}%",
   "@journalMoneyStoryCategoryShare": {
     "placeholders": {
-      "category": {"type": "String"},
-      "percent": {"type": "int"}
+      "category": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "journalMoneyStoryCategoryPercent": "{percent}%",
-  "@journalMoneyStoryCategoryPercent": {"placeholders": {"percent": {"type": "int"}}},
+  "@journalMoneyStoryCategoryPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryHighestDayEmpty": "No standout spending day yet this month.",
   "journalMoneyStoryHighestDayTransactions": "{count} entries on this day",
-  "@journalMoneyStoryHighestDayTransactions": {"placeholders": {"count": {"type": "int"}}},
+  "@journalMoneyStoryHighestDayTransactions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryInsightsTitle": "What this month tells you",
   "journalMoneyStoryInsightSpendingDown": "You spent {percent}% less than last month.",
-  "@journalMoneyStoryInsightSpendingDown": {"placeholders": {"percent": {"type": "int"}}},
+  "@journalMoneyStoryInsightSpendingDown": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryInsightSpendingUp": "Spending rose {percent}% compared with last month.",
-  "@journalMoneyStoryInsightSpendingUp": {"placeholders": {"percent": {"type": "int"}}},
+  "@journalMoneyStoryInsightSpendingUp": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryInsightTopCategory": "{category} was the biggest theme at {percent}% of spending.",
   "@journalMoneyStoryInsightTopCategory": {
     "placeholders": {
-      "category": {"type": "String"},
-      "percent": {"type": "int"}
+      "category": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "journalMoneyStoryInsightWeekend": "Weekends made up {percent}% of this month's spending.",
-  "@journalMoneyStoryInsightWeekend": {"placeholders": {"percent": {"type": "int"}}},
+  "@journalMoneyStoryInsightWeekend": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryInsightRecording": "You recorded spending on {count} days, enough rhythm to see patterns.",
-  "@journalMoneyStoryInsightRecording": {"placeholders": {"count": {"type": "int"}}},
+  "@journalMoneyStoryInsightRecording": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryInsightQuiet": "This month is still quiet. Add a few more entries so the story has more to tell.",
   "journalMoneyStoryShareTitle": "Ready to keep this month",
   "journalMoneyStoryShareBody": "Create a polished poster to share or save privately.",
@@ -2254,8 +2655,12 @@
   "journalCollectionMeta": "{count} entries · {amount}",
   "@journalCollectionMeta": {
     "placeholders": {
-      "count": {"type": "int"},
-      "amount": {"type": "String"}
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "journalAddTransaction": "Add an entry to this collection",
@@ -2264,18 +2669,48 @@
   "journalStreakTitle": "Recording streak",
   "journalStreakBreadcrumb": "Home — recording streak",
   "journalStreakDays": "{count} days in a row",
-  "@journalStreakDays": {"placeholders": {"count": {"type": "int"}}},
+  "@journalStreakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "journalStreakBody": "You have recorded spending every day for the past {count} days.",
-  "@journalStreakBody": {"placeholders": {"count": {"type": "int"}}},
+  "@journalStreakBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "journalStreakRecord": "Your record",
   "journalStreakRecordDays": "{count} days",
-  "@journalStreakRecordDays": {"placeholders": {"count": {"type": "int"}}},
+  "@journalStreakRecordDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "friendInviteShareDescription": "Send a link so others can add you faster.",
   "friendInviteShareMessage": "Add me on Moniary: {link}",
-  "@friendInviteShareMessage": {"placeholders": {"link": {"type": "String"}}},
+  "@friendInviteShareMessage": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "friendInviteAcceptTitle": "Friend invite",
   "friendInviteAcceptSubtitle": "{name} wants to add you on Moniary.",
-  "@friendInviteAcceptSubtitle": {"placeholders": {"name": {"type": "String"}}},
+  "@friendInviteAcceptSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "friendInviteAcceptButton": "Add friend",
   "friendInviteAgreeButton": "Accept",
   "friendInviteAccepted": "Friend added.",
@@ -2297,15 +2732,17 @@
   "privacyStatusProtected": "Protected",
   "privacyStatusReview": "Review",
   "privacyRequestCount": "{count} requests",
-  "@privacyRequestCount": {"placeholders": {"count": {"type": "int"}}},
+  "@privacyRequestCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "biometricReasonDisable": "Authenticate to disable app lock",
   "biometricReasonDeleteAccount": "Authenticate to request account deletion",
   "deleteAccountGraceTitle": "Your account will be deleted after 30 days",
   "deleteAccountGraceBody": "You will be signed out immediately. During the next 30 days, sign in with the same method to restore your account before its data is permanently deleted.",
-  "deleteGuestDataTitle": "Delete guest account data",
-  "deleteGuestDataBody": "Guest account data is stored only on this device and will be deleted immediately. Language, currency, and first-run preferences will be kept.",
-  "deleteGuestDataUnderstand": "I understand that guest account data on this device will be deleted immediately.",
-  "deleteGuestDataAction": "Delete guest data",
   "deleteAccountExportTitle": "Keep a copy before deletion",
   "deleteAccountExportBody": "You can export your data before requesting deletion. An export error never blocks your right to delete the account.",
   "deleteAccountExportAction": "Open data export",
@@ -2317,7 +2754,13 @@
   "deleteAccountGraceUnderstand": "I understand the account will be unavailable and permanently deleted after 30 days unless I restore it.",
   "deleteAccountConfirmationPhrase": "DELETE",
   "deleteAccountConfirmationLabel": "Type {phrase} to confirm",
-  "@deleteAccountConfirmationLabel": {"placeholders": {"phrase": {"type": "String"}}},
+  "@deleteAccountConfirmationLabel": {
+    "placeholders": {
+      "phrase": {
+        "type": "String"
+      }
+    }
+  },
   "deleteAccountScheduleAction": "Request account deletion",
   "deleteReasonDifficultToUse": "Difficult to use",
   "deleteReasonMissingFeatures": "Missing features",
@@ -2327,14 +2770,41 @@
   "deleteReasonOther": "Other",
   "deleteAccountImpactTitle": "Data affected",
   "deleteAccountTransactionsCount": "{count} transactions",
-  "@deleteAccountTransactionsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@deleteAccountTransactionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteAccountWalletsCount": "{count} wallets",
-  "@deleteAccountWalletsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@deleteAccountWalletsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteAccountPhotosCount": "{count} photos",
-  "@deleteAccountPhotosCount": {"placeholders": {"count": {"type": "int"}}},
+  "@deleteAccountPhotosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteAccountImpactUnavailable": "Detailed counts are unavailable right now. You can still continue with deletion.",
   "restoreAccountPendingBody": "The deletion request was created on {requestedDate}. Your data will be permanently deleted on {deletionDate}.\n\nRestore the account to continue using Moniary.",
-  "@restoreAccountPendingBody": {"placeholders": {"requestedDate": {"type": "String"}, "deletionDate": {"type": "String"}}},
+  "@restoreAccountPendingBody": {
+    "placeholders": {
+      "requestedDate": {
+        "type": "String"
+      },
+      "deletionDate": {
+        "type": "String"
+      }
+    }
+  },
   "commonUnknown": "Unknown",
   "loginEmailConfirmationSent": "Check your email to confirm the account.",
   "loginCreateAccount": "Create account",
@@ -2347,17 +2817,6 @@
   "loginSignIn": "Sign in",
   "loginAlreadyHaveAccount": "Already have an account? Sign in",
   "loginNeedAccount": "Need an account? Sign up",
-  "resetPasswordTitle": "Set a new password",
-  "resetPasswordSubtitle": "Enter a new password for your account.",
-  "resetPasswordConfirmLabel": "Confirm new password",
-  "resetPasswordMismatch": "Passwords do not match",
-  "resetPasswordSubmit": "Reset password",
-  "resetPasswordSuccess": "Your password has been updated.",
-  "authErrorInvalidCredentials": "Incorrect email or password.",
-  "authErrorEmailNotConfirmed": "Please confirm your email before signing in.",
-  "authErrorEmailAlreadyRegistered": "This email is already registered.",
-  "authErrorWeakPassword": "This password is too weak. Try a longer one with numbers or symbols.",
-  "authErrorRateLimited": "Too many attempts. Please try again later.",
   "authErrorUserBanned": "This account has been suspended.",
   "cameraFallbackPermissionDenied": "Camera permission denied. You can enter the transaction manually.",
   "cameraFallbackGenericError": "Could not open camera. You can enter the transaction manually.",
@@ -2397,6 +2856,94 @@
   "friendQrSwitchCamera": "Switch camera",
   "friendQrInvalid": "This is not a valid Moniary friend QR code.",
   "friendRateLimited": "Too many friend requests. Please try again later.",
+  "paymentQrTitle": "Payment QR",
+  "paymentQrProfileSubtitle": "Save it once so group members can open it when paying you.",
+  "paymentQrMyTitle": "My payment QR",
+  "paymentQrDescription": "Members in the same group can open this code when they need to pay you.",
+  "paymentQrMemberDescription": "Payment QR for {name}.",
+  "@paymentQrMemberDescription": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentQrAdd": "Save QR image",
+  "paymentQrReplace": "Replace QR image",
+  "paymentQrRemove": "Remove QR",
+  "paymentQrPrivacyNote": "Your QR is private and only visible to members of a shared group.",
+  "paymentQrSaved": "Payment QR saved.",
+  "paymentQrRemoved": "Payment QR removed.",
+  "paymentQrViewForPayment": "Open QR to pay",
+  "paymentQrEmptyOwner": "You have not saved a payment QR image yet.",
+  "paymentQrEmptyMember": "This member has not saved a payment QR image.",
+  "groupSettingsTitle": "Group settings",
+  "groupSettingsSubtitle": "Edit group details and archive only after balances are settled.",
+  "groupSettingsName": "Group name",
+  "groupSettingsDescription": "Description",
+  "groupSettingsType": "Group type",
+  "groupSettingsBaseCurrency": "Group base currency",
+  "groupSettingsBaseCurrencySubtitle": "All balances and budgets are kept in this currency. Foreign transactions need an explicit rate.",
+  "groupSettingsSave": "Save changes",
+  "groupSettingsSaved": "Group details updated.",
+  "groupSettingsArchiveTitle": "Archive group",
+  "groupSettingsArchiveSubtitle": "The group will leave the active list and stop accepting new expenses. Unresolved balances block this action.",
+  "groupSettingsArchiveAction": "Archive group",
+  "groupSettingsArchiveConfirmTitle": "Archive this group?",
+  "groupSettingsArchiveConfirmMessage": "Archive the group only after every member has completed payment.",
+  "groupSettingsArchiveBlocked": "The group cannot be archived while balances, pending expenses, or disputes remain.",
+  "groupSettingsAdminRequired": "Only the group owner or an admin can perform this action.",
+  "groupAuditLogTitle": "Admin audit log",
+  "groupAuditLogSubtitle": "Review changes to members, transactions, and group settings.",
+  "groupAuditLogEmpty": "No administrative activity has been recorded yet.",
+  "groupAuditSystem": "System",
+  "groupParticipationTitle": "Group participation",
+  "groupParticipationSubtitle": "Vote together and turn shared goals into progress.",
+  "groupPollsTitle": "Polls",
+  "groupPollsEmpty": "No polls yet.",
+  "groupPollCreate": "Create poll",
+  "groupPollQuestion": "Question",
+  "groupPollOptionsHint": "Options, one per line",
+  "groupChallengesTitle": "Savings challenges",
+  "groupChallengesEmpty": "No savings challenge yet.",
+  "groupChallengeCreate": "Create challenge",
+  "groupChallengeName": "Challenge name",
+  "groupChallengeTarget": "Target amount",
+  "groupChallengeContribute": "Contribute",
+  "groupPulsePersonalTitle": "Your next step",
+  "groupPulsePersonalMessage": "There is one item waiting for you so the group can keep moving smoothly.",
+  "groupPulseUpcomingTitle": "A shared date is coming",
+  "groupPulseUpcomingMessage": "{title} is due soon. Prepare together so nobody misses it.",
+  "@groupPulseUpcomingMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "groupPulseTogetherTitle": "Keep the group moving",
+  "groupPulseTogetherMessage": "Open the activity stream so everyone can update and respond.",
+  "groupPulseAllClearTitle": "The group is in a good place",
+  "groupPulseAllClearMessage": "Nothing is waiting. Add a new expense so everyone can see the next step.",
+  "groupSpotlightTitle": "Latest touchpoint",
+  "groupSpotlightComment": "View and respond",
+  "groupSummaryContributionTitle": "Contribution spotlight",
+  "groupSummaryContributionMessage": "{name} is helping the group keep a steady rhythm this month.",
+  "@groupSummaryContributionMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupSummaryContributionCount": "{count} activities",
+  "@groupSummaryContributionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupSplitExact": "Exact amounts",
   "groupParticipantsTitle": "Participants in this expense",
   "groupSettlementDisputeTitle": "Report a settlement issue",
@@ -2411,20 +2958,26 @@
   "mascotOverBudget": "{category} is over budget! Your wallet is crying! 🛑",
   "@mascotOverBudget": {
     "placeholders": {
-      "category": { "type": "String" }
+      "category": {
+        "type": "String"
+      }
     }
   },
   "mascotNearBudget": "Careful! {category} is nearly at its budget limit! ⚠️",
   "@mascotNearBudget": {
     "placeholders": {
-      "category": { "type": "String" }
+      "category": {
+        "type": "String"
+      }
     }
   },
   "mascotZeroExpenseToday": "No spending today! Piggy is proud of you! 🐖💖",
   "mascotGoodSavings": "Saved {percent}% this month. Amazing! 🏆",
   "@mascotGoodSavings": {
     "placeholders": {
-      "percent": { "type": "String" }
+      "percent": {
+        "type": "String"
+      }
     }
   },
   "mascotFunQuote1": "Have you logged your expenses today? 📝",
@@ -2435,7 +2988,9 @@
   "mascotStreakPraise": "You've logged for {days} days in a row! You're on fire! 🐷🔥",
   "@mascotStreakPraise": {
     "placeholders": {
-      "days": { "type": "int" }
+      "days": {
+        "type": "int"
+      }
     }
   },
   "widgetTotalBalance": "Total Balance",
@@ -2452,7 +3007,9 @@
   "widgetDays": "{count} days",
   "@widgetDays": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "widgetBudgetTitle": "Budget",
@@ -2483,5 +3040,12 @@
   "pushNotificationSectionDesc": "Choose which notifications may appear when Moniary is not open.",
   "pushNotificationAllTitle": "Allow push notifications",
   "pushNotificationAllSubtitle": "Turning this off only blocks phone alerts; history remains in the inbox.",
-  "pushNotificationCategorySubtitle": "Notifications remain in the inbox for 30 days."
+  "pushNotificationCategorySubtitle": "Notifications remain in the inbox for 30 days.",
+  "loginAnonymous": "Continue as guest",
+  "onboardingMonthMock": "May",
+  "profileAnonymousWarning": "You are using a guest account. Link Email or Google to keep your data when switching devices.",
+  "deleteGuestDataTitle": "Delete guest account data",
+  "deleteGuestDataBody": "Guest account data is stored only on this device and will be deleted immediately. Language, currency, and first-run preferences will be kept.",
+  "deleteGuestDataUnderstand": "I understand that guest account data on this device will be deleted immediately.",
+  "deleteGuestDataAction": "Delete guest data"
 }

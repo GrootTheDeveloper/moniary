@@ -5,24 +5,38 @@
 
 ## Authentication
 
-Supabase Auth is initialized with PKCE when real configuration is present.
+Supabase Auth is initialized with PKCE and mandatory configuration.
 `AuthRepository` supports:
 
 - email/password sign-in and sign-up;
-- password-reset request;
-- Google, Facebook, and Apple OAuth;
+- password-reset request and recovery completion with a new password;
+- Google and Facebook OAuth;
 - anonymous Supabase sign-in;
-- explicit guest/mock session;
-- linking email, Google, or Apple identity to an existing account;
+- linking email, Google, or Facebook identity to an existing anonymous account;
 - sign-out and user initialization.
 
-In mock/guest mode these flows return or maintain a synthetic
-`mock-user-id` session and must not access configured user data.
+Anonymous-to-email upgrades are two-phase. The app first updates only the
+email and stores the originating user ID plus normalized email locally. After
+Supabase confirms the email and returns the same user, the app opens a separate
+password step, then updates the profile provider. It never reports a completed
+email link before both phases succeed.
+
+Google identity linking is also callback-driven. The repository supplies the
+mobile redirect and checks that the external browser launched. A persisted
+pending record is bound to the originating user ID; after callback, the app
+verifies that the same user now has a Google identity before updating the
+profile and showing success. No fixed delay is used as a completion signal.
+
+Live anonymous sign-in is fail-closed behind Cloudflare Turnstile: the mobile
+widget obtains a short-lived token and `AuthRepository` forwards it to Supabase
+for server-side verification. Local/hosted Auth limits anonymous creation to
+5 attempts per hour per IP. A nightly `pg_cron` job removes anonymous Auth
+users inactive for 30 days; upgraded email/OAuth users are preserved.
 
 ## Session and route security
 
 - Supabase auth changes are exposed as a `StreamProvider`.
-- `currentSessionProvider` prefers the mock session, then the Supabase session.
+- `currentSessionProvider` exposes the current Supabase session.
 - Account soft-deletion state and app-lock state refresh global redirects.
 - Pending friend deep links are held in a Riverpod notifier until login/profile
   setup is complete.
@@ -36,6 +50,11 @@ In mock/guest mode these flows return or maintain a synthetic
   legacy `moniary://groups/invite/<token>` is still parsed.
 - Supabase OAuth callback: `io.supabase.moniary://login-callback`.
 - Password reset callback: `io.supabase.moniary://reset-password`.
+
+Supabase Flutter consumes the PKCE recovery callback and emits
+`AuthChangeEvent.passwordRecovery`. The app routes that event to the public
+`/reset-password` form, updates the password, and clears the temporary recovery
+session before returning to login.
 
 Platform intent/URL registration and provider dashboard redirect allowlists must
 remain aligned with these values.
@@ -63,8 +82,11 @@ client-side `user_id` filters are not a security boundary.
 
 ## Secrets
 
-`SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `OCR_API_URL` are compile-time
-Dart defines. Edge Function secrets such as `RESEND_API_KEY`,
+`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `OCR_API_URL`, `TURNSTILE_SITE_KEY`, and
+`TURNSTILE_BASE_URL` are compile-time Dart defines. Anonymous sign-in, direct
+email sign-in/sign-up, and password reset pass a fresh Turnstile token when
+Supabase CAPTCHA protection is enabled. The Turnstile secret and
+Edge Function secrets such as `RESEND_API_KEY`,
 `GEMINI_API_KEY`, `GEMINI_MODEL`, and `GEMINI_BLOCKED_KEY_SHA256` belong in
 the Supabase environment. Never commit access tokens, service-role keys,
 signing secrets, AI provider keys, database URLs, or production credentials.

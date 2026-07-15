@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:moniary/core/constants/app_constants.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/features/settings/data/account/account_repository.dart';
 import 'package:moniary/features/settings/domain/export/export_file_text.dart';
@@ -55,6 +54,7 @@ void main() {
     tempDir = Directory.systemTemp.createTempSync('moniary_account_test');
     repository = AccountRepository(
       FakeSupabaseClient(),
+      currentUserId: 'user-1',
       documentsDirectory: tempDir,
       exportDirectory: tempDir,
     );
@@ -106,89 +106,64 @@ void main() {
     expect(historyFile.readAsStringSync(), corruptHistory);
   });
 
-  test(
-    'exportTransactionsCsv works in mock mode without Supabase auth',
-    () async {
-      if (AppConstants.hasSupabaseConfig) {
-        markTestSkipped(
-          'Mock mode export test requires missing Supabase config.',
-        );
-      }
+  test('exportTransactionsCsv writes a file for the signed-in user', () async {
+    final file = await repository.exportTransactionsCsv(
+      filters: const ExportFilters(dataTypes: {}),
+    );
 
-      final file = await repository.exportTransactionsCsv();
+    expect(file.path, endsWith('.csv'));
+    expect(await file.exists(), isTrue);
+    expect(await file.readAsString(), contains('data_type'));
 
-      expect(file.path, endsWith('.csv'));
-      expect(await file.exists(), isTrue);
-      expect(await file.readAsString(), contains('data_type'));
+    final history = await repository.fetchExportHistory();
+    expect(history, hasLength(1));
+    expect(history.single.format, 'CSV');
+    expect(history.single.path, file.path);
+  });
 
-      final history = await repository.fetchExportHistory();
-      expect(history, hasLength(1));
-      expect(history.single.format, 'CSV');
-      expect(history.single.path, file.path);
-    },
-  );
+  test('exportTransactionsXlsx writes a file for the signed-in user', () async {
+    final file = await repository.exportTransactionsXlsx(
+      filters: const ExportFilters(dataTypes: {}),
+      text: testExportFileText,
+    );
 
-  test(
-    'exportTransactionsXlsx works in mock mode without Supabase auth',
-    () async {
-      if (AppConstants.hasSupabaseConfig) {
-        markTestSkipped(
-          'Mock mode export test requires missing Supabase config.',
-        );
-      }
+    expect(file.path, endsWith('.xlsx'));
+    expect(await file.exists(), isTrue);
+    expect(await file.length(), greaterThan(0));
 
-      final file = await repository.exportTransactionsXlsx(
-        text: testExportFileText,
-      );
+    final history = await repository.fetchExportHistory();
+    expect(history, hasLength(1));
+    expect(history.single.format, 'XLSX');
+    expect(history.single.path, file.path);
+  });
 
-      expect(file.path, endsWith('.xlsx'));
-      expect(await file.exists(), isTrue);
-      expect(await file.length(), greaterThan(0));
+  test('exportTransactionsPdf writes a file for the signed-in user', () async {
+    final file = await repository.exportTransactionsPdf(
+      filters: const ExportFilters(dataTypes: {}),
+      text: testExportFileText,
+    );
 
-      final history = await repository.fetchExportHistory();
-      expect(history, hasLength(1));
-      expect(history.single.format, 'XLSX');
-      expect(history.single.path, file.path);
-    },
-  );
+    expect(file.path, endsWith('.pdf'));
+    expect(await file.exists(), isTrue);
+    expect(await file.length(), greaterThan(0));
 
-  test(
-    'exportTransactionsPdf works in mock mode without Supabase auth',
-    () async {
-      if (AppConstants.hasSupabaseConfig) {
-        markTestSkipped(
-          'Mock mode export test requires missing Supabase config.',
-        );
-      }
-
-      final file = await repository.exportTransactionsPdf(
-        text: testExportFileText,
-      );
-
-      expect(file.path, endsWith('.pdf'));
-      expect(await file.exists(), isTrue);
-      expect(await file.length(), greaterThan(0));
-
-      final history = await repository.fetchExportHistory();
-      expect(history, hasLength(1));
-      expect(history.single.format, 'PDF');
-      expect(history.single.path, file.path);
-    },
-  );
+    final history = await repository.fetchExportHistory();
+    expect(history, hasLength(1));
+    expect(history.single.format, 'PDF');
+    expect(history.single.path, file.path);
+  });
 
   test(
     'export history stores date range as technical dates instead of display text',
     () async {
-      if (AppConstants.hasSupabaseConfig) {
-        markTestSkipped(
-          'Mock mode export test requires missing Supabase config.',
-        );
-      }
-
       final start = DateTime(2026, 5, 1);
       final end = DateTime(2026, 5, 31);
       await repository.exportTransactionsCsv(
-        filters: ExportFilters(startDate: start, endDate: end),
+        filters: ExportFilters(
+          startDate: start,
+          endDate: end,
+          dataTypes: const {},
+        ),
       );
 
       final historyFile = File('${tempDir.path}/moniary_export_history.json');

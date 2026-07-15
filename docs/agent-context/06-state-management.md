@@ -12,7 +12,7 @@ The project uses `flutter_riverpod` 3.x without code generation.
 - **`Provider`**: repositories, clients, preferences, router, and other
   read-only dependencies.
 - **`NotifierProvider`**: synchronous mutable app state such as onboarding,
-  preferred currency, visible calendar month, filters, mock session, and pending
+  preferred currency, visible calendar month, filters, and pending
   deep links.
 - **`FutureProvider` / `FutureProvider.family`**: read queries such as current
   profile, monthly calendar/statistics/budget/recap, journal collections, and
@@ -25,14 +25,12 @@ The project uses `flutter_riverpod` 3.x without code generation.
 Providers are handwritten and conventionally end in `Provider`; controllers
 end in `Controller`.
 
-## Environment state
+## Authentication state
 
-- `currentSessionProvider` resolves a mock session first, otherwise the current
-  Supabase session.
-- `guestModeEnabledProvider` identifies the explicit mock guest session.
-- `useMockDataModeProvider` is true for missing Supabase config or guest mode.
-- Repositories should watch this provider so logging into guest mode cannot
-  accidentally access a configured production backend.
+- `currentSessionProvider` exposes the current Supabase session.
+- `authStateChangesProvider` streams Supabase Auth lifecycle events.
+- Anonymous sessions are real Supabase sessions; there is no separate guest or
+  mock-session provider.
 
 ## Read/query convention
 

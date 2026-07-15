@@ -30,11 +30,19 @@ class _AssistantConversationScreenState
     extends ConsumerState<AssistantConversationScreen> {
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
+  final _focusNode = FocusNode();
   bool _launched = false;
 
   @override
   void initState() {
     super.initState();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        Future.delayed(const Duration(milliseconds: 200), () {
+          if (mounted) _scrollToEnd();
+        });
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) => _askLaunch());
   }
 
@@ -42,6 +50,7 @@ class _AssistantConversationScreenState
   void dispose() {
     _controller.dispose();
     _scrollController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -106,6 +115,7 @@ class _AssistantConversationScreenState
         minimum: const EdgeInsets.fromLTRB(18, 8, 18, 14),
         child: TextField(
           controller: _controller,
+          focusNode: _focusNode,
           enabled: !isSending,
           textInputAction: TextInputAction.send,
           onSubmitted: (_) => _send(),
@@ -126,15 +136,9 @@ class _AssistantConversationScreenState
         data: (chat) {
           final messages = chat.messages;
           if (messages.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Text(
-                  context.l10n.assistantHomePrompt,
-                  textAlign: TextAlign.center,
-                  style: context.moniaryTypography.displayMedium,
-                ),
-              ),
+            return _AssistantEmptyState(
+              onPromptSelected: (prompt) =>
+                  _ask(prompt.text, kind: prompt.kind),
             );
           }
           return ListView.separated(
@@ -144,10 +148,26 @@ class _AssistantConversationScreenState
             separatorBuilder: (_, _) => const SizedBox(height: 14),
             itemBuilder: (context, index) {
               if (index == messages.length) {
-                return const _AssistantResponseShell(
-                  child: SizedBox.square(
-                    dimension: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                final isVi =
+                    Localizations.localeOf(context).languageCode == 'vi';
+                return _AssistantResponseShell(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox.square(
+                        dimension: 16,
+                        child: CircularProgressIndicator(strokeWidth: 1.8),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        isVi ? 'Đang phân tích...' : 'Analyzing...',
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w500,
+                          color: context.moniaryColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 );
               }
@@ -234,6 +254,59 @@ class _AssistantConversationScreenState
       _scrollController.position.maxScrollExtent,
       duration: const Duration(milliseconds: 260),
       curve: Curves.easeOutCubic,
+    );
+  }
+}
+
+class _AssistantEmptyState extends StatelessWidget {
+  const _AssistantEmptyState({required this.onPromptSelected});
+
+  final ValueChanged<AssistantPrompt> onPromptSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final prompts = assistantPrompts(context);
+    final icons = [
+      Icons.receipt_long_outlined,
+      Icons.donut_large_outlined,
+      Icons.compare_arrows,
+      Icons.calendar_today_outlined,
+    ];
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(24, 34, 24, 28),
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(
+              color: context.moniaryColors.primary,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.auto_awesome_outlined,
+              color: context.moniaryColors.surface,
+              size: 26,
+            ),
+          ),
+        ),
+        const SizedBox(height: 18),
+        Text(
+          context.l10n.assistantHomePrompt,
+          style: context.moniaryTypography.displayMedium,
+        ),
+        MoniarySectionLabel(context.l10n.assistantSuggestionsTitle),
+        for (var index = 0; index < math.min(4, prompts.length); index++)
+          MoniaryHairlineTile(
+            showTopDivider: index == 0,
+            leading: Icon(icons[index], color: context.moniaryColors.primary),
+            title: Text(prompts[index].text),
+            trailing: const Icon(Icons.arrow_forward, size: 18),
+            onTap: () => onPromptSelected(prompts[index]),
+          ),
+      ],
     );
   }
 }

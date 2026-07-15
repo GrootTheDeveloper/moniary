@@ -72,7 +72,7 @@ class MainShellScreen extends ConsumerWidget {
           Positioned(
             left: 0,
             right: 0,
-            bottom: -10.0,
+            bottom: 0,
             height: 200.0,
             child: const MascotOverlay(),
           ),

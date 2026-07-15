@@ -10,6 +10,11 @@ final localNotificationServiceProvider = Provider<LocalNotificationService>(
 );
 
 final fcmPushNotificationServiceProvider = Provider<FcmPushNotificationService>(
-  (ref) =>
-      FcmPushNotificationService(ref.watch(localNotificationServiceProvider)),
+  (ref) {
+    final service = FcmPushNotificationService(
+      ref.watch(localNotificationServiceProvider),
+    );
+    ref.onDispose(service.dispose);
+    return service;
+  },
 );

@@ -221,9 +221,9 @@ class _DayDetailBodyState extends ConsumerState<_DayDetailBody> {
                     itemCount: transactions.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 7,
-                          mainAxisSpacing: 6,
-                          crossAxisSpacing: 6,
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
                           childAspectRatio: 1,
                         ),
                     itemBuilder: (context, index) {

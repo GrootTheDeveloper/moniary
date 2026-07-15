@@ -393,9 +393,9 @@ class _DateTimeTile extends StatelessWidget {
                   'dd/MM/yyyy • HH:mm',
                   Localizations.localeOf(context).toString(),
                 ).format(value),
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(color: Colors.white),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: context.moniaryColors.textPrimary,
+                ),
               ),
             ),
             const Icon(Icons.chevron_right_outlined),

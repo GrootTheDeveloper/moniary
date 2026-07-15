@@ -19,6 +19,28 @@ abstract interface class GroupRepository {
     String? avatarFilePath,
   });
 
+  Future<void> updateGroup({
+    required String groupId,
+    required String name,
+    String? description,
+    String? type,
+  });
+
+  Future<void> updateGroupAvatar({
+    required String groupId,
+    required String filePath,
+  });
+
+  Future<void> updateGroupCurrency({
+    required String groupId,
+    required String baseCurrency,
+  });
+
+  Future<void> setGroupArchived({
+    required String groupId,
+    required bool archived,
+  });
+
   Future<String> createInviteLink(String groupId);
 
   Future<GroupInvitePreview> fetchInvitePreview(String token);
@@ -46,6 +68,14 @@ abstract interface class GroupRepository {
   });
 
   Future<List<GroupTransaction>> fetchTransactions(String groupId);
+
+  Future<GroupTransactionPage> fetchTransactionsPage({
+    required String groupId,
+    required int offset,
+    required int limit,
+    String query = '',
+    String? status,
+  });
 
   Future<GroupTransactionDetail> fetchTransactionDetail(String transactionId);
 
@@ -139,9 +169,34 @@ abstract interface class GroupRepository {
 
   Future<List<GroupActivity>> fetchActivities(String groupId);
 
+  Future<List<GroupAuditLog>> fetchAuditLogs(String groupId);
+
+  Future<List<GroupPoll>> fetchPolls(String groupId);
+  Future<String> createPoll({
+    required String groupId,
+    required String title,
+    required List<String> options,
+  });
+  Future<void> votePoll({required String pollId, required String optionId});
+  Future<List<GroupSavingsChallenge>> fetchSavingsChallenges(String groupId);
+  Future<String> createSavingsChallenge({
+    required String groupId,
+    required String title,
+    required int targetAmount,
+    required DateTime startDate,
+    required DateTime endDate,
+  });
+  Future<void> addSavingsContribution({
+    required String challengeId,
+    required int amount,
+    String? note,
+  });
+
   Future<List<GroupNotification>> fetchNotifications({String? category});
 
   Future<void> markNotificationRead(String notificationId);
+
+  Future<void> markAllNotificationsRead();
 
   Future<GroupNotificationPreference> fetchNotificationPreference(
     String groupId,
@@ -164,6 +219,7 @@ abstract interface class GroupRepository {
     required String frequency,
     required DateTime nextRunAt,
     required int notifyDaysBefore,
+    bool autoPost = false,
   });
 
   Future<void> updateRecurringTransaction({
@@ -174,6 +230,7 @@ abstract interface class GroupRepository {
     required DateTime nextRunAt,
     required int notifyDaysBefore,
     required bool isActive,
+    bool autoPost = false,
   });
 
   Future<void> deleteRecurringTransaction(String id);

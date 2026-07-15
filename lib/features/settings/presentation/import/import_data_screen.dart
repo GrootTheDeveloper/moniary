@@ -418,7 +418,7 @@ class _WalletPickerCard extends StatelessWidget {
                     style: TextStyle(
                       color: wallet == null
                           ? AppTheme.textSubtle
-                          : Colors.white,
+                          : context.moniaryColors.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -561,8 +561,8 @@ class _WalletOptionTile extends StatelessWidget {
                     wallet.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: context.moniaryColors.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),

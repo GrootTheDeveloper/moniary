@@ -1,110 +1,138 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  createClient,
+  type SupabaseClient,
+} from "https://esm.sh/@supabase/supabase-js@2";
+
+type EdgeSupabaseClient = SupabaseClient<any, "public", "public", any, any>;
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "content-type, x-cron-secret",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+const cleanupPrefixes = (userId: string) => [
+  `transactions/${userId}`,
+  `avatars/${userId}`,
+  `payment-qr/${userId}`,
+];
+
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+  if (req.method !== "POST") {
+    return json({ error: "Method not allowed" }, 405);
   }
 
-  if (req.method !== 'POST') {
-    return json({ error: 'Method not allowed' }, 405);
+  const expectedSecret = Deno.env.get("GARBAGE_COLLECT_SECRET");
+  if (!expectedSecret) {
+    return json({ error: "Server cleanup secret is not configured" }, 500);
+  }
+  const receivedSecret = req.headers.get("x-cron-secret") ?? "";
+  if (!(await secureEquals(receivedSecret, expectedSecret))) {
+    return json({ error: "Unauthorized" }, 401);
   }
 
-  const supabaseUrl = Deno.env.get('SUPABASE_URL');
-  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !serviceRoleKey) {
-    return json({ error: 'Server is not configured' }, 500);
+    return json({ error: "Server is not configured" }, 500);
   }
 
-  // Basic security to ensure only our cron (or someone with anon key/service role) calls it
-  // Since pg_net uses anon key, we should check auth header, but for a cron we might just verify the service role
-  // But wait, the cron sends Authorization: Bearer anon_key. Let's just bypass auth check for simplicity, 
-  // or verify it. Actually, anyone could hit this and trigger garbage collection which is fine, it's just a cleanup job.
-  
-  const adminClient = createClient(supabaseUrl, serviceRoleKey);
+  const adminClient = createClient(supabaseUrl, serviceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+  const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    .toISOString();
 
-  // 30 days ago
-  const date30DaysAgo = new Date();
-  date30DaysAgo.setDate(date30DaysAgo.getDate() - 30);
-  const cutoffDate = date30DaysAgo.toISOString();
-
-  // Find users
+  // Keep each invocation bounded so the Edge Function cannot time out while
+  // processing a large backlog. The nightly job continues with the next batch.
   const { data: profiles, error: fetchError } = await adminClient
-    .from('profiles')
-    .select('id')
-    .lt('deleted_at', cutoffDate);
+    .from("profiles")
+    .select("id")
+    .not("deleted_at", "is", null)
+    .lte("deleted_at", cutoff)
+    .order("deleted_at", { ascending: true })
+    .limit(100);
 
   if (fetchError) {
     return json({ error: fetchError.message }, 500);
   }
 
-  const usersToDelete = profiles || [];
   let deletedCount = 0;
+  const failures: Array<{ userId: string; error: string }> = [];
 
-  for (const user of usersToDelete) {
-    const userId = user.id;
-    
-    // 1. Remove images
+  for (const profile of profiles ?? []) {
+    const userId = profile.id as string;
     try {
-      await removeTransactionImages(adminClient, userId);
-    } catch (e) {
-      console.error(`Failed to remove images for user ${userId}`, e);
-      continue; // Skip deleting auth if we couldn't remove images, to try again later
-    }
+      const { error: prepareError } = await adminClient.rpc(
+        "prepare_account_for_hard_delete",
+        { p_user_id: userId },
+      );
+      if (prepareError) throw prepareError;
 
-    // 2. Delete Auth user
-    const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
-    if (!deleteError) {
+      for (const prefix of cleanupPrefixes(userId)) {
+        await removeStoragePrefix(adminClient, prefix);
+      }
+
+      const { error: deleteError } = await adminClient.auth.admin.deleteUser(
+        userId,
+        false,
+      );
+      if (deleteError) throw deleteError;
+
       deletedCount++;
-    } else {
-      console.error(`Failed to delete user ${userId}`, deleteError);
+    } catch (error) {
+      const message = readableError(error);
+      failures.push({ userId, error: message });
+      console.error(`Account cleanup failed for ${userId}: ${message}`);
     }
   }
 
-  return json({ success: true, processed: usersToDelete.length, deleted: deletedCount });
+  return json({
+    success: failures.length === 0,
+    processed: profiles?.length ?? 0,
+    deleted: deletedCount,
+    failed: failures.length,
+  }, failures.length === 0 ? 200 : 207);
 });
 
-async function removeTransactionImages(adminClient: ReturnType<typeof createClient>, userId: string) {
-  const prefix = `transactions/${userId}`;
-  const paths: string[] = [];
-  let offset = 0;
-  const limit = 100;
-
+async function removeStoragePrefix(
+  adminClient: EdgeSupabaseClient,
+  prefix: string,
+) {
   while (true) {
-    const { data, error } = await adminClient.storage.from('transaction-images').list(prefix, {
-      limit,
-      offset,
-    });
+    const { data, error } = await adminClient.storage
+      .from("transaction-images")
+      .list(prefix, { limit: 100, offset: 0 });
+    if (error) throw error;
 
-    if (error) {
-      throw error;
-    }
+    const paths = (data ?? [])
+      .filter((item) => item.name && item.id)
+      .map((item) => `${prefix}/${item.name}`);
+    if (paths.length === 0) return;
 
-    const batch = data ?? [];
-    for (const item of batch) {
-      if (item.name) {
-        paths.push(`${prefix}/${item.name}`);
-      }
-    }
-
-    if (batch.length < limit) {
-      break;
-    }
-    offset += limit;
+    const { error: removeError } = await adminClient.storage
+      .from("transaction-images")
+      .remove(paths);
+    if (removeError) throw removeError;
   }
+}
 
-  if (paths.length > 0) {
-    const { error } = await adminClient.storage.from('transaction-images').remove(paths);
-    if (error) {
-      throw error;
-    }
+async function secureEquals(left: string, right: string) {
+  const encoder = new TextEncoder();
+  const [leftHash, rightHash] = await Promise.all([
+    crypto.subtle.digest("SHA-256", encoder.encode(left)),
+    crypto.subtle.digest("SHA-256", encoder.encode(right)),
+  ]);
+  const leftBytes = new Uint8Array(leftHash);
+  const rightBytes = new Uint8Array(rightHash);
+  let difference = left.length ^ right.length;
+  for (let index = 0; index < leftBytes.length; index++) {
+    difference |= leftBytes[index] ^ rightBytes[index];
   }
+  return difference === 0;
 }
 
 function json(body: Record<string, unknown>, status = 200) {
@@ -112,7 +140,20 @@ function json(body: Record<string, unknown>, status = 200) {
     status,
     headers: {
       ...corsHeaders,
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
+}
+
+function readableError(error: unknown) {
+  if (error instanceof Error) return error.message;
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string"
+  ) {
+    return error.message;
+  }
+  return "Could not delete account data";
 }

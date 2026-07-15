@@ -21,7 +21,7 @@ class StarredTransactionsScreen extends ConsumerWidget {
     final starredAsync = ref.watch(starredTransactionsProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: context.moniaryColors.background,
       appBar: AppBar(
         title: Text(context.l10n.starredTransactionsTitle),
         backgroundColor: Colors.transparent,
@@ -34,15 +34,19 @@ class StarredTransactionsScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.star_border,
                     size: 64,
-                    color: Colors.white24,
+                    color: context.moniaryColors.textSecondary.withValues(
+                      alpha: 0.28,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     context.l10n.starredTransactionsEmpty,
-                    style: const TextStyle(color: Colors.white54),
+                    style: TextStyle(
+                      color: context.moniaryColors.textSecondary,
+                    ),
                   ),
                 ],
               ),

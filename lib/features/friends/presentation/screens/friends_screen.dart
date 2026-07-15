@@ -14,6 +14,7 @@ import '../../application/friend_controller.dart';
 import '../../domain/entities/friend_profile.dart';
 import 'add_friend_screen.dart';
 import 'friend_qr_screen.dart';
+import '../../../calendar/presentation/month/calendar_screen.dart';
 
 class FriendsScreen extends ConsumerStatefulWidget {
   const FriendsScreen({super.key});
@@ -80,9 +81,13 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 _FriendsTopBar(
-                  onBack: _canPop(context)
-                      ? () => Navigator.of(context).maybePop()
-                      : null,
+                  onBack: () {
+                    if (_canPop(context)) {
+                      Navigator.of(context).maybePop();
+                    } else {
+                      context.go(CalendarScreen.routePath);
+                    }
+                  },
                   onAdd: () => context.push(AddFriendScreen.routePath),
                   onQr: () => context.push(FriendQrScreen.routePath),
                   onRequests: () => _showFriendRequestsSheet(context),

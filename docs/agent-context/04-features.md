@@ -11,8 +11,7 @@
   `TransactionRepository`, and transaction domain models.
 - **Entry flow**: the shell camera action opens `CameraScreen`; camera failures
   surface a localized reason and fall back to the manual create sheet.
-- **Storage**: private `transaction-images` paths in Supabase mode; temporary
-  local files and in-memory entries in mock mode.
+- **Storage**: private `transaction-images` paths in Supabase Storage.
 
 ## Calendar
 
@@ -35,10 +34,9 @@
 - **Purpose**: monthly per-category expense limits, warning ratios, progress, and
   category transaction drill-down.
 - **Layers**: `BudgetController`, `BudgetRepository`,
-  `BudgetRepositoryImpl`, and environment-specific budget limit data sources.
+  `BudgetRepositoryImpl`, and the Supabase budget limit data source.
 - **Data**: combines categories + monthly transactions with
-  `category_budget_limits`. Supabase and in-memory mock limit sources are both
-  implemented.
+  `category_budget_limits` in Supabase.
 - **Routes**: `/budgets` and `/budgets/category`.
 
 ## Journal
@@ -46,12 +44,11 @@
 - **Purpose**: Money Story monthly recap, recording streak, custom transaction
   collections, and shareable/savable recap images.
 - **Layers**: journal query/action providers, `JournalRepository`, repository
-  implementation, and Supabase/mock collection data sources.
+  implementation, and the Supabase collection data source.
 - **Data**: recaps and streaks derive from transactions. Money Story combines
   income, expenses, net amount, active recording days, top categories, highest
   spend day, and deterministic insight types derived in the repository.
-  Collections use `journal_collections` and `journal_collection_transactions`
-  in Supabase mode and process-local records in mock mode.
+  Collections use `journal_collections` and `journal_collection_transactions`.
 - **Routes**: `/journal/recap`, `/journal/export`,
   `/journal/collections`, `/journal/collection`, and `/journal/streak`.
 
@@ -71,8 +68,8 @@
 ## Wallets and Categories
 
 - **Purpose**: manage financial sources and expense/income classifications.
-- **Repositories**: `WalletRepository` and `CategoryRepository`, both with
-  Supabase and mock paths selected by `useMockDataModeProvider`.
+- **Repositories**: `WalletRepository` and `CategoryRepository`, both backed by
+  Supabase.
 - **Setup defaults**: profile survey completion seeds the common default
   categories plus occupation-specific defaults for students, office workers,
   freelancers, and business owners. Existing categories are preserved and
@@ -86,8 +83,8 @@
 - **Expense participants**: each expense can target a selected subset of active
   members. Equal, exact-amount, and member-submitted unequal splits are
   supported; exact shares must sum to the integer transaction total.
-- **Layers**: `GroupController`, repository contract/implementation,
-  Supabase/mock data sources, model mappers, and pure split/settlement services.
+- **Layers**: `GroupController`, repository contract/implementation, Supabase
+  data sources, model mappers, and pure split/settlement services.
 - **Backend**: versioned group tables, RPCs, RLS, Storage policies, and views are
   defined in `20260611000000_groups_community.sql`.
 - **Invite links**: owner/admin can create a shared link that multiple people
@@ -158,7 +155,7 @@
   - `AccountRepository`: account lifecycle, sessions, exports, privacy
     requests, and local export/privacy history.
   - `ImportRepository`: CSV parsing and local import history.
-  - `NotificationSettingsRepository`: Supabase or mock notification settings.
+  - `NotificationSettingsRepository`: Supabase notification settings.
   - `PrivacyRepository`: app lock and hidden-balance preferences.
 - `FileActionService`: open/share exported files.
 
@@ -167,7 +164,7 @@
 - **Purpose**: global 30-day inbox for personal, Group, Community, and System
   notification categories.
 - **Layers**: `NotificationCenterScreen`, notification Riverpod providers and
-  actions controller, `NotificationRepository`, Supabase/mock data sources.
+  actions controller, `NotificationRepository`, and Supabase data sources.
 - **Compatibility**: the global RPC normalizes new `app_notifications` with
   existing `group_notifications` during the migration period.
 - **Delivery**: mute preferences affect phone push delivery but do not remove
@@ -192,7 +189,7 @@
 - **Survey**: `ProfileSurveyScreen` stores occupation/preferred currency,
   creates or updates the default wallet, and initializes occupation-specific
   category defaults.
-- **Data**: `ProfileRepository` supports Supabase and mock profiles.
+- **Data**: `ProfileRepository` stores profiles in Supabase.
 - **Display currency**: the chosen currency (`preferredCurrencyProvider`,
   persisted in `SharedPreferences`) drives all money rendering via
   `formatMoney`/`formatVnd` in `lib/shared/utils/currency_formatter.dart`. A
@@ -204,10 +201,13 @@
 
 ## Auth, Onboarding, and Splash
 
-- **Auth methods**: email sign-in/sign-up/password reset, Google/Facebook/Apple
-  OAuth, anonymous sign-in, and explicit guest/mock session.
-- **Account linking**: email, Google, and Apple identity linking paths exist for
-  an already signed-in account.
+- **Auth methods**: email sign-in/sign-up/password reset, Google/Facebook
+  OAuth, and CAPTCHA-protected Supabase anonymous sign-in. There is no demo or
+  mock authentication path.
+- **Account linking**: email upgrade sends confirmation first, persists the
+  originating user/email pair, and only sets a password after the callback;
+  Google identity linking persists the originating user, verifies the returned
+  Google identity, and only then updates the profile provider.
 - **Boundary**: controllers manage Riverpod state; `AuthRepository` owns
   Supabase Auth, `initialize_user`, and profile-provider updates.
 - **Routing**: splash/post-auth decisions account for onboarding, session,

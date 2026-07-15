@@ -1,49 +1,29 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../domain/entities/friend_profile.dart';
 import '../../domain/repositories/friend_repository.dart';
-import '../datasources/friend_mock_data_source.dart';
 import '../datasources/friend_supabase_data_source.dart';
 import '../models/friend_model_mapper.dart';
 
 final friendRepositoryProvider = Provider<FriendRepository>((ref) {
   final client = ref.watch(supabaseClientProvider);
-  final useMockData =
-      ref.watch(useMockDataModeProvider) || !AppConstants.hasSupabaseConfig;
-  final currentUserId = ref.watch(currentSessionProvider)?.user.id ?? '';
-  return FriendRepositoryImpl(
-    client,
-    useMockData: useMockData,
-    mockDataSource: FriendMockDataSource(
-      currentUserId: currentUserId,
-      seedDemoData: useMockData && currentUserId == 'mock-user-id',
-    ),
-  );
+  return FriendRepositoryImpl(client);
 });
 
 class FriendRepositoryImpl implements FriendRepository {
-  FriendRepositoryImpl(
-    SupabaseClient client, {
-    required bool useMockData,
-    required FriendMockDataSource mockDataSource,
-  }) : _client = client,
-       _useMockData = useMockData,
-       _mock = mockDataSource,
-       _remote = FriendSupabaseDataSource(client);
+  FriendRepositoryImpl(SupabaseClient client)
+    : _client = client,
+      _remote = FriendSupabaseDataSource(client);
 
   final SupabaseClient _client;
-  final bool _useMockData;
-  final FriendMockDataSource _mock;
   final FriendSupabaseDataSource _remote;
 
   @override
   String get currentUserId {
-    if (_useMockData) return _mock.currentUserId;
     final userId = _client.auth.currentUser?.id;
     if (userId == null) {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
@@ -53,7 +33,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<List<FriendProfile>> fetchFriends() {
-    if (_useMockData) return _mock.fetchFriends();
     return _guard('fetch friends', () async {
       return (await _remote.fetchFriends())
           .map(FriendModelMapper.profile)
@@ -63,7 +42,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<List<FriendRequest>> fetchIncomingRequests() {
-    if (_useMockData) return _mock.fetchIncomingRequests();
     return _guard('fetch incoming friend requests', () async {
       return (await _remote.fetchIncomingRequests())
           .map((row) => FriendModelMapper.request(row, isIncoming: true))
@@ -73,7 +51,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<List<FriendRequest>> fetchOutgoingRequests() {
-    if (_useMockData) return _mock.fetchOutgoingRequests();
     return _guard('fetch outgoing friend requests', () async {
       return (await _remote.fetchOutgoingRequests())
           .map((row) => FriendModelMapper.request(row, isIncoming: false))
@@ -85,7 +62,6 @@ class FriendRepositoryImpl implements FriendRepository {
   Future<List<FriendSearchResult>> searchUsers(String usernameQuery) {
     final query = usernameQuery.trim();
     if (query.isEmpty) return Future.value(const []);
-    if (_useMockData) return _mock.searchUsers(query);
     return _guard('search friend profiles', () async {
       return (await _remote.searchUsers(
         query,
@@ -95,7 +71,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<FriendInviteLink> createInviteLink() {
-    if (_useMockData) return _mock.createInviteLink();
     return _guard('create friend invite link', () async {
       return FriendModelMapper.inviteLink(await _remote.createInviteLink());
     });
@@ -103,7 +78,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<FriendInvitePreview> fetchInvitePreview(String token) {
-    if (_useMockData) return _mock.fetchInvitePreview(token);
     return _guard('fetch friend invite preview', () async {
       return FriendModelMapper.invitePreview(
         await _remote.fetchInvitePreview(token.trim()),
@@ -113,7 +87,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<FriendInviteAcceptResult> acceptInvite(String token) {
-    if (_useMockData) return _mock.acceptInvite(token);
     return _guard('accept friend invite', () async {
       return FriendModelMapper.inviteAcceptResult(
         await _remote.acceptInvite(token.trim()),
@@ -123,7 +96,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<void> revokeInviteLink(String token) {
-    if (_useMockData) return _mock.revokeInviteLink(token);
     return _guard(
       'revoke friend invite link',
       () => _remote.revokeInviteLink(token.trim()),
@@ -132,7 +104,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<void> sendRequest(String username) {
-    if (_useMockData) return _mock.sendRequest(username);
     return _guard(
       'send friend request',
       () => _remote.sendRequest(username.trim().toLowerCase()),
@@ -141,7 +112,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<void> sendRequestToUser(String userId) {
-    if (_useMockData) return _mock.sendRequestToUser(userId);
     return _guard(
       'send friend request to user',
       () => _remote.sendRequestToUser(userId.trim()),
@@ -150,7 +120,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<void> acceptRequest(String requestId) {
-    if (_useMockData) return _mock.acceptRequest(requestId);
     return _guard(
       'accept friend request',
       () => _remote.acceptRequest(requestId),
@@ -159,7 +128,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<void> declineRequest(String requestId) {
-    if (_useMockData) return _mock.declineRequest(requestId);
     return _guard(
       'decline friend request',
       () => _remote.declineRequest(requestId),
@@ -168,7 +136,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<void> cancelRequest(String requestId) {
-    if (_useMockData) return _mock.cancelRequest(requestId);
     return _guard(
       'cancel friend request',
       () => _remote.cancelRequest(requestId),
@@ -177,7 +144,6 @@ class FriendRepositoryImpl implements FriendRepository {
 
   @override
   Future<void> removeFriend(String friendUserId) {
-    if (_useMockData) return _mock.removeFriend(friendUserId);
     return _guard('remove friend', () => _remote.removeFriend(friendUserId));
   }
 

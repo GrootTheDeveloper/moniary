@@ -13,6 +13,13 @@ import '../../../shared/widgets/selection_picker_sheet.dart';
 import '../../../shared/widgets/supabase_image.dart';
 import '../../profile/presentation/timezone_picker_screen.dart';
 import '../../auth/application/auth_controller.dart';
+import '../../auth/application/pending_email_link_controller.dart';
+import '../../auth/application/pending_facebook_link_controller.dart';
+import '../../auth/application/pending_google_link_controller.dart';
+import '../../auth/domain/email_account_link.dart';
+import '../../auth/domain/facebook_account_link.dart';
+import '../../auth/domain/google_account_link.dart';
+import '../../auth/presentation/email_account_link_completion_screen.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../friends/application/friend_controller.dart';
@@ -25,6 +32,7 @@ import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../../profile/presentation/currency_picker_screen.dart';
 import '../../profile/domain/currency_data.dart';
+import '../../profile/presentation/payment_qr_screen.dart';
 import '../application/account/account_actions_controller.dart';
 import '../application/privacy_controller.dart';
 import '../../notifications/presentation/widgets/notification_bell_button.dart';
@@ -51,14 +59,13 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLinkingLoading = false;
+  bool _accountLinkNoticeScheduled = false;
 
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
@@ -68,30 +75,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     refreshSheet();
   }
 
-  Future<bool> _linkEmailAccount(VoidCallback refreshSheet) async {
-    if (!_formKey.currentState!.validate()) return false;
+  Future<EmailAccountLinkStatus?> _linkEmailAccount(
+    VoidCallback refreshSheet,
+  ) async {
+    if (!_formKey.currentState!.validate()) return null;
 
     _setLinkingLoading(true, refreshSheet);
     final messenger = ScaffoldMessenger.of(context);
     final email = _emailController.text.trim();
-    final password = _passwordController.text;
 
     try {
-      await ref
+      final result = await ref
           .read(authControllerProvider.notifier)
-          .linkEmailAccount(email: email, password: password);
+          .beginEmailAccountLink(email: email);
 
-      if (mounted) {
+      if (mounted && result == EmailAccountLinkStatus.confirmationRequired) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text(context.l10n.profileLinkSuccess),
+            content: Text(context.l10n.profileLinkEmailConfirmationSent(email)),
             backgroundColor: AppTheme.success,
           ),
         );
       }
-
-      ref.invalidate(currentProfileProvider);
-      return true;
+      return result;
     } catch (e, st) {
       AppLogger.error('Failed to link email account from profile', e, st);
       if (mounted) {
@@ -102,19 +108,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
-      return false;
+      return null;
     } finally {
       _setLinkingLoading(false, refreshSheet);
     }
   }
 
-  Future<void> _linkGoogleAccount(VoidCallback refreshSheet) async {
+  Future<GoogleAccountLinkStatus?> _linkGoogleAccount(
+    VoidCallback refreshSheet,
+  ) async {
     _setLinkingLoading(true, refreshSheet);
     final messenger = ScaffoldMessenger.of(context);
 
     try {
-      await ref.read(authControllerProvider.notifier).linkGoogleAccount();
-      if (mounted) {
+      final result = await ref
+          .read(authControllerProvider.notifier)
+          .beginGoogleAccountLink();
+      if (mounted && result == GoogleAccountLinkStatus.browserOpened) {
         messenger.showSnackBar(
           SnackBar(
             content: Text(context.l10n.profileLinkGoogleBrowser),
@@ -122,6 +132,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
+      return result;
     } catch (e, st) {
       AppLogger.error('Failed to link Google account from profile', e, st);
       if (mounted) {
@@ -136,51 +147,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
+      return null;
     } finally {
       _setLinkingLoading(false, refreshSheet);
     }
   }
 
-  Future<void> _linkAppleAccount(VoidCallback refreshSheet) async {
+  Future<FacebookAccountLinkStatus?> _linkFacebookAccount(
+    VoidCallback refreshSheet,
+  ) async {
     _setLinkingLoading(true, refreshSheet);
     final messenger = ScaffoldMessenger.of(context);
 
     try {
-      await ref.read(authControllerProvider.notifier).linkAppleAccount();
-      if (mounted) {
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text(context.l10n.profileLinkAppleBrowser),
-            backgroundColor: AppTheme.success,
-          ),
-        );
-      }
-    } catch (e, st) {
-      AppLogger.error('Failed to link Apple account from profile', e, st);
-      if (mounted) {
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text(
-              context.l10n.profileLinkAppleError(
-                userFriendlyMessage(context, e),
-              ),
-            ),
-            backgroundColor: AppTheme.danger,
-          ),
-        );
-      }
-    } finally {
-      _setLinkingLoading(false, refreshSheet);
-    }
-  }
-
-  Future<void> _linkFacebookAccount(VoidCallback refreshSheet) async {
-    _setLinkingLoading(true, refreshSheet);
-    final messenger = ScaffoldMessenger.of(context);
-
-    try {
-      await ref.read(authControllerProvider.notifier).linkFacebookAccount();
-      if (mounted) {
+      final result = await ref
+          .read(authControllerProvider.notifier)
+          .beginFacebookAccountLink();
+      if (mounted && result == FacebookAccountLinkStatus.browserOpened) {
         messenger.showSnackBar(
           SnackBar(
             content: Text(context.l10n.profileLinkFacebookBrowser),
@@ -188,6 +171,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
+      return result;
     } catch (e, st) {
       AppLogger.error('Failed to link Facebook account from profile', e, st);
       if (mounted) {
@@ -202,12 +186,57 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
+      return null;
     } finally {
       _setLinkingLoading(false, refreshSheet);
     }
   }
 
   void _showLinkAccountSheet() {
+    final pendingLink = ref.read(pendingEmailAccountLinkProvider);
+    final user = ref.read(currentSessionProvider)?.user;
+    if (pendingLink != null &&
+        user != null &&
+        pendingLink.matches(
+          userId: user.id,
+          email: user.email,
+          isAnonymous: user.isAnonymous,
+        )) {
+      context.push(EmailAccountLinkCompletionScreen.routePath);
+      return;
+    }
+    if (pendingLink != null && pendingLink.userId == user?.id) {
+      _emailController.text = pendingLink.email;
+    }
+
+    final pendingGoogleLink = ref.read(pendingGoogleAccountLinkProvider);
+    final hasGoogleIdentity =
+        user?.identities?.any((identity) => identity.provider == 'google') ??
+        false;
+    if (pendingGoogleLink != null &&
+        user != null &&
+        pendingGoogleLink.matches(
+          userId: user.id,
+          hasGoogleIdentity: hasGoogleIdentity,
+        )) {
+      _retryPendingGoogleLink();
+      return;
+    }
+
+    final pendingFacebookLink = ref.read(pendingFacebookAccountLinkProvider);
+    final hasFacebookIdentity =
+        user?.identities?.any((identity) => identity.provider == 'facebook') ??
+        false;
+    if (pendingFacebookLink != null &&
+        user != null &&
+        pendingFacebookLink.matches(
+          userId: user.id,
+          hasFacebookIdentity: hasFacebookIdentity,
+        )) {
+      _retryPendingFacebookLink();
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -219,6 +248,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
+            final colors = context.moniaryColors;
             void refreshSheet() {
               if (context.mounted) {
                 setSheetState(() {});
@@ -255,8 +285,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       context.l10n.profileLinkAccountSubtitle,
-                      style: const TextStyle(
-                        color: Colors.white54,
+                      style: TextStyle(
+                        color: colors.textSecondary,
                         fontSize: 13,
                       ),
                     ),
@@ -264,16 +294,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: colors.textPrimary),
                       decoration: InputDecoration(
                         labelText: context.l10n.loginEmail,
-                        labelStyle: const TextStyle(color: Colors.white54),
-                        prefixIcon: const Icon(
+                        labelStyle: TextStyle(color: colors.textSecondary),
+                        prefixIcon: Icon(
                           Icons.email_outlined,
-                          color: Colors.white54,
+                          color: colors.textSecondary,
                         ),
                         filled: true,
-                        fillColor: AppTheme.surfaceRaised,
+                        fillColor: colors.surfaceRaised,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide.none,
@@ -285,32 +315,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         }
                         if (!val.contains('@')) {
                           return context.l10n.validationEmailInvalid;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: context.l10n.profileNewPassword,
-                        labelStyle: const TextStyle(color: Colors.white54),
-                        prefixIcon: const Icon(
-                          Icons.lock_outlined,
-                          color: Colors.white54,
-                        ),
-                        filled: true,
-                        fillColor: AppTheme.surfaceRaised,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      validator: (val) {
-                        if (val == null || val.length < 6) {
-                          return context.l10n.validationPasswordMinLength(6);
                         }
                         return null;
                       },
@@ -328,9 +332,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     else ...[
                       FilledButton.icon(
                         onPressed: () async {
-                          final linked = await _linkEmailAccount(refreshSheet);
-                          if (linked && context.mounted) {
+                          final result = await _linkEmailAccount(refreshSheet);
+                          if (result != null && context.mounted) {
                             Navigator.pop(context);
+                          }
+                          if (result ==
+                                  EmailAccountLinkStatus.readyToSetPassword &&
+                              mounted) {
+                            await this.context.push(
+                              EmailAccountLinkCompletionScreen.routePath,
+                            );
                           }
                         },
                         style: FilledButton.styleFrom(
@@ -350,7 +361,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         onPressed: () async {
-                          await _linkGoogleAccount(refreshSheet);
+                          final result = await _linkGoogleAccount(refreshSheet);
+                          if (result != null && context.mounted) {
+                            Navigator.pop(context);
+                          }
                         },
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -359,15 +373,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           side: const BorderSide(color: AppTheme.outline),
                         ),
-                        icon: const Icon(
-                          Icons.g_mobiledata,
+                        icon: Icon(
+                          Icons.g_mobiledata_outlined,
                           size: 28,
-                          color: Colors.white,
+                          color: colors.textPrimary,
                         ),
                         label: Text(
                           context.l10n.profileLinkGoogle,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: colors.textPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -375,7 +389,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         onPressed: () async {
-                          await _linkAppleAccount(refreshSheet);
+                          final result = await _linkFacebookAccount(
+                            refreshSheet,
+                          );
+                          if (result != null && context.mounted) {
+                            Navigator.pop(context);
+                          }
                         },
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -384,40 +403,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           side: const BorderSide(color: AppTheme.outline),
                         ),
-                        icon: const Icon(
-                          Icons.apple,
-                          size: 28,
-                          color: Colors.white,
-                        ),
-                        label: Text(
-                          context.l10n.profileLinkApple,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        onPressed: () async {
-                          await _linkFacebookAccount(refreshSheet);
-                        },
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          side: const BorderSide(color: AppTheme.outline),
-                        ),
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.facebook_outlined,
                           size: 24,
-                          color: Colors.white,
+                          color: colors.textPrimary,
                         ),
                         label: Text(
                           context.l10n.profileLinkFacebook,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: colors.textPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -440,10 +434,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final state = ref.watch(accountActionsControllerProvider);
     final privacyState = ref.watch(privacyControllerProvider);
     final requestHistory = ref.watch(privacyRequestHistoryProvider);
-    final isGuest = ref.watch(guestModeEnabledProvider);
     final pendingFriendRequestCount = ref.watch(
       pendingIncomingFriendRequestCountProvider,
     );
+    final accountLinkNotice = ref.watch(accountLinkNoticeProvider);
+    _scheduleAccountLinkNotice(accountLinkNotice);
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -476,7 +471,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   final provider = profile.loginProvider;
                   final isAnonymous = provider == 'anonymous';
                   final accountMode = _ProfileAccountMode.from(
-                    isGuest: isGuest,
                     provider: provider,
                   );
                   final name = profile.fullName?.trim().isNotEmpty == true
@@ -614,6 +608,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 context.push(CurrencyPickerScreen.routePath),
                           ),
                           _SettingsTile(
+                            icon: Icons.qr_code_2_outlined,
+                            title: context.l10n.paymentQrTitle,
+                            subtitle: context.l10n.paymentQrProfileSubtitle,
+                            onTap: () =>
+                                context.push(PaymentQrScreen.routePath),
+                          ),
+                          _SettingsTile(
                             icon: Icons.schedule_outlined,
                             title: context.l10n.profileChangeTimezone,
                             subtitle: timezoneDisplayLabel(profile.timezone),
@@ -648,11 +649,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           if (accountMode.needsAccountProtectionCard)
                             _AccountModeBanner(
                               mode: accountMode,
-                              onAction: accountMode == _ProfileAccountMode.guest
-                                  ? () {
-                                      _switchFromGuestToLogin();
-                                    }
-                                  : _showLinkAccountSheet,
+                              onAction: _showLinkAccountSheet,
                             ),
                         ],
                       ),
@@ -747,12 +744,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           _SettingsTile(
                             icon: Icons.delete_forever_outlined,
-                            title: isGuest
-                                ? context.l10n.deleteGuestDataTitle
-                                : context.l10n.profileDeleteAccount,
-                            subtitle: isGuest
-                                ? context.l10n.deleteGuestDataBody
-                                : context.l10n.profileDeleteSubtitle,
+                            title: context.l10n.profileDeleteAccount,
+                            subtitle: context.l10n.profileDeleteSubtitle,
                             destructive: true,
                             onTap: state.isLoading
                                 ? null
@@ -789,6 +782,64 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _retryPendingGoogleLink() async {
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .completePendingGoogleAccountLink();
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to retry pending Google link', error, stackTrace);
+    }
+  }
+
+  Future<void> _retryPendingFacebookLink() async {
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .completePendingFacebookAccountLink();
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to retry pending Facebook link',
+        error,
+        stackTrace,
+      );
+    }
+  }
+
+  void _scheduleAccountLinkNotice(AccountLinkNotice? notice) {
+    if (notice == null || _accountLinkNoticeScheduled) return;
+    _accountLinkNoticeScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final (message, isSuccess) = switch (notice) {
+        AccountLinkNotice.googleSuccess => (
+          context.l10n.profileLinkGoogleSuccess,
+          true,
+        ),
+        AccountLinkNotice.googleFailure => (
+          context.l10n.profileLinkGoogleCompletionError,
+          false,
+        ),
+        AccountLinkNotice.facebookSuccess => (
+          context.l10n.profileLinkFacebookSuccess,
+          true,
+        ),
+        AccountLinkNotice.facebookFailure => (
+          context.l10n.profileLinkFacebookCompletionError,
+          false,
+        ),
+      };
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: isSuccess ? AppTheme.success : AppTheme.danger,
+        ),
+      );
+      ref.read(accountLinkNoticeProvider.notifier).clear();
+      _accountLinkNoticeScheduled = false;
+    });
   }
 
   void _showMoniarySetupSheet() {
@@ -1004,13 +1055,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
     if (selected != null && mounted) {
       await ref.read(preferredLocaleProvider.notifier).setLocale(selected);
-    }
-  }
-
-  Future<void> _switchFromGuestToLogin() async {
-    await ref.read(authControllerProvider.notifier).signOut();
-    if (mounted) {
-      context.go(LoginScreen.routePath);
     }
   }
 }
@@ -1308,15 +1352,10 @@ class _SetupStep extends StatelessWidget {
 }
 
 enum _ProfileAccountMode {
-  guest,
   supabaseAnonymous,
   authenticated;
 
-  static _ProfileAccountMode from({
-    required bool isGuest,
-    required String provider,
-  }) {
-    if (isGuest) return _ProfileAccountMode.guest;
+  static _ProfileAccountMode from({required String provider}) {
     if (provider == 'anonymous') return _ProfileAccountMode.supabaseAnonymous;
     return _ProfileAccountMode.authenticated;
   }
@@ -1326,7 +1365,6 @@ enum _ProfileAccountMode {
 
   Color get accentColor {
     return switch (this) {
-      _ProfileAccountMode.guest => AppTheme.amber,
       _ProfileAccountMode.supabaseAnonymous => AppTheme.mint,
       _ProfileAccountMode.authenticated => AppTheme.success,
     };
@@ -1334,7 +1372,6 @@ enum _ProfileAccountMode {
 
   IconData get icon {
     return switch (this) {
-      _ProfileAccountMode.guest => Icons.person_outlined,
       _ProfileAccountMode.supabaseAnonymous => Icons.warning_amber_outlined,
       _ProfileAccountMode.authenticated => Icons.verified_user_outlined,
     };
@@ -1342,7 +1379,6 @@ enum _ProfileAccountMode {
 
   String title(BuildContext context) {
     return switch (this) {
-      _ProfileAccountMode.guest => context.l10n.profileAnonymous,
       _ProfileAccountMode.supabaseAnonymous =>
         context.l10n.profileProtectAccount,
       _ProfileAccountMode.authenticated => context.l10n.profileAccount,
@@ -1351,7 +1387,6 @@ enum _ProfileAccountMode {
 
   String body(BuildContext context) {
     return switch (this) {
-      _ProfileAccountMode.guest => context.l10n.profileAnonymousWarning,
       _ProfileAccountMode.supabaseAnonymous =>
         context.l10n.profileLinkAccountSubtitle,
       _ProfileAccountMode.authenticated => '',
@@ -1360,7 +1395,6 @@ enum _ProfileAccountMode {
 
   String actionLabel(BuildContext context) {
     return switch (this) {
-      _ProfileAccountMode.guest => context.l10n.loginSignIn,
       _ProfileAccountMode.supabaseAnonymous => context.l10n.profileLinkNow,
       _ProfileAccountMode.authenticated => context.l10n.profileAccount,
     };

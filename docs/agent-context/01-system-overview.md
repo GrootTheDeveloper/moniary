@@ -43,9 +43,10 @@ There are 16 feature directories under `lib/features/`:
 
 - **Supabase mode**: Auth, PostgreSQL, private Storage, RPCs, migrations, RLS,
   and Edge Functions.
-- **Guest/mock data mode**: active when Supabase configuration is absent or the
-  user explicitly enters a guest session. Repositories/data sources use
-  in-memory mock state; most data is lost when the process restarts.
+- **Anonymous account mode**: the "try now" entry point creates a real
+  Supabase anonymous user after CAPTCHA verification. It uses the same backend
+  repositories as other users and can later be upgraded to email, Google, or
+  Facebook.
 - **OCR service**: a separate FastAPI service using Tesseract, OpenCV, regex,
   and keyword rules. It is not an LLM service and has no Flutter-side mock
   result fallback.

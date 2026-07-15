@@ -55,6 +55,7 @@ class GroupDetailScreen extends ConsumerWidget {
             onRetry: () => ref.invalidate(groupDetailProvider(groupId)),
           ),
           data: (detail) => _GroupDetailContent(
+            groupId: groupId,
             detail: detail,
             transactionsAsync: transactionsAsync,
             settlementsAsync: settlementsAsync,
@@ -392,6 +393,7 @@ class GroupDetailScreen extends ConsumerWidget {
 
 class _GroupDetailContent extends StatelessWidget {
   const _GroupDetailContent({
+    required this.groupId,
     required this.detail,
     required this.transactionsAsync,
     required this.settlementsAsync,
@@ -404,6 +406,7 @@ class _GroupDetailContent extends StatelessWidget {
     required this.onAddTransaction,
   });
 
+  final String groupId;
   final SpendingGroupDetail detail;
   final AsyncValue<List<GroupTransaction>> transactionsAsync;
   final AsyncValue<GroupSettlementOverview> settlementsAsync;
@@ -474,6 +477,7 @@ class _GroupDetailContent extends StatelessWidget {
                         color: context.moniaryColors.danger,
                       ),
                       data: (transactions) => _TransactionHistory(
+                        groupId: groupId,
                         transactions: transactions,
                         memberCount: detail.activeMembers.length,
                       ),
@@ -882,34 +886,125 @@ class _BalanceRow extends ConsumerWidget {
   }
 }
 
-class _TransactionHistory extends StatelessWidget {
+class _TransactionHistory extends ConsumerStatefulWidget {
   const _TransactionHistory({
+    required this.groupId,
     required this.transactions,
     required this.memberCount,
   });
 
+  final String groupId;
   final List<GroupTransaction> transactions;
   final int memberCount;
 
   @override
+  ConsumerState<_TransactionHistory> createState() =>
+      _TransactionHistoryState();
+}
+
+class _TransactionHistoryState extends ConsumerState<_TransactionHistory> {
+  String _query = '';
+  GroupSplitStatus? _status;
+  int _offset = 0;
+
+  @override
   Widget build(BuildContext context) {
-    if (transactions.isEmpty) {
+    final status = switch (_status) {
+      GroupSplitStatus.posted => 'posted',
+      null => null,
+      _ => 'pending',
+    };
+    final pageAsync = ref.watch(
+      groupTransactionsPageProvider((
+        groupId: widget.groupId,
+        offset: _offset,
+        query: _query,
+        status: status,
+      )),
+    );
+    if (pageAsync.isLoading && pageAsync.asData == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (pageAsync.hasError) {
       return _InlineNotice(
-        text: context.l10n.groupTransactionNoData,
+        text: context.l10n.groupTransactionLoadError,
+        color: context.moniaryColors.danger,
+      );
+    }
+    final page = pageAsync.asData?.value;
+    if (page == null || page.items.isEmpty) {
+      return _InlineNotice(
+        text: _query.trim().isEmpty && _status == null
+            ? context.l10n.groupTransactionNoData
+            : context.l10n.groupTransactionFilterNoResults,
         color: context.moniaryColors.secondary,
       );
     }
 
     return Column(
       children: [
-        for (var index = 0; index < transactions.length; index++)
+        TextField(
+          onChanged: (value) => setState(() {
+            _query = value;
+            _offset = 0;
+          }),
+          decoration: InputDecoration(
+            prefixIcon: const Icon(Icons.search_outlined),
+            hintText: context.l10n.groupTransactionSearchHint,
+            isDense: true,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Wrap(
+            spacing: 8,
+            children: [
+              ChoiceChip(
+                label: Text(context.l10n.groupTransactionFilterAll),
+                selected: _status == null,
+                onSelected: (_) => setState(() {
+                  _status = null;
+                  _offset = 0;
+                }),
+              ),
+              ChoiceChip(
+                label: Text(context.l10n.groupTransactionPostedStatus),
+                selected: _status == GroupSplitStatus.posted,
+                onSelected: (_) => setState(() {
+                  _status = GroupSplitStatus.posted;
+                  _offset = 0;
+                }),
+              ),
+              ChoiceChip(
+                label: Text(context.l10n.groupTransactionPendingStatus),
+                selected: _status != null && _status != GroupSplitStatus.posted,
+                onSelected: (_) => setState(() {
+                  _status = GroupSplitStatus.pendingMemberAmountInput;
+                  _offset = 0;
+                }),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        for (var index = 0; index < page.items.length; index++)
           _TransactionRow(
-            transaction: transactions[index],
-            memberCount: memberCount,
+            transaction: page.items[index],
+            memberCount: widget.memberCount,
             showTopDivider: index == 0,
             onTap: () => context.push(
               GroupTransactionDetailScreen.routePath,
-              extra: transactions[index].id,
+              extra: page.items[index].id,
+            ),
+          ),
+        if (page.hasMore)
+          Align(
+            alignment: Alignment.center,
+            child: OutlinedButton.icon(
+              onPressed: () => setState(() => _offset += 40),
+              icon: const Icon(Icons.expand_more_outlined),
+              label: Text(context.l10n.groupTransactionLoadMore),
             ),
           ),
       ],

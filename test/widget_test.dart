@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:moniary/app/app.dart';
 import 'package:moniary/app/app_router.dart';
 import 'package:moniary/core/preferences/preferences_providers.dart';
+import 'package:moniary/core/supabase/supabase_providers.dart';
 
 void main() {
   testWidgets('App shell renders with an injected router', (
@@ -28,6 +29,7 @@ void main() {
       ProviderScope(
         overrides: [
           appRouterProvider.overrideWithValue(testRouter),
+          currentSessionProvider.overrideWithValue(null),
           sharedPreferencesProvider.overrideWithValue(prefs),
         ],
         child: const MoniaryApp(),

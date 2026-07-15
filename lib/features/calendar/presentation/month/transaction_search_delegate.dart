@@ -1198,7 +1198,6 @@ class _TransactionPhotoThumb extends StatelessWidget {
       fallback: transaction.isIncome ? colors.success : AppTheme.taupe,
     );
     final imagePath = transactionImagePathForDisplay(transaction);
-    final fallbackAssetPath = transactionFallbackAssetPath(transaction);
 
     return SizedBox(
       width: 42,
@@ -1227,17 +1226,11 @@ class _TransactionPhotoThumb extends StatelessWidget {
                 height: 42,
                 fit: BoxFit.cover,
                 fallbackIcon: Icons.receipt_long_outlined,
-                fallbackBuilder: (context) => Image.asset(
-                  fallbackAssetPath,
-                  width: 42,
-                  height: 42,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Center(
-                    child: Icon(
-                      Icons.receipt_long_outlined,
-                      size: 17,
-                      color: _readableTextColor(accent).withValues(alpha: 0.84),
-                    ),
+                fallbackBuilder: (context) => Center(
+                  child: Icon(
+                    Icons.receipt_long_outlined,
+                    size: 17,
+                    color: _readableTextColor(accent).withValues(alpha: 0.84),
                   ),
                 ),
               ),

@@ -44,7 +44,7 @@ tracing all call sites.
 | Model | Path | Notes |
 |---|---|---|
 | `OcrResult` | `lib/features/scanning/domain/ocr_result.dart` | DTO consumed by OCR repository/review UI |
-| `NotificationSettings` | `lib/features/settings/domain/models/notification_settings.dart` | Supabase/mock notification and report preferences |
+| `NotificationSettings` | `lib/features/settings/domain/models/notification_settings.dart` | Supabase notification and report preferences |
 | `AppNotification` | `lib/features/notifications/domain/entities/app_notification.dart` | Unified 30-day inbox item normalized across personal, Group, Community, and System sources |
 | `NotificationDeliveryPreferences` | `lib/features/notifications/domain/entities/notification_delivery_preferences.dart` | Push delivery switches; muting does not delete inbox history |
 | `CsvTransactionRow` | `lib/features/settings/domain/models/csv_transaction_row.dart` | Parsed import row with validation state |

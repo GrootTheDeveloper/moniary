@@ -6,44 +6,31 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
+import '../domain/email_account_link.dart';
+import '../domain/facebook_account_link.dart';
+import '../domain/google_account_link.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  final client = AppConstants.hasSupabaseConfig
-      ? ref.watch(supabaseClientProvider)
-      : null;
-  return AuthRepository(
-    client,
-    useMockData: ref.watch(useMockDataModeProvider),
-  );
+  return AuthRepository(ref.watch(supabaseClientProvider));
 });
 
 class AuthRepository {
-  AuthRepository(this._client, {bool useMockData = false})
-    : _useMockData = useMockData || !AppConstants.hasSupabaseConfig;
+  AuthRepository(this._client);
 
-  final SupabaseClient? _client;
-  final bool _useMockData;
+  final SupabaseClient _client;
 
-  SupabaseClient get _requiredClient {
-    final client = _client;
-    if (client == null) {
-      throw const AppException(
-        'Supabase client is not available',
-        code: 'SUPABASE_CLIENT_UNAVAILABLE',
-      );
-    }
-    return client;
-  }
-
-  Future<Session?> signInAnonymously() async {
-    if (_useMockData) {
-      return _mockSession();
-    }
+  Future<Session?> signInAnonymously({String? captchaToken}) async {
+    final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
 
     try {
-      await _requiredClient.auth.signInAnonymously();
+      final response = await _client.auth.signInAnonymously(
+        captchaToken: normalizedCaptchaToken,
+      );
       await _initializeUserIfPossible();
-      return null;
+      return response.session;
+    } on AuthException catch (e, st) {
+      AppLogger.error('Anonymous sign-in failed', e, st);
+      throw _mapAuthException(e);
     } catch (e, st) {
       AppLogger.error('Anonymous sign-in failed', e, st);
       if (e is AppException) rethrow;
@@ -51,15 +38,9 @@ class AuthRepository {
     }
   }
 
-  Future<Session> startGuestSession() async {
-    return _mockSession();
-  }
-
   Future<void> signOut() async {
-    if (_useMockData) return;
-
     try {
-      await _requiredClient.auth.signOut();
+      await _client.auth.signOut();
     } catch (e, st) {
       AppLogger.error('Sign-out failed', e, st);
       if (e is AppException) rethrow;
@@ -67,72 +48,183 @@ class AuthRepository {
     }
   }
 
-  Future<bool> linkEmailAccount({
+  Future<EmailAccountLinkStatus> beginEmailAccountLink({
     required String email,
-    required String password,
   }) async {
-    if (_useMockData) {
-      return true;
-    }
-
     try {
-      await _requiredClient.auth.updateUser(
-        UserAttributes(email: email, password: password),
+      final response = await _client.auth.updateUser(
+        UserAttributes(email: email),
+        emailRedirectTo: AppConstants.supabaseLoginCallbackUrl,
       );
-      await _initializeUserIfPossible();
-      await _updateProfileLoginProvider(email: email, loginProvider: 'email');
-      return false;
+      final user = response.user;
+      final emailIsConfirmed =
+          user != null &&
+          !user.isAnonymous &&
+          user.email?.trim().toLowerCase() == email.trim().toLowerCase();
+      return emailIsConfirmed
+          ? EmailAccountLinkStatus.readyToSetPassword
+          : EmailAccountLinkStatus.confirmationRequired;
     } catch (e, st) {
-      AppLogger.error('Email account linking failed', e, st);
+      AppLogger.error('Starting email account linking failed', e, st);
       if (e is AppException) rethrow;
       throw const AppException('errorGeneric', code: 'AUTH_LINK_EMAIL_FAILED');
     }
   }
 
-  Future<bool> linkGoogleAccount() async {
-    if (_useMockData) {
-      return true;
-    }
-
+  Future<void> completeEmailAccountLink({required String password}) async {
     try {
-      await _requiredClient.auth.linkIdentity(OAuthProvider.google);
-      // Wait a moment for identity to be linked and metadata updated
-      await Future.delayed(const Duration(seconds: 1));
+      final user = (await _client.auth.getUser()).user;
+      final email = user?.email?.trim();
+      if (user == null || user.isAnonymous || email == null || email.isEmpty) {
+        throw const AppException(
+          'Email confirmation is required before setting a password',
+          code: 'AUTH_LINK_EMAIL_NOT_CONFIRMED',
+        );
+      }
+
+      await _client.auth.updateUser(UserAttributes(password: password));
       await _initializeUserIfPossible();
-      return false;
+      await _updateProfileLoginProvider(email: email, loginProvider: 'email');
+    } on AuthException catch (e, st) {
+      AppLogger.error('Completing email account linking failed', e, st);
+      throw _mapAuthException(e);
+    } on AppException {
+      rethrow;
     } catch (e, st) {
-      AppLogger.error('Google account linking failed', e, st);
-      if (e is AppException) rethrow;
+      AppLogger.error('Completing email account linking failed', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
+      throw const AppException('errorGeneric', code: 'AUTH_LINK_EMAIL_FAILED');
+    }
+  }
+
+  Future<GoogleAccountLinkStatus> beginGoogleAccountLink() async {
+    try {
+      final launched = await _client.auth.linkIdentity(
+        OAuthProvider.google,
+        redirectTo: kIsWeb ? null : AppConstants.supabaseLoginCallbackUrl,
+        authScreenLaunchMode: kIsWeb
+            ? LaunchMode.platformDefault
+            : LaunchMode.externalApplication,
+      );
+      if (!launched) {
+        throw const AppException(
+          'OAuth browser could not be opened',
+          code: 'AUTH_OAUTH_LAUNCH_FAILED',
+        );
+      }
+      return GoogleAccountLinkStatus.browserOpened;
+    } on AuthException catch (e, st) {
+      AppLogger.error('Starting Google account linking failed', e, st);
+      throw _mapAuthException(e);
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      AppLogger.error('Starting Google account linking failed', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
       throw const AppException('errorGeneric', code: 'AUTH_LINK_GOOGLE_FAILED');
     }
   }
 
-  Future<bool> linkAppleAccount() async {
-    if (_useMockData) {
-      return true;
-    }
-
+  Future<void> completeGoogleAccountLink() async {
     try {
-      await _requiredClient.auth.linkIdentity(OAuthProvider.apple);
-      return false;
+      final user = (await _client.auth.getUser()).user;
+      final hasGoogleIdentity =
+          user?.identities?.any((identity) => identity.provider == 'google') ??
+          false;
+      final email = user?.email?.trim();
+      if (!hasGoogleIdentity || email == null || email.isEmpty) {
+        throw const AppException(
+          'Google identity linking has not completed',
+          code: 'AUTH_LINK_GOOGLE_NOT_COMPLETED',
+        );
+      }
+      await _initializeUserIfPossible();
+      await _updateProfileLoginProvider(email: email, loginProvider: 'google');
+    } on AuthException catch (e, st) {
+      AppLogger.error('Completing Google account linking failed', e, st);
+      throw _mapAuthException(e);
+    } on AppException {
+      rethrow;
     } catch (e, st) {
-      AppLogger.error('Apple account linking failed', e, st);
-      if (e is AppException) rethrow;
-      throw const AppException('errorGeneric', code: 'AUTH_LINK_APPLE_FAILED');
+      AppLogger.error('Completing Google account linking failed', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
+      throw const AppException('errorGeneric', code: 'AUTH_LINK_GOOGLE_FAILED');
     }
   }
 
-  Future<bool> linkFacebookAccount() async {
-    if (_useMockData) {
-      return true;
-    }
-
+  Future<FacebookAccountLinkStatus> beginFacebookAccountLink() async {
     try {
-      await _requiredClient.auth.linkIdentity(OAuthProvider.facebook);
-      return false;
+      final launched = await _client.auth.linkIdentity(
+        OAuthProvider.facebook,
+        redirectTo: kIsWeb ? null : AppConstants.supabaseLoginCallbackUrl,
+        authScreenLaunchMode: kIsWeb
+            ? LaunchMode.platformDefault
+            : LaunchMode.externalApplication,
+      );
+      if (!launched) {
+        throw const AppException(
+          'OAuth browser could not be opened',
+          code: 'AUTH_OAUTH_LAUNCH_FAILED',
+        );
+      }
+      return FacebookAccountLinkStatus.browserOpened;
+    } on AuthException catch (e, st) {
+      AppLogger.error('Starting Facebook account linking failed', e, st);
+      throw _mapAuthException(e);
+    } on AppException {
+      rethrow;
     } catch (e, st) {
-      AppLogger.error('Facebook account linking failed', e, st);
-      if (e is AppException) rethrow;
+      AppLogger.error('Starting Facebook account linking failed', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
+      throw const AppException(
+        'errorGeneric',
+        code: 'AUTH_LINK_FACEBOOK_FAILED',
+      );
+    }
+  }
+
+  Future<void> completeFacebookAccountLink() async {
+    try {
+      final user = (await _client.auth.getUser()).user;
+      final facebookIdentity = user?.identities
+          ?.where((identity) => identity.provider == 'facebook')
+          .firstOrNull;
+      final identityEmailValue = facebookIdentity?.identityData?['email'];
+      final identityEmail = identityEmailValue is String
+          ? identityEmailValue
+          : null;
+      final email = user?.email?.trim().isNotEmpty == true
+          ? user!.email!.trim()
+          : identityEmail?.trim();
+      if (facebookIdentity == null || email == null || email.isEmpty) {
+        throw const AppException(
+          'Facebook identity linking has not completed',
+          code: 'AUTH_LINK_FACEBOOK_NOT_COMPLETED',
+        );
+      }
+      await _initializeUserIfPossible();
+      await _updateProfileLoginProvider(
+        email: email,
+        loginProvider: 'facebook',
+      );
+    } on AuthException catch (e, st) {
+      AppLogger.error('Completing Facebook account linking failed', e, st);
+      throw _mapAuthException(e);
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      AppLogger.error('Completing Facebook account linking failed', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
       throw const AppException(
         'errorGeneric',
         code: 'AUTH_LINK_FACEBOOK_FAILED',
@@ -141,52 +233,47 @@ class AuthRepository {
   }
 
   Future<Session?> signInWithGoogle() async {
-    if (_useMockData) {
-      return _mockSession();
-    }
-    try {
-      // Clear any existing verifier to avoid bad_code_verifier if a previous flow was stale
-      await _requiredClient.auth.signOut(scope: SignOutScope.local);
-
-      await _requiredClient.auth.signInWithOAuth(
-        OAuthProvider.google,
-        redirectTo: kIsWeb ? null : 'io.supabase.moniary://login-callback',
-      );
-      return null;
-    } catch (e, st) {
-      AppLogger.error('Google sign-in failed', e, st);
-      throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
-    }
-  }
-
-  Future<Session?> signInWithApple() async {
-    if (_useMockData) {
-      return _mockSession();
-    }
-    try {
-      await _requiredClient.auth.signInWithOAuth(
-        OAuthProvider.apple,
-        redirectTo: kIsWeb ? null : 'io.supabase.moniary://login-callback',
-      );
-      return null;
-    } catch (e, st) {
-      AppLogger.error('Apple sign-in failed', e, st);
-      throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
-    }
+    return _signInWithOAuth(OAuthProvider.google, providerName: 'Google');
   }
 
   Future<Session?> signInWithFacebook() async {
-    if (_useMockData) {
-      return _mockSession();
-    }
+    return _signInWithOAuth(OAuthProvider.facebook, providerName: 'Facebook');
+  }
+
+  Future<Session?> _signInWithOAuth(
+    OAuthProvider provider, {
+    required String providerName,
+  }) async {
     try {
-      await _requiredClient.auth.signInWithOAuth(
-        OAuthProvider.facebook,
-        redirectTo: kIsWeb ? null : 'io.supabase.moniary://login-callback',
+      // Clear a verifier left behind by an interrupted PKCE flow before
+      // starting a fresh browser session.
+      await _client.auth.signOut(scope: SignOutScope.local);
+
+      final launched = await _client.auth.signInWithOAuth(
+        provider,
+        redirectTo: kIsWeb ? null : AppConstants.supabaseLoginCallbackUrl,
+        authScreenLaunchMode: kIsWeb
+            ? LaunchMode.platformDefault
+            : LaunchMode.externalApplication,
       );
+
+      if (!launched) {
+        throw const AppException(
+          'OAuth browser could not be opened',
+          code: 'AUTH_OAUTH_LAUNCH_FAILED',
+        );
+      }
       return null;
+    } on AuthException catch (e, st) {
+      AppLogger.error('$providerName sign-in failed', e, st);
+      throw _mapAuthException(e);
+    } on AppException {
+      rethrow;
     } catch (e, st) {
-      AppLogger.error('Facebook sign-in failed', e, st);
+      AppLogger.error('$providerName sign-in failed', e, st);
+      if (_isNetworkError(e)) {
+        throw const AppException('errorConnection', code: 'AUTH_NETWORK_ERROR');
+      }
       throw const AppException('errorGeneric', code: 'AUTH_SIGN_IN_FAILED');
     }
   }
@@ -194,15 +281,15 @@ class AuthRepository {
   Future<Session?> signInWithEmail({
     required String email,
     required String password,
+    String? captchaToken,
   }) async {
-    if (_useMockData) {
-      return _mockSession();
-    }
+    final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
     try {
-      AppLogger.info('Attempting email sign-in for $email');
-      final response = await _requiredClient.auth.signInWithPassword(
+      AppLogger.info('Attempting email sign-in');
+      final response = await _client.auth.signInWithPassword(
         email: email,
         password: password,
+        captchaToken: normalizedCaptchaToken,
       );
       AppLogger.info('Email sign-in RPC success, initializing user...');
       await _initializeUserIfPossible();
@@ -219,17 +306,24 @@ class AuthRepository {
     }
   }
 
-  Future<void> signUpWithEmail({
+  Future<Session?> signUpWithEmail({
     required String email,
     required String password,
+    String? captchaToken,
   }) async {
-    if (_useMockData) return;
+    final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
     try {
-      await _requiredClient.auth.signUp(
+      final response = await _client.auth.signUp(
         email: email,
         password: password,
-        emailRedirectTo: 'io.supabase.moniary://login-callback',
+        emailRedirectTo: AppConstants.supabaseLoginCallbackUrl,
+        captchaToken: normalizedCaptchaToken,
       );
+
+      if (response.session != null) {
+        await _initializeUserIfPossible();
+      }
+      return response.session;
     } on AuthException catch (e, st) {
       AppLogger.error('Email sign-up failed', e, st);
       throw _mapAuthException(e);
@@ -242,12 +336,18 @@ class AuthRepository {
     }
   }
 
-  Future<void> requestPasswordReset(String email) async {
-    if (_useMockData) return;
+  Future<void> requestPasswordReset(
+    String email, {
+    String? captchaToken,
+  }) async {
+    final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
     try {
-      await _requiredClient.auth.resetPasswordForEmail(
+      await _client.auth.resetPasswordForEmail(
         email,
-        redirectTo: kIsWeb ? null : 'io.supabase.moniary://reset-password',
+        redirectTo: kIsWeb
+            ? null
+            : AppConstants.supabasePasswordResetCallbackUrl,
+        captchaToken: normalizedCaptchaToken,
       );
     } on AuthException catch (e, st) {
       AppLogger.error('Password reset request failed', e, st);
@@ -264,12 +364,10 @@ class AuthRepository {
     }
   }
 
-  Future<void> updatePassword(String newPassword) async {
-    if (_useMockData) return;
+  Future<void> updatePassword(String password) async {
     try {
-      await _requiredClient.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
+      await _client.auth.updateUser(UserAttributes(password: password));
+      await _client.auth.signOut(scope: SignOutScope.local);
     } on AuthException catch (e, st) {
       AppLogger.error('Password update failed', e, st);
       throw _mapAuthException(e);
@@ -281,6 +379,19 @@ class AuthRepository {
       throw const AppException(
         'errorGeneric',
         code: 'AUTH_PASSWORD_UPDATE_FAILED',
+      );
+    }
+  }
+
+  Future<void> cancelPasswordRecovery() async {
+    try {
+      await _client.auth.signOut(scope: SignOutScope.local);
+    } catch (e, st) {
+      AppLogger.error('Password recovery cancellation failed', e, st);
+      if (e is AppException) rethrow;
+      throw const AppException(
+        'errorGeneric',
+        code: 'AUTH_PASSWORD_RECOVERY_CANCEL_FAILED',
       );
     }
   }
@@ -305,40 +416,35 @@ class AuthRepository {
 
   Future<void> _initializeUserIfPossible() async {
     try {
-      await _requiredClient.rpc('initialize_user');
+      await _client.rpc('initialize_user');
     } catch (e, st) {
       AppLogger.error('initialize_user RPC failed (non-blocking)', e, st);
     }
+  }
+
+  String _requireCaptchaToken(String? captchaToken) {
+    final normalizedCaptchaToken = captchaToken?.trim();
+    if (normalizedCaptchaToken == null || normalizedCaptchaToken.isEmpty) {
+      throw const AppException(
+        'CAPTCHA is required for this authentication action',
+        code: 'AUTH_CAPTCHA_REQUIRED',
+      );
+    }
+    return normalizedCaptchaToken;
   }
 
   Future<void> _updateProfileLoginProvider({
     required String email,
     required String loginProvider,
   }) async {
-    final userId = _requiredClient.auth.currentUser?.id;
+    final userId = _client.auth.currentUser?.id;
     if (userId == null) {
       throw const AppException('Missing auth user', code: 'AUTH_REQUIRED');
     }
 
-    await _requiredClient
+    await _client
         .from('profiles')
         .update({'email': email, 'login_provider': loginProvider})
         .eq('id', userId);
-  }
-
-  Session _mockSession() {
-    const user = User(
-      id: 'mock-user-id',
-      appMetadata: {},
-      userMetadata: {},
-      aud: 'authenticated',
-      createdAt: '2026-05-28T00:00:00Z',
-    );
-    return Session(
-      accessToken: 'mockAccessToken',
-      tokenType: 'bearer',
-      expiresIn: 3600,
-      user: user,
-    );
   }
 }

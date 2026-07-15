@@ -49,20 +49,28 @@
   "commonSelect": "Chọn",
   "commonCreate": "Tạo",
   "commonConfirm": "Xác nhận",
+  "commonContinue": "Tiếp tục",
   "errorGeneric": "Đã xảy ra lỗi. Vui lòng thử lại.",
   "errorLocalAuthUnavailable": "Thiết bị này không hỗ trợ xác thực sinh trắc học hoặc mã khóa màn hình.",
   "errorLocalAuthFailed": "Không thể xác thực thiết bị. Vui lòng thử lại.",
   "errorNotLoggedIn": "Bạn chưa đăng nhập.",
   "errorNotFound": "Dữ liệu không tồn tại.",
   "errorConnection": "Lỗi kết nối. Vui lòng thử lại.",
+  "authErrorInvalidCredentials": "Email hoặc mật khẩu không đúng.",
+  "authErrorEmailNotConfirmed": "Vui lòng xác nhận email trước khi đăng nhập.",
+  "authErrorProviderDisabled": "Phương thức đăng nhập này chưa được cấu hình.",
+  "authErrorOAuthCallback": "Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng bắt đầu lại.",
+  "authErrorRateLimited": "Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.",
+  "authErrorEmailAlreadyRegistered": "Email này đã được đăng ký.",
+  "authErrorWeakPassword": "Mật khẩu chưa đủ mạnh. Hãy thử mật khẩu dài hơn kèm số hoặc ký tự đặc biệt.",
+  "authErrorSignupDisabled": "Hệ thống hiện không cho phép đăng ký tài khoản mới.",
+  "authErrorBrowserLaunch": "Không thể mở trình duyệt đăng nhập bảo mật.",
   "loginTitle": "Moniary",
   "loginSubtitle": "Quản lý chi tiêu cá nhân",
-  "loginAnonymous": "Tiếp tục với tài khoản khách",
   "loginTerms": "Bằng cách tiếp tục, bạn đồng ý với các điều khoản sử dụng và chính sách bảo mật của Moniary.",
   "loginFeatureSubtitle": "Ghi chi tiêu bằng ảnh",
   "loginHeader": "Đăng nhập",
   "loginGoogle": "Đăng nhập với Google",
-  "loginApple": "Đăng nhập với Apple",
   "loginFacebook": "Đăng nhập với Facebook",
   "loginEmail": "Đăng nhập với Email",
   "loginOr": "hoặc",
@@ -75,9 +83,24 @@
   "loginRegisterNow": "Đăng ký ngay",
   "loginHaveAccount": "Đã có tài khoản?",
   "loginSocialDivider": "Hoặc đăng nhập bằng",
-  "loginDemoCta": "DEMO",
   "loginGuestCta": "Dùng thử ngay — không cần tài khoản →",
+  "anonymousCaptchaTitle": "Xác minh trước khi tiếp tục",
+  "anonymousCaptchaDescription": "Hoàn tất bước kiểm tra bảo mật để tiếp tục an toàn.",
+  "anonymousCaptchaVerified": "Đã xác minh",
+  "anonymousCaptchaRequired": "Hãy hoàn tất kiểm tra bảo mật trước khi tiếp tục.",
+  "anonymousCaptchaFailed": "Xác minh thất bại. Vui lòng thử lại.",
+  "anonymousCaptchaExpired": "Phiên xác minh đã hết hạn. Vui lòng thực hiện lại.",
+  "anonymousCaptchaTimeout": "Bước kiểm tra bảo mật tải quá lâu. Hãy kiểm tra kết nối rồi thử lại.",
+  "anonymousCaptchaConfigRequired": "Bản build này chưa cấu hình bước xác minh bảo mật.",
   "loginPasswordResetSent": "Đã gửi hướng dẫn đặt lại mật khẩu qua email.",
+  "passwordResetTitle": "Đặt mật khẩu mới",
+  "passwordResetSubtitle": "Chọn mật khẩu mới cho tài khoản Moniary của bạn.",
+  "passwordResetSubmit": "Cập nhật mật khẩu",
+  "passwordResetSuccess": "Đã cập nhật mật khẩu. Hãy đăng nhập bằng mật khẩu mới.",
+  "confirmPasswordLabel": "Xác nhận mật khẩu",
+  "validationPasswordsMismatch": "Mật khẩu xác nhận không khớp",
+  "signupLegalConsentLabel": "Tôi đã đọc và đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư của Moniary.",
+  "signupLegalConsentRequired": "Hãy đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư để tạo tài khoản.",
   "splashLoading": "Đang tải ứng dụng...",
   "splashRetry": "Thử lại",
   "splashError": "Không thể kết nối. Vui lòng kiểm tra mạng và thử lại.",
@@ -97,7 +120,6 @@
   "onboardingNext": "Tiếp",
   "onboardingNextPage": "Xem tiếp",
   "onboardingFinish": "Tiếp tục",
-  "onboardingMonthMock": "Tháng 5",
   "onboardingPillCapture": "Chụp & lưu",
   "onboardingPillCalendar": "Xem theo ngày",
   "onboardingPillStats": "Thống kê",
@@ -403,7 +425,13 @@
   "groupTitle": "Nhóm chi tiêu",
   "groupListTitle": "Nhóm",
   "groupListSection": "Nhóm của bạn · {count}",
-  "@groupListSection": {"placeholders": {"count": {"type": "int"}}},
+  "@groupListSection": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupEmpty": "Chưa có nhóm chi tiêu",
   "groupEmptySubtitle": "Tạo nhóm để cùng theo dõi hóa đơn và chia tiền.",
   "groupCreate": "Tạo nhóm",
@@ -421,7 +449,13 @@
   "groupDetailKindLabel": "Nhóm",
   "groupMoreActions": "Tác vụ nhóm",
   "groupTransactionCount": "{count} khoản",
-  "@groupTransactionCount": {"placeholders": {"count": {"type": "int"}}},
+  "@groupTransactionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupLoadError": "Không tải được danh sách nhóm.",
   "groupAddMember": "Thêm thành viên",
   "groupMemberName": "Tên thành viên",
@@ -443,9 +477,21 @@
   "groupInvitationsEmptySubtitle": "Các lời mời qua username hoặc bạn bè sẽ xuất hiện tại đây.",
   "groupInvitationsLoadError": "Không thể tải lời mời nhóm.",
   "groupInvitationInvitedBy": "{name} đã mời bạn tham gia.",
-  "@groupInvitationInvitedBy": {"placeholders": {"name": {"type": "String"}}},
+  "@groupInvitationInvitedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "groupInvitationExpiresAt": "Hết hạn ngày {date}",
-  "@groupInvitationExpiresAt": {"placeholders": {"date": {"type": "String"}}},
+  "@groupInvitationExpiresAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "groupInvitationAccept": "Chấp nhận",
   "groupInvitationDecline": "Từ chối",
   "groupInvitationDeclinedSuccess": "Đã từ chối lời mời nhóm.",
@@ -853,8 +899,12 @@
   "recurringEvery": "Mỗi {interval} × {unit}",
   "@recurringEvery": {
     "placeholders": {
-      "interval": { "type": "int" },
-      "unit": { "type": "String" }
+      "interval": {
+        "type": "int"
+      },
+      "unit": {
+        "type": "String"
+      }
     }
   },
   "recurringStartDate": "Ngày bắt đầu",
@@ -875,7 +925,11 @@
   "recurringApplyTitle": "Cập nhật đăng ký?",
   "recurringApplyMessage": "Lưu thay đổi sẽ xóa {count} giao dịch mà đăng ký này đã tạo và tạo lại theo thông tin mới.",
   "@recurringApplyMessage": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "recurringApplyFutureOnly": "Chỉ áp dụng từ lần tới",
   "recurringApplyUpdate": "Cập nhật các giao dịch đã tạo",
@@ -884,7 +938,11 @@
   "recurringDeleteRemoveTx": "Xóa luôn giao dịch",
   "recurringDeleteGeneratedMessage": "Đăng ký này đã tạo {count} giao dịch. Bạn muốn xử lý chúng thế nào?",
   "@recurringDeleteGeneratedMessage": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "starredTransactionsEmpty": "Chưa có giao dịch quan trọng nào",
   "statsCategoryTransactions": "Giao dịch trong danh mục",
@@ -900,30 +958,46 @@
     }
   },
   "profileProtectAccount": "Bảo vệ tài khoản của bạn",
-  "profileAnonymousWarning": "Bạn đang dùng tài khoản khách. Hãy liên kết Email hoặc Google để giữ dữ liệu khi đổi thiết bị.",
   "profileLinkNow": "Liên kết ngay",
   "profileLinkAccountTitle": "Liên kết tài khoản",
-  "profileLinkAccountSubtitle": "Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email hoặc Google để lưu dữ liệu và đăng nhập trên nhiều thiết bị.",
+  "profileLinkAccountSubtitle": "Tài khoản của bạn hiện là tài khoản khách. Liên kết với Email, Google hoặc Facebook để lưu dữ liệu và đăng nhập trên nhiều thiết bị.",
   "profileNewPassword": "Mật khẩu mới",
   "profileLinkEmail": "Liên kết Email",
-  "profileLinkGoogle": "Liên kết Google",
-  "profileLinkApple": "Liên kết Apple",
-  "profileLinkFacebook": "Liên kết Facebook",
-  "profileLinkSuccess": "Liên kết tài khoản email thành công!",
-  "profileLinkGoogleBrowser": "Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.",
-  "profileLinkAppleBrowser": "Hoàn tất liên kết Apple trong trình duyệt để quay lại Moniary.",
-  "profileLinkFacebookBrowser": "Hoàn tất liên kết Facebook trong trình duyệt để quay lại Moniary.",
-  "profileLinkGoogleError": "Lỗi liên kết Google: {error}",
-  "profileLinkAppleError": "Lỗi liên kết Apple: {error}",
-  "profileLinkFacebookError": "Lỗi liên kết Facebook: {error}",
-  "@profileLinkGoogleError": {
+  "profileLinkEmailConfirmationSent": "Đã gửi liên kết xác nhận đến {email}. Hãy mở liên kết trên thiết bị này để tiếp tục.",
+  "@profileLinkEmailConfirmationSent": {
     "placeholders": {
-      "error": {
+      "email": {
         "type": "String"
       }
     }
   },
-  "@profileLinkAppleError": {
+  "emailLinkCompleteTitle": "Bảo vệ tài khoản email",
+  "emailLinkCompleteSubtitle": "Email {email} đã được xác nhận. Hãy tạo mật khẩu để hoàn tất nâng cấp tài khoản khách.",
+  "@emailLinkCompleteSubtitle": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailLinkCompleteSubmit": "Hoàn tất nâng cấp tài khoản",
+  "emailLinkMissing": "Yêu cầu liên kết email này không còn khả dụng.",
+  "emailLinkNotConfirmed": "Hãy xác nhận liên kết email trước khi tạo mật khẩu.",
+  "emailLinkReturnProfile": "Quay lại hồ sơ",
+  "profileLinkGoogle": "Liên kết Google",
+  "profileLinkFacebook": "Liên kết Facebook",
+  "profileLinkSuccess": "Liên kết tài khoản email thành công!",
+  "profileLinkGoogleBrowser": "Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.",
+  "profileLinkFacebookBrowser": "Hoàn tất liên kết Facebook trong trình duyệt để quay lại Moniary.",
+  "profileLinkGoogleSuccess": "Đã liên kết tài khoản Google thành công.",
+  "profileLinkGoogleCompletionError": "Google đã quay lại Moniary nhưng chưa thể hoàn tất liên kết. Hãy nhấn Liên kết ngay để thử lại.",
+  "profileLinkFacebookSuccess": "Đã liên kết tài khoản Facebook thành công.",
+  "profileLinkFacebookCompletionError": "Facebook đã quay lại Moniary nhưng chưa thể hoàn tất liên kết. Hãy nhấn Liên kết ngay để thử lại.",
+  "authErrorGoogleLinkIncomplete": "Hãy hoàn tất xác thực Google trước khi liên kết tài khoản.",
+  "authErrorFacebookLinkIncomplete": "Hãy hoàn tất xác thực Facebook trước khi liên kết tài khoản.",
+  "profileLinkGoogleError": "Lỗi liên kết Google: {error}",
+  "profileLinkFacebookError": "Lỗi liên kết Facebook: {error}",
+  "@profileLinkGoogleError": {
     "placeholders": {
       "error": {
         "type": "String"
@@ -1160,6 +1234,7 @@
   "restoreAccountTitle": "Tài khoản đang chờ xóa",
   "restoreAccountBody": "Tài khoản của bạn đã bị vô hiệu hóa và đang trong thời gian ân hạn 30 ngày trước khi bị xóa vĩnh viễn.\n\nBạn có muốn khôi phục lại tài khoản không?",
   "restoreAccountButton": "Khôi phục tài khoản",
+  "accountRestoreExpired": "Thời hạn khôi phục 30 ngày đã kết thúc. Tài khoản của bạn không thể khôi phục được nữa.",
   "validationEmailRequired": "Email không được trống",
   "validationEmailInvalid": "Email không hợp lệ",
   "validationPasswordMinLength": "Mật khẩu phải từ {min} ký tự",
@@ -1314,9 +1389,15 @@
   "dataRetentionPolicyTitle": "Chính sách lưu giữ dữ liệu",
   "dataRetentionPolicySubtitle": "Xem dữ liệu nào được đồng bộ theo tài khoản, dữ liệu nào nằm trên thiết bị và cách xử lý sau khi xóa tài khoản.",
   "thirdPartyServicesTitle": "Dịch vụ bên thứ ba",
-  "thirdPartyServicesSubtitle": "Xem app đang dùng Supabase, Google Gemini, Flutter/package và bộ nhớ thiết bị như thế nào.",
-  "thirdPartyHeroBody": "Thông báo này giúp người dùng hiểu app dựa vào dịch vụ nào để đăng nhập, lưu trữ và vận hành dữ liệu.",
+  "thirdPartyServicesSubtitle": "Xem app đang dùng Supabase, Google, Meta, Cloudflare, Google Gemini, Flutter/package và bộ nhớ thiết bị như thế nào.",
+  "thirdPartyHeroBody": "Thông báo này giúp người dùng hiểu app dựa vào dịch vụ nào để đăng nhập, lưu trữ, vận hành dữ liệu và cung cấp tính năng trợ lý tùy chọn.",
   "thirdPartySupabaseDescription": "Được dùng cho đăng nhập, cơ sở dữ liệu, storage ảnh giao dịch, xóa tài khoản và edge function của trợ lý AI.",
+  "thirdPartyGoogleTitle": "Google",
+  "thirdPartyGoogleDescription": "Chỉ dùng khi bạn chọn đăng nhập bằng Google. Google có thể cung cấp mã tài khoản, email, tên và ảnh đại diện theo các quyền bạn chấp thuận.",
+  "thirdPartyMetaTitle": "Facebook (Meta)",
+  "thirdPartyMetaDescription": "Chỉ dùng khi bạn chọn đăng nhập bằng Facebook. Meta có thể cung cấp mã tài khoản, email, tên và ảnh đại diện theo các quyền bạn chấp thuận.",
+  "thirdPartyCloudflareTitle": "Cloudflare Turnstile",
+  "thirdPartyCloudflareDescription": "Dùng để ngăn lạm dụng tự động đối với đăng nhập khách bằng cách xử lý các tín hiệu bảo mật cần thiết cho thử thách CAPTCHA.",
   "thirdPartyGeminiDescription": "Chỉ dùng khi bạn bật trợ lý AI. Moniary gửi ngữ cảnh tài chính đã chọn qua Supabase Edge Function để tạo câu trả lời.",
   "thirdPartyFlutterDescription": "Framework giao diện chính của app, kèm các package hỗ trợ điều hướng, trạng thái, camera, chọn ảnh và xử lý file.",
   "thirdPartyDeviceStorageTitle": "Bộ nhớ thiết bị",
@@ -1498,7 +1579,7 @@
   "supportChecklistSensitiveTitle": "Không gửi dữ liệu quá nhạy cảm",
   "supportChecklistSensitiveDesc": "Không gửi mật khẩu, mã truy cập hoặc ảnh hóa đơn nhạy cảm nếu không thật sự cần thiết.",
   "dataSafetyPersonalInfoTitle": "Thông tin cá nhân",
-  "dataSafetyPersonalInfoStatus": "Có, khi đăng nhập email hoặc Google",
+  "dataSafetyPersonalInfoStatus": "Có, khi đăng nhập bằng email, Google hoặc Facebook (Meta)",
   "dataSafetyPersonalInfoDesc": "Tên hiển thị, email, avatar và mã tài khoản dùng cho đăng nhập và đồng bộ dữ liệu.",
   "dataSafetyFinancialInfoTitle": "Thông tin tài chính",
   "dataSafetyFinancialInfoStatus": "Có",
@@ -1556,12 +1637,13 @@
   "privacyPolicyShareItem1": "Moniary không bán dữ liệu cá nhân hoặc dữ liệu tài chính của người dùng.",
   "privacyPolicyShareItem2": "Dữ liệu được lưu trên hạ tầng bảo mật để cung cấp đăng nhập, đồng bộ dữ liệu, lưu trữ ảnh và các tính năng trợ lý AI đã bật.",
   "privacyPolicyShareItem3": "Khi bật trợ lý AI, ngữ cảnh tài chính đã chọn có thể được gửi qua Supabase Edge Functions tới Google Gemini để tạo câu trả lời. Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.",
+  "privacyPolicyShareItem4": "Khi bạn chọn đăng nhập bằng Google hoặc Facebook (Meta), nhà cung cấp đó và Supabase sẽ xử lý dữ liệu xác thực. Cloudflare Turnstile xử lý tín hiệu bảo mật cho đăng nhập khách được bảo vệ.",
   "privacyPolicyDeleteTitle": "Xóa dữ liệu",
   "privacyPolicyDeleteItem1": "Người dùng có thể xóa từng giao dịch trong app.",
   "privacyPolicyDeleteItem2": "Người dùng có thể xuất dữ liệu CSV trước khi xóa tài khoản.",
   "privacyPolicyDeleteItem3": "Khi xóa tài khoản, Moniary yêu cầu xóa hồ sơ, ví, danh mục, giao dịch và ảnh thuộc tài khoản hiện tại.",
   "privacyPolicySafetyTitle": "Khai báo an toàn dữ liệu",
-  "privacyPolicySafetyItem1": "Thông tin cá nhân: chỉ thu thập khi người dùng đăng nhập bằng email hoặc Google.",
+  "privacyPolicySafetyItem1": "Thông tin cá nhân: được xử lý khi người dùng đăng nhập bằng email, Google hoặc Facebook (Meta).",
   "privacyPolicySafetyItem2": "Thông tin tài chính: thu thập để lưu và hiển thị thu chi cá nhân.",
   "privacyPolicySafetyItem3": "Ảnh: chỉ thu thập ảnh người dùng chủ động chụp hoặc chọn.",
   "privacyPolicySafetyItem4": "Vị trí, danh bạ, SMS: không thu thập trong phiên bản hiện tại.",
@@ -1584,8 +1666,7 @@
   "termsOfUseLiabilityTitle": "4. Giới hạn trách nhiệm",
   "termsOfUseLiabilityDesc": "Moniary không phải công cụ tư vấn tài chính, kế toán, thuế hoặc pháp lý. Các thống kê trong app chỉ có tính tham khảo.",
   "termsOfUseChangesTitle": "5. Thay đổi điều khoản",
-  "termsOfUseChangesDesc": "Điều khoản có thể được cập nhật khi app bổ sung tính năng hoặc chuẩn bị phát hành chính thức."
-,
+  "termsOfUseChangesDesc": "Điều khoản có thể được cập nhật khi app bổ sung tính năng hoặc chuẩn bị phát hành chính thức.",
   "transactionOcrExtracting": "Đang trích xuất dữ liệu...",
   "exportSheetTransactions": "Giao dịch",
   "exportColumnDataType": "Loại dữ liệu",
@@ -1627,13 +1708,31 @@
   "groupChooseImage": "Chọn ảnh",
   "groupNameRequired": "Tên nhóm là bắt buộc.",
   "groupTotalSpent": "Tổng chi {amount}",
-  "@groupTotalSpent": {"placeholders": {"amount": {"type": "String"}}},
+  "@groupTotalSpent": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "groupBalanceSettled": "Đã cân bằng",
   "groupBalanceSettledShort": "Đã cân",
   "groupBalanceOwes": "Bạn cần trả {amount}",
-  "@groupBalanceOwes": {"placeholders": {"amount": {"type": "String"}}},
+  "@groupBalanceOwes": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "groupBalanceReceives": "Bạn sẽ nhận {amount}",
-  "@groupBalanceReceives": {"placeholders": {"amount": {"type": "String"}}},
+  "@groupBalanceReceives": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "groupBalanceReceiveShort": "Được nhận",
   "groupBalancePayShort": "Cần trả",
   "groupBalanceReceiveSummary": "Bạn được nhận",
@@ -1643,7 +1742,16 @@
   "groupSettlementConfirmAll": "Xác nhận đã tất toán",
   "groupSettlementWaitingForPayers": "Chờ người trả đánh dấu đã thanh toán trước.",
   "groupSettlementOptimizedSubtitle": "{groupName} · Tối ưu {count} giao dịch",
-  "@groupSettlementOptimizedSubtitle": {"placeholders": {"groupName": {"type": "String"}, "count": {"type": "int"}}},
+  "@groupSettlementOptimizedSubtitle": {
+    "placeholders": {
+      "groupName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupUnresolvedBadge": "Chưa xử lý",
   "groupOverviewTitle": "Tổng quan",
   "groupTransactionsTitle": "Giao dịch nhóm",
@@ -1659,7 +1767,13 @@
   "groupOwnerTransferTargetRequired": "Vui lòng chọn một thành viên đang tham gia khác để làm owner.",
   "groupTransferOwnership": "Chuyển owner",
   "groupTransferOwnershipConfirm": "Chuyển quyền owner của nhóm cho {member}?",
-  "@groupTransferOwnershipConfirm": {"placeholders": {"member": {"type": "String"}}},
+  "@groupTransferOwnershipConfirm": {
+    "placeholders": {
+      "member": {
+        "type": "String"
+      }
+    }
+  },
   "groupTransferOwnershipDone": "Đã chuyển quyền owner của nhóm.",
   "groupLeaveBlockedTitle": "Chưa thể rời nhóm",
   "groupLeaveViewSettlements": "Xem khoản tất toán",
@@ -1679,7 +1793,16 @@
   "groupInviteLinkRevoked": "Đã thu hồi link mời nhóm.",
   "groupInviteAcceptTitle": "Lời mời vào nhóm",
   "groupInviteAcceptSubtitle": "{name} mời bạn tham gia nhóm {group}.",
-  "@groupInviteAcceptSubtitle": {"placeholders": {"name": {"type": "String"}, "group": {"type": "String"}}},
+  "@groupInviteAcceptSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
   "groupInvitePreviewNotice": "Bạn chưa tham gia nhóm. Chỉ bấm Tham gia nhóm khi bạn muốn nhận lời mời này.",
   "groupInviteAcceptButton": "Tham gia nhóm",
   "groupInviteDismissButton": "Không tham gia",
@@ -1695,7 +1818,13 @@
   "groupCopyInviteLink": "Sao chép link",
   "groupShareInviteLink": "Chia sẻ link",
   "groupInviteShareMessage": "Tham gia nhóm chi tiêu của mình trên Moniary nhé: {link}",
-  "@groupInviteShareMessage": {"placeholders": {"link": {"type": "String"}}},
+  "@groupInviteShareMessage": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "groupInviteSent": "Đã gửi lời mời.",
   "groupUserNotFound": "Không tìm thấy người dùng này.",
   "groupNoFriends": "Bạn chưa có bạn bè nào để mời.",
@@ -1708,6 +1837,28 @@
   "groupTransactionCaption": "Caption",
   "groupTransactionNote": "Ghi chú",
   "groupTransactionTotal": "Tổng tiền",
+  "groupTransactionCurrency": "Tiền tệ giao dịch",
+  "groupTransactionCurrencySubtitle": "Tiền tệ chung của nhóm: {currency}",
+  "@groupTransactionCurrencySubtitle": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "groupTransactionExchangeRate": "Tỷ giá quy đổi về tiền tệ chung",
+  "groupTransactionExchangeRateSubtitle": "1 {from} = ? {to}",
+  "@groupTransactionExchangeRateSubtitle": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "groupTransactionExchangeRateInvalid": "Hãy nhập tỷ giá dương hợp lệ.",
   "groupTransactionCategory": "Danh mục",
   "groupTransactionImage": "Ảnh hóa đơn",
   "groupTransactionImageOptional": "Ảnh không bắt buộc nhưng được khuyến khích.",
@@ -1735,9 +1886,22 @@
   "groupTransactionMismatchStatus": "Tổng tiền chưa khớp",
   "groupTransactionPostedStatus": "Đã đăng",
   "groupTransactionNoData": "Chưa có giao dịch nhóm.",
+  "groupTransactionSearchHint": "Tìm theo nội dung, danh mục hoặc người đăng",
+  "groupTransactionFilterAll": "Tất cả",
+  "groupTransactionFilterNoResults": "Không tìm thấy giao dịch phù hợp.",
+  "groupTransactionLoadMore": "Tải thêm giao dịch",
   "groupTransactionLoadError": "Không tải được giao dịch nhóm.",
   "groupTransactionHistorySubtitle": "{payer} trả · Chia {count} người",
-  "@groupTransactionHistorySubtitle": {"placeholders": {"payer": {"type": "String"}, "count": {"type": "int"}}},
+  "@groupTransactionHistorySubtitle": {
+    "placeholders": {
+      "payer": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupTransactionDetailTitle": "Chi tiết giao dịch nhóm",
   "groupActivityCenterTitle": "Hoạt động nhóm",
   "groupActivityTabTimeline": "Hoạt động",
@@ -1755,9 +1919,24 @@
   "groupBudgetNoLimit": "Chưa đặt giới hạn ngân sách.",
   "groupBudgetOverLimit": "Nhóm đã vượt giới hạn ngân sách.",
   "groupBudgetSpentOfLimit": "Đã chi {spent} trên {limit}",
-  "@groupBudgetSpentOfLimit": {"placeholders": {"spent": {"type": "String"}, "limit": {"type": "String"}}},
+  "@groupBudgetSpentOfLimit": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
   "groupBudgetThresholdNotice": "Cảnh báo khi đạt {percent}% ngân sách.",
-  "@groupBudgetThresholdNotice": {"placeholders": {"percent": {"type": "int"}}},
+  "@groupBudgetThresholdNotice": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "groupBudgetMonthlyLimit": "Giới hạn mỗi tháng",
   "groupBudgetWarningThreshold": "Ngưỡng cảnh báo",
   "groupBudgetNotSet": "Chưa đặt ngân sách",
@@ -1803,6 +1982,11 @@
   "groupPublicProfileSettingsSubtitle": "Chỉ thông tin an toàn của nhóm được hiển thị công khai.",
   "groupPublicProfileEnabled": "Bật trang công khai",
   "groupPublicProfileShowStatsSubtitle": "Chỉ hiển thị số lượng tổng hợp và tổng chi tiêu.",
+  "groupPublicProfileShowDescription": "Hiển thị mô tả",
+  "groupPublicProfileShowDescriptionSubtitle": "Mô tả nhóm sẽ hiển thị cho bất kỳ ai có đường dẫn công khai.",
+  "groupPublicProfileShowType": "Hiển thị loại nhóm",
+  "groupPublicProfileShowAvatar": "Hiển thị ảnh nhóm",
+  "groupPublicProfileShowAvatarSubtitle": "Chỉ ảnh public-safe được tải riêng mới đủ điều kiện; ảnh riêng tư của nhóm không bao giờ bị lộ.",
   "groupPublicProfileShareTitle": "Chia sẻ trang công khai",
   "groupPublicProfileCopy": "Sao chép link",
   "groupPublicProfileCopied": "Đã sao chép link trang công khai.",
@@ -1825,6 +2009,8 @@
   "groupRecurringNextRun": "Lần chạy tiếp theo",
   "groupRecurringNotifyBefore": "Báo trước số ngày",
   "groupRecurringActive": "Đang hoạt động",
+  "groupRecurringAutoPost": "Tự động ghi nhận khi đến hạn",
+  "groupRecurringAutoPostSubtitle": "Tạo giao dịch chia đều theo tiền tệ chung của nhóm.",
   "groupRecurringDeleteTitle": "Xoá giao dịch định kỳ?",
   "groupRecurringDeleteMessage": "Giao dịch định kỳ này sẽ bị xoá vĩnh viễn.",
   "groupToolsTitle": "Công cụ nhóm",
@@ -1851,12 +2037,40 @@
   "groupSummarySettlementHistory": "Lịch sử tất toán",
   "groupSummaryNoData": "Chưa có dữ liệu trong tháng này.",
   "groupSummaryNoHistory": "Chưa có lịch sử tất toán.",
+  "groupSummaryChartsTitle": "Tổng quan chi tiêu",
+  "groupSummaryTrendTitle": "Xu hướng chi tiêu 6 tháng",
+  "groupSettlementBadgeTitle": "Đã tất toán",
+  "groupSettlementBadgeSubtitle": "Nhóm không còn số dư cần thanh toán trong tháng này.",
   "groupSummaryTransactionCount": "{count} giao dịch",
-  "@groupSummaryTransactionCount": {"placeholders": {"count": {"type": "int"}}},
+  "@groupSummaryTransactionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupSummaryMemberAmounts": "Chịu {share} · Đã trả {paid}",
-  "@groupSummaryMemberAmounts": {"placeholders": {"share": {"type": "String"}, "paid": {"type": "String"}}},
+  "@groupSummaryMemberAmounts": {
+    "placeholders": {
+      "share": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "String"
+      }
+    }
+  },
   "groupSummarySettlementPair": "{from} trả {to}",
-  "@groupSummarySettlementPair": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
+  "@groupSummarySettlementPair": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
   "groupActivityTransactionReacted": "đã thả cảm xúc vào một giao dịch",
   "groupActivityTransactionCommented": "đã bình luận vào một giao dịch",
   "groupActivityMemberJoined": "đã tham gia nhóm",
@@ -1908,9 +2122,30 @@
   "groupSettlementDisputed": "Đang tranh chấp",
   "groupSettlementEmpty": "Không có khoản nợ cần xử lý.",
   "groupSettlementFromTo": "{from} trả {to}",
-  "@groupSettlementFromTo": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
+  "@groupSettlementFromTo": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
   "groupSharePaidBalance": "Chịu {share} • Đã trả {paid} • Cân đối {balance}",
-  "@groupSharePaidBalance": {"placeholders": {"share": {"type": "String"}, "paid": {"type": "String"}, "balance": {"type": "String"}}},
+  "@groupSharePaidBalance": {
+    "placeholders": {
+      "share": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "String"
+      },
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
   "groupCommentsTitle": "Bình luận",
   "groupCommentHint": "Nhập bình luận...",
   "groupCommentSend": "Gửi",
@@ -1939,11 +2174,29 @@
   "groupActivitiesEmpty": "Chưa có hoạt động nhóm.",
   "groupActivitiesLoadError": "Không tải được hoạt động nhóm.",
   "groupActivityTransactionCreated": "{actor} đã tạo giao dịch nhóm.",
-  "@groupActivityTransactionCreated": {"placeholders": {"actor": {"type": "String"}}},
+  "@groupActivityTransactionCreated": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
   "groupActivityTransactionPosted": "{actor} đã đăng giao dịch nhóm.",
-  "@groupActivityTransactionPosted": {"placeholders": {"actor": {"type": "String"}}},
+  "@groupActivityTransactionPosted": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
   "groupActivityGeneric": "{actor} đã cập nhật nhóm.",
-  "@groupActivityGeneric": {"placeholders": {"actor": {"type": "String"}}},
+  "@groupActivityGeneric": {
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      }
+    }
+  },
   "groupLeaveWarningActivity": "Có thành viên trong nhóm cố gắng rời khỏi nhóm khi chưa xử lý xong các khoản chi. Hãy cẩn thận.",
   "cancel": "Hủy",
   "retry": "Thử lại",
@@ -1955,16 +2208,34 @@
   "friendSearch": "Tìm kiếm",
   "friendSearchPrompt": "Nhập username để tìm người dùng Moniary.",
   "friendSearchEmpty": "Không tìm thấy người dùng “{query}”.",
-  "@friendSearchEmpty": {"placeholders": {"query": {"type": "String"}}},
+  "@friendSearchEmpty": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
   "friendSearchError": "Không thể tìm bạn bè. Vui lòng thử lại.",
   "friendSearchPlaceholder": "Tìm bạn bè...",
   "friendLoadError": "Không tải được danh sách bạn bè.",
   "friendNoFriends": "Bạn chưa có bạn bè nào.",
   "friendNoFriendsSubtitle": "Thêm bạn bè để mời vào nhóm chi tiêu nhanh hơn.",
   "friendListSection": "Bạn bè · {count}",
-  "@friendListSection": {"placeholders": {"count": {"type": "int"}}},
+  "@friendListSection": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "friendSharedGroups": "{count} nhóm chung",
-  "@friendSharedGroups": {"placeholders": {"count": {"type": "int"}}},
+  "@friendSharedGroups": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "friendOwesYou": "Nợ bạn",
   "friendYouOwe": "Bạn nợ",
   "friendBalanceSettled": "Đã cân",
@@ -1977,7 +2248,13 @@
   "friendRemove": "Xóa bạn",
   "friendRemoveTitle": "Xóa bạn bè?",
   "friendRemoveMessage": "Bạn có chắc muốn xóa {name} khỏi danh sách bạn bè?",
-  "@friendRemoveMessage": {"placeholders": {"name": {"type": "String"}}},
+  "@friendRemoveMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "friendRemoved": "Đã xóa bạn bè.",
   "friendRequestSent": "Đã gửi lời mời kết bạn.",
   "friendRequestAccepted": "Đã chấp nhận lời mời kết bạn.",
@@ -2001,8 +2278,12 @@
   "budgetSpentOfLimit": "{spent} / {limit} tháng này",
   "@budgetSpentOfLimit": {
     "placeholders": {
-      "spent": {"type": "String"},
-      "limit": {"type": "String"}
+      "spent": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
     }
   },
   "budgetAddCategory": "Đặt hạn mức cho danh mục khác",
@@ -2105,7 +2386,13 @@
   "assistantPermissionConfirm": "Xác nhận",
   "assistantPrivacyNote": "Khi bật AI, ngữ cảnh Moniary đã chọn có thể được gửi qua Supabase tới Google Gemini để tạo câu trả lời.",
   "assistantGreeting": "Chào {name}",
-  "@assistantGreeting": {"placeholders": {"name": {"type": "String"}}},
+  "@assistantGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "assistantHomePrompt": "Hôm nay mình có thể giúp gì cho bạn?",
   "assistantInputHint": "Nhập câu hỏi của bạn",
   "assistantSuggestionsTitle": "Gợi ý cho bạn",
@@ -2123,12 +2410,22 @@
   "assistantQuestionRecurring": "Có khoản chi nào lặp lại nhiều lần mà tôi không chú ý không?",
   "assistantQuestionSaving": "Cắt giảm ở đâu để tiết kiệm thêm?",
   "assistantMonthlyAnswer": "Bạn đã chi {amount} trong tháng này.",
-  "@assistantMonthlyAnswer": {"placeholders": {"amount": {"type": "String"}}},
+  "@assistantMonthlyAnswer": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "assistantMonthlyCompare": "{direction} {percent}% so với tháng trước.",
   "@assistantMonthlyCompare": {
     "placeholders": {
-      "direction": {"type": "String"},
-      "percent": {"type": "String"}
+      "direction": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
     }
   },
   "assistantDirectionMore": "Nhiều hơn",
@@ -2136,59 +2433,113 @@
   "assistantWeeklyAnswer": "Tuần này bạn đã chi {current}, {direction} {percent}% so với tuần trước.",
   "@assistantWeeklyAnswer": {
     "placeholders": {
-      "current": {"type": "String"},
-      "direction": {"type": "String"},
-      "percent": {"type": "String"}
+      "current": {
+        "type": "String"
+      },
+      "direction": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
     }
   },
   "assistantDailyAnswer": "Trung bình bạn chi {amount} mỗi ngày trong tháng này.",
-  "@assistantDailyAnswer": {"placeholders": {"amount": {"type": "String"}}},
+  "@assistantDailyAnswer": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "assistantTopCategoryAnswer": "{category} đang đứng đầu với {amount}, chiếm {percent}% tổng chi.",
   "@assistantTopCategoryAnswer": {
     "placeholders": {
-      "category": {"type": "String"},
-      "amount": {"type": "String"},
-      "percent": {"type": "String"}
+      "category": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
     }
   },
   "assistantRecurringAnswer": "Khoản “{label}” xuất hiện {count} lần, tổng cộng {amount}.",
   "@assistantRecurringAnswer": {
     "placeholders": {
-      "label": {"type": "String"},
-      "count": {"type": "int"},
-      "amount": {"type": "String"}
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "assistantSavingAnswer": "Nếu giảm khoảng 15% ở {category}, bạn có thể tiết kiệm gần {amount} trong tháng.",
   "@assistantSavingAnswer": {
     "placeholders": {
-      "category": {"type": "String"},
-      "amount": {"type": "String"}
+      "category": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "assistantNoData": "Chưa có đủ dữ liệu để trả lời câu này. Hãy ghi thêm vài giao dịch rồi thử lại.",
   "assistantAnalysisError": "Không thể phân tích lúc này. Hãy thử lại sau.",
   "journalRecapTitle": "Money Story",
   "journalRecapMonth": "Money Story {month}",
-  "@journalRecapMonth": {"placeholders": {"month": {"type": "String"}}},
+  "@journalRecapMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
   "journalMoneyStoryMonth": "Tháng {month}",
-  "@journalMoneyStoryMonth": {"placeholders": {"month": {"type": "String"}}},
+  "@journalMoneyStoryMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
   "journalMoneyStoryExpenseLabel": "Tổng chi tháng này",
   "journalRecordedCount": "Bạn đã ghi lại {count} khoản chi",
-  "@journalRecordedCount": {"placeholders": {"count": {"type": "int"}}},
+  "@journalRecordedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "journalRecapSummary": "Tổng cộng {amount}. Danh mục lớn nhất là {category}.",
   "@journalRecapSummary": {
     "placeholders": {
-      "amount": {"type": "String"},
-      "category": {"type": "String"}
+      "amount": {
+        "type": "String"
+      },
+      "category": {
+        "type": "String"
+      }
     }
   },
   "journalHighestDay": "Ngày chi nhiều nhất",
   "journalHighestDayValue": "{date} — {amount} trong một ngày",
   "@journalHighestDayValue": {
     "placeholders": {
-      "date": {"type": "String"},
-      "amount": {"type": "String"}
+      "date": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "journalComparedPrevious": "So với tháng trước",
@@ -2202,35 +2553,85 @@
   "journalMoneyStoryNet": "Còn lại",
   "journalMoneyStoryAverageDay": "Trung bình / ngày ghi",
   "journalMoneyStoryActiveDays": "{count} ngày có ghi chép",
-  "@journalMoneyStoryActiveDays": {"placeholders": {"count": {"type": "int"}}},
+  "@journalMoneyStoryActiveDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryCategoryShare": "{category} chiếm {percent}%",
   "@journalMoneyStoryCategoryShare": {
     "placeholders": {
-      "category": {"type": "String"},
-      "percent": {"type": "int"}
+      "category": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "journalMoneyStoryCategoryPercent": "{percent}%",
-  "@journalMoneyStoryCategoryPercent": {"placeholders": {"percent": {"type": "int"}}},
+  "@journalMoneyStoryCategoryPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryHighestDayEmpty": "Chưa có ngày chi nổi bật trong tháng này.",
   "journalMoneyStoryHighestDayTransactions": "{count} khoản trong ngày này",
-  "@journalMoneyStoryHighestDayTransactions": {"placeholders": {"count": {"type": "int"}}},
+  "@journalMoneyStoryHighestDayTransactions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryInsightsTitle": "Những điều tháng này kể lại",
   "journalMoneyStoryInsightSpendingDown": "Bạn chi ít hơn {percent}% so với tháng trước.",
-  "@journalMoneyStoryInsightSpendingDown": {"placeholders": {"percent": {"type": "int"}}},
+  "@journalMoneyStoryInsightSpendingDown": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryInsightSpendingUp": "Chi tiêu tăng {percent}% so với tháng trước.",
-  "@journalMoneyStoryInsightSpendingUp": {"placeholders": {"percent": {"type": "int"}}},
+  "@journalMoneyStoryInsightSpendingUp": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryInsightTopCategory": "{category} là điểm rơi lớn nhất, chiếm {percent}% tổng chi.",
   "@journalMoneyStoryInsightTopCategory": {
     "placeholders": {
-      "category": {"type": "String"},
-      "percent": {"type": "int"}
+      "category": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "journalMoneyStoryInsightWeekend": "Cuối tuần chiếm {percent}% chi tiêu của tháng.",
-  "@journalMoneyStoryInsightWeekend": {"placeholders": {"percent": {"type": "int"}}},
+  "@journalMoneyStoryInsightWeekend": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryInsightRecording": "Bạn ghi chép trong {count} ngày, đủ đều để nhìn ra thói quen.",
-  "@journalMoneyStoryInsightRecording": {"placeholders": {"count": {"type": "int"}}},
+  "@journalMoneyStoryInsightRecording": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "journalMoneyStoryInsightQuiet": "Tháng này còn khá yên ắng. Ghi thêm vài khoản để story kể được nhiều hơn.",
   "journalMoneyStoryShareTitle": "Sẵn sàng lưu lại tháng này",
   "journalMoneyStoryShareBody": "Tạo poster gọn đẹp để chia sẻ hoặc giữ riêng trong máy.",
@@ -2254,8 +2655,12 @@
   "journalCollectionMeta": "{count} khoản · {amount}",
   "@journalCollectionMeta": {
     "placeholders": {
-      "count": {"type": "int"},
-      "amount": {"type": "String"}
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
     }
   },
   "journalAddTransaction": "Thêm khoản vào bộ sưu tập",
@@ -2264,18 +2669,48 @@
   "journalStreakTitle": "Chuỗi ghi chép",
   "journalStreakBreadcrumb": "Trang chủ — chuỗi ghi chép",
   "journalStreakDays": "{count} ngày liên tiếp",
-  "@journalStreakDays": {"placeholders": {"count": {"type": "int"}}},
+  "@journalStreakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "journalStreakBody": "Bạn đã ghi lại chi tiêu mỗi ngày trong {count} ngày gần đây.",
-  "@journalStreakBody": {"placeholders": {"count": {"type": "int"}}},
+  "@journalStreakBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "journalStreakRecord": "Kỷ lục của bạn",
   "journalStreakRecordDays": "{count} ngày",
-  "@journalStreakRecordDays": {"placeholders": {"count": {"type": "int"}}},
+  "@journalStreakRecordDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "friendInviteShareDescription": "Gửi link cho người khác để họ kết bạn với bạn nhanh hơn.",
   "friendInviteShareMessage": "Kết bạn với mình trên Moniary nhé: {link}",
-  "@friendInviteShareMessage": {"placeholders": {"link": {"type": "String"}}},
+  "@friendInviteShareMessage": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "friendInviteAcceptTitle": "Lời mời kết bạn",
   "friendInviteAcceptSubtitle": "{name} muốn kết bạn với bạn trên Moniary.",
-  "@friendInviteAcceptSubtitle": {"placeholders": {"name": {"type": "String"}}},
+  "@friendInviteAcceptSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "friendInviteAcceptButton": "Kết bạn",
   "friendInviteAgreeButton": "Đồng ý",
   "friendInviteAccepted": "Đã kết bạn thành công.",
@@ -2297,15 +2732,17 @@
   "privacyStatusProtected": "Đang bảo vệ",
   "privacyStatusReview": "Cần kiểm tra",
   "privacyRequestCount": "{count} yêu cầu",
-  "@privacyRequestCount": {"placeholders": {"count": {"type": "int"}}},
+  "@privacyRequestCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "biometricReasonDisable": "Xác thực để tắt khóa ứng dụng",
   "biometricReasonDeleteAccount": "Xác thực để yêu cầu xóa tài khoản",
   "deleteAccountGraceTitle": "Tài khoản sẽ được xóa sau 30 ngày",
   "deleteAccountGraceBody": "Bạn sẽ được đăng xuất ngay. Trong 30 ngày, hãy đăng nhập bằng đúng phương thức hiện tại nếu muốn khôi phục tài khoản trước khi dữ liệu bị xóa vĩnh viễn.",
-  "deleteGuestDataTitle": "Xóa dữ liệu tài khoản khách",
-  "deleteGuestDataBody": "Dữ liệu tài khoản khách chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và hướng dẫn ban đầu vẫn được giữ lại.",
-  "deleteGuestDataUnderstand": "Tôi hiểu dữ liệu tài khoản khách trên thiết bị sẽ bị xóa ngay.",
-  "deleteGuestDataAction": "Xóa dữ liệu khách",
   "deleteAccountExportTitle": "Giữ một bản sao trước khi xóa",
   "deleteAccountExportBody": "Bạn có thể xuất dữ liệu trước khi gửi yêu cầu xóa. Lỗi xuất dữ liệu không ngăn bạn thực hiện quyền xóa tài khoản.",
   "deleteAccountExportAction": "Mở trang xuất dữ liệu",
@@ -2317,7 +2754,13 @@
   "deleteAccountGraceUnderstand": "Tôi hiểu tài khoản sẽ bị khóa sử dụng và xóa vĩnh viễn sau 30 ngày nếu không khôi phục.",
   "deleteAccountConfirmationPhrase": "XÓA",
   "deleteAccountConfirmationLabel": "Nhập {phrase} để xác nhận",
-  "@deleteAccountConfirmationLabel": {"placeholders": {"phrase": {"type": "String"}}},
+  "@deleteAccountConfirmationLabel": {
+    "placeholders": {
+      "phrase": {
+        "type": "String"
+      }
+    }
+  },
   "deleteAccountScheduleAction": "Yêu cầu xóa tài khoản",
   "deleteReasonDifficultToUse": "Khó sử dụng",
   "deleteReasonMissingFeatures": "Thiếu tính năng",
@@ -2327,14 +2770,41 @@
   "deleteReasonOther": "Khác",
   "deleteAccountImpactTitle": "Dữ liệu bị ảnh hưởng",
   "deleteAccountTransactionsCount": "{count} giao dịch",
-  "@deleteAccountTransactionsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@deleteAccountTransactionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteAccountWalletsCount": "{count} ví",
-  "@deleteAccountWalletsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@deleteAccountWalletsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteAccountPhotosCount": "{count} ảnh",
-  "@deleteAccountPhotosCount": {"placeholders": {"count": {"type": "int"}}},
+  "@deleteAccountPhotosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteAccountImpactUnavailable": "Không thể tải số lượng chi tiết lúc này. Bạn vẫn có thể tiếp tục yêu cầu xóa.",
   "restoreAccountPendingBody": "Yêu cầu xóa được tạo ngày {requestedDate}. Dữ liệu sẽ bị xóa vĩnh viễn ngày {deletionDate}.\n\nKhôi phục tài khoản để tiếp tục sử dụng Moniary.",
-  "@restoreAccountPendingBody": {"placeholders": {"requestedDate": {"type": "String"}, "deletionDate": {"type": "String"}}},
+  "@restoreAccountPendingBody": {
+    "placeholders": {
+      "requestedDate": {
+        "type": "String"
+      },
+      "deletionDate": {
+        "type": "String"
+      }
+    }
+  },
   "commonUnknown": "Không xác định",
   "loginEmailConfirmationSent": "Vui lòng kiểm tra email để xác nhận tài khoản.",
   "loginCreateAccount": "Tạo tài khoản",
@@ -2347,17 +2817,6 @@
   "loginSignIn": "Đăng nhập",
   "loginAlreadyHaveAccount": "Đã có tài khoản? Đăng nhập",
   "loginNeedAccount": "Chưa có tài khoản? Đăng ký",
-  "resetPasswordTitle": "Đặt mật khẩu mới",
-  "resetPasswordSubtitle": "Nhập mật khẩu mới cho tài khoản của bạn.",
-  "resetPasswordConfirmLabel": "Xác nhận mật khẩu mới",
-  "resetPasswordMismatch": "Mật khẩu xác nhận không khớp",
-  "resetPasswordSubmit": "Đặt lại mật khẩu",
-  "resetPasswordSuccess": "Mật khẩu của bạn đã được cập nhật.",
-  "authErrorInvalidCredentials": "Email hoặc mật khẩu không đúng.",
-  "authErrorEmailNotConfirmed": "Vui lòng xác nhận email trước khi đăng nhập.",
-  "authErrorEmailAlreadyRegistered": "Email này đã được đăng ký.",
-  "authErrorWeakPassword": "Mật khẩu chưa đủ mạnh. Hãy thử mật khẩu dài hơn kèm số hoặc ký tự đặc biệt.",
-  "authErrorRateLimited": "Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.",
   "authErrorUserBanned": "Tài khoản này đã bị tạm khóa.",
   "cameraFallbackPermissionDenied": "Không có quyền truy cập camera. Bạn có thể nhập giao dịch thủ công.",
   "cameraFallbackGenericError": "Không thể mở camera. Bạn có thể nhập giao dịch thủ công.",
@@ -2397,6 +2856,94 @@
   "friendQrSwitchCamera": "Đổi camera",
   "friendQrInvalid": "Đây không phải mã QR kết bạn Moniary hợp lệ.",
   "friendRateLimited": "Bạn đã gửi quá nhiều lời mời kết bạn. Vui lòng thử lại sau.",
+  "paymentQrTitle": "Mã QR nhận tiền",
+  "paymentQrProfileSubtitle": "Lưu một lần để thành viên nhóm mở khi thanh toán.",
+  "paymentQrMyTitle": "Mã QR của tôi",
+  "paymentQrDescription": "Thành viên trong cùng nhóm có thể mở mã này khi cần chuyển tiền cho bạn.",
+  "paymentQrMemberDescription": "Mã QR nhận tiền của {name}.",
+  "@paymentQrMemberDescription": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentQrAdd": "Lưu ảnh mã QR",
+  "paymentQrReplace": "Thay ảnh mã QR",
+  "paymentQrRemove": "Xóa mã QR",
+  "paymentQrPrivacyNote": "Mã QR được lưu riêng tư và chỉ hiển thị cho thành viên cùng nhóm.",
+  "paymentQrSaved": "Đã lưu mã QR nhận tiền.",
+  "paymentQrRemoved": "Đã xóa mã QR nhận tiền.",
+  "paymentQrViewForPayment": "Mở QR để thanh toán",
+  "paymentQrEmptyOwner": "Bạn chưa lưu ảnh mã QR nhận tiền.",
+  "paymentQrEmptyMember": "Thành viên này chưa lưu mã QR nhận tiền.",
+  "groupSettingsTitle": "Cài đặt nhóm",
+  "groupSettingsSubtitle": "Chỉnh thông tin nhóm và chỉ đóng nhóm sau khi đã tất toán.",
+  "groupSettingsName": "Tên nhóm",
+  "groupSettingsDescription": "Mô tả",
+  "groupSettingsType": "Loại nhóm",
+  "groupSettingsBaseCurrency": "Tiền tệ chung của nhóm",
+  "groupSettingsBaseCurrencySubtitle": "Tất toán và ngân sách dùng tiền tệ này. Giao dịch ngoại tệ cần nhập tỷ giá rõ ràng.",
+  "groupSettingsSave": "Lưu thay đổi",
+  "groupSettingsSaved": "Đã cập nhật thông tin nhóm.",
+  "groupSettingsArchiveTitle": "Đóng nhóm",
+  "groupSettingsArchiveSubtitle": "Nhóm sẽ ẩn khỏi danh sách và không nhận giao dịch mới. Công nợ chưa xử lý sẽ chặn thao tác này.",
+  "groupSettingsArchiveAction": "Đóng nhóm",
+  "groupSettingsArchiveConfirmTitle": "Đóng nhóm này?",
+  "groupSettingsArchiveConfirmMessage": "Chỉ nên đóng nhóm sau khi mọi thành viên đã hoàn tất thanh toán.",
+  "groupSettingsArchiveBlocked": "Chưa thể đóng nhóm vì vẫn còn công nợ, giao dịch chờ xử lý hoặc tranh chấp.",
+  "groupSettingsAdminRequired": "Chỉ chủ nhóm hoặc quản trị viên mới có quyền thực hiện thao tác này.",
+  "groupAuditLogTitle": "Nhật ký quản trị",
+  "groupAuditLogSubtitle": "Theo dõi thay đổi thành viên, giao dịch và cài đặt nhóm.",
+  "groupAuditLogEmpty": "Chưa có hoạt động quản trị nào được ghi nhận.",
+  "groupAuditSystem": "Hệ thống",
+  "groupParticipationTitle": "Hoạt động cùng nhóm",
+  "groupParticipationSubtitle": "Cùng bình chọn và biến mục tiêu chung thành tiến độ.",
+  "groupPollsTitle": "Bình chọn",
+  "groupPollsEmpty": "Chưa có bình chọn.",
+  "groupPollCreate": "Tạo bình chọn",
+  "groupPollQuestion": "Câu hỏi",
+  "groupPollOptionsHint": "Các lựa chọn, mỗi dòng một lựa chọn",
+  "groupChallengesTitle": "Thử thách tiết kiệm",
+  "groupChallengesEmpty": "Chưa có thử thách tiết kiệm.",
+  "groupChallengeCreate": "Tạo thử thách",
+  "groupChallengeName": "Tên thử thách",
+  "groupChallengeTarget": "Số tiền mục tiêu",
+  "groupChallengeContribute": "Đóng góp",
+  "groupPulsePersonalTitle": "Việc tiếp theo của bạn",
+  "groupPulsePersonalMessage": "Có một khoản cần bạn xử lý để nhóm tiếp tục nhẹ nhàng hơn.",
+  "groupPulseUpcomingTitle": "Sắp đến lịch chung",
+  "groupPulseUpcomingMessage": "{title} sắp đến hạn. Cùng chuẩn bị trước để không bỏ lỡ.",
+  "@groupPulseUpcomingMessage": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "groupPulseTogetherTitle": "Cùng giữ nhịp nhóm",
+  "groupPulseTogetherMessage": "Mở dòng hoạt động để mọi người cùng cập nhật và phản hồi.",
+  "groupPulseAllClearTitle": "Nhóm đang rất ổn",
+  "groupPulseAllClearMessage": "Không còn khoản chờ xử lý. Thêm một khoản chi mới để cả nhóm cùng thấy tiến độ.",
+  "groupSpotlightTitle": "Điểm chạm mới nhất",
+  "groupSpotlightComment": "Xem và phản hồi",
+  "groupSummaryContributionTitle": "Đóng góp nổi bật",
+  "groupSummaryContributionMessage": "{name} đang giúp nhóm giữ nhịp đều đặn trong tháng này.",
+  "@groupSummaryContributionMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupSummaryContributionCount": "{count} hoạt động",
+  "@groupSummaryContributionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "groupSplitExact": "Số tiền cụ thể",
   "groupParticipantsTitle": "Người tham gia khoản chi",
   "groupSettlementDisputeTitle": "Báo cáo vấn đề thanh toán",
@@ -2411,20 +2958,26 @@
   "mascotOverBudget": "Ví đang khóc vì mục {category} vượt trần rồi kìa! 🛑",
   "@mascotOverBudget": {
     "placeholders": {
-      "category": { "type": "String" }
+      "category": {
+        "type": "String"
+      }
     }
   },
   "mascotNearBudget": "Coi chừng mục {category} sắp chạm trần ngân sách nha! ⚠️",
   "@mascotNearBudget": {
     "placeholders": {
-      "category": { "type": "String" }
+      "category": {
+        "type": "String"
+      }
     }
   },
   "mascotZeroExpenseToday": "Hôm nay chưa tiêu đồng nào! Heo tự hào về bạn! 🐖💖",
   "mascotGoodSavings": "Tháng này tiết kiệm được {percent}%. Quá siêu! 🏆",
   "@mascotGoodSavings": {
     "placeholders": {
-      "percent": { "type": "String" }
+      "percent": {
+        "type": "String"
+      }
     }
   },
   "mascotFunQuote1": "Hôm nay bạn đã ghi chép chi tiêu chưa? 📝",
@@ -2435,7 +2988,9 @@
   "mascotStreakPraise": "Bạn đã ghi chép liên tục {days} ngày rồi! Siêu quá heo ơi! 🐷🔥",
   "@mascotStreakPraise": {
     "placeholders": {
-      "days": { "type": "int" }
+      "days": {
+        "type": "int"
+      }
     }
   },
   "widgetTotalBalance": "Số dư tổng",
@@ -2452,7 +3007,9 @@
   "widgetDays": "{count} ngày",
   "@widgetDays": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "widgetBudgetTitle": "Ngân sách",
@@ -2483,5 +3040,12 @@
   "pushNotificationSectionDesc": "Chọn loại thông báo được phép hiển thị khi Moniary không mở.",
   "pushNotificationAllTitle": "Cho phép thông báo đẩy",
   "pushNotificationAllSubtitle": "Tắt chỉ chặn thông báo trên điện thoại; lịch sử vẫn ở trong inbox.",
-  "pushNotificationCategorySubtitle": "Thông báo vẫn được lưu trong inbox trong 30 ngày."
+  "pushNotificationCategorySubtitle": "Thông báo vẫn được lưu trong inbox trong 30 ngày.",
+  "loginAnonymous": "Tiếp tục với tài khoản khách",
+  "onboardingMonthMock": "Tháng 5",
+  "profileAnonymousWarning": "Bạn đang dùng tài khoản khách. Hãy liên kết Email hoặc Google để giữ dữ liệu khi đổi thiết bị.",
+  "deleteGuestDataTitle": "Xóa dữ liệu tài khoản khách",
+  "deleteGuestDataBody": "Dữ liệu tài khoản khách chỉ nằm trên thiết bị này và sẽ bị xóa ngay. Thiết lập ngôn ngữ, tiền tệ và hướng dẫn ban đầu vẫn được giữ lại.",
+  "deleteGuestDataUnderstand": "Tôi hiểu dữ liệu tài khoản khách trên thiết bị sẽ bị xóa ngay.",
+  "deleteGuestDataAction": "Xóa dữ liệu khách"
 }

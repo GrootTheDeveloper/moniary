@@ -17,8 +17,10 @@ const _mascotHeight = 42.0;
 const _mascotAspectRatio = 353 / 291;
 const _walkDuration = Duration(seconds: 6);
 const _frameDuration = Duration(milliseconds: 130);
+const _actionFrameHeight = 58.0;
+const _actionFrameWidth = 68.0;
 const _baseBottom =
-    0.0; // aligned with the -10.0 bottom offset in the shell stack
+    8.0; // mascot feet align 8px above the bottom nav top border
 const _buttonWidth = 68.0; // matches _CameraActionButton in bottom_nav_bar.dart
 const _jumpHeight = 24.0; // lifts the mascot's feet up to the button's top edge
 
@@ -26,19 +28,32 @@ const _jumpHeight = 24.0; // lifts the mascot's feet up to the button's top edge
 const _bounceDuration = Duration(milliseconds: 400);
 
 // ── Idle behaviour constants ──────────────────────────────────────────────────
-const _idleMinSeconds = 8;
-const _idleMaxSeconds = 15;
-const _idleChance = 0.3; // 30 % probability of pausing
-const _idlePauseSeconds = 3;
+const _ambientWalkDuration = Duration(seconds: 5);
+const _actionVisibleDuration = Duration(seconds: 5);
 
 // ── Speech bubble constants ───────────────────────────────────────────────────
 const _speechDismissSeconds = 5;
 const _speechBubbleMaxWidth = 200.0;
 const _speechBubbleAbove = 60.0; // px above the mascot's feet
 
-// ── Idle frame range ─────────────────────────────────────────────────────────
-const _idleFrameStart = 0;
-const _idleFrameEnd = 2;
+enum _MascotAction {
+  look('look', 9),
+  wave('wave', 9),
+  sleep('sleep', 10),
+  startled('startled', 10),
+  celebrate('celebrate', 10);
+
+  const _MascotAction(this.assetName, this.frameCount);
+
+  final String assetName;
+  final int frameCount;
+
+  String assetPath(int frameIndex) {
+    final safeFrame = frameIndex < frameCount ? frameIndex : frameCount - 1;
+    return 'assets/mascot/generated/frames/mascot_$assetName'
+        '_${safeFrame.toString().padLeft(2, '0')}.png';
+  }
+}
 
 class MascotOverlay extends ConsumerStatefulWidget {
   const MascotOverlay({super.key});
@@ -68,17 +83,24 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
   Timer? _frameTimer;
   int _frameIndex = 0;
 
+  // ── Generated action sprites ─────────────────────────────────────────────
+  Timer? _actionFrameTimer;
+  _MascotAction? _activeAction;
+  int _actionFrameIndex = 0;
+  int _nextAmbientActionIndex = 0;
+  bool _wasOverBudget = false;
+  bool _wasHappy = false;
+
   // ── Idle ─────────────────────────────────────────────────────────────────
   Timer? _idleScheduler;
   bool _isIdling = false;
-  int _idleFrameIndex = _idleFrameStart;
-  Timer? _idleFrameTimer;
-  Timer? _idleExitTimer;
 
   // ── Speech bubble ─────────────────────────────────────────────────────────
   String? _speechText;
   bool _speechVisible = false;
   Timer? _speechDismissTimer;
+
+  bool _autoGreetingShown = false;
 
   final math.Random _rng = math.Random();
 
@@ -141,6 +163,7 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
 
   // ── Frame loop ─────────────────────────────────────────────────────────────
   void _startFrameLoop() {
+    if (_activeAction != null) return;
     _frameTimer ??= Timer.periodic(_frameDuration, (_) {
       if (!mounted) return;
       setState(() => _frameIndex = (_frameIndex + 1) % _frameCount);
@@ -155,61 +178,108 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
   // ── Idle behaviour ─────────────────────────────────────────────────────────
   void _scheduleNextIdleCheck() {
     _idleScheduler?.cancel();
-    final seconds =
-        _idleMinSeconds + _rng.nextInt(_idleMaxSeconds - _idleMinSeconds);
-    _idleScheduler = Timer(Duration(seconds: seconds), _maybeIdle);
+    _idleScheduler = Timer(_ambientWalkDuration, _maybeIdle);
   }
 
   void _maybeIdle() {
-    if (!mounted || _isIdling) return;
-    if (_rng.nextDouble() < _idleChance) {
-      _enterIdle();
-    } else {
+    if (!mounted || _isIdling || _activeAction != null) return;
+    _enterIdle();
+  }
+
+  void _enterIdle() {
+    if (!mounted || _activeAction != null) return;
+    _idleScheduler?.cancel();
+    _idleScheduler = null;
+    setState(() => _isIdling = true);
+    _startAction(_pickIdleAction());
+  }
+
+  _MascotAction _pickIdleAction() {
+    const ambientActions = [
+      _MascotAction.look,
+      _MascotAction.wave,
+      _MascotAction.sleep,
+      _MascotAction.startled,
+      _MascotAction.celebrate,
+    ];
+    final action = ambientActions[_nextAmbientActionIndex];
+    _nextAmbientActionIndex =
+        (_nextAmbientActionIndex + 1) % ambientActions.length;
+    return action;
+  }
+
+  void _startAction(_MascotAction action) {
+    if (!mounted) return;
+    _actionFrameTimer?.cancel();
+    _stopFrameLoop();
+    if (_walkController.isAnimating) {
+      _walkController.stop();
+    }
+
+    setState(() {
+      _activeAction = action;
+      _actionFrameIndex = 0;
+    });
+
+    final actionFrameDuration = Duration(
+      milliseconds: _actionVisibleDuration.inMilliseconds ~/ action.frameCount,
+    );
+    _actionFrameTimer = Timer.periodic(actionFrameDuration, (_) {
+      if (!mounted) return;
+      final nextFrame = _actionFrameIndex + 1;
+      if (nextFrame >= action.frameCount) {
+        _finishAction();
+        return;
+      }
+      setState(() => _actionFrameIndex = nextFrame);
+    });
+  }
+
+  void _finishAction() {
+    _actionFrameTimer?.cancel();
+    _actionFrameTimer = null;
+    if (!mounted) return;
+
+    final wasIdling = _isIdling;
+    setState(() {
+      _activeAction = null;
+      _actionFrameIndex = 0;
+      _isIdling = false;
+    });
+
+    _startFrameLoop();
+    if (!_walkController.isAnimating) {
+      _walkController.repeat(reverse: true);
+    }
+    if (wasIdling || _idleScheduler == null) {
       _scheduleNextIdleCheck();
     }
   }
 
-  void _enterIdle() {
-    _walkController.stop();
-    _stopFrameLoop();
-    setState(() {
-      _isIdling = true;
-      _idleFrameIndex = _idleFrameStart;
-    });
-
-    _idleFrameTimer?.cancel();
-    _idleFrameTimer = Timer.periodic(const Duration(milliseconds: 300), (_) {
-      if (!mounted) return;
-      setState(() {
-        _idleFrameIndex = _idleFrameIndex == _idleFrameStart
-            ? _idleFrameEnd
-            : _idleFrameStart;
-      });
-    });
-
-    _idleExitTimer?.cancel();
-    _idleExitTimer = Timer(
-      const Duration(seconds: _idlePauseSeconds),
-      _exitIdle,
-    );
+  void _stopAction() {
+    _actionFrameTimer?.cancel();
+    _actionFrameTimer = null;
+    _activeAction = null;
+    _actionFrameIndex = 0;
   }
 
-  void _exitIdle() {
-    if (!mounted) return;
-    _idleFrameTimer?.cancel();
-    _idleFrameTimer = null;
-    _idleExitTimer?.cancel();
-    _idleExitTimer = null;
-    _walkController.repeat(reverse: true);
-    setState(() => _isIdling = false);
-    _scheduleNextIdleCheck();
+  void _queueStatusAction(_MascotAction action) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _activeAction != null || _isIdling) return;
+      if (!ref.read(mascotEnabledProvider)) return;
+      _startAction(action);
+    });
   }
 
   // ── Tap handler ────────────────────────────────────────────────────────────
   void _onTap() {
     HapticFeedback.lightImpact();
-    if (_isIdling) _exitIdle();
+    if (_isIdling || _activeAction != null) {
+      _stopAction();
+      _isIdling = false;
+    }
 
+    _startAction(_MascotAction.wave);
     _bounceController.forward(from: 0);
 
     final mascotDataAsync = ref.read(mascotDataProvider);
@@ -240,10 +310,37 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
     );
   }
 
+  void _showGreetingQuote(MascotData data) {
+    final text = MascotDialogueGenerator.generate(
+      context,
+      allTimeEmpty: data.allTimeEmpty,
+      budgetCategories: data.budgetCategories,
+      todayTransactions: data.todayTransactions,
+      monthTransactions: data.monthTransactions,
+      streakDays: data.streakDays,
+      isTap: false,
+    );
+    if (!mounted) return;
+    setState(() {
+      _speechText = text;
+      _speechVisible = true;
+    });
+
+    _speechDismissTimer?.cancel();
+    _speechDismissTimer = Timer(
+      const Duration(seconds: _speechDismissSeconds),
+      () {
+        if (mounted) setState(() => _speechVisible = false);
+      },
+    );
+  }
+
   // ── Feed animation trigger & callback ───────────────────────────────────────
   void _startFeedAnimation() {
     HapticFeedback.mediumImpact();
     _speechDismissTimer?.cancel();
+    _stopAction();
+    _isIdling = false;
     setState(() {
       _isEating = true;
       _showConfetti = false;
@@ -280,6 +377,7 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
       _showConfetti = true;
       _speechText = context.l10n.mascotFedResponse;
     });
+    _startAction(_MascotAction.celebrate);
 
     _confettiController.forward(from: 0.0);
     _feedController.reset();
@@ -301,10 +399,9 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
     _bounceController.dispose();
     _feedController.dispose();
     _confettiController.dispose();
+    _actionFrameTimer?.cancel();
     _stopFrameLoop();
     _idleScheduler?.cancel();
-    _idleFrameTimer?.cancel();
-    _idleExitTimer?.cancel();
     _speechDismissTimer?.cancel();
     super.dispose();
   }
@@ -315,12 +412,10 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
 
     if (!enabled) {
       _stopFrameLoop();
+      _stopAction();
       _idleScheduler?.cancel();
       _idleScheduler = null;
-      _idleFrameTimer?.cancel();
-      _idleFrameTimer = null;
-      _idleExitTimer?.cancel();
-      _idleExitTimer = null;
+      _isIdling = false;
       _speechDismissTimer?.cancel();
       _speechDismissTimer = null;
       if (_walkController.isAnimating) {
@@ -335,9 +430,31 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
     final mascotDataAsync = ref.watch(mascotDataProvider);
     final data = mascotDataAsync.asData?.value;
 
+    ref.listen<AsyncValue<MascotData>>(mascotDataProvider, (previous, next) {
+      if (_autoGreetingShown) return;
+      next.whenOrNull(
+        data: (data) {
+          _autoGreetingShown = true;
+          Timer(const Duration(milliseconds: 1500), () {
+            if (mounted) {
+              _showGreetingQuote(data);
+            }
+          });
+        },
+      );
+    });
+
     final isOverBudget =
         data?.budgetCategories.any((c) => c.isOverLimit) ?? false;
     final isHappy = (data?.streakDays ?? 0) >= 3;
+
+    if (isOverBudget && !_wasOverBudget) {
+      _queueStatusAction(_MascotAction.startled);
+    } else if (!isOverBudget && isHappy && !_wasHappy) {
+      _queueStatusAction(_MascotAction.celebrate);
+    }
+    _wasOverBudget = isOverBudget;
+    _wasHappy = isHappy;
 
     final targetDuration = isOverBudget
         ? const Duration(seconds: 10)
@@ -350,11 +467,13 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
       }
     }
 
-    _startFrameLoop();
-    if (!_walkController.isAnimating && !_isIdling) {
+    if (_activeAction == null) {
+      _startFrameLoop();
+    }
+    if (!_walkController.isAnimating && !_isIdling && _activeAction == null) {
       _walkController.repeat(reverse: true);
     }
-    if (_idleScheduler == null && !_isIdling) {
+    if (_idleScheduler == null && !_isIdling && _activeAction == null) {
       _scheduleNextIdleCheck();
     }
 
@@ -501,9 +620,25 @@ class _MascotOverlayState extends ConsumerState<MascotOverlay>
           SizedBox(
             height: _mascotHeight,
             width: mascotWidth,
-            child: Image.asset(
-              'assets/mascot/pig_${(_isIdling ? _idleFrameIndex : _frameIndex).toString().padLeft(2, '0')}.png',
-              fit: BoxFit.contain,
+            child: OverflowBox(
+              alignment: Alignment.bottomCenter,
+              maxHeight: _activeAction == null
+                  ? _mascotHeight
+                  : _actionFrameHeight,
+              maxWidth: _activeAction == null ? mascotWidth : _actionFrameWidth,
+              child: SizedBox(
+                height: _activeAction == null
+                    ? _mascotHeight
+                    : _actionFrameHeight,
+                width: _activeAction == null ? mascotWidth : _actionFrameWidth,
+                child: Image.asset(
+                  _activeAction?.assetPath(_actionFrameIndex) ??
+                      'assets/mascot/pig_${_frameIndex.toString().padLeft(2, '0')}.png',
+                  fit: BoxFit.contain,
+                  alignment: Alignment.bottomCenter,
+                  filterQuality: FilterQuality.none,
+                ),
+              ),
             ),
           ),
           if (_showConfetti)
@@ -562,16 +697,19 @@ class _SpeechBubble extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: _speechBubbleMaxWidth),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
-        color: colors.surface.withValues(alpha: 0.98),
+        color: colors.surface,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x11000000),
-            blurRadius: 8,
-            offset: Offset(0, 3),
+            color: colors.textPrimary.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: colors.outline, width: 0.8),
+        border: Border.all(
+          color: colors.textPrimary.withValues(alpha: 0.12),
+          width: 1.0,
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -62,7 +62,8 @@ class SupabaseImage extends ConsumerWidget {
         imagePath!.startsWith('transactions/') ||
         imagePath!.startsWith('avatars/') ||
         imagePath!.startsWith('groups/') ||
-        imagePath!.startsWith('group-transactions/');
+        imagePath!.startsWith('group-transactions/') ||
+        imagePath!.startsWith('payment-qr/');
     final isLocal = !isStoragePath;
     if (isLocal) {
       return ClipRRect(

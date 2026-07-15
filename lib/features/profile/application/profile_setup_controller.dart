@@ -14,6 +14,11 @@ final profileSetupControllerProvider =
       ProfileSetupController.new,
     );
 
+final paymentQrControllerProvider =
+    AsyncNotifierProvider<PaymentQrController, UserProfile?>(
+      PaymentQrController.new,
+    );
+
 class ProfileSetupController extends AsyncNotifier<UserProfile?> {
   @override
   Future<UserProfile?> build() {
@@ -41,5 +46,29 @@ class ProfileSetupController extends AsyncNotifier<UserProfile?> {
     ref.invalidate(currentProfileProvider);
     // Invalidate the controller to ensure next build gets fresh data
     ref.invalidateSelf();
+  }
+}
+
+class PaymentQrController extends AsyncNotifier<UserProfile?> {
+  @override
+  Future<UserProfile?> build() {
+    ref.watch(currentSessionProvider);
+    return ref.watch(profileRepositoryProvider).fetchCurrentProfile();
+  }
+
+  Future<void> save(String imagePath) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref.read(profileRepositoryProvider).savePaymentQrImage(imagePath),
+    );
+    ref.invalidate(currentProfileProvider);
+  }
+
+  Future<void> clear() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref.read(profileRepositoryProvider).clearPaymentQrImage(),
+    );
+    ref.invalidate(currentProfileProvider);
   }
 }

@@ -13,8 +13,9 @@ class ImportDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: colors.background,
       appBar: AppBar(title: Text(context.l10n.importDetailTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -24,7 +25,7 @@ class ImportDetailScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppTheme.surface,
+                color: colors.surface,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -37,10 +38,10 @@ class ImportDetailScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     entry.fileName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: colors.textPrimary,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -50,7 +51,7 @@ class ImportDetailScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Container(
               decoration: BoxDecoration(
-                color: AppTheme.surface,
+                color: colors.surface,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -62,13 +63,13 @@ class ImportDetailScreen extends StatelessWidget {
                       'dd/MM/yyyy HH:mm',
                     ).format(entry.createdAt),
                   ),
-                  const Divider(height: 1, color: Colors.white24),
+                  Divider(height: 1, color: colors.outline),
                   _DetailTile(
                     icon: Icons.list_alt,
                     title: context.l10n.importDetailImportedCount,
                     value: entry.importedCount.toString(),
                   ),
-                  const Divider(height: 1, color: Colors.white24),
+                  Divider(height: 1, color: colors.outline),
                   _DetailTile(
                     icon: Icons.account_balance_wallet_outlined,
                     title: context.l10n.importDetailWallet,
@@ -76,7 +77,7 @@ class ImportDetailScreen extends StatelessWidget {
                         ? context.l10n.walletUnknown
                         : entry.walletName,
                   ),
-                  const Divider(height: 1, color: Colors.white24),
+                  Divider(height: 1, color: colors.outline),
                   _DetailTile(
                     icon: Icons.info_outline,
                     title: context.l10n.importDetailStatus,
@@ -84,7 +85,7 @@ class ImportDetailScreen extends StatelessWidget {
                   ),
                   if (entry.errorMessage != null &&
                       entry.errorMessage!.isNotEmpty) ...[
-                    const Divider(height: 1, color: Colors.white24),
+                    Divider(height: 1, color: colors.outline),
                     _DetailTile(
                       icon: Icons.error_outline,
                       title: context.l10n.importDetailError,
@@ -122,20 +123,21 @@ class _DetailTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white54, size: 20),
+          Icon(icon, color: colors.textSecondary, size: 20),
           const SizedBox(width: 12),
-          Text(title, style: const TextStyle(color: Colors.white70)),
+          Text(title, style: TextStyle(color: colors.textSecondary)),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: colors.textPrimary,
                 fontWeight: FontWeight.w500,
               ),
             ),

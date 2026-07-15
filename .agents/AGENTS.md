@@ -26,7 +26,7 @@ Read the full agent context before making non-trivial changes:
 2. **Do not break boundaries:** `UI -> Riverpod Controller/Notifier -> Repository -> Data Source`.
 3. **UI must not call Database/API directly.** Always use the Repository pattern.
 4. **Data/Repository layer must not contain UI text, localization logic, or widget logic.**
-5. **Preserve both Supabase mode and mock mode.** Always check `AppConstants.hasSupabaseConfig` inside Repositories.
+5. **Production data only.** Runtime repositories must use the configured Supabase client; do not add demo sessions, mock-data fallbacks, or guest-mode branches. Anonymous sign-in is a real Supabase Auth flow and requires CAPTCHA.
 6. **Do not hardcode user-facing UI strings.** Use `context.l10n.<key>`.
 7. **Do not swallow exceptions silently.**
 8. **Use existing `AppException` and `AppLogger` patterns** for error handling.

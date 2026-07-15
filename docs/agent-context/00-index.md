@@ -45,7 +45,7 @@ When a document disagrees with executable code, use this source-of-truth order:
 
 - Read `05-data-models.md`, `08-api-and-integrations.md`, and
   `12-build-flavors-and-environments.md`.
-- Preserve both authenticated Supabase mode and guest/mock data mode.
+- Preserve the production-only Supabase runtime; do not add demo/mock fallbacks.
 - Treat `supabase/migrations/` as the versioned schema and RLS definition.
 
 ### Specialized areas
