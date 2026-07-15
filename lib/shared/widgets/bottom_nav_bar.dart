@@ -12,6 +12,9 @@ import '../../features/settings/presentation/profile_screen.dart';
 
 enum MoniaryTab { calendar, stats, groups, profile }
 
+const _bottomNavHeight = 72.0;
+const _cameraLift = 16.0;
+
 class MoniaryBottomNavBar extends ConsumerWidget {
   const MoniaryBottomNavBar({
     super.key,
@@ -31,13 +34,12 @@ class MoniaryBottomNavBar extends ConsumerWidget {
     return SafeArea(
       top: false,
       child: SizedBox(
-        height: 86,
+        height: _bottomNavHeight,
         child: Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.topCenter,
           children: [
             Positioned.fill(
-              top: 14,
               child: ClipRect(
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -114,7 +116,10 @@ class MoniaryBottomNavBar extends ConsumerWidget {
                 ),
               ),
             ),
-            _CameraActionButton(onPressed: onCameraPressed),
+            Positioned(
+              top: -_cameraLift,
+              child: _CameraActionButton(onPressed: onCameraPressed),
+            ),
           ],
         ),
       ),
