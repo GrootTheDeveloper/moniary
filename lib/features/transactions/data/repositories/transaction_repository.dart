@@ -14,6 +14,7 @@ import '../../../categories/domain/models/category.dart';
 import '../../../wallets/data/repositories/wallet_repository.dart';
 import '../../../wallets/domain/models/wallet.dart';
 import '../../domain/models/transaction_entry.dart';
+import '../../domain/models/transaction_search_filter.dart';
 
 final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
   return TransactionRepository(
@@ -436,23 +437,72 @@ class TransactionRepository {
     }
   }
 
-  Future<List<TransactionEntry>> searchTransactions(String queryText) async {
-    final normalizedQuery = queryText.trim().toLowerCase();
-    if (normalizedQuery.isEmpty) {
-      return const [];
-    }
+  Future<List<TransactionEntry>> searchTransactions(
+    TransactionSearchFilter filter,
+  ) async {
+    final normalizedQuery = filter.query.trim().toLowerCase();
 
     if (_useMockData) {
-      return _filterTransactions(_mockTransactions, normalizedQuery);
+      final results = _mockTransactions
+          .where((tx) => _matchesFilter(tx, filter, normalizedQuery))
+          .toList();
+      _sortStarredThenDate(results);
+      return results;
     }
     try {
       final uid = _userId;
 
-      final rows = await _baseSelect()
-          .eq('user_id', uid)
-          .order('transaction_date', ascending: false);
+      var query = _baseSelect().eq('user_id', uid);
+      if (filter.type != null) {
+        query = query.eq('type', filter.type!.value);
+      }
+      if (filter.categoryId != null) {
+        query = query.eq('category_id', filter.categoryId!);
+      }
+      if (filter.importance != null) {
+        query = query.eq(
+          'is_important',
+          filter.importance == TransactionImportanceFilter.important,
+        );
+      }
+      if (filter.subscription != null) {
+        // A subscription transaction is any auto-posted one (source =
+        // 'recurring'). This is more reliable than recurring_transaction_id,
+        // which is only set on transactions created after that column existed.
+        query = filter.subscription == TransactionSubscriptionFilter.subscription
+            ? query.eq('source', 'recurring')
+            : query.not('source', 'eq', 'recurring');
+      }
+      if (filter.dateFrom != null) {
+        query = query.gte(
+          'transaction_date',
+          _startOfDay(filter.dateFrom!).toUtc().toIso8601String(),
+        );
+      }
+      if (filter.dateTo != null) {
+        query = query.lt(
+          'transaction_date',
+          _startOfDay(
+            filter.dateTo!,
+          ).add(const Duration(days: 1)).toUtc().toIso8601String(),
+        );
+      }
+      if (filter.minAmount != null) {
+        query = query.gte('amount', filter.minAmount!);
+      }
+      if (filter.maxAmount != null) {
+        query = query.lte('amount', filter.maxAmount!);
+      }
 
-      return _filterTransactions(_mapList(rows), normalizedQuery);
+      final rows = await query.order('transaction_date', ascending: false);
+      var results = _mapList(rows);
+      if (normalizedQuery.isNotEmpty) {
+        results = results
+            .where((tx) => _matchesSearchQuery(tx, normalizedQuery))
+            .toList();
+      }
+      _sortStarredThenDate(results);
+      return results;
     } on PostgrestException catch (e, st) {
       AppLogger.error('Search transactions failed', e, st);
       throw AppException(e.message, code: e.code);
@@ -555,6 +605,7 @@ class TransactionRepository {
     String? merchantName,
     String source = 'manual',
     bool isImportant = false,
+    String? recurringTransactionId,
   }) async {
     if (_useMockData) {
       final id = 'mock-tx-${DateTime.now().millisecondsSinceEpoch}';
@@ -606,6 +657,7 @@ class TransactionRepository {
           categoryName: c.name,
           categoryColor: c.color,
           isImportant: isImportant,
+          recurringTransactionId: recurringTransactionId,
         ),
       );
       return id;
@@ -627,6 +679,7 @@ class TransactionRepository {
             'source': source,
             'image_upload_status': 'pending',
             'is_important': isImportant,
+            'recurring_transaction_id': recurringTransactionId,
           })
           .select('id')
           .single();
@@ -700,6 +753,8 @@ class TransactionRepository {
           categoryName: c.name,
           categoryColor: c.color,
           isImportant: isImportant,
+          recurringTransactionId:
+              _mockTransactions[index].recurringTransactionId,
         );
       }
       return;
@@ -752,6 +807,7 @@ class TransactionRepository {
           categoryName: t.categoryName,
           categoryColor: t.categoryColor,
           isImportant: isImportant,
+          recurringTransactionId: t.recurringTransactionId,
         );
       }
       return;
@@ -816,6 +872,139 @@ class TransactionRepository {
     }
   }
 
+  /// How many transactions were auto-posted from the given recurring rule.
+  Future<int> countGeneratedTransactions(String recurringTransactionId) async {
+    if (_useMockData) {
+      return _mockTransactions
+          .where((t) => t.recurringTransactionId == recurringTransactionId)
+          .length;
+    }
+    try {
+      final rows = await _client
+          .from('transactions')
+          .select('id')
+          .eq('user_id', _userId)
+          .eq('recurring_transaction_id', recurringTransactionId);
+      return (rows as List).length;
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Count generated transactions failed', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Count generated transactions failed', e, st);
+      throw const AppException('errorConnection');
+    }
+  }
+
+  /// Updates the shared fields of every transaction generated by a rule, to
+  /// match an edited rule. Deliberately leaves transaction_date, is_important
+  /// and image untouched (a user may have adjusted those).
+  Future<void> updateGeneratedTransactions({
+    required String recurringTransactionId,
+    required double amount,
+    required TransactionType type,
+    required String walletId,
+    required String categoryId,
+    String? note,
+  }) async {
+    if (_useMockData) {
+      final wallet = WalletRepository.mockWallets.firstWhere(
+        (element) => element.id == walletId,
+        orElse: () => Wallet(
+          id: walletId,
+          name: '',
+          type: WalletType.cash,
+          initialBalance: 0,
+          isDefault: false,
+          isActive: true,
+          createdAt: DateTime.now(),
+          icon: null,
+          color: null,
+        ),
+      );
+      final category = CategoryRepository.mockCategories.firstWhere(
+        (element) => element.id == categoryId,
+        orElse: () => Category(
+          id: categoryId,
+          name: '',
+          type: type,
+          icon: null,
+          color: null,
+          isDefault: false,
+          isActive: true,
+          createdAt: DateTime.now(),
+        ),
+      );
+      for (var i = 0; i < _mockTransactions.length; i++) {
+        final t = _mockTransactions[i];
+        if (t.recurringTransactionId != recurringTransactionId) continue;
+        _mockTransactions[i] = TransactionEntry(
+          id: t.id,
+          amount: amount,
+          type: type,
+          note: note,
+          imagePath: t.imagePath,
+          transactionDate: t.transactionDate,
+          walletId: walletId,
+          walletName: wallet.name,
+          walletColor: wallet.color,
+          categoryId: categoryId,
+          categoryName: category.name,
+          categoryColor: category.color,
+          isImportant: t.isImportant,
+          recurringTransactionId: t.recurringTransactionId,
+        );
+      }
+      return;
+    }
+    try {
+      await _client
+          .from('transactions')
+          .update({
+            'wallet_id': walletId,
+            'category_id': categoryId,
+            'amount': amount,
+            'type': type.value,
+            'note': note,
+          })
+          .eq('user_id', _userId)
+          .eq('recurring_transaction_id', recurringTransactionId);
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Update generated transactions failed', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Update generated transactions failed', e, st);
+      throw const AppException('errorConnection');
+    }
+  }
+
+  /// Deletes every transaction generated by a rule.
+  Future<void> deleteGeneratedTransactions(
+    String recurringTransactionId,
+  ) async {
+    if (_useMockData) {
+      _mockTransactions.removeWhere(
+        (t) => t.recurringTransactionId == recurringTransactionId,
+      );
+      return;
+    }
+    try {
+      await _client
+          .from('transactions')
+          .delete()
+          .eq('user_id', _userId)
+          .eq('recurring_transaction_id', recurringTransactionId);
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Delete generated transactions failed', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Delete generated transactions failed', e, st);
+      throw const AppException('errorConnection');
+    }
+  }
+
   Future<String> uploadTransactionImage(
     String transactionId,
     Uint8List bytes,
@@ -875,6 +1064,8 @@ class TransactionRepository {
           categoryName: _mockTransactions[index].categoryName,
           categoryColor: _mockTransactions[index].categoryColor,
           isImportant: _mockTransactions[index].isImportant,
+          recurringTransactionId:
+              _mockTransactions[index].recurringTransactionId,
         );
       }
       return;
@@ -949,6 +1140,7 @@ class TransactionRepository {
           image_path,
           transaction_date,
           is_important,
+          recurring_transaction_id,
           wallet:wallets!inner(id,name,color),
           category:categories!inner(id,name,color)
         ''');
@@ -961,18 +1153,66 @@ class TransactionRepository {
         .toList();
   }
 
-  List<TransactionEntry> _filterTransactions(
-    Iterable<TransactionEntry> transactions,
+  bool _matchesFilter(
+    TransactionEntry transaction,
+    TransactionSearchFilter filter,
     String normalizedQuery,
   ) {
-    final filtered = transactions
-        .where(
-          (transaction) => _matchesSearchQuery(transaction, normalizedQuery),
-        )
-        .toList();
-    filtered.sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
-    return filtered;
+    if (filter.type != null && transaction.type != filter.type) return false;
+    if (filter.categoryId != null &&
+        transaction.categoryId != filter.categoryId) {
+      return false;
+    }
+    if (filter.importance == TransactionImportanceFilter.important &&
+        !transaction.isImportant) {
+      return false;
+    }
+    if (filter.importance == TransactionImportanceFilter.notImportant &&
+        transaction.isImportant) {
+      return false;
+    }
+    if (filter.subscription == TransactionSubscriptionFilter.subscription &&
+        transaction.recurringTransactionId == null) {
+      return false;
+    }
+    if (filter.subscription == TransactionSubscriptionFilter.nonSubscription &&
+        transaction.recurringTransactionId != null) {
+      return false;
+    }
+    if (filter.dateFrom != null &&
+        transaction.transactionDate.isBefore(_startOfDay(filter.dateFrom!))) {
+      return false;
+    }
+    if (filter.dateTo != null &&
+        !transaction.transactionDate.isBefore(
+          _startOfDay(filter.dateTo!).add(const Duration(days: 1)),
+        )) {
+      return false;
+    }
+    if (filter.minAmount != null && transaction.amount < filter.minAmount!) {
+      return false;
+    }
+    if (filter.maxAmount != null && transaction.amount > filter.maxAmount!) {
+      return false;
+    }
+    if (normalizedQuery.isNotEmpty &&
+        !_matchesSearchQuery(transaction, normalizedQuery)) {
+      return false;
+    }
+    return true;
   }
+
+  void _sortStarredThenDate(List<TransactionEntry> list) {
+    list.sort((a, b) {
+      if (a.isImportant != b.isImportant) {
+        return b.isImportant ? 1 : -1;
+      }
+      return b.transactionDate.compareTo(a.transactionDate);
+    });
+  }
+
+  DateTime _startOfDay(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
 
   bool _matchesSearchQuery(
     TransactionEntry transaction,
@@ -983,6 +1223,14 @@ class TransactionRepository {
     final categoryMatch = transaction.categoryName.toLowerCase().contains(
       normalizedQuery,
     );
-    return noteMatch || categoryMatch;
+    final walletMatch = transaction.walletName.toLowerCase().contains(
+      normalizedQuery,
+    );
+    // Digits in the query are matched against the whole-number amount, so
+    // typing "45000" finds a 45,000 transaction.
+    final amountMatch = transaction.amount.toStringAsFixed(0).contains(
+      normalizedQuery,
+    );
+    return noteMatch || categoryMatch || walletMatch || amountMatch;
   }
 }

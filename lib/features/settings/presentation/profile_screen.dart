@@ -20,6 +20,7 @@ import '../../friends/presentation/screens/friends_screen.dart';
 import '../../journal/presentation/journal_collections_screen.dart';
 import '../../journal/presentation/monthly_recap_screen.dart';
 import '../../journal/presentation/recording_streak_screen.dart';
+import '../../recurring/presentation/recurring_transactions_screen.dart';
 import '../../profile/application/profile_setup_controller.dart';
 import '../../profile/presentation/profile_setup_screen.dart';
 import '../../profile/presentation/currency_picker_screen.dart';
@@ -468,6 +469,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             title: context.l10n.starredTransactionsTitle,
                             subtitle: '',
                             onTap: () => context.push('/starred-transactions'),
+                          ),
+                          _SettingsTile(
+                            icon: Icons.autorenew_outlined,
+                            title: context.l10n.recurringTitle,
+                            subtitle: context.l10n.recurringSubtitle,
+                            onTap: () => context.push(
+                              RecurringTransactionsScreen.routePath,
+                            ),
                           ),
                           _SettingsTile(
                             icon: Icons.auto_stories_outlined,

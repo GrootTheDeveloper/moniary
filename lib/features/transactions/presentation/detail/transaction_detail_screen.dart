@@ -7,6 +7,7 @@ import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
+import '../../../../shared/widgets/confirm_action_dialog.dart';
 import '../../../../shared/widgets/obscurable_amount_text.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/composer/transaction_composer_controller.dart';
@@ -284,18 +285,16 @@ class _TransactionDetailBody extends ConsumerWidget {
   Future<void> _deleteTransaction(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: context.moniaryColors.surface,
-        title: Text(context.l10n.transactionDeleteTitleQuestion),
-        content: Text(context.l10n.transactionDeleteUndone),
+      builder: (dialogContext) => ConfirmActionDialog<bool>(
+        icon: Icons.delete_outline_rounded,
+        iconColor: dialogContext.moniaryColors.danger,
+        title: dialogContext.l10n.transactionDeleteTitleQuestion,
+        message: dialogContext.l10n.transactionDeleteUndone,
         actions: [
-          TextButton(
-            onPressed: () => context.pop(false),
-            child: Text(context.l10n.commonCancel),
-          ),
-          FilledButton(
-            onPressed: () => context.pop(true),
-            child: Text(context.l10n.commonDelete),
+          ConfirmAction(
+            dialogContext.l10n.commonDelete,
+            true,
+            style: ConfirmActionStyle.danger,
           ),
         ],
       ),

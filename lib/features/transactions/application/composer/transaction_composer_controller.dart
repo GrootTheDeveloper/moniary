@@ -190,6 +190,11 @@ class TransactionComposerController extends AsyncNotifier<void> {
 
   void _triggerUpdates() {
     ref.invalidate(walletsControllerProvider);
+    // Refresh every list that shows transactions so a create/update/delete is
+    // reflected immediately, not only on the screen that triggered it.
+    ref.invalidate(calendarMonthProvider);
+    ref.invalidate(transactionsForDayProvider);
+    ref.invalidate(transactionSearchProvider);
     ref.read(widgetUpdateServiceProvider).updateWidget().ignore();
   }
 }

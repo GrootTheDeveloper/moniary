@@ -1773,6 +1773,203 @@ class AppLocalizationsEn extends AppLocalizations {
   String get starredTransactionsTitle => 'Starred Transactions';
 
   @override
+  String get searchFilterType => 'Type';
+
+  @override
+  String get searchFilterAll => 'All';
+
+  @override
+  String get searchFilterIncome => 'Income';
+
+  @override
+  String get searchFilterExpense => 'Expense';
+
+  @override
+  String get searchFilterCategory => 'Category';
+
+  @override
+  String get searchFilterAllCategories => 'All categories';
+
+  @override
+  String get searchFilterDate => 'Date';
+
+  @override
+  String get searchFilterAmount => 'Amount';
+
+  @override
+  String get searchFilterAmountMin => 'Min';
+
+  @override
+  String get searchFilterAmountMax => 'Max';
+
+  @override
+  String get searchFilterApply => 'Apply';
+
+  @override
+  String get searchFilterClearAll => 'Clear filters';
+
+  @override
+  String get searchFilterImportance => 'Priority';
+
+  @override
+  String get searchImportanceImportant => 'Important';
+
+  @override
+  String get searchImportanceNotImportant => 'Not important';
+
+  @override
+  String get searchFilterSubscription => 'Subscription';
+
+  @override
+  String get searchSubscriptionYes => 'Subscriptions';
+
+  @override
+  String get searchSubscriptionNo => 'Non-subscription';
+
+  @override
+  String get searchAmountRangeError =>
+      'Max amount must be greater than the minimum';
+
+  @override
+  String get searchRecentClear => 'Clear';
+
+  @override
+  String get recurringTitle => 'Recurring & subscriptions';
+
+  @override
+  String get recurringSubtitle =>
+      'Subscriptions, salary, rent and other repeating items';
+
+  @override
+  String get recurringAdd => 'Add recurring';
+
+  @override
+  String get recurringEdit => 'Edit recurring';
+
+  @override
+  String get recurringEmpty => 'No recurring items yet';
+
+  @override
+  String get recurringAmount => 'Amount';
+
+  @override
+  String get recurringType => 'Type';
+
+  @override
+  String get recurringIncome => 'Income';
+
+  @override
+  String get recurringExpense => 'Expense';
+
+  @override
+  String get recurringWallet => 'Wallet';
+
+  @override
+  String get recurringCategory => 'Category';
+
+  @override
+  String get recurringNote => 'Note (optional)';
+
+  @override
+  String get recurringFrequency => 'Frequency';
+
+  @override
+  String get recurringInterval => 'Every';
+
+  @override
+  String get recurringDaily => 'Daily';
+
+  @override
+  String get recurringWeekly => 'Weekly';
+
+  @override
+  String get recurringMonthly => 'Monthly';
+
+  @override
+  String get recurringYearly => 'Yearly';
+
+  @override
+  String recurringEvery(int interval, String unit) {
+    return 'Every $interval × $unit';
+  }
+
+  @override
+  String get recurringStartDate => 'Start date';
+
+  @override
+  String get recurringNextRun => 'Next run';
+
+  @override
+  String get recurringNextRunLabel => 'Next';
+
+  @override
+  String get recurringEndDate => 'End date';
+
+  @override
+  String get recurringNoEndDate => 'No end date';
+
+  @override
+  String get recurringAutoPost => 'Auto-post transactions';
+
+  @override
+  String get recurringAutoPostHelp =>
+      'Automatically create the transaction on each run date';
+
+  @override
+  String get recurringActive => 'Active';
+
+  @override
+  String get recurringPaused => 'Paused';
+
+  @override
+  String get recurringDeleteTitle => 'Delete recurring item?';
+
+  @override
+  String get recurringDeleteMessage =>
+      'This recurring rule will be removed. Past transactions are kept.';
+
+  @override
+  String get recurringSaved => 'Recurring item saved';
+
+  @override
+  String get recurringAmountRequired => 'Enter an amount greater than 0';
+
+  @override
+  String get recurringNoWallets =>
+      'Create a wallet first to add recurring items';
+
+  @override
+  String get recurringNoCategories => 'Create a matching category first';
+
+  @override
+  String get recurringApplyTitle => 'Update subscription?';
+
+  @override
+  String recurringApplyMessage(int count) {
+    return 'Saving will delete the $count transaction(s) already created by this subscription and re-create them with the new details.';
+  }
+
+  @override
+  String get recurringApplyFutureOnly => 'Only apply from now on';
+
+  @override
+  String get recurringApplyUpdate => 'Update the created transactions';
+
+  @override
+  String get recurringApplyDelete => 'Delete all and re-create';
+
+  @override
+  String get recurringDeleteKeepTx => 'Keep transactions';
+
+  @override
+  String get recurringDeleteRemoveTx => 'Delete transactions too';
+
+  @override
+  String recurringDeleteGeneratedMessage(int count) {
+    return 'This subscription created $count transaction(s). What should happen to them?';
+  }
+
+  @override
   String get starredTransactionsEmpty => 'No starred transactions yet';
 
   @override

@@ -20,6 +20,7 @@ import '../features/assistant/presentation/assistant_question_catalog.dart';
 import '../features/assistant/presentation/assistant_question_library_screen.dart';
 import '../features/budgets/presentation/budget_category_detail_screen.dart';
 import '../features/budgets/presentation/budget_screen.dart';
+import '../features/recurring/presentation/recurring_transactions_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/friends/presentation/screens/add_friend_screen.dart';
 import '../features/friends/presentation/screens/friend_invite_accept_screen.dart';
@@ -391,6 +392,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: BudgetScreen.routePath,
         pageBuilder: (context, state) =>
             buildSlideTransitionPage(state: state, child: const BudgetScreen()),
+      ),
+      GoRoute(
+        path: RecurringTransactionsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const RecurringTransactionsScreen(),
+        ),
       ),
       GoRoute(
         path: BudgetCategoryDetailScreen.routePath,

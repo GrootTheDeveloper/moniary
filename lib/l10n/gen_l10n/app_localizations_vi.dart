@@ -1771,6 +1771,200 @@ class AppLocalizationsVi extends AppLocalizations {
   String get starredTransactionsTitle => 'Giao dịch quan trọng';
 
   @override
+  String get searchFilterType => 'Loại';
+
+  @override
+  String get searchFilterAll => 'Tất cả';
+
+  @override
+  String get searchFilterIncome => 'Thu nhập';
+
+  @override
+  String get searchFilterExpense => 'Chi tiêu';
+
+  @override
+  String get searchFilterCategory => 'Danh mục';
+
+  @override
+  String get searchFilterAllCategories => 'Tất cả danh mục';
+
+  @override
+  String get searchFilterDate => 'Ngày';
+
+  @override
+  String get searchFilterAmount => 'Số tiền';
+
+  @override
+  String get searchFilterAmountMin => 'Tối thiểu';
+
+  @override
+  String get searchFilterAmountMax => 'Tối đa';
+
+  @override
+  String get searchFilterApply => 'Áp dụng';
+
+  @override
+  String get searchFilterClearAll => 'Xóa bộ lọc';
+
+  @override
+  String get searchFilterImportance => 'Ưu tiên';
+
+  @override
+  String get searchImportanceImportant => 'Quan trọng';
+
+  @override
+  String get searchImportanceNotImportant => 'Không quan trọng';
+
+  @override
+  String get searchFilterSubscription => 'Đăng ký';
+
+  @override
+  String get searchSubscriptionYes => 'Từ đăng ký';
+
+  @override
+  String get searchSubscriptionNo => 'Không đăng ký';
+
+  @override
+  String get searchAmountRangeError => 'Số tiền tối đa phải lớn hơn tối thiểu';
+
+  @override
+  String get searchRecentClear => 'Xóa';
+
+  @override
+  String get recurringTitle => 'Định kỳ & đăng ký';
+
+  @override
+  String get recurringSubtitle =>
+      'Đăng ký, lương, tiền thuê và các khoản lặp lại khác';
+
+  @override
+  String get recurringAdd => 'Thêm định kỳ';
+
+  @override
+  String get recurringEdit => 'Sửa định kỳ';
+
+  @override
+  String get recurringEmpty => 'Chưa có khoản định kỳ nào';
+
+  @override
+  String get recurringAmount => 'Số tiền';
+
+  @override
+  String get recurringType => 'Loại';
+
+  @override
+  String get recurringIncome => 'Thu nhập';
+
+  @override
+  String get recurringExpense => 'Chi tiêu';
+
+  @override
+  String get recurringWallet => 'Ví';
+
+  @override
+  String get recurringCategory => 'Danh mục';
+
+  @override
+  String get recurringNote => 'Ghi chú (tùy chọn)';
+
+  @override
+  String get recurringFrequency => 'Tần suất';
+
+  @override
+  String get recurringInterval => 'Mỗi';
+
+  @override
+  String get recurringDaily => 'Hàng ngày';
+
+  @override
+  String get recurringWeekly => 'Hàng tuần';
+
+  @override
+  String get recurringMonthly => 'Hàng tháng';
+
+  @override
+  String get recurringYearly => 'Hàng năm';
+
+  @override
+  String recurringEvery(int interval, String unit) {
+    return 'Mỗi $interval × $unit';
+  }
+
+  @override
+  String get recurringStartDate => 'Ngày bắt đầu';
+
+  @override
+  String get recurringNextRun => 'Lần chạy tới';
+
+  @override
+  String get recurringNextRunLabel => 'Kế tiếp';
+
+  @override
+  String get recurringEndDate => 'Ngày kết thúc';
+
+  @override
+  String get recurringNoEndDate => 'Không có ngày kết thúc';
+
+  @override
+  String get recurringAutoPost => 'Tự động ghi giao dịch';
+
+  @override
+  String get recurringAutoPostHelp => 'Tự động tạo giao dịch vào mỗi ngày chạy';
+
+  @override
+  String get recurringActive => 'Đang hoạt động';
+
+  @override
+  String get recurringPaused => 'Tạm dừng';
+
+  @override
+  String get recurringDeleteTitle => 'Xóa khoản định kỳ?';
+
+  @override
+  String get recurringDeleteMessage =>
+      'Quy tắc định kỳ này sẽ bị xóa. Các giao dịch đã tạo vẫn được giữ lại.';
+
+  @override
+  String get recurringSaved => 'Đã lưu khoản định kỳ';
+
+  @override
+  String get recurringAmountRequired => 'Nhập số tiền lớn hơn 0';
+
+  @override
+  String get recurringNoWallets => 'Hãy tạo ví trước khi thêm khoản định kỳ';
+
+  @override
+  String get recurringNoCategories => 'Hãy tạo danh mục phù hợp trước';
+
+  @override
+  String get recurringApplyTitle => 'Cập nhật đăng ký?';
+
+  @override
+  String recurringApplyMessage(int count) {
+    return 'Lưu thay đổi sẽ xóa $count giao dịch mà đăng ký này đã tạo và tạo lại theo thông tin mới.';
+  }
+
+  @override
+  String get recurringApplyFutureOnly => 'Chỉ áp dụng từ lần tới';
+
+  @override
+  String get recurringApplyUpdate => 'Cập nhật các giao dịch đã tạo';
+
+  @override
+  String get recurringApplyDelete => 'Xóa hết và tạo lại';
+
+  @override
+  String get recurringDeleteKeepTx => 'Giữ lại giao dịch';
+
+  @override
+  String get recurringDeleteRemoveTx => 'Xóa luôn giao dịch';
+
+  @override
+  String recurringDeleteGeneratedMessage(int count) {
+    return 'Đăng ký này đã tạo $count giao dịch. Bạn muốn xử lý chúng thế nào?';
+  }
+
+  @override
   String get starredTransactionsEmpty => 'Chưa có giao dịch quan trọng nào';
 
   @override

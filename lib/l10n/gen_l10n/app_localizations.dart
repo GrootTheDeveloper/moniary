@@ -3302,6 +3302,378 @@ abstract class AppLocalizations {
   /// **'Giao dịch quan trọng'**
   String get starredTransactionsTitle;
 
+  /// No description provided for @searchFilterType.
+  ///
+  /// In vi, this message translates to:
+  /// **'Loại'**
+  String get searchFilterType;
+
+  /// No description provided for @searchFilterAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả'**
+  String get searchFilterAll;
+
+  /// No description provided for @searchFilterIncome.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thu nhập'**
+  String get searchFilterIncome;
+
+  /// No description provided for @searchFilterExpense.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu'**
+  String get searchFilterExpense;
+
+  /// No description provided for @searchFilterCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Danh mục'**
+  String get searchFilterCategory;
+
+  /// No description provided for @searchFilterAllCategories.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả danh mục'**
+  String get searchFilterAllCategories;
+
+  /// No description provided for @searchFilterDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày'**
+  String get searchFilterDate;
+
+  /// No description provided for @searchFilterAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền'**
+  String get searchFilterAmount;
+
+  /// No description provided for @searchFilterAmountMin.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tối thiểu'**
+  String get searchFilterAmountMin;
+
+  /// No description provided for @searchFilterAmountMax.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tối đa'**
+  String get searchFilterAmountMax;
+
+  /// No description provided for @searchFilterApply.
+  ///
+  /// In vi, this message translates to:
+  /// **'Áp dụng'**
+  String get searchFilterApply;
+
+  /// No description provided for @searchFilterClearAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa bộ lọc'**
+  String get searchFilterClearAll;
+
+  /// No description provided for @searchFilterImportance.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ưu tiên'**
+  String get searchFilterImportance;
+
+  /// No description provided for @searchImportanceImportant.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quan trọng'**
+  String get searchImportanceImportant;
+
+  /// No description provided for @searchImportanceNotImportant.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không quan trọng'**
+  String get searchImportanceNotImportant;
+
+  /// No description provided for @searchFilterSubscription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ký'**
+  String get searchFilterSubscription;
+
+  /// No description provided for @searchSubscriptionYes.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ đăng ký'**
+  String get searchSubscriptionYes;
+
+  /// No description provided for @searchSubscriptionNo.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không đăng ký'**
+  String get searchSubscriptionNo;
+
+  /// No description provided for @searchAmountRangeError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền tối đa phải lớn hơn tối thiểu'**
+  String get searchAmountRangeError;
+
+  /// No description provided for @searchRecentClear.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa'**
+  String get searchRecentClear;
+
+  /// No description provided for @recurringTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Định kỳ & đăng ký'**
+  String get recurringTitle;
+
+  /// No description provided for @recurringSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ký, lương, tiền thuê và các khoản lặp lại khác'**
+  String get recurringSubtitle;
+
+  /// No description provided for @recurringAdd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm định kỳ'**
+  String get recurringAdd;
+
+  /// No description provided for @recurringEdit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa định kỳ'**
+  String get recurringEdit;
+
+  /// No description provided for @recurringEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có khoản định kỳ nào'**
+  String get recurringEmpty;
+
+  /// No description provided for @recurringAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền'**
+  String get recurringAmount;
+
+  /// No description provided for @recurringType.
+  ///
+  /// In vi, this message translates to:
+  /// **'Loại'**
+  String get recurringType;
+
+  /// No description provided for @recurringIncome.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thu nhập'**
+  String get recurringIncome;
+
+  /// No description provided for @recurringExpense.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiêu'**
+  String get recurringExpense;
+
+  /// No description provided for @recurringWallet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ví'**
+  String get recurringWallet;
+
+  /// No description provided for @recurringCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Danh mục'**
+  String get recurringCategory;
+
+  /// No description provided for @recurringNote.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi chú (tùy chọn)'**
+  String get recurringNote;
+
+  /// No description provided for @recurringFrequency.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tần suất'**
+  String get recurringFrequency;
+
+  /// No description provided for @recurringInterval.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi'**
+  String get recurringInterval;
+
+  /// No description provided for @recurringDaily.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hàng ngày'**
+  String get recurringDaily;
+
+  /// No description provided for @recurringWeekly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hàng tuần'**
+  String get recurringWeekly;
+
+  /// No description provided for @recurringMonthly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hàng tháng'**
+  String get recurringMonthly;
+
+  /// No description provided for @recurringYearly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hàng năm'**
+  String get recurringYearly;
+
+  /// No description provided for @recurringEvery.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi {interval} × {unit}'**
+  String recurringEvery(int interval, String unit);
+
+  /// No description provided for @recurringStartDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày bắt đầu'**
+  String get recurringStartDate;
+
+  /// No description provided for @recurringNextRun.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lần chạy tới'**
+  String get recurringNextRun;
+
+  /// No description provided for @recurringNextRunLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kế tiếp'**
+  String get recurringNextRunLabel;
+
+  /// No description provided for @recurringEndDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngày kết thúc'**
+  String get recurringEndDate;
+
+  /// No description provided for @recurringNoEndDate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có ngày kết thúc'**
+  String get recurringNoEndDate;
+
+  /// No description provided for @recurringAutoPost.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự động ghi giao dịch'**
+  String get recurringAutoPost;
+
+  /// No description provided for @recurringAutoPostHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự động tạo giao dịch vào mỗi ngày chạy'**
+  String get recurringAutoPostHelp;
+
+  /// No description provided for @recurringActive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang hoạt động'**
+  String get recurringActive;
+
+  /// No description provided for @recurringPaused.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạm dừng'**
+  String get recurringPaused;
+
+  /// No description provided for @recurringDeleteTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa khoản định kỳ?'**
+  String get recurringDeleteTitle;
+
+  /// No description provided for @recurringDeleteMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quy tắc định kỳ này sẽ bị xóa. Các giao dịch đã tạo vẫn được giữ lại.'**
+  String get recurringDeleteMessage;
+
+  /// No description provided for @recurringSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu khoản định kỳ'**
+  String get recurringSaved;
+
+  /// No description provided for @recurringAmountRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập số tiền lớn hơn 0'**
+  String get recurringAmountRequired;
+
+  /// No description provided for @recurringNoWallets.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy tạo ví trước khi thêm khoản định kỳ'**
+  String get recurringNoWallets;
+
+  /// No description provided for @recurringNoCategories.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy tạo danh mục phù hợp trước'**
+  String get recurringNoCategories;
+
+  /// No description provided for @recurringApplyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật đăng ký?'**
+  String get recurringApplyTitle;
+
+  /// No description provided for @recurringApplyMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu thay đổi sẽ xóa {count} giao dịch mà đăng ký này đã tạo và tạo lại theo thông tin mới.'**
+  String recurringApplyMessage(int count);
+
+  /// No description provided for @recurringApplyFutureOnly.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ áp dụng từ lần tới'**
+  String get recurringApplyFutureOnly;
+
+  /// No description provided for @recurringApplyUpdate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật các giao dịch đã tạo'**
+  String get recurringApplyUpdate;
+
+  /// No description provided for @recurringApplyDelete.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa hết và tạo lại'**
+  String get recurringApplyDelete;
+
+  /// No description provided for @recurringDeleteKeepTx.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giữ lại giao dịch'**
+  String get recurringDeleteKeepTx;
+
+  /// No description provided for @recurringDeleteRemoveTx.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa luôn giao dịch'**
+  String get recurringDeleteRemoveTx;
+
+  /// No description provided for @recurringDeleteGeneratedMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ký này đã tạo {count} giao dịch. Bạn muốn xử lý chúng thế nào?'**
+  String recurringDeleteGeneratedMessage(int count);
+
   /// No description provided for @starredTransactionsEmpty.
   ///
   /// In vi, this message translates to:
