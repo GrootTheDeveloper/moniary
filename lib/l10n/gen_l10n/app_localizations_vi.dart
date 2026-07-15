@@ -2088,6 +2088,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String profileEmailChangeConfirmationSent(String email) {
+    return 'Đã yêu cầu đổi sang $email. Hãy làm theo hướng dẫn xác nhận được gửi qua email; hồ sơ sẽ cập nhật sau khi xác nhận hoàn tất.';
+  }
+
+  @override
   String get emailLinkCompleteTitle => 'Bảo vệ tài khoản email';
 
   @override
@@ -2509,11 +2514,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get importSelectFile => 'Chọn tệp CSV';
 
   @override
-  String get importCsvFormatTitle => 'Định dạng CSV yêu cầu:';
+  String get importCsvFormatTitle => 'Định dạng CSV được hỗ trợ:';
 
   @override
   String get importCsvFormatBody =>
-      '1. Ngày giao dịch (YYYY-MM-DD)\n2. Số tiền (Ví dụ: 100000)\n3. Loại (Thu / Chi)\n4. Hạng mục\n5. Ghi chú (Tùy chọn)\n\nLưu ý: Bỏ qua dòng tiêu đề nếu có.';
+      'Nhập file CSV xuất từ Moniary, Excel hoặc Google Sheets. Cần các cột: Ngày giao dịch, Số tiền, Loại (Thu/Chi) và Danh mục. Ghi chú là tùy chọn. Có thể đổi thứ tự cột; ngày dùng YYYY-MM-DD hoặc DD/MM/YYYY.';
 
   @override
   String get importConfirm => 'Xác nhận nhập';
@@ -2614,6 +2619,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get importErrorCategoryNotFound => 'Không tìm thấy danh mục';
+
+  @override
+  String get importErrorInvalidHeader =>
+      'Tiêu đề CSV đang thiếu cột Ngày giao dịch, Số tiền, Loại hoặc Danh mục.';
+
+  @override
+  String get importErrorNoTransactions =>
+      'Không tìm thấy dòng giao dịch nào trong file CSV này.';
 
   @override
   String get importRetry => 'Thử lại';

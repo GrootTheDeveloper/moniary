@@ -19,7 +19,7 @@ extension ExportDataTypeL10n on ExportDataType {
 ExportFileText buildExportFileText(BuildContext context) {
   return ExportFileText(
     xlsxSheetName: context.l10n.exportSheetTransactions,
-    xlsxHeaders: [
+    spreadsheetHeaders: [
       context.l10n.exportColumnDataType,
       context.l10n.exportColumnId,
       context.l10n.exportColumnName,

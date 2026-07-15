@@ -14,6 +14,7 @@ import '../../../../shared/utils/app_logger.dart';
 import '../../domain/export/export_filters.dart';
 import '../../domain/export/export_file_text.dart';
 import '../../domain/export/export_history_entry.dart';
+import '../../domain/data_transfer/spreadsheet_data_format.dart';
 import '../../domain/account/active_session.dart';
 import '../../domain/account/account_deletion_status.dart';
 import '../../domain/account/deletion_feedback.dart';
@@ -49,40 +50,23 @@ class AccountRepository {
 
   Future<File> exportTransactionsCsv({
     ExportFilters filters = const ExportFilters(),
+    required ExportFileText text,
   }) async {
     final userId = _requireExportUserId();
     final exportRows = await _buildExportRows(userId, filters: filters);
-
-    final csv = StringBuffer()
-      ..writeln(
-        [
-          'data_type',
-          'id',
-          'name',
-          'type',
-          'amount',
-          'wallet',
-          'category',
-          'note',
-          'transaction_date',
-          'image_path',
-          'created_at',
-          'initial_balance',
-          'is_default',
-          'is_active',
-        ].map(_csvCell).join(','),
-      );
-
-    for (final row in exportRows) {
-      csv.writeln(row.map(_csvCell).join(','));
-    }
+    final headers = _spreadsheetHeaders(text);
+    final csvLines = <String>[
+      headers.map(_csvCell).join(','),
+      ...exportRows.map((row) => row.map(_csvCell).join(',')),
+    ];
+    final csv = '\uFEFF${csvLines.join('\r\n')}\r\n';
 
     try {
       final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
       final saved = await _writeExportFile(
         fileName: 'moniary_export_$timestamp.csv',
-        mimeType: 'text/csv',
-        bytes: Uint8List.fromList(utf8.encode(csv.toString())),
+        mimeType: 'text/csv;charset=utf-8',
+        bytes: Uint8List.fromList(utf8.encode(csv)),
       );
       await _recordExport(format: 'CSV', file: saved, filters: filters);
       return saved;
@@ -103,7 +87,7 @@ class AccountRepository {
     final userId = _requireExportUserId();
     final exportRows = await _buildExportRows(userId, filters: filters);
     final workbookRows = <List<Object?>>[
-      List<Object?>.from(text.xlsxHeaders),
+      List<Object?>.from(_spreadsheetHeaders(text)),
       ...exportRows,
     ];
 
@@ -501,6 +485,14 @@ class AccountRepository {
     return '"$text"';
   }
 
+  static List<String> _spreadsheetHeaders(ExportFileText text) {
+    if (text.spreadsheetHeaders.length ==
+        SpreadsheetDataFormat.fullColumnKeys.length) {
+      return text.spreadsheetHeaders;
+    }
+    return SpreadsheetDataFormat.fullColumnKeys;
+  }
+
   String _requireExportUserId() {
     final userId = _currentUserId ?? _client.auth.currentSession?.user.id;
     if (userId == null) {
@@ -588,66 +580,63 @@ class AccountRepository {
       for (final row in transactions) {
         final wallet = row['wallet'] as Map<String, dynamic>? ?? const {};
         final category = row['category'] as Map<String, dynamic>? ?? const {};
-        rows.add([
-          'transaction',
-          row['id'],
-          '',
-          row['type'],
-          row['amount'],
-          wallet['name'],
-          category['name'],
-          row['note'],
-          _formatDate(row['transaction_date'] as String?),
-          row['image_path'],
-          _formatDate(row['created_at'] as String?),
-          '',
-          '',
-          '',
-        ]);
+        rows.add(
+          SpreadsheetDataFormat.orderedValues({
+            SpreadsheetDataFormat.dataType: 'transaction',
+            SpreadsheetDataFormat.id: row['id'],
+            SpreadsheetDataFormat.type: row['type'],
+            SpreadsheetDataFormat.amount: row['amount'],
+            SpreadsheetDataFormat.wallet: wallet['name'],
+            SpreadsheetDataFormat.category: category['name'],
+            SpreadsheetDataFormat.note: row['note'],
+            SpreadsheetDataFormat.transactionDate: _formatDate(
+              row['transaction_date'] as String?,
+            ),
+            SpreadsheetDataFormat.imagePath: row['image_path'],
+            SpreadsheetDataFormat.createdAt: _formatDate(
+              row['created_at'] as String?,
+            ),
+          }),
+        );
       }
     }
 
     if (filters.hasWallets) {
       final wallets = await _fetchWalletRows(userId);
       for (final row in wallets) {
-        rows.add([
-          'wallet',
-          row['id'],
-          row['name'],
-          row['type'],
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          _formatDate(row['created_at'] as String?),
-          row['initial_balance'],
-          row['is_default'],
-          row['is_active'],
-        ]);
+        rows.add(
+          SpreadsheetDataFormat.orderedValues({
+            SpreadsheetDataFormat.dataType: 'wallet',
+            SpreadsheetDataFormat.id: row['id'],
+            SpreadsheetDataFormat.name: row['name'],
+            SpreadsheetDataFormat.type: row['type'],
+            SpreadsheetDataFormat.createdAt: _formatDate(
+              row['created_at'] as String?,
+            ),
+            SpreadsheetDataFormat.initialBalance: row['initial_balance'],
+            SpreadsheetDataFormat.isDefault: row['is_default'],
+            SpreadsheetDataFormat.isActive: row['is_active'],
+          }),
+        );
       }
     }
 
     if (filters.hasCategories) {
       final categories = await _fetchCategoryRows(userId);
       for (final row in categories) {
-        rows.add([
-          'category',
-          row['id'],
-          row['name'],
-          row['type'],
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          _formatDate(row['created_at'] as String?),
-          '',
-          row['is_default'],
-          row['is_active'],
-        ]);
+        rows.add(
+          SpreadsheetDataFormat.orderedValues({
+            SpreadsheetDataFormat.dataType: 'category',
+            SpreadsheetDataFormat.id: row['id'],
+            SpreadsheetDataFormat.name: row['name'],
+            SpreadsheetDataFormat.type: row['type'],
+            SpreadsheetDataFormat.createdAt: _formatDate(
+              row['created_at'] as String?,
+            ),
+            SpreadsheetDataFormat.isDefault: row['is_default'],
+            SpreadsheetDataFormat.isActive: row['is_active'],
+          }),
+        );
       }
     }
 

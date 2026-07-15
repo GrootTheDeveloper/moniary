@@ -68,6 +68,12 @@ class _AssistantHomeScreenState extends ConsumerState<AssistantHomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.assistantTitle),
+        leading: context.canPop()
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.go('/'),
+              ),
         actions: [
           IconButton(
             tooltip: context.l10n.assistantOpenLibrary,

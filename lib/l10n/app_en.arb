@@ -971,6 +971,14 @@
       }
     }
   },
+  "profileEmailChangeConfirmationSent": "Email change requested for {email}. Follow the confirmation instructions sent by email; your profile will update after confirmation.",
+  "@profileEmailChangeConfirmationSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
   "emailLinkCompleteTitle": "Protect your email account",
   "emailLinkCompleteSubtitle": "Email {email} is confirmed. Create a password to finish upgrading your guest account.",
   "@emailLinkCompleteSubtitle": {
@@ -1138,8 +1146,8 @@
   "biometricReasonUnlock": "Unlock Moniary",
   "importTitle": "Import Data (CSV)",
   "importSelectFile": "Select CSV File",
-  "importCsvFormatTitle": "CSV Format Required:",
-  "importCsvFormatBody": "1. Transaction Date (YYYY-MM-DD)\n2. Amount (e.g. 100000)\n3. Type (Income / Expense)\n4. Category\n5. Note (Optional)\n\nNote: Skip header row if exists.",
+  "importCsvFormatTitle": "Supported CSV format:",
+  "importCsvFormatBody": "Import a CSV exported by Moniary, Excel, or Google Sheets. Required headers: Date, Amount, Type (Income/Expense), and Category. Note is optional. Headers may be reordered; dates support YYYY-MM-DD or DD/MM/YYYY.",
   "importConfirm": "Confirm Import",
   "importRecentTitle": "Recent imports",
   "importRecentHistoryError": "Could not load recent imports.",
@@ -1192,6 +1200,8 @@
   "importErrorInvalidAmount": "Invalid amount",
   "importErrorInvalidType": "Invalid transaction type",
   "importErrorCategoryNotFound": "Category was not found",
+  "importErrorInvalidHeader": "The CSV header is missing Date, Amount, Type, or Category.",
+  "importErrorNoTransactions": "No transaction rows were found in this CSV file.",
   "importRetry": "Try again",
   "activeSessionsTitle": "Devices & Sessions",
   "activeSessionsEmpty": "No active sessions found.",

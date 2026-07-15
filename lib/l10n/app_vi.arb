@@ -971,6 +971,14 @@
       }
     }
   },
+  "profileEmailChangeConfirmationSent": "Đã yêu cầu đổi sang {email}. Hãy làm theo hướng dẫn xác nhận được gửi qua email; hồ sơ sẽ cập nhật sau khi xác nhận hoàn tất.",
+  "@profileEmailChangeConfirmationSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
   "emailLinkCompleteTitle": "Bảo vệ tài khoản email",
   "emailLinkCompleteSubtitle": "Email {email} đã được xác nhận. Hãy tạo mật khẩu để hoàn tất nâng cấp tài khoản khách.",
   "@emailLinkCompleteSubtitle": {
@@ -1138,8 +1146,8 @@
   "biometricReasonUnlock": "Mở khóa Moniary",
   "importTitle": "Nhập dữ liệu (CSV)",
   "importSelectFile": "Chọn tệp CSV",
-  "importCsvFormatTitle": "Định dạng CSV yêu cầu:",
-  "importCsvFormatBody": "1. Ngày giao dịch (YYYY-MM-DD)\n2. Số tiền (Ví dụ: 100000)\n3. Loại (Thu / Chi)\n4. Hạng mục\n5. Ghi chú (Tùy chọn)\n\nLưu ý: Bỏ qua dòng tiêu đề nếu có.",
+  "importCsvFormatTitle": "Định dạng CSV được hỗ trợ:",
+  "importCsvFormatBody": "Nhập file CSV xuất từ Moniary, Excel hoặc Google Sheets. Cần các cột: Ngày giao dịch, Số tiền, Loại (Thu/Chi) và Danh mục. Ghi chú là tùy chọn. Có thể đổi thứ tự cột; ngày dùng YYYY-MM-DD hoặc DD/MM/YYYY.",
   "importConfirm": "Xác nhận nhập",
   "importRecentTitle": "Lần nạp gần đây",
   "importRecentHistoryError": "Không tải được lần nạp gần đây.",
@@ -1192,6 +1200,8 @@
   "importErrorInvalidAmount": "Số tiền không hợp lệ",
   "importErrorInvalidType": "Loại giao dịch không hợp lệ",
   "importErrorCategoryNotFound": "Không tìm thấy danh mục",
+  "importErrorInvalidHeader": "Tiêu đề CSV đang thiếu cột Ngày giao dịch, Số tiền, Loại hoặc Danh mục.",
+  "importErrorNoTransactions": "Không tìm thấy dòng giao dịch nào trong file CSV này.",
   "importRetry": "Thử lại",
   "activeSessionsTitle": "Thiết bị & Phiên",
   "activeSessionsEmpty": "Không có dữ liệu.",

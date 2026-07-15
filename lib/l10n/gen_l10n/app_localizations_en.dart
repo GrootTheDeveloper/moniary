@@ -2094,6 +2094,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String profileEmailChangeConfirmationSent(String email) {
+    return 'Email change requested for $email. Follow the confirmation instructions sent by email; your profile will update after confirmation.';
+  }
+
+  @override
   String get emailLinkCompleteTitle => 'Protect your email account';
 
   @override
@@ -2516,11 +2521,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importSelectFile => 'Select CSV File';
 
   @override
-  String get importCsvFormatTitle => 'CSV Format Required:';
+  String get importCsvFormatTitle => 'Supported CSV format:';
 
   @override
   String get importCsvFormatBody =>
-      '1. Transaction Date (YYYY-MM-DD)\n2. Amount (e.g. 100000)\n3. Type (Income / Expense)\n4. Category\n5. Note (Optional)\n\nNote: Skip header row if exists.';
+      'Import a CSV exported by Moniary, Excel, or Google Sheets. Required headers: Date, Amount, Type (Income/Expense), and Category. Note is optional. Headers may be reordered; dates support YYYY-MM-DD or DD/MM/YYYY.';
 
   @override
   String get importConfirm => 'Confirm Import';
@@ -2620,6 +2625,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get importErrorCategoryNotFound => 'Category was not found';
+
+  @override
+  String get importErrorInvalidHeader =>
+      'The CSV header is missing Date, Amount, Type, or Category.';
+
+  @override
+  String get importErrorNoTransactions =>
+      'No transaction rows were found in this CSV file.';
 
   @override
   String get importRetry => 'Try again';

@@ -17,6 +17,7 @@ import '../../auth/presentation/login_screen.dart';
 import '../../auth/application/auth_controller.dart';
 import '../application/profile_setup_controller.dart';
 import '../domain/currency_data.dart';
+import '../domain/user_profile.dart';
 import 'currency_picker_screen.dart';
 import 'profile_survey_screen.dart';
 
@@ -37,6 +38,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   String _currency = 'VND';
   String? _avatarPath;
   bool _avatarPicked = false;
+  bool _profileHydrated = false;
+  bool _isSubmitting = false;
+  UserProfile? _loadedProfile;
   String? _detectedTimezone;
 
   @override
@@ -66,36 +70,38 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   @override
   Widget build(BuildContext context) {
     final profileAsync = ref.watch(profileSetupControllerProvider);
-    final isLoading = profileAsync.isLoading;
+    final isLoading = profileAsync.isLoading || _isSubmitting;
     final isEditMode = widget.isEditMode;
 
     profileAsync.whenData((profile) {
-      final profileName = profile?.fullName?.trim() ?? '';
-      if (_nameController.text.isEmpty && profileName.isNotEmpty) {
-        _nameController.text = profileName;
-      }
+      _loadedProfile = profile;
+      if (!_profileHydrated) {
+        _profileHydrated = true;
+        _nameController.text = profile?.fullName?.trim() ?? '';
 
-      final profileEmail = profile?.email?.trim();
-      final linkedEmail =
-          profile?.loginProvider != 'anonymous' &&
-              profileEmail?.isNotEmpty == true
-          ? profileEmail!
-          : '';
-      if (_emailController.text != linkedEmail) {
-        _emailController.text = linkedEmail;
-      }
+        final profileEmail = profile?.email?.trim();
+        _emailController.text =
+            profile?.loginProvider != 'anonymous' &&
+                profileEmail?.isNotEmpty == true
+            ? profileEmail!
+            : '';
 
-      final username = profile?.username?.trim() ?? '';
-      if (_usernameController.text.isEmpty &&
-          username.isNotEmpty &&
-          !_isGeneratedUsername(username)) {
-        _usernameController.text = username;
-      }
+        final username = profile?.username?.trim() ?? '';
+        _usernameController.text =
+            username.isNotEmpty && !_isGeneratedUsername(username)
+            ? username
+            : '';
 
-      if (!_avatarPicked && _avatarPath == null) {
-        _avatarPath = profile?.avatarUrl;
+        if (!_avatarPicked) {
+          _avatarPath = profile?.avatarUrl;
+        }
       }
     });
+
+    final canEditEmail =
+        isEditMode &&
+        _loadedProfile?.loginProvider != 'anonymous' &&
+        _loadedProfile?.email?.trim().isNotEmpty == true;
 
     return Scaffold(
       body: AuroraBackground(
@@ -244,11 +250,19 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                       ),
                       const SizedBox(height: 10),
                       TextField(
+                        key: const ValueKey('profile-email-field'),
                         controller: _emailController,
-                        readOnly: true,
+                        readOnly: !canEditEmail,
+                        keyboardType: TextInputType.emailAddress,
+                        autocorrect: false,
+                        textCapitalization: TextCapitalization.none,
+                        autofillHints: const [AutofillHints.email],
                         decoration: InputDecoration(
                           hintText: context.l10n.loginEmail,
                           prefixIcon: const Icon(Icons.email_outlined),
+                          suffixIcon: canEditEmail
+                              ? null
+                              : const Icon(Icons.lock_outline),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -271,6 +285,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                       const SizedBox(height: 24),
                       const Spacer(),
                       FilledButton(
+                        key: const ValueKey('profile-save-button'),
                         onPressed: isLoading ? null : _submit,
                         child: Text(
                           isLoading
@@ -308,26 +323,41 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       return;
     }
 
+    final existingProfile =
+        _loadedProfile ??
+        ref.read(profileSetupControllerProvider).asData?.value;
+    final canEditEmail =
+        widget.isEditMode &&
+        existingProfile?.loginProvider != 'anonymous' &&
+        existingProfile?.email?.trim().isNotEmpty == true;
+    final email = canEditEmail ? _emailController.text.trim() : null;
+    if (email != null &&
+        !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(context.l10n.validationEmailInvalid)),
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
     try {
-      final existingProfile = ref
-          .read(profileSetupControllerProvider)
-          .asData
-          ?.value;
       final timezone =
           (widget.isEditMode && existingProfile?.timezone.isNotEmpty == true)
           ? existingProfile!.timezone
           : (_detectedTimezone ?? AppConstants.defaultTimezone);
       await ref.read(preferredCurrencyProvider.notifier).setCurrency(_currency);
       if (!mounted) return;
-      await ref
+      final result = await ref
           .read(profileSetupControllerProvider.notifier)
           .saveProfile(
             fullName: name,
             username: username,
             timezone: timezone,
+            email: email,
             avatarImagePath: _avatarPicked ? _avatarPath : null,
           );
       if (!mounted) return;
+      _loadedProfile = result.profile;
       if (context.canPop()) {
         context.pop();
       } else {
@@ -337,10 +367,24 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
               : ProfileSurveyScreen.routePath,
         );
       }
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            result.pendingEmail == null
+                ? context.l10n.commonSaved
+                : context.l10n.profileEmailChangeConfirmationSent(
+                    result.pendingEmail!,
+                  ),
+          ),
+          backgroundColor: AppTheme.success,
+        ),
+      );
     } catch (error) {
       messenger.showSnackBar(
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 

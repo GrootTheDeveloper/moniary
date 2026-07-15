@@ -3878,6 +3878,12 @@ abstract class AppLocalizations {
   /// **'Đã gửi liên kết xác nhận đến {email}. Hãy mở liên kết trên thiết bị này để tiếp tục.'**
   String profileLinkEmailConfirmationSent(String email);
 
+  /// No description provided for @profileEmailChangeConfirmationSent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã yêu cầu đổi sang {email}. Hãy làm theo hướng dẫn xác nhận được gửi qua email; hồ sơ sẽ cập nhật sau khi xác nhận hoàn tất.'**
+  String profileEmailChangeConfirmationSent(String email);
+
   /// No description provided for @emailLinkCompleteTitle.
   ///
   /// In vi, this message translates to:
@@ -4641,13 +4647,13 @@ abstract class AppLocalizations {
   /// No description provided for @importCsvFormatTitle.
   ///
   /// In vi, this message translates to:
-  /// **'Định dạng CSV yêu cầu:'**
+  /// **'Định dạng CSV được hỗ trợ:'**
   String get importCsvFormatTitle;
 
   /// No description provided for @importCsvFormatBody.
   ///
   /// In vi, this message translates to:
-  /// **'1. Ngày giao dịch (YYYY-MM-DD)\n2. Số tiền (Ví dụ: 100000)\n3. Loại (Thu / Chi)\n4. Hạng mục\n5. Ghi chú (Tùy chọn)\n\nLưu ý: Bỏ qua dòng tiêu đề nếu có.'**
+  /// **'Nhập file CSV xuất từ Moniary, Excel hoặc Google Sheets. Cần các cột: Ngày giao dịch, Số tiền, Loại (Thu/Chi) và Danh mục. Ghi chú là tùy chọn. Có thể đổi thứ tự cột; ngày dùng YYYY-MM-DD hoặc DD/MM/YYYY.'**
   String get importCsvFormatBody;
 
   /// No description provided for @importConfirm.
@@ -4835,6 +4841,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Không tìm thấy danh mục'**
   String get importErrorCategoryNotFound;
+
+  /// No description provided for @importErrorInvalidHeader.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiêu đề CSV đang thiếu cột Ngày giao dịch, Số tiền, Loại hoặc Danh mục.'**
+  String get importErrorInvalidHeader;
+
+  /// No description provided for @importErrorNoTransactions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy dòng giao dịch nào trong file CSV này.'**
+  String get importErrorNoTransactions;
 
   /// No description provided for @importRetry.
   ///
