@@ -37,12 +37,16 @@ class StarredTransactionsScreen extends ConsumerWidget {
                   Icon(
                     Icons.star_border,
                     size: 64,
-                    color: context.moniaryColors.textSecondary.withValues(alpha: 0.28),
+                    color: context.moniaryColors.textSecondary.withValues(
+                      alpha: 0.28,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     context.l10n.starredTransactionsEmpty,
-                    style: TextStyle(color: context.moniaryColors.textSecondary),
+                    style: TextStyle(
+                      color: context.moniaryColors.textSecondary,
+                    ),
                   ),
                 ],
               ),

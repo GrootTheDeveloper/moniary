@@ -148,7 +148,8 @@ class _AssistantConversationScreenState
             separatorBuilder: (_, _) => const SizedBox(height: 14),
             itemBuilder: (context, index) {
               if (index == messages.length) {
-                final isVi = Localizations.localeOf(context).languageCode == 'vi';
+                final isVi =
+                    Localizations.localeOf(context).languageCode == 'vi';
                 return _AssistantResponseShell(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,

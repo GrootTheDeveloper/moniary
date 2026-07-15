@@ -14,7 +14,9 @@ class FileActionService {
   Future<bool> open(File file) async {
     try {
       if (!file.existsSync()) {
-        AppLogger.error('FileActionService: File does not exist at ${file.path}');
+        AppLogger.error(
+          'FileActionService: File does not exist at ${file.path}',
+        );
         return false;
       }
       final result = await OpenFilex.open(file.path);
@@ -28,7 +30,9 @@ class FileActionService {
   Future<bool> share(File file) async {
     try {
       if (!file.existsSync()) {
-        AppLogger.error('FileActionService: File does not exist at ${file.path}');
+        AppLogger.error(
+          'FileActionService: File does not exist at ${file.path}',
+        );
         return false;
       }
       final result = await Share.shareXFiles([XFile(file.path)]);

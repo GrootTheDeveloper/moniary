@@ -19,7 +19,8 @@ const _walkDuration = Duration(seconds: 6);
 const _frameDuration = Duration(milliseconds: 130);
 const _actionFrameHeight = 58.0;
 const _actionFrameWidth = 68.0;
-const _baseBottom = 8.0; // mascot feet align 8px above the bottom nav top border
+const _baseBottom =
+    8.0; // mascot feet align 8px above the bottom nav top border
 const _buttonWidth = 68.0; // matches _CameraActionButton in bottom_nav_bar.dart
 const _jumpHeight = 24.0; // lifts the mascot's feet up to the button's top edge
 

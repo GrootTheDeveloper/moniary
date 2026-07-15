@@ -191,6 +191,7 @@ class LocalNotificationService implements LocalNotificationGateway {
   /// Presents a safe foreground notification. The caller supplies already
   /// localized, privacy-safe copy; no personal names or amounts should be
   /// passed here because this can appear on the lock screen.
+  @override
   Future<void> showIncomingNotification({
     required int id,
     required String title,
