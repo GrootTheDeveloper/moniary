@@ -88,7 +88,9 @@ client-side `user_id` filters are not a security boundary.
 ## Secrets
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `OCR_API_URL`, `TURNSTILE_SITE_KEY`, and
-`TURNSTILE_BASE_URL` are compile-time Dart defines. The Turnstile secret and
+`TURNSTILE_BASE_URL` are compile-time Dart defines. Anonymous sign-in, direct
+email sign-in/sign-up, and password reset pass a fresh Turnstile token when
+Supabase CAPTCHA protection is enabled. The Turnstile secret and
 Edge Function secrets such as `RESEND_API_KEY` belong in the Supabase
 environment. Never commit access tokens, service-role keys, signing secrets,
 or production credentials.

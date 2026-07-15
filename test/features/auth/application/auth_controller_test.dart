@@ -83,6 +83,9 @@ class FakeAuthRepository extends AuthRepository {
   String? updatedPassword;
   String? linkedEmail;
   String? linkedEmailPassword;
+  String? emailSignInCaptchaToken;
+  String? emailSignUpCaptchaToken;
+  String? passwordResetCaptchaToken;
   var completeGoogleLinkCount = 0;
 
   @override
@@ -94,7 +97,9 @@ class FakeAuthRepository extends AuthRepository {
   Future<Session?> signInWithEmail({
     required String email,
     required String password,
+    String? captchaToken,
   }) async {
+    emailSignInCaptchaToken = captchaToken;
     return emailSession;
   }
 
@@ -107,7 +112,9 @@ class FakeAuthRepository extends AuthRepository {
   Future<Session?> signUpWithEmail({
     required String email,
     required String password,
+    String? captchaToken,
   }) async {
+    emailSignUpCaptchaToken = captchaToken;
     return signUpSession;
   }
 
@@ -117,7 +124,11 @@ class FakeAuthRepository extends AuthRepository {
   }
 
   @override
-  Future<bool> requestPasswordReset(String email) async {
+  Future<bool> requestPasswordReset(
+    String email, {
+    String? captchaToken,
+  }) async {
+    passwordResetCaptchaToken = captchaToken;
     return opensRecoveryLocally;
   }
 
@@ -284,8 +295,13 @@ void main() {
 
     await container
         .read(authControllerProvider.notifier)
-        .signInWithEmail(email: 'bee@moniary.app', password: 'password123');
+        .signInWithEmail(
+          email: 'bee@moniary.app',
+          password: 'password123',
+          captchaToken: 'email-sign-in-token',
+        );
 
+    expect(repository.emailSignInCaptchaToken, 'email-sign-in-token');
     expect(container.read(authControllerProvider).isLoading, isFalse);
     expect(container.read(authControllerProvider).hasError, isFalse);
     expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
@@ -347,9 +363,14 @@ void main() {
 
     final requiresConfirmation = await container
         .read(authControllerProvider.notifier)
-        .signUpWithEmail(email: 'bee@moniary.app', password: 'password123');
+        .signUpWithEmail(
+          email: 'bee@moniary.app',
+          password: 'password123',
+          captchaToken: 'email-sign-up-token',
+        );
 
     expect(requiresConfirmation, isFalse);
+    expect(repository.emailSignUpCaptchaToken, 'email-sign-up-token');
     expect(container.read(authControllerProvider).hasError, isFalse);
     expect(container.read(mockSessionProvider)?.user.id, 'mock-user-id');
   });
@@ -381,8 +402,12 @@ void main() {
 
       await container
           .read(authControllerProvider.notifier)
-          .requestPasswordReset('bee@moniary.app');
+          .requestPasswordReset(
+            'bee@moniary.app',
+            captchaToken: 'password-reset-token',
+          );
 
+      expect(repository.passwordResetCaptchaToken, 'password-reset-token');
       expect(container.read(authControllerProvider).isLoading, isFalse);
       expect(container.read(authControllerProvider).hasError, isFalse);
     },

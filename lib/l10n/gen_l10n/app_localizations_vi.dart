@@ -230,14 +230,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get anonymousCaptchaDescription =>
-      'Hoàn tất bước kiểm tra bảo mật để bắt đầu phiên khách.';
+      'Hoàn tất bước kiểm tra bảo mật để tiếp tục an toàn.';
 
   @override
   String get anonymousCaptchaVerified => 'Đã xác minh';
 
   @override
   String get anonymousCaptchaRequired =>
-      'Hãy hoàn tất kiểm tra bảo mật trước khi tiếp tục với tài khoản khách.';
+      'Hãy hoàn tất kiểm tra bảo mật trước khi tiếp tục.';
 
   @override
   String get anonymousCaptchaFailed => 'Xác minh thất bại. Vui lòng thử lại.';
@@ -252,7 +252,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get anonymousCaptchaConfigRequired =>
-      'Bản build này chưa cấu hình bảo mật cho đăng nhập khách.';
+      'Bản build này chưa cấu hình bước xác minh bảo mật.';
 
   @override
   String get loginPasswordResetSent =>

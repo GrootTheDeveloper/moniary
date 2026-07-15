@@ -63,7 +63,9 @@ Supabase identity linking and will be rejected when this setting is disabled.
 ## 3. Anonymous sign-in protection
 
 Anonymous sign-in remains enabled because guest data can be upgraded in place
-to email or Google. It must not be exposed without CAPTCHA:
+to email or Google. Supabase CAPTCHA protection also covers direct email
+sign-in, sign-up, and password-reset requests, so every protected flow must
+submit a fresh Turnstile token:
 
 1. In Cloudflare Dashboard, create a Turnstile widget in **Managed** mode.
 2. Add a domain you control, such as `auth.example.com`, to the widget's
@@ -86,9 +88,9 @@ For local Supabase, export the server-only secret before `supabase start`:
 export SUPABASE_AUTH_CAPTCHA_SECRET=YOUR_PRIVATE_TURNSTILE_SECRET
 ```
 
-The app refuses live anonymous sign-in when the public Turnstile configuration
-is missing. Mock mode intentionally skips CAPTCHA and never creates a Supabase
-Auth user.
+The app refuses live anonymous or direct email authentication when the public
+Turnstile configuration is missing. Mock mode intentionally skips CAPTCHA and
+never creates a Supabase Auth user.
 
 ## 4. Email signup
 

@@ -503,7 +503,7 @@ abstract class AppLocalizations {
   /// No description provided for @anonymousCaptchaDescription.
   ///
   /// In vi, this message translates to:
-  /// **'Hoàn tất bước kiểm tra bảo mật để bắt đầu phiên khách.'**
+  /// **'Hoàn tất bước kiểm tra bảo mật để tiếp tục an toàn.'**
   String get anonymousCaptchaDescription;
 
   /// No description provided for @anonymousCaptchaVerified.
@@ -515,7 +515,7 @@ abstract class AppLocalizations {
   /// No description provided for @anonymousCaptchaRequired.
   ///
   /// In vi, this message translates to:
-  /// **'Hãy hoàn tất kiểm tra bảo mật trước khi tiếp tục với tài khoản khách.'**
+  /// **'Hãy hoàn tất kiểm tra bảo mật trước khi tiếp tục.'**
   String get anonymousCaptchaRequired;
 
   /// No description provided for @anonymousCaptchaFailed.
@@ -539,7 +539,7 @@ abstract class AppLocalizations {
   /// No description provided for @anonymousCaptchaConfigRequired.
   ///
   /// In vi, this message translates to:
-  /// **'Bản build này chưa cấu hình bảo mật cho đăng nhập khách.'**
+  /// **'Bản build này chưa cấu hình bước xác minh bảo mật.'**
   String get anonymousCaptchaConfigRequired;
 
   /// No description provided for @loginPasswordResetSent.

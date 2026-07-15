@@ -41,6 +41,36 @@ void main() {
     );
   });
 
+  test('live direct email auth rejects missing CAPTCHA tokens', () async {
+    final repository = AuthRepository(FakeSupabaseClient(), useMockData: false);
+    final captchaRequired = throwsA(
+      isA<AppException>().having(
+        (error) => error.code,
+        'code',
+        'AUTH_CAPTCHA_REQUIRED',
+      ),
+    );
+
+    await expectLater(
+      repository.signInWithEmail(
+        email: 'bee@moniary.app',
+        password: 'password123',
+      ),
+      captchaRequired,
+    );
+    await expectLater(
+      repository.signUpWithEmail(
+        email: 'bee@moniary.app',
+        password: 'password123',
+      ),
+      captchaRequired,
+    );
+    await expectLater(
+      repository.requestPasswordReset('bee@moniary.app'),
+      captchaRequired,
+    );
+  });
+
   test('signOut completes in mock mode', () async {
     if (AppConstants.hasSupabaseConfig) {
       markTestSkipped('Mock mode test requires missing Supabase config.');

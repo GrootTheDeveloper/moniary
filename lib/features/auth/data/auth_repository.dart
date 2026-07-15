@@ -42,13 +42,7 @@ class AuthRepository {
       return _mockSession();
     }
 
-    final normalizedCaptchaToken = captchaToken?.trim();
-    if (normalizedCaptchaToken == null || normalizedCaptchaToken.isEmpty) {
-      throw const AppException(
-        'CAPTCHA is required for anonymous sign-in',
-        code: 'AUTH_CAPTCHA_REQUIRED',
-      );
-    }
+    final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
 
     try {
       await _requiredClient.auth.signInAnonymously(
@@ -276,15 +270,18 @@ class AuthRepository {
   Future<Session?> signInWithEmail({
     required String email,
     required String password,
+    String? captchaToken,
   }) async {
     if (_useMockData) {
       return _mockSession();
     }
+    final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
     try {
       AppLogger.info('Attempting email sign-in');
       final response = await _requiredClient.auth.signInWithPassword(
         email: email,
         password: password,
+        captchaToken: normalizedCaptchaToken,
       );
       AppLogger.info('Email sign-in RPC success, initializing user...');
       await _initializeUserIfPossible();
@@ -304,13 +301,16 @@ class AuthRepository {
   Future<Session?> signUpWithEmail({
     required String email,
     required String password,
+    String? captchaToken,
   }) async {
     if (_useMockData) return _mockSession();
+    final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
     try {
       final response = await _requiredClient.auth.signUp(
         email: email,
         password: password,
         emailRedirectTo: AppConstants.supabaseLoginCallbackUrl,
+        captchaToken: normalizedCaptchaToken,
       );
 
       if (response.session != null) {
@@ -329,14 +329,19 @@ class AuthRepository {
     }
   }
 
-  Future<bool> requestPasswordReset(String email) async {
+  Future<bool> requestPasswordReset(
+    String email, {
+    String? captchaToken,
+  }) async {
     if (_useMockData) return true;
+    final normalizedCaptchaToken = _requireCaptchaToken(captchaToken);
     try {
       await _requiredClient.auth.resetPasswordForEmail(
         email,
         redirectTo: kIsWeb
             ? null
             : AppConstants.supabasePasswordResetCallbackUrl,
+        captchaToken: normalizedCaptchaToken,
       );
       return false;
     } on AuthException catch (e, st) {
@@ -414,6 +419,17 @@ class AuthRepository {
     } catch (e, st) {
       AppLogger.error('initialize_user RPC failed (non-blocking)', e, st);
     }
+  }
+
+  String _requireCaptchaToken(String? captchaToken) {
+    final normalizedCaptchaToken = captchaToken?.trim();
+    if (normalizedCaptchaToken == null || normalizedCaptchaToken.isEmpty) {
+      throw const AppException(
+        'CAPTCHA is required for this authentication action',
+        code: 'AUTH_CAPTCHA_REQUIRED',
+      );
+    }
+    return normalizedCaptchaToken;
   }
 
   Future<void> _updateProfileLoginProvider({

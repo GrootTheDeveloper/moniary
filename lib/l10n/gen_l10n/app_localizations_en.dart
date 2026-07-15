@@ -230,14 +230,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get anonymousCaptchaDescription =>
-      'Complete this security check to start a guest session.';
+      'Complete this security check to continue securely.';
 
   @override
   String get anonymousCaptchaVerified => 'Verification complete';
 
   @override
   String get anonymousCaptchaRequired =>
-      'Complete the security check before continuing as a guest.';
+      'Complete the security check before continuing.';
 
   @override
   String get anonymousCaptchaFailed => 'Verification failed. Please try again.';
@@ -252,7 +252,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get anonymousCaptchaConfigRequired =>
-      'Guest sign-in is not configured securely for this build.';
+      'Security verification is not configured for this build.';
 
   @override
   String get loginPasswordResetSent =>

@@ -332,6 +332,7 @@ class AuthController extends AsyncNotifier<void> {
   Future<void> signInWithEmail({
     required String email,
     required String password,
+    String? captchaToken,
   }) async {
     if (_isProcessing) return;
     _isProcessing = true;
@@ -339,7 +340,11 @@ class AuthController extends AsyncNotifier<void> {
     try {
       final session = await ref
           .read(authRepositoryProvider)
-          .signInWithEmail(email: email, password: password);
+          .signInWithEmail(
+            email: email,
+            password: password,
+            captchaToken: captchaToken,
+          );
 
       _applySignedInSession(session);
       state = const AsyncData(null);
@@ -354,6 +359,7 @@ class AuthController extends AsyncNotifier<void> {
   Future<bool> signUpWithEmail({
     required String email,
     required String password,
+    String? captchaToken,
   }) async {
     if (_isProcessing) return true;
     _isProcessing = true;
@@ -361,7 +367,11 @@ class AuthController extends AsyncNotifier<void> {
     try {
       final session = await ref
           .read(authRepositoryProvider)
-          .signUpWithEmail(email: email, password: password);
+          .signUpWithEmail(
+            email: email,
+            password: password,
+            captchaToken: captchaToken,
+          );
       _applySignedInSession(session);
       state = const AsyncData(null);
       return session == null;
@@ -373,14 +383,17 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<bool> requestPasswordReset(String email) async {
+  Future<bool> requestPasswordReset(
+    String email, {
+    String? captchaToken,
+  }) async {
     if (_isProcessing) return false;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
       final opensRecoveryLocally = await ref
           .read(authRepositoryProvider)
-          .requestPasswordReset(email);
+          .requestPasswordReset(email, captchaToken: captchaToken);
       state = const AsyncData(null);
       return opensRecoveryLocally;
     } catch (e, st) {

@@ -57,6 +57,7 @@ class FakeAuthRepository extends AuthRepository {
   Future<Session?> signUpWithEmail({
     required String email,
     required String password,
+    String? captchaToken,
   }) async {
     signedUpEmail = email;
     signedUpPassword = password;

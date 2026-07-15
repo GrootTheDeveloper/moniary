@@ -24,7 +24,7 @@ import '../../settings/presentation/privacy/privacy_policy_screen.dart';
 import '../application/account_status_controller.dart';
 import '../application/auth_controller.dart';
 import '../application/post_auth_decision_provider.dart';
-import 'anonymous_captcha_dialog.dart';
+import 'auth_captcha_dialog.dart';
 import 'password_reset_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -485,12 +485,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final email = _emailController.text.trim();
     final password = _passwordController.text;
+    String? captchaToken;
+
+    if (!ref.read(useMockDataModeProvider)) {
+      captchaToken = await _requestAuthCaptcha(
+        _isSignUp
+            ? AuthCaptchaAction.emailSignUp
+            : AuthCaptchaAction.emailSignIn,
+      );
+      if (!mounted || captchaToken == null) return;
+    }
 
     if (_isSignUp) {
       try {
         final requiresEmailConfirmation = await ref
             .read(authControllerProvider.notifier)
-            .signUpWithEmail(email: email, password: password);
+            .signUpWithEmail(
+              email: email,
+              password: password,
+              captchaToken: captchaToken,
+            );
         if (!mounted) return;
         if (requiresEmailConfirmation) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -513,7 +527,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     await _enterApp(
       () => ref
           .read(authControllerProvider.notifier)
-          .signInWithEmail(email: email, password: password),
+          .signInWithEmail(
+            email: email,
+            password: password,
+            captchaToken: captchaToken,
+          ),
     );
   }
 
@@ -526,10 +544,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
+    String? captchaToken;
+    if (!ref.read(useMockDataModeProvider)) {
+      captchaToken = await _requestAuthCaptcha(
+        AuthCaptchaAction.passwordReset,
+      );
+      if (!mounted || captchaToken == null) return;
+    }
+
     try {
       final opensRecoveryLocally = await ref
           .read(authControllerProvider.notifier)
-          .requestPasswordReset(email);
+          .requestPasswordReset(email, captchaToken: captchaToken);
       if (!mounted) return;
       if (opensRecoveryLocally) {
         context.go(PasswordResetScreen.routePath);
@@ -571,20 +597,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    if (!AppConstants.hasTurnstileConfig) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.anonymousCaptchaConfigRequired)),
-      );
-      return;
-    }
-
-    final captchaToken = await showAnonymousCaptchaDialog(context);
+    final captchaToken = await _requestAuthCaptcha(
+      AuthCaptchaAction.anonymousSignIn,
+    );
     if (!mounted || captchaToken == null) return;
     await _enterApp(
       () => ref
           .read(authControllerProvider.notifier)
           .signInAnonymously(captchaToken: captchaToken),
     );
+  }
+
+  Future<String?> _requestAuthCaptcha(AuthCaptchaAction action) async {
+    if (!AppConstants.hasTurnstileConfig) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.anonymousCaptchaConfigRequired)),
+      );
+      return null;
+    }
+
+    return showAuthCaptchaDialog(context, action: action);
   }
 
   void _showAuthError(Object error, StackTrace stackTrace) {

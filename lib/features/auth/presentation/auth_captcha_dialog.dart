@@ -5,23 +5,38 @@ import '../../../app/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../l10n/l10n_extension.dart';
 
-Future<String?> showAnonymousCaptchaDialog(BuildContext context) {
+enum AuthCaptchaAction {
+  anonymousSignIn('anonymous_sign_in'),
+  emailSignIn('email_sign_in'),
+  emailSignUp('email_sign_up'),
+  passwordReset('password_reset');
+
+  const AuthCaptchaAction(this.value);
+
+  final String value;
+}
+
+Future<String?> showAuthCaptchaDialog(
+  BuildContext context, {
+  required AuthCaptchaAction action,
+}) {
   return showDialog<String>(
     context: context,
     barrierDismissible: false,
-    builder: (_) => const _AnonymousCaptchaDialog(),
+    builder: (_) => _AuthCaptchaDialog(action: action),
   );
 }
 
-class _AnonymousCaptchaDialog extends StatefulWidget {
-  const _AnonymousCaptchaDialog();
+class _AuthCaptchaDialog extends StatefulWidget {
+  const _AuthCaptchaDialog({required this.action});
+
+  final AuthCaptchaAction action;
 
   @override
-  State<_AnonymousCaptchaDialog> createState() =>
-      _AnonymousCaptchaDialogState();
+  State<_AuthCaptchaDialog> createState() => _AuthCaptchaDialogState();
 }
 
-class _AnonymousCaptchaDialogState extends State<_AnonymousCaptchaDialog> {
+class _AuthCaptchaDialogState extends State<_AuthCaptchaDialog> {
   String? _captchaToken;
   String? _errorMessage;
 
@@ -49,7 +64,7 @@ class _AnonymousCaptchaDialogState extends State<_AnonymousCaptchaDialog> {
             child: CloudflareTurnstile(
               siteKey: AppConstants.turnstileSiteKey,
               baseUrl: AppConstants.turnstileBaseUrl,
-              action: 'anonymous_sign_in',
+              action: widget.action.value,
               options: TurnstileOptions(
                 language: locale,
                 theme: turnstileTheme,
