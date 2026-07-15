@@ -114,46 +114,69 @@ class _FriendInvitePromptDialog extends ConsumerWidget {
       );
     });
 
+    void closeDialog() {
+      ref.read(pendingFriendInvitePromptProvider.notifier).clear();
+      Navigator.of(context).pop();
+    }
+
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 22, 20, 18),
-        child: previewAsync.when(
-          loading: () => _DialogMessage(
-            icon: Icons.mark_email_unread_outlined,
-            title: context.l10n.friendInviteLoading,
-          ),
-          error: (error, stackTrace) {
-            AppLogger.error(
-              'Failed to load friend invite prompt',
-              error,
-              stackTrace,
-            );
-            return _DialogMessage(
-              icon: Icons.link_off_outlined,
-              title: context.l10n.friendInvitePreviewError,
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    ref
-                        .read(pendingFriendInvitePromptProvider.notifier)
-                        .clear();
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(context.l10n.commonClose),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 12, 18),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    onPressed: closeDialog,
+                    tooltip: context.l10n.commonClose,
+                    visualDensity: VisualDensity.compact,
+                    icon: const Icon(Icons.close_outlined),
+                  ),
                 ),
-                FilledButton(
-                  onPressed: () =>
-                      ref.invalidate(friendInvitePreviewProvider(token)),
-                  child: Text(context.l10n.retry),
+                previewAsync.when(
+                  loading: () => _DialogMessage(
+                    icon: Icons.mark_email_unread_outlined,
+                    title: context.l10n.friendInviteLoading,
+                  ),
+                  error: (error, stackTrace) {
+                    AppLogger.error(
+                      'Failed to load friend invite prompt',
+                      error,
+                      stackTrace,
+                    );
+                    return _DialogMessage(
+                      icon: Icons.link_off_outlined,
+                      title: context.l10n.friendInvitePreviewError,
+                      actions: [
+                        TextButton(
+                          onPressed: closeDialog,
+                          child: Text(context.l10n.commonClose),
+                        ),
+                        FilledButton(
+                          onPressed: () => ref.invalidate(
+                            friendInvitePreviewProvider(token),
+                          ),
+                          child: Text(context.l10n.retry),
+                        ),
+                      ],
+                    );
+                  },
+                  data: (preview) => _FriendInvitePromptBody(
+                    token: token,
+                    preview: preview,
+                    actionLoading: action.isLoading,
+                  ),
                 ),
               ],
-            );
-          },
-          data: (preview) => _FriendInvitePromptBody(
-            token: token,
-            preview: preview,
-            actionLoading: action.isLoading,
+            ),
           ),
         ),
       ),

@@ -127,7 +127,7 @@ class _AssistantHomeScreenState extends ConsumerState<AssistantHomeScreen> {
           ),
           MoniarySectionLabel(context.l10n.assistantSuggestionsTitle),
           SizedBox(
-            height: 154,
+            height: 172,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: 3,
@@ -219,8 +219,9 @@ class _AssistantComposer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return SafeArea(
-      minimum: const EdgeInsets.fromLTRB(18, 8, 18, 14),
+      minimum: EdgeInsets.fromLTRB(18, 8, 18, 14 + bottomInset),
       child: TextField(
         controller: controller,
         textInputAction: TextInputAction.send,

@@ -118,7 +118,12 @@ class _AssistantConversationScreenState
         ],
       ),
       bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(18, 8, 18, 14),
+        minimum: EdgeInsets.fromLTRB(
+          18,
+          8,
+          18,
+          14 + MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: TextField(
           controller: _controller,
           focusNode: _focusNode,
