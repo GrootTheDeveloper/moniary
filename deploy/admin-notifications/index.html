@@ -257,6 +257,74 @@
       margin-top: 14px;
     }
 
+    .progress-panel {
+      grid-column: 1 / -1;
+      display: none;
+      gap: 10px;
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid rgba(33, 29, 23, 0.1);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .progress-panel.show { display: grid; }
+
+    .progress-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .progress-track {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(33, 29, 23, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(33, 29, 23, 0.08);
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background:
+        linear-gradient(90deg, var(--color-primary), var(--sand), var(--color-accent));
+      transition: width 260ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .progress-steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .progress-step {
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 9px;
+      border-radius: 11px;
+      border: 1px solid rgba(33, 29, 23, 0.08);
+      background: rgba(255, 255, 255, 0.42);
+    }
+
+    .progress-step.done {
+      color: var(--success);
+      background: rgba(74, 124, 89, 0.1);
+    }
+
+    .progress-step.active {
+      color: var(--ink);
+      background: rgba(217, 165, 116, 0.16);
+    }
+
     .btn {
       display: inline-flex;
       align-items: center;
@@ -481,7 +549,7 @@
         width: min(100% - 20px, 520px);
         padding-top: 12px;
       }
-      .topbar, .grid-2, .metric-row, .advanced-grid {
+      .topbar, .grid-2, .metric-row, .advanced-grid, .progress-steps {
         grid-template-columns: 1fr;
       }
       .panel-body, .panel-header {
@@ -663,6 +731,22 @@
               Queue và gửi ngay
             </button>
           </div>
+
+          <div class="progress-panel" id="progressPanel" aria-live="polite">
+            <div class="progress-topline">
+              <span id="progressLabel">Đang chuẩn bị</span>
+              <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-track" aria-hidden="true">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-steps">
+              <span class="progress-step" data-progress-step="validate"><i data-lucide="search-check"></i> Kiểm tra</span>
+              <span class="progress-step" data-progress-step="queue"><i data-lucide="list-plus"></i> Queue</span>
+              <span class="progress-step" data-progress-step="dispatch"><i data-lucide="radio-tower"></i> Gửi FCM</span>
+              <span class="progress-step" data-progress-step="done"><i data-lucide="check-circle-2"></i> Hoàn tất</span>
+            </div>
+          </div>
         </form>
       </section>
 
@@ -741,10 +825,15 @@
       devicesMetric: document.getElementById('devicesMetric'),
       pendingMetric: document.getElementById('pendingMetric'),
       campaignList: document.getElementById('campaignList'),
+      progressPanel: document.getElementById('progressPanel'),
+      progressLabel: document.getElementById('progressLabel'),
+      progressPercent: document.getElementById('progressPercent'),
+      progressBar: document.getElementById('progressBar'),
       toast: document.getElementById('toast')
     };
 
     let dispatchNow = true;
+    let progressTimer = null;
 
     function init() {
       document.querySelectorAll('input, textarea, select').forEach((input) => {
@@ -830,7 +919,9 @@
 
     async function dryRun() {
       await requestWithState(elements.dryRunButton, async () => {
+        startProgress('Kiểm tra người nhận', 18, 'validate');
         const result = await callAdmin('POST', payload({ dryRun: true }));
+        finishProgress('Tìm thấy ' + result.targetCount + ' user', 'validate');
         if (result.targetCount === 0 && elements.audience.value === 'active_device_users') {
           showToast('Chưa có thiết bị nào đăng ký push. Mở app trên điện thoại test và cấp quyền thông báo trước.');
           return;
@@ -842,14 +933,23 @@
     async function sendCampaign(event) {
       event.preventDefault();
       await requestWithState(elements.sendButton, async () => {
+        startProgress('Kiểm tra người nhận', 12, 'validate');
         const preview = await callAdmin('POST', payload({ dryRun: true }));
+        updateProgress(32, 'Sẵn sàng queue cho ' + preview.targetCount + ' user', 'validate');
         const confirmed = window.confirm('Queue campaign cho ' + preview.targetCount + ' user?');
-        if (!confirmed) return;
+        if (!confirmed) {
+          resetProgress('Đã hủy gửi');
+          return;
+        }
+        updateProgress(48, 'Đang tạo notification inbox/outbox', 'queue');
         const result = await callAdmin('POST', payload({ dryRun: false }));
+        updateProgress(88, 'Đang tổng hợp kết quả FCM', 'dispatch');
         const dispatch = result.dispatchResult?.totals;
         if (dispatch) {
+          finishProgress('Hoàn tất: gửi ' + dispatch.sent + ', bỏ qua ' + dispatch.skipped + ', lỗi ' + dispatch.failed, 'done');
           showToast('Đã queue ' + result.queuedCount + '/' + result.targetCount + '. FCM gửi ' + dispatch.sent + ', bỏ qua ' + dispatch.skipped + ', lỗi ' + dispatch.failed + '.');
         } else {
+          finishProgress('Đã queue ' + result.queuedCount + '/' + result.targetCount + ' thông báo', 'done');
           showToast('Đã queue ' + result.queuedCount + '/' + result.targetCount + ' thông báo.');
         }
         await loadSummary();
@@ -924,6 +1024,8 @@
       try {
         await action();
       } catch (error) {
+        stopProgress();
+        updateProgress(100, 'Có lỗi khi xử lý', null);
         if (toastErrors) showToast(error.message || String(error));
         else {
           elements.campaignList.innerHTML = '<div class="muted">Không tải được trạng thái: ' + escapeHtml(error.message || String(error)) + '</div>';
@@ -933,6 +1035,57 @@
         button.innerHTML = original;
         lucide.createIcons();
       }
+    }
+
+    function startProgress(label, percent, step) {
+      stopProgress();
+      elements.progressPanel.classList.add('show');
+      updateProgress(percent, label, step);
+      progressTimer = window.setInterval(() => {
+        const current = parseInt(elements.progressPercent.textContent, 10) || 0;
+        if (current < 82) {
+          updateProgress(current + 3, elements.progressLabel.textContent, step);
+        }
+      }, 900);
+    }
+
+    function updateProgress(percent, label, step) {
+      const normalized = Math.max(0, Math.min(100, Math.round(percent)));
+      elements.progressLabel.textContent = label;
+      elements.progressPercent.textContent = normalized + '%';
+      elements.progressBar.style.width = normalized + '%';
+      document.querySelectorAll('[data-progress-step]').forEach((item) => {
+        const key = item.getAttribute('data-progress-step');
+        item.classList.toggle('active', key === step);
+        item.classList.toggle('done', isProgressStepDone(key, step));
+      });
+      lucide.createIcons();
+    }
+
+    function finishProgress(label, step) {
+      stopProgress();
+      updateProgress(100, label, step);
+    }
+
+    function resetProgress(label) {
+      stopProgress();
+      updateProgress(0, label, null);
+      window.setTimeout(() => {
+        elements.progressPanel.classList.remove('show');
+      }, 1200);
+    }
+
+    function stopProgress() {
+      if (progressTimer) {
+        window.clearInterval(progressTimer);
+        progressTimer = null;
+      }
+    }
+
+    function isProgressStepDone(key, activeStep) {
+      const order = ['validate', 'queue', 'dispatch', 'done'];
+      if (!key || !activeStep) return false;
+      return order.indexOf(key) < order.indexOf(activeStep) || activeStep === 'done';
     }
 
     function showToast(message) {
