@@ -469,7 +469,8 @@ class TransactionRepository {
         // A subscription transaction is any auto-posted one (source =
         // 'recurring'). This is more reliable than recurring_transaction_id,
         // which is only set on transactions created after that column existed.
-        query = filter.subscription == TransactionSubscriptionFilter.subscription
+        query =
+            filter.subscription == TransactionSubscriptionFilter.subscription
             ? query.eq('source', 'recurring')
             : query.not('source', 'eq', 'recurring');
       }
@@ -1228,9 +1229,9 @@ class TransactionRepository {
     );
     // Digits in the query are matched against the whole-number amount, so
     // typing "45000" finds a 45,000 transaction.
-    final amountMatch = transaction.amount.toStringAsFixed(0).contains(
-      normalizedQuery,
-    );
+    final amountMatch = transaction.amount
+        .toStringAsFixed(0)
+        .contains(normalizedQuery);
     return noteMatch || categoryMatch || walletMatch || amountMatch;
   }
 }

@@ -15,7 +15,7 @@ String currencySymbolFor({
 }) {
   final normalized = currencyCode.trim().toUpperCase();
   if (normalized.isEmpty) return '₫';
-  
+
   final info = _catalog[normalized];
   if (info != null) return info.symbol;
 

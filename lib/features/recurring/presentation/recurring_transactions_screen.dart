@@ -211,10 +211,7 @@ class _RecurringCard extends ConsumerWidget {
             children: [
               Text(
                 '${item.isIncome ? '+' : '-'}${ref.formatAmount(item.amount)}',
-                style: TextStyle(
-                  color: signColor,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(color: signColor, fontWeight: FontWeight.w700),
               ),
               PopupMenuButton<String>(
                 onSelected: (value) {
@@ -356,8 +353,7 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
     }
 
     // Keep selections valid against the available options.
-    if (_walletId == null ||
-        !activeWallets.any((w) => w.id == _walletId)) {
+    if (_walletId == null || !activeWallets.any((w) => w.id == _walletId)) {
       _walletId = activeWallets.first.id;
     }
     if (_categoryId == null || !categories.any((c) => c.id == _categoryId)) {
@@ -413,9 +409,7 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
             prefixIcon: const Icon(Icons.account_balance_wallet_outlined),
           ),
           items: activeWallets
-              .map(
-                (w) => DropdownMenuItem(value: w.id, child: Text(w.name)),
-              )
+              .map((w) => DropdownMenuItem(value: w.id, child: Text(w.name)))
               .toList(),
           onChanged: (value) => setState(() => _walletId = value),
         ),
@@ -428,9 +422,7 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
             prefixIcon: const Icon(Icons.category_outlined),
           ),
           items: categories
-              .map(
-                (c) => DropdownMenuItem(value: c.id, child: Text(c.name)),
-              )
+              .map((c) => DropdownMenuItem(value: c.id, child: Text(c.name)))
               .toList(),
           onChanged: (value) => setState(() => _categoryId = value),
         ),
@@ -532,9 +524,7 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
           child: FilledButton(
             onPressed: _submitting ? null : _submit,
             child: Text(
-              _submitting
-                  ? context.l10n.commonSaving
-                  : context.l10n.commonSave,
+              _submitting ? context.l10n.commonSaving : context.l10n.commonSave,
             ),
           ),
         ),
@@ -545,9 +535,7 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
   Widget _sheetMessage(BuildContext context, String message) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 32),
-      child: Center(
-        child: Text(message, textAlign: TextAlign.center),
-      ),
+      child: Center(child: Text(message, textAlign: TextAlign.center)),
     );
   }
 
@@ -558,9 +546,7 @@ class _RecurringFormState extends ConsumerState<_RecurringForm> {
         icon: Icons.autorenew,
         title: dialogContext.l10n.recurringApplyTitle,
         message: dialogContext.l10n.recurringApplyMessage(count),
-        actions: [
-          ConfirmAction(dialogContext.l10n.recurringApplyDelete, true),
-        ],
+        actions: [ConfirmAction(dialogContext.l10n.recurringApplyDelete, true)],
       ),
     );
     return confirmed ?? false;
@@ -696,10 +682,7 @@ class _DateTile extends StatelessWidget {
       title: Text(label),
       subtitle: Text(display),
       trailing: optional && value != null && onClear != null
-          ? IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: onClear,
-            )
+          ? IconButton(icon: const Icon(Icons.clear), onPressed: onClear)
           : const Icon(Icons.chevron_right),
       onTap: () async {
         final now = DateTime.now();
@@ -748,4 +731,3 @@ class _Message extends StatelessWidget {
     ),
   );
 }
-

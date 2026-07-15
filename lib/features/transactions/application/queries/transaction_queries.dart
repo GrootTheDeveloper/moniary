@@ -36,5 +36,7 @@ final transactionSearchProvider =
       ref,
       filter,
     ) async {
-      return ref.watch(transactionRepositoryProvider).searchTransactions(filter);
+      return ref
+          .watch(transactionRepositoryProvider)
+          .searchTransactions(filter);
     });

@@ -86,14 +86,16 @@ void main() {
     expect(amountResults.map((transaction) => transaction.id), ['tx-2']);
   });
 
-  test('searchTransactions returns all transactions for a blank filter',
-      () async {
-    final results = await repository.searchTransactions(
-      const TransactionSearchFilter(query: '   '),
-    );
+  test(
+    'searchTransactions returns all transactions for a blank filter',
+    () async {
+      final results = await repository.searchTransactions(
+        const TransactionSearchFilter(query: '   '),
+      );
 
-    expect(results, hasLength(3));
-  });
+      expect(results, hasLength(3));
+    },
+  );
 
   test('searchTransactions filters not-important only', () async {
     TransactionRepository.mockTransactions[0] = TransactionEntry(
@@ -140,10 +142,10 @@ void main() {
       const TransactionSearchFilter(minAmount: 50000, maxAmount: 130000),
     );
 
-    expect(
-      results.map((transaction) => transaction.id).toSet(),
-      {'tx-2', 'tx-3'},
-    );
+    expect(results.map((transaction) => transaction.id).toSet(), {
+      'tx-2',
+      'tx-3',
+    });
   });
 
   test('searchTransactions filters by subscription facet', () async {

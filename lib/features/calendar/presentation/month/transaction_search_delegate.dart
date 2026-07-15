@@ -223,7 +223,10 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
             value: _type,
             options: [
               _SegOption(context.l10n.searchFilterAll, null),
-              _SegOption(context.l10n.searchFilterIncome, TransactionType.income),
+              _SegOption(
+                context.l10n.searchFilterIncome,
+                TransactionType.income,
+              ),
               _SegOption(
                 context.l10n.searchFilterExpense,
                 TransactionType.expense,
@@ -349,8 +352,7 @@ class TransactionSearchDelegate extends SearchDelegate<TransactionEntry?> {
     final monthOf = <String, DateTime>{};
     for (final tx in transactions) {
       final date = tx.transactionDate;
-      final key =
-          '${date.year}-${date.month.toString().padLeft(2, '0')}';
+      final key = '${date.year}-${date.month.toString().padLeft(2, '0')}';
       (groups[key] ??= []).add(tx);
       monthOf[key] = DateTime(date.year, date.month);
     }
@@ -556,9 +558,8 @@ class _FilterScrollRowState extends State<_FilterScrollRow> {
             physics: const BouncingScrollPhysics(),
             itemCount: widget.children.length,
             separatorBuilder: (_, _) => const SizedBox(width: 8),
-            itemBuilder: (context, index) => Center(
-              child: widget.children[index],
-            ),
+            itemBuilder: (context, index) =>
+                Center(child: widget.children[index]),
           ),
         ),
         const SizedBox(height: 8),
@@ -591,10 +592,17 @@ class _ScrollIndicator extends StatelessWidget {
               // Nothing to scroll — no indicator needed.
               return const SizedBox(height: 3);
             }
-            final content = position.maxScrollExtent + position.viewportDimension;
-            final thumbWidth = (trackWidth * position.viewportDimension / content)
-                .clamp(28.0, trackWidth);
-            final t = (position.pixels / position.maxScrollExtent).clamp(0.0, 1.0);
+            final content =
+                position.maxScrollExtent + position.viewportDimension;
+            final thumbWidth =
+                (trackWidth * position.viewportDimension / content).clamp(
+                  28.0,
+                  trackWidth,
+                );
+            final t = (position.pixels / position.maxScrollExtent).clamp(
+              0.0,
+              1.0,
+            );
             final left = (trackWidth - thumbWidth) * t;
             return SizedBox(
               height: 3,
@@ -828,9 +836,9 @@ class _OptionSheet<T> extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(23, 0, 23, 8),
               child: Text(
                 title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
             ),
             Flexible(
@@ -923,9 +931,9 @@ class _AmountRangeSheetState extends State<_AmountRangeSheet> {
         children: [
           Text(
             context.l10n.searchFilterAmount,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 16),
           Row(

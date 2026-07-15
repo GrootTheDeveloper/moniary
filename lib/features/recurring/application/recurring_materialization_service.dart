@@ -105,8 +105,9 @@ class RecurringMaterializationService {
     final step = interval < 1 ? 1 : interval;
     return switch (frequency) {
       RecurringFrequency.daily => _dateOnly(date.add(Duration(days: step))),
-      RecurringFrequency.weekly =>
-        _dateOnly(date.add(Duration(days: 7 * step))),
+      RecurringFrequency.weekly => _dateOnly(
+        date.add(Duration(days: 7 * step)),
+      ),
       RecurringFrequency.monthly => _addMonths(date, step),
       RecurringFrequency.yearly => _addMonths(date, 12 * step),
     };

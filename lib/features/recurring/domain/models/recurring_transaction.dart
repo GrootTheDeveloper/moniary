@@ -74,8 +74,7 @@ class RecurringTransaction {
   bool get isExpense => type == TransactionType.expense;
   bool get isIncome => type == TransactionType.income;
 
-  static DateTime _parseDate(String value) =>
-      DateTime.parse(value).toLocal();
+  static DateTime _parseDate(String value) => DateTime.parse(value).toLocal();
 
   factory RecurringTransaction.fromMap(Map<String, dynamic> map) {
     final wallet = map['wallet'] as Map<String, dynamic>? ?? const {};

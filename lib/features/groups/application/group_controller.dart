@@ -115,29 +115,12 @@ final groupTransactionReactionsProvider =
           .fetchReactionSummaries(transactionId);
     });
 
-typedef GroupMonthKey = ({String groupId, DateTime month});
-
-final groupMonthlyStatsProvider =
-    FutureProvider.family<GroupMonthlyStats, GroupMonthKey>((ref, key) {
-      return ref
-          .watch(groupRepositoryProvider)
-          .fetchMonthlyStats(groupId: key.groupId, month: key.month);
-    });
-
 final groupBudgetProvider = FutureProvider.family<GroupBudget, String>((
   ref,
   groupId,
 ) {
   return ref.watch(groupRepositoryProvider).fetchBudget(groupId);
 });
-
-final groupSettlementHistoryProvider =
-    FutureProvider.family<List<GroupSettlementHistoryEntry>, String>((
-      ref,
-      groupId,
-    ) {
-      return ref.watch(groupRepositoryProvider).fetchSettlementHistory(groupId);
-    });
 
 final groupFeedProvider = FutureProvider.family<List<GroupFeedItem>, String>((
   ref,

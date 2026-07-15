@@ -128,9 +128,9 @@ class RecurringController extends AsyncNotifier<List<RecurringTransaction>> {
   }
 
   Future<int> generatedTransactionCount(String id) {
-    return ref.read(transactionRepositoryProvider).countGeneratedTransactions(
-      id,
-    );
+    return ref
+        .read(transactionRepositoryProvider)
+        .countGeneratedTransactions(id);
   }
 
   Future<void> deleteRecurring(

@@ -10,8 +10,7 @@ import 'package:moniary/features/transactions/data/repositories/transaction_repo
 
 class _FakeSupabaseClient extends Mock implements SupabaseClient {}
 
-DateTime _dateOnly(DateTime date) =>
-    DateTime(date.year, date.month, date.day);
+DateTime _dateOnly(DateTime date) => DateTime(date.year, date.month, date.day);
 
 void main() {
   late RecurringTransactionRepository recurringRepo;
@@ -31,35 +30,37 @@ void main() {
     return rules.firstWhere((r) => r.note == note);
   }
 
-  test('daily auto-post catches up every missed occurrence through today',
-      () async {
-    final today = _dateOnly(DateTime.now());
-    final before = TransactionRepository.mockTransactions.length;
+  test(
+    'daily auto-post catches up every missed occurrence through today',
+    () async {
+      final today = _dateOnly(DateTime.now());
+      final before = TransactionRepository.mockTransactions.length;
 
-    await recurringRepo.createRecurringTransaction(
-      amount: 10000,
-      type: TransactionType.expense,
-      walletId: 'w1',
-      categoryId: 'mock-cat-food',
-      frequency: RecurringFrequency.daily,
-      interval: 1,
-      startDate: today.subtract(const Duration(days: 3)),
-      nextRunDate: today.subtract(const Duration(days: 3)),
-      note: 'daily-catchup',
-      autoPost: true,
-    );
+      await recurringRepo.createRecurringTransaction(
+        amount: 10000,
+        type: TransactionType.expense,
+        walletId: 'w1',
+        categoryId: 'mock-cat-food',
+        frequency: RecurringFrequency.daily,
+        interval: 1,
+        startDate: today.subtract(const Duration(days: 3)),
+        nextRunDate: today.subtract(const Duration(days: 3)),
+        note: 'daily-catchup',
+        autoPost: true,
+      );
 
-    final posted = await service.run();
+      final posted = await service.run();
 
-    // Occurrences due: today-3, -2, -1, 0 => 4 posts.
-    expect(posted, 4);
-    expect(TransactionRepository.mockTransactions.length, before + 4);
+      // Occurrences due: today-3, -2, -1, 0 => 4 posts.
+      expect(posted, 4);
+      expect(TransactionRepository.mockTransactions.length, before + 4);
 
-    final rule = await ruleByNote('daily-catchup');
-    expect(rule.nextRunDate, today.add(const Duration(days: 1)));
-    expect(rule.lastRunDate, today);
-    expect(rule.isActive, isTrue);
-  });
+      final rule = await ruleByNote('daily-catchup');
+      expect(rule.nextRunDate, today.add(const Duration(days: 1)));
+      expect(rule.lastRunDate, today);
+      expect(rule.isActive, isTrue);
+    },
+  );
 
   test('future-dated rule posts nothing and is unchanged', () async {
     final today = _dateOnly(DateTime.now());

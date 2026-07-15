@@ -239,7 +239,9 @@ class RecurringTransactionRepository {
           .from('recurring_transactions')
           .update({
             'next_run_date': _dateOnly(nextRunDate),
-            'last_run_date': lastRunDate == null ? null : _dateOnly(lastRunDate),
+            'last_run_date': lastRunDate == null
+                ? null
+                : _dateOnly(lastRunDate),
             'is_active': isActive,
           })
           .eq('id', id)

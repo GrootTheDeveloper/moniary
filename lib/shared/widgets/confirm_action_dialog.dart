@@ -63,10 +63,7 @@ class ConfirmActionDialog<T> extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             for (final action in actions) ...[
-              SizedBox(
-                width: double.infinity,
-                child: _button(context, action),
-              ),
+              SizedBox(width: double.infinity, child: _button(context, action)),
               const SizedBox(height: 8),
             ],
             SizedBox(

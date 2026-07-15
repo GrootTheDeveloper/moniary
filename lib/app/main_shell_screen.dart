@@ -15,7 +15,9 @@ import '../shared/widgets/bottom_nav_bar.dart';
 import '../shared/widgets/mascot_overlay.dart';
 import '../core/widgets/widget_update_service.dart';
 
-final _widgetBootstrapRunProvider = NotifierProvider<_BootstrapNotifier, bool>(_BootstrapNotifier.new);
+final _widgetBootstrapRunProvider = NotifierProvider<_BootstrapNotifier, bool>(
+  _BootstrapNotifier.new,
+);
 
 class _BootstrapNotifier extends Notifier<bool> {
   @override
@@ -53,7 +55,11 @@ class MainShellScreen extends ConsumerWidget {
           Positioned.fill(child: navigationShell),
           // Positioned so this zero-size logic-only widget doesn't make the
           // Stack (StackFit.loose) collapse to its size and blank the body.
-          const Positioned(width: 0, height: 0, child: RecurringAutoPostRunner()),
+          const Positioned(
+            width: 0,
+            height: 0,
+            child: RecurringAutoPostRunner(),
+          ),
           Positioned(
             right: 18,
             bottom: 18,

@@ -71,8 +71,10 @@ class WidgetUpdateService {
       final longestStreak = streakData?.longestDays ?? 0;
       final recordedDays = streakData?.recordedDays ?? const <DateTime>{};
       final recordedDaysList = recordedDays
-          .map((d) =>
-              "${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}")
+          .map(
+            (d) =>
+                "${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}",
+          )
           .toList();
       final recordedDaysJson = jsonEncode(recordedDaysList);
 
@@ -84,10 +86,14 @@ class WidgetUpdateService {
       final now = DateTime.now();
       final budgetVal = _ref
           .read(monthlyBudgetProvider(DateTime(now.year, now.month)))
-          .asData?.value;
+          .asData
+          ?.value;
       final budgetLimit = budgetVal?.totalLimit ?? 0.0;
       final budgetSpent = budgetVal?.totalSpent ?? 0.0;
-      final budgetRemaining = (budgetLimit - budgetSpent).clamp(0.0, double.infinity);
+      final budgetRemaining = (budgetLimit - budgetSpent).clamp(
+        0.0,
+        double.infinity,
+      );
       final budgetProgress = budgetVal?.progress ?? 0.0;
 
       // 4. Retrieve preferred user currency and locale
@@ -141,30 +147,72 @@ class WidgetUpdateService {
 
       // 5. Save formatted data & labels to shared preferences (App Group)
       await HomeWidget.saveWidgetData<String>('user_name', userName);
-      await HomeWidget.saveWidgetData<String>('total_balance', formattedBalance);
-      await HomeWidget.saveWidgetData<String>('today_spending', formattedSpending);
-      await HomeWidget.saveWidgetData<String>('total_balance_label', labelBalance);
-      await HomeWidget.saveWidgetData<String>('today_spending_label', labelSpending);
+      await HomeWidget.saveWidgetData<String>(
+        'total_balance',
+        formattedBalance,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'today_spending',
+        formattedSpending,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'total_balance_label',
+        labelBalance,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'today_spending_label',
+        labelSpending,
+      );
       await HomeWidget.saveWidgetData<String>('quick_add_label', labelQuickAdd);
-      await HomeWidget.saveWidgetData<String>('scan_receipt_label', labelScanReceipt);
+      await HomeWidget.saveWidgetData<String>(
+        'scan_receipt_label',
+        labelScanReceipt,
+      );
 
       await HomeWidget.saveWidgetData<int>('recording_streak', streak);
       await HomeWidget.saveWidgetData<int>('longest_streak', longestStreak);
-      await HomeWidget.saveWidgetData<String>('recorded_days_json', recordedDaysJson);
+      await HomeWidget.saveWidgetData<String>(
+        'recorded_days_json',
+        recordedDaysJson,
+      );
 
-      await HomeWidget.saveWidgetData<String>('budget_limit', formattedBudgetLimit);
-      await HomeWidget.saveWidgetData<String>('budget_spent', formattedBudgetSpent);
-      await HomeWidget.saveWidgetData<String>('budget_remaining', formattedBudgetRemaining);
-      await HomeWidget.saveWidgetData<double>('budget_progress', budgetProgress);
+      await HomeWidget.saveWidgetData<String>(
+        'budget_limit',
+        formattedBudgetLimit,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'budget_spent',
+        formattedBudgetSpent,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'budget_remaining',
+        formattedBudgetRemaining,
+      );
+      await HomeWidget.saveWidgetData<double>(
+        'budget_progress',
+        budgetProgress,
+      );
 
       await HomeWidget.saveWidgetData<String>('label_streak', labelStreak);
       await HomeWidget.saveWidgetData<String>('label_longest', labelLongest);
       await HomeWidget.saveWidgetData<String>('label_days', labelDays);
-      await HomeWidget.saveWidgetData<String>('label_longest_days', labelLongestDays);
+      await HomeWidget.saveWidgetData<String>(
+        'label_longest_days',
+        labelLongestDays,
+      );
       await HomeWidget.saveWidgetData<String>('label_budget', labelBudget);
-      await HomeWidget.saveWidgetData<String>('label_budget_spent', labelBudgetSpent);
-      await HomeWidget.saveWidgetData<String>('label_budget_remaining', labelBudgetRemaining);
-      await HomeWidget.saveWidgetData<String>('label_over_budget', labelOverBudget);
+      await HomeWidget.saveWidgetData<String>(
+        'label_budget_spent',
+        labelBudgetSpent,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'label_budget_remaining',
+        labelBudgetRemaining,
+      );
+      await HomeWidget.saveWidgetData<String>(
+        'label_over_budget',
+        labelOverBudget,
+      );
 
       // 6. Request Widget Extension timeline reload
       await HomeWidget.updateWidget(iOSName: _iOSWidgetName);
