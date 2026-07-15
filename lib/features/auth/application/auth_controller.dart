@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/app_constants.dart';
+import '../../../core/notifications/notification_providers.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../data/auth_repository.dart';
+import '../../notifications/data/repositories/notification_repository_impl.dart';
 import '../../profile/data/profile_repository.dart';
 import '../../profile/application/profile_setup_controller.dart';
 
@@ -102,6 +104,15 @@ class AuthController extends AsyncNotifier<void> {
     _isProcessing = true;
     state = const AsyncLoading();
     try {
+      if (!ref.read(useMockDataModeProvider)) {
+        await ref
+            .read(fcmPushNotificationServiceProvider)
+            .unregisterCurrentDevice(
+              (token) => ref
+                  .read(notificationRepositoryProvider)
+                  .unregisterDevice(token),
+            );
+      }
       await ref.read(authRepositoryProvider).signOut();
       ref.read(mockSessionProvider.notifier).setSession(null);
       state = const AsyncData(null);

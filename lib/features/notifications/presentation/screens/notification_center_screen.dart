@@ -11,6 +11,7 @@ import '../../../groups/presentation/screens/group_invitations_screen.dart';
 import '../../../groups/presentation/screens/group_transaction_detail_screen.dart';
 import '../../application/notification_controller.dart';
 import '../../domain/entities/app_notification.dart';
+import '../../../../shared/utils/app_logger.dart';
 
 class NotificationCenterScreen extends ConsumerWidget {
   const NotificationCenterScreen({super.key});
@@ -105,9 +106,19 @@ class NotificationCenterScreen extends ConsumerWidget {
     AppNotification notification,
   ) async {
     if (!notification.isRead) {
-      await ref
-          .read(notificationActionControllerProvider.notifier)
-          .markRead(notification.id);
+      try {
+        await ref
+            .read(notificationActionControllerProvider.notifier)
+            .markRead(notification.id);
+      } catch (error, stackTrace) {
+        // Opening the target remains useful even if the read-state update
+        // temporarily fails because of a network or backend issue.
+        AppLogger.error(
+          'Failed to mark notification read before navigation',
+          error,
+          stackTrace,
+        );
+      }
     }
     if (!context.mounted) return;
 

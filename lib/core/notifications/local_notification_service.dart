@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
@@ -27,6 +29,7 @@ class LocalNotificationService {
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
   bool _initialized = false;
+  Future<void> Function(String? payload)? _notificationTapHandler;
 
   Future<void> init() async {
     if (_initialized) return;
@@ -54,6 +57,11 @@ class LocalNotificationService {
         android: androidSettings,
         iOS: darwinSettings,
       ),
+      onDidReceiveNotificationResponse: (response) {
+        final handler = _notificationTapHandler;
+        if (handler == null) return;
+        unawaited(handler(response.payload));
+      },
     );
     final android = _plugin
         .resolvePlatformSpecificImplementation<
@@ -94,6 +102,12 @@ class LocalNotificationService {
       );
     }
     _initialized = true;
+  }
+
+  void setNotificationTapHandler(
+    Future<void> Function(String? payload) handler,
+  ) {
+    _notificationTapHandler = handler;
   }
 
   /// Requests OS permission to post notifications. Returns whether it was
@@ -169,6 +183,7 @@ class LocalNotificationService {
     required String category,
     required String channelName,
     required String channelDescription,
+    String? payload,
   }) async {
     await init();
     final channelId = switch (category) {
@@ -191,6 +206,7 @@ class LocalNotificationService {
         ),
         iOS: DarwinNotificationDetails(threadIdentifier: channelId),
       ),
+      payload: payload,
     );
   }
 

@@ -8,11 +8,13 @@ type ServiceAccount = {
 
 type OutboxRow = {
   id: string;
+  notification_id: string;
   user_id: string;
   category: string;
   type: string;
   group_id: string | null;
   metadata: Record<string, unknown>;
+  attempt_count: number;
 };
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
@@ -47,7 +49,9 @@ Deno.serve(async (req) => {
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
   const { data: rows, error } = await supabase
     .from('notification_outbox')
-    .select('id, user_id, category, type, group_id, metadata')
+    .select(
+      'id, notification_id, user_id, category, type, group_id, metadata, attempt_count',
+    )
     .is('sent_at', null)
     .lte('next_attempt_at', new Date().toISOString())
     .order('created_at', { ascending: true })
@@ -61,21 +65,56 @@ Deno.serve(async (req) => {
   let failed = 0;
 
   for (const row of (rows ?? []) as OutboxRow[]) {
-    const allowed = await pushAllowed(supabase, row);
+    let allowed: boolean;
+    try {
+      allowed = await pushAllowed(supabase, row);
+    } catch (error) {
+      await retryLater(supabase, row, 'PUSH_POLICY_CHECK_FAILED');
+      failed++;
+      console.error('Push policy check failed', row.id, error);
+      continue;
+    }
     if (!allowed) {
-      await markDone(supabase, row.id, 'PUSH_MUTED');
+      if (
+        !(await markDoneWithRetry(
+          supabase,
+          row,
+          'PUSH_MUTED',
+          'OUTBOX_UPDATE_FAILED',
+        ))
+      ) {
+        failed++;
+        continue;
+      }
       skipped++;
       continue;
     }
 
-    const { data: devices } = await supabase
+    const { data: devices, error: devicesError } = await supabase
       .from('notification_devices')
       .select('id, device_token, locale')
       .eq('user_id', row.user_id)
       .eq('is_active', true);
 
+    if (devicesError) {
+      await retryLater(supabase, row, 'DEVICE_LOOKUP_FAILED');
+      failed++;
+      console.error('Notification device lookup failed', row.id, devicesError);
+      continue;
+    }
+
     if (!devices || devices.length === 0) {
-      await markDone(supabase, row.id, 'NO_ACTIVE_DEVICE');
+      if (
+        !(await markDoneWithRetry(
+          supabase,
+          row,
+          'NO_ACTIVE_DEVICE',
+          'OUTBOX_UPDATE_FAILED',
+        ))
+      ) {
+        failed++;
+        continue;
+      }
       skipped++;
       continue;
     }
@@ -102,10 +141,20 @@ Deno.serve(async (req) => {
     }
 
     if (rowFailed) {
-      await retryLater(supabase, row.id, 'FCM_SEND_FAILED');
+      await retryLater(supabase, row, 'FCM_SEND_FAILED');
       failed++;
     } else {
-      await markDone(supabase, row.id, null);
+      if (
+        !(await markDoneWithRetry(
+          supabase,
+          row,
+          null,
+          'OUTBOX_UPDATE_FAILED',
+        ))
+      ) {
+        failed++;
+        continue;
+      }
       sent++;
     }
   }
@@ -120,7 +169,8 @@ async function pushAllowed(client: ReturnType<typeof createClient>, row: OutboxR
     p_group_id: row.group_id,
     p_type: row.type,
   });
-  return !error && data === true;
+  if (error) throw error;
+  return data === true;
 }
 
 function notificationCopy(category: string, type: string, locale: string) {
@@ -156,7 +206,7 @@ async function sendFcmMessage(
 ) {
   const metadata = row.metadata ?? {};
   const data: Record<string, string> = {
-    notification_id: row.id,
+    notification_id: row.notification_id,
     category: row.category,
     type: row.type,
     channel_name: copy.title,
@@ -199,9 +249,12 @@ async function sendFcmMessage(
   );
   if (response.ok) return { ok: true, invalidToken: false };
   const message = await response.text();
+  const normalizedMessage = message.toLowerCase();
   return {
     ok: false,
-    invalidToken: response.status === 400 || response.status === 404,
+    invalidToken:
+      normalizedMessage.includes('unregistered') ||
+      normalizedMessage.includes('registration-token-not-registered'),
     message,
   };
 }
@@ -211,27 +264,50 @@ async function markDone(
   id: string,
   reason: string | null,
 ) {
-  await client
+  const { error } = await client
     .from('notification_outbox')
     .update({ sent_at: new Date().toISOString(), last_error: reason })
     .eq('id', id)
     .is('sent_at', null);
+  if (error) throw error;
+}
+
+async function markDoneWithRetry(
+  client: ReturnType<typeof createClient>,
+  row: OutboxRow,
+  reason: string | null,
+  retryReason: string,
+) {
+  try {
+    await markDone(client, row.id, reason);
+    return true;
+  } catch (error) {
+    console.error('Notification outbox update failed', row.id, error);
+    try {
+      await retryLater(client, row, retryReason);
+    } catch (retryError) {
+      console.error('Notification outbox retry update failed', row.id, retryError);
+    }
+    return false;
+  }
 }
 
 async function retryLater(
   client: ReturnType<typeof createClient>,
-  id: string,
+  row: OutboxRow,
   reason: string,
 ) {
-  await client
+  const { error } = await client
     .from('notification_outbox')
     .update({
-      attempt_count: 1,
+      attempt_count: row.attempt_count + 1,
       next_attempt_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
       last_error: reason,
     })
-    .eq('id', id)
+    .eq('id', row.id)
+    .eq('attempt_count', row.attempt_count)
     .is('sent_at', null);
+  if (error) throw error;
 }
 
 async function createGoogleAccessToken(account: ServiceAccount) {

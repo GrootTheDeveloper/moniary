@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,6 +14,10 @@ class FcmPushNotificationService {
 
   final LocalNotificationService _localNotifications;
   bool _initialized = false;
+  String? _registeredToken;
+  StreamSubscription<String>? _tokenRefreshSubscription;
+  StreamSubscription<RemoteMessage>? _foregroundSubscription;
+  StreamSubscription<RemoteMessage>? _openedSubscription;
 
   Future<void> initialize({
     required Future<void> Function(String token) onToken,
@@ -39,18 +44,36 @@ class FcmPushNotificationService {
       }
 
       final messaging = FirebaseMessaging.instance;
+      _localNotifications.setNotificationTapHandler((payload) async {
+        if (payload == null || payload.isEmpty) return;
+        try {
+          final decoded = jsonDecode(payload);
+          if (decoded is Map) {
+            await onTap(Map<String, dynamic>.from(decoded));
+          }
+        } catch (error, stackTrace) {
+          AppLogger.error(
+            'Foreground notification payload is invalid',
+            error,
+            stackTrace,
+          );
+        }
+      });
       await messaging.requestPermission(alert: true, badge: true, sound: true);
       final token = await messaging.getToken();
       if (token != null && token.isNotEmpty) {
         await _registerToken(onToken, token);
       }
-      FirebaseMessaging.instance.onTokenRefresh.listen((value) {
-        unawaited(_registerToken(onToken, value));
-      });
-      FirebaseMessaging.onMessage.listen((message) {
+      _tokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh
+          .listen((value) {
+            unawaited(_registerToken(onToken, value));
+          });
+      _foregroundSubscription = FirebaseMessaging.onMessage.listen((message) {
         unawaited(_presentForegroundMessage(message));
       });
-      FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      _openedSubscription = FirebaseMessaging.onMessageOpenedApp.listen((
+        message,
+      ) {
         unawaited(onTap(message.data));
       });
       final initialMessage = await messaging.getInitialMessage();
@@ -61,12 +84,38 @@ class FcmPushNotificationService {
     }
   }
 
+  Future<void> unregisterCurrentDevice(
+    Future<void> Function(String token) onToken,
+  ) async {
+    final token = _registeredToken;
+    if (token != null) {
+      try {
+        await onToken(token);
+      } catch (error, stackTrace) {
+        AppLogger.error('FCM device unregister failed', error, stackTrace);
+      }
+    }
+    await reset();
+  }
+
+  Future<void> reset() async {
+    await _tokenRefreshSubscription?.cancel();
+    await _foregroundSubscription?.cancel();
+    await _openedSubscription?.cancel();
+    _tokenRefreshSubscription = null;
+    _foregroundSubscription = null;
+    _openedSubscription = null;
+    _registeredToken = null;
+    _initialized = false;
+  }
+
   Future<void> _registerToken(
     Future<void> Function(String token) onToken,
     String token,
   ) async {
     try {
       await onToken(token);
+      _registeredToken = token;
     } catch (error, stackTrace) {
       AppLogger.error('FCM token registration failed', error, stackTrace);
     }
@@ -89,6 +138,7 @@ class FcmPushNotificationService {
       channelDescription:
           data['channel_description'] as String? ??
           'Moniary notification updates.',
+      payload: jsonEncode(data),
     );
   }
 }

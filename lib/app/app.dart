@@ -19,6 +19,7 @@ import 'app_router.dart';
 import 'app_theme.dart';
 import '../features/settings/application/privacy_controller.dart';
 import '../features/notifications/data/repositories/notification_repository_impl.dart';
+import '../features/notifications/presentation/screens/notification_center_screen.dart';
 
 class MoniaryApp extends ConsumerStatefulWidget {
   const MoniaryApp({super.key});
@@ -41,7 +42,11 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
       previous,
       next,
     ) {
-      if (next != null) unawaited(_initializePushNotifications());
+      if (next == null && previous != null) {
+        unawaited(ref.read(fcmPushNotificationServiceProvider).reset());
+      } else if (next != null && previous?.user.id != next.user.id) {
+        unawaited(_initializePushNotifications());
+      }
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeDeepLinks();
@@ -147,6 +152,9 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
         }
         final privacyState = ref.read(privacyControllerProvider);
         if (privacyState.isAppLocked && !privacyState.isAuthenticated) {
+          ref
+              .read(pendingDeepLinkProvider.notifier)
+              .set(NotificationCenterScreen.routePath);
           router.go(AppLockScreen.routePath);
           return;
         }
