@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -43,10 +44,27 @@ class FcmPushNotificationService {
       }
 
       final messaging = FirebaseMessaging.instance;
-      await messaging.requestPermission(alert: true, badge: true, sound: true);
-      final token = await messaging.getToken();
+      final settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      if (settings.authorizationStatus == AuthorizationStatus.denied) {
+        AppLogger.warning('Push notification permission denied');
+        return;
+      }
+
+      await messaging.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      final token = await _readFcmToken(messaging);
       if (token != null && token.isNotEmpty) {
         await _registerToken(onToken, token);
+      } else {
+        AppLogger.warning('FCM token was not available after permission grant');
       }
       FirebaseMessaging.instance.onTokenRefresh.listen((value) {
         unawaited(_registerToken(onToken, value));
@@ -63,6 +81,17 @@ class FcmPushNotificationService {
     } catch (error, stackTrace) {
       AppLogger.error('FCM initialization failed', error, stackTrace);
     }
+  }
+
+  Future<String?> _readFcmToken(FirebaseMessaging messaging) async {
+    if (Platform.isIOS) {
+      for (var attempt = 0; attempt < 10; attempt++) {
+        final apnsToken = await messaging.getAPNSToken();
+        if (apnsToken != null && apnsToken.isNotEmpty) break;
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+      }
+    }
+    return messaging.getToken();
   }
 
   Future<void> _registerToken(
