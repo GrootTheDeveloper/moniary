@@ -289,15 +289,11 @@ class _AddGroupTransactionScreenState
               ParticipantSelector(
                 members: detail.activeMembers,
                 selectedIds: _selectedParticipantIds,
-                onChanged: (userId, selected) {
-                  setState(() {
-                    if (selected) {
-                      _selectedParticipantIds.add(userId);
-                    } else {
-                      _selectedParticipantIds.remove(userId);
-                    }
-                  });
-                },
+                onChanged: (selectedIds) => setState(() {
+                  _selectedParticipantIds
+                    ..clear()
+                    ..addAll(selectedIds);
+                }),
               ),
               const SizedBox(height: 20),
               Text(
@@ -308,6 +304,7 @@ class _AddGroupTransactionScreenState
               SplitModeSelector(
                 value: _splitMode,
                 onChanged: (value) => setState(() => _splitMode = value),
+                onHelp: () => _showSplitModeGuide(context),
               ),
               if (_splitMode == GroupSplitMode.exact) ...[
                 const SizedBox(height: 18),
@@ -433,6 +430,80 @@ class _AddGroupTransactionScreenState
     }
   }
 
+  Future<void> _showSplitModeGuide(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.64,
+        minChildSize: 0.4,
+        maxChildSize: 0.92,
+        builder: (context, controller) => Material(
+          color: context.moniaryColors.backgroundSoft,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              Container(
+                width: 42,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: context.moniaryColors.outline,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  controller: controller,
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
+                  children: [
+                    Text(
+                      context.l10n.groupSplitGuideTitle,
+                      style: context.moniaryTypography.displaySmall.copyWith(
+                        fontSize: 24,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(context.l10n.groupSplitGuideIntro),
+                    const SizedBox(height: 18),
+                    _SplitGuideItem(
+                      icon: Icons.balance_outlined,
+                      title: context.l10n.groupSplitGuideEqualTitle,
+                      body: context.l10n.groupSplitGuideEqualBody,
+                    ),
+                    _SplitGuideItem(
+                      icon: Icons.edit_note_outlined,
+                      title: context.l10n.groupSplitGuideExactTitle,
+                      body: context.l10n.groupSplitGuideExactBody,
+                    ),
+                    _SplitGuideItem(
+                      icon: Icons.tune_outlined,
+                      title: context.l10n.groupSplitGuideUnequalTitle,
+                      body: context.l10n.groupSplitGuideUnequalBody,
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(context.l10n.groupSplitGuideClose),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _runOcr(String imagePath) async {
     setState(() => _ocrLoading = true);
     try {
@@ -531,12 +602,9 @@ class _AddGroupTransactionScreenState
       return;
     }
 
-    if (_editing &&
-        widget.args.initialDetail!.transaction.hasCompletedSettlement) {
-      final continueEditing = await _showConfirmation(
-        context.l10n.groupTransactionCompletedEditWarning,
-      );
-      if (!continueEditing) return;
+    if (_editing && widget.args.initialDetail!.transaction.hasSettlementLock) {
+      _showMessage(context.l10n.groupTransactionSettlementLocked);
+      return;
     }
     if (!mounted) return;
     final confirmed = await _showConfirmation(
@@ -715,6 +783,53 @@ class _Notice extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
       ),
       child: Text(text, style: const TextStyle(color: AppTheme.amber)),
+    );
+  }
+}
+
+class _SplitGuideItem extends StatelessWidget {
+  const _SplitGuideItem({
+    required this.icon,
+    required this.title,
+    required this.body,
+  });
+
+  final IconData icon;
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, color: context.moniaryColors.primary),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(body),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

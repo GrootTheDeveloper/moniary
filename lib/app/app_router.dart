@@ -35,9 +35,12 @@ import '../features/groups/presentation/screens/group_notification_preferences_s
 import '../features/groups/presentation/screens/group_public_profile_screen.dart';
 import '../features/groups/presentation/screens/group_recurring_transactions_screen.dart';
 import '../features/groups/presentation/screens/group_summary_screen.dart';
+import '../features/groups/presentation/screens/group_transactions_screen.dart';
 import '../features/groups/presentation/screens/group_settings_screen.dart';
 import '../features/groups/presentation/screens/group_tools_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
+import '../features/groups/presentation/screens/group_shell_screen.dart';
+import '../features/groups/presentation/screens/group_route_paths.dart';
 import '../features/groups/presentation/screens/group_invite_accept_screen.dart';
 import '../features/groups/presentation/screens/group_invitations_screen.dart';
 import '../features/groups/presentation/screens/group_transaction_detail_screen.dart';
@@ -375,13 +378,266 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: GroupRoutePaths.groupPattern,
+        redirect: (context, state) {
+          final groupId = state.pathParameters['groupId'];
+          if (groupId == null || groupId.isEmpty) return GroupsScreen.routePath;
+          final groupRoot = '/groups/${Uri.encodeComponent(groupId)}';
+          return state.uri.path == groupRoot
+              ? GroupRoutePaths.home(groupId)
+              : null;
+        },
+        routes: [
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) {
+              final groupId = state.pathParameters['groupId'];
+              if (groupId == null || groupId.isEmpty) {
+                return const GroupsScreen();
+              }
+              return GroupShellScreen(
+                groupId: groupId,
+                navigationShell: navigationShell,
+              );
+            },
+            branches: [
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: 'home',
+                    pageBuilder: (context, state) => NoTransitionPage(
+                      child: GroupDetailScreen(
+                        groupId: state.pathParameters['groupId']!,
+                      ),
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: 'settlements',
+                        pageBuilder: (context, state) =>
+                            buildSlideTransitionPage(
+                              state: state,
+                              child: DebtSettlementScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'summary',
+                        pageBuilder: (context, state) =>
+                            buildSlideTransitionPage(
+                              state: state,
+                              child: GroupSummaryScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'transactions',
+                        pageBuilder: (context, state) =>
+                            buildSlideTransitionPage(
+                              state: state,
+                              child: GroupTransactionsScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'transactions/new',
+                        pageBuilder: (context, state) {
+                          final groupId = state.pathParameters['groupId']!;
+                          final extra = state.extra;
+                          final args = extra is AddGroupTransactionArgs
+                              ? extra
+                              : AddGroupTransactionArgs(groupId: groupId);
+                          return buildSlideUpTransitionPage(
+                            state: state,
+                            child: AddGroupTransactionScreen(args: args),
+                          );
+                        },
+                      ),
+                      GoRoute(
+                        path: 'transactions/:transactionId',
+                        pageBuilder: (context, state) =>
+                            buildFadeTransitionPage(
+                              state: state,
+                              child: GroupTransactionDetailScreen(
+                                transactionId:
+                                    state.pathParameters['transactionId']!,
+                              ),
+                            ),
+                        routes: [
+                          GoRoute(
+                            path: 'member-amount',
+                            pageBuilder: (context, state) {
+                              final groupId = state.pathParameters['groupId']!;
+                              final transactionId =
+                                  state.pathParameters['transactionId']!;
+                              final extra = state.extra;
+                              final args = extra is MemberAmountInputArgs
+                                  ? extra
+                                  : MemberAmountInputArgs(
+                                      groupId: groupId,
+                                      transactionId: transactionId,
+                                    );
+                              return buildSlideUpTransitionPage(
+                                state: state,
+                                child: MemberAmountInputScreen(args: args),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: 'community',
+                    pageBuilder: (context, state) => NoTransitionPage(
+                      child: GroupActivityCenterScreen(
+                        groupId: state.pathParameters['groupId']!,
+                      ),
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: 'album',
+                        pageBuilder: (context, state) =>
+                            buildSlideTransitionPage(
+                              state: state,
+                              child: GroupPhotoAlbumScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'participation',
+                        pageBuilder: (context, state) =>
+                            buildSlideTransitionPage(
+                              state: state,
+                              child: GroupParticipationScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: 'notifications',
+                    pageBuilder: (context, state) => const NoTransitionPage(
+                      child: GroupActivityCenterScreen(notificationOnly: true),
+                    ),
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: 'management',
+                    pageBuilder: (context, state) => NoTransitionPage(
+                      child: GroupToolsScreen(
+                        groupId: state.pathParameters['groupId']!,
+                      ),
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: 'budget',
+                        pageBuilder: (context, state) =>
+                            buildSlideTransitionPage(
+                              state: state,
+                              child: GroupBudgetScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'recurring',
+                        pageBuilder: (context, state) =>
+                            buildSlideTransitionPage(
+                              state: state,
+                              child: GroupRecurringTransactionsScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'notification-preferences',
+                        pageBuilder: (context, state) =>
+                            buildSlideTransitionPage(
+                              state: state,
+                              child: GroupNotificationPreferencesScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'public-profile',
+                        pageBuilder: (context, state) =>
+                            buildSlideTransitionPage(
+                              state: state,
+                              child: GroupPublicProfileScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'audit-log',
+                        pageBuilder: (context, state) =>
+                            buildSlideTransitionPage(
+                              state: state,
+                              child: GroupAuditLogScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'settings',
+                        pageBuilder: (context, state) =>
+                            buildSlideTransitionPage(
+                              state: state,
+                              child: GroupSettingsScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'invite',
+                        pageBuilder: (context, state) =>
+                            buildSlideUpTransitionPage(
+                              state: state,
+                              child: InviteMemberScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+      GoRoute(
         path: GroupDetailScreen.routePath,
-        pageBuilder: (context, state) {
+        redirect: (context, state) {
           final groupId = state.extra as String?;
-          final child = groupId == null
-              ? const GroupsScreen()
-              : GroupDetailScreen(groupId: groupId);
-          return buildSlideTransitionPage(state: state, child: child);
+          return groupId == null
+              ? GroupsScreen.routePath
+              : GroupRoutePaths.home(groupId);
+        },
+      ),
+      GoRoute(
+        path: GroupShellScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null
+              ? GroupsScreen.routePath
+              : GroupRoutePaths.home(groupId);
         },
       ),
       GoRoute(
@@ -393,6 +649,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: InviteMemberScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null ? null : GroupRoutePaths.invite(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -423,6 +683,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: DebtSettlementScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null ? null : GroupRoutePaths.settlements(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -443,14 +707,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: GroupActivityCenterScreen.routePath,
-        pageBuilder: (context, state) {
+        redirect: (context, state) {
           final groupId = state.extra as String?;
-          final child = GroupActivityCenterScreen(groupId: groupId);
+          return groupId == null ? null : GroupRoutePaths.community(groupId);
+        },
+        pageBuilder: (context, state) {
+          final child = GroupActivityCenterScreen(notificationOnly: true);
           return buildSlideTransitionPage(state: state, child: child);
         },
       ),
       GoRoute(
         path: GroupPhotoAlbumScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null ? null : GroupRoutePaths.album(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -461,6 +732,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: GroupBudgetScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null ? null : GroupRoutePaths.budget(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -471,6 +746,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: GroupNotificationPreferencesScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null
+              ? null
+              : GroupRoutePaths.notificationPreferences(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -481,6 +762,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: GroupPublicProfileScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null
+              ? null
+              : GroupRoutePaths.publicProfile(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -507,6 +794,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: GroupRecurringTransactionsScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null ? null : GroupRoutePaths.recurring(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -517,6 +808,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: GroupSummaryScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null ? null : GroupRoutePaths.summary(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -526,7 +821,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: GroupToolsScreen.routePath,
+        path: GroupToolsScreen.legacyRoutePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null ? null : GroupRoutePaths.management(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -537,6 +836,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: GroupSettingsScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null ? null : GroupRoutePaths.settings(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -547,6 +850,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: GroupAuditLogScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null ? null : GroupRoutePaths.auditLog(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -557,6 +864,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: GroupParticipationScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null
+              ? null
+              : GroupRoutePaths.participation(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null

@@ -1,4 +1,5 @@
 import '../entities/group_community.dart';
+import '../entities/group_community_feed.dart';
 import '../entities/group_invite.dart';
 import '../entities/group_roadmap.dart';
 import '../entities/group_settlement.dart';
@@ -111,6 +112,8 @@ abstract interface class GroupRepository {
     required String reason,
   });
 
+  Future<void> resetDisputedSettlement(String settlementId);
+
   Future<void> transferOwnership({
     required String groupId,
     required String newOwnerUserId,
@@ -133,6 +136,29 @@ abstract interface class GroupRepository {
   });
 
   Future<List<GroupActivity>> fetchActivities(String groupId);
+
+  Future<List<GroupCommunityPost>> fetchCommunityPosts({
+    required String groupId,
+    int offset = 0,
+    int limit = 30,
+  });
+
+  Future<String> createCommunityPost({
+    required String groupId,
+    required String type,
+    String? content,
+    List<GroupCommunityMediaDraft> media = const [],
+  });
+
+  Future<void> addCommunityPostComment({
+    required String postId,
+    required String content,
+  });
+
+  Future<void> toggleCommunityPostReaction({
+    required String postId,
+    required String emoji,
+  });
 
   Future<List<GroupAuditLog>> fetchAuditLogs(String groupId);
 

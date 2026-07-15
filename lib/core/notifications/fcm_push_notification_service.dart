@@ -33,7 +33,7 @@ class FcmPushNotificationService {
     try {
       if (Firebase.apps.isEmpty) {
         await Firebase.initializeApp(
-          options: const FirebaseOptions(
+          options: FirebaseOptions(
             apiKey: AppConstants.firebaseApiKey,
             appId: AppConstants.firebaseAppId,
             messagingSenderId: AppConstants.firebaseMessagingSenderId,

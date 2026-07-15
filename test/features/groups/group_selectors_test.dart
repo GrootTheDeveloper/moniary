@@ -8,6 +8,8 @@ import 'package:moniary/features/groups/domain/entities/spending_group.dart';
 import 'package:moniary/features/groups/presentation/widgets/group_confirmation_dialog.dart';
 import 'package:moniary/features/groups/presentation/widgets/payer_amount_input_list.dart';
 import 'package:moniary/features/groups/presentation/widgets/payment_mode_selector.dart';
+import 'package:moniary/features/groups/presentation/widgets/participant_selector.dart';
+import 'package:moniary/features/groups/presentation/widgets/group_transaction_filter_bar.dart';
 import 'package:moniary/features/groups/presentation/widgets/settlement_action_button.dart';
 import 'package:moniary/features/groups/presentation/widgets/split_mode_selector.dart';
 import 'package:moniary/l10n/gen_l10n/app_localizations.dart';
@@ -66,6 +68,85 @@ void main() {
     expect(find.text('Mọi người đều trả'), findsOneWidget);
     expect(find.text('Một người trả'), findsOneWidget);
     expect(find.text('Nhiều người trả'), findsOneWidget);
+  });
+
+  testWidgets('transaction filter giữ cố định ba lựa chọn trên một hàng', (
+    tester,
+  ) async {
+    GroupSplitStatus? selected;
+    await tester.pumpWidget(
+      app(
+        StatefulBuilder(
+          builder: (context, setState) => GroupTransactionFilterBar(
+            value: selected,
+            onChanged: (value) => setState(() => selected = value),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Tất cả'), findsOneWidget);
+    expect(find.text('Đã đăng'), findsOneWidget);
+    expect(find.text('Chờ nhập'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(GroupTransactionFilterBar),
+        matching: find.byType(SingleChildScrollView),
+      ),
+      findsNothing,
+    );
+
+    await tester.tap(find.text('Chờ nhập'));
+    await tester.pump();
+    expect(selected, GroupSplitStatus.pendingMemberAmountInput);
+  });
+
+  testWidgets('participant picker chọn và bỏ chọn tất cả', (tester) async {
+    final members = [
+      SpendingGroupMember(
+        id: 'member-a',
+        groupId: 'group',
+        userId: 'a',
+        role: GroupRole.owner,
+        status: GroupMemberStatus.active,
+        joinedAt: DateTime(2026),
+        displayName: 'A',
+      ),
+      SpendingGroupMember(
+        id: 'member-b',
+        groupId: 'group',
+        userId: 'b',
+        role: GroupRole.member,
+        status: GroupMemberStatus.active,
+        joinedAt: DateTime(2026),
+        displayName: 'B',
+      ),
+    ];
+    Set<String> selected = {'a', 'b'};
+
+    await tester.pumpWidget(
+      app(
+        ParticipantSelector(
+          members: members,
+          selectedIds: selected,
+          onChanged: (value) => selected = value,
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Người tham gia khoản chi'));
+    await tester.pumpAndSettle();
+    expect(find.text('Bỏ chọn tất cả'), findsOneWidget);
+
+    await tester.tap(find.text('Bỏ chọn tất cả'));
+    await tester.pump();
+    expect(find.text('Chọn tất cả'), findsOneWidget);
+    await tester.tap(find.text('Chọn tất cả'));
+    await tester.pump();
+    await tester.tap(find.text('Xong'));
+    await tester.pumpAndSettle();
+
+    expect(selected, {'a', 'b'});
   });
 
   testWidgets('multiple payers hiển thị checkbox và amount input', (
@@ -176,5 +257,39 @@ void main() {
       find.byKey(const ValueKey('confirm-settlement-received')),
     );
     expect(button.onPressed, isNotNull);
+  });
+
+  testWidgets('nút báo đã chuyển tiền chỉ bật ở trạng thái chờ thanh toán', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      app(
+        SettlementActionButton(
+          status: GroupSettlementStatus.pending,
+          isReceiverAction: false,
+          onPressed: () {},
+        ),
+      ),
+    );
+
+    var button = tester.widget<FilledButton>(
+      find.byKey(const ValueKey('mark-settlement-paid')),
+    );
+    expect(button.onPressed, isNotNull);
+    expect(find.text('Tôi đã chuyển tiền'), findsOneWidget);
+
+    await tester.pumpWidget(
+      app(
+        SettlementActionButton(
+          status: GroupSettlementStatus.payerMarkedPaid,
+          isReceiverAction: false,
+          onPressed: () {},
+        ),
+      ),
+    );
+    button = tester.widget<FilledButton>(
+      find.byKey(const ValueKey('mark-settlement-paid')),
+    );
+    expect(button.onPressed, isNull);
   });
 }

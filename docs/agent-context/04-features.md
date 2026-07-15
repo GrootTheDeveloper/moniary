@@ -95,14 +95,18 @@
 - **Direct invitations**: recipients can reopen username/friend invitations
   from the localized group-invitations inbox, where they can accept or decline
   before the seven-day expiry; the Group tab shows a pending-invitation badge.
-- **Notifications**: group activity notifications are available from the Group
-  tab header as a global inbox, and from group detail with the activity timeline
-  when a group ID is provided.
-- **UX organization**: group detail keeps finance-first quick actions for add
-  expense, settle, community, and tools. Budget, recurring, album, notification
-  preferences, and public profile are grouped under the tools screen. The
-  notification center separates operational Group notifications from social
-  Community notifications.
+- **Notifications**: group and community notifications have a dedicated Group
+  Shell branch with an unread badge. Community content no longer embeds an
+  inbox tab; notification preferences remain under Group management.
+- **UX organization**: entering a group opens a stateful nested shell with four
+  URL-backed destinations: Home, Community, Notifications, and Group
+  management. Home is transaction-first: the group header and balance summary
+  are followed by the searchable transaction list. Settlement and financial
+  summary are contextual flows from Home; album and participation live under
+  Community; budget, recurring, notification preferences, public profile,
+  audit log, invite, and member controls live under Group management.
+  Operational Group notifications remain separate from Community content, and
+  child screens preserve the Group Shell bottom navigation.
 - **Leave guard**: leaving is allowed only when the member has zero balance, no
   pending/payer-marked/disputed settlement, and no incomplete transaction. A
   successful leave creates both a member-left activity and notifications for
@@ -111,9 +115,16 @@
 - **Member and settlement controls**: owners can transfer ownership; owners and
   admins can remove permitted members only after their balances and settlements
   are resolved. Settlement participants can open a dispute with a reason.
+- **Community UX**: the Community branch is a member-only feed with a real
+  composer for text and multi-photo posts. Polls, savings challenges, member
+  activities, settlement milestones, and recent group transactions are shown
+  as feed cards. The private Album combines transaction receipts with
+  standalone memory/receipt media; media remains accessible only to active
+  group members through the private storage bucket.
 - **Screens**: group list/detail/create, invite member, shared-invite
   acceptance, direct-invitations inbox, activity/notifications center,
-  add/detail transaction, member amount input, and debt settlement.
+  Community feed/composer, private album upload, add/detail transaction, member
+  amount input, and debt settlement.
 
 ## Friends
 

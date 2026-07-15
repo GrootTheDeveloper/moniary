@@ -1,6 +1,7 @@
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../domain/entities/group_community.dart';
+import '../../domain/entities/group_community_feed.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_invite.dart';
 import '../../domain/entities/group_roadmap.dart';
@@ -28,6 +29,10 @@ class GroupMockDataSource {
   static final Map<String, _MockDirectGroupInvite> _directInvites = {};
   static final Map<String, Map<String, Set<String>>> _reactions = {};
   static final Map<String, List<GroupActivity>> _activities = {};
+  static final Map<String, List<GroupCommunityPost>> _communityPosts = {};
+  static final Map<String, List<GroupPoll>> _polls = {};
+  static final Map<String, List<GroupSavingsChallenge>> _challenges = {};
+  static final Map<String, String> _pollVotes = {};
   static final List<GroupNotification> _notifications = [];
   static var _sequence = 0;
 
@@ -40,6 +45,10 @@ class GroupMockDataSource {
     _directInvites.clear();
     _reactions.clear();
     _activities.clear();
+    _communityPosts.clear();
+    _polls.clear();
+    _challenges.clear();
+    _pollVotes.clear();
     _notifications.clear();
     _sequence = 0;
   }
@@ -88,7 +97,8 @@ class GroupMockDataSource {
                 _settlements[group.id]?.any(
                   (item) =>
                       item.status == GroupSettlementStatus.pending ||
-                      item.status == GroupSettlementStatus.payerMarkedPaid,
+                      item.status == GroupSettlementStatus.payerMarkedPaid ||
+                      item.status == GroupSettlementStatus.disputed,
                 ) ??
                 false,
           );
@@ -167,8 +177,64 @@ class GroupMockDataSource {
           ),
       ];
       _seedDemoTransactions(seed, now);
+      _seedDemoCommunity(seed, now);
       _refreshSettlements(seed.id);
     }
+  }
+
+  void _seedDemoCommunity(_DemoGroupSeed seed, DateTime now) {
+    final postId = '${seed.id}-post-welcome';
+    _communityPosts[seed.id] = [
+      GroupCommunityPost(
+        id: postId,
+        groupId: seed.id,
+        authorUserId: currentUserId,
+        authorName: 'Minh Anh',
+        type: 'text',
+        content: seed.colorName == 'travel'
+            ? 'Mọi người nhớ giữ lại hóa đơn và ảnh kỷ niệm cho chuyến đi nhé!'
+            : 'Cùng cập nhật chi tiêu để nhóm mình dễ theo dõi hơn nha.',
+        createdAt: now.subtract(const Duration(hours: 3)),
+      ),
+    ];
+    _polls[seed.id] = [
+      GroupPoll(
+        id: '${seed.id}-poll-dinner',
+        groupId: seed.id,
+        title: 'Tối nay ăn ở đâu?',
+        options: const [
+          GroupPollOption(
+            id: 'poll-option-seafood',
+            label: 'Hải sản Bé Mặn',
+            voteCount: 4,
+          ),
+          GroupPollOption(
+            id: 'poll-option-cafe',
+            label: 'Cà phê sân',
+            voteCount: 2,
+          ),
+          GroupPollOption(
+            id: 'poll-option-other',
+            label: 'Khác (gợi ý thêm nhé!)',
+            voteCount: 1,
+          ),
+        ],
+        isClosed: false,
+        createdAt: now.subtract(const Duration(hours: 5)),
+      ),
+    ];
+    _challenges[seed.id] = [
+      GroupSavingsChallenge(
+        id: '${seed.id}-challenge-may',
+        groupId: seed.id,
+        title: 'Thử thách tiết kiệm tháng này',
+        targetAmount: 2000000,
+        startDate: now.subtract(const Duration(days: 10)),
+        endDate: now.add(const Duration(days: 20)),
+        totalContributed: 1245000,
+        isActive: true,
+      ),
+    ];
   }
 
   SpendingGroupMember _demoMember(
@@ -427,7 +493,8 @@ class GroupMockDataSource {
             _settlements[groupId]?.any(
               (item) =>
                   item.status == GroupSettlementStatus.pending ||
-                  item.status == GroupSettlementStatus.payerMarkedPaid,
+                  item.status == GroupSettlementStatus.payerMarkedPaid ||
+                  item.status == GroupSettlementStatus.disputed,
             ) ??
             false,
       ),
@@ -906,7 +973,20 @@ class GroupMockDataSource {
   ) async {
     final record = _requireTransaction(transactionId);
     _requireGroup(record.transaction.groupId);
-    return record.detail;
+    final hasSettlementLock = _hasLockedSettlements(record.transaction.groupId);
+    if (record.transaction.hasSettlementLock == hasSettlementLock) {
+      return record.detail;
+    }
+    return GroupTransactionDetail(
+      transaction: _copyTransaction(
+        record.transaction,
+        status: record.transaction.splitStatus,
+        hasSettlementLock: hasSettlementLock,
+      ),
+      payers: record.detail.payers,
+      shares: record.detail.shares,
+      comments: record.detail.comments,
+    );
   }
 
   Future<String> createTransaction(GroupTransactionDraft draft) async {
@@ -1002,6 +1082,12 @@ class GroupMockDataSource {
     if (existing.transaction.createdBy != currentUserId) {
       throw const AppException('Forbidden', code: 'GROUP_CREATOR_ONLY');
     }
+    if (_hasLockedSettlements(existing.transaction.groupId)) {
+      throw const AppException(
+        'Group transaction is locked by settlement',
+        code: 'GROUP_TRANSACTION_SETTLEMENT_LOCKED',
+      );
+    }
     final oldImage = existing.transaction.imagePath;
     _transactions.remove(transactionId);
     final newId = await createTransaction(draft);
@@ -1067,6 +1153,12 @@ class GroupMockDataSource {
     final record = _requireTransaction(transactionId);
     if (record.transaction.createdBy != currentUserId) {
       throw const AppException('Forbidden', code: 'GROUP_CREATOR_ONLY');
+    }
+    if (_hasLockedSettlements(record.transaction.groupId)) {
+      throw const AppException(
+        'Group transaction is locked by settlement',
+        code: 'GROUP_TRANSACTION_SETTLEMENT_LOCKED',
+      );
     }
     _transactions.remove(transactionId);
     _refreshSettlements(record.transaction.groupId);
@@ -1338,11 +1430,45 @@ class GroupMockDataSource {
     match.list[match.index] = _copySettlement(
       match.item,
       status: GroupSettlementStatus.disputed,
+      disputeReason: reason.trim(),
+      disputedByUserId: currentUserId,
+      disputedAt: DateTime.now(),
     );
     _logActivity(
       groupId: match.item.groupId,
       type: 'settlement_disputed',
       metadata: {'settlement_id': settlementId, 'reason': reason.trim()},
+    );
+  }
+
+  Future<void> resetDisputedSettlement(String settlementId) async {
+    final match = _findSettlement(settlementId);
+    final members = _members[match.item.groupId] ?? const [];
+    final actor = members.cast<SpendingGroupMember?>().firstWhere(
+      (member) =>
+          member?.userId == currentUserId &&
+          member?.status == GroupMemberStatus.active,
+      orElse: () => null,
+    );
+    if (actor == null ||
+        (actor.role != GroupRole.owner && actor.role != GroupRole.admin) ||
+        match.item.status != GroupSettlementStatus.disputed) {
+      throw const AppException(
+        'Settlement cannot be reset',
+        code: 'GROUP_SETTLEMENT_FORBIDDEN',
+      );
+    }
+    match.list[match.index] = _copySettlement(
+      match.item,
+      status: GroupSettlementStatus.pending,
+      clearSettlementTimestamps: true,
+      clearDisputeDetails: true,
+    );
+    _refreshSettlements(match.item.groupId);
+    _logActivity(
+      groupId: match.item.groupId,
+      type: 'settlement_dispute_reset',
+      metadata: {'settlement_id': settlementId},
     );
   }
 
@@ -1603,14 +1729,153 @@ class GroupMockDataSource {
     return List.unmodifiable((_activities[groupId] ?? const []).reversed);
   }
 
+  Future<List<GroupCommunityPost>> fetchCommunityPosts({
+    required String groupId,
+    required int offset,
+    required int limit,
+  }) async {
+    _seedDemoGroupsIfNeeded();
+    _requireActiveMember(groupId);
+    final items = List<GroupCommunityPost>.of(
+      _communityPosts[groupId] ?? const [],
+    )..sort((left, right) => right.createdAt.compareTo(left.createdAt));
+    if (offset >= items.length) return const [];
+    return List.unmodifiable(items.skip(offset).take(limit));
+  }
+
+  Future<String> createCommunityPost({
+    required String groupId,
+    required String type,
+    String? content,
+    List<GroupCommunityMediaDraft> media = const [],
+  }) async {
+    _seedDemoGroupsIfNeeded();
+    _requireActiveMember(groupId);
+    if ((content?.trim().isEmpty ?? true) && media.isEmpty) {
+      throw const AppException(
+        'Community post is empty',
+        code: 'GROUP_COMMUNITY_POST_EMPTY',
+      );
+    }
+    final postId = _id('community-post');
+    final now = DateTime.now();
+    final post = GroupCommunityPost(
+      id: postId,
+      groupId: groupId,
+      authorUserId: currentUserId,
+      authorName: 'Bạn',
+      type: type,
+      content: content?.trim().isEmpty == true ? null : content?.trim(),
+      media: [
+        for (final item in media)
+          GroupCommunityMedia(
+            id: _id('community-media'),
+            groupId: groupId,
+            postId: postId,
+            createdBy: currentUserId,
+            kind: item.kind,
+            storagePath: item.localPath,
+            caption: item.caption,
+            createdAt: now,
+          ),
+      ],
+      createdAt: now,
+    );
+    _communityPosts.putIfAbsent(groupId, () => []).insert(0, post);
+    _logActivity(
+      groupId: groupId,
+      type: 'community_post_created',
+      metadata: {'post_id': postId},
+    );
+    return postId;
+  }
+
+  Future<void> addCommunityPostComment({
+    required String postId,
+    required String content,
+  }) async {
+    _seedDemoGroupsIfNeeded();
+    final located = _findCommunityPost(postId);
+    if (located == null) return;
+    final (groupId, index) = located;
+    _requireActiveMember(groupId);
+    final post = _communityPosts[groupId]![index];
+    final comments = [
+      ...post.comments,
+      GroupCommunityComment(
+        id: _id('community-comment'),
+        postId: postId,
+        userId: currentUserId,
+        content: content.trim(),
+        createdAt: DateTime.now(),
+        displayName: 'Bạn',
+      ),
+    ];
+    _communityPosts[groupId]![index] = post.copyWith(comments: comments);
+    _logActivity(
+      groupId: groupId,
+      type: 'community_post_commented',
+      metadata: {'post_id': postId},
+    );
+  }
+
+  Future<void> toggleCommunityPostReaction({
+    required String postId,
+    required String emoji,
+  }) async {
+    _seedDemoGroupsIfNeeded();
+    final located = _findCommunityPost(postId);
+    if (located == null) return;
+    final (groupId, index) = located;
+    _requireActiveMember(groupId);
+    final post = _communityPosts[groupId]![index];
+    final current = post.reactions.firstWhere(
+      (item) => item.emoji == emoji,
+      orElse: () => const GroupCommunityReactionSummary(
+        emoji: '',
+        count: 0,
+        reactedByCurrentUser: false,
+      ),
+    );
+    final next = [...post.reactions]
+      ..removeWhere((item) => item.emoji == emoji);
+    final nextCount = current.reactedByCurrentUser
+        ? current.count - 1
+        : current.count + 1;
+    if (nextCount > 0) {
+      next.add(
+        GroupCommunityReactionSummary(
+          emoji: emoji,
+          count: nextCount,
+          reactedByCurrentUser: !current.reactedByCurrentUser,
+        ),
+      );
+    }
+    _communityPosts[groupId]![index] = post.copyWith(reactions: next);
+    _logActivity(
+      groupId: groupId,
+      type: 'community_post_reacted',
+      metadata: {'post_id': postId, 'emoji': emoji},
+    );
+  }
+
+  (String, int)? _findCommunityPost(String postId) {
+    for (final entry in _communityPosts.entries) {
+      final index = entry.value.indexWhere((post) => post.id == postId);
+      if (index >= 0) return (entry.key, index);
+    }
+    return null;
+  }
+
   Future<List<GroupAuditLog>> fetchAuditLogs(String groupId) async {
     _requireActiveMember(groupId);
     return const [];
   }
 
   Future<List<GroupPoll>> fetchPolls(String groupId) async {
+    _seedDemoGroupsIfNeeded();
     _requireActiveMember(groupId);
-    return const [];
+    return List.unmodifiable(_polls[groupId] ?? const []);
   }
 
   Future<String> createPoll({
@@ -1618,20 +1883,78 @@ class GroupMockDataSource {
     required String title,
     required List<String> options,
   }) async {
+    _seedDemoGroupsIfNeeded();
     _requireActiveMember(groupId);
-    return _id('poll');
+    final id = _id('poll');
+    _polls
+        .putIfAbsent(groupId, () => [])
+        .insert(
+          0,
+          GroupPoll(
+            id: id,
+            groupId: groupId,
+            title: title.trim(),
+            options: [
+              for (var index = 0; index < options.length; index++)
+                GroupPollOption(
+                  id: '$id-option-$index',
+                  label: options[index].trim(),
+                ),
+            ],
+            isClosed: false,
+            createdAt: DateTime.now(),
+          ),
+        );
+    _logActivity(
+      groupId: groupId,
+      type: 'poll_created',
+      metadata: {'poll_id': id},
+    );
+    return id;
   }
 
   Future<void> votePoll({
     required String pollId,
     required String optionId,
-  }) async {}
+  }) async {
+    for (final entry in _polls.entries) {
+      final pollIndex = entry.value.indexWhere((poll) => poll.id == pollId);
+      if (pollIndex == -1) continue;
+      _requireActiveMember(entry.key);
+      final voteKey = '$pollId:$currentUserId';
+      final oldOption = _pollVotes[voteKey];
+      final poll = entry.value[pollIndex];
+      final options = poll.options
+          .map(
+            (option) => GroupPollOption(
+              id: option.id,
+              label: option.label,
+              voteCount:
+                  option.voteCount -
+                  (oldOption == option.id ? 1 : 0) +
+                  (option.id == optionId ? 1 : 0),
+            ),
+          )
+          .toList(growable: false);
+      entry.value[pollIndex] = GroupPoll(
+        id: poll.id,
+        groupId: poll.groupId,
+        title: poll.title,
+        options: options,
+        isClosed: poll.isClosed,
+        createdAt: poll.createdAt,
+      );
+      _pollVotes[voteKey] = optionId;
+      return;
+    }
+  }
 
   Future<List<GroupSavingsChallenge>> fetchSavingsChallenges(
     String groupId,
   ) async {
+    _seedDemoGroupsIfNeeded();
     _requireActiveMember(groupId);
-    return const [];
+    return List.unmodifiable(_challenges[groupId] ?? const []);
   }
 
   Future<String> createSavingsChallenge({
@@ -1641,15 +1964,52 @@ class GroupMockDataSource {
     required DateTime startDate,
     required DateTime endDate,
   }) async {
+    _seedDemoGroupsIfNeeded();
     _requireAdmin(groupId);
-    return _id('challenge');
+    final id = _id('challenge');
+    _challenges
+        .putIfAbsent(groupId, () => [])
+        .insert(
+          0,
+          GroupSavingsChallenge(
+            id: id,
+            groupId: groupId,
+            title: title.trim(),
+            targetAmount: targetAmount,
+            startDate: startDate,
+            endDate: endDate,
+            totalContributed: 0,
+            isActive: true,
+          ),
+        );
+    return id;
   }
 
   Future<void> addSavingsContribution({
     required String challengeId,
     required int amount,
     String? note,
-  }) async {}
+  }) async {
+    for (final entry in _challenges.entries) {
+      final index = entry.value.indexWhere(
+        (challenge) => challenge.id == challengeId,
+      );
+      if (index == -1) continue;
+      _requireActiveMember(entry.key);
+      final challenge = entry.value[index];
+      entry.value[index] = GroupSavingsChallenge(
+        id: challenge.id,
+        groupId: challenge.groupId,
+        title: challenge.title,
+        targetAmount: challenge.targetAmount,
+        startDate: challenge.startDate,
+        endDate: challenge.endDate,
+        totalContributed: challenge.totalContributed + amount,
+        isActive: challenge.isActive,
+      );
+      return;
+    }
+  }
 
   Future<List<GroupNotification>> fetchNotifications({String? category}) async {
     _seedDemoNotificationsIfNeeded();
@@ -1751,13 +2111,16 @@ class GroupMockDataSource {
             ?.where(
               (item) =>
                   item.status == GroupSettlementStatus.completed ||
-                  item.status == GroupSettlementStatus.payerMarkedPaid,
+                  item.status == GroupSettlementStatus.payerMarkedPaid ||
+                  item.status == GroupSettlementStatus.disputed,
             )
             .toList() ??
         [];
     final balances = _groupBalances(groupId);
     for (final item in retained.where(
-      (entry) => entry.status == GroupSettlementStatus.payerMarkedPaid,
+      (entry) =>
+          entry.status == GroupSettlementStatus.payerMarkedPaid ||
+          entry.status == GroupSettlementStatus.disputed,
     )) {
       balances[item.fromUserId] =
           (balances[item.fromUserId] ?? 0) - item.amount;
@@ -1986,6 +2349,7 @@ class GroupMockDataSource {
   GroupTransaction _copyTransaction(
     GroupTransaction value, {
     required GroupSplitStatus status,
+    bool? hasSettlementLock,
   }) {
     return GroupTransaction(
       id: value.id,
@@ -2006,14 +2370,26 @@ class GroupMockDataSource {
       updatedAt: DateTime.now(),
       creatorName: value.creatorName,
       hasCompletedSettlement: value.hasCompletedSettlement,
+      hasSettlementLock: hasSettlementLock ?? value.hasSettlementLock,
     );
   }
+
+  bool _hasLockedSettlements(String groupId) =>
+      _settlements[groupId]?.any(
+        (item) => item.status != GroupSettlementStatus.pending,
+      ) ??
+      false;
 
   GroupSettlementSuggestion _copySettlement(
     GroupSettlementSuggestion value, {
     required GroupSettlementStatus status,
     DateTime? payerMarkedPaidAt,
     DateTime? receiverConfirmedAt,
+    bool clearSettlementTimestamps = false,
+    String? disputeReason,
+    String? disputedByUserId,
+    DateTime? disputedAt,
+    bool clearDisputeDetails = false,
   }) {
     return GroupSettlementSuggestion(
       id: value.id,
@@ -2022,12 +2398,23 @@ class GroupMockDataSource {
       toUserId: value.toUserId,
       amount: value.amount,
       status: status,
-      payerMarkedPaidAt: payerMarkedPaidAt ?? value.payerMarkedPaidAt,
-      receiverConfirmedAt: receiverConfirmedAt ?? value.receiverConfirmedAt,
+      payerMarkedPaidAt: clearSettlementTimestamps
+          ? null
+          : payerMarkedPaidAt ?? value.payerMarkedPaidAt,
+      receiverConfirmedAt: clearSettlementTimestamps
+          ? null
+          : receiverConfirmedAt ?? value.receiverConfirmedAt,
       createdAt: value.createdAt,
       updatedAt: DateTime.now(),
       fromDisplayName: value.fromDisplayName,
       toDisplayName: value.toDisplayName,
+      disputeReason: clearDisputeDetails
+          ? null
+          : disputeReason ?? value.disputeReason,
+      disputedByUserId: clearDisputeDetails
+          ? null
+          : disputedByUserId ?? value.disputedByUserId,
+      disputedAt: clearDisputeDetails ? null : disputedAt ?? value.disputedAt,
     );
   }
 

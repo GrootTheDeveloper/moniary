@@ -378,6 +378,13 @@ class GroupSupabaseDataSource {
     );
   }
 
+  Future<void> resetDisputedSettlement(String settlementId) {
+    return client.rpc(
+      'reset_disputed_settlement',
+      params: {'p_settlement_id': settlementId},
+    );
+  }
+
   Future<void> transferOwnership({
     required String groupId,
     required String newOwnerUserId,
@@ -463,6 +470,96 @@ class GroupSupabaseDataSource {
       params: {'p_group_id': groupId},
     );
     return _rows(rows);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchCommunityPosts({
+    required String groupId,
+    required int offset,
+    required int limit,
+  }) async {
+    final rows = await client
+        .from('group_community_posts')
+        .select(
+          '*, author:profiles!group_community_posts_author_user_id_fkey(full_name,avatar_url), media:group_community_media(*), reactions:group_community_post_reactions(emoji,user_id), comments:group_community_post_comments(*, profile:profiles!group_community_post_comments_user_id_fkey(full_name,avatar_url))',
+        )
+        .eq('group_id', groupId)
+        .isFilter('deleted_at', null)
+        .order('created_at', ascending: false)
+        .range(offset, offset + limit - 1);
+    return _rows(rows);
+  }
+
+  Future<String> createCommunityPost({
+    required String groupId,
+    required String type,
+    String? content,
+  }) async {
+    final row = await client
+        .from('group_community_posts')
+        .insert({
+          'group_id': groupId,
+          'author_user_id': client.auth.currentUser!.id,
+          'post_type': type,
+          'content': content?.trim().isEmpty == true ? null : content?.trim(),
+        })
+        .select('id')
+        .single();
+    return row['id'] as String;
+  }
+
+  Future<String> createCommunityMedia({
+    required String groupId,
+    required String postId,
+    required String kind,
+    String? caption,
+  }) async {
+    final row = await client
+        .from('group_community_media')
+        .insert({
+          'group_id': groupId,
+          'post_id': postId,
+          'created_by': client.auth.currentUser!.id,
+          'media_kind': kind,
+          'caption': caption?.trim().isEmpty == true ? null : caption?.trim(),
+        })
+        .select('id')
+        .single();
+    return row['id'] as String;
+  }
+
+  Future<String> uploadCommunityMedia({
+    required String groupId,
+    required String mediaId,
+    required String filePath,
+  }) async {
+    final path = 'group-community/$groupId/$mediaId.jpg';
+    await _uploadCompressed(path: path, filePath: filePath);
+    await client
+        .from('group_community_media')
+        .update({'storage_path': path})
+        .eq('id', mediaId);
+    return path;
+  }
+
+  Future<void> addCommunityPostComment({
+    required String postId,
+    required String content,
+  }) {
+    return client.from('group_community_post_comments').insert({
+      'post_id': postId,
+      'user_id': client.auth.currentUser!.id,
+      'content': content.trim(),
+    });
+  }
+
+  Future<void> toggleCommunityPostReaction({
+    required String postId,
+    required String emoji,
+  }) {
+    return client.rpc(
+      'toggle_group_community_post_reaction',
+      params: {'p_post_id': postId, 'p_emoji': emoji},
+    );
   }
 
   Future<List<Map<String, dynamic>>> fetchAuditLogs(String groupId) async {

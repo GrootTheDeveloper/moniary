@@ -6,9 +6,8 @@ import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../../friends/presentation/screens/friends_screen.dart';
-import '../../../groups/presentation/screens/group_detail_screen.dart';
+import '../../../groups/presentation/screens/group_route_paths.dart';
 import '../../../groups/presentation/screens/group_invitations_screen.dart';
-import '../../../groups/presentation/screens/group_transaction_detail_screen.dart';
 import '../../application/notification_controller.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../../../shared/utils/app_logger.dart';
@@ -125,8 +124,10 @@ class NotificationCenterScreen extends ConsumerWidget {
     final transactionId = notification.groupTransactionId;
     if (transactionId != null) {
       await context.push(
-        GroupTransactionDetailScreen.routePath,
-        extra: transactionId,
+        GroupRoutePaths.transactionDetail(
+          groupId: notification.groupId!,
+          transactionId: transactionId,
+        ),
       );
       return;
     }
@@ -144,7 +145,7 @@ class NotificationCenterScreen extends ConsumerWidget {
 
     final groupId = notification.groupId;
     if (groupId != null) {
-      await context.push(GroupDetailScreen.routePath, extra: groupId);
+      await context.push(GroupRoutePaths.home(groupId));
     }
   }
 }

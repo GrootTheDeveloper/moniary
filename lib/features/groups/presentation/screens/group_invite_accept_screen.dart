@@ -9,7 +9,7 @@ import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_invite.dart';
-import 'group_detail_screen.dart';
+import 'group_route_paths.dart';
 import '../groups_screen.dart';
 
 class GroupInviteAcceptScreen extends ConsumerWidget {
@@ -85,7 +85,7 @@ class GroupInviteAcceptScreen extends ConsumerWidget {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
-      await context.push(GroupDetailScreen.routePath, extra: result.groupId);
+      await context.push(GroupRoutePaths.home(result.groupId));
     } catch (_) {
       // The listener maps stable AppException codes to localized messages.
     }

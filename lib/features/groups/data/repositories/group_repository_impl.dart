@@ -6,6 +6,7 @@ import '../../../../core/supabase/app_exception.dart';
 import '../../../../core/supabase/supabase_providers.dart';
 import '../../../../shared/utils/app_logger.dart';
 import '../../domain/entities/group_community.dart';
+import '../../domain/entities/group_community_feed.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_invite.dart';
 import '../../domain/entities/group_roadmap.dart';
@@ -103,7 +104,8 @@ class GroupRepositoryImpl implements GroupRepository {
             hasUnresolvedSettlements: settlements.any(
               (item) =>
                   item['status'] == 'pending' ||
-                  item['status'] == 'payer_marked_paid',
+                  item['status'] == 'payer_marked_paid' ||
+                  item['status'] == 'disputed',
             ),
           ),
         );
@@ -426,6 +428,9 @@ class GroupRepositoryImpl implements GroupRepository {
       transactionRow['has_completed_settlement'] = settlements.any(
         (item) => item['status'] == 'completed',
       );
+      transactionRow['has_settlement_lock'] = settlements.any(
+        (item) => item['status'] != 'pending',
+      );
       final transaction = GroupModelMapper.transaction(transactionRow);
       final payers = (await _remote.fetchPayers(
         transactionId,
@@ -649,6 +654,17 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<void> resetDisputedSettlement(String settlementId) {
+    if (_useMockData) {
+      return _mock.resetDisputedSettlement(settlementId);
+    }
+    return _guard(
+      'reset disputed group settlement',
+      () => _remote.resetDisputedSettlement(settlementId),
+    );
+  }
+
+  @override
   Future<void> transferOwnership({
     required String groupId,
     required String newOwnerUserId,
@@ -735,6 +751,111 @@ class GroupRepositoryImpl implements GroupRepository {
       final rows = await _remote.fetchActivities(groupId);
       return rows.map(GroupModelMapper.activity).toList();
     });
+  }
+
+  @override
+  Future<List<GroupCommunityPost>> fetchCommunityPosts({
+    required String groupId,
+    int offset = 0,
+    int limit = 30,
+  }) {
+    if (_useMockData) {
+      return _mock.fetchCommunityPosts(
+        groupId: groupId,
+        offset: offset,
+        limit: limit,
+      );
+    }
+    return _guard('fetch group community posts', () async {
+      final rows = await _remote.fetchCommunityPosts(
+        groupId: groupId,
+        offset: offset,
+        limit: limit,
+      );
+      return rows
+          .map(
+            (row) => GroupModelMapper.communityPost(
+              row,
+              currentUserId: currentUserId,
+            ),
+          )
+          .toList(growable: false);
+    });
+  }
+
+  @override
+  Future<String> createCommunityPost({
+    required String groupId,
+    required String type,
+    String? content,
+    List<GroupCommunityMediaDraft> media = const [],
+  }) {
+    if (_useMockData) {
+      return _mock.createCommunityPost(
+        groupId: groupId,
+        type: type,
+        content: content,
+        media: media,
+      );
+    }
+    return _guard('create group community post', () async {
+      final postId = await _remote.createCommunityPost(
+        groupId: groupId,
+        type: type,
+        content: content,
+      );
+      for (final item in media) {
+        final mediaId = await _remote.createCommunityMedia(
+          groupId: groupId,
+          postId: postId,
+          kind: item.kind,
+          caption: item.caption,
+        );
+        try {
+          await _remote.uploadCommunityMedia(
+            groupId: groupId,
+            mediaId: mediaId,
+            filePath: item.localPath,
+          );
+        } catch (error, stackTrace) {
+          AppLogger.error(
+            'Group community media upload failed',
+            error,
+            stackTrace,
+          );
+          rethrow;
+        }
+      }
+      return postId;
+    });
+  }
+
+  @override
+  Future<void> addCommunityPostComment({
+    required String postId,
+    required String content,
+  }) {
+    if (_useMockData) {
+      return _mock.addCommunityPostComment(postId: postId, content: content);
+    }
+    return _guard(
+      'add group community comment',
+      () => _remote.addCommunityPostComment(postId: postId, content: content),
+    );
+  }
+
+  @override
+  Future<void> toggleCommunityPostReaction({
+    required String postId,
+    required String emoji,
+  }) {
+    if (_useMockData) {
+      return _mock.toggleCommunityPostReaction(postId: postId, emoji: emoji);
+    }
+    return _guard(
+      'toggle group community reaction',
+      () => _remote.toggleCommunityPostReaction(postId: postId, emoji: emoji),
+    );
   }
 
   @override

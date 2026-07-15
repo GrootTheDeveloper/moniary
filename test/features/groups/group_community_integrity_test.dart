@@ -95,6 +95,146 @@ void main() {
     expect(updated.status, GroupSettlementStatus.disputed);
   });
 
+  test('settlement lifecycle completes and clears the group balance', () async {
+    final owner = GroupMockDataSource(currentUserId: 'owner');
+    final member = GroupMockDataSource(currentUserId: 'member');
+    final groupId = await owner.createGroup(name: 'Dinner');
+    final invite = await owner.createInviteLink(groupId);
+    await member.acceptInvite(tokenFrom(invite));
+    await owner.createTransaction(
+      GroupTransactionDraft(
+        groupId: groupId,
+        totalAmount: 200,
+        splitMode: GroupSplitMode.equal,
+        paymentMode: GroupPaymentMode.singlePayer,
+        payerAmounts: const {'owner': 200},
+        participantIds: const ['owner', 'member'],
+      ),
+    );
+
+    final settlement = (await member.fetchSettlementOverview(
+      groupId,
+    )).suggestions.single;
+    await member.markSettlementPaid(settlement.id);
+    expect(
+      (await owner.fetchSettlementOverview(groupId)).suggestions.single.status,
+      GroupSettlementStatus.payerMarkedPaid,
+    );
+
+    await owner.confirmSettlementReceived(settlement.id);
+    final overview = await member.fetchSettlementOverview(groupId);
+    expect(overview.suggestions.single.status, GroupSettlementStatus.completed);
+    expect(overview.balances.map((item) => item.balance), everyElement(0));
+  });
+
+  test(
+    'disputed settlement is reserved and can be reopened by an admin',
+    () async {
+      final owner = GroupMockDataSource(currentUserId: 'owner');
+      final member = GroupMockDataSource(currentUserId: 'member');
+      final groupId = await owner.createGroup(name: 'Dinner');
+      final invite = await owner.createInviteLink(groupId);
+      await member.acceptInvite(tokenFrom(invite));
+      final draft = GroupTransactionDraft(
+        groupId: groupId,
+        totalAmount: 200,
+        splitMode: GroupSplitMode.equal,
+        paymentMode: GroupPaymentMode.singlePayer,
+        payerAmounts: const {'owner': 200},
+        participantIds: const ['owner', 'member'],
+      );
+      await owner.createTransaction(draft);
+
+      final disputed = (await member.fetchSettlementOverview(
+        groupId,
+      )).suggestions.single;
+      await member.disputeSettlement(
+        settlementId: disputed.id,
+        reason: 'Please review the amount',
+      );
+      final disputedSnapshot = (await member.fetchSettlementOverview(
+        groupId,
+      )).suggestions.single;
+      expect(disputedSnapshot.status, GroupSettlementStatus.disputed);
+      expect(disputedSnapshot.disputeReason, 'Please review the amount');
+      final disputeActivity = (await member.fetchActivities(groupId)).first;
+      expect(disputeActivity.type, 'settlement_disputed');
+      expect(disputeActivity.metadata['reason'], 'Please review the amount');
+      await owner.createTransaction(draft);
+
+      final refreshed = await owner.fetchSettlementOverview(groupId);
+      expect(
+        refreshed.suggestions.where(
+          (item) => item.status == GroupSettlementStatus.disputed,
+        ),
+        hasLength(1),
+      );
+      final pending = refreshed.suggestions.where(
+        (item) => item.status == GroupSettlementStatus.pending,
+      );
+      expect(pending, hasLength(1));
+      expect(pending.single.amount, 100);
+
+      await owner.resetDisputedSettlement(disputed.id);
+      final reopened = await owner.fetchSettlementOverview(groupId);
+      expect(
+        reopened.suggestions.where(
+          (item) => item.status == GroupSettlementStatus.disputed,
+        ),
+        isEmpty,
+      );
+      expect(reopened.suggestions, hasLength(1));
+      expect(reopened.suggestions.single.status, GroupSettlementStatus.pending);
+      expect(reopened.suggestions.single.amount, 200);
+      expect(
+        (await owner.fetchActivities(groupId)).first.type,
+        'settlement_dispute_reset',
+      );
+    },
+  );
+
+  test('posted transactions are locked after settlement starts', () async {
+    final owner = GroupMockDataSource(currentUserId: 'owner');
+    final member = GroupMockDataSource(currentUserId: 'member');
+    final groupId = await owner.createGroup(name: 'Dinner');
+    final invite = await owner.createInviteLink(groupId);
+    await member.acceptInvite(tokenFrom(invite));
+    final draft = GroupTransactionDraft(
+      groupId: groupId,
+      totalAmount: 200,
+      splitMode: GroupSplitMode.equal,
+      paymentMode: GroupPaymentMode.singlePayer,
+      payerAmounts: const {'owner': 200},
+      participantIds: const ['owner', 'member'],
+    );
+    final transactionId = await owner.createTransaction(draft);
+    final settlement = (await member.fetchSettlementOverview(
+      groupId,
+    )).suggestions.single;
+    await member.markSettlementPaid(settlement.id);
+
+    expect(
+      () => owner.updateTransaction(transactionId: transactionId, draft: draft),
+      throwsA(
+        isA<AppException>().having(
+          (error) => error.code,
+          'code',
+          'GROUP_TRANSACTION_SETTLEMENT_LOCKED',
+        ),
+      ),
+    );
+    expect(
+      () => owner.deleteTransaction(transactionId),
+      throwsA(
+        isA<AppException>().having(
+          (error) => error.code,
+          'code',
+          'GROUP_TRANSACTION_SETTLEMENT_LOCKED',
+        ),
+      ),
+    );
+  });
+
   test('member cannot leave while their group balance is unresolved', () async {
     final owner = GroupMockDataSource(currentUserId: 'owner');
     final member = GroupMockDataSource(currentUserId: 'member');

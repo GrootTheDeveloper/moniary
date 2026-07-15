@@ -16,8 +16,16 @@ class AppConstants {
   static const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
   // --- FCM/APNs (provided through dart-define; never commit real values) ---
-  static const firebaseApiKey = String.fromEnvironment('FIREBASE_API_KEY');
-  static const firebaseAppId = String.fromEnvironment('FIREBASE_APP_ID');
+  static const firebaseAndroidApiKey = String.fromEnvironment(
+    'FIREBASE_ANDROID_API_KEY',
+  );
+  static const firebaseIosApiKey = String.fromEnvironment(
+    'FIREBASE_IOS_API_KEY',
+  );
+  static const firebaseAndroidAppId = String.fromEnvironment(
+    'FIREBASE_ANDROID_APP_ID',
+  );
+  static const firebaseIosAppId = String.fromEnvironment('FIREBASE_IOS_APP_ID');
   static const firebaseMessagingSenderId = String.fromEnvironment(
     'FIREBASE_MESSAGING_SENDER_ID',
   );
@@ -28,6 +36,15 @@ class AppConstants {
     'FIREBASE_IOS_BUNDLE_ID',
     defaultValue: 'com.moniary.moniary',
   );
+
+  static String get firebaseApiKey =>
+      defaultTargetPlatform == TargetPlatform.iOS
+      ? firebaseIosApiKey
+      : firebaseAndroidApiKey;
+
+  static String get firebaseAppId => defaultTargetPlatform == TargetPlatform.iOS
+      ? firebaseIosAppId
+      : firebaseAndroidAppId;
 
   static bool get hasSupabaseConfig =>
       supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;

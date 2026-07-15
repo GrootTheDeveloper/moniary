@@ -65,6 +65,8 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupTransactionAmountMismatch;
       case 'GROUP_DISPUTE_REASON_REQUIRED':
         return l10n.groupSettlementDisputeReasonRequired;
+      case 'GROUP_DISPUTE_REASON_TOO_LONG':
+        return l10n.groupSettlementDisputeReasonTooLong;
       case 'GROUP_MEMBER_REMOVE_UNRESOLVED':
         return l10n.groupMemberRemoveUnresolved;
       case 'GROUP_MEMBER_REMOVE_FORBIDDEN':
@@ -87,6 +89,8 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.groupSettingsAdminRequired;
       case 'GROUP_CREATOR_ONLY':
         return l10n.groupTransactionCreatorOnly;
+      case 'GROUP_TRANSACTION_SETTLEMENT_LOCKED':
+        return l10n.groupTransactionSettlementLocked;
       case 'FRIEND_USER_NOT_FOUND':
         return l10n.friendUserNotFound;
       case 'FRIEND_CANNOT_ADD_SELF':
