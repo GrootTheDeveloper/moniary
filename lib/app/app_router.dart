@@ -12,6 +12,7 @@ import '../l10n/l10n_extension.dart';
 import '../core/preferences/preferences_providers.dart';
 import '../core/supabase/supabase_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
+import '../features/auth/presentation/reset_password_screen.dart';
 import '../features/assistant/presentation/assistant_conversation_screen.dart';
 import '../features/assistant/presentation/assistant_home_screen.dart';
 import '../features/assistant/presentation/assistant_intro_screen.dart';
@@ -185,6 +186,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         LoginScreen.routePath,
         ProfileSetupScreen.routePath,
         ProfileSurveyScreen.routePath,
+        ResetPasswordScreen.routePath,
       };
       final isPublicGroupRoute = location.startsWith('/public-group/');
       final isPublicRoute =
@@ -244,6 +246,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: LoginScreen.routePath,
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: ResetPasswordScreen.routePath,
+        builder: (context, state) => const ResetPasswordScreen(),
       ),
       GoRoute(
         path: ProfileSetupScreen.routePath,

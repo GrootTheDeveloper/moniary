@@ -104,4 +104,93 @@ void main() {
 
     expect(usesMockProfile, isTrue);
   });
+
+  test('linkAppleAccount reports mock profile update in mock mode', () async {
+    if (AppConstants.hasSupabaseConfig) {
+      markTestSkipped('Mock mode test requires missing Supabase config.');
+      return;
+    }
+
+    SharedPreferences.setMockInitialValues({});
+    final repository = AuthRepository(FakeSupabaseClient());
+
+    final usesMockProfile = await repository.linkAppleAccount();
+
+    expect(usesMockProfile, isTrue);
+  });
+
+  test(
+    'linkFacebookAccount reports mock profile update in mock mode',
+    () async {
+      if (AppConstants.hasSupabaseConfig) {
+        markTestSkipped('Mock mode test requires missing Supabase config.');
+        return;
+      }
+
+      SharedPreferences.setMockInitialValues({});
+      final repository = AuthRepository(FakeSupabaseClient());
+
+      final usesMockProfile = await repository.linkFacebookAccount();
+
+      expect(usesMockProfile, isTrue);
+    },
+  );
+
+  test('mock Facebook sign-in creates a session only when selected', () async {
+    if (AppConstants.hasSupabaseConfig) {
+      markTestSkipped('Mock mode test requires missing Supabase config.');
+      return;
+    }
+
+    final repository = AuthRepository(FakeSupabaseClient());
+
+    final session = await repository.signInWithFacebook();
+
+    expect(session?.user.id, 'mock-user-id');
+  });
+
+  test(
+    'signUpWithEmail completes without a network call in mock mode',
+    () async {
+      if (AppConstants.hasSupabaseConfig) {
+        markTestSkipped('Mock mode test requires missing Supabase config.');
+        return;
+      }
+
+      final repository = AuthRepository(FakeSupabaseClient());
+
+      await repository.signUpWithEmail(
+        email: 'bee@moniary.app',
+        password: 'password123',
+      );
+    },
+  );
+
+  test(
+    'requestPasswordReset completes without a network call in mock mode',
+    () async {
+      if (AppConstants.hasSupabaseConfig) {
+        markTestSkipped('Mock mode test requires missing Supabase config.');
+        return;
+      }
+
+      final repository = AuthRepository(FakeSupabaseClient());
+
+      await repository.requestPasswordReset('bee@moniary.app');
+    },
+  );
+
+  test(
+    'updatePassword completes without a network call in mock mode',
+    () async {
+      if (AppConstants.hasSupabaseConfig) {
+        markTestSkipped('Mock mode test requires missing Supabase config.');
+        return;
+      }
+
+      final repository = AuthRepository(FakeSupabaseClient());
+
+      await repository.updatePassword('newPassword123');
+    },
+  );
 }

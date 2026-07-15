@@ -24,7 +24,24 @@ String userFriendlyMessage(BuildContext context, Object error) {
       case 'AUTH_LINK_EMAIL_FAILED':
       case 'AUTH_LINK_GOOGLE_FAILED':
       case 'AUTH_LINK_APPLE_FAILED':
+      case 'AUTH_LINK_FACEBOOK_FAILED':
+      case 'AUTH_PASSWORD_UPDATE_FAILED':
         return l10n.errorGeneric;
+      case 'invalid_credentials':
+        return l10n.authErrorInvalidCredentials;
+      case 'email_not_confirmed':
+        return l10n.authErrorEmailNotConfirmed;
+      case 'user_already_exists':
+      case 'email_exists':
+        return l10n.authErrorEmailAlreadyRegistered;
+      case 'weak_password':
+        return l10n.authErrorWeakPassword;
+      case 'over_email_send_rate_limit':
+      case 'over_request_rate_limit':
+      case 'over_sms_send_rate_limit':
+        return l10n.authErrorRateLimited;
+      case 'user_banned':
+        return l10n.authErrorUserBanned;
       case 'GROUP_NAME_REQUIRED':
         return l10n.groupNameRequired;
       case 'GROUP_USER_NOT_FOUND':

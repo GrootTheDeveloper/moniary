@@ -2005,6 +2005,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileLinkApple => 'Liên kết Apple';
 
   @override
+  String get profileLinkFacebook => 'Liên kết Facebook';
+
+  @override
   String get profileLinkSuccess => 'Liên kết tài khoản email thành công!';
 
   @override
@@ -2016,6 +2019,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'Hoàn tất liên kết Apple trong trình duyệt để quay lại Moniary.';
 
   @override
+  String get profileLinkFacebookBrowser =>
+      'Hoàn tất liên kết Facebook trong trình duyệt để quay lại Moniary.';
+
+  @override
   String profileLinkGoogleError(String error) {
     return 'Lỗi liên kết Google: $error';
   }
@@ -2023,6 +2030,11 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String profileLinkAppleError(String error) {
     return 'Lỗi liên kết Apple: $error';
+  }
+
+  @override
+  String profileLinkFacebookError(String error) {
+    return 'Lỗi liên kết Facebook: $error';
   }
 
   @override
@@ -4555,9 +4567,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupActivityMemberRemoved => 'đã xóa một thành viên khỏi nhóm';
 
   @override
-  String groupActivityOwnerTransferred(String actor) {
-    return '$actor đã chuyển quyền owner của nhóm.';
-  }
+  String get groupActivityOwnerTransferred => 'đã chuyển quyền chủ nhóm';
 
   @override
   String get groupActivitySettlementDisputed =>
@@ -4621,9 +4631,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupNotificationMention => 'Bạn được nhắc tên trong cộng đồng';
-
-  @override
-  String get groupNotificationGeneric => 'Có cập nhật mới trong nhóm.';
 
   @override
   String get groupTransactionCreator => 'Người đăng';
@@ -4783,6 +4790,9 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get groupNotificationOwnerTransferred =>
       'Quyền owner của nhóm đã được chuyển.';
+
+  @override
+  String get groupNotificationGeneric => 'Có cập nhật mới trong nhóm.';
 
   @override
   String get groupActivitiesTitle => 'Hoạt động nhóm';
@@ -5709,6 +5719,46 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get loginNeedAccount => 'Chưa có tài khoản? Đăng ký';
+
+  @override
+  String get resetPasswordTitle => 'Đặt mật khẩu mới';
+
+  @override
+  String get resetPasswordSubtitle =>
+      'Nhập mật khẩu mới cho tài khoản của bạn.';
+
+  @override
+  String get resetPasswordConfirmLabel => 'Xác nhận mật khẩu mới';
+
+  @override
+  String get resetPasswordMismatch => 'Mật khẩu xác nhận không khớp';
+
+  @override
+  String get resetPasswordSubmit => 'Đặt lại mật khẩu';
+
+  @override
+  String get resetPasswordSuccess => 'Mật khẩu của bạn đã được cập nhật.';
+
+  @override
+  String get authErrorInvalidCredentials => 'Email hoặc mật khẩu không đúng.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'Vui lòng xác nhận email trước khi đăng nhập.';
+
+  @override
+  String get authErrorEmailAlreadyRegistered => 'Email này đã được đăng ký.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'Mật khẩu chưa đủ mạnh. Hãy thử mật khẩu dài hơn kèm số hoặc ký tự đặc biệt.';
+
+  @override
+  String get authErrorRateLimited =>
+      'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.';
+
+  @override
+  String get authErrorUserBanned => 'Tài khoản này đã bị tạm khóa.';
 
   @override
   String get cameraFallbackPermissionDenied =>

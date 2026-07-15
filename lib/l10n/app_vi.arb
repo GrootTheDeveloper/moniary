@@ -906,11 +906,14 @@
   "profileLinkEmail": "Liên kết Email",
   "profileLinkGoogle": "Liên kết Google",
   "profileLinkApple": "Liên kết Apple",
+  "profileLinkFacebook": "Liên kết Facebook",
   "profileLinkSuccess": "Liên kết tài khoản email thành công!",
   "profileLinkGoogleBrowser": "Hoàn tất liên kết Google trong trình duyệt để quay lại Moniary.",
   "profileLinkAppleBrowser": "Hoàn tất liên kết Apple trong trình duyệt để quay lại Moniary.",
+  "profileLinkFacebookBrowser": "Hoàn tất liên kết Facebook trong trình duyệt để quay lại Moniary.",
   "profileLinkGoogleError": "Lỗi liên kết Google: {error}",
   "profileLinkAppleError": "Lỗi liên kết Apple: {error}",
+  "profileLinkFacebookError": "Lỗi liên kết Facebook: {error}",
   "@profileLinkGoogleError": {
     "placeholders": {
       "error": {
@@ -919,6 +922,13 @@
     }
   },
   "@profileLinkAppleError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@profileLinkFacebookError": {
     "placeholders": {
       "error": {
         "type": "String"
@@ -1870,7 +1880,6 @@
   "groupNotificationCommentAdded": "Có bình luận mới",
   "groupNotificationReactionAdded": "Có người đã thả cảm xúc vào giao dịch",
   "groupNotificationMention": "Bạn được nhắc tên trong cộng đồng",
-  "groupNotificationGeneric": "Có cập nhật mới trong nhóm",
   "groupTransactionCreator": "Người đăng",
   "groupTransactionPayers": "Người đã trả",
   "groupTransactionShares": "Phần phải chịu",
@@ -1930,8 +1939,6 @@
   "@groupActivityTransactionCreated": {"placeholders": {"actor": {"type": "String"}}},
   "groupActivityTransactionPosted": "{actor} đã đăng giao dịch nhóm.",
   "@groupActivityTransactionPosted": {"placeholders": {"actor": {"type": "String"}}},
-  "groupActivityOwnerTransferred": "{actor} đã chuyển quyền owner của nhóm.",
-  "@groupActivityOwnerTransferred": {"placeholders": {"actor": {"type": "String"}}},
   "groupActivityGeneric": "{actor} đã cập nhật nhóm.",
   "@groupActivityGeneric": {"placeholders": {"actor": {"type": "String"}}},
   "groupLeaveWarningActivity": "Có thành viên trong nhóm cố gắng rời khỏi nhóm khi chưa xử lý xong các khoản chi. Hãy cẩn thận.",
@@ -2337,6 +2344,18 @@
   "loginSignIn": "Đăng nhập",
   "loginAlreadyHaveAccount": "Đã có tài khoản? Đăng nhập",
   "loginNeedAccount": "Chưa có tài khoản? Đăng ký",
+  "resetPasswordTitle": "Đặt mật khẩu mới",
+  "resetPasswordSubtitle": "Nhập mật khẩu mới cho tài khoản của bạn.",
+  "resetPasswordConfirmLabel": "Xác nhận mật khẩu mới",
+  "resetPasswordMismatch": "Mật khẩu xác nhận không khớp",
+  "resetPasswordSubmit": "Đặt lại mật khẩu",
+  "resetPasswordSuccess": "Mật khẩu của bạn đã được cập nhật.",
+  "authErrorInvalidCredentials": "Email hoặc mật khẩu không đúng.",
+  "authErrorEmailNotConfirmed": "Vui lòng xác nhận email trước khi đăng nhập.",
+  "authErrorEmailAlreadyRegistered": "Email này đã được đăng ký.",
+  "authErrorWeakPassword": "Mật khẩu chưa đủ mạnh. Hãy thử mật khẩu dài hơn kèm số hoặc ký tự đặc biệt.",
+  "authErrorRateLimited": "Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.",
+  "authErrorUserBanned": "Tài khoản này đã bị tạm khóa.",
   "cameraFallbackPermissionDenied": "Không có quyền truy cập camera. Bạn có thể nhập giao dịch thủ công.",
   "cameraFallbackGenericError": "Không thể mở camera. Bạn có thể nhập giao dịch thủ công.",
   "scanSuggestionNotice": "Thông tin trên hóa đơn đã được tự động điền. Hãy kiểm tra trước khi lưu.",

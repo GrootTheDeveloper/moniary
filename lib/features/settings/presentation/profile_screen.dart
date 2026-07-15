@@ -174,6 +174,39 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
+  Future<void> _linkFacebookAccount(VoidCallback refreshSheet) async {
+    _setLinkingLoading(true, refreshSheet);
+    final messenger = ScaffoldMessenger.of(context);
+
+    try {
+      await ref.read(authControllerProvider.notifier).linkFacebookAccount();
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.profileLinkFacebookBrowser),
+            backgroundColor: AppTheme.success,
+          ),
+        );
+      }
+    } catch (e, st) {
+      AppLogger.error('Failed to link Facebook account from profile', e, st);
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              context.l10n.profileLinkFacebookError(
+                userFriendlyMessage(context, e),
+              ),
+            ),
+            backgroundColor: AppTheme.danger,
+          ),
+        );
+      }
+    } finally {
+      _setLinkingLoading(false, refreshSheet);
+    }
+  }
+
   void _showLinkAccountSheet() {
     showModalBottomSheet(
       context: context,
@@ -358,6 +391,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         label: Text(
                           context.l10n.profileLinkApple,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          await _linkFacebookAccount(refreshSheet);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          side: const BorderSide(color: AppTheme.outline),
+                        ),
+                        icon: const Icon(
+                          Icons.facebook_outlined,
+                          size: 24,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          context.l10n.profileLinkFacebook,
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

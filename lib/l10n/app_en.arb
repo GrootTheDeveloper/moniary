@@ -906,11 +906,14 @@
   "profileLinkEmail": "Link Email",
   "profileLinkGoogle": "Link Google",
   "profileLinkApple": "Link Apple",
+  "profileLinkFacebook": "Link Facebook",
   "profileLinkSuccess": "Linked account successfully!",
   "profileLinkGoogleBrowser": "Complete Google linking in browser to return to Moniary.",
   "profileLinkAppleBrowser": "Complete Apple linking in browser to return to Moniary.",
+  "profileLinkFacebookBrowser": "Complete Facebook linking in browser to return to Moniary.",
   "profileLinkGoogleError": "Google linking error: {error}",
   "profileLinkAppleError": "Apple linking error: {error}",
+  "profileLinkFacebookError": "Facebook linking error: {error}",
   "@profileLinkGoogleError": {
     "placeholders": {
       "error": {
@@ -919,6 +922,13 @@
     }
   },
   "@profileLinkAppleError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@profileLinkFacebookError": {
     "placeholders": {
       "error": {
         "type": "String"
@@ -1870,7 +1880,6 @@
   "groupNotificationCommentAdded": "A new comment was added",
   "groupNotificationReactionAdded": "Someone reacted to a transaction",
   "groupNotificationMention": "You were mentioned in the community",
-  "groupNotificationGeneric": "New group update",
   "groupTransactionCreator": "Posted by",
   "groupTransactionPayers": "Payers",
   "groupTransactionShares": "Member shares",
@@ -1930,8 +1939,6 @@
   "@groupActivityTransactionCreated": {"placeholders": {"actor": {"type": "String"}}},
   "groupActivityTransactionPosted": "{actor} posted a group transaction.",
   "@groupActivityTransactionPosted": {"placeholders": {"actor": {"type": "String"}}},
-  "groupActivityOwnerTransferred": "{actor} transferred group ownership.",
-  "@groupActivityOwnerTransferred": {"placeholders": {"actor": {"type": "String"}}},
   "groupActivityGeneric": "{actor} updated the group.",
   "@groupActivityGeneric": {"placeholders": {"actor": {"type": "String"}}},
   "groupLeaveWarningActivity": "A member tried to leave before resolving group expenses. Please be careful.",
@@ -2337,6 +2344,18 @@
   "loginSignIn": "Sign in",
   "loginAlreadyHaveAccount": "Already have an account? Sign in",
   "loginNeedAccount": "Need an account? Sign up",
+  "resetPasswordTitle": "Set a new password",
+  "resetPasswordSubtitle": "Enter a new password for your account.",
+  "resetPasswordConfirmLabel": "Confirm new password",
+  "resetPasswordMismatch": "Passwords do not match",
+  "resetPasswordSubmit": "Reset password",
+  "resetPasswordSuccess": "Your password has been updated.",
+  "authErrorInvalidCredentials": "Incorrect email or password.",
+  "authErrorEmailNotConfirmed": "Please confirm your email before signing in.",
+  "authErrorEmailAlreadyRegistered": "This email is already registered.",
+  "authErrorWeakPassword": "This password is too weak. Try a longer one with numbers or symbols.",
+  "authErrorRateLimited": "Too many attempts. Please try again later.",
+  "authErrorUserBanned": "This account has been suspended.",
   "cameraFallbackPermissionDenied": "Camera permission denied. You can enter the transaction manually.",
   "cameraFallbackGenericError": "Could not open camera. You can enter the transaction manually.",
   "scanSuggestionNotice": "Receipt details were filled automatically. Review them before saving.",

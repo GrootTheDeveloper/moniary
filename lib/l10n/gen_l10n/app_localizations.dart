@@ -3746,6 +3746,12 @@ abstract class AppLocalizations {
   /// **'Liên kết Apple'**
   String get profileLinkApple;
 
+  /// No description provided for @profileLinkFacebook.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết Facebook'**
+  String get profileLinkFacebook;
+
   /// No description provided for @profileLinkSuccess.
   ///
   /// In vi, this message translates to:
@@ -3764,6 +3770,12 @@ abstract class AppLocalizations {
   /// **'Hoàn tất liên kết Apple trong trình duyệt để quay lại Moniary.'**
   String get profileLinkAppleBrowser;
 
+  /// No description provided for @profileLinkFacebookBrowser.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoàn tất liên kết Facebook trong trình duyệt để quay lại Moniary.'**
+  String get profileLinkFacebookBrowser;
+
   /// No description provided for @profileLinkGoogleError.
   ///
   /// In vi, this message translates to:
@@ -3775,6 +3787,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Lỗi liên kết Apple: {error}'**
   String profileLinkAppleError(String error);
+
+  /// No description provided for @profileLinkFacebookError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lỗi liên kết Facebook: {error}'**
+  String profileLinkFacebookError(String error);
 
   /// No description provided for @profileEditInfo.
   ///
@@ -8241,8 +8259,8 @@ abstract class AppLocalizations {
   /// No description provided for @groupActivityOwnerTransferred.
   ///
   /// In vi, this message translates to:
-  /// **'{actor} đã chuyển quyền owner của nhóm.'**
-  String groupActivityOwnerTransferred(String actor);
+  /// **'đã chuyển quyền chủ nhóm'**
+  String get groupActivityOwnerTransferred;
 
   /// No description provided for @groupActivitySettlementDisputed.
   ///
@@ -8351,12 +8369,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bạn được nhắc tên trong cộng đồng'**
   String get groupNotificationMention;
-
-  /// No description provided for @groupNotificationGeneric.
-  ///
-  /// In vi, this message translates to:
-  /// **'Có cập nhật mới trong nhóm.'**
-  String get groupNotificationGeneric;
 
   /// No description provided for @groupTransactionCreator.
   ///
@@ -8651,6 +8663,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Quyền owner của nhóm đã được chuyển.'**
   String get groupNotificationOwnerTransferred;
+
+  /// No description provided for @groupNotificationGeneric.
+  ///
+  /// In vi, this message translates to:
+  /// **'Có cập nhật mới trong nhóm.'**
+  String get groupNotificationGeneric;
 
   /// No description provided for @groupActivitiesTitle.
   ///
@@ -10207,6 +10225,78 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chưa có tài khoản? Đăng ký'**
   String get loginNeedAccount;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt mật khẩu mới'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @resetPasswordSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập mật khẩu mới cho tài khoản của bạn.'**
+  String get resetPasswordSubtitle;
+
+  /// No description provided for @resetPasswordConfirmLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận mật khẩu mới'**
+  String get resetPasswordConfirmLabel;
+
+  /// No description provided for @resetPasswordMismatch.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mật khẩu xác nhận không khớp'**
+  String get resetPasswordMismatch;
+
+  /// No description provided for @resetPasswordSubmit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt lại mật khẩu'**
+  String get resetPasswordSubmit;
+
+  /// No description provided for @resetPasswordSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mật khẩu của bạn đã được cập nhật.'**
+  String get resetPasswordSuccess;
+
+  /// No description provided for @authErrorInvalidCredentials.
+  ///
+  /// In vi, this message translates to:
+  /// **'Email hoặc mật khẩu không đúng.'**
+  String get authErrorInvalidCredentials;
+
+  /// No description provided for @authErrorEmailNotConfirmed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng xác nhận email trước khi đăng nhập.'**
+  String get authErrorEmailNotConfirmed;
+
+  /// No description provided for @authErrorEmailAlreadyRegistered.
+  ///
+  /// In vi, this message translates to:
+  /// **'Email này đã được đăng ký.'**
+  String get authErrorEmailAlreadyRegistered;
+
+  /// No description provided for @authErrorWeakPassword.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mật khẩu chưa đủ mạnh. Hãy thử mật khẩu dài hơn kèm số hoặc ký tự đặc biệt.'**
+  String get authErrorWeakPassword;
+
+  /// No description provided for @authErrorRateLimited.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.'**
+  String get authErrorRateLimited;
+
+  /// No description provided for @authErrorUserBanned.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tài khoản này đã bị tạm khóa.'**
+  String get authErrorUserBanned;
 
   /// No description provided for @cameraFallbackPermissionDenied.
   ///

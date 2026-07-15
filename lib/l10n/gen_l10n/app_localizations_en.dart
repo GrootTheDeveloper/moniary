@@ -2010,6 +2010,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLinkApple => 'Link Apple';
 
   @override
+  String get profileLinkFacebook => 'Link Facebook';
+
+  @override
   String get profileLinkSuccess => 'Linked account successfully!';
 
   @override
@@ -2021,6 +2024,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Complete Apple linking in browser to return to Moniary.';
 
   @override
+  String get profileLinkFacebookBrowser =>
+      'Complete Facebook linking in browser to return to Moniary.';
+
+  @override
   String profileLinkGoogleError(String error) {
     return 'Google linking error: $error';
   }
@@ -2028,6 +2035,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String profileLinkAppleError(String error) {
     return 'Apple linking error: $error';
+  }
+
+  @override
+  String profileLinkFacebookError(String error) {
+    return 'Facebook linking error: $error';
   }
 
   @override
@@ -4555,9 +4567,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupActivityMemberRemoved => 'removed a member from the group';
 
   @override
-  String groupActivityOwnerTransferred(String actor) {
-    return '$actor transferred group ownership.';
-  }
+  String get groupActivityOwnerTransferred => 'transferred group ownership';
 
   @override
   String get groupActivitySettlementDisputed => 'reported a settlement dispute';
@@ -4620,9 +4630,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupNotificationMention => 'You were mentioned in the community';
-
-  @override
-  String get groupNotificationGeneric => 'There is a new group update.';
 
   @override
   String get groupTransactionCreator => 'Posted by';
@@ -4782,6 +4789,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get groupNotificationOwnerTransferred =>
       'Group ownership was transferred.';
+
+  @override
+  String get groupNotificationGeneric => 'There is a new group update.';
 
   @override
   String get groupActivitiesTitle => 'Group activity';
@@ -5708,6 +5718,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginNeedAccount => 'Need an account? Sign up';
+
+  @override
+  String get resetPasswordTitle => 'Set a new password';
+
+  @override
+  String get resetPasswordSubtitle => 'Enter a new password for your account.';
+
+  @override
+  String get resetPasswordConfirmLabel => 'Confirm new password';
+
+  @override
+  String get resetPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get resetPasswordSubmit => 'Reset password';
+
+  @override
+  String get resetPasswordSuccess => 'Your password has been updated.';
+
+  @override
+  String get authErrorInvalidCredentials => 'Incorrect email or password.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'Please confirm your email before signing in.';
+
+  @override
+  String get authErrorEmailAlreadyRegistered =>
+      'This email is already registered.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'This password is too weak. Try a longer one with numbers or symbols.';
+
+  @override
+  String get authErrorRateLimited =>
+      'Too many attempts. Please try again later.';
+
+  @override
+  String get authErrorUserBanned => 'This account has been suspended.';
 
   @override
   String get cameraFallbackPermissionDenied =>

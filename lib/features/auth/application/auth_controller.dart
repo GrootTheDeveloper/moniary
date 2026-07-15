@@ -198,6 +198,35 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
+  Future<void> linkFacebookAccount() async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      final usesMockProfile = await ref
+          .read(authRepositoryProvider)
+          .linkFacebookAccount();
+
+      ref.invalidate(currentProfileProvider);
+
+      if (usesMockProfile) {
+        ref
+            .read(profileRepositoryProvider)
+            .setMockEmailAndProvider(
+              email: 'mock-facebook@facebook.com',
+              loginProvider: 'facebook',
+            );
+      }
+      state = const AsyncData(null);
+    } catch (e, st) {
+      AppLogger.error('linkFacebookAccount failed', e, st);
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
   Future<void> signInWithGoogle() async {
     if (_isProcessing) return;
     _isProcessing = true;
@@ -300,6 +329,21 @@ class AuthController extends AsyncNotifier<void> {
     state = const AsyncLoading();
     try {
       await ref.read(authRepositoryProvider).requestPasswordReset(email);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> updatePassword(String newPassword) async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      await ref.read(authRepositoryProvider).updatePassword(newPassword);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
