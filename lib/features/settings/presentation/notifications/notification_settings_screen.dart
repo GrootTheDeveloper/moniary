@@ -105,6 +105,15 @@ class _PushNotificationSection extends ConsumerWidget {
                   onChanged: (value) =>
                       controller.setCategoryEnabled('community', value),
                 ),
+                const _SettingsDivider(),
+                _PushCategoryTile(
+                  icon: Icons.settings_outlined,
+                  title: context.l10n.notificationsCategorySystem,
+                  value: preferences.systemEnabled,
+                  enabled: preferences.pushEnabled,
+                  onChanged: (value) =>
+                      controller.setCategoryEnabled('system', value),
+                ),
               ],
             ),
           ),

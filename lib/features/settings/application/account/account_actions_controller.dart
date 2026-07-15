@@ -36,13 +36,14 @@ class AccountActionsController extends AsyncNotifier<void> {
 
   Future<File?> exportCsv({
     ExportFilters filters = const ExportFilters(),
+    required ExportFileText text,
   }) async {
     state = const AsyncLoading();
     File? exportedFile;
     state = await AsyncValue.guard(() async {
       exportedFile = await ref
           .read(accountRepositoryProvider)
-          .exportTransactionsCsv(filters: filters);
+          .exportTransactionsCsv(filters: filters, text: text);
     });
     ref.invalidate(exportHistoryProvider);
     return exportedFile;

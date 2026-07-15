@@ -15,6 +15,7 @@ import 'package:moniary/features/friends/presentation/screens/friends_screen.dar
 import 'package:moniary/features/friends/presentation/widgets/friend_invite_prompt_host.dart';
 import 'package:moniary/features/groups/data/repositories/group_repository_impl.dart';
 import 'package:moniary/features/groups/domain/entities/group_community.dart';
+import 'package:moniary/features/groups/domain/entities/group_community_feed.dart';
 import 'package:moniary/features/groups/domain/entities/group_enums.dart';
 import 'package:moniary/features/groups/domain/entities/group_invite.dart';
 import 'package:moniary/features/groups/domain/entities/group_roadmap.dart';
@@ -27,6 +28,13 @@ import 'package:moniary/features/groups/presentation/screens/group_detail_screen
 import 'package:moniary/features/groups/presentation/screens/invite_member_screen.dart';
 import 'package:moniary/features/groups/presentation/screens/group_invitations_screen.dart';
 import 'package:moniary/features/groups/presentation/screens/group_list_screen.dart';
+import 'package:moniary/features/groups/presentation/screens/group_route_paths.dart';
+import 'package:moniary/features/groups/presentation/screens/group_shell_screen.dart';
+import 'package:moniary/features/groups/presentation/screens/group_tools_screen.dart';
+import 'package:moniary/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:moniary/features/notifications/domain/entities/app_notification.dart';
+import 'package:moniary/features/notifications/domain/repositories/notification_repository.dart';
+import 'package:moniary/features/notifications/presentation/screens/notification_center_screen.dart';
 import 'package:moniary/l10n/gen_l10n/app_localizations.dart';
 
 void main() {
@@ -101,6 +109,7 @@ void main() {
 
   Widget groupRouterApp({
     required FakeGroupRepository groupRepository,
+    NotificationRepository? notificationRepository,
     String initialLocation = GroupListScreen.routePath,
     String detailGroupId = 'group-1',
   }) {
@@ -117,9 +126,104 @@ void main() {
               GroupActivityCenterScreen(groupId: state.extra as String?),
         ),
         GoRoute(
+          path: GroupRoutePaths.communityPattern,
+          builder: (context, state) => GroupActivityCenterScreen(
+            groupId: state.pathParameters['groupId']!,
+          ),
+        ),
+        GoRoute(
           path: GroupDetailScreen.routePath,
           builder: (context, state) =>
               GroupDetailScreen(groupId: detailGroupId),
+        ),
+        GoRoute(
+          path: NotificationCenterScreen.routePath,
+          builder: (context, state) => const NotificationCenterScreen(),
+        ),
+      ],
+    );
+    return ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        friendRepositoryProvider.overrideWithValue(FakeFriendRepository()),
+        groupRepositoryProvider.overrideWithValue(groupRepository),
+        if (notificationRepository != null)
+          notificationRepositoryProvider.overrideWithValue(
+            notificationRepository,
+          ),
+      ],
+      child: MaterialApp.router(
+        locale: const Locale('vi'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router,
+      ),
+    );
+  }
+
+  Widget groupShellApp({required FakeGroupRepository groupRepository}) {
+    final router = GoRouter(
+      initialLocation: GroupRoutePaths.home('group-1'),
+      routes: [
+        GoRoute(
+          path: GroupRoutePaths.groupPattern,
+          redirect: (context, state) {
+            final groupId = state.pathParameters['groupId']!;
+            return state.uri.path == '/groups/$groupId'
+                ? GroupRoutePaths.home(groupId)
+                : null;
+          },
+          routes: [
+            StatefulShellRoute.indexedStack(
+              builder: (context, state, navigationShell) => GroupShellScreen(
+                groupId: state.pathParameters['groupId']!,
+                navigationShell: navigationShell,
+              ),
+              branches: [
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: 'home',
+                      builder: (context, state) => GroupDetailScreen(
+                        groupId: state.pathParameters['groupId']!,
+                      ),
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: 'community',
+                      builder: (context, state) => GroupActivityCenterScreen(
+                        groupId: state.pathParameters['groupId']!,
+                      ),
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: 'notifications',
+                      builder: (context, state) =>
+                          const GroupActivityCenterScreen(
+                            notificationOnly: true,
+                          ),
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: 'management',
+                      builder: (context, state) => GroupToolsScreen(
+                        groupId: state.pathParameters['groupId']!,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
       ],
     );
@@ -237,6 +341,71 @@ void main() {
 
     expect(find.text('Thêm bạn'), findsWidgets);
     expect(find.byTooltip('Chia sẻ link kết bạn'), findsOneWidget);
+  });
+
+  testWidgets('FriendsScreen empty state không bị chồng widget', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(393, 852));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = FakeFriendRepository();
+
+    await tester.pumpWidget(
+      app(const FriendsScreen(), friendRepository: repository),
+    );
+    await tester.pumpAndSettle();
+
+    final iconRect = tester.getRect(find.byIcon(Icons.people_outline_rounded));
+    final titleRect = tester.getRect(find.text('Bạn chưa có bạn bè nào.'));
+    final subtitleRect = tester.getRect(
+      find.text('Thêm bạn bè để mời vào nhóm chi tiêu nhanh hơn.'),
+    );
+
+    // Each element must sit strictly below the previous one.
+    expect(
+      titleRect.top,
+      greaterThanOrEqualTo(iconRect.bottom),
+      reason: 'title overlaps the icon',
+    );
+    expect(
+      subtitleRect.top,
+      greaterThanOrEqualTo(titleRect.bottom),
+      reason: 'subtitle overlaps the title',
+    );
+  });
+
+  testWidgets('FriendsScreen empty state + outgoing request không crash', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(393, 852));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.binding.platformDispatcher.textScaleFactorTestValue = 2.0;
+    addTearDown(
+      tester.binding.platformDispatcher.clearTextScaleFactorTestValue,
+    );
+    final repository = FakeFriendRepository(
+      outgoing: [
+        FriendRequest(
+          id: 'outgoing-1',
+          fromUserId: 'mock-user-id',
+          toUserId: 'friend-outgoing',
+          otherUserId: 'friend-outgoing',
+          status: FriendRequestStatus.pending,
+          createdAt: DateTime(2026),
+          isIncoming: false,
+          fullName: 'hoang',
+          username: 'hoang',
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      app(const FriendsScreen(), friendRepository: repository),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Bạn chưa có bạn bè nào.'), findsOneWidget);
   });
 
   testWidgets('AddFriendScreen hiển thị card chia sẻ link kết bạn', (
@@ -521,8 +690,36 @@ void main() {
         ),
       ],
     );
+    final notificationRepository = FakeNotificationRepository(
+      notifications: [
+        AppNotification(
+          id: 'notification-1',
+          category: AppNotificationCategory.group,
+          type: 'transaction_posted',
+          isRead: false,
+          createdAt: DateTime(2026, 7, 1),
+          groupId: 'group-1',
+          groupName: 'Chuyến đi Đà Lạt',
+          groupTransactionId: 'transaction-1',
+        ),
+        AppNotification(
+          id: 'notification-2',
+          category: AppNotificationCategory.group,
+          type: 'debt_settled',
+          isRead: false,
+          createdAt: DateTime(2026, 7, 2),
+          groupId: 'group-2',
+          groupName: 'Nhà chung',
+        ),
+      ],
+    );
 
-    await tester.pumpWidget(groupRouterApp(groupRepository: groupRepository));
+    await tester.pumpWidget(
+      groupRouterApp(
+        groupRepository: groupRepository,
+        notificationRepository: notificationRepository,
+      ),
+    );
     await tester.pumpAndSettle();
 
     final notificationButton = find.byTooltip('Thông báo');
@@ -532,8 +729,11 @@ void main() {
     await tester.tap(notificationButton);
     await tester.pumpAndSettle();
 
-    expect(find.text('Có giao dịch mới'), findsOneWidget);
-    expect(find.text('Một khoản nợ đã được tất toán'), findsOneWidget);
+    expect(find.text('Có giao dịch mới trong group'), findsOneWidget);
+    expect(
+      find.text('Một khoản nợ trong group đã được tất toán'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('GroupActivityCenterScreen mở thông báo không cần nhóm', (
@@ -602,13 +802,34 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(find.text('Hoạt động'), findsOneWidget);
-    expect(find.text('Thông báo'), findsOneWidget);
+    expect(find.text('Cộng đồng'), findsOneWidget);
+    expect(find.text('Thông báo'), findsNothing);
+  });
 
-    await tester.tap(find.text('Thông báo'));
+  testWidgets('GroupShellScreen điều hướng qua bốn khu vực chính', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      groupShellApp(groupRepository: FakeGroupRepository()),
+    );
     await tester.pumpAndSettle();
 
-    expect(find.text('Có giao dịch mới'), findsOneWidget);
+    expect(find.text('TRANG CHỦ'), findsOneWidget);
+    expect(find.text('CỘNG ĐỒNG'), findsOneWidget);
+    expect(find.text('THÔNG BÁO'), findsOneWidget);
+    expect(find.text('QUẢN LÝ NHÓM'), findsOneWidget);
+
+    await tester.tap(find.text('CỘNG ĐỒNG'));
+    await tester.pumpAndSettle();
+    expect(find.text('Cộng đồng'), findsWidgets);
+
+    await tester.tap(find.text('THÔNG BÁO'));
+    await tester.pumpAndSettle();
+    expect(find.text('Thông báo nhóm'), findsOneWidget);
+
+    await tester.tap(find.text('QUẢN LÝ NHÓM'));
+    await tester.pumpAndSettle();
+    expect(find.text('Quản lý nhóm'), findsOneWidget);
   });
 
   testWidgets('InviteMemberScreen disable bạn đã là thành viên nhóm', (
@@ -1079,6 +1300,33 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
+  Future<List<GroupCommunityPost>> fetchCommunityPosts({
+    required String groupId,
+    int offset = 0,
+    int limit = 30,
+  }) async => const [];
+
+  @override
+  Future<String> createCommunityPost({
+    required String groupId,
+    required String type,
+    String? content,
+    List<GroupCommunityMediaDraft> media = const [],
+  }) async => 'mock-community-post';
+
+  @override
+  Future<void> addCommunityPostComment({
+    required String postId,
+    required String content,
+  }) async {}
+
+  @override
+  Future<void> toggleCommunityPostReaction({
+    required String postId,
+    required String emoji,
+  }) async {}
+
+  @override
   Future<List<GroupNotification>> fetchNotifications({
     String? category,
   }) async => category == null
@@ -1348,4 +1596,46 @@ class FakeGroupRepository implements GroupRepository {
 
   @override
   Future<void> deleteRecurringTransaction(String id) async {}
+}
+
+class FakeNotificationRepository implements NotificationRepository {
+  FakeNotificationRepository({required this.notifications});
+
+  final List<AppNotification> notifications;
+
+  @override
+  Future<List<AppNotification>> fetchNotifications({
+    AppNotificationCategory? category,
+  }) async {
+    if (category == null) return List.unmodifiable(notifications);
+    return List.unmodifiable(
+      notifications.where((item) => item.category == category),
+    );
+  }
+
+  @override
+  Future<void> markRead(String notificationId) async {
+    final index = notifications.indexWhere((item) => item.id == notificationId);
+    if (index != -1) {
+      notifications[index] = notifications[index].copyWith(isRead: true);
+    }
+  }
+
+  @override
+  Future<void> markAllRead() async {
+    for (var index = 0; index < notifications.length; index++) {
+      notifications[index] = notifications[index].copyWith(isRead: true);
+    }
+  }
+
+  @override
+  Future<void> registerDevice({
+    required String token,
+    required String platform,
+    required String locale,
+    required String timezone,
+  }) async {}
+
+  @override
+  Future<void> unregisterDevice(String token) async {}
 }

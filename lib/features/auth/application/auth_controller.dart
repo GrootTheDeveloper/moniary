@@ -1,9 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/notifications/notification_providers.dart';
+import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
+import '../../notifications/data/repositories/notification_repository_impl.dart';
 import '../data/auth_repository.dart';
+import '../domain/email_account_link.dart';
+import '../domain/facebook_account_link.dart';
+import '../domain/google_account_link.dart';
+import 'pending_email_link_controller.dart';
+import 'pending_facebook_link_controller.dart';
+import 'pending_google_link_controller.dart';
 import '../../profile/application/profile_setup_controller.dart';
 
 final authControllerProvider = AsyncNotifierProvider<AuthController, void>(
@@ -27,11 +36,31 @@ class AuthController extends AsyncNotifier<void> {
     });
   }
 
+  Future<void> signInAnonymously({String? captchaToken}) async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      final session = await ref
+          .read(authRepositoryProvider)
+          .signInAnonymously(captchaToken: captchaToken);
+
+      _applySignedInSession(session);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
   Future<void> signOut() async {
     if (_isProcessing) return;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
+      await _unregisterPushDevice();
       await ref.read(authRepositoryProvider).signOut();
       state = const AsyncData(null);
     } catch (e, st) {
@@ -42,21 +71,64 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> linkEmailAccount({
+  Future<void> _unregisterPushDevice() async {
+    await ref
+        .read(fcmPushNotificationServiceProvider)
+        .unregisterCurrentToken(
+          onToken: ref.read(notificationRepositoryProvider).unregisterDevice,
+        );
+  }
+
+  Future<EmailAccountLinkStatus> beginEmailAccountLink({
     required String email,
-    required String password,
   }) async {
+    if (_isProcessing) {
+      return EmailAccountLinkStatus.confirmationRequired;
+    }
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      final session = ref.read(currentSessionProvider);
+      if (session == null) {
+        throw const AppException('errorNotLoggedIn', code: 'AUTH_REQUIRED');
+      }
+      final result = await ref
+          .read(authRepositoryProvider)
+          .beginEmailAccountLink(email: email);
+      await ref
+          .read(pendingEmailAccountLinkProvider.notifier)
+          .save(userId: session.user.id, email: email);
+      state = const AsyncData(null);
+      return result;
+    } catch (e, st) {
+      AppLogger.error('beginEmailAccountLink failed', e, st);
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> completeEmailAccountLink({required String password}) async {
     if (_isProcessing) return;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
+      final pendingLink = ref.read(pendingEmailAccountLinkProvider);
+      if (pendingLink == null) {
+        throw const AppException(
+          'Email account linking is not pending',
+          code: 'AUTH_LINK_EMAIL_NOT_PENDING',
+        );
+      }
       await ref
           .read(authRepositoryProvider)
-          .linkEmailAccount(email: email, password: password);
+          .completeEmailAccountLink(password: password);
+      await ref.read(pendingEmailAccountLinkProvider.notifier).clear();
       ref.invalidate(currentProfileProvider);
       state = const AsyncData(null);
     } catch (e, st) {
-      AppLogger.error('linkEmailAccount failed', e, st);
+      AppLogger.error('completeEmailAccountLink failed', e, st);
       state = AsyncError(e, st);
       rethrow;
     } finally {
@@ -64,16 +136,25 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> linkGoogleAccount() async {
-    if (_isProcessing) return;
+  Future<GoogleAccountLinkStatus> beginGoogleAccountLink() async {
+    if (_isProcessing) return GoogleAccountLinkStatus.browserOpened;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      await ref.read(authRepositoryProvider).linkGoogleAccount();
-      ref.invalidate(currentProfileProvider);
+      final session = ref.read(currentSessionProvider);
+      if (session == null) {
+        throw const AppException('errorNotLoggedIn', code: 'AUTH_REQUIRED');
+      }
+      final result = await ref
+          .read(authRepositoryProvider)
+          .beginGoogleAccountLink();
+      await ref
+          .read(pendingGoogleAccountLinkProvider.notifier)
+          .save(session.user.id);
       state = const AsyncData(null);
+      return result;
     } catch (e, st) {
-      AppLogger.error('linkGoogleAccount failed', e, st);
+      AppLogger.error('beginGoogleAccountLink failed', e, st);
       state = AsyncError(e, st);
       rethrow;
     } finally {
@@ -81,16 +162,42 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> linkAppleAccount() async {
+  Future<void> completePendingGoogleAccountLink() async {
     if (_isProcessing) return;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      await ref.read(authRepositoryProvider).linkAppleAccount();
+      final pendingLink = ref.read(pendingGoogleAccountLinkProvider);
+      final session = ref.read(currentSessionProvider);
+      final hasGoogleIdentity =
+          session?.user.identities?.any(
+            (identity) => identity.provider == 'google',
+          ) ??
+          false;
+      if (pendingLink == null ||
+          session == null ||
+          !pendingLink.matches(
+            userId: session.user.id,
+            hasGoogleIdentity: hasGoogleIdentity,
+          )) {
+        throw const AppException(
+          'Google identity linking has not completed',
+          code: 'AUTH_LINK_GOOGLE_NOT_COMPLETED',
+        );
+      }
+
+      await ref.read(authRepositoryProvider).completeGoogleAccountLink();
+      await ref.read(pendingGoogleAccountLinkProvider.notifier).clear();
       ref.invalidate(currentProfileProvider);
+      ref
+          .read(accountLinkNoticeProvider.notifier)
+          .show(AccountLinkNotice.googleSuccess);
       state = const AsyncData(null);
     } catch (e, st) {
-      AppLogger.error('linkAppleAccount failed', e, st);
+      AppLogger.error('completePendingGoogleAccountLink failed', e, st);
+      ref
+          .read(accountLinkNoticeProvider.notifier)
+          .show(AccountLinkNotice.googleFailure);
       state = AsyncError(e, st);
       rethrow;
     } finally {
@@ -98,16 +205,68 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> linkFacebookAccount() async {
+  Future<FacebookAccountLinkStatus> beginFacebookAccountLink() async {
+    if (_isProcessing) return FacebookAccountLinkStatus.browserOpened;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      final session = ref.read(currentSessionProvider);
+      if (session == null) {
+        throw const AppException('errorNotLoggedIn', code: 'AUTH_REQUIRED');
+      }
+      final result = await ref
+          .read(authRepositoryProvider)
+          .beginFacebookAccountLink();
+      await ref
+          .read(pendingFacebookAccountLinkProvider.notifier)
+          .save(session.user.id);
+      state = const AsyncData(null);
+      return result;
+    } catch (e, st) {
+      AppLogger.error('beginFacebookAccountLink failed', e, st);
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> completePendingFacebookAccountLink() async {
     if (_isProcessing) return;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      await ref.read(authRepositoryProvider).linkFacebookAccount();
+      final pendingLink = ref.read(pendingFacebookAccountLinkProvider);
+      final session = ref.read(currentSessionProvider);
+      final hasFacebookIdentity =
+          session?.user.identities?.any(
+            (identity) => identity.provider == 'facebook',
+          ) ??
+          false;
+      if (pendingLink == null ||
+          session == null ||
+          !pendingLink.matches(
+            userId: session.user.id,
+            hasFacebookIdentity: hasFacebookIdentity,
+          )) {
+        throw const AppException(
+          'Facebook identity linking has not completed',
+          code: 'AUTH_LINK_FACEBOOK_NOT_COMPLETED',
+        );
+      }
+
+      await ref.read(authRepositoryProvider).completeFacebookAccountLink();
+      await ref.read(pendingFacebookAccountLinkProvider.notifier).clear();
       ref.invalidate(currentProfileProvider);
+      ref
+          .read(accountLinkNoticeProvider.notifier)
+          .show(AccountLinkNotice.facebookSuccess);
       state = const AsyncData(null);
     } catch (e, st) {
-      AppLogger.error('linkFacebookAccount failed', e, st);
+      AppLogger.error('completePendingFacebookAccountLink failed', e, st);
+      ref
+          .read(accountLinkNoticeProvider.notifier)
+          .show(AccountLinkNotice.facebookFailure);
       state = AsyncError(e, st);
       rethrow;
     } finally {
@@ -120,27 +279,8 @@ class AuthController extends AsyncNotifier<void> {
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      // Clear any existing verifier to avoid bad_code_verifier if a previous flow was stale
-      await ref.read(authRepositoryProvider).signOut();
-
       final session = await ref.read(authRepositoryProvider).signInWithGoogle();
 
-      _applySignedInSession(session);
-      state = const AsyncData(null);
-    } catch (e, st) {
-      state = AsyncError(e, st);
-      rethrow;
-    } finally {
-      _isProcessing = false;
-    }
-  }
-
-  Future<void> signInWithApple() async {
-    if (_isProcessing) return;
-    _isProcessing = true;
-    state = const AsyncLoading();
-    try {
-      final session = await ref.read(authRepositoryProvider).signInWithApple();
       _applySignedInSession(session);
       state = const AsyncData(null);
     } catch (e, st) {
@@ -172,6 +312,7 @@ class AuthController extends AsyncNotifier<void> {
   Future<void> signInWithEmail({
     required String email,
     required String password,
+    String? captchaToken,
   }) async {
     if (_isProcessing) return;
     _isProcessing = true;
@@ -179,7 +320,11 @@ class AuthController extends AsyncNotifier<void> {
     try {
       final session = await ref
           .read(authRepositoryProvider)
-          .signInWithEmail(email: email, password: password);
+          .signInWithEmail(
+            email: email,
+            password: password,
+            captchaToken: captchaToken,
+          );
 
       _applySignedInSession(session);
       state = const AsyncData(null);
@@ -191,9 +336,36 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> signUpWithEmail({
+  Future<bool> signUpWithEmail({
     required String email,
     required String password,
+    String? captchaToken,
+  }) async {
+    if (_isProcessing) return true;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      final session = await ref
+          .read(authRepositoryProvider)
+          .signUpWithEmail(
+            email: email,
+            password: password,
+            captchaToken: captchaToken,
+          );
+      _applySignedInSession(session);
+      state = const AsyncData(null);
+      return session == null;
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> requestPasswordReset(
+    String email, {
+    String? captchaToken,
   }) async {
     if (_isProcessing) return;
     _isProcessing = true;
@@ -201,7 +373,7 @@ class AuthController extends AsyncNotifier<void> {
     try {
       await ref
           .read(authRepositoryProvider)
-          .signUpWithEmail(email: email, password: password);
+          .requestPasswordReset(email, captchaToken: captchaToken);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -211,12 +383,27 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> requestPasswordReset(String email) async {
+  Future<void> completePasswordRecovery(String password) async {
     if (_isProcessing) return;
     _isProcessing = true;
     state = const AsyncLoading();
     try {
-      await ref.read(authRepositoryProvider).requestPasswordReset(email);
+      await ref.read(authRepositoryProvider).updatePassword(password);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    } finally {
+      _isProcessing = false;
+    }
+  }
+
+  Future<void> cancelPasswordRecovery() async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    state = const AsyncLoading();
+    try {
+      await ref.read(authRepositoryProvider).cancelPasswordRecovery();
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);

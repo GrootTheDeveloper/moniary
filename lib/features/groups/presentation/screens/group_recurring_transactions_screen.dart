@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/widgets/moniary_design.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_roadmap.dart';
 
@@ -40,17 +42,54 @@ class GroupRecurringTransactionsScreen extends ConsumerWidget {
                     ref.invalidate(groupRecurringTransactionsProvider(groupId)),
                 child: ListView.separated(
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-                  itemCount: items.length,
+                  itemCount: items.length + 1,
                   separatorBuilder: (_, _) => const SizedBox(height: 10),
                   itemBuilder: (context, index) => _RecurringCard(
-                    item: items[index],
-                    onEdit: () => _showForm(context, ref, item: items[index]),
-                    onDelete: () => _delete(context, ref, items[index]),
+                    item: index == 0 ? null : items[index - 1],
+                    onEdit: index == 0
+                        ? null
+                        : () => _showForm(context, ref, item: items[index - 1]),
+                    onDelete: index == 0
+                        ? null
+                        : () => _delete(context, ref, items[index - 1]),
+                    onToggle: index == 0
+                        ? null
+                        : (value) =>
+                              _toggle(context, ref, items[index - 1], value),
                   ),
                 ),
               ),
       ),
     );
+  }
+
+  Future<void> _toggle(
+    BuildContext context,
+    WidgetRef ref,
+    GroupRecurringTransaction item,
+    bool isActive,
+  ) async {
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .updateRecurringTransaction(
+            groupId: groupId,
+            id: item.id,
+            title: item.title,
+            amount: item.amount,
+            frequency: item.frequency,
+            nextRunAt: item.nextRunAt,
+            notifyDaysBefore: item.notifyDaysBefore,
+            isActive: isActive,
+            autoPost: item.autoPost,
+          );
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
+        );
+      }
+    }
   }
 
   Future<void> _showForm(
@@ -139,38 +178,123 @@ class _RecurringCard extends StatelessWidget {
     required this.item,
     required this.onEdit,
     required this.onDelete,
+    required this.onToggle,
   });
-  final GroupRecurringTransaction item;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final GroupRecurringTransaction? item;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+  final ValueChanged<bool>? onToggle;
 
   @override
-  Widget build(BuildContext context) => Card(
-    child: ListTile(
-      contentPadding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-      leading: CircleAvatar(
-        backgroundColor: context.moniaryColors.primary.withValues(alpha: .12),
-        child: Icon(Icons.autorenew, color: context.moniaryColors.primary),
+  Widget build(BuildContext context) {
+    if (item == null) {
+      return MoniaryEditorialCard(
+        padding: const EdgeInsets.fromLTRB(16, 15, 16, 15),
+        backgroundColor: context.moniaryColors.primary.withValues(alpha: 0.08),
+        borderColor: context.moniaryColors.primary.withValues(alpha: 0.24),
+        child: Row(
+          children: [
+            Icon(
+              Icons.autorenew_outlined,
+              color: context.moniaryColors.primary,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                context.l10n.groupRecurringSubtitle,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Consumer(
+      builder: (context, ref, _) => MoniaryEditorialCard(
+        padding: const EdgeInsets.fromLTRB(14, 14, 8, 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: context.moniaryColors.primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                Icons.autorenew_outlined,
+                color: context.moniaryColors.primary,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item!.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    ref.formatAmount(item!.amount),
+                    style: context.moniaryTypography.displaySmall.copyWith(
+                      fontSize: 19,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    '${item!.frequency} · ${context.l10n.groupRecurringNextRunLabel}: ${DateFormat('dd/MM/yyyy').format(item!.nextRunAt.toLocal())}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: context.moniaryColors.textDim,
+                    ),
+                  ),
+                  if (item!.autoPost) ...[
+                    const SizedBox(height: 7),
+                    Text(
+                      context.l10n.groupRecurringAutoPostLabel,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: context.moniaryColors.success,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            Column(
+              children: [
+                Switch(value: item!.isActive, onChanged: onToggle),
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'edit') onEdit?.call();
+                    if (value == 'delete') onDelete?.call();
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: Text(context.l10n.commonEdit),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Text(context.l10n.commonDelete),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-      title: Text(item.title),
-      subtitle: Text(
-        '${item.amount} • ${item.frequency} • ${DateFormat('dd/MM/yyyy').format(item.nextRunAt.toLocal())}',
-      ),
-      trailing: PopupMenuButton<String>(
-        onSelected: (value) {
-          if (value == 'edit') onEdit();
-          if (value == 'delete') onDelete();
-        },
-        itemBuilder: (context) => [
-          PopupMenuItem(value: 'edit', child: Text(context.l10n.commonEdit)),
-          PopupMenuItem(
-            value: 'delete',
-            child: Text(context.l10n.commonDelete),
-          ),
-        ],
-      ),
-    ),
-  );
+    );
+  }
 }
 
 class _RecurringFormValue {

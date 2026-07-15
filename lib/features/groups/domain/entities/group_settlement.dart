@@ -32,6 +32,9 @@ class GroupSettlementSuggestion {
     this.receiverConfirmedAt,
     this.fromDisplayName,
     this.toDisplayName,
+    this.disputeReason,
+    this.disputedByUserId,
+    this.disputedAt,
   });
 
   final String id;
@@ -46,6 +49,9 @@ class GroupSettlementSuggestion {
   final DateTime updatedAt;
   final String? fromDisplayName;
   final String? toDisplayName;
+  final String? disputeReason;
+  final String? disputedByUserId;
+  final DateTime? disputedAt;
 }
 
 class GroupSettlementOverview {

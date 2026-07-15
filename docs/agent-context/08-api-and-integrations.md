@@ -1,7 +1,7 @@
 # API & Integrations
 
 **Confidence / Verification Status**: `VERIFIED AGAINST SOURCE`
-**Last source audit**: `2026-07-12`
+**Last source audit**: `2026-07-15`
 
 ## Supabase
 
@@ -32,7 +32,7 @@ use `get_my_group_invites`, `accept_direct_group_invite`, and
 
 ### Auth
 
-`AuthRepository` owns email/password, anonymous, Google/Facebook/Apple OAuth,
+`AuthRepository` owns email/password, anonymous, Google/Facebook OAuth,
 identity linking, sign-out, password reset, and `initialize_user`. Auth state
 feeds `currentSessionProvider` and router refresh.
 
@@ -54,17 +54,20 @@ than assuming public URLs.
 
 ### Edge Functions
 
-- `scheduled-reports`: builds scheduled financial emails and calls Resend when
-  `RESEND_API_KEY` is configured.
+- `scheduled-reports`: claims timezone-aware report periods with bounded
+  retries, aggregates totals in Postgres, and sends through a verified Resend
+  sender with a stable idempotency key.
 - `notification-dispatcher`: reads the notification outbox and sends
   privacy-safe FCM HTTP v1 messages to registered Android/iOS devices. It
-  honors global and Group/Community mute preferences and retries failures.
+  honors global and Group/Community mute preferences, uses leased outbox
+  claims, records per-device receipts, and dead-letters bounded failures.
 - `soft-delete-account`: starts the account-deletion grace flow.
-- `delete-account`: performs deletion.
-- `garbage-collect`: cleanup support.
+- `garbage-collect`: scheduler-only permanent cleanup after the 30-day grace
+  period. It transfers group ownership when needed, scrubs the retained shared
+  ledger profile, removes personal storage, and deletes the Auth user.
 
-Scheduling SQL enables `pg_cron`; production secrets, URLs, and schedules remain
-environment operations.
+Scheduling SQL enables `pg_cron`; project URLs and scheduler secrets are read
+from Supabase Vault and are never committed to migrations.
 
 ## OCR service
 

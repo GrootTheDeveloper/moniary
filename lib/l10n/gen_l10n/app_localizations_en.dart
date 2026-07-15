@@ -99,6 +99,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonConfirm => 'Confirm';
 
   @override
+  String get commonContinue => 'Continue';
+
+  @override
   String get errorGeneric => 'An error occurred. Please try again.';
 
   @override
@@ -119,6 +122,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorConnection => 'Connection error. Please try again.';
 
   @override
+  String get authErrorInvalidCredentials => 'Incorrect email or password.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'Please confirm your email before signing in.';
+
+  @override
+  String get authErrorProviderDisabled =>
+      'This sign-in provider is not configured yet.';
+
+  @override
+  String get authErrorOAuthCallback =>
+      'The sign-in callback expired or is invalid. Please start again.';
+
+  @override
+  String get authErrorRateLimited =>
+      'Too many attempts. Please try again later.';
+
+  @override
+  String get authErrorEmailAlreadyRegistered =>
+      'This email is already registered.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'This password is too weak. Try a longer one with numbers or symbols.';
+
+  @override
+  String get authErrorSignupDisabled =>
+      'New account registration is currently disabled.';
+
+  @override
+  String get authErrorBrowserLaunch =>
+      'Could not open the secure sign-in browser.';
+
+  @override
   String get loginTitle => 'Moniary';
 
   @override
@@ -136,9 +174,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginGoogle => 'Sign in with Google';
-
-  @override
-  String get loginApple => 'Sign in with Apple';
 
   @override
   String get loginFacebook => 'Sign in with Facebook';
@@ -178,8 +213,68 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginSocialDivider => 'Or sign in with';
 
   @override
+  String get loginGuestCta => 'Try it now — no account needed →';
+
+  @override
+  String get anonymousCaptchaTitle => 'Verify before continuing';
+
+  @override
+  String get anonymousCaptchaDescription =>
+      'Complete this security check to continue securely.';
+
+  @override
+  String get anonymousCaptchaVerified => 'Verification complete';
+
+  @override
+  String get anonymousCaptchaRequired =>
+      'Complete the security check before continuing.';
+
+  @override
+  String get anonymousCaptchaFailed => 'Verification failed. Please try again.';
+
+  @override
+  String get anonymousCaptchaExpired =>
+      'Verification expired. Please complete it again.';
+
+  @override
+  String get anonymousCaptchaTimeout =>
+      'The security check took too long to load. Check your connection and try again.';
+
+  @override
+  String get anonymousCaptchaConfigRequired =>
+      'Security verification is not configured for this build.';
+
+  @override
   String get loginPasswordResetSent =>
       'Password reset instructions were sent by email.';
+
+  @override
+  String get passwordResetTitle => 'Set a new password';
+
+  @override
+  String get passwordResetSubtitle =>
+      'Choose a new password for your Moniary account.';
+
+  @override
+  String get passwordResetSubmit => 'Update password';
+
+  @override
+  String get passwordResetSuccess =>
+      'Your password was updated. Sign in with the new password.';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm password';
+
+  @override
+  String get validationPasswordsMismatch => 'Passwords do not match';
+
+  @override
+  String get signupLegalConsentLabel =>
+      'I have read and agree to Moniary\'s Terms of Use and Privacy Policy.';
+
+  @override
+  String get signupLegalConsentRequired =>
+      'Agree to the Terms of Use and Privacy Policy to create an account.';
 
   @override
   String get splashLoading => 'Loading app...';
@@ -1198,7 +1293,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileUserDefault => 'Moniary User';
 
   @override
-  String get profileAnonymous => 'No email';
+  String get profileAnonymous => 'Guest account';
 
   @override
   String get profileMyData => 'My Data';
@@ -1758,6 +1853,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statsLargestTransactions => 'Largest transactions';
 
   @override
+  String get statsMonthlyTrend => 'Monthly trend';
+
+  @override
+  String get statsOpenMoneyStory => 'View Money Story';
+
+  @override
   String get starredTransactionsTitle => 'Starred Transactions';
 
   @override
@@ -1979,7 +2080,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileLinkAccountSubtitle =>
-      'Link Email or Google to sign in across devices.';
+      'Your account is currently a guest account. Link Email, Google, or Facebook to save your data and sign in across devices.';
 
   @override
   String get profileNewPassword => 'New password';
@@ -1988,10 +2089,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLinkEmail => 'Link Email';
 
   @override
-  String get profileLinkGoogle => 'Link Google';
+  String profileLinkEmailConfirmationSent(String email) {
+    return 'A confirmation link was sent to $email. Open it on this device to continue.';
+  }
 
   @override
-  String get profileLinkApple => 'Link Apple';
+  String profileEmailChangeConfirmationSent(String email) {
+    return 'Email change requested for $email. Follow the confirmation instructions sent by email; your profile will update after confirmation.';
+  }
+
+  @override
+  String get emailLinkCompleteTitle => 'Protect your email account';
+
+  @override
+  String emailLinkCompleteSubtitle(String email) {
+    return 'Email $email is confirmed. Create a password to finish upgrading your guest account.';
+  }
+
+  @override
+  String get emailLinkCompleteSubmit => 'Finish account upgrade';
+
+  @override
+  String get emailLinkMissing =>
+      'This email-linking request is no longer available.';
+
+  @override
+  String get emailLinkNotConfirmed =>
+      'Confirm the email link before creating a password.';
+
+  @override
+  String get emailLinkReturnProfile => 'Return to profile';
+
+  @override
+  String get profileLinkGoogle => 'Link Google';
 
   @override
   String get profileLinkFacebook => 'Link Facebook';
@@ -2004,21 +2134,35 @@ class AppLocalizationsEn extends AppLocalizations {
       'Complete Google linking in browser to return to Moniary.';
 
   @override
-  String get profileLinkAppleBrowser =>
-      'Complete Apple linking in browser to return to Moniary.';
-
-  @override
   String get profileLinkFacebookBrowser =>
       'Complete Facebook linking in browser to return to Moniary.';
 
   @override
-  String profileLinkGoogleError(String error) {
-    return 'Google linking error: $error';
-  }
+  String get profileLinkGoogleSuccess => 'Google account linked successfully.';
 
   @override
-  String profileLinkAppleError(String error) {
-    return 'Apple linking error: $error';
+  String get profileLinkGoogleCompletionError =>
+      'Google returned to Moniary, but account linking could not be completed. Tap Link now to retry.';
+
+  @override
+  String get profileLinkFacebookSuccess =>
+      'Facebook account linked successfully.';
+
+  @override
+  String get profileLinkFacebookCompletionError =>
+      'Facebook returned to Moniary, but account linking could not be completed. Tap Link now to retry.';
+
+  @override
+  String get authErrorGoogleLinkIncomplete =>
+      'Complete Google authorization before linking the account.';
+
+  @override
+  String get authErrorFacebookLinkIncomplete =>
+      'Complete Facebook authorization before linking the account.';
+
+  @override
+  String profileLinkGoogleError(String error) {
+    return 'Google linking error: $error';
   }
 
   @override
@@ -2038,6 +2182,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profileMascotSubtitle =>
       'Show the animated mascot on the bottom navigation bar.';
+
+  @override
+  String get profileAssistantChatTitle => 'Financial assistant';
+
+  @override
+  String get profileAssistantChatSubtitle =>
+      'Show the AI assistant chat button on the main screens.';
 
   @override
   String get profileLanguage => 'Language';
@@ -2082,7 +2233,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timezonePickerUseDevice => 'Use device timezone';
 
   @override
-  String get profileAnonymousBadge => 'Unlinked account';
+  String get profileAnonymousBadge => 'Guest account';
 
   @override
   String profileVerifiedBadge(String provider) {
@@ -2370,11 +2521,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importSelectFile => 'Select CSV File';
 
   @override
-  String get importCsvFormatTitle => 'CSV Format Required:';
+  String get importCsvFormatTitle => 'Supported CSV format:';
 
   @override
   String get importCsvFormatBody =>
-      '1. Transaction Date (YYYY-MM-DD)\n2. Amount (e.g. 100000)\n3. Type (Income / Expense)\n4. Category\n5. Note (Optional)\n\nNote: Skip header row if exists.';
+      'Import a CSV exported by Moniary, Excel, or Google Sheets. Required headers: Date, Amount, Type (Income/Expense), and Category. Note is optional. Headers may be reordered; dates support YYYY-MM-DD or DD/MM/YYYY.';
 
   @override
   String get importConfirm => 'Confirm Import';
@@ -2476,6 +2627,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importErrorCategoryNotFound => 'Category was not found';
 
   @override
+  String get importErrorInvalidHeader =>
+      'The CSV header is missing Date, Amount, Type, or Category.';
+
+  @override
+  String get importErrorNoTransactions =>
+      'No transaction rows were found in this CSV file.';
+
+  @override
   String get importRetry => 'Try again';
 
   @override
@@ -2532,6 +2691,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restoreAccountButton => 'Restore Account';
+
+  @override
+  String get accountRestoreExpired =>
+      'The 30-day restoration window has expired. Your account can no longer be restored.';
 
   @override
   String get validationEmailRequired => 'Email is required';
@@ -2913,15 +3076,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get thirdPartyServicesSubtitle =>
-      'See how the app uses Supabase, Google Gemini, Flutter packages, and device storage.';
+      'See how the app uses Supabase, Google, Meta, Cloudflare, Google Gemini, Flutter packages, and device storage.';
 
   @override
   String get thirdPartyHeroBody =>
-      'This notice helps users understand which services the app relies on for sign-in, storage, and data operations.';
+      'This notice helps users understand which services the app relies on for sign-in, storage, data operations, and optional assistant features.';
 
   @override
   String get thirdPartySupabaseDescription =>
       'Used for sign-in, database, transaction image storage, account deletion, and the AI assistant edge function.';
+
+  @override
+  String get thirdPartyGoogleTitle => 'Google';
+
+  @override
+  String get thirdPartyGoogleDescription =>
+      'Used only when you choose Google sign-in. Google may provide your account ID, email, name, and avatar under the permissions you approve.';
+
+  @override
+  String get thirdPartyMetaTitle => 'Facebook (Meta)';
+
+  @override
+  String get thirdPartyMetaDescription =>
+      'Used only when you choose Facebook sign-in. Meta may provide your account ID, email, name, and avatar under the permissions you approve.';
+
+  @override
+  String get thirdPartyCloudflareTitle => 'Cloudflare Turnstile';
+
+  @override
+  String get thirdPartyCloudflareDescription =>
+      'Used to prevent automated abuse of guest sign-in by processing the security signals needed to complete a CAPTCHA challenge.';
 
   @override
   String get thirdPartyGeminiDescription =>
@@ -3376,7 +3560,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dataSafetyPersonalInfoStatus =>
-      'Yes, when logging in with email or Google';
+      'Yes, when logging in with email, Google, or Facebook (Meta)';
 
   @override
   String get dataSafetyPersonalInfoDesc =>
@@ -3579,6 +3763,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'When the AI assistant is enabled, selected financial context may be sent through Supabase Edge Functions to Google Gemini to generate replies. Moniary does not automatically read location, contacts, SMS, personal email, or bank data.';
 
   @override
+  String get privacyPolicyShareItem4 =>
+      'When you choose Google or Facebook (Meta) sign-in, that provider and Supabase process authentication data. Cloudflare Turnstile processes security signals for protected guest sign-in.';
+
+  @override
   String get privacyPolicyDeleteTitle => 'Data deletion';
 
   @override
@@ -3598,7 +3786,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySafetyItem1 =>
-      'Personal info: collected only when users log in with email or Google.';
+      'Personal info: processed when users log in with email, Google, or Facebook (Meta).';
 
   @override
   String get privacyPolicySafetyItem2 =>
@@ -3859,12 +4047,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupSettlementConfirmAll => 'Confirm settled';
 
   @override
+  String get groupSettlementConfirmMyActions => 'Confirm my actions';
+
+  @override
+  String get groupSettlementMyToPay => 'I need to pay';
+
+  @override
+  String get groupSettlementMyToReceive => 'I need to receive';
+
+  @override
+  String get groupSettlementGroupOpenItems => 'Open settlements';
+
+  @override
+  String get groupSettlementDisputedSection => 'Disputed';
+
+  @override
+  String groupSettlementDisputeReason(String reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String get groupSettlementFlowTitle => 'How to complete a settlement';
+
+  @override
+  String get groupSettlementFlowSummary =>
+      'Payer marks it sent → receiver confirms receipt';
+
+  @override
+  String get groupSettlementPayerActionHint =>
+      'After sending the exact amount, use the button below to notify the receiver.';
+
+  @override
+  String get groupSettlementReceiverActionHint =>
+      'Confirm only after checking that the money has actually arrived.';
+
+  @override
+  String get groupSettlementMarkedPaid => 'Your payment was marked as sent';
+
+  @override
+  String get groupSettlementReceivedConfirmed => 'Receipt confirmed';
+
+  @override
   String get groupSettlementWaitingForPayers =>
       'Waiting for payers to mark their payments first.';
 
   @override
   String groupSettlementOptimizedSubtitle(String groupName, int count) {
     return '$groupName · Optimized $count transactions';
+  }
+
+  @override
+  String groupSettlementRemaining(String amount) {
+    return 'Remaining $amount';
+  }
+
+  @override
+  String groupSettlementProgress(int completed, int total) {
+    return '$completed/$total settlements completed';
   }
 
   @override
@@ -3875,6 +4114,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupTransactionsTitle => 'Group transactions';
+
+  @override
+  String get groupTransactionsTab => 'Transactions';
+
+  @override
+  String get groupSettlementsTab => 'Settlements';
+
+  @override
+  String get groupCommunityTab => 'Community';
 
   @override
   String get groupDebtAreaTitle => 'Who owes whom';
@@ -4165,6 +4413,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupTransactionPendingStatus => 'Waiting for member amounts';
 
   @override
+  String get groupTransactionPendingShort => 'Needs input';
+
+  @override
   String get groupTransactionMismatchStatus => 'Amounts do not match';
 
   @override
@@ -4179,6 +4430,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupTransactionFilterAll => 'All';
+
+  @override
+  String get groupTransactionViewAll => 'View all transactions';
+
+  @override
+  String get groupTransactionRecent => 'Recent transactions';
+
+  @override
+  String get groupTransactionExplorerSubtitle =>
+      'Search, filter, and browse transactions page by page.';
+
+  @override
+  String groupTransactionMonth(Object month) {
+    return '$month';
+  }
+
+  @override
+  String groupTransactionTrendValue(Object amount, Object count) {
+    return '$amount · $count transactions';
+  }
+
+  @override
+  String get groupTransactionNoChange => 'No change';
 
   @override
   String get groupTransactionFilterNoResults =>
@@ -4202,6 +4476,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupActivityCenterTitle => 'Group activity';
 
   @override
+  String get groupNotificationsTitle => 'Group notifications';
+
+  @override
+  String get groupShellHome => 'Home';
+
+  @override
+  String get groupShellCommunity => 'Community';
+
+  @override
+  String get groupShellNotifications => 'Notifications';
+
+  @override
+  String get groupManageTitle => 'Group management';
+
+  @override
+  String get groupManageSubtitle =>
+      'Manage members, finances, and group activity.';
+
+  @override
+  String get groupManageAccessSection => 'Access and safety';
+
+  @override
   String get groupActivityTabTimeline => 'Activity';
 
   @override
@@ -4217,10 +4513,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupPhotoAlbumTitle => 'Photo album';
 
   @override
+  String get groupPhotoAlbumAll => 'All';
+
+  @override
+  String get groupPhotoAlbumReceipts => 'Receipts';
+
+  @override
+  String get groupPhotoAlbumMemories => 'Memories';
+
+  @override
+  String get groupPhotoAlbumChoose => 'Choose photos';
+
+  @override
+  String get groupPhotoAlbumAdd => 'Add photo';
+
+  @override
   String get groupPhotoAlbumEmpty => 'No transaction photos yet';
 
   @override
   String get groupPhotoAlbumLoadError => 'Could not load the photo album';
+
+  @override
+  String get groupPhotoAlbumAddHint =>
+      'Choose a memory or receipt photo to share with the group.';
+
+  @override
+  String get groupPhotoAlbumUploadError => 'Unable to add photos to the album';
+
+  @override
+  String get groupPhotoAlbumUploadSuccess => 'Photos added to the group album';
+
+  @override
+  String get groupPhotoAlbumPreview => 'View photo';
 
   @override
   String get groupTransactionFallback => 'Group transaction';
@@ -4449,6 +4773,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupRecurringTitle => 'Recurring transactions';
 
   @override
+  String get groupRecurringSubtitle =>
+      'Automatically create a transaction on schedule.';
+
+  @override
+  String get groupRecurringNextRunLabel => 'Next run';
+
+  @override
+  String get groupRecurringAutoPostLabel => 'Auto-post';
+
+  @override
   String get groupRecurringAdd => 'Add recurring';
 
   @override
@@ -4583,6 +4917,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupSummaryTrendTitle => 'Six-month spending trend';
 
   @override
+  String get groupSummaryTrendSubtitle =>
+      'Each bar is the total spent in a month. Tap a bar for details.';
+
+  @override
+  String get groupSummaryTrendTableTitle => 'Monthly details';
+
+  @override
+  String get groupSummaryCategorySubtitle =>
+      'Share of the total spent this month';
+
+  @override
+  String groupSummaryCategoryShare(Object percent) {
+    return '$percent%';
+  }
+
+  @override
   String get groupSettlementBadgeTitle => 'All settled';
 
   @override
@@ -4670,6 +5020,254 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupActivityTabCommunityNotifications => 'Community';
 
   @override
+  String get groupCommunityComposerHint => 'Share an update with the group...';
+
+  @override
+  String get groupCommunityCreateActivity => 'Create activity';
+
+  @override
+  String get groupCommunityCreateActivityHelp =>
+      'Choose what you want to create for the group.';
+
+  @override
+  String get groupCommunityWriteUpdate => 'Share an update';
+
+  @override
+  String get groupCommunityWriteUpdateHelp =>
+      'Share text or photos with the group members.';
+
+  @override
+  String get groupCommunityCreatePoll => 'Create a poll';
+
+  @override
+  String get groupCommunityCreatePollHelp =>
+      'Ask a question so the group can choose together.';
+
+  @override
+  String get groupCommunityCreateChallenge => 'Create savings challenge';
+
+  @override
+  String get groupCommunityCreateChallengeHelp =>
+      'Set a shared money goal for members to contribute to.';
+
+  @override
+  String get groupCommunityFeedTitle => 'Group updates';
+
+  @override
+  String get groupCommunityAlbumAction => 'Photo album';
+
+  @override
+  String get groupCommunityParticipationAction => 'Polls & challenges';
+
+  @override
+  String get groupCommunityMilestone => 'Group milestone';
+
+  @override
+  String get groupCommunityAllTab => 'All';
+
+  @override
+  String get groupCommunityPollTab => 'Polls';
+
+  @override
+  String get groupCommunityActivityTab => 'Activity';
+
+  @override
+  String get groupCommunityPostText => 'Post';
+
+  @override
+  String get groupCommunityPostPhoto => 'Photos';
+
+  @override
+  String get groupCommunityPostPoll => 'Poll';
+
+  @override
+  String get groupCommunityPostChallenge => 'Challenge';
+
+  @override
+  String get groupCommunityPollTitle => 'Group poll';
+
+  @override
+  String groupCommunityStepOf(int step, int total) {
+    return 'Step $step/$total';
+  }
+
+  @override
+  String get groupCommunityBack => 'Back';
+
+  @override
+  String get groupCommunityNext => 'Next';
+
+  @override
+  String get groupCommunityPollPreview => 'Preview poll';
+
+  @override
+  String get groupCommunityChallengePreview => 'Preview challenge';
+
+  @override
+  String get groupCommunityPollInstruction =>
+      'Choose an option, then tap Record vote.';
+
+  @override
+  String get groupCommunityPollVoteAction => 'Record vote';
+
+  @override
+  String get groupCommunityPollVoteRecorded => 'Vote recorded';
+
+  @override
+  String get groupCommunityPollClosed => 'This poll is closed';
+
+  @override
+  String groupCommunityPollSelected(String option) {
+    return 'You chose: $option';
+  }
+
+  @override
+  String get groupCommunityPollCreated => 'Poll created for the group';
+
+  @override
+  String get groupCommunityPollCreateHelp =>
+      'Ask a question and add at least 2 options, one option per line.';
+
+  @override
+  String get groupCommunityPollValidation =>
+      'Enter a question and at least 2 options.';
+
+  @override
+  String get groupCommunityPollOptionsExample => 'Seafood\nCoffee\nOther';
+
+  @override
+  String groupCommunityPollOptionLabel(int number) {
+    return 'Option $number';
+  }
+
+  @override
+  String get groupCommunityPollAddOption => 'Add option';
+
+  @override
+  String get groupCommunityPollRemoveOption => 'Remove option';
+
+  @override
+  String get groupCommunityPollMaxOptions =>
+      'You have reached the maximum of 6 options.';
+
+  @override
+  String get groupCommunityChallengeTitle => 'Savings challenge';
+
+  @override
+  String get groupCommunityChallengeInstruction =>
+      'Contribute together to reach the group\'s shared goal.';
+
+  @override
+  String get groupCommunityChallengeCreateHelp =>
+      'Set a savings goal for members to contribute together.';
+
+  @override
+  String get groupCommunityChallengeDuration => 'Default duration: 30 days';
+
+  @override
+  String get groupCommunityChallengeMembers =>
+      'All group members can participate';
+
+  @override
+  String get groupCommunityChallengeValidation =>
+      'Enter a name and a target amount greater than 0.';
+
+  @override
+  String get groupCommunityChallengeCompleted => 'The group reached its goal';
+
+  @override
+  String get groupCommunityChallengeClosed => 'This challenge is closed';
+
+  @override
+  String get groupCommunityChallengeSaved => 'Contributed';
+
+  @override
+  String get groupCommunityChallengeRemaining => 'Remaining';
+
+  @override
+  String get groupCommunityChallengeEnds => 'Ends';
+
+  @override
+  String get groupCommunityChallengeCreated => 'Savings challenge created';
+
+  @override
+  String get groupCommunityContributionRecorded =>
+      'Your contribution was recorded';
+
+  @override
+  String groupCommunityContributionHelp(String amount) {
+    return 'Enter your contribution. Remaining: $amount';
+  }
+
+  @override
+  String get groupCommunityContributionAmount => 'Contribution amount';
+
+  @override
+  String get groupCommunityContributionInvalid =>
+      'Enter an amount greater than 0.';
+
+  @override
+  String get groupCommunityPublish => 'Share with group';
+
+  @override
+  String get groupCommunityPostEmpty =>
+      'Write something or choose photos before posting.';
+
+  @override
+  String groupCommunityPhotoCount(int count) {
+    return '$count photos selected';
+  }
+
+  @override
+  String get groupCommunityComment => 'Comment';
+
+  @override
+  String get groupCommunityCommentHint => 'Write a comment...';
+
+  @override
+  String get groupCommunityCommentEmpty => 'No comments yet';
+
+  @override
+  String get groupCommunityActivityTransaction => 'added a new expense';
+
+  @override
+  String get groupCommunityActivitySettlement =>
+      'completed their settlement 🎉';
+
+  @override
+  String get groupCommunityActivityMemberLeft => 'left the group';
+
+  @override
+  String get groupCommunityActivityPost => 'shared an update with the group';
+
+  @override
+  String get groupCommunityActivityGeneric => 'shared a new update';
+
+  @override
+  String get groupCommunityVoters => 'people voted';
+
+  @override
+  String get groupCommunityChallengeProgress => 'Saved';
+
+  @override
+  String get groupCommunityJoinChallenge => 'Join';
+
+  @override
+  String get groupCommunityContribute => 'Contribute';
+
+  @override
+  String get groupCommunityNoFeed => 'No updates yet. Be the first to share!';
+
+  @override
+  String get groupCommunityOpenNotifications => 'Open group notifications';
+
+  @override
+  String get groupCommunityOpenManagement => 'Open group management';
+
+  @override
+  String get groupCommunityPostCreated => 'Update shared with the community';
+
+  @override
   String get communityNotificationsEmptyState =>
       'No community notifications yet';
 
@@ -4705,6 +5303,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get groupTransactionCompletedEditWarning =>
       'This transaction has a confirmed settlement. Editing it recalculates group balances. Continue?';
+
+  @override
+  String get groupTransactionSettlementLocked =>
+      'This transaction is part of the settlement history and cannot be edited or deleted. Create a new adjustment transaction if the amount needs correcting.';
 
   @override
   String get groupTransactionCreatorOnly =>
@@ -4828,9 +5430,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupStatsPendingCount => 'Pending';
-
-  @override
-  String get groupNotificationsTitle => 'Group notifications';
 
   @override
   String get groupNotificationsEmpty => 'No group notifications yet.';
@@ -5765,43 +6364,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginNeedAccount => 'Need an account? Sign up';
 
   @override
-  String get resetPasswordTitle => 'Set a new password';
-
-  @override
-  String get resetPasswordSubtitle => 'Enter a new password for your account.';
-
-  @override
-  String get resetPasswordConfirmLabel => 'Confirm new password';
-
-  @override
-  String get resetPasswordMismatch => 'Passwords do not match';
-
-  @override
-  String get resetPasswordSubmit => 'Reset password';
-
-  @override
-  String get resetPasswordSuccess => 'Your password has been updated.';
-
-  @override
-  String get authErrorInvalidCredentials => 'Incorrect email or password.';
-
-  @override
-  String get authErrorEmailNotConfirmed =>
-      'Please confirm your email before signing in.';
-
-  @override
-  String get authErrorEmailAlreadyRegistered =>
-      'This email is already registered.';
-
-  @override
-  String get authErrorWeakPassword =>
-      'This password is too weak. Try a longer one with numbers or symbols.';
-
-  @override
-  String get authErrorRateLimited =>
-      'Too many attempts. Please try again later.';
-
-  @override
   String get authErrorUserBanned => 'This account has been suspended.';
 
   @override
@@ -6097,6 +6659,118 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupParticipantsTitle => 'Participants in this expense';
 
   @override
+  String get groupParticipantsSelectHint => 'Choose members for this expense';
+
+  @override
+  String groupParticipantsSelectedCount(Object count, Object total) {
+    return '$count/$total members selected';
+  }
+
+  @override
+  String get groupParticipantsAllSelected => 'All members';
+
+  @override
+  String get groupParticipantsNoneSelected => 'No members selected';
+
+  @override
+  String get groupParticipantsSelectAll => 'Select all';
+
+  @override
+  String get groupParticipantsDeselectAll => 'Deselect all';
+
+  @override
+  String get groupParticipantsDone => 'Done';
+
+  @override
+  String get groupSplitEqualDescription =>
+      'Split the total evenly between the selected members.';
+
+  @override
+  String get groupSplitExactDescription =>
+      'Enter the exact share that each person owes.';
+
+  @override
+  String get groupSplitUnequalDescription =>
+      'Let each member enter the amount they used.';
+
+  @override
+  String get groupSplitHelp => 'How to choose';
+
+  @override
+  String get groupSplitGuideTitle => 'Choose a split method';
+
+  @override
+  String get groupSplitGuideIntro =>
+      'Choose the method that matches this expense. You can change it before posting the transaction.';
+
+  @override
+  String get groupSplitGuideEqualTitle => 'Equal split';
+
+  @override
+  String get groupSplitGuideEqualBody =>
+      'Use when everyone benefits equally. Example: split a meal bill evenly between four people.';
+
+  @override
+  String get groupSplitGuideExactTitle => 'Exact amounts';
+
+  @override
+  String get groupSplitGuideExactBody =>
+      'Use when each person owes a known amount. The shares you enter must add up to the receipt total.';
+
+  @override
+  String get groupSplitGuideUnequalTitle => 'Member-entered amounts';
+
+  @override
+  String get groupSplitGuideUnequalBody =>
+      'Use when each member should confirm what they used. The transaction stays pending until the required amounts are submitted.';
+
+  @override
+  String get groupSplitGuideClose => 'Got it';
+
+  @override
+  String get groupSettlementGroupOverview => 'Group overview';
+
+  @override
+  String get groupSettlementMyPart => 'My part';
+
+  @override
+  String get groupSettlementMyProgress => 'My progress';
+
+  @override
+  String get groupSettlementMarkPaid => 'I transferred the money';
+
+  @override
+  String get groupSettlementConfirmReceived => 'I received the money';
+
+  @override
+  String get groupSettlementWaitingReceiver =>
+      'You marked it sent. The receiver must check and confirm receipt.';
+
+  @override
+  String get groupSettlementWaitingPayer =>
+      'The payer has not marked it sent yet. Confirm after the money arrives.';
+
+  @override
+  String get groupSummaryBudgetTitle => 'Monthly budget';
+
+  @override
+  String groupSummaryBudgetSpent(Object limit, Object spent) {
+    return 'Spent $spent/$limit';
+  }
+
+  @override
+  String get groupSummaryBudgetWarning =>
+      'The group is close to its budget threshold.';
+
+  @override
+  String get groupSummaryBudgetExceeded =>
+      'The group is over its monthly budget.';
+
+  @override
+  String get groupSummaryBudgetNoLimit =>
+      'No budget has been set for this month.';
+
+  @override
   String get groupSettlementDisputeTitle => 'Report a settlement issue';
 
   @override
@@ -6107,7 +6781,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter a reason for the dispute.';
 
   @override
+  String get groupSettlementDisputeReasonTooLong =>
+      'The dispute reason must be 300 characters or fewer.';
+
+  @override
   String get groupSettlementDisputeAction => 'Dispute';
+
+  @override
+  String get groupSettlementResetDisputeTitle => 'Reopen settlement';
+
+  @override
+  String get groupSettlementResetDisputeMessage =>
+      'This disputed settlement will return to pending so the group can resolve it again.';
+
+  @override
+  String get groupSettlementResetDisputeAction => 'Reopen';
 
   @override
   String get groupTransferOwnershipAction => 'Transfer ownership';
@@ -6301,4 +6989,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pushNotificationCategorySubtitle =>
       'Notifications remain in the inbox for 30 days.';
+
+  @override
+  String get loginAnonymous => 'Continue as guest';
+
+  @override
+  String get onboardingMonthMock => 'May';
+
+  @override
+  String get profileAnonymousWarning =>
+      'You are using a guest account. Link Email or Google to keep your data when switching devices.';
+
+  @override
+  String get deleteGuestDataTitle => 'Delete guest account data';
+
+  @override
+  String get deleteGuestDataBody =>
+      'Guest account data is stored only on this device and will be deleted immediately. Language, currency, and first-run preferences will be kept.';
+
+  @override
+  String get deleteGuestDataUnderstand =>
+      'I understand that guest account data on this device will be deleted immediately.';
+
+  @override
+  String get deleteGuestDataAction => 'Delete guest data';
 }

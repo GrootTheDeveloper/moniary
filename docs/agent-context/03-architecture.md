@@ -11,7 +11,7 @@ Moniary is feature-first with lightweight Clean Architecture boundaries:
 2. **Application**: Riverpod notifiers/controllers orchestrate mutations and
    invalidate dependent queries.
 3. **Domain**: pure models, repository contracts, and calculation services.
-4. **Data**: repository implementations, Supabase/mock data sources, local file
+4. **Data**: repository implementations, Supabase data sources, local file
    storage, and external services.
 
 Some older/simple modules combine repository and data-source responsibilities in
@@ -24,28 +24,19 @@ architecture solely to make every feature structurally identical.
 flowchart TD
   UI[Screen / Widget] --> P[Riverpod provider or controller]
   P --> R[Repository contract or implementation]
-  R --> M{useMockDataModeProvider}
-  M -->|true| Mock[Mock / in-memory data source]
-  M -->|false| Data[Supabase / local file / external service]
+  R --> Data[Supabase / local file / external service]
   Data --> R
-  Mock --> R
   R --> P
   P --> State[AsyncValue / immutable state]
   State --> UI
 ```
 
-## Supabase mode vs guest/mock mode
+## Production-only data mode
 
-`useMockDataModeProvider` is the canonical runtime decision:
-
-- It is `true` when `AppConstants.hasSupabaseConfig` is false.
-- It is also `true` for an explicit guest session, even if Supabase is
-  configured.
-- New repositories must depend on this provider (or receive the resulting bool)
-  and preserve both execution paths.
-
-Mock state is primarily process-local and should not be described as durable
-offline storage.
+Runtime repositories use Supabase and must fail closed when required
+configuration is missing. There is no demo session or mock-data fallback.
+Anonymous users are real Supabase Auth users and access data through the same
+RLS-protected repositories as email and OAuth users.
 
 ## Query and mutation convention
 

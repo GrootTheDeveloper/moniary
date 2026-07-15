@@ -6,24 +6,15 @@ import '../../../../app/app_theme.dart';
 import '../../../../core/supabase/app_exception.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/widgets/moniary_design.dart';
 import '../../application/group_controller.dart';
-import 'debt_settlement_screen.dart';
-import 'group_detail_screen.dart';
-import 'group_activity_center_screen.dart';
-import 'group_audit_log_screen.dart';
-import 'group_budget_screen.dart';
-import 'group_notification_preferences_screen.dart';
-import 'group_photo_album_screen.dart';
-import 'group_participation_screen.dart';
-import 'group_public_profile_screen.dart';
-import 'group_recurring_transactions_screen.dart';
-import 'group_summary_screen.dart';
-import 'group_settings_screen.dart';
+import 'group_route_paths.dart';
 
 class GroupToolsScreen extends ConsumerWidget {
   const GroupToolsScreen({required this.groupId, super.key});
 
-  static const routePath = '/group-tools';
+  static const routePath = GroupRoutePaths.managementPattern;
+  static const legacyRoutePath = '/group-tools';
   final String groupId;
 
   @override
@@ -32,16 +23,45 @@ class GroupToolsScreen extends ConsumerWidget {
     final colors = context.moniaryColors;
     return Scaffold(
       backgroundColor: colors.backgroundSoft,
-      appBar: AppBar(title: Text(context.l10n.groupToolsTitle)),
+      appBar: AppBar(title: Text(context.l10n.groupManageTitle)),
       body: detailAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(child: Text(context.l10n.errorGeneric)),
         data: (detail) => ListView(
           padding: const EdgeInsets.fromLTRB(20, 18, 20, 32),
           children: [
-            Text(
-              context.l10n.groupToolsSubtitle,
-              style: Theme.of(context).textTheme.bodyMedium,
+            MoniaryEditorialCard(
+              padding: const EdgeInsets.fromLTRB(16, 16, 12, 14),
+              child: Row(
+                children: [
+                  Icon(Icons.tune_outlined, color: colors.primary, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          detail.group.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w800),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          context.l10n.groupManageSubtitle,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: context.l10n.groupTransactionsTab,
+                    onPressed: () => context.go(GroupRoutePaths.home(groupId)),
+                    icon: const Icon(Icons.receipt_long_outlined),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 22),
             _ToolsSection(
@@ -51,73 +71,26 @@ class GroupToolsScreen extends ConsumerWidget {
                   icon: Icons.account_balance_wallet_outlined,
                   title: context.l10n.groupBudgetTitle,
                   subtitle: context.l10n.groupToolsBudgetSubtitle,
-                  onTap: () =>
-                      context.push(GroupBudgetScreen.routePath, extra: groupId),
+                  onTap: () => context.push(GroupRoutePaths.budget(groupId)),
                 ),
                 _ToolTile(
                   icon: Icons.autorenew_outlined,
                   title: context.l10n.groupRecurringTitle,
                   subtitle: context.l10n.groupToolsRecurringSubtitle,
-                  onTap: () => context.push(
-                    GroupRecurringTransactionsScreen.routePath,
-                    extra: groupId,
-                  ),
-                ),
-                _ToolTile(
-                  icon: Icons.insights_outlined,
-                  title: context.l10n.groupSummaryTitle,
-                  subtitle: context.l10n.groupToolsSummarySubtitle,
-                  onTap: () => context.push(
-                    GroupSummaryScreen.routePath,
-                    extra: groupId,
-                  ),
+                  onTap: () => context.push(GroupRoutePaths.recurring(groupId)),
                 ),
               ],
             ),
             const SizedBox(height: 18),
             _ToolsSection(
-              title: context.l10n.groupToolsCommunitySection,
-              children: [
-                _ToolTile(
-                  icon: Icons.bolt_outlined,
-                  title: context.l10n.groupActivityCenterTitle,
-                  subtitle: context.l10n.groupToolsActivitySubtitle,
-                  onTap: () => context.push(
-                    GroupActivityCenterScreen.routePath,
-                    extra: groupId,
-                  ),
-                ),
-                _ToolTile(
-                  icon: Icons.photo_library_outlined,
-                  title: context.l10n.groupPhotoAlbumTitle,
-                  subtitle: context.l10n.groupToolsAlbumSubtitle,
-                  onTap: () => context.push(
-                    GroupPhotoAlbumScreen.routePath,
-                    extra: groupId,
-                  ),
-                ),
-                _ToolTile(
-                  icon: Icons.how_to_vote_outlined,
-                  title: context.l10n.groupParticipationTitle,
-                  subtitle: context.l10n.groupParticipationSubtitle,
-                  onTap: () => context.push(
-                    GroupParticipationScreen.routePath,
-                    extra: groupId,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            _ToolsSection(
-              title: context.l10n.groupToolsSettingsSection,
+              title: context.l10n.groupManageAccessSection,
               children: [
                 _ToolTile(
                   icon: Icons.notifications_none_outlined,
                   title: context.l10n.groupNotificationPreferencesTitle,
                   subtitle: context.l10n.groupToolsNotificationsSubtitle,
                   onTap: () => context.push(
-                    GroupNotificationPreferencesScreen.routePath,
-                    extra: groupId,
+                    GroupRoutePaths.notificationPreferences(groupId),
                   ),
                 ),
                 if (detail.canInvite)
@@ -125,30 +98,24 @@ class GroupToolsScreen extends ConsumerWidget {
                     icon: Icons.public_outlined,
                     title: context.l10n.groupPublicProfileSettingsTitle,
                     subtitle: context.l10n.groupToolsPublicProfileSubtitle,
-                    onTap: () => context.push(
-                      GroupPublicProfileScreen.routePath,
-                      extra: groupId,
-                    ),
+                    onTap: () =>
+                        context.push(GroupRoutePaths.publicProfile(groupId)),
                   ),
                 if (detail.canInvite)
                   _ToolTile(
                     icon: Icons.history_outlined,
                     title: context.l10n.groupAuditLogTitle,
                     subtitle: context.l10n.groupAuditLogSubtitle,
-                    onTap: () => context.push(
-                      GroupAuditLogScreen.routePath,
-                      extra: groupId,
-                    ),
+                    onTap: () =>
+                        context.push(GroupRoutePaths.auditLog(groupId)),
                   ),
                 if (detail.canInvite)
                   _ToolTile(
                     icon: Icons.tune_outlined,
                     title: context.l10n.groupSettingsTitle,
                     subtitle: context.l10n.groupSettingsSubtitle,
-                    onTap: () => context.push(
-                      GroupSettingsScreen.routePath,
-                      extra: groupId,
-                    ),
+                    onTap: () =>
+                        context.push(GroupRoutePaths.settings(groupId)),
                   ),
                 _ToolTile(
                   icon: Icons.logout_outlined,
@@ -214,12 +181,9 @@ class GroupToolsScreen extends ConsumerWidget {
                 onPressed: () {
                   Navigator.pop(dialogContext);
                   if (shouldOpenSettlements) {
-                    context.push(
-                      DebtSettlementScreen.routePath,
-                      extra: groupId,
-                    );
+                    context.push(GroupRoutePaths.settlements(groupId));
                   } else {
-                    context.push(GroupDetailScreen.routePath, extra: groupId);
+                    context.go(GroupRoutePaths.home(groupId));
                   }
                 },
                 child: Text(

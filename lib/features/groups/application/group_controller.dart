@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../data/repositories/group_repository_impl.dart';
 import '../domain/entities/group_community.dart';
+import '../domain/entities/group_community_feed.dart';
 import '../domain/entities/group_roadmap.dart';
 import '../domain/entities/group_settlement.dart';
 import '../domain/entities/group_transaction.dart';
@@ -30,14 +31,14 @@ final groupTransactionsProvider =
 final groupTransactionsPageProvider =
     FutureProvider.family<
       GroupTransactionPage,
-      ({String groupId, int offset, String query, String? status})
+      ({String groupId, int offset, int limit, String query, String? status})
     >((ref, key) {
       return ref
           .watch(groupRepositoryProvider)
           .fetchTransactionsPage(
             groupId: key.groupId,
             offset: key.offset,
-            limit: 40,
+            limit: key.limit,
             query: key.query,
             status: key.status,
           );
@@ -115,6 +116,73 @@ final groupStatsProvider = FutureProvider.family<GroupStatsOverview, String>((
 final groupActivitiesProvider =
     FutureProvider.family<List<GroupActivity>, String>((ref, groupId) {
       return ref.watch(groupRepositoryProvider).fetchActivities(groupId);
+    });
+
+final groupCommunityPostsProvider =
+    FutureProvider.family<List<GroupCommunityPost>, String>((ref, groupId) {
+      return ref
+          .watch(groupRepositoryProvider)
+          .fetchCommunityPosts(groupId: groupId);
+    });
+
+final groupCommunityFeedProvider =
+    FutureProvider.family<GroupCommunityFeed, String>((ref, groupId) async {
+      final repository = ref.watch(groupRepositoryProvider);
+      final posts = await repository.fetchCommunityPosts(groupId: groupId);
+      final polls = await repository.fetchPolls(groupId);
+      final challenges = await repository.fetchSavingsChallenges(groupId);
+      final activities = await repository.fetchActivities(groupId);
+      final transactions = await repository.fetchTransactions(groupId);
+      final items = <GroupCommunityFeedItem>[
+        ...posts.map(
+          (post) => GroupCommunityFeedItem(
+            id: 'post-${post.id}',
+            groupId: groupId,
+            type: GroupCommunityFeedItemType.post,
+            createdAt: post.createdAt,
+            post: post,
+          ),
+        ),
+        ...polls.map(
+          (poll) => GroupCommunityFeedItem(
+            id: 'poll-${poll.id}',
+            groupId: groupId,
+            type: GroupCommunityFeedItemType.poll,
+            createdAt: poll.createdAt,
+            poll: poll,
+          ),
+        ),
+        ...challenges.map(
+          (challenge) => GroupCommunityFeedItem(
+            id: 'challenge-${challenge.id}',
+            groupId: groupId,
+            type: GroupCommunityFeedItemType.challenge,
+            createdAt: challenge.startDate,
+            challenge: challenge,
+          ),
+        ),
+        ...activities.map(
+          (activity) => GroupCommunityFeedItem(
+            id: 'activity-${activity.id}',
+            groupId: groupId,
+            type: GroupCommunityFeedItemType.activity,
+            createdAt: activity.createdAt,
+            activity: activity,
+          ),
+        ),
+        ...transactions
+            .take(20)
+            .map(
+              (transaction) => GroupCommunityFeedItem(
+                id: 'transaction-${transaction.id}',
+                groupId: groupId,
+                type: GroupCommunityFeedItemType.transaction,
+                createdAt: transaction.createdAt,
+                transaction: transaction,
+              ),
+            ),
+      ]..sort((left, right) => right.createdAt.compareTo(left.createdAt));
+      return GroupCommunityFeed(items: items.take(40).toList(growable: false));
     });
 
 final groupAuditLogsProvider =
@@ -698,6 +766,58 @@ class GroupActionController extends AsyncNotifier<void> {
           .addComment(transactionId: transactionId, content: content);
       ref.invalidate(groupTransactionDetailProvider(transactionId));
       ref.invalidate(groupActivitiesProvider);
+    });
+  }
+
+  Future<String> createCommunityPost({
+    required String groupId,
+    required String type,
+    String? content,
+    List<GroupCommunityMediaDraft> media = const [],
+  }) {
+    return _run(() async {
+      final id = await ref
+          .read(groupRepositoryProvider)
+          .createCommunityPost(
+            groupId: groupId,
+            type: type,
+            content: content,
+            media: media,
+          );
+      ref.invalidate(groupCommunityPostsProvider(groupId));
+      ref.invalidate(groupCommunityFeedProvider(groupId));
+      ref.invalidate(groupActivitiesProvider(groupId));
+      return id;
+    });
+  }
+
+  Future<void> addCommunityPostComment({
+    required String groupId,
+    required String postId,
+    required String content,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .addCommunityPostComment(postId: postId, content: content);
+      ref.invalidate(groupCommunityPostsProvider(groupId));
+      ref.invalidate(groupCommunityFeedProvider(groupId));
+      ref.invalidate(groupActivitiesProvider(groupId));
+    });
+  }
+
+  Future<void> toggleCommunityPostReaction({
+    required String groupId,
+    required String postId,
+    required String emoji,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .toggleCommunityPostReaction(postId: postId, emoji: emoji);
+      ref.invalidate(groupCommunityPostsProvider(groupId));
+      ref.invalidate(groupCommunityFeedProvider(groupId));
+      ref.invalidate(groupActivitiesProvider(groupId));
     });
   }
 

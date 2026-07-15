@@ -12,6 +12,7 @@ import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../widgets/comment_list.dart';
 import 'add_group_transaction_screen.dart';
+import 'group_route_paths.dart';
 import 'member_amount_input_screen.dart';
 
 class GroupTransactionDetailScreen extends ConsumerStatefulWidget {
@@ -51,6 +52,7 @@ class _GroupTransactionDetailScreenState
         data: (detail) {
           final transaction = detail.transaction;
           final isCreator = transaction.createdBy == currentUserId;
+          final settlementLocked = transaction.hasSettlementLock;
           final ownShare = detail.shares.where(
             (share) => share.userId == currentUserId,
           );
@@ -126,7 +128,10 @@ class _GroupTransactionDetailScreenState
                 const SizedBox(height: 14),
                 FilledButton.icon(
                   onPressed: () => context.push(
-                    MemberAmountInputScreen.routePath,
+                    GroupRoutePaths.memberAmount(
+                      groupId: transaction.groupId,
+                      transactionId: transaction.id,
+                    ),
                     extra: MemberAmountInputArgs(
                       groupId: transaction.groupId,
                       transactionId: transaction.id,
@@ -187,11 +192,20 @@ class _GroupTransactionDetailScreenState
               }),
               if (isCreator) ...[
                 const SizedBox(height: 18),
+                if (settlementLocked) ...[
+                  Text(
+                    context.l10n.groupTransactionSettlementLocked,
+                    style: TextStyle(color: context.moniaryColors.textDim),
+                  ),
+                  const SizedBox(height: 8),
+                ],
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () => _openEdit(detail),
+                        onPressed: settlementLocked
+                            ? null
+                            : () => _openEdit(detail),
                         icon: const Icon(Icons.edit_outlined),
                         label: Text(context.l10n.commonEdit),
                       ),
@@ -199,7 +213,9 @@ class _GroupTransactionDetailScreenState
                     const SizedBox(width: 10),
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () => _delete(detail),
+                        onPressed: settlementLocked
+                            ? null
+                            : () => _delete(detail),
                         icon: const Icon(Icons.delete_outline),
                         label: Text(context.l10n.commonDelete),
                       ),

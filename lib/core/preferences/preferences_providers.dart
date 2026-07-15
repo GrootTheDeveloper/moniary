@@ -25,6 +25,11 @@ final mascotEnabledProvider = NotifierProvider<MascotEnabledNotifier, bool>(
   MascotEnabledNotifier.new,
 );
 
+final assistantChatEnabledProvider =
+    NotifierProvider<AssistantChatEnabledNotifier, bool>(
+      AssistantChatEnabledNotifier.new,
+    );
+
 final firstDayOfWeekProvider = NotifierProvider<FirstDayOfWeekNotifier, int>(
   FirstDayOfWeekNotifier.new,
 );
@@ -78,6 +83,20 @@ class PreferredLocaleNotifier extends Notifier<String> {
 
 class MascotEnabledNotifier extends Notifier<bool> {
   static const _key = 'mascot_enabled';
+
+  @override
+  bool build() {
+    return ref.read(sharedPreferencesProvider).getBool(_key) ?? true;
+  }
+
+  Future<void> setEnabled(bool value) async {
+    state = value;
+    await ref.read(sharedPreferencesProvider).setBool(_key, value);
+  }
+}
+
+class AssistantChatEnabledNotifier extends Notifier<bool> {
+  static const _key = 'assistant_chat_enabled';
 
   @override
   bool build() {

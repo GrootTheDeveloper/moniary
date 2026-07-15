@@ -1,3 +1,9 @@
+-- Reconcile the two historical migrations that independently used version
+-- 20260714000600 on separate branches. Every statement is idempotent so this
+-- safely repairs either production history and also runs once on a fresh DB.
+
+alter type public.transaction_source add value if not exists 'recurring';
+
 -- Keep operational Group notifications complete when financial state changes.
 
 create or replace function public.notify_group_settlement_change()

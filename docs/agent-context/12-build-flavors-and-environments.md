@@ -9,14 +9,17 @@
 
 | Define | Required | Default/behavior |
 |---|---|---|
-| `SUPABASE_URL` | Required for release | Empty enables shell/mock support in debug |
-| `SUPABASE_ANON_KEY` | Required for release | Must be present with URL |
+| `SUPABASE_URL` | Required | Missing configuration stops startup |
+| `SUPABASE_ANON_KEY` | Required | Must be present with URL |
 | `OCR_API_URL` | Optional at build time | `http://10.0.2.2:8000` |
 | `APP_VERSION` | Optional | `1.0.0+1` |
+| `ENABLE_GOOGLE_AUTH` | Optional | `true`; show Google when configured |
+| `ENABLE_FACEBOOK_AUTH` | Optional | `false`; hide Facebook until configured |
+| `TURNSTILE_SITE_KEY` | Required for protected auth | Public Cloudflare Turnstile widget key |
+| `TURNSTILE_BASE_URL` | Required for protected auth | HTTPS origin allowlisted by the Turnstile widget |
 
-`AppConstants.assertSupabaseConfig()` throws in release mode if either Supabase
-value is missing. In debug without credentials, bootstrap initializes a
-placeholder client so providers can exist while repositories use mock data.
+`AppConstants.assertSupabaseConfig()` throws in every build mode if either
+Supabase value is missing. There is no placeholder client or mock fallback.
 
 ## Native flavors
 
@@ -27,13 +30,12 @@ Supabase project/environment used for deployment.
 ## Common commands
 
 ```bash
-# Debug guest/mock-capable build
-flutter run
-
 # Debug against Supabase
 flutter run \
   --dart-define=SUPABASE_URL=... \
-  --dart-define=SUPABASE_ANON_KEY=...
+  --dart-define=SUPABASE_ANON_KEY=... \
+  --dart-define=TURNSTILE_SITE_KEY=... \
+  --dart-define=TURNSTILE_BASE_URL=https://auth.example.com/
 
 # Physical device or hosted OCR
 flutter run \

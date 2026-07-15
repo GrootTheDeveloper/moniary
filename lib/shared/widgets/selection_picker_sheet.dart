@@ -128,8 +128,8 @@ class _PickerOptionTile extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: context.moniaryColors.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),

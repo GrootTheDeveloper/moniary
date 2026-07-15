@@ -14,6 +14,7 @@ import '../../application/friend_controller.dart';
 import '../../domain/entities/friend_profile.dart';
 import 'add_friend_screen.dart';
 import 'friend_qr_screen.dart';
+import '../../../calendar/presentation/month/calendar_screen.dart';
 
 class FriendsScreen extends ConsumerStatefulWidget {
   const FriendsScreen({super.key});
@@ -80,9 +81,13 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 _FriendsTopBar(
-                  onBack: _canPop(context)
-                      ? () => Navigator.of(context).maybePop()
-                      : null,
+                  onBack: () {
+                    if (_canPop(context)) {
+                      Navigator.of(context).maybePop();
+                    } else {
+                      context.go(CalendarScreen.routePath);
+                    }
+                  },
                   onAdd: () => context.push(AddFriendScreen.routePath),
                   onQr: () => context.push(FriendQrScreen.routePath),
                   onRequests: () => _showFriendRequestsSheet(context),
@@ -428,49 +433,46 @@ class _FriendsTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 84,
-      child: Stack(
-        alignment: Alignment.center,
+      child: Row(
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: _IconSquareButton(
-              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-              onPressed: onBack,
-              icon: Icons.arrow_back_ios_new_rounded,
+          _IconSquareButton(
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            onPressed: onBack,
+            icon: Icons.arrow_back_ios_new_rounded,
+          ),
+          Expanded(
+            child: Center(
+              child: _TitleWithBadge(
+                title: context.l10n.friendsTitle,
+                badge: pendingRequestCount,
+              ),
             ),
           ),
-          _TitleWithBadge(
-            title: context.l10n.friendsTitle,
-            badge: pendingRequestCount,
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _IconSquareButton(
-                  tooltip: context.l10n.friendQrTitle,
-                  onPressed: onQr,
-                  icon: Icons.qr_code_scanner_outlined,
-                ),
-                const SizedBox(width: 8),
-                _IconSquareButton(
-                  tooltip: context.l10n.friendIncomingRequests,
-                  onPressed: onRequests,
-                  icon: pendingRequestCount > 0
-                      ? Icons.mark_email_unread_outlined
-                      : Icons.mark_email_read_outlined,
-                  badge: pendingRequestCount,
-                ),
-                const SizedBox(width: 8),
-                _IconSquareButton(
-                  tooltip: context.l10n.friendAdd,
-                  onPressed: onAdd,
-                  icon: Icons.person_add_alt_1_rounded,
-                  filled: true,
-                ),
-              ],
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _IconSquareButton(
+                tooltip: context.l10n.friendQrTitle,
+                onPressed: onQr,
+                icon: Icons.qr_code_scanner_outlined,
+              ),
+              const SizedBox(width: 8),
+              _IconSquareButton(
+                tooltip: context.l10n.friendIncomingRequests,
+                onPressed: onRequests,
+                icon: pendingRequestCount > 0
+                    ? Icons.mark_email_unread_outlined
+                    : Icons.mark_email_read_outlined,
+                badge: pendingRequestCount,
+              ),
+              const SizedBox(width: 8),
+              _IconSquareButton(
+                tooltip: context.l10n.friendAdd,
+                onPressed: onAdd,
+                icon: Icons.person_add_alt_1_rounded,
+                filled: true,
+              ),
+            ],
           ),
         ],
       ),
@@ -490,11 +492,15 @@ class _TitleWithBadge extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          title,
-          style: context.moniaryTypography.displaySmall.copyWith(
-            fontSize: 22,
-            color: colors.textPrimary,
+        Flexible(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.moniaryTypography.displaySmall.copyWith(
+              fontSize: 22,
+              color: colors.textPrimary,
+            ),
           ),
         ),
         if (badge > 0) ...[
@@ -955,7 +961,10 @@ class _RequestRow extends StatelessWidget {
     final colors = context.moniaryColors;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < 300;
+        // Scale the threshold with text size so large fonts fall back to the
+        // stacked layout instead of overflowing the horizontal row.
+        final compact =
+            constraints.maxWidth < MediaQuery.textScalerOf(context).scale(300);
         final identity = Row(
           children: [
             ClipOval(
@@ -1142,15 +1151,20 @@ class _EmptyFriendsState extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          // Wrap (not Row) so the buttons flow onto a second line instead of
+          // overflowing — a fixed-width Row here crashes with unbounded-width
+          // constraints at large text scales.
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 10,
+            runSpacing: 10,
             children: [
               FilledButton.icon(
                 onPressed: onAdd,
                 icon: const Icon(Icons.person_add_alt_1_rounded),
                 label: Text(context.l10n.friendAdd),
               ),
-              const SizedBox(width: 10),
               IconButton.outlined(
                 tooltip: context.l10n.friendShareInviteLink,
                 onPressed: onShare,

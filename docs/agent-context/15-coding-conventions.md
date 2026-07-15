@@ -11,12 +11,11 @@
 - Do not rewrite architecture or move broad directory trees without an explicit
   request.
 
-## Runtime modes
+## Runtime data
 
-- Use `useMockDataModeProvider` as the runtime selector. Checking only
-  `AppConstants.hasSupabaseConfig` misses explicit guest mode.
-- New stateful repositories must preserve both Supabase and mock behavior.
-- Mock mode must never read or mutate a real authenticated user's backend data.
+- Runtime repositories use Supabase; do not add demo/mock branches.
+- Missing required Supabase configuration must fail closed at startup.
+- Anonymous users are real Supabase users and remain subject to RLS.
 
 ## Localization
 

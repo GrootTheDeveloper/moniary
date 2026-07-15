@@ -4,7 +4,7 @@
 Fix dead buttons, Vietnamese diacritics thiếu dấu, hardcoded day label.
 
 ## Review Issues Handled
-- #8: 3 auth buttons (Google/Apple/Email) không có onTap — dead UI
+- #8: 3 auth buttons (Google/Facebook/Email) không có onTap — dead UI
 - #11: Multiple strings thiếu dấu tiếng Việt
 - #28: `'Hôm nay'` hardcoded cho mọi ngày trong day detail
 
@@ -30,7 +30,7 @@ CHỈ sửa files dưới đây. KHÔNG sửa file khác.
 ## Step-by-step Implementation
 
 1. `login_screen.dart`:
-   - Tìm 3 `_AuthButton` (Google, Apple, Email)
+   - Tìm 3 `_AuthButton` (Google, Facebook, Email)
    - Wrap mỗi cái trong `Opacity(opacity: 0.5, child: ...)`
    - Thêm `' (Sắp có)'` vào cuối label text
 
@@ -72,7 +72,7 @@ Thấp. Chỉ sửa text/UI, không ảnh hưởng logic.
 Bạn là Flutter engineer. Fix UI dead states và Vietnamese text trong Moniary:
 
 1. lib/features/auth/presentation/login_screen.dart:
-   - 3 _AuthButton (Google, Apple, Email) là Container không có onTap — dead UI
+   - 3 _AuthButton (Google, Facebook, Email) là Container không có onTap — dead UI
    - Wrap mỗi button trong Opacity(opacity: 0.5)
    - Thêm ' (Sắp có)' vào cuối label text
 

@@ -280,6 +280,9 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
       'INVALID_AMOUNT' => context.l10n.importErrorInvalidAmount,
       'INVALID_TYPE' => context.l10n.importErrorInvalidType,
       'CATEGORY_NOT_FOUND' => context.l10n.importErrorCategoryNotFound,
+      'IMPORT_INVALID_HEADER' => context.l10n.importErrorInvalidHeader,
+      'IMPORT_NO_TRANSACTIONS' => context.l10n.importErrorNoTransactions,
+      'IMPORT_FILE_EMPTY' => context.l10n.importErrorNoTransactions,
       'AUTH_REQUIRED' => context.l10n.errorNotLoggedIn,
       'IMPORT_HISTORY_READ_ERROR' ||
       'FILE_IO_ERROR' ||
@@ -418,7 +421,7 @@ class _WalletPickerCard extends StatelessWidget {
                     style: TextStyle(
                       color: wallet == null
                           ? AppTheme.textSubtle
-                          : Colors.white,
+                          : context.moniaryColors.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -561,8 +564,8 @@ class _WalletOptionTile extends StatelessWidget {
                     wallet.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: context.moniaryColors.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),

@@ -1,4 +1,5 @@
 import '../../domain/entities/group_community.dart';
+import '../../domain/entities/group_community_feed.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_roadmap.dart';
 import '../../domain/entities/group_settlement.dart';
@@ -87,6 +88,7 @@ class GroupModelMapper {
       updatedAt: _date(row['updated_at']),
       creatorName: creator?['full_name'] as String?,
       hasCompletedSettlement: row['has_completed_settlement'] as bool? ?? false,
+      hasSettlementLock: row['has_settlement_lock'] as bool? ?? false,
     );
   }
 
@@ -162,6 +164,9 @@ class GroupModelMapper {
       updatedAt: _date(row['updated_at']),
       fromDisplayName: fromProfile?['full_name'] as String?,
       toDisplayName: toProfile?['full_name'] as String?,
+      disputeReason: row['dispute_reason'] as String?,
+      disputedByUserId: row['disputed_by_user_id'] as String?,
+      disputedAt: _nullableDate(row['disputed_at']),
     );
   }
 
@@ -170,6 +175,82 @@ class GroupModelMapper {
       emoji: row['emoji'] as String,
       count: (row['reaction_count'] as num).toInt(),
       reactedByCurrentUser: row['reacted_by_current_user'] as bool? ?? false,
+    );
+  }
+
+  static GroupCommunityPost communityPost(
+    Map<String, dynamic> row, {
+    String? currentUserId,
+  }) {
+    final author = row['author'] as Map<String, dynamic>?;
+    final mediaRows = (row['media'] as List? ?? const [])
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .where((item) => item['storage_path'] != null)
+        .map(
+          (item) => GroupCommunityMedia(
+            id: item['id'] as String,
+            groupId: item['group_id'] as String,
+            postId: item['post_id'] as String,
+            createdBy: item['created_by'] as String,
+            kind: item['media_kind'] as String? ?? 'memory',
+            storagePath: item['storage_path'] as String?,
+            caption: item['caption'] as String?,
+            createdAt: _date(item['created_at']),
+          ),
+        )
+        .toList(growable: false);
+    final reactionRows = (row['reactions'] as List? ?? const [])
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item));
+    final byEmoji = <String, List<Map<String, dynamic>>>{};
+    for (final reaction in reactionRows) {
+      final emoji = reaction['emoji'] as String?;
+      if (emoji == null) continue;
+      byEmoji.putIfAbsent(emoji, () => []).add(reaction);
+    }
+    final reactions = byEmoji.entries
+        .map(
+          (entry) => GroupCommunityReactionSummary(
+            emoji: entry.key,
+            count: entry.value.length,
+            reactedByCurrentUser: entry.value.any(
+              (item) => item['user_id'] == currentUserId,
+            ),
+          ),
+        )
+        .toList(growable: false);
+    final comments = (row['comments'] as List? ?? const [])
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .map((item) {
+          final profile = item['profile'] as Map<String, dynamic>?;
+          return GroupCommunityComment(
+            id: item['id'] as String,
+            postId: item['post_id'] as String,
+            userId: item['user_id'] as String,
+            content: item['content'] as String,
+            createdAt: _date(item['created_at']),
+            displayName: profile?['full_name'] as String?,
+            avatarPath: profile?['avatar_url'] as String?,
+          );
+        })
+        .toList(growable: false);
+    return GroupCommunityPost(
+      id: row['id'] as String,
+      groupId: row['group_id'] as String,
+      authorUserId: row['author_user_id'] as String,
+      type: row['post_type'] as String? ?? 'text',
+      content: row['content'] as String?,
+      authorName: author?['full_name'] as String?,
+      authorAvatarPath: author?['avatar_url'] as String?,
+      media: mediaRows,
+      reactions: reactions,
+      comments: comments,
+      linkedTransactionId: row['linked_transaction_id'] as String?,
+      linkedPollId: row['linked_poll_id'] as String?,
+      linkedChallengeId: row['linked_challenge_id'] as String?,
+      createdAt: _date(row['created_at']),
     );
   }
 

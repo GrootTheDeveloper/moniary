@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../core/preferences/preferences_providers.dart';
+import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/timezone_utils.dart';
@@ -12,6 +13,13 @@ import '../../../shared/widgets/selection_picker_sheet.dart';
 import '../../../shared/widgets/supabase_image.dart';
 import '../../profile/presentation/timezone_picker_screen.dart';
 import '../../auth/application/auth_controller.dart';
+import '../../auth/application/pending_email_link_controller.dart';
+import '../../auth/application/pending_facebook_link_controller.dart';
+import '../../auth/application/pending_google_link_controller.dart';
+import '../../auth/domain/email_account_link.dart';
+import '../../auth/domain/facebook_account_link.dart';
+import '../../auth/domain/google_account_link.dart';
+import '../../auth/presentation/email_account_link_completion_screen.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../calendar/presentation/month/calendar_screen.dart';
 import '../../friends/application/friend_controller.dart';
@@ -51,14 +59,13 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLinkingLoading = false;
+  bool _accountLinkNoticeScheduled = false;
 
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
@@ -68,30 +75,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     refreshSheet();
   }
 
-  Future<bool> _linkEmailAccount(VoidCallback refreshSheet) async {
-    if (!_formKey.currentState!.validate()) return false;
+  Future<EmailAccountLinkStatus?> _linkEmailAccount(
+    VoidCallback refreshSheet,
+  ) async {
+    if (!_formKey.currentState!.validate()) return null;
 
     _setLinkingLoading(true, refreshSheet);
     final messenger = ScaffoldMessenger.of(context);
     final email = _emailController.text.trim();
-    final password = _passwordController.text;
 
     try {
-      await ref
+      final result = await ref
           .read(authControllerProvider.notifier)
-          .linkEmailAccount(email: email, password: password);
+          .beginEmailAccountLink(email: email);
 
-      if (mounted) {
+      if (mounted && result == EmailAccountLinkStatus.confirmationRequired) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text(context.l10n.profileLinkSuccess),
+            content: Text(context.l10n.profileLinkEmailConfirmationSent(email)),
             backgroundColor: AppTheme.success,
           ),
         );
       }
-
-      ref.invalidate(currentProfileProvider);
-      return true;
+      return result;
     } catch (e, st) {
       AppLogger.error('Failed to link email account from profile', e, st);
       if (mounted) {
@@ -102,19 +108,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
-      return false;
+      return null;
     } finally {
       _setLinkingLoading(false, refreshSheet);
     }
   }
 
-  Future<void> _linkGoogleAccount(VoidCallback refreshSheet) async {
+  Future<GoogleAccountLinkStatus?> _linkGoogleAccount(
+    VoidCallback refreshSheet,
+  ) async {
     _setLinkingLoading(true, refreshSheet);
     final messenger = ScaffoldMessenger.of(context);
 
     try {
-      await ref.read(authControllerProvider.notifier).linkGoogleAccount();
-      if (mounted) {
+      final result = await ref
+          .read(authControllerProvider.notifier)
+          .beginGoogleAccountLink();
+      if (mounted && result == GoogleAccountLinkStatus.browserOpened) {
         messenger.showSnackBar(
           SnackBar(
             content: Text(context.l10n.profileLinkGoogleBrowser),
@@ -122,6 +132,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
+      return result;
     } catch (e, st) {
       AppLogger.error('Failed to link Google account from profile', e, st);
       if (mounted) {
@@ -136,51 +147,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
+      return null;
     } finally {
       _setLinkingLoading(false, refreshSheet);
     }
   }
 
-  Future<void> _linkAppleAccount(VoidCallback refreshSheet) async {
+  Future<FacebookAccountLinkStatus?> _linkFacebookAccount(
+    VoidCallback refreshSheet,
+  ) async {
     _setLinkingLoading(true, refreshSheet);
     final messenger = ScaffoldMessenger.of(context);
 
     try {
-      await ref.read(authControllerProvider.notifier).linkAppleAccount();
-      if (mounted) {
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text(context.l10n.profileLinkAppleBrowser),
-            backgroundColor: AppTheme.success,
-          ),
-        );
-      }
-    } catch (e, st) {
-      AppLogger.error('Failed to link Apple account from profile', e, st);
-      if (mounted) {
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text(
-              context.l10n.profileLinkAppleError(
-                userFriendlyMessage(context, e),
-              ),
-            ),
-            backgroundColor: AppTheme.danger,
-          ),
-        );
-      }
-    } finally {
-      _setLinkingLoading(false, refreshSheet);
-    }
-  }
-
-  Future<void> _linkFacebookAccount(VoidCallback refreshSheet) async {
-    _setLinkingLoading(true, refreshSheet);
-    final messenger = ScaffoldMessenger.of(context);
-
-    try {
-      await ref.read(authControllerProvider.notifier).linkFacebookAccount();
-      if (mounted) {
+      final result = await ref
+          .read(authControllerProvider.notifier)
+          .beginFacebookAccountLink();
+      if (mounted && result == FacebookAccountLinkStatus.browserOpened) {
         messenger.showSnackBar(
           SnackBar(
             content: Text(context.l10n.profileLinkFacebookBrowser),
@@ -188,6 +171,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
+      return result;
     } catch (e, st) {
       AppLogger.error('Failed to link Facebook account from profile', e, st);
       if (mounted) {
@@ -202,12 +186,57 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         );
       }
+      return null;
     } finally {
       _setLinkingLoading(false, refreshSheet);
     }
   }
 
   void _showLinkAccountSheet() {
+    final pendingLink = ref.read(pendingEmailAccountLinkProvider);
+    final user = ref.read(currentSessionProvider)?.user;
+    if (pendingLink != null &&
+        user != null &&
+        pendingLink.matches(
+          userId: user.id,
+          email: user.email,
+          isAnonymous: user.isAnonymous,
+        )) {
+      context.push(EmailAccountLinkCompletionScreen.routePath);
+      return;
+    }
+    if (pendingLink != null && pendingLink.userId == user?.id) {
+      _emailController.text = pendingLink.email;
+    }
+
+    final pendingGoogleLink = ref.read(pendingGoogleAccountLinkProvider);
+    final hasGoogleIdentity =
+        user?.identities?.any((identity) => identity.provider == 'google') ??
+        false;
+    if (pendingGoogleLink != null &&
+        user != null &&
+        pendingGoogleLink.matches(
+          userId: user.id,
+          hasGoogleIdentity: hasGoogleIdentity,
+        )) {
+      _retryPendingGoogleLink();
+      return;
+    }
+
+    final pendingFacebookLink = ref.read(pendingFacebookAccountLinkProvider);
+    final hasFacebookIdentity =
+        user?.identities?.any((identity) => identity.provider == 'facebook') ??
+        false;
+    if (pendingFacebookLink != null &&
+        user != null &&
+        pendingFacebookLink.matches(
+          userId: user.id,
+          hasFacebookIdentity: hasFacebookIdentity,
+        )) {
+      _retryPendingFacebookLink();
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -219,6 +248,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
+            final colors = context.moniaryColors;
             void refreshSheet() {
               if (context.mounted) {
                 setSheetState(() {});
@@ -255,8 +285,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       context.l10n.profileLinkAccountSubtitle,
-                      style: const TextStyle(
-                        color: Colors.white54,
+                      style: TextStyle(
+                        color: colors.textSecondary,
                         fontSize: 13,
                       ),
                     ),
@@ -264,16 +294,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: colors.textPrimary),
                       decoration: InputDecoration(
                         labelText: context.l10n.loginEmail,
-                        labelStyle: const TextStyle(color: Colors.white54),
-                        prefixIcon: const Icon(
+                        labelStyle: TextStyle(color: colors.textSecondary),
+                        prefixIcon: Icon(
                           Icons.email_outlined,
-                          color: Colors.white54,
+                          color: colors.textSecondary,
                         ),
                         filled: true,
-                        fillColor: AppTheme.surfaceRaised,
+                        fillColor: colors.surfaceRaised,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide.none,
@@ -285,32 +315,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         }
                         if (!val.contains('@')) {
                           return context.l10n.validationEmailInvalid;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: context.l10n.profileNewPassword,
-                        labelStyle: const TextStyle(color: Colors.white54),
-                        prefixIcon: const Icon(
-                          Icons.lock_outlined,
-                          color: Colors.white54,
-                        ),
-                        filled: true,
-                        fillColor: AppTheme.surfaceRaised,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      validator: (val) {
-                        if (val == null || val.length < 6) {
-                          return context.l10n.validationPasswordMinLength(6);
                         }
                         return null;
                       },
@@ -328,9 +332,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     else ...[
                       FilledButton.icon(
                         onPressed: () async {
-                          final linked = await _linkEmailAccount(refreshSheet);
-                          if (linked && context.mounted) {
+                          final result = await _linkEmailAccount(refreshSheet);
+                          if (result != null && context.mounted) {
                             Navigator.pop(context);
+                          }
+                          if (result ==
+                                  EmailAccountLinkStatus.readyToSetPassword &&
+                              mounted) {
+                            await this.context.push(
+                              EmailAccountLinkCompletionScreen.routePath,
+                            );
                           }
                         },
                         style: FilledButton.styleFrom(
@@ -350,7 +361,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         onPressed: () async {
-                          await _linkGoogleAccount(refreshSheet);
+                          final result = await _linkGoogleAccount(refreshSheet);
+                          if (result != null && context.mounted) {
+                            Navigator.pop(context);
+                          }
                         },
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -359,15 +373,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           side: const BorderSide(color: AppTheme.outline),
                         ),
-                        icon: const Icon(
-                          Icons.g_mobiledata,
+                        icon: Icon(
+                          Icons.g_mobiledata_outlined,
                           size: 28,
-                          color: Colors.white,
+                          color: colors.textPrimary,
                         ),
                         label: Text(
                           context.l10n.profileLinkGoogle,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: colors.textPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -375,7 +389,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         onPressed: () async {
-                          await _linkAppleAccount(refreshSheet);
+                          final result = await _linkFacebookAccount(
+                            refreshSheet,
+                          );
+                          if (result != null && context.mounted) {
+                            Navigator.pop(context);
+                          }
                         },
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -384,40 +403,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           side: const BorderSide(color: AppTheme.outline),
                         ),
-                        icon: const Icon(
-                          Icons.apple,
-                          size: 28,
-                          color: Colors.white,
-                        ),
-                        label: Text(
-                          context.l10n.profileLinkApple,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        onPressed: () async {
-                          await _linkFacebookAccount(refreshSheet);
-                        },
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          side: const BorderSide(color: AppTheme.outline),
-                        ),
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.facebook_outlined,
                           size: 24,
-                          color: Colors.white,
+                          color: colors.textPrimary,
                         ),
                         label: Text(
                           context.l10n.profileLinkFacebook,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: colors.textPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -443,6 +437,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final pendingFriendRequestCount = ref.watch(
       pendingIncomingFriendRequestCountProvider,
     );
+    final accountLinkNotice = ref.watch(accountLinkNoticeProvider);
+    _scheduleAccountLinkNotice(accountLinkNotice);
 
     ref.listen(accountActionsControllerProvider, (previous, next) {
       next.whenOrNull(
@@ -650,6 +646,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 .read(mascotEnabledProvider.notifier)
                                 .setEnabled(value),
                           ),
+                          _AssistantChatToggleTile(
+                            enabled: ref.watch(assistantChatEnabledProvider),
+                            onChanged: (value) => ref
+                                .read(assistantChatEnabledProvider.notifier)
+                                .setEnabled(value),
+                          ),
                           if (accountMode.needsAccountProtectionCard)
                             _AccountModeBanner(
                               mode: accountMode,
@@ -786,6 +788,64 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _retryPendingGoogleLink() async {
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .completePendingGoogleAccountLink();
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to retry pending Google link', error, stackTrace);
+    }
+  }
+
+  Future<void> _retryPendingFacebookLink() async {
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .completePendingFacebookAccountLink();
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to retry pending Facebook link',
+        error,
+        stackTrace,
+      );
+    }
+  }
+
+  void _scheduleAccountLinkNotice(AccountLinkNotice? notice) {
+    if (notice == null || _accountLinkNoticeScheduled) return;
+    _accountLinkNoticeScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final (message, isSuccess) = switch (notice) {
+        AccountLinkNotice.googleSuccess => (
+          context.l10n.profileLinkGoogleSuccess,
+          true,
+        ),
+        AccountLinkNotice.googleFailure => (
+          context.l10n.profileLinkGoogleCompletionError,
+          false,
+        ),
+        AccountLinkNotice.facebookSuccess => (
+          context.l10n.profileLinkFacebookSuccess,
+          true,
+        ),
+        AccountLinkNotice.facebookFailure => (
+          context.l10n.profileLinkFacebookCompletionError,
+          false,
+        ),
+      };
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: isSuccess ? AppTheme.success : AppTheme.danger,
+        ),
+      );
+      ref.read(accountLinkNoticeProvider.notifier).clear();
+      _accountLinkNoticeScheduled = false;
+    });
   }
 
   void _showMoniarySetupSheet() {
@@ -1490,6 +1550,66 @@ class _MascotToggleTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     context.l10n.profileMascotSubtitle,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Switch(value: enabled, onChanged: onChanged),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AssistantChatToggleTile extends StatelessWidget {
+  const _AssistantChatToggleTile({
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return InkWell(
+      onTap: () => onChanged(!enabled),
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 60),
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 14),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: colors.textPrimary.withValues(alpha: 0.12),
+            ),
+          ),
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 34,
+              child: Icon(
+                Icons.chat_bubble_outline,
+                color: colors.primary,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.profileAssistantChatTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    context.l10n.profileAssistantChatSubtitle,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],

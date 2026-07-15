@@ -10,10 +10,10 @@ import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/spending_group.dart';
-import 'group_activity_center_screen.dart';
+import '../../../notifications/presentation/screens/notification_center_screen.dart';
 import 'create_group_screen.dart';
-import 'group_detail_screen.dart';
 import 'group_invitations_screen.dart';
+import 'group_route_paths.dart';
 import 'invite_member_screen.dart';
 
 class GroupListScreen extends ConsumerWidget {
@@ -73,7 +73,7 @@ class GroupListScreen extends ConsumerWidget {
       await context.push(InviteMemberScreen.routePath, extra: groupId);
       if (!context.mounted) return;
     }
-    await context.push(GroupDetailScreen.routePath, extra: groupId);
+    await context.push(GroupRoutePaths.home(groupId));
   }
 }
 
@@ -155,8 +155,7 @@ class _GroupListContent extends StatelessWidget {
                         group: groups[index],
                         index: index,
                         onTap: () => context.push(
-                          GroupDetailScreen.routePath,
-                          extra: groups[index].id,
+                          GroupRoutePaths.home(groups[index].id),
                         ),
                       ),
                     ),
@@ -231,7 +230,7 @@ class _GroupsHeader extends StatelessWidget {
               ? Icons.notifications_active_outlined
               : Icons.notifications_none_outlined,
           badge: unreadNotificationCount,
-          onTap: () => context.push(GroupActivityCenterScreen.routePath),
+          onTap: () => context.push(NotificationCenterScreen.routePath),
           foreground: colors.textPrimary,
           background: colors.surface.withValues(alpha: 0.58),
           border: colors.outline.withValues(alpha: 0.8),
