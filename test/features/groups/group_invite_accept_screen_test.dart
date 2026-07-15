@@ -7,8 +7,8 @@ import 'package:moniary/features/groups/data/repositories/group_repository_impl.
 import 'package:moniary/features/groups/domain/entities/group_invite.dart';
 import 'package:moniary/features/groups/domain/repositories/group_repository.dart';
 import 'package:moniary/features/groups/presentation/groups_screen.dart';
-import 'package:moniary/features/groups/presentation/screens/group_detail_screen.dart';
 import 'package:moniary/features/groups/presentation/screens/group_invite_accept_screen.dart';
+import 'package:moniary/features/groups/presentation/screens/group_route_paths.dart';
 import 'package:moniary/l10n/gen_l10n/app_localizations.dart';
 
 class _MockGroupRepository extends Mock implements GroupRepository {}
@@ -30,7 +30,7 @@ void main() {
               const Scaffold(body: Center(child: Text('Groups route'))),
         ),
         GoRoute(
-          path: GroupDetailScreen.routePath,
+          path: GroupRoutePaths.homePattern,
           builder: (context, state) =>
               Scaffold(appBar: AppBar(title: const Text('Group detail'))),
         ),

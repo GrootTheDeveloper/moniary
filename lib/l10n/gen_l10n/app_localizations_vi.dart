@@ -4043,12 +4043,63 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupSettlementConfirmAll => 'Xác nhận đã tất toán';
 
   @override
+  String get groupSettlementConfirmMyActions => 'Xác nhận phần của tôi';
+
+  @override
+  String get groupSettlementMyToPay => 'Tôi cần trả';
+
+  @override
+  String get groupSettlementMyToReceive => 'Tôi cần nhận';
+
+  @override
+  String get groupSettlementGroupOpenItems => 'Các khoản chưa hoàn tất';
+
+  @override
+  String get groupSettlementDisputedSection => 'Đang tranh chấp';
+
+  @override
+  String groupSettlementDisputeReason(String reason) {
+    return 'Lý do: $reason';
+  }
+
+  @override
+  String get groupSettlementFlowTitle => 'Cách hoàn tất một khoản';
+
+  @override
+  String get groupSettlementFlowSummary =>
+      'Người trả báo đã chuyển → người nhận xác nhận';
+
+  @override
+  String get groupSettlementPayerActionHint =>
+      'Sau khi chuyển đúng số tiền, hãy bấm nút bên dưới để báo cho người nhận.';
+
+  @override
+  String get groupSettlementReceiverActionHint =>
+      'Chỉ xác nhận sau khi bạn đã kiểm tra tiền thực sự đã về.';
+
+  @override
+  String get groupSettlementMarkedPaid => 'Đã ghi nhận bạn đã chuyển tiền';
+
+  @override
+  String get groupSettlementReceivedConfirmed => 'Đã xác nhận nhận tiền';
+
+  @override
   String get groupSettlementWaitingForPayers =>
       'Chờ người trả đánh dấu đã thanh toán trước.';
 
   @override
   String groupSettlementOptimizedSubtitle(String groupName, int count) {
     return '$groupName · Tối ưu $count giao dịch';
+  }
+
+  @override
+  String groupSettlementRemaining(String amount) {
+    return 'Còn lại $amount';
+  }
+
+  @override
+  String groupSettlementProgress(int completed, int total) {
+    return '$completed/$total khoản đã hoàn tất';
   }
 
   @override
@@ -4059,6 +4110,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupTransactionsTitle => 'Giao dịch nhóm';
+
+  @override
+  String get groupTransactionsTab => 'Giao dịch';
+
+  @override
+  String get groupSettlementsTab => 'Tất toán';
+
+  @override
+  String get groupCommunityTab => 'Cộng đồng';
 
   @override
   String get groupDebtAreaTitle => 'Ai nợ ai';
@@ -4351,6 +4411,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupTransactionPendingStatus => 'Chờ thành viên nhập số tiền';
 
   @override
+  String get groupTransactionPendingShort => 'Chờ nhập';
+
+  @override
   String get groupTransactionMismatchStatus => 'Tổng tiền chưa khớp';
 
   @override
@@ -4365,6 +4428,29 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupTransactionFilterAll => 'Tất cả';
+
+  @override
+  String get groupTransactionViewAll => 'Xem tất cả giao dịch';
+
+  @override
+  String get groupTransactionRecent => 'Giao dịch gần đây';
+
+  @override
+  String get groupTransactionExplorerSubtitle =>
+      'Tìm kiếm, lọc và xem giao dịch theo từng trang.';
+
+  @override
+  String groupTransactionMonth(Object month) {
+    return 'Tháng $month';
+  }
+
+  @override
+  String groupTransactionTrendValue(Object amount, Object count) {
+    return '$amount · $count giao dịch';
+  }
+
+  @override
+  String get groupTransactionNoChange => 'Không đổi';
 
   @override
   String get groupTransactionFilterNoResults =>
@@ -4388,6 +4474,28 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupActivityCenterTitle => 'Hoạt động nhóm';
 
   @override
+  String get groupNotificationsTitle => 'Thông báo nhóm';
+
+  @override
+  String get groupShellHome => 'Trang chủ';
+
+  @override
+  String get groupShellCommunity => 'Cộng đồng';
+
+  @override
+  String get groupShellNotifications => 'Thông báo';
+
+  @override
+  String get groupManageTitle => 'Quản lý nhóm';
+
+  @override
+  String get groupManageSubtitle =>
+      'Quản lý thành viên, tài chính và hoạt động của nhóm.';
+
+  @override
+  String get groupManageAccessSection => 'Quyền và an toàn';
+
+  @override
   String get groupActivityTabTimeline => 'Hoạt động';
 
   @override
@@ -4403,10 +4511,38 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupPhotoAlbumTitle => 'Album ảnh';
 
   @override
+  String get groupPhotoAlbumAll => 'Tất cả';
+
+  @override
+  String get groupPhotoAlbumReceipts => 'Hóa đơn';
+
+  @override
+  String get groupPhotoAlbumMemories => 'Kỷ niệm';
+
+  @override
+  String get groupPhotoAlbumChoose => 'Chọn ảnh';
+
+  @override
+  String get groupPhotoAlbumAdd => 'Thêm ảnh';
+
+  @override
   String get groupPhotoAlbumEmpty => 'Chưa có ảnh giao dịch';
 
   @override
   String get groupPhotoAlbumLoadError => 'Không thể tải album ảnh';
+
+  @override
+  String get groupPhotoAlbumAddHint =>
+      'Chọn ảnh kỷ niệm hoặc hóa đơn để chia sẻ với nhóm.';
+
+  @override
+  String get groupPhotoAlbumUploadError => 'Không thể đăng ảnh vào album';
+
+  @override
+  String get groupPhotoAlbumUploadSuccess => 'Đã thêm ảnh vào album nhóm';
+
+  @override
+  String get groupPhotoAlbumPreview => 'Xem ảnh';
 
   @override
   String get groupTransactionFallback => 'Giao dịch nhóm';
@@ -4635,6 +4771,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupRecurringTitle => 'Giao dịch định kỳ';
 
   @override
+  String get groupRecurringSubtitle =>
+      'Tự động tạo giao dịch theo lịch đã chọn.';
+
+  @override
+  String get groupRecurringNextRunLabel => 'Lần chạy tiếp theo';
+
+  @override
+  String get groupRecurringAutoPostLabel => 'Tự động ghi nhận';
+
+  @override
   String get groupRecurringAdd => 'Thêm giao dịch định kỳ';
 
   @override
@@ -4769,6 +4915,22 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupSummaryTrendTitle => 'Xu hướng chi tiêu 6 tháng';
 
   @override
+  String get groupSummaryTrendSubtitle =>
+      'Mỗi cột là tổng chi trong tháng. Chạm vào cột để xem chi tiết.';
+
+  @override
+  String get groupSummaryTrendTableTitle => 'Chi tiết theo tháng';
+
+  @override
+  String get groupSummaryCategorySubtitle =>
+      'Tỷ trọng theo tổng chi trong tháng';
+
+  @override
+  String groupSummaryCategoryShare(Object percent) {
+    return '$percent%';
+  }
+
+  @override
   String get groupSettlementBadgeTitle => 'Đã tất toán';
 
   @override
@@ -4860,6 +5022,253 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupActivityTabCommunityNotifications => 'Cộng đồng';
 
   @override
+  String get groupCommunityComposerHint => 'Chia sẻ cập nhật với nhóm...';
+
+  @override
+  String get groupCommunityCreateActivity => 'Tạo hoạt động';
+
+  @override
+  String get groupCommunityCreateActivityHelp =>
+      'Chọn loại nội dung bạn muốn tạo cho cả nhóm.';
+
+  @override
+  String get groupCommunityWriteUpdate => 'Đăng cập nhật';
+
+  @override
+  String get groupCommunityWriteUpdateHelp =>
+      'Chia sẻ nội dung hoặc ảnh với các thành viên.';
+
+  @override
+  String get groupCommunityCreatePoll => 'Tạo bình chọn';
+
+  @override
+  String get groupCommunityCreatePollHelp =>
+      'Đặt câu hỏi để nhóm cùng lựa chọn và thống nhất.';
+
+  @override
+  String get groupCommunityCreateChallenge => 'Tạo thử thách tiết kiệm';
+
+  @override
+  String get groupCommunityCreateChallengeHelp =>
+      'Đặt mục tiêu tiền chung để các thành viên cùng đóng góp.';
+
+  @override
+  String get groupCommunityFeedTitle => 'Cập nhật của nhóm';
+
+  @override
+  String get groupCommunityAlbumAction => 'Album ảnh';
+
+  @override
+  String get groupCommunityParticipationAction => 'Bình chọn & thử thách';
+
+  @override
+  String get groupCommunityMilestone => 'Cột mốc của nhóm';
+
+  @override
+  String get groupCommunityAllTab => 'Tất cả';
+
+  @override
+  String get groupCommunityPollTab => 'Bình chọn';
+
+  @override
+  String get groupCommunityActivityTab => 'Hoạt động';
+
+  @override
+  String get groupCommunityPostText => 'Bài viết';
+
+  @override
+  String get groupCommunityPostPhoto => 'Đăng ảnh';
+
+  @override
+  String get groupCommunityPostPoll => 'Bình chọn';
+
+  @override
+  String get groupCommunityPostChallenge => 'Thử thách';
+
+  @override
+  String get groupCommunityPollTitle => 'Bình chọn của nhóm';
+
+  @override
+  String groupCommunityStepOf(int step, int total) {
+    return 'Bước $step/$total';
+  }
+
+  @override
+  String get groupCommunityBack => 'Quay lại';
+
+  @override
+  String get groupCommunityNext => 'Tiếp tục';
+
+  @override
+  String get groupCommunityPollPreview => 'Xem trước bình chọn';
+
+  @override
+  String get groupCommunityChallengePreview => 'Xem trước thử thách';
+
+  @override
+  String get groupCommunityPollInstruction =>
+      'Chọn một phương án rồi nhấn Ghi nhận bình chọn.';
+
+  @override
+  String get groupCommunityPollVoteAction => 'Ghi nhận bình chọn';
+
+  @override
+  String get groupCommunityPollVoteRecorded => 'Đã bình chọn';
+
+  @override
+  String get groupCommunityPollClosed => 'Bình chọn đã kết thúc';
+
+  @override
+  String groupCommunityPollSelected(String option) {
+    return 'Bạn đã chọn: $option';
+  }
+
+  @override
+  String get groupCommunityPollCreated => 'Đã tạo bình chọn cho nhóm';
+
+  @override
+  String get groupCommunityPollCreateHelp =>
+      'Đặt một câu hỏi và nhập ít nhất 2 lựa chọn, mỗi lựa chọn trên một dòng.';
+
+  @override
+  String get groupCommunityPollValidation =>
+      'Hãy nhập câu hỏi và ít nhất 2 lựa chọn.';
+
+  @override
+  String get groupCommunityPollOptionsExample => 'Hải sản\nCà phê\nMón khác';
+
+  @override
+  String groupCommunityPollOptionLabel(int number) {
+    return 'Lựa chọn $number';
+  }
+
+  @override
+  String get groupCommunityPollAddOption => 'Thêm lựa chọn';
+
+  @override
+  String get groupCommunityPollRemoveOption => 'Xóa lựa chọn';
+
+  @override
+  String get groupCommunityPollMaxOptions => 'Bạn đã đạt tối đa 6 lựa chọn.';
+
+  @override
+  String get groupCommunityChallengeTitle => 'Thử thách tiết kiệm';
+
+  @override
+  String get groupCommunityChallengeInstruction =>
+      'Cùng đóng góp để đạt mục tiêu chung của nhóm.';
+
+  @override
+  String get groupCommunityChallengeCreateHelp =>
+      'Đặt mục tiêu tiết kiệm để các thành viên cùng đóng góp.';
+
+  @override
+  String get groupCommunityChallengeDuration => 'Thời hạn mặc định: 30 ngày';
+
+  @override
+  String get groupCommunityChallengeMembers =>
+      'Mọi thành viên trong nhóm đều có thể tham gia';
+
+  @override
+  String get groupCommunityChallengeValidation =>
+      'Hãy nhập tên và số tiền mục tiêu lớn hơn 0.';
+
+  @override
+  String get groupCommunityChallengeCompleted => 'Nhóm đã đạt mục tiêu';
+
+  @override
+  String get groupCommunityChallengeClosed => 'Thử thách đã kết thúc';
+
+  @override
+  String get groupCommunityChallengeSaved => 'Đã góp';
+
+  @override
+  String get groupCommunityChallengeRemaining => 'Còn thiếu';
+
+  @override
+  String get groupCommunityChallengeEnds => 'Kết thúc';
+
+  @override
+  String get groupCommunityChallengeCreated => 'Đã tạo thử thách tiết kiệm';
+
+  @override
+  String get groupCommunityContributionRecorded =>
+      'Đã ghi nhận khoản đóng góp của bạn';
+
+  @override
+  String groupCommunityContributionHelp(String amount) {
+    return 'Nhập số tiền bạn muốn đóng góp. Còn thiếu: $amount';
+  }
+
+  @override
+  String get groupCommunityContributionAmount => 'Số tiền đóng góp';
+
+  @override
+  String get groupCommunityContributionInvalid => 'Nhập số tiền lớn hơn 0.';
+
+  @override
+  String get groupCommunityPublish => 'Đăng lên nhóm';
+
+  @override
+  String get groupCommunityPostEmpty =>
+      'Hãy viết gì đó hoặc chọn ảnh trước khi đăng.';
+
+  @override
+  String groupCommunityPhotoCount(int count) {
+    return '$count ảnh đã chọn';
+  }
+
+  @override
+  String get groupCommunityComment => 'Bình luận';
+
+  @override
+  String get groupCommunityCommentHint => 'Viết bình luận...';
+
+  @override
+  String get groupCommunityCommentEmpty => 'Chưa có bình luận';
+
+  @override
+  String get groupCommunityActivityTransaction => 'đã thêm một khoản chi mới';
+
+  @override
+  String get groupCommunityActivitySettlement =>
+      'đã hoàn tất phần tất toán của mình 🎉';
+
+  @override
+  String get groupCommunityActivityMemberLeft => 'đã rời nhóm';
+
+  @override
+  String get groupCommunityActivityPost => 'đã chia sẻ cập nhật với nhóm';
+
+  @override
+  String get groupCommunityActivityGeneric => 'đã có một cập nhật mới';
+
+  @override
+  String get groupCommunityVoters => 'người đã chọn';
+
+  @override
+  String get groupCommunityChallengeProgress => 'Đã tiết kiệm';
+
+  @override
+  String get groupCommunityJoinChallenge => 'Tham gia';
+
+  @override
+  String get groupCommunityContribute => 'Đóng góp';
+
+  @override
+  String get groupCommunityNoFeed =>
+      'Chưa có cập nhật. Hãy là người đầu tiên chia sẻ!';
+
+  @override
+  String get groupCommunityOpenNotifications => 'Mở thông báo nhóm';
+
+  @override
+  String get groupCommunityOpenManagement => 'Mở quản lý nhóm';
+
+  @override
+  String get groupCommunityPostCreated => 'Đã đăng cập nhật vào cộng đồng';
+
+  @override
   String get communityNotificationsEmptyState => 'Chưa có thông báo cộng đồng';
 
   @override
@@ -4894,6 +5303,10 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get groupTransactionCompletedEditWarning =>
       'Giao dịch này đã có khoản nợ được xác nhận. Nếu chỉnh sửa, hệ thống sẽ tính lại công nợ của nhóm. Bạn có chắc muốn tiếp tục không?';
+
+  @override
+  String get groupTransactionSettlementLocked =>
+      'Giao dịch đã tham gia quy trình tất toán nên không thể sửa hoặc xóa. Nếu cần điều chỉnh, hãy tạo một giao dịch mới để lưu dấu vết rõ ràng.';
 
   @override
   String get groupTransactionCreatorOnly =>
@@ -5017,9 +5430,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get groupStatsPendingCount => 'Chờ xử lý';
-
-  @override
-  String get groupNotificationsTitle => 'Thông báo nhóm';
 
   @override
   String get groupNotificationsEmpty => 'Chưa có thông báo nhóm.';
@@ -6247,6 +6657,116 @@ class AppLocalizationsVi extends AppLocalizations {
   String get groupParticipantsTitle => 'Người tham gia khoản chi';
 
   @override
+  String get groupParticipantsSelectHint =>
+      'Chọn thành viên tham gia khoản chi';
+
+  @override
+  String groupParticipantsSelectedCount(Object count, Object total) {
+    return 'Đã chọn $count/$total thành viên';
+  }
+
+  @override
+  String get groupParticipantsAllSelected => 'Tất cả thành viên';
+
+  @override
+  String get groupParticipantsNoneSelected => 'Chưa chọn thành viên';
+
+  @override
+  String get groupParticipantsSelectAll => 'Chọn tất cả';
+
+  @override
+  String get groupParticipantsDeselectAll => 'Bỏ chọn tất cả';
+
+  @override
+  String get groupParticipantsDone => 'Xong';
+
+  @override
+  String get groupSplitEqualDescription =>
+      'Chia tổng tiền đều cho những người đã chọn.';
+
+  @override
+  String get groupSplitExactDescription =>
+      'Bạn nhập chính xác phần tiền mỗi người chịu.';
+
+  @override
+  String get groupSplitUnequalDescription =>
+      'Mỗi thành viên tự nhập phần mình đã sử dụng.';
+
+  @override
+  String get groupSplitHelp => 'Cách chọn';
+
+  @override
+  String get groupSplitGuideTitle => 'Chọn cách chia tiền';
+
+  @override
+  String get groupSplitGuideIntro =>
+      'Chọn cách phù hợp với tình huống của khoản chi. Bạn có thể thay đổi trước khi đăng giao dịch.';
+
+  @override
+  String get groupSplitGuideEqualTitle => 'Chia đều';
+
+  @override
+  String get groupSplitGuideEqualBody =>
+      'Dùng khi mọi người cùng hưởng như nhau. Ví dụ: hóa đơn ăn uống chia cho 4 người, mỗi người chịu một phần bằng nhau.';
+
+  @override
+  String get groupSplitGuideExactTitle => 'Số tiền cụ thể';
+
+  @override
+  String get groupSplitGuideExactBody =>
+      'Dùng khi mỗi người chịu một số tiền đã biết trước. Tổng các phần bạn nhập phải bằng tổng hóa đơn.';
+
+  @override
+  String get groupSplitGuideUnequalTitle => 'Tự nhập phần đã dùng';
+
+  @override
+  String get groupSplitGuideUnequalBody =>
+      'Dùng khi muốn để từng thành viên tự xác nhận số tiền mình đã sử dụng. Giao dịch sẽ chờ đủ thông tin trước khi đăng chính thức.';
+
+  @override
+  String get groupSplitGuideClose => 'Đã hiểu';
+
+  @override
+  String get groupSettlementGroupOverview => 'Tổng quan nhóm';
+
+  @override
+  String get groupSettlementMyPart => 'Phần của tôi';
+
+  @override
+  String get groupSettlementMyProgress => 'Tiến độ của tôi';
+
+  @override
+  String get groupSettlementMarkPaid => 'Tôi đã chuyển tiền';
+
+  @override
+  String get groupSettlementConfirmReceived => 'Tôi đã nhận tiền';
+
+  @override
+  String get groupSettlementWaitingReceiver =>
+      'Bạn đã báo đã chuyển. Chờ người nhận kiểm tra và xác nhận.';
+
+  @override
+  String get groupSettlementWaitingPayer =>
+      'Người trả chưa báo đã chuyển. Khi tiền về, bạn có thể xác nhận đã nhận.';
+
+  @override
+  String get groupSummaryBudgetTitle => 'Ngân sách tháng';
+
+  @override
+  String groupSummaryBudgetSpent(Object limit, Object spent) {
+    return 'Đã chi $spent/$limit';
+  }
+
+  @override
+  String get groupSummaryBudgetWarning => 'Nhóm đã gần chạm ngưỡng ngân sách.';
+
+  @override
+  String get groupSummaryBudgetExceeded => 'Nhóm đã vượt ngân sách tháng.';
+
+  @override
+  String get groupSummaryBudgetNoLimit => 'Chưa đặt ngân sách cho tháng này.';
+
+  @override
   String get groupSettlementDisputeTitle => 'Báo cáo vấn đề thanh toán';
 
   @override
@@ -6258,7 +6778,21 @@ class AppLocalizationsVi extends AppLocalizations {
       'Vui lòng nhập lý do tranh chấp.';
 
   @override
+  String get groupSettlementDisputeReasonTooLong =>
+      'Lý do tranh chấp không được dài quá 300 ký tự.';
+
+  @override
   String get groupSettlementDisputeAction => 'Tranh chấp';
+
+  @override
+  String get groupSettlementResetDisputeTitle => 'Mở lại khoản tất toán';
+
+  @override
+  String get groupSettlementResetDisputeMessage =>
+      'Khoản tranh chấp sẽ được đưa về trạng thái chờ thanh toán để nhóm xử lý lại.';
+
+  @override
+  String get groupSettlementResetDisputeAction => 'Mở lại';
 
   @override
   String get groupTransferOwnershipAction => 'Chuyển quyền chủ nhóm';

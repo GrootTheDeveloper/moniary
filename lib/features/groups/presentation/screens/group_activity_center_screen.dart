@@ -4,37 +4,39 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_community.dart';
-import '../../domain/entities/group_enums.dart';
-import '../../domain/entities/group_roadmap.dart';
-import 'group_detail_screen.dart';
-import 'group_transaction_detail_screen.dart';
-import 'add_group_transaction_screen.dart';
-import 'debt_settlement_screen.dart';
-import 'group_recurring_transactions_screen.dart';
+import 'group_community_screen.dart';
+import 'group_route_paths.dart';
 
 class GroupActivityCenterScreen extends ConsumerWidget {
-  const GroupActivityCenterScreen({this.groupId, super.key});
+  const GroupActivityCenterScreen({
+    this.groupId,
+    this.notificationOnly = false,
+    super.key,
+  });
 
   static const routePath = '/groups/activity-center';
 
   final String? groupId;
+  final bool notificationOnly;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final groupId = this.groupId;
     final unreadCount = ref.watch(unreadGroupNotificationCountProvider);
     final actionState = ref.watch(groupActionControllerProvider);
+
+    if (groupId != null && !notificationOnly) {
+      return GroupCommunityScreen(groupId: groupId);
+    }
+
     final tabs = <Tab>[
-      if (groupId != null) Tab(text: context.l10n.groupActivityTabTimeline),
       Tab(text: context.l10n.groupActivityTabNotifications),
       Tab(text: context.l10n.groupActivityTabCommunityNotifications),
     ];
     final views = <Widget>[
-      if (groupId != null) _ActivityTimelineTab(groupId: groupId),
       const _NotificationsTab(category: 'group'),
       const _NotificationsTab(category: 'community'),
     ];
@@ -43,7 +45,13 @@ class GroupActivityCenterScreen extends ConsumerWidget {
       length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(context.l10n.groupActivityCenterTitle),
+          title: Text(
+            notificationOnly
+                ? context.l10n.groupNotificationsTitle
+                : groupId == null
+                ? context.l10n.groupActivityCenterTitle
+                : context.l10n.groupCommunityTab,
+          ),
           actions: [
             if (unreadCount > 0)
               TextButton(
@@ -70,352 +78,6 @@ class GroupActivityCenterScreen extends ConsumerWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(userFriendlyMessage(context, error))),
       );
-    }
-  }
-}
-
-class _ActivityTimelineTab extends ConsumerWidget {
-  const _ActivityTimelineTab({required this.groupId});
-
-  final String groupId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final activitiesAsync = ref.watch(groupActivitiesProvider(groupId));
-    final colors = context.moniaryColors;
-
-    return activitiesAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            userFriendlyMessage(context, error),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-      data: (activities) {
-        return RefreshIndicator(
-          onRefresh: () async =>
-              ref.invalidate(groupActivitiesProvider(groupId)),
-          child: ListView.separated(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-            itemCount: activities.isEmpty ? 3 : activities.length + 2,
-            separatorBuilder: (_, _) => const SizedBox(height: 4),
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return _CommunityPulseCard(groupId: groupId);
-              }
-              if (index == 1) {
-                return _LatestTransactionSpotlight(groupId: groupId);
-              }
-              if (activities.isEmpty) {
-                return SizedBox(
-                  height: 320,
-                  child: Center(
-                    child: Text(
-                      context.l10n.groupActivityEmpty,
-                      style: TextStyle(color: colors.textDim),
-                    ),
-                  ),
-                );
-              }
-              return _ActivityRow(activity: activities[index - 2]);
-            },
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _CommunityPulseCard extends ConsumerWidget {
-  const _CommunityPulseCard({required this.groupId});
-
-  final String groupId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final detail = ref.watch(groupDetailProvider(groupId)).asData?.value;
-    final settlement = ref
-        .watch(groupSettlementOverviewProvider(groupId))
-        .asData
-        ?.value;
-    final recurring = ref
-        .watch(groupRecurringTransactionsProvider(groupId))
-        .asData
-        ?.value
-        .where((item) => item.isActive)
-        .toList();
-    if (detail == null) {
-      return const SizedBox.shrink();
-    }
-
-    final ownBalance = detail.group.currentUserBalance;
-    final nextRecurring = recurring == null || recurring.isEmpty
-        ? null
-        : (List.of(
-            recurring,
-          )..sort((a, b) => a.nextRunAt.compareTo(b.nextRunAt))).first;
-    final dueSoon =
-        nextRecurring != null &&
-        nextRecurring.nextRunAt.difference(DateTime.now()).inDays <= 7 &&
-        !nextRecurring.nextRunAt.isBefore(DateTime.now());
-    final hasUnresolved =
-        settlement?.suggestions.any(
-          (item) => item.status != GroupSettlementStatus.completed,
-        ) ??
-        ownBalance != 0;
-
-    final String title;
-    final String message;
-    final IconData icon;
-    final VoidCallback? onTap;
-    if (ownBalance != 0) {
-      title = context.l10n.groupPulsePersonalTitle;
-      message = context.l10n.groupPulsePersonalMessage;
-      icon = Icons.near_me_outlined;
-      onTap = () =>
-          context.push(DebtSettlementScreen.routePath, extra: groupId);
-    } else if (dueSoon) {
-      title = context.l10n.groupPulseUpcomingTitle;
-      message = context.l10n.groupPulseUpcomingMessage(nextRecurring.title);
-      icon = Icons.event_available_outlined;
-      onTap = () => context.push(
-        GroupRecurringTransactionsScreen.routePath,
-        extra: groupId,
-      );
-    } else if (hasUnresolved) {
-      title = context.l10n.groupPulseTogetherTitle;
-      message = context.l10n.groupPulseTogetherMessage;
-      icon = Icons.groups_2_outlined;
-      onTap = () =>
-          context.push(GroupActivityCenterScreen.routePath, extra: groupId);
-    } else {
-      title = context.l10n.groupPulseAllClearTitle;
-      message = context.l10n.groupPulseAllClearMessage;
-      icon = Icons.auto_awesome_outlined;
-      onTap = () => context.push(
-        AddGroupTransactionScreen.routePath,
-        extra: AddGroupTransactionArgs(groupId: groupId),
-      );
-    }
-
-    return Card(
-      margin: EdgeInsets.zero,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 15, 16, 15),
-          child: Row(
-            children: [
-              Icon(icon, color: context.moniaryColors.primary),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: Theme.of(context).textTheme.titleSmall),
-                    const SizedBox(height: 4),
-                    Text(message),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right_outlined),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _LatestTransactionSpotlight extends ConsumerWidget {
-  const _LatestTransactionSpotlight({required this.groupId});
-
-  final String groupId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final transactions = ref
-        .watch(groupTransactionsProvider(groupId))
-        .asData
-        ?.value;
-    if (transactions == null || transactions.isEmpty) {
-      return const SizedBox.shrink();
-    }
-    final transaction = transactions.first;
-    final reactions =
-        ref.watch(groupReactionsProvider(transaction.id)).asData?.value ??
-        const [];
-    final actionState = ref.watch(groupActionControllerProvider);
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 15, 12, 13),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(context.l10n.groupSpotlightTitle),
-            const SizedBox(height: 5),
-            Text(
-              transaction.caption ??
-                  transaction.categoryName ??
-                  context.l10n.groupNoCategory,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 3),
-            Text(ref.formatAmount(transaction.totalAmount)),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 6,
-              children: [
-                for (final emoji in const ['❤️', '👏', '🔥', '🙌'])
-                  ActionChip(
-                    label: Text('$emoji ${_reactionCount(reactions, emoji)}'),
-                    onPressed: actionState.isLoading
-                        ? null
-                        : () => ref
-                              .read(groupActionControllerProvider.notifier)
-                              .toggleReaction(
-                                transactionId: transaction.id,
-                                emoji: emoji,
-                              ),
-                  ),
-                ActionChip(
-                  label: Text(context.l10n.groupSpotlightComment),
-                  onPressed: () => context.push(
-                    GroupTransactionDetailScreen.routePath,
-                    extra: transaction.id,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  int _reactionCount(List<GroupReactionSummary> reactions, String emoji) {
-    for (final reaction in reactions) {
-      if (reaction.emoji == emoji) return reaction.count;
-    }
-    return 0;
-  }
-}
-
-class _ActivityRow extends StatelessWidget {
-  const _ActivityRow({required this.activity});
-
-  final GroupActivity activity;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.moniaryColors;
-    final actor = activity.actorName?.trim().isNotEmpty == true
-        ? activity.actorName!
-        : context.l10n.groupUnknownMember;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              _activityIcon(activity.type),
-              size: 17,
-              color: colors.primary,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '$actor ',
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      TextSpan(text: _activityLabel(context, activity.type)),
-                    ],
-                  ),
-                  style: TextStyle(color: colors.textPrimary, fontSize: 13.5),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  _timeAgo(context, activity.createdAt),
-                  style: TextStyle(color: colors.textDim, fontSize: 11),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  IconData _activityIcon(String type) {
-    switch (type) {
-      case 'transaction_reacted':
-        return Icons.favorite_outline;
-      case 'transaction_commented':
-        return Icons.mode_comment_outlined;
-      case 'member_joined_by_link':
-      case 'member_invitation_accepted':
-        return Icons.person_add_outlined;
-      case 'member_left':
-        return Icons.logout_outlined;
-      case 'member_invitation_declined':
-        return Icons.person_off_outlined;
-      case 'member_removed':
-        return Icons.person_remove_outlined;
-      case 'owner_transferred':
-        return Icons.swap_horiz_outlined;
-      case 'settlement_disputed':
-        return Icons.report_problem_outlined;
-      case 'leave_blocked_unresolved':
-        return Icons.warning_amber_outlined;
-      default:
-        return Icons.bolt_outlined;
-    }
-  }
-
-  String _activityLabel(BuildContext context, String type) {
-    switch (type) {
-      case 'transaction_reacted':
-        return context.l10n.groupActivityTransactionReacted;
-      case 'transaction_commented':
-        return context.l10n.groupActivityTransactionCommented;
-      case 'member_joined_by_link':
-      case 'member_invitation_accepted':
-        return context.l10n.groupActivityMemberJoined;
-      case 'member_left':
-        return context.l10n.groupActivityMemberLeft;
-      case 'member_invitation_declined':
-        return context.l10n.groupActivityInvitationDeclined;
-      case 'member_removed':
-        return context.l10n.groupActivityMemberRemoved;
-      case 'owner_transferred':
-        return context.l10n.groupActivityOwnerTransferred;
-      case 'settlement_disputed':
-        return context.l10n.groupActivitySettlementDisputed;
-      case 'leave_blocked_unresolved':
-        return context.l10n.groupActivityLeaveBlocked;
-      default:
-        return type.replaceAll('_', ' ');
     }
   }
 }
@@ -550,14 +212,13 @@ class _NotificationRow extends ConsumerWidget {
     final transactionId = notification.groupTransactionId;
     if (transactionId != null && context.mounted) {
       await context.push(
-        GroupTransactionDetailScreen.routePath,
-        extra: transactionId,
+        GroupRoutePaths.transactionDetail(
+          groupId: notification.groupId,
+          transactionId: transactionId,
+        ),
       );
     } else if (context.mounted) {
-      await context.push(
-        GroupDetailScreen.routePath,
-        extra: notification.groupId,
-      );
+      context.go(GroupRoutePaths.home(notification.groupId));
     }
   }
 

@@ -23,6 +23,7 @@ class GroupTransaction {
     this.imagePath,
     this.creatorName,
     this.hasCompletedSettlement = false,
+    this.hasSettlementLock = false,
   }) : baseTotalAmount = baseTotalAmount ?? totalAmount;
 
   final String id;
@@ -46,6 +47,7 @@ class GroupTransaction {
   final DateTime updatedAt;
   final String? creatorName;
   final bool hasCompletedSettlement;
+  final bool hasSettlementLock;
 
   // The base amount is the only amount used for balances and budgets.
   // Legacy rows default to totalAmount.

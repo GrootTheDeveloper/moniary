@@ -4047,12 +4047,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupSettlementConfirmAll => 'Confirm settled';
 
   @override
+  String get groupSettlementConfirmMyActions => 'Confirm my actions';
+
+  @override
+  String get groupSettlementMyToPay => 'I need to pay';
+
+  @override
+  String get groupSettlementMyToReceive => 'I need to receive';
+
+  @override
+  String get groupSettlementGroupOpenItems => 'Open settlements';
+
+  @override
+  String get groupSettlementDisputedSection => 'Disputed';
+
+  @override
+  String groupSettlementDisputeReason(String reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String get groupSettlementFlowTitle => 'How to complete a settlement';
+
+  @override
+  String get groupSettlementFlowSummary =>
+      'Payer marks it sent → receiver confirms receipt';
+
+  @override
+  String get groupSettlementPayerActionHint =>
+      'After sending the exact amount, use the button below to notify the receiver.';
+
+  @override
+  String get groupSettlementReceiverActionHint =>
+      'Confirm only after checking that the money has actually arrived.';
+
+  @override
+  String get groupSettlementMarkedPaid => 'Your payment was marked as sent';
+
+  @override
+  String get groupSettlementReceivedConfirmed => 'Receipt confirmed';
+
+  @override
   String get groupSettlementWaitingForPayers =>
       'Waiting for payers to mark their payments first.';
 
   @override
   String groupSettlementOptimizedSubtitle(String groupName, int count) {
     return '$groupName · Optimized $count transactions';
+  }
+
+  @override
+  String groupSettlementRemaining(String amount) {
+    return 'Remaining $amount';
+  }
+
+  @override
+  String groupSettlementProgress(int completed, int total) {
+    return '$completed/$total settlements completed';
   }
 
   @override
@@ -4063,6 +4114,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupTransactionsTitle => 'Group transactions';
+
+  @override
+  String get groupTransactionsTab => 'Transactions';
+
+  @override
+  String get groupSettlementsTab => 'Settlements';
+
+  @override
+  String get groupCommunityTab => 'Community';
 
   @override
   String get groupDebtAreaTitle => 'Who owes whom';
@@ -4353,6 +4413,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupTransactionPendingStatus => 'Waiting for member amounts';
 
   @override
+  String get groupTransactionPendingShort => 'Needs input';
+
+  @override
   String get groupTransactionMismatchStatus => 'Amounts do not match';
 
   @override
@@ -4367,6 +4430,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupTransactionFilterAll => 'All';
+
+  @override
+  String get groupTransactionViewAll => 'View all transactions';
+
+  @override
+  String get groupTransactionRecent => 'Recent transactions';
+
+  @override
+  String get groupTransactionExplorerSubtitle =>
+      'Search, filter, and browse transactions page by page.';
+
+  @override
+  String groupTransactionMonth(Object month) {
+    return '$month';
+  }
+
+  @override
+  String groupTransactionTrendValue(Object amount, Object count) {
+    return '$amount · $count transactions';
+  }
+
+  @override
+  String get groupTransactionNoChange => 'No change';
 
   @override
   String get groupTransactionFilterNoResults =>
@@ -4390,6 +4476,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupActivityCenterTitle => 'Group activity';
 
   @override
+  String get groupNotificationsTitle => 'Group notifications';
+
+  @override
+  String get groupShellHome => 'Home';
+
+  @override
+  String get groupShellCommunity => 'Community';
+
+  @override
+  String get groupShellNotifications => 'Notifications';
+
+  @override
+  String get groupManageTitle => 'Group management';
+
+  @override
+  String get groupManageSubtitle =>
+      'Manage members, finances, and group activity.';
+
+  @override
+  String get groupManageAccessSection => 'Access and safety';
+
+  @override
   String get groupActivityTabTimeline => 'Activity';
 
   @override
@@ -4405,10 +4513,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupPhotoAlbumTitle => 'Photo album';
 
   @override
+  String get groupPhotoAlbumAll => 'All';
+
+  @override
+  String get groupPhotoAlbumReceipts => 'Receipts';
+
+  @override
+  String get groupPhotoAlbumMemories => 'Memories';
+
+  @override
+  String get groupPhotoAlbumChoose => 'Choose photos';
+
+  @override
+  String get groupPhotoAlbumAdd => 'Add photo';
+
+  @override
   String get groupPhotoAlbumEmpty => 'No transaction photos yet';
 
   @override
   String get groupPhotoAlbumLoadError => 'Could not load the photo album';
+
+  @override
+  String get groupPhotoAlbumAddHint =>
+      'Choose a memory or receipt photo to share with the group.';
+
+  @override
+  String get groupPhotoAlbumUploadError => 'Unable to add photos to the album';
+
+  @override
+  String get groupPhotoAlbumUploadSuccess => 'Photos added to the group album';
+
+  @override
+  String get groupPhotoAlbumPreview => 'View photo';
 
   @override
   String get groupTransactionFallback => 'Group transaction';
@@ -4637,6 +4773,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupRecurringTitle => 'Recurring transactions';
 
   @override
+  String get groupRecurringSubtitle =>
+      'Automatically create a transaction on schedule.';
+
+  @override
+  String get groupRecurringNextRunLabel => 'Next run';
+
+  @override
+  String get groupRecurringAutoPostLabel => 'Auto-post';
+
+  @override
   String get groupRecurringAdd => 'Add recurring';
 
   @override
@@ -4771,6 +4917,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupSummaryTrendTitle => 'Six-month spending trend';
 
   @override
+  String get groupSummaryTrendSubtitle =>
+      'Each bar is the total spent in a month. Tap a bar for details.';
+
+  @override
+  String get groupSummaryTrendTableTitle => 'Monthly details';
+
+  @override
+  String get groupSummaryCategorySubtitle =>
+      'Share of the total spent this month';
+
+  @override
+  String groupSummaryCategoryShare(Object percent) {
+    return '$percent%';
+  }
+
+  @override
   String get groupSettlementBadgeTitle => 'All settled';
 
   @override
@@ -4858,6 +5020,254 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupActivityTabCommunityNotifications => 'Community';
 
   @override
+  String get groupCommunityComposerHint => 'Share an update with the group...';
+
+  @override
+  String get groupCommunityCreateActivity => 'Create activity';
+
+  @override
+  String get groupCommunityCreateActivityHelp =>
+      'Choose what you want to create for the group.';
+
+  @override
+  String get groupCommunityWriteUpdate => 'Share an update';
+
+  @override
+  String get groupCommunityWriteUpdateHelp =>
+      'Share text or photos with the group members.';
+
+  @override
+  String get groupCommunityCreatePoll => 'Create a poll';
+
+  @override
+  String get groupCommunityCreatePollHelp =>
+      'Ask a question so the group can choose together.';
+
+  @override
+  String get groupCommunityCreateChallenge => 'Create savings challenge';
+
+  @override
+  String get groupCommunityCreateChallengeHelp =>
+      'Set a shared money goal for members to contribute to.';
+
+  @override
+  String get groupCommunityFeedTitle => 'Group updates';
+
+  @override
+  String get groupCommunityAlbumAction => 'Photo album';
+
+  @override
+  String get groupCommunityParticipationAction => 'Polls & challenges';
+
+  @override
+  String get groupCommunityMilestone => 'Group milestone';
+
+  @override
+  String get groupCommunityAllTab => 'All';
+
+  @override
+  String get groupCommunityPollTab => 'Polls';
+
+  @override
+  String get groupCommunityActivityTab => 'Activity';
+
+  @override
+  String get groupCommunityPostText => 'Post';
+
+  @override
+  String get groupCommunityPostPhoto => 'Photos';
+
+  @override
+  String get groupCommunityPostPoll => 'Poll';
+
+  @override
+  String get groupCommunityPostChallenge => 'Challenge';
+
+  @override
+  String get groupCommunityPollTitle => 'Group poll';
+
+  @override
+  String groupCommunityStepOf(int step, int total) {
+    return 'Step $step/$total';
+  }
+
+  @override
+  String get groupCommunityBack => 'Back';
+
+  @override
+  String get groupCommunityNext => 'Next';
+
+  @override
+  String get groupCommunityPollPreview => 'Preview poll';
+
+  @override
+  String get groupCommunityChallengePreview => 'Preview challenge';
+
+  @override
+  String get groupCommunityPollInstruction =>
+      'Choose an option, then tap Record vote.';
+
+  @override
+  String get groupCommunityPollVoteAction => 'Record vote';
+
+  @override
+  String get groupCommunityPollVoteRecorded => 'Vote recorded';
+
+  @override
+  String get groupCommunityPollClosed => 'This poll is closed';
+
+  @override
+  String groupCommunityPollSelected(String option) {
+    return 'You chose: $option';
+  }
+
+  @override
+  String get groupCommunityPollCreated => 'Poll created for the group';
+
+  @override
+  String get groupCommunityPollCreateHelp =>
+      'Ask a question and add at least 2 options, one option per line.';
+
+  @override
+  String get groupCommunityPollValidation =>
+      'Enter a question and at least 2 options.';
+
+  @override
+  String get groupCommunityPollOptionsExample => 'Seafood\nCoffee\nOther';
+
+  @override
+  String groupCommunityPollOptionLabel(int number) {
+    return 'Option $number';
+  }
+
+  @override
+  String get groupCommunityPollAddOption => 'Add option';
+
+  @override
+  String get groupCommunityPollRemoveOption => 'Remove option';
+
+  @override
+  String get groupCommunityPollMaxOptions =>
+      'You have reached the maximum of 6 options.';
+
+  @override
+  String get groupCommunityChallengeTitle => 'Savings challenge';
+
+  @override
+  String get groupCommunityChallengeInstruction =>
+      'Contribute together to reach the group\'s shared goal.';
+
+  @override
+  String get groupCommunityChallengeCreateHelp =>
+      'Set a savings goal for members to contribute together.';
+
+  @override
+  String get groupCommunityChallengeDuration => 'Default duration: 30 days';
+
+  @override
+  String get groupCommunityChallengeMembers =>
+      'All group members can participate';
+
+  @override
+  String get groupCommunityChallengeValidation =>
+      'Enter a name and a target amount greater than 0.';
+
+  @override
+  String get groupCommunityChallengeCompleted => 'The group reached its goal';
+
+  @override
+  String get groupCommunityChallengeClosed => 'This challenge is closed';
+
+  @override
+  String get groupCommunityChallengeSaved => 'Contributed';
+
+  @override
+  String get groupCommunityChallengeRemaining => 'Remaining';
+
+  @override
+  String get groupCommunityChallengeEnds => 'Ends';
+
+  @override
+  String get groupCommunityChallengeCreated => 'Savings challenge created';
+
+  @override
+  String get groupCommunityContributionRecorded =>
+      'Your contribution was recorded';
+
+  @override
+  String groupCommunityContributionHelp(String amount) {
+    return 'Enter your contribution. Remaining: $amount';
+  }
+
+  @override
+  String get groupCommunityContributionAmount => 'Contribution amount';
+
+  @override
+  String get groupCommunityContributionInvalid =>
+      'Enter an amount greater than 0.';
+
+  @override
+  String get groupCommunityPublish => 'Share with group';
+
+  @override
+  String get groupCommunityPostEmpty =>
+      'Write something or choose photos before posting.';
+
+  @override
+  String groupCommunityPhotoCount(int count) {
+    return '$count photos selected';
+  }
+
+  @override
+  String get groupCommunityComment => 'Comment';
+
+  @override
+  String get groupCommunityCommentHint => 'Write a comment...';
+
+  @override
+  String get groupCommunityCommentEmpty => 'No comments yet';
+
+  @override
+  String get groupCommunityActivityTransaction => 'added a new expense';
+
+  @override
+  String get groupCommunityActivitySettlement =>
+      'completed their settlement 🎉';
+
+  @override
+  String get groupCommunityActivityMemberLeft => 'left the group';
+
+  @override
+  String get groupCommunityActivityPost => 'shared an update with the group';
+
+  @override
+  String get groupCommunityActivityGeneric => 'shared a new update';
+
+  @override
+  String get groupCommunityVoters => 'people voted';
+
+  @override
+  String get groupCommunityChallengeProgress => 'Saved';
+
+  @override
+  String get groupCommunityJoinChallenge => 'Join';
+
+  @override
+  String get groupCommunityContribute => 'Contribute';
+
+  @override
+  String get groupCommunityNoFeed => 'No updates yet. Be the first to share!';
+
+  @override
+  String get groupCommunityOpenNotifications => 'Open group notifications';
+
+  @override
+  String get groupCommunityOpenManagement => 'Open group management';
+
+  @override
+  String get groupCommunityPostCreated => 'Update shared with the community';
+
+  @override
   String get communityNotificationsEmptyState =>
       'No community notifications yet';
 
@@ -4893,6 +5303,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get groupTransactionCompletedEditWarning =>
       'This transaction has a confirmed settlement. Editing it recalculates group balances. Continue?';
+
+  @override
+  String get groupTransactionSettlementLocked =>
+      'This transaction is part of the settlement history and cannot be edited or deleted. Create a new adjustment transaction if the amount needs correcting.';
 
   @override
   String get groupTransactionCreatorOnly =>
@@ -5016,9 +5430,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupStatsPendingCount => 'Pending';
-
-  @override
-  String get groupNotificationsTitle => 'Group notifications';
 
   @override
   String get groupNotificationsEmpty => 'No group notifications yet.';
@@ -6248,6 +6659,118 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupParticipantsTitle => 'Participants in this expense';
 
   @override
+  String get groupParticipantsSelectHint => 'Choose members for this expense';
+
+  @override
+  String groupParticipantsSelectedCount(Object count, Object total) {
+    return '$count/$total members selected';
+  }
+
+  @override
+  String get groupParticipantsAllSelected => 'All members';
+
+  @override
+  String get groupParticipantsNoneSelected => 'No members selected';
+
+  @override
+  String get groupParticipantsSelectAll => 'Select all';
+
+  @override
+  String get groupParticipantsDeselectAll => 'Deselect all';
+
+  @override
+  String get groupParticipantsDone => 'Done';
+
+  @override
+  String get groupSplitEqualDescription =>
+      'Split the total evenly between the selected members.';
+
+  @override
+  String get groupSplitExactDescription =>
+      'Enter the exact share that each person owes.';
+
+  @override
+  String get groupSplitUnequalDescription =>
+      'Let each member enter the amount they used.';
+
+  @override
+  String get groupSplitHelp => 'How to choose';
+
+  @override
+  String get groupSplitGuideTitle => 'Choose a split method';
+
+  @override
+  String get groupSplitGuideIntro =>
+      'Choose the method that matches this expense. You can change it before posting the transaction.';
+
+  @override
+  String get groupSplitGuideEqualTitle => 'Equal split';
+
+  @override
+  String get groupSplitGuideEqualBody =>
+      'Use when everyone benefits equally. Example: split a meal bill evenly between four people.';
+
+  @override
+  String get groupSplitGuideExactTitle => 'Exact amounts';
+
+  @override
+  String get groupSplitGuideExactBody =>
+      'Use when each person owes a known amount. The shares you enter must add up to the receipt total.';
+
+  @override
+  String get groupSplitGuideUnequalTitle => 'Member-entered amounts';
+
+  @override
+  String get groupSplitGuideUnequalBody =>
+      'Use when each member should confirm what they used. The transaction stays pending until the required amounts are submitted.';
+
+  @override
+  String get groupSplitGuideClose => 'Got it';
+
+  @override
+  String get groupSettlementGroupOverview => 'Group overview';
+
+  @override
+  String get groupSettlementMyPart => 'My part';
+
+  @override
+  String get groupSettlementMyProgress => 'My progress';
+
+  @override
+  String get groupSettlementMarkPaid => 'I transferred the money';
+
+  @override
+  String get groupSettlementConfirmReceived => 'I received the money';
+
+  @override
+  String get groupSettlementWaitingReceiver =>
+      'You marked it sent. The receiver must check and confirm receipt.';
+
+  @override
+  String get groupSettlementWaitingPayer =>
+      'The payer has not marked it sent yet. Confirm after the money arrives.';
+
+  @override
+  String get groupSummaryBudgetTitle => 'Monthly budget';
+
+  @override
+  String groupSummaryBudgetSpent(Object limit, Object spent) {
+    return 'Spent $spent/$limit';
+  }
+
+  @override
+  String get groupSummaryBudgetWarning =>
+      'The group is close to its budget threshold.';
+
+  @override
+  String get groupSummaryBudgetExceeded =>
+      'The group is over its monthly budget.';
+
+  @override
+  String get groupSummaryBudgetNoLimit =>
+      'No budget has been set for this month.';
+
+  @override
   String get groupSettlementDisputeTitle => 'Report a settlement issue';
 
   @override
@@ -6258,7 +6781,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter a reason for the dispute.';
 
   @override
+  String get groupSettlementDisputeReasonTooLong =>
+      'The dispute reason must be 300 characters or fewer.';
+
+  @override
   String get groupSettlementDisputeAction => 'Dispute';
+
+  @override
+  String get groupSettlementResetDisputeTitle => 'Reopen settlement';
+
+  @override
+  String get groupSettlementResetDisputeMessage =>
+      'This disputed settlement will return to pending so the group can resolve it again.';
+
+  @override
+  String get groupSettlementResetDisputeAction => 'Reopen';
 
   @override
   String get groupTransferOwnershipAction => 'Transfer ownership';

@@ -91,26 +91,44 @@ floating global action that pushes `/assistant`; it is not a fifth shell tab.
 
 | Route | Screen | Extra/fallback |
 |---|---|---|
-| `/group-detail` | `GroupDetailScreen` | Group ID |
+| `/groups/:groupId/home` | `GroupShellScreen` + `GroupDetailScreen` | Primary Group Shell branch; transaction-first Home |
+| `/groups/:groupId/community` | `GroupShellScreen` + `GroupActivityCenterScreen` / `GroupCommunityScreen` | Member-only Community feed and composer; child routes keep the shell |
+| `/groups/:groupId/notifications` | `GroupShellScreen` + notifications center | Group and community notification inbox |
+| `/groups/:groupId/management` | `GroupShellScreen` + `GroupToolsScreen` | Group management branch; child routes keep the shell |
+| `/groups/:groupId/home/settlements` | `DebtSettlementScreen` | Contextual settlement flow inside Group Shell |
+| `/groups/:groupId/home/summary` | `GroupSummaryScreen` | Contextual financial summary inside Group Shell |
+| `/groups/:groupId/home/transactions/new` | `AddGroupTransactionScreen` | Create/edit transaction inside Group Shell |
+| `/groups/:groupId/home/transactions/:transactionId` | `GroupTransactionDetailScreen` | Transaction detail inside Group Shell |
+| `/groups/:groupId/community/album` | `GroupPhotoAlbumScreen` | Private 3-column gallery combining transaction receipts and standalone community media |
+| `/groups/:groupId/community/participation` | `GroupParticipationScreen` | Polls and savings challenges |
+| `/groups/:groupId/management/budget` | `GroupBudgetScreen` | Owner/admin budget controls |
+| `/groups/:groupId/management/recurring` | `GroupRecurringTransactionsScreen` | Recurring expense controls |
+| `/groups/:groupId/management/notification-preferences` | `GroupNotificationPreferencesScreen` | Current member's preferences |
+| `/groups/:groupId/management/public-profile` | `GroupPublicProfileScreen` | Owner/admin public profile policy |
+| `/groups/:groupId/management/audit-log` | `GroupAuditLogScreen` | Owner/admin audit trail |
+| `/groups/:groupId/management/settings` | `GroupSettingsScreen` | Group identity and archive settings |
+| `/groups/:groupId/management/invite` | `InviteMemberScreen` | Invite flow inside Group Shell |
+| `/group-detail` | redirects to Group Home | Legacy route; accepts Group ID through `extra` |
+| `/group-shell` | redirects to Group Home | Legacy route; accepts Group ID through `extra` |
 | `/groups/create` | `CreateGroupScreen` | Slide up |
 | `/groups/invite` | `InviteMemberScreen` | Group ID |
 | `/groups/invite/:token` | `GroupInviteAcceptScreen` | Shared invite token; recipient previews, joins, or dismisses without joining |
 | `/groups/invitations` | `GroupInvitationsScreen` | Persistent direct username/friend invitations; accept or decline |
-| `/groups/transaction/form` | `AddGroupTransactionScreen` | `AddGroupTransactionArgs` |
-| `/groups/member-amount` | `MemberAmountInputScreen` | `MemberAmountInputArgs` |
-| `/groups/settlements` | `DebtSettlementScreen` | Group ID |
-| `/groups/transaction/detail` | `GroupTransactionDetailScreen` | Transaction ID; fade |
-| `/groups/activity-center` | `GroupActivityCenterScreen` | Optional group ID; without one it opens the notifications-only view |
-| `/group-tools` | `GroupToolsScreen` | Group ID; finance, community, and group settings tools |
-| `/group-settings` | `GroupSettingsScreen` | Group ID; owner/admin edit and guarded archive |
-| `/group-summary` | `GroupSummaryScreen` | Group ID; monthly spending, member breakdown, and settlement history |
-| `/group-participation` | `GroupParticipationScreen` | Group ID; polls and savings challenges |
-| `/group-audit-log` | `GroupAuditLogScreen` | Group ID; owner/admin audit trail |
-| `/group-photo-album` | `GroupPhotoAlbumScreen` | Group ID; private transaction photo gallery |
-| `/group-budget` | `GroupBudgetScreen` | Group ID; owner/admin write, members read |
-| `/group-notification-preferences` | `GroupNotificationPreferencesScreen` | Group ID; current member's preferences |
-| `/group-public-profile` | `GroupPublicProfileScreen` | Group ID; owner/admin settings |
-| `/group-recurring-transactions` | `GroupRecurringTransactionsScreen` | Group ID; recurring expense CRUD through RPC |
+| `/groups/transaction/form` | `AddGroupTransactionScreen` compatibility entry | Legacy `AddGroupTransactionArgs`; Group Shell uses `/groups/:groupId/home/transactions/new` |
+| `/groups/member-amount` | `MemberAmountInputScreen` compatibility entry | Legacy `MemberAmountInputArgs`; Group Shell uses the nested transaction route |
+| `/groups/settlements` | redirects to Group Home settlements | Legacy route; accepts Group ID through `extra` |
+| `/groups/transaction/detail` | `GroupTransactionDetailScreen` compatibility entry | Legacy transaction ID extra; Group Shell uses `/groups/:groupId/home/transactions/:transactionId` |
+| `/groups/activity-center` | redirects to Community or legacy notifications | Optional Group ID through `extra`; no ID keeps the compatibility notification view |
+| `/group-tools` | redirects to Group management | Legacy route; accepts Group ID through `extra` |
+| `/group-settings` | redirects to Group management settings | Legacy route; accepts Group ID through `extra` |
+| `/group-summary` | redirects to Group Home summary | Legacy route; accepts Group ID through `extra` |
+| `/group-participation` | redirects to Community participation | Legacy route; accepts Group ID through `extra` |
+| `/group-audit-log` | redirects to Group management audit log | Legacy route; accepts Group ID through `extra` |
+| `/group-photo-album` | redirects to Community album | Legacy route; accepts Group ID through `extra` |
+| `/group-budget` | redirects to Group management budget | Legacy route; accepts Group ID through `extra` |
+| `/group-notification-preferences` | redirects to Group management preferences | Legacy route; accepts Group ID through `extra` |
+| `/group-public-profile` | redirects to Group management public profile | Legacy route; accepts Group ID through `extra` |
+| `/group-recurring-transactions` | redirects to Group management recurring | Legacy route; accepts Group ID through `extra` |
 | `/public-group/:slug` | `GroupPublicProfileScreen.public` | Public-safe aggregate profile route |
 | `/friends` | `FriendsScreen` | Friend list/requests |
 | `/friends/add` | `AddFriendScreen` | Search/add |

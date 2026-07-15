@@ -23,6 +23,7 @@ type OutboxRow = {
   type: string;
   group_id: string | null;
   metadata: Record<string, unknown>;
+  attempt_count: number;
 };
 
 type DeviceRow = {

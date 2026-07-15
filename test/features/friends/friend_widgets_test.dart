@@ -15,6 +15,7 @@ import 'package:moniary/features/friends/presentation/screens/friends_screen.dar
 import 'package:moniary/features/friends/presentation/widgets/friend_invite_prompt_host.dart';
 import 'package:moniary/features/groups/data/repositories/group_repository_impl.dart';
 import 'package:moniary/features/groups/domain/entities/group_community.dart';
+import 'package:moniary/features/groups/domain/entities/group_community_feed.dart';
 import 'package:moniary/features/groups/domain/entities/group_enums.dart';
 import 'package:moniary/features/groups/domain/entities/group_invite.dart';
 import 'package:moniary/features/groups/domain/entities/group_roadmap.dart';
@@ -27,6 +28,9 @@ import 'package:moniary/features/groups/presentation/screens/group_detail_screen
 import 'package:moniary/features/groups/presentation/screens/invite_member_screen.dart';
 import 'package:moniary/features/groups/presentation/screens/group_invitations_screen.dart';
 import 'package:moniary/features/groups/presentation/screens/group_list_screen.dart';
+import 'package:moniary/features/groups/presentation/screens/group_route_paths.dart';
+import 'package:moniary/features/groups/presentation/screens/group_shell_screen.dart';
+import 'package:moniary/features/groups/presentation/screens/group_tools_screen.dart';
 import 'package:moniary/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:moniary/features/notifications/domain/entities/app_notification.dart';
 import 'package:moniary/features/notifications/domain/repositories/notification_repository.dart';
@@ -122,6 +126,12 @@ void main() {
               GroupActivityCenterScreen(groupId: state.extra as String?),
         ),
         GoRoute(
+          path: GroupRoutePaths.communityPattern,
+          builder: (context, state) => GroupActivityCenterScreen(
+            groupId: state.pathParameters['groupId']!,
+          ),
+        ),
+        GoRoute(
           path: GroupDetailScreen.routePath,
           builder: (context, state) =>
               GroupDetailScreen(groupId: detailGroupId),
@@ -141,6 +151,87 @@ void main() {
           notificationRepositoryProvider.overrideWithValue(
             notificationRepository,
           ),
+      ],
+      child: MaterialApp.router(
+        locale: const Locale('vi'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router,
+      ),
+    );
+  }
+
+  Widget groupShellApp({required FakeGroupRepository groupRepository}) {
+    final router = GoRouter(
+      initialLocation: GroupRoutePaths.home('group-1'),
+      routes: [
+        GoRoute(
+          path: GroupRoutePaths.groupPattern,
+          redirect: (context, state) {
+            final groupId = state.pathParameters['groupId']!;
+            return state.uri.path == '/groups/$groupId'
+                ? GroupRoutePaths.home(groupId)
+                : null;
+          },
+          routes: [
+            StatefulShellRoute.indexedStack(
+              builder: (context, state, navigationShell) => GroupShellScreen(
+                groupId: state.pathParameters['groupId']!,
+                navigationShell: navigationShell,
+              ),
+              branches: [
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: 'home',
+                      builder: (context, state) => GroupDetailScreen(
+                        groupId: state.pathParameters['groupId']!,
+                      ),
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: 'community',
+                      builder: (context, state) => GroupActivityCenterScreen(
+                        groupId: state.pathParameters['groupId']!,
+                      ),
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: 'notifications',
+                      builder: (context, state) =>
+                          const GroupActivityCenterScreen(
+                            notificationOnly: true,
+                          ),
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: 'management',
+                      builder: (context, state) => GroupToolsScreen(
+                        groupId: state.pathParameters['groupId']!,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+    return ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        friendRepositoryProvider.overrideWithValue(FakeFriendRepository()),
+        groupRepositoryProvider.overrideWithValue(groupRepository),
       ],
       child: MaterialApp.router(
         locale: const Locale('vi'),
@@ -711,13 +802,34 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(find.text('Hoạt động'), findsOneWidget);
-    expect(find.text('Thông báo'), findsOneWidget);
+    expect(find.text('Cộng đồng'), findsOneWidget);
+    expect(find.text('Thông báo'), findsNothing);
+  });
 
-    await tester.tap(find.text('Thông báo'));
+  testWidgets('GroupShellScreen điều hướng qua bốn khu vực chính', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      groupShellApp(groupRepository: FakeGroupRepository()),
+    );
     await tester.pumpAndSettle();
 
-    expect(find.text('Có giao dịch mới'), findsOneWidget);
+    expect(find.text('TRANG CHỦ'), findsOneWidget);
+    expect(find.text('CỘNG ĐỒNG'), findsOneWidget);
+    expect(find.text('THÔNG BÁO'), findsOneWidget);
+    expect(find.text('QUẢN LÝ NHÓM'), findsOneWidget);
+
+    await tester.tap(find.text('CỘNG ĐỒNG'));
+    await tester.pumpAndSettle();
+    expect(find.text('Cộng đồng'), findsWidgets);
+
+    await tester.tap(find.text('THÔNG BÁO'));
+    await tester.pumpAndSettle();
+    expect(find.text('Thông báo nhóm'), findsOneWidget);
+
+    await tester.tap(find.text('QUẢN LÝ NHÓM'));
+    await tester.pumpAndSettle();
+    expect(find.text('Quản lý nhóm'), findsOneWidget);
   });
 
   testWidgets('InviteMemberScreen disable bạn đã là thành viên nhóm', (
@@ -1186,6 +1298,33 @@ class FakeGroupRepository implements GroupRepository {
   Future<GroupStatsOverview> fetchStats(String groupId) async {
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<GroupCommunityPost>> fetchCommunityPosts({
+    required String groupId,
+    int offset = 0,
+    int limit = 30,
+  }) async => const [];
+
+  @override
+  Future<String> createCommunityPost({
+    required String groupId,
+    required String type,
+    String? content,
+    List<GroupCommunityMediaDraft> media = const [],
+  }) async => 'mock-community-post';
+
+  @override
+  Future<void> addCommunityPostComment({
+    required String postId,
+    required String content,
+  }) async {}
+
+  @override
+  Future<void> toggleCommunityPostReaction({
+    required String postId,
+    required String emoji,
+  }) async {}
 
   @override
   Future<List<GroupNotification>> fetchNotifications({

@@ -12,8 +12,8 @@ import '../../application/group_controller.dart';
 import '../../domain/entities/spending_group.dart';
 import '../../../notifications/presentation/screens/notification_center_screen.dart';
 import 'create_group_screen.dart';
-import 'group_detail_screen.dart';
 import 'group_invitations_screen.dart';
+import 'group_route_paths.dart';
 import 'invite_member_screen.dart';
 
 class GroupListScreen extends ConsumerWidget {
@@ -73,7 +73,7 @@ class GroupListScreen extends ConsumerWidget {
       await context.push(InviteMemberScreen.routePath, extra: groupId);
       if (!context.mounted) return;
     }
-    await context.push(GroupDetailScreen.routePath, extra: groupId);
+    await context.push(GroupRoutePaths.home(groupId));
   }
 }
 
@@ -155,8 +155,7 @@ class _GroupListContent extends StatelessWidget {
                         group: groups[index],
                         index: index,
                         onTap: () => context.push(
-                          GroupDetailScreen.routePath,
-                          extra: groups[index].id,
+                          GroupRoutePaths.home(groups[index].id),
                         ),
                       ),
                     ),

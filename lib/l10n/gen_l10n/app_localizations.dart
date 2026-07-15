@@ -7260,6 +7260,78 @@ abstract class AppLocalizations {
   /// **'Xác nhận đã tất toán'**
   String get groupSettlementConfirmAll;
 
+  /// No description provided for @groupSettlementConfirmMyActions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận phần của tôi'**
+  String get groupSettlementConfirmMyActions;
+
+  /// No description provided for @groupSettlementMyToPay.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tôi cần trả'**
+  String get groupSettlementMyToPay;
+
+  /// No description provided for @groupSettlementMyToReceive.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tôi cần nhận'**
+  String get groupSettlementMyToReceive;
+
+  /// No description provided for @groupSettlementGroupOpenItems.
+  ///
+  /// In vi, this message translates to:
+  /// **'Các khoản chưa hoàn tất'**
+  String get groupSettlementGroupOpenItems;
+
+  /// No description provided for @groupSettlementDisputedSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tranh chấp'**
+  String get groupSettlementDisputedSection;
+
+  /// No description provided for @groupSettlementDisputeReason.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lý do: {reason}'**
+  String groupSettlementDisputeReason(String reason);
+
+  /// No description provided for @groupSettlementFlowTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cách hoàn tất một khoản'**
+  String get groupSettlementFlowTitle;
+
+  /// No description provided for @groupSettlementFlowSummary.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người trả báo đã chuyển → người nhận xác nhận'**
+  String get groupSettlementFlowSummary;
+
+  /// No description provided for @groupSettlementPayerActionHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Sau khi chuyển đúng số tiền, hãy bấm nút bên dưới để báo cho người nhận.'**
+  String get groupSettlementPayerActionHint;
+
+  /// No description provided for @groupSettlementReceiverActionHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ xác nhận sau khi bạn đã kiểm tra tiền thực sự đã về.'**
+  String get groupSettlementReceiverActionHint;
+
+  /// No description provided for @groupSettlementMarkedPaid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ghi nhận bạn đã chuyển tiền'**
+  String get groupSettlementMarkedPaid;
+
+  /// No description provided for @groupSettlementReceivedConfirmed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xác nhận nhận tiền'**
+  String get groupSettlementReceivedConfirmed;
+
   /// No description provided for @groupSettlementWaitingForPayers.
   ///
   /// In vi, this message translates to:
@@ -7271,6 +7343,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'{groupName} · Tối ưu {count} giao dịch'**
   String groupSettlementOptimizedSubtitle(String groupName, int count);
+
+  /// No description provided for @groupSettlementRemaining.
+  ///
+  /// In vi, this message translates to:
+  /// **'Còn lại {amount}'**
+  String groupSettlementRemaining(String amount);
+
+  /// No description provided for @groupSettlementProgress.
+  ///
+  /// In vi, this message translates to:
+  /// **'{completed}/{total} khoản đã hoàn tất'**
+  String groupSettlementProgress(int completed, int total);
 
   /// No description provided for @groupUnresolvedBadge.
   ///
@@ -7289,6 +7373,24 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Giao dịch nhóm'**
   String get groupTransactionsTitle;
+
+  /// No description provided for @groupTransactionsTab.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch'**
+  String get groupTransactionsTab;
+
+  /// No description provided for @groupSettlementsTab.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất toán'**
+  String get groupSettlementsTab;
+
+  /// No description provided for @groupCommunityTab.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cộng đồng'**
+  String get groupCommunityTab;
 
   /// No description provided for @groupDebtAreaTitle.
   ///
@@ -7812,6 +7914,12 @@ abstract class AppLocalizations {
   /// **'Chờ thành viên nhập số tiền'**
   String get groupTransactionPendingStatus;
 
+  /// No description provided for @groupTransactionPendingShort.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ nhập'**
+  String get groupTransactionPendingShort;
+
   /// No description provided for @groupTransactionMismatchStatus.
   ///
   /// In vi, this message translates to:
@@ -7841,6 +7949,42 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Tất cả'**
   String get groupTransactionFilterAll;
+
+  /// No description provided for @groupTransactionViewAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem tất cả giao dịch'**
+  String get groupTransactionViewAll;
+
+  /// No description provided for @groupTransactionRecent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch gần đây'**
+  String get groupTransactionRecent;
+
+  /// No description provided for @groupTransactionExplorerSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm kiếm, lọc và xem giao dịch theo từng trang.'**
+  String get groupTransactionExplorerSubtitle;
+
+  /// No description provided for @groupTransactionMonth.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tháng {month}'**
+  String groupTransactionMonth(Object month);
+
+  /// No description provided for @groupTransactionTrendValue.
+  ///
+  /// In vi, this message translates to:
+  /// **'{amount} · {count} giao dịch'**
+  String groupTransactionTrendValue(Object amount, Object count);
+
+  /// No description provided for @groupTransactionNoChange.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không đổi'**
+  String get groupTransactionNoChange;
 
   /// No description provided for @groupTransactionFilterNoResults.
   ///
@@ -7878,6 +8022,48 @@ abstract class AppLocalizations {
   /// **'Hoạt động nhóm'**
   String get groupActivityCenterTitle;
 
+  /// No description provided for @groupNotificationsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo nhóm'**
+  String get groupNotificationsTitle;
+
+  /// No description provided for @groupShellHome.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trang chủ'**
+  String get groupShellHome;
+
+  /// No description provided for @groupShellCommunity.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cộng đồng'**
+  String get groupShellCommunity;
+
+  /// No description provided for @groupShellNotifications.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thông báo'**
+  String get groupShellNotifications;
+
+  /// No description provided for @groupManageTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quản lý nhóm'**
+  String get groupManageTitle;
+
+  /// No description provided for @groupManageSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quản lý thành viên, tài chính và hoạt động của nhóm.'**
+  String get groupManageSubtitle;
+
+  /// No description provided for @groupManageAccessSection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền và an toàn'**
+  String get groupManageAccessSection;
+
   /// No description provided for @groupActivityTabTimeline.
   ///
   /// In vi, this message translates to:
@@ -7908,6 +8094,36 @@ abstract class AppLocalizations {
   /// **'Album ảnh'**
   String get groupPhotoAlbumTitle;
 
+  /// No description provided for @groupPhotoAlbumAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả'**
+  String get groupPhotoAlbumAll;
+
+  /// No description provided for @groupPhotoAlbumReceipts.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hóa đơn'**
+  String get groupPhotoAlbumReceipts;
+
+  /// No description provided for @groupPhotoAlbumMemories.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kỷ niệm'**
+  String get groupPhotoAlbumMemories;
+
+  /// No description provided for @groupPhotoAlbumChoose.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn ảnh'**
+  String get groupPhotoAlbumChoose;
+
+  /// No description provided for @groupPhotoAlbumAdd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm ảnh'**
+  String get groupPhotoAlbumAdd;
+
   /// No description provided for @groupPhotoAlbumEmpty.
   ///
   /// In vi, this message translates to:
@@ -7919,6 +8135,30 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Không thể tải album ảnh'**
   String get groupPhotoAlbumLoadError;
+
+  /// No description provided for @groupPhotoAlbumAddHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn ảnh kỷ niệm hoặc hóa đơn để chia sẻ với nhóm.'**
+  String get groupPhotoAlbumAddHint;
+
+  /// No description provided for @groupPhotoAlbumUploadError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể đăng ảnh vào album'**
+  String get groupPhotoAlbumUploadError;
+
+  /// No description provided for @groupPhotoAlbumUploadSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thêm ảnh vào album nhóm'**
+  String get groupPhotoAlbumUploadSuccess;
+
+  /// No description provided for @groupPhotoAlbumPreview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem ảnh'**
+  String get groupPhotoAlbumPreview;
 
   /// No description provided for @groupTransactionFallback.
   ///
@@ -8340,6 +8580,24 @@ abstract class AppLocalizations {
   /// **'Giao dịch định kỳ'**
   String get groupRecurringTitle;
 
+  /// No description provided for @groupRecurringSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự động tạo giao dịch theo lịch đã chọn.'**
+  String get groupRecurringSubtitle;
+
+  /// No description provided for @groupRecurringNextRunLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lần chạy tiếp theo'**
+  String get groupRecurringNextRunLabel;
+
+  /// No description provided for @groupRecurringAutoPostLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự động ghi nhận'**
+  String get groupRecurringAutoPostLabel;
+
   /// No description provided for @groupRecurringAdd.
   ///
   /// In vi, this message translates to:
@@ -8586,6 +8844,30 @@ abstract class AppLocalizations {
   /// **'Xu hướng chi tiêu 6 tháng'**
   String get groupSummaryTrendTitle;
 
+  /// No description provided for @groupSummaryTrendSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi cột là tổng chi trong tháng. Chạm vào cột để xem chi tiết.'**
+  String get groupSummaryTrendSubtitle;
+
+  /// No description provided for @groupSummaryTrendTableTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiết theo tháng'**
+  String get groupSummaryTrendTableTitle;
+
+  /// No description provided for @groupSummaryCategorySubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tỷ trọng theo tổng chi trong tháng'**
+  String get groupSummaryCategorySubtitle;
+
+  /// No description provided for @groupSummaryCategoryShare.
+  ///
+  /// In vi, this message translates to:
+  /// **'{percent}%'**
+  String groupSummaryCategoryShare(Object percent);
+
   /// No description provided for @groupSettlementBadgeTitle.
   ///
   /// In vi, this message translates to:
@@ -8736,6 +9018,450 @@ abstract class AppLocalizations {
   /// **'Cộng đồng'**
   String get groupActivityTabCommunityNotifications;
 
+  /// No description provided for @groupCommunityComposerHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ cập nhật với nhóm...'**
+  String get groupCommunityComposerHint;
+
+  /// No description provided for @groupCommunityCreateActivity.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo hoạt động'**
+  String get groupCommunityCreateActivity;
+
+  /// No description provided for @groupCommunityCreateActivityHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn loại nội dung bạn muốn tạo cho cả nhóm.'**
+  String get groupCommunityCreateActivityHelp;
+
+  /// No description provided for @groupCommunityWriteUpdate.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng cập nhật'**
+  String get groupCommunityWriteUpdate;
+
+  /// No description provided for @groupCommunityWriteUpdateHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ nội dung hoặc ảnh với các thành viên.'**
+  String get groupCommunityWriteUpdateHelp;
+
+  /// No description provided for @groupCommunityCreatePoll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo bình chọn'**
+  String get groupCommunityCreatePoll;
+
+  /// No description provided for @groupCommunityCreatePollHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt câu hỏi để nhóm cùng lựa chọn và thống nhất.'**
+  String get groupCommunityCreatePollHelp;
+
+  /// No description provided for @groupCommunityCreateChallenge.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo thử thách tiết kiệm'**
+  String get groupCommunityCreateChallenge;
+
+  /// No description provided for @groupCommunityCreateChallengeHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt mục tiêu tiền chung để các thành viên cùng đóng góp.'**
+  String get groupCommunityCreateChallengeHelp;
+
+  /// No description provided for @groupCommunityFeedTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật của nhóm'**
+  String get groupCommunityFeedTitle;
+
+  /// No description provided for @groupCommunityAlbumAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Album ảnh'**
+  String get groupCommunityAlbumAction;
+
+  /// No description provided for @groupCommunityParticipationAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bình chọn & thử thách'**
+  String get groupCommunityParticipationAction;
+
+  /// No description provided for @groupCommunityMilestone.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cột mốc của nhóm'**
+  String get groupCommunityMilestone;
+
+  /// No description provided for @groupCommunityAllTab.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả'**
+  String get groupCommunityAllTab;
+
+  /// No description provided for @groupCommunityPollTab.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bình chọn'**
+  String get groupCommunityPollTab;
+
+  /// No description provided for @groupCommunityActivityTab.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoạt động'**
+  String get groupCommunityActivityTab;
+
+  /// No description provided for @groupCommunityPostText.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bài viết'**
+  String get groupCommunityPostText;
+
+  /// No description provided for @groupCommunityPostPhoto.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng ảnh'**
+  String get groupCommunityPostPhoto;
+
+  /// No description provided for @groupCommunityPostPoll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bình chọn'**
+  String get groupCommunityPostPoll;
+
+  /// No description provided for @groupCommunityPostChallenge.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử thách'**
+  String get groupCommunityPostChallenge;
+
+  /// No description provided for @groupCommunityPollTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bình chọn của nhóm'**
+  String get groupCommunityPollTitle;
+
+  /// No description provided for @groupCommunityStepOf.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bước {step}/{total}'**
+  String groupCommunityStepOf(int step, int total);
+
+  /// No description provided for @groupCommunityBack.
+  ///
+  /// In vi, this message translates to:
+  /// **'Quay lại'**
+  String get groupCommunityBack;
+
+  /// No description provided for @groupCommunityNext.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếp tục'**
+  String get groupCommunityNext;
+
+  /// No description provided for @groupCommunityPollPreview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem trước bình chọn'**
+  String get groupCommunityPollPreview;
+
+  /// No description provided for @groupCommunityChallengePreview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem trước thử thách'**
+  String get groupCommunityChallengePreview;
+
+  /// No description provided for @groupCommunityPollInstruction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn một phương án rồi nhấn Ghi nhận bình chọn.'**
+  String get groupCommunityPollInstruction;
+
+  /// No description provided for @groupCommunityPollVoteAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi nhận bình chọn'**
+  String get groupCommunityPollVoteAction;
+
+  /// No description provided for @groupCommunityPollVoteRecorded.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã bình chọn'**
+  String get groupCommunityPollVoteRecorded;
+
+  /// No description provided for @groupCommunityPollClosed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bình chọn đã kết thúc'**
+  String get groupCommunityPollClosed;
+
+  /// No description provided for @groupCommunityPollSelected.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã chọn: {option}'**
+  String groupCommunityPollSelected(String option);
+
+  /// No description provided for @groupCommunityPollCreated.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tạo bình chọn cho nhóm'**
+  String get groupCommunityPollCreated;
+
+  /// No description provided for @groupCommunityPollCreateHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt một câu hỏi và nhập ít nhất 2 lựa chọn, mỗi lựa chọn trên một dòng.'**
+  String get groupCommunityPollCreateHelp;
+
+  /// No description provided for @groupCommunityPollValidation.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy nhập câu hỏi và ít nhất 2 lựa chọn.'**
+  String get groupCommunityPollValidation;
+
+  /// No description provided for @groupCommunityPollOptionsExample.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hải sản\nCà phê\nMón khác'**
+  String get groupCommunityPollOptionsExample;
+
+  /// No description provided for @groupCommunityPollOptionLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lựa chọn {number}'**
+  String groupCommunityPollOptionLabel(int number);
+
+  /// No description provided for @groupCommunityPollAddOption.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm lựa chọn'**
+  String get groupCommunityPollAddOption;
+
+  /// No description provided for @groupCommunityPollRemoveOption.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xóa lựa chọn'**
+  String get groupCommunityPollRemoveOption;
+
+  /// No description provided for @groupCommunityPollMaxOptions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã đạt tối đa 6 lựa chọn.'**
+  String get groupCommunityPollMaxOptions;
+
+  /// No description provided for @groupCommunityChallengeTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử thách tiết kiệm'**
+  String get groupCommunityChallengeTitle;
+
+  /// No description provided for @groupCommunityChallengeInstruction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cùng đóng góp để đạt mục tiêu chung của nhóm.'**
+  String get groupCommunityChallengeInstruction;
+
+  /// No description provided for @groupCommunityChallengeCreateHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt mục tiêu tiết kiệm để các thành viên cùng đóng góp.'**
+  String get groupCommunityChallengeCreateHelp;
+
+  /// No description provided for @groupCommunityChallengeDuration.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thời hạn mặc định: 30 ngày'**
+  String get groupCommunityChallengeDuration;
+
+  /// No description provided for @groupCommunityChallengeMembers.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mọi thành viên trong nhóm đều có thể tham gia'**
+  String get groupCommunityChallengeMembers;
+
+  /// No description provided for @groupCommunityChallengeValidation.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy nhập tên và số tiền mục tiêu lớn hơn 0.'**
+  String get groupCommunityChallengeValidation;
+
+  /// No description provided for @groupCommunityChallengeCompleted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhóm đã đạt mục tiêu'**
+  String get groupCommunityChallengeCompleted;
+
+  /// No description provided for @groupCommunityChallengeClosed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử thách đã kết thúc'**
+  String get groupCommunityChallengeClosed;
+
+  /// No description provided for @groupCommunityChallengeSaved.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã góp'**
+  String get groupCommunityChallengeSaved;
+
+  /// No description provided for @groupCommunityChallengeRemaining.
+  ///
+  /// In vi, this message translates to:
+  /// **'Còn thiếu'**
+  String get groupCommunityChallengeRemaining;
+
+  /// No description provided for @groupCommunityChallengeEnds.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết thúc'**
+  String get groupCommunityChallengeEnds;
+
+  /// No description provided for @groupCommunityChallengeCreated.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tạo thử thách tiết kiệm'**
+  String get groupCommunityChallengeCreated;
+
+  /// No description provided for @groupCommunityContributionRecorded.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã ghi nhận khoản đóng góp của bạn'**
+  String get groupCommunityContributionRecorded;
+
+  /// No description provided for @groupCommunityContributionHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập số tiền bạn muốn đóng góp. Còn thiếu: {amount}'**
+  String groupCommunityContributionHelp(String amount);
+
+  /// No description provided for @groupCommunityContributionAmount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền đóng góp'**
+  String get groupCommunityContributionAmount;
+
+  /// No description provided for @groupCommunityContributionInvalid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập số tiền lớn hơn 0.'**
+  String get groupCommunityContributionInvalid;
+
+  /// No description provided for @groupCommunityPublish.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đăng lên nhóm'**
+  String get groupCommunityPublish;
+
+  /// No description provided for @groupCommunityPostEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy viết gì đó hoặc chọn ảnh trước khi đăng.'**
+  String get groupCommunityPostEmpty;
+
+  /// No description provided for @groupCommunityPhotoCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ảnh đã chọn'**
+  String groupCommunityPhotoCount(int count);
+
+  /// No description provided for @groupCommunityComment.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bình luận'**
+  String get groupCommunityComment;
+
+  /// No description provided for @groupCommunityCommentHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Viết bình luận...'**
+  String get groupCommunityCommentHint;
+
+  /// No description provided for @groupCommunityCommentEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có bình luận'**
+  String get groupCommunityCommentEmpty;
+
+  /// No description provided for @groupCommunityActivityTransaction.
+  ///
+  /// In vi, this message translates to:
+  /// **'đã thêm một khoản chi mới'**
+  String get groupCommunityActivityTransaction;
+
+  /// No description provided for @groupCommunityActivitySettlement.
+  ///
+  /// In vi, this message translates to:
+  /// **'đã hoàn tất phần tất toán của mình 🎉'**
+  String get groupCommunityActivitySettlement;
+
+  /// No description provided for @groupCommunityActivityMemberLeft.
+  ///
+  /// In vi, this message translates to:
+  /// **'đã rời nhóm'**
+  String get groupCommunityActivityMemberLeft;
+
+  /// No description provided for @groupCommunityActivityPost.
+  ///
+  /// In vi, this message translates to:
+  /// **'đã chia sẻ cập nhật với nhóm'**
+  String get groupCommunityActivityPost;
+
+  /// No description provided for @groupCommunityActivityGeneric.
+  ///
+  /// In vi, this message translates to:
+  /// **'đã có một cập nhật mới'**
+  String get groupCommunityActivityGeneric;
+
+  /// No description provided for @groupCommunityVoters.
+  ///
+  /// In vi, this message translates to:
+  /// **'người đã chọn'**
+  String get groupCommunityVoters;
+
+  /// No description provided for @groupCommunityChallengeProgress.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tiết kiệm'**
+  String get groupCommunityChallengeProgress;
+
+  /// No description provided for @groupCommunityJoinChallenge.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tham gia'**
+  String get groupCommunityJoinChallenge;
+
+  /// No description provided for @groupCommunityContribute.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đóng góp'**
+  String get groupCommunityContribute;
+
+  /// No description provided for @groupCommunityNoFeed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có cập nhật. Hãy là người đầu tiên chia sẻ!'**
+  String get groupCommunityNoFeed;
+
+  /// No description provided for @groupCommunityOpenNotifications.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở thông báo nhóm'**
+  String get groupCommunityOpenNotifications;
+
+  /// No description provided for @groupCommunityOpenManagement.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở quản lý nhóm'**
+  String get groupCommunityOpenManagement;
+
+  /// No description provided for @groupCommunityPostCreated.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã đăng cập nhật vào cộng đồng'**
+  String get groupCommunityPostCreated;
+
   /// No description provided for @communityNotificationsEmptyState.
   ///
   /// In vi, this message translates to:
@@ -8801,6 +9527,12 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Giao dịch này đã có khoản nợ được xác nhận. Nếu chỉnh sửa, hệ thống sẽ tính lại công nợ của nhóm. Bạn có chắc muốn tiếp tục không?'**
   String get groupTransactionCompletedEditWarning;
+
+  /// No description provided for @groupTransactionSettlementLocked.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch đã tham gia quy trình tất toán nên không thể sửa hoặc xóa. Nếu cần điều chỉnh, hãy tạo một giao dịch mới để lưu dấu vết rõ ràng.'**
+  String get groupTransactionSettlementLocked;
 
   /// No description provided for @groupTransactionCreatorOnly.
   ///
@@ -9029,12 +9761,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Chờ xử lý'**
   String get groupStatsPendingCount;
-
-  /// No description provided for @groupNotificationsTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Thông báo nhóm'**
-  String get groupNotificationsTitle;
 
   /// No description provided for @groupNotificationsEmpty.
   ///
@@ -11126,6 +11852,198 @@ abstract class AppLocalizations {
   /// **'Người tham gia khoản chi'**
   String get groupParticipantsTitle;
 
+  /// No description provided for @groupParticipantsSelectHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn thành viên tham gia khoản chi'**
+  String get groupParticipantsSelectHint;
+
+  /// No description provided for @groupParticipantsSelectedCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chọn {count}/{total} thành viên'**
+  String groupParticipantsSelectedCount(Object count, Object total);
+
+  /// No description provided for @groupParticipantsAllSelected.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tất cả thành viên'**
+  String get groupParticipantsAllSelected;
+
+  /// No description provided for @groupParticipantsNoneSelected.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa chọn thành viên'**
+  String get groupParticipantsNoneSelected;
+
+  /// No description provided for @groupParticipantsSelectAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn tất cả'**
+  String get groupParticipantsSelectAll;
+
+  /// No description provided for @groupParticipantsDeselectAll.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bỏ chọn tất cả'**
+  String get groupParticipantsDeselectAll;
+
+  /// No description provided for @groupParticipantsDone.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xong'**
+  String get groupParticipantsDone;
+
+  /// No description provided for @groupSplitEqualDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia tổng tiền đều cho những người đã chọn.'**
+  String get groupSplitEqualDescription;
+
+  /// No description provided for @groupSplitExactDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn nhập chính xác phần tiền mỗi người chịu.'**
+  String get groupSplitExactDescription;
+
+  /// No description provided for @groupSplitUnequalDescription.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mỗi thành viên tự nhập phần mình đã sử dụng.'**
+  String get groupSplitUnequalDescription;
+
+  /// No description provided for @groupSplitHelp.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cách chọn'**
+  String get groupSplitHelp;
+
+  /// No description provided for @groupSplitGuideTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn cách chia tiền'**
+  String get groupSplitGuideTitle;
+
+  /// No description provided for @groupSplitGuideIntro.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn cách phù hợp với tình huống của khoản chi. Bạn có thể thay đổi trước khi đăng giao dịch.'**
+  String get groupSplitGuideIntro;
+
+  /// No description provided for @groupSplitGuideEqualTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia đều'**
+  String get groupSplitGuideEqualTitle;
+
+  /// No description provided for @groupSplitGuideEqualBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng khi mọi người cùng hưởng như nhau. Ví dụ: hóa đơn ăn uống chia cho 4 người, mỗi người chịu một phần bằng nhau.'**
+  String get groupSplitGuideEqualBody;
+
+  /// No description provided for @groupSplitGuideExactTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Số tiền cụ thể'**
+  String get groupSplitGuideExactTitle;
+
+  /// No description provided for @groupSplitGuideExactBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng khi mỗi người chịu một số tiền đã biết trước. Tổng các phần bạn nhập phải bằng tổng hóa đơn.'**
+  String get groupSplitGuideExactBody;
+
+  /// No description provided for @groupSplitGuideUnequalTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự nhập phần đã dùng'**
+  String get groupSplitGuideUnequalTitle;
+
+  /// No description provided for @groupSplitGuideUnequalBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng khi muốn để từng thành viên tự xác nhận số tiền mình đã sử dụng. Giao dịch sẽ chờ đủ thông tin trước khi đăng chính thức.'**
+  String get groupSplitGuideUnequalBody;
+
+  /// No description provided for @groupSplitGuideClose.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hiểu'**
+  String get groupSplitGuideClose;
+
+  /// No description provided for @groupSettlementGroupOverview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng quan nhóm'**
+  String get groupSettlementGroupOverview;
+
+  /// No description provided for @groupSettlementMyPart.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phần của tôi'**
+  String get groupSettlementMyPart;
+
+  /// No description provided for @groupSettlementMyProgress.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiến độ của tôi'**
+  String get groupSettlementMyProgress;
+
+  /// No description provided for @groupSettlementMarkPaid.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tôi đã chuyển tiền'**
+  String get groupSettlementMarkPaid;
+
+  /// No description provided for @groupSettlementConfirmReceived.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tôi đã nhận tiền'**
+  String get groupSettlementConfirmReceived;
+
+  /// No description provided for @groupSettlementWaitingReceiver.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã báo đã chuyển. Chờ người nhận kiểm tra và xác nhận.'**
+  String get groupSettlementWaitingReceiver;
+
+  /// No description provided for @groupSettlementWaitingPayer.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người trả chưa báo đã chuyển. Khi tiền về, bạn có thể xác nhận đã nhận.'**
+  String get groupSettlementWaitingPayer;
+
+  /// No description provided for @groupSummaryBudgetTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngân sách tháng'**
+  String get groupSummaryBudgetTitle;
+
+  /// No description provided for @groupSummaryBudgetSpent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chi {spent}/{limit}'**
+  String groupSummaryBudgetSpent(Object limit, Object spent);
+
+  /// No description provided for @groupSummaryBudgetWarning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhóm đã gần chạm ngưỡng ngân sách.'**
+  String get groupSummaryBudgetWarning;
+
+  /// No description provided for @groupSummaryBudgetExceeded.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhóm đã vượt ngân sách tháng.'**
+  String get groupSummaryBudgetExceeded;
+
+  /// No description provided for @groupSummaryBudgetNoLimit.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa đặt ngân sách cho tháng này.'**
+  String get groupSummaryBudgetNoLimit;
+
   /// No description provided for @groupSettlementDisputeTitle.
   ///
   /// In vi, this message translates to:
@@ -11144,11 +12062,35 @@ abstract class AppLocalizations {
   /// **'Vui lòng nhập lý do tranh chấp.'**
   String get groupSettlementDisputeReasonRequired;
 
+  /// No description provided for @groupSettlementDisputeReasonTooLong.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lý do tranh chấp không được dài quá 300 ký tự.'**
+  String get groupSettlementDisputeReasonTooLong;
+
   /// No description provided for @groupSettlementDisputeAction.
   ///
   /// In vi, this message translates to:
   /// **'Tranh chấp'**
   String get groupSettlementDisputeAction;
+
+  /// No description provided for @groupSettlementResetDisputeTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở lại khoản tất toán'**
+  String get groupSettlementResetDisputeTitle;
+
+  /// No description provided for @groupSettlementResetDisputeMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Khoản tranh chấp sẽ được đưa về trạng thái chờ thanh toán để nhóm xử lý lại.'**
+  String get groupSettlementResetDisputeMessage;
+
+  /// No description provided for @groupSettlementResetDisputeAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở lại'**
+  String get groupSettlementResetDisputeAction;
 
   /// No description provided for @groupTransferOwnershipAction.
   ///

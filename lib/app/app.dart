@@ -60,7 +60,19 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
       previous,
       next,
     ) {
-      if (next != null) unawaited(_initializePushNotifications());
+      if (next == null && previous != null) {
+        unawaited(
+          ref
+              .read(fcmPushNotificationServiceProvider)
+              .unregisterCurrentToken(
+                onToken: ref
+                    .read(notificationRepositoryProvider)
+                    .unregisterDevice,
+              ),
+        );
+      } else if (next != null && previous?.user.id != next.user.id) {
+        unawaited(_initializePushNotifications());
+      }
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeDeepLinks();

@@ -15,12 +15,8 @@ import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
-import 'add_group_transaction_screen.dart';
-import 'debt_settlement_screen.dart';
-import 'group_activity_center_screen.dart';
-import 'group_tools_screen.dart';
-import 'group_transaction_detail_screen.dart';
-import 'invite_member_screen.dart';
+import 'group_route_paths.dart';
+import '../widgets/group_transaction_filter_bar.dart';
 
 enum _MemberAction { transferOwnership, remove }
 
@@ -65,21 +61,12 @@ class GroupDetailScreen extends ConsumerWidget {
               ref.invalidate(groupSettlementOverviewProvider(groupId));
             },
             onActions: () => _showGroupActions(context, ref, detail),
-            onSettle: () =>
-                context.push(DebtSettlementScreen.routePath, extra: groupId),
-            onCommunity: () => context.push(
-              GroupActivityCenterScreen.routePath,
-              extra: groupId,
-            ),
-            onTools: () =>
-                context.push(GroupToolsScreen.routePath, extra: groupId),
-            onLeave: () => _leaveGroup(context, ref),
+            onSettle: () => context.push(GroupRoutePaths.settlements(groupId)),
+            onSummary: () => context.push(GroupRoutePaths.summary(groupId)),
+            onCommunity: () => context.go(GroupRoutePaths.community(groupId)),
             onAddTransaction: detail.activeMembers.isEmpty
                 ? null
-                : () => context.push(
-                    AddGroupTransactionScreen.routePath,
-                    extra: AddGroupTransactionArgs(groupId: groupId),
-                  ),
+                : () => context.push(GroupRoutePaths.transactionForm(groupId)),
           ),
         ),
       ),
@@ -112,10 +99,7 @@ class GroupDetailScreen extends ConsumerWidget {
                     title: Text(context.l10n.groupInviteTitle),
                     onTap: () {
                       Navigator.pop(sheetContext);
-                      context.push(
-                        InviteMemberScreen.routePath,
-                        extra: groupId,
-                      );
+                      context.push(GroupRoutePaths.invite(groupId));
                     },
                   ),
                 if (detail.canInvite)
@@ -132,18 +116,15 @@ class GroupDetailScreen extends ConsumerWidget {
                   title: Text(context.l10n.groupActivityCenterTitle),
                   onTap: () {
                     Navigator.pop(sheetContext);
-                    context.push(
-                      GroupActivityCenterScreen.routePath,
-                      extra: groupId,
-                    );
+                    context.go(GroupRoutePaths.community(groupId));
                   },
                 ),
                 ListTile(
                   leading: const Icon(Icons.tune_outlined),
-                  title: Text(context.l10n.groupToolsTitle),
+                  title: Text(context.l10n.groupManageTitle),
                   onTap: () {
                     Navigator.pop(sheetContext);
-                    context.push(GroupToolsScreen.routePath, extra: groupId);
+                    context.go(GroupRoutePaths.management(groupId));
                   },
                 ),
                 ListTile(
@@ -210,12 +191,9 @@ class GroupDetailScreen extends ConsumerWidget {
                 onPressed: () {
                   Navigator.pop(dialogContext);
                   if (shouldOpenSettlements) {
-                    context.push(
-                      DebtSettlementScreen.routePath,
-                      extra: groupId,
-                    );
+                    context.push(GroupRoutePaths.settlements(groupId));
                   } else {
-                    context.push(GroupDetailScreen.routePath, extra: groupId);
+                    context.go(GroupRoutePaths.home(groupId));
                   }
                 },
                 child: Text(
@@ -400,9 +378,8 @@ class _GroupDetailContent extends StatelessWidget {
     required this.onRefresh,
     required this.onActions,
     required this.onSettle,
+    required this.onSummary,
     required this.onCommunity,
-    required this.onTools,
-    required this.onLeave,
     required this.onAddTransaction,
   });
 
@@ -413,9 +390,8 @@ class _GroupDetailContent extends StatelessWidget {
   final Future<void> Function() onRefresh;
   final VoidCallback onActions;
   final VoidCallback onSettle;
+  final VoidCallback onSummary;
   final VoidCallback onCommunity;
-  final VoidCallback onTools;
-  final VoidCallback onLeave;
   final VoidCallback? onAddTransaction;
 
   @override
@@ -441,45 +417,57 @@ class _GroupDetailContent extends StatelessWidget {
                       detail: detail,
                       transactionsAsync: transactionsAsync,
                       onSettle: onSettle,
+                      onSummary: onSummary,
                     ),
-                    const SizedBox(height: 18),
-                    _GroupQuickActions(
-                      onAddTransaction: onAddTransaction,
-                      onSettle: onSettle,
-                      onCommunity: onCommunity,
-                      onTools: onTools,
-                      onLeave: onLeave,
-                    ),
-                    MoniarySectionLabel(
-                      context.l10n.groupMemberBalanceTitle,
-                      padding: const EdgeInsets.only(top: 25, bottom: 10),
-                    ),
-                    settlementsAsync.when(
-                      loading: () => const LinearProgressIndicator(),
-                      error: (_, _) => _InlineNotice(
-                        text: context.l10n.debtLoadError,
-                        color: context.moniaryColors.danger,
+                    const SizedBox(height: 16),
+                    _GroupCollapsibleSection(
+                      title: context.l10n.groupTransactionsTitle,
+                      subtitle: context.l10n.groupTransactionCount(
+                        transactionsAsync.asData?.value.length ??
+                            detail.group.transactionCount,
                       ),
-                      data: (overview) => _MemberBalances(
-                        overview: overview,
-                        members: detail.members,
+                      icon: Icons.receipt_long_outlined,
+                      initiallyExpanded: true,
+                      child: transactionsAsync.when(
+                        loading: () => const Padding(
+                          padding: EdgeInsets.all(18),
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                        error: (_, _) => _InlineNotice(
+                          text: context.l10n.groupTransactionLoadError,
+                          color: context.moniaryColors.danger,
+                        ),
+                        data: (transactions) => _TransactionHistory(
+                          groupId: groupId,
+                          transactions: transactions,
+                          memberCount: detail.activeMembers.length,
+                          isPreview: true,
+                          onViewAll: () => context.push(
+                            GroupRoutePaths.transactions(groupId),
+                          ),
+                        ),
                       ),
                     ),
-                    MoniarySectionLabel(
-                      context.l10n.groupTransactionsTitle,
-                      padding: const EdgeInsets.only(top: 28, bottom: 10),
-                    ),
-                    transactionsAsync.when(
-                      loading: () =>
-                          const Center(child: CircularProgressIndicator()),
-                      error: (_, _) => _InlineNotice(
-                        text: context.l10n.groupTransactionLoadError,
-                        color: context.moniaryColors.danger,
+                    const SizedBox(height: 12),
+                    _GroupCollapsibleSection(
+                      title: context.l10n.groupMemberBalanceTitle,
+                      subtitle: context.l10n.groupMemberCount(
+                        detail.activeMembers.length,
                       ),
-                      data: (transactions) => _TransactionHistory(
-                        groupId: groupId,
-                        transactions: transactions,
-                        memberCount: detail.activeMembers.length,
+                      icon: Icons.people_outline_rounded,
+                      child: settlementsAsync.when(
+                        loading: () => const Padding(
+                          padding: EdgeInsets.all(18),
+                          child: LinearProgressIndicator(),
+                        ),
+                        error: (_, _) => _InlineNotice(
+                          text: context.l10n.debtLoadError,
+                          color: context.moniaryColors.danger,
+                        ),
+                        data: (overview) => _MemberBalances(
+                          overview: overview,
+                          members: detail.members,
+                        ),
                       ),
                     ),
                   ],
@@ -497,7 +485,8 @@ class _GroupDetailContent extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 333),
               child: SizedBox(
                 height: 50,
-                child: FilledButton.icon(
+                child: FloatingActionButton.extended(
+                  heroTag: 'group-add-transaction',
                   onPressed: onAddTransaction,
                   icon: const Icon(Icons.add_rounded, size: 20),
                   label: Text(context.l10n.groupAddTransaction),
@@ -511,76 +500,51 @@ class _GroupDetailContent extends StatelessWidget {
   }
 }
 
-class _GroupQuickActions extends StatelessWidget {
-  const _GroupQuickActions({
-    required this.onAddTransaction,
-    required this.onSettle,
-    required this.onCommunity,
-    required this.onTools,
-    required this.onLeave,
-  });
-
-  final VoidCallback? onAddTransaction;
-  final VoidCallback onSettle;
-  final VoidCallback onCommunity;
-  final VoidCallback onTools;
-  final VoidCallback onLeave;
-
-  @override
-  Widget build(BuildContext context) => Wrap(
-    spacing: 8,
-    runSpacing: 8,
-    children: [
-      _QuickAction(
-        icon: Icons.add_rounded,
-        label: context.l10n.groupAddTransaction,
-        onTap: onAddTransaction,
-      ),
-      _QuickAction(
-        icon: Icons.swap_horiz_rounded,
-        label: context.l10n.groupSettleAction,
-        onTap: onSettle,
-      ),
-      _QuickAction(
-        icon: Icons.forum_outlined,
-        label: context.l10n.groupActivityCenterTitle,
-        onTap: onCommunity,
-      ),
-      _QuickAction(
-        icon: Icons.tune_outlined,
-        label: context.l10n.groupToolsTitle,
-        onTap: onTools,
-      ),
-      _QuickAction(
-        icon: Icons.logout_outlined,
-        label: context.l10n.groupLeave,
-        onTap: onLeave,
-      ),
-    ],
-  );
-}
-
-class _QuickAction extends StatelessWidget {
-  const _QuickAction({
+class _GroupCollapsibleSection extends StatelessWidget {
+  const _GroupCollapsibleSection({
+    required this.title,
+    required this.subtitle,
     required this.icon,
-    required this.label,
-    required this.onTap,
+    required this.child,
+    this.initiallyExpanded = false,
   });
 
+  final String title;
+  final String subtitle;
   final IconData icon;
-  final String label;
-  final VoidCallback? onTap;
+  final Widget child;
+  final bool initiallyExpanded;
 
   @override
-  Widget build(BuildContext context) => OutlinedButton.icon(
-    onPressed: onTap,
-    icon: Icon(icon, size: 17),
-    label: Text(label),
-    style: OutlinedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 10),
-      textStyle: Theme.of(context).textTheme.labelMedium,
-    ),
-  );
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Card(
+      margin: EdgeInsets.zero,
+      elevation: 0,
+      color: colors.surface.withValues(alpha: 0.72),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: colors.outline.withValues(alpha: 0.8)),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          initiallyExpanded: initiallyExpanded,
+          tilePadding: const EdgeInsets.symmetric(horizontal: 14),
+          childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+          leading: Icon(icon, color: colors.primary),
+          title: Text(
+            title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          subtitle: Text(subtitle),
+          children: [child],
+        ),
+      ),
+    );
+  }
 }
 
 class _DetailTopBar extends StatelessWidget {
@@ -668,11 +632,13 @@ class _GroupHero extends ConsumerWidget {
     required this.detail,
     required this.transactionsAsync,
     required this.onSettle,
+    required this.onSummary,
   });
 
   final SpendingGroupDetail detail;
   final AsyncValue<List<GroupTransaction>> transactionsAsync;
   final VoidCallback onSettle;
+  final VoidCallback onSummary;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -697,78 +663,240 @@ class _GroupHero extends ConsumerWidget {
     final transactionCount = transactions?.length ?? group.transactionCount;
     final totalText = ref.formatAmount(total ?? group.totalSpent);
 
-    return Column(
-      children: [
-        SupabaseImage(
-          imagePath: group.avatarPath,
-          width: 58,
-          height: 58,
-          borderRadius: BorderRadius.circular(17),
-          fallbackBuilder: (_) => const _GroupImageFallback(),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          group.name,
-          textAlign: TextAlign.center,
-          style: context.moniaryTypography.displayMedium.copyWith(
-            fontSize: 26,
-            height: 1.03,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          [
-            context.l10n.groupMemberCount(detail.activeMembers.length),
-            context.l10n.groupTransactionCount(transactionCount),
-            totalText,
-          ].join(' · ').toUpperCase(),
-          textAlign: TextAlign.center,
-          style: context.moniaryTypography.metadata.copyWith(
-            color: colors.textDim,
-            letterSpacing: 2.2,
-          ),
-        ),
-        const SizedBox(height: 20),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(16, 15, 16, 17),
-          decoration: BoxDecoration(
-            color: balanceColor.withValues(alpha: 0.07),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: balanceColor.withValues(alpha: 0.34)),
-          ),
-          child: Row(
+    return MoniaryEditorialCard(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
+              SupabaseImage(
+                imagePath: group.avatarPath,
+                width: 60,
+                height: 60,
+                borderRadius: BorderRadius.circular(18),
+                fallbackBuilder: (_) => const _GroupImageFallback(),
+              ),
+              const SizedBox(width: 13),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      balanceLabel.toUpperCase(),
-                      style: context.moniaryTypography.metadataStrong.copyWith(
-                        color: balanceColor,
-                        fontSize: 9,
-                        letterSpacing: 2,
+                      group.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.moniaryTypography.displaySmall.copyWith(
+                        fontSize: 25,
+                        height: 1.05,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 7),
                     Text(
-                      ref.formatAmount(balance.abs()),
-                      style: context.moniaryTypography.displaySmall.copyWith(
-                        color: balanceColor,
-                        fontSize: 24,
-                        fontFeatures: const [FontFeature.tabularFigures()],
+                      context.l10n.groupMemberCount(
+                        detail.activeMembers.length,
+                      ),
+                      style: context.moniaryTypography.metadata.copyWith(
+                        color: colors.textDim,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                    const SizedBox(height: 7),
+                    SizedBox(
+                      height: 24,
+                      child: Stack(
+                        children: [
+                          for (
+                            var index = 0;
+                            index < detail.activeMembers.take(5).length;
+                            index++
+                          )
+                            Positioned(
+                              left: index * 18,
+                              child: SupabaseImage(
+                                imagePath: detail.activeMembers
+                                    .elementAt(index)
+                                    .avatarPath,
+                                width: 24,
+                                height: 24,
+                                borderRadius: BorderRadius.circular(14),
+                                fallbackBuilder: (_) =>
+                                    const _MemberAvatarFallback(),
+                              ),
+                            ),
+                          if (detail.activeMembers.length > 5)
+                            Positioned(
+                              left: 5 * 18,
+                              child: Container(
+                                width: 24,
+                                height: 24,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: colors.backgroundSoft,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: colors.surface),
+                                ),
+                                child: Text(
+                                  '+${detail.activeMembers.length - 5}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelSmall?.copyWith(fontSize: 8),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              if (!isSettled)
-                TextButton(
-                  onPressed: onSettle,
-                  child: Text('${context.l10n.groupSettleAction} →'),
-                ),
             ],
+          ),
+          if (group.description?.trim().isNotEmpty == true) ...[
+            const SizedBox(height: 10),
+            Text(
+              group.description!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colors.textSecondary),
+            ),
+          ],
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: _HeroMetric(
+                  label: context.l10n.groupSummaryTotalSpent,
+                  value: totalText,
+                  color: colors.textPrimary,
+                ),
+              ),
+              Container(
+                width: 1,
+                height: 40,
+                color: colors.outline.withValues(alpha: 0.7),
+              ),
+              Expanded(
+                child: _HeroMetric(
+                  label: balanceLabel,
+                  value: ref.formatAmount(balance.abs()),
+                  color: balanceColor,
+                  alignEnd: true,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
+          Container(
+            height: 7,
+            decoration: BoxDecoration(
+              color: colors.outline.withValues(alpha: 0.32),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            alignment: Alignment.centerLeft,
+            child: FractionallySizedBox(
+              widthFactor: (transactionCount / (transactionCount + 4)).clamp(
+                0.08,
+                1.0,
+              ),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  context.l10n.groupTransactionCount(transactionCount),
+                  style: context.moniaryTypography.metadata.copyWith(
+                    color: colors.textDim,
+                    fontSize: 9,
+                  ),
+                ),
+              ),
+              Text(
+                isSettled
+                    ? context.l10n.groupBalanceSettled
+                    : context.l10n.groupSettlementTitle,
+                style: context.moniaryTypography.metadata.copyWith(
+                  color: isSettled ? colors.success : colors.textDim,
+                  fontSize: 9,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onSummary,
+                  icon: const Icon(Icons.insights_outlined, size: 16),
+                  label: Text(context.l10n.groupSummaryTitle),
+                ),
+              ),
+              if (!isSettled) ...[
+                const SizedBox(width: 8),
+                Expanded(
+                  child: FilledButton.tonalIcon(
+                    onPressed: onSettle,
+                    icon: const Icon(Icons.swap_horiz_rounded, size: 16),
+                    label: Text(context.l10n.groupSettleAction),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeroMetric extends StatelessWidget {
+  const _HeroMetric({
+    required this.label,
+    required this.value,
+    required this.color,
+    this.alignEnd = false,
+  });
+
+  final String label;
+  final String value;
+  final Color color;
+  final bool alignEnd;
+
+  @override
+  Widget build(BuildContext context) {
+    final alignment = alignEnd
+        ? CrossAxisAlignment.end
+        : CrossAxisAlignment.start;
+    return Column(
+      crossAxisAlignment: alignment,
+      children: [
+        Text(
+          label,
+          textAlign: alignEnd ? TextAlign.end : TextAlign.start,
+          style: context.moniaryTypography.metadata.copyWith(
+            color: context.moniaryColors.textDim,
+            fontSize: 9,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          textAlign: alignEnd ? TextAlign.end : TextAlign.start,
+          style: context.moniaryTypography.displaySmall.copyWith(
+            color: color,
+            fontSize: 18,
+            fontFeatures: const [FontFeature.tabularFigures()],
           ),
         ),
       ],
@@ -891,11 +1019,15 @@ class _TransactionHistory extends ConsumerStatefulWidget {
     required this.groupId,
     required this.transactions,
     required this.memberCount,
+    this.isPreview = false,
+    this.onViewAll,
   });
 
   final String groupId;
   final List<GroupTransaction> transactions;
   final int memberCount;
+  final bool isPreview;
+  final VoidCallback? onViewAll;
 
   @override
   ConsumerState<_TransactionHistory> createState() =>
@@ -918,28 +1050,12 @@ class _TransactionHistoryState extends ConsumerState<_TransactionHistory> {
       groupTransactionsPageProvider((
         groupId: widget.groupId,
         offset: _offset,
+        limit: widget.isPreview ? 5 : 20,
         query: _query,
         status: status,
       )),
     );
-    if (pageAsync.isLoading && pageAsync.asData == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (pageAsync.hasError) {
-      return _InlineNotice(
-        text: context.l10n.groupTransactionLoadError,
-        color: context.moniaryColors.danger,
-      );
-    }
     final page = pageAsync.asData?.value;
-    if (page == null || page.items.isEmpty) {
-      return _InlineNotice(
-        text: _query.trim().isEmpty && _status == null
-            ? context.l10n.groupTransactionNoData
-            : context.l10n.groupTransactionFilterNoResults,
-        color: context.moniaryColors.secondary,
-      );
-    }
 
     return Column(
       children: [
@@ -955,58 +1071,64 @@ class _TransactionHistoryState extends ConsumerState<_TransactionHistory> {
           ),
         ),
         const SizedBox(height: 10),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Wrap(
-            spacing: 8,
-            children: [
-              ChoiceChip(
-                label: Text(context.l10n.groupTransactionFilterAll),
-                selected: _status == null,
-                onSelected: (_) => setState(() {
-                  _status = null;
-                  _offset = 0;
-                }),
-              ),
-              ChoiceChip(
-                label: Text(context.l10n.groupTransactionPostedStatus),
-                selected: _status == GroupSplitStatus.posted,
-                onSelected: (_) => setState(() {
-                  _status = GroupSplitStatus.posted;
-                  _offset = 0;
-                }),
-              ),
-              ChoiceChip(
-                label: Text(context.l10n.groupTransactionPendingStatus),
-                selected: _status != null && _status != GroupSplitStatus.posted,
-                onSelected: (_) => setState(() {
-                  _status = GroupSplitStatus.pendingMemberAmountInput;
-                  _offset = 0;
-                }),
-              ),
-            ],
-          ),
+        GroupTransactionFilterBar(
+          value: _status,
+          onChanged: (value) => setState(() {
+            _status = value;
+            _offset = 0;
+          }),
         ),
         const SizedBox(height: 8),
-        for (var index = 0; index < page.items.length; index++)
-          _TransactionRow(
-            transaction: page.items[index],
-            memberCount: widget.memberCount,
-            showTopDivider: index == 0,
-            onTap: () => context.push(
-              GroupTransactionDetailScreen.routePath,
-              extra: page.items[index].id,
+        if (pageAsync.isLoading && pageAsync.asData == null)
+          const Padding(
+            padding: EdgeInsets.all(18),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (pageAsync.hasError)
+          _InlineNotice(
+            text: context.l10n.groupTransactionLoadError,
+            color: context.moniaryColors.danger,
+          )
+        else if (page == null || page.items.isEmpty)
+          _InlineNotice(
+            text: _query.trim().isEmpty && _status == null
+                ? context.l10n.groupTransactionNoData
+                : context.l10n.groupTransactionFilterNoResults,
+            color: context.moniaryColors.secondary,
+          )
+        else ...[
+          for (var index = 0; index < page.items.length; index++)
+            _TransactionRow(
+              transaction: page.items[index],
+              memberCount: widget.memberCount,
+              showTopDivider: index == 0,
+              onTap: () => context.push(
+                GroupRoutePaths.transactionDetail(
+                  groupId: widget.groupId,
+                  transactionId: page.items[index].id,
+                ),
+              ),
             ),
-          ),
-        if (page.hasMore)
-          Align(
-            alignment: Alignment.center,
-            child: OutlinedButton.icon(
-              onPressed: () => setState(() => _offset += 40),
-              icon: const Icon(Icons.expand_more_outlined),
-              label: Text(context.l10n.groupTransactionLoadMore),
+          if (page.hasMore && !widget.isPreview)
+            Align(
+              alignment: Alignment.center,
+              child: OutlinedButton.icon(
+                onPressed: () =>
+                    setState(() => _offset += widget.isPreview ? 5 : 20),
+                icon: const Icon(Icons.expand_more_outlined),
+                label: Text(context.l10n.groupTransactionLoadMore),
+              ),
             ),
-          ),
+          if (widget.isPreview && widget.onViewAll != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: OutlinedButton.icon(
+                onPressed: widget.onViewAll,
+                icon: const Icon(Icons.open_in_new_rounded, size: 16),
+                label: Text(context.l10n.groupTransactionViewAll),
+              ),
+            ),
+        ],
       ],
     );
   }

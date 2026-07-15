@@ -39,6 +39,15 @@ class AppConstants {
     defaultValue: 'com.moniary.moniary',
   );
 
+  static String get firebaseApiKey =>
+      defaultTargetPlatform == TargetPlatform.iOS
+      ? firebaseIosApiKey
+      : firebaseAndroidApiKey;
+
+  static String get firebaseAppId => defaultTargetPlatform == TargetPlatform.iOS
+      ? firebaseIosAppId
+      : firebaseAndroidAppId;
+
   static bool get hasSupabaseConfig =>
       supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
 

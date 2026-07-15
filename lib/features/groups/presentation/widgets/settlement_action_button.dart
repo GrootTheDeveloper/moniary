@@ -13,7 +13,7 @@ class SettlementActionButton extends StatelessWidget {
 
   final GroupSettlementStatus status;
   final bool isReceiverAction;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   bool get isEnabled => isReceiverAction
       ? status == GroupSettlementStatus.payerMarkedPaid
@@ -30,8 +30,8 @@ class SettlementActionButton extends StatelessWidget {
       onPressed: isEnabled ? onPressed : null,
       child: Text(
         isReceiverAction
-            ? context.l10n.groupConfirmReceived
-            : context.l10n.groupMarkPaid,
+            ? context.l10n.groupSettlementConfirmReceived
+            : context.l10n.groupSettlementMarkPaid,
       ),
     );
   }
