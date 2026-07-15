@@ -969,6 +969,14 @@
       }
     }
   },
+  "profileEmailChangeConfirmationSent": "Đã yêu cầu đổi sang {email}. Hãy làm theo hướng dẫn xác nhận được gửi qua email; hồ sơ sẽ cập nhật sau khi xác nhận hoàn tất.",
+  "@profileEmailChangeConfirmationSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
   "emailLinkCompleteTitle": "Bảo vệ tài khoản email",
   "emailLinkCompleteSubtitle": "Email {email} đã được xác nhận. Hãy tạo mật khẩu để hoàn tất nâng cấp tài khoản khách.",
   "@emailLinkCompleteSubtitle": {

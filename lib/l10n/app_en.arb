@@ -969,6 +969,14 @@
       }
     }
   },
+  "profileEmailChangeConfirmationSent": "Email change requested for {email}. Follow the confirmation instructions sent by email; your profile will update after confirmation.",
+  "@profileEmailChangeConfirmationSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
   "emailLinkCompleteTitle": "Protect your email account",
   "emailLinkCompleteSubtitle": "Email {email} is confirmed. Create a password to finish upgrading your guest account.",
   "@emailLinkCompleteSubtitle": {

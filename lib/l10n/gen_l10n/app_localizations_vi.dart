@@ -2082,6 +2082,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String profileEmailChangeConfirmationSent(String email) {
+    return 'Đã yêu cầu đổi sang $email. Hãy làm theo hướng dẫn xác nhận được gửi qua email; hồ sơ sẽ cập nhật sau khi xác nhận hoàn tất.';
+  }
+
+  @override
   String get emailLinkCompleteTitle => 'Bảo vệ tài khoản email';
 
   @override

@@ -2088,6 +2088,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String profileEmailChangeConfirmationSent(String email) {
+    return 'Email change requested for $email. Follow the confirmation instructions sent by email; your profile will update after confirmation.';
+  }
+
+  @override
   String get emailLinkCompleteTitle => 'Protect your email account';
 
   @override

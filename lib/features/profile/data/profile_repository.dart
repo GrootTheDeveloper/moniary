@@ -1,12 +1,14 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/constants/app_constants.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
-import '../../../../shared/utils/app_logger.dart';
+import '../../../shared/utils/app_logger.dart';
+import '../domain/profile_update_result.dart';
 import '../domain/user_profile.dart';
 
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
@@ -46,14 +48,14 @@ class ProfileRepository {
               .eq('id', uid)
               .maybeSingle();
           if (retryRow != null) {
-            return UserProfile.fromMap(retryRow);
+            return await _profileWithConfirmedAuthEmail(retryRow);
           }
         } catch (e, st) {
           AppLogger.error('Failed to auto-initialize profile', e, st);
         }
         return null;
       }
-      return UserProfile.fromMap(row);
+      return await _profileWithConfirmedAuthEmail(row);
     } on PostgrestException catch (e, st) {
       AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
@@ -64,17 +66,52 @@ class ProfileRepository {
     }
   }
 
-  Future<UserProfile> upsertProfile({
+  Future<ProfileUpdateResult> upsertProfile({
     required String fullName,
     required String username,
     required String timezone,
+    String? email,
     String? avatarImagePath,
   }) async {
+    String? uploadedAvatarPath;
+    var createdAvatarObject = false;
+    var profilePersisted = false;
+
     try {
       final uid = _userId;
-      final avatarUrl = avatarImagePath == null
-          ? null
-          : await _uploadAvatarImage(uid: uid, imagePath: avatarImagePath);
+      final currentUser = _client.auth.currentUser;
+      if (currentUser == null) {
+        throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
+      }
+
+      final requestedEmail = _normalizeEmail(email);
+      var confirmedEmail = _normalizeEmail(currentUser.email);
+      String? pendingEmail;
+      final emailChangeRequested =
+          requestedEmail != null &&
+          requestedEmail.toLowerCase() != confirmedEmail?.toLowerCase();
+
+      if (emailChangeRequested && currentUser.isAnonymous) {
+        throw const AppException(
+          'Anonymous accounts must be linked before changing email',
+          code: 'PROFILE_EMAIL_LINK_REQUIRED',
+        );
+      }
+
+      String? previousAvatarPath;
+      if (avatarImagePath != null) {
+        final previousRow = await _client
+            .from('profiles')
+            .select('avatar_url')
+            .eq('id', uid)
+            .maybeSingle();
+        previousAvatarPath = previousRow?['avatar_url'] as String?;
+        uploadedAvatarPath = await _uploadAvatarImage(
+          uid: uid,
+          imagePath: avatarImagePath,
+        );
+        createdAvatarObject = _isLocalImagePath(avatarImagePath);
+      }
 
       final values = <String, dynamic>{
         'id': uid,
@@ -82,31 +119,111 @@ class ProfileRepository {
         'username': username,
         'timezone': timezone,
       };
-      if (avatarUrl != null) values['avatar_url'] = avatarUrl;
+      if (confirmedEmail != null) values['email'] = confirmedEmail;
+      if (uploadedAvatarPath != null) {
+        values['avatar_url'] = uploadedAvatarPath;
+      }
 
-      final row = await _client
+      var persistedRow = await _client
           .from('profiles')
           .upsert(values)
           .select()
           .single();
+      profilePersisted = true;
 
-      // Fix for Problem 3: Also update Supabase Auth metadata so login doesn't reset full_name
+      var authMetadataSynced = false;
       try {
         final authMeta = <String, dynamic>{
           'full_name': fullName,
           'username': username,
         };
-        if (avatarUrl != null) authMeta['avatar_url'] = avatarUrl;
+        if (uploadedAvatarPath != null) {
+          authMeta['avatar_url'] = uploadedAvatarPath;
+        }
         await _client.auth.updateUser(UserAttributes(data: authMeta));
+        authMetadataSynced = true;
       } catch (e, st) {
         AppLogger.error('Failed to sync auth metadata (non-blocking)', e, st);
       }
 
-      return UserProfile.fromMap(row);
+      if (authMetadataSynced &&
+          uploadedAvatarPath != null &&
+          previousAvatarPath != uploadedAvatarPath) {
+        await _removeOwnedAvatar(uid: uid, avatarPath: previousAvatarPath);
+      }
+
+      if (emailChangeRequested) {
+        final response = await _client.auth.updateUser(
+          UserAttributes(email: requestedEmail),
+          emailRedirectTo: kIsWeb
+              ? null
+              : AppConstants.supabaseLoginCallbackUrl,
+        );
+        final updatedUser = response.user;
+        if (updatedUser == null) {
+          throw const AppException(
+            'Supabase returned no user after the email change',
+            code: 'PROFILE_EMAIL_UPDATE_FAILED',
+          );
+        }
+        confirmedEmail = _normalizeEmail(updatedUser.email);
+        final responsePendingEmail = _normalizeEmail(updatedUser.newEmail);
+
+        if (confirmedEmail?.toLowerCase() != requestedEmail.toLowerCase()) {
+          if (responsePendingEmail?.toLowerCase() ==
+              requestedEmail.toLowerCase()) {
+            pendingEmail = requestedEmail;
+          } else {
+            throw const AppException(
+              'Supabase did not accept the email change',
+              code: 'PROFILE_EMAIL_UPDATE_FAILED',
+            );
+          }
+        } else if (_normalizeEmail(
+              persistedRow['email'] as String?,
+            )?.toLowerCase() !=
+            confirmedEmail?.toLowerCase()) {
+          persistedRow = await _client
+              .from('profiles')
+              .update({'email': confirmedEmail})
+              .eq('id', uid)
+              .select()
+              .single();
+        }
+      }
+
+      return ProfileUpdateResult(
+        profile: UserProfile.fromMap(persistedRow),
+        pendingEmail: pendingEmail,
+      );
+    } on AuthException catch (e, st) {
+      if (createdAvatarObject && !profilePersisted) {
+        await _removeOwnedAvatar(
+          uid: _client.auth.currentUser?.id,
+          avatarPath: uploadedAvatarPath,
+        );
+      }
+      AppLogger.error('Failed to update profile authentication data', e, st);
+      throw AppException(e.message, code: e.code);
+    } on StorageException catch (e, st) {
+      AppLogger.error('Failed to update profile avatar', e, st);
+      throw AppException(e.message, code: e.statusCode);
     } on PostgrestException catch (e, st) {
+      if (createdAvatarObject && !profilePersisted) {
+        await _removeOwnedAvatar(
+          uid: _client.auth.currentUser?.id,
+          avatarPath: uploadedAvatarPath,
+        );
+      }
       AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
+      if (createdAvatarObject && !profilePersisted) {
+        await _removeOwnedAvatar(
+          uid: _client.auth.currentUser?.id,
+          avatarPath: uploadedAvatarPath,
+        );
+      }
       if (e is AppException) rethrow;
       AppLogger.error('Lỗi kết nối', e, st);
       throw const AppException('errorConnection');
@@ -241,17 +358,15 @@ class ProfileRepository {
 
     try {
       final bytes = await File(imagePath).readAsBytes();
-      final path = 'avatars/$uid/avatar.jpg';
+      final version = DateTime.now().toUtc().microsecondsSinceEpoch;
+      final path = 'avatars/$uid/avatar_$version.jpg';
 
       await _client.storage
           .from(AppConstants.storageBucket)
           .uploadBinary(
             path,
             bytes,
-            fileOptions: const FileOptions(
-              contentType: 'image/jpeg',
-              upsert: true,
-            ),
+            fileOptions: const FileOptions(contentType: 'image/jpeg'),
           );
 
       return path;
@@ -265,6 +380,60 @@ class ProfileRepository {
         'Failed to upload profile avatar',
         code: 'AVATAR_UPLOAD_FAILED',
       );
+    }
+  }
+
+  Future<UserProfile> _profileWithConfirmedAuthEmail(
+    Map<String, dynamic> row,
+  ) async {
+    final confirmedEmail = _normalizeEmail(_client.auth.currentUser?.email);
+    final storedEmail = _normalizeEmail(row['email'] as String?);
+    if (confirmedEmail == null ||
+        storedEmail?.toLowerCase() == confirmedEmail.toLowerCase()) {
+      return UserProfile.fromMap(row);
+    }
+
+    final visibleRow = Map<String, dynamic>.from(row)
+      ..['email'] = confirmedEmail;
+    try {
+      final updatedRow = await _client
+          .from('profiles')
+          .update({'email': confirmedEmail})
+          .eq('id', _userId)
+          .select()
+          .single();
+      return UserProfile.fromMap(updatedRow);
+    } catch (e, st) {
+      AppLogger.error('Failed to sync confirmed auth email to profile', e, st);
+      return UserProfile.fromMap(visibleRow);
+    }
+  }
+
+  String? _normalizeEmail(String? value) {
+    final normalized = value?.trim();
+    return normalized == null || normalized.isEmpty ? null : normalized;
+  }
+
+  bool _isLocalImagePath(String path) {
+    return !path.startsWith('avatars/') && !path.startsWith('http');
+  }
+
+  Future<void> _removeOwnedAvatar({
+    required String? uid,
+    required String? avatarPath,
+  }) async {
+    if (uid == null ||
+        avatarPath == null ||
+        !avatarPath.startsWith('avatars/$uid/')) {
+      return;
+    }
+
+    try {
+      await _client.storage.from(AppConstants.storageBucket).remove([
+        avatarPath,
+      ]);
+    } catch (e, st) {
+      AppLogger.error('Failed to clean up previous profile avatar', e, st);
     }
   }
 

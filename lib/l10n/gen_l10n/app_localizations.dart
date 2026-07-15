@@ -3866,6 +3866,12 @@ abstract class AppLocalizations {
   /// **'Đã gửi liên kết xác nhận đến {email}. Hãy mở liên kết trên thiết bị này để tiếp tục.'**
   String profileLinkEmailConfirmationSent(String email);
 
+  /// No description provided for @profileEmailChangeConfirmationSent.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã yêu cầu đổi sang {email}. Hãy làm theo hướng dẫn xác nhận được gửi qua email; hồ sơ sẽ cập nhật sau khi xác nhận hoàn tất.'**
+  String profileEmailChangeConfirmationSent(String email);
+
   /// No description provided for @emailLinkCompleteTitle.
   ///
   /// In vi, this message translates to:

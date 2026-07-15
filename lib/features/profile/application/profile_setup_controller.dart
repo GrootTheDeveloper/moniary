@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
 import '../data/profile_repository.dart';
+import '../domain/profile_update_result.dart';
 import '../domain/user_profile.dart';
 
 final currentProfileProvider = FutureProvider<UserProfile?>((ref) async {
@@ -26,26 +27,34 @@ class ProfileSetupController extends AsyncNotifier<UserProfile?> {
     return ref.watch(profileRepositoryProvider).fetchCurrentProfile();
   }
 
-  Future<void> saveProfile({
+  Future<ProfileUpdateResult> saveProfile({
     required String fullName,
     required String username,
     required String timezone,
+    String? email,
     String? avatarImagePath,
   }) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref
+    try {
+      final result = await ref
           .read(profileRepositoryProvider)
           .upsertProfile(
             fullName: fullName,
             username: username,
             timezone: timezone,
+            email: email,
             avatarImagePath: avatarImagePath,
-          ),
-    );
-    ref.invalidate(currentProfileProvider);
-    // Invalidate the controller to ensure next build gets fresh data
-    ref.invalidateSelf();
+          );
+      state = AsyncData(result.profile);
+      ref.invalidate(currentProfileProvider);
+      return result;
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      // The profile row can be saved before an independent Auth email update
+      // fails, so consumers must always refetch the latest persisted profile.
+      ref.invalidate(currentProfileProvider);
+      Error.throwWithStackTrace(error, stackTrace);
+    }
   }
 }
 
