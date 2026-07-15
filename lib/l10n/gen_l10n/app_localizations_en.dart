@@ -6157,6 +6157,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String friendInviteRequestFrom(String name) {
+    return '$name sent you a friend request.';
+  }
+
+  @override
   String get friendInviteAcceptButton => 'Add friend';
 
   @override

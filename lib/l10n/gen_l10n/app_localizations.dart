@@ -10964,6 +10964,12 @@ abstract class AppLocalizations {
   /// **'{name} muốn kết bạn với bạn trên Moniary.'**
   String friendInviteAcceptSubtitle(String name);
 
+  /// No description provided for @friendInviteRequestFrom.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng {name} đã gửi lời mời kết bạn.'**
+  String friendInviteRequestFrom(String name);
+
   /// No description provided for @friendInviteAcceptButton.
   ///
   /// In vi, this message translates to:

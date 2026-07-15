@@ -2853,6 +2853,14 @@
       }
     }
   },
+  "friendInviteRequestFrom": "Người dùng {name} đã gửi lời mời kết bạn.",
+  "@friendInviteRequestFrom": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "friendInviteAcceptButton": "Kết bạn",
   "friendInviteAgreeButton": "Đồng ý",
   "friendInviteAccepted": "Đã kết bạn thành công.",

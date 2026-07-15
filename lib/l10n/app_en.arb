@@ -2853,6 +2853,14 @@
       }
     }
   },
+  "friendInviteRequestFrom": "{name} sent you a friend request.",
+  "@friendInviteRequestFrom": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "friendInviteAcceptButton": "Add friend",
   "friendInviteAgreeButton": "Accept",
   "friendInviteAccepted": "Friend added.",

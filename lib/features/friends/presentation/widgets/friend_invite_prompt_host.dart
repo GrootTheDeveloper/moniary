@@ -127,55 +127,46 @@ class _FriendInvitePromptDialog extends ConsumerWidget {
         ),
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 12, 18),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
+            padding: const EdgeInsets.fromLTRB(20, 22, 20, 18),
+            child: previewAsync.when(
+              loading: () => _DialogMessage(
+                icon: Icons.mark_email_unread_outlined,
+                title: context.l10n.friendInviteLoading,
+                actions: [
+                  TextButton(
                     onPressed: closeDialog,
-                    tooltip: context.l10n.commonClose,
-                    visualDensity: VisualDensity.compact,
-                    icon: const Icon(Icons.close_outlined),
+                    child: Text(context.l10n.commonClose),
                   ),
-                ),
-                previewAsync.when(
-                  loading: () => _DialogMessage(
-                    icon: Icons.mark_email_unread_outlined,
-                    title: context.l10n.friendInviteLoading,
-                  ),
-                  error: (error, stackTrace) {
-                    AppLogger.error(
-                      'Failed to load friend invite prompt',
-                      error,
-                      stackTrace,
-                    );
-                    return _DialogMessage(
-                      icon: Icons.link_off_outlined,
-                      title: context.l10n.friendInvitePreviewError,
-                      actions: [
-                        TextButton(
-                          onPressed: closeDialog,
-                          child: Text(context.l10n.commonClose),
-                        ),
-                        FilledButton(
-                          onPressed: () => ref.invalidate(
-                            friendInvitePreviewProvider(token),
-                          ),
-                          child: Text(context.l10n.retry),
-                        ),
-                      ],
-                    );
-                  },
-                  data: (preview) => _FriendInvitePromptBody(
-                    token: token,
-                    preview: preview,
-                    actionLoading: action.isLoading,
-                  ),
-                ),
-              ],
+                ],
+              ),
+              error: (error, stackTrace) {
+                AppLogger.error(
+                  'Failed to load friend invite prompt',
+                  error,
+                  stackTrace,
+                );
+                return _DialogMessage(
+                  icon: Icons.link_off_outlined,
+                  title: context.l10n.friendInvitePreviewError,
+                  actions: [
+                    TextButton(
+                      onPressed: closeDialog,
+                      child: Text(context.l10n.commonClose),
+                    ),
+                    FilledButton(
+                      onPressed: () =>
+                          ref.invalidate(friendInvitePreviewProvider(token)),
+                      child: Text(context.l10n.retry),
+                    ),
+                  ],
+                );
+              },
+              data: (preview) => _FriendInvitePromptBody(
+                token: token,
+                preview: preview,
+                actionLoading: action.isLoading,
+                onClose: closeDialog,
+              ),
             ),
           ),
         ),
@@ -189,25 +180,26 @@ class _FriendInvitePromptBody extends ConsumerWidget {
     required this.token,
     required this.preview,
     required this.actionLoading,
+    required this.onClose,
   });
 
   final String token;
   final FriendInvitePreview preview;
   final bool actionLoading;
+  final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final inviter = preview.inviter;
+
+    // Already responded / no longer actionable: show the status + a Close.
     if (!preview.canAccept) {
       return _DialogMessage(
-        icon: Icons.link_off_outlined,
+        icon: Icons.how_to_reg_outlined,
         title: _statusMessage(context, preview.status),
         actions: [
           FilledButton(
-            onPressed: () {
-              ref.read(pendingFriendInvitePromptProvider.notifier).clear();
-              Navigator.of(context).pop();
-            },
+            onPressed: onClose,
             child: Text(context.l10n.commonClose),
           ),
         ],
@@ -220,6 +212,7 @@ class _FriendInvitePromptBody extends ConsumerWidget {
       );
     }
 
+    // Not responded yet: Accept/Decline on top, Close (decide later) below.
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -229,47 +222,27 @@ class _FriendInvitePromptBody extends ConsumerWidget {
           color: AppTheme.mint,
           size: 52,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         Text(
-          context.l10n.friendInviteAcceptTitle,
+          context.l10n.friendInviteRequestFrom(
+            inviter?.displayName ?? context.l10n.friendsTitle,
+          ),
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w900,
             color: context.moniaryColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          context.l10n.friendInviteAcceptSubtitle(
-            inviter?.displayName ?? context.l10n.friendsTitle,
-          ),
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
         if (inviter != null) ...[
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
           FriendProfileTile(
             profile: inviter,
             subtitle: inviter.displayUsername,
           ),
         ],
-        const SizedBox(height: 22),
+        const SizedBox(height: 20),
         Row(
           children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: actionLoading
-                    ? null
-                    : () {
-                        ref
-                            .read(pendingFriendInvitePromptProvider.notifier)
-                            .clear();
-                        Navigator.of(context).pop();
-                      },
-                child: Text(context.l10n.friendDecline),
-              ),
-            ),
-            const SizedBox(width: 12),
             Expanded(
               child: FilledButton(
                 onPressed: actionLoading ? null : () => _accept(context, ref),
@@ -281,7 +254,19 @@ class _FriendInvitePromptBody extends ConsumerWidget {
                     : Text(context.l10n.friendInviteAgreeButton),
               ),
             ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: actionLoading ? null : onClose,
+                child: Text(context.l10n.friendDecline),
+              ),
+            ),
           ],
+        ),
+        const SizedBox(height: 10),
+        TextButton(
+          onPressed: actionLoading ? null : onClose,
+          child: Text(context.l10n.commonClose),
         ),
       ],
     );

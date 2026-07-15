@@ -6158,6 +6158,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String friendInviteRequestFrom(String name) {
+    return 'Người dùng $name đã gửi lời mời kết bạn.';
+  }
+
+  @override
   String get friendInviteAcceptButton => 'Kết bạn';
 
   @override

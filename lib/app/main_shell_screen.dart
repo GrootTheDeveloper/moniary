@@ -65,7 +65,7 @@ class MainShellScreen extends ConsumerWidget {
           if (assistantChatEnabled)
             Positioned(
               right: 18,
-              bottom: 18,
+              bottom: 92,
               child: _AssistantChatBubble(
                 color: colors.button,
                 foregroundColor: colors.surfaceRaised,

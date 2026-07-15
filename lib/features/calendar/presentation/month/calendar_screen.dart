@@ -290,32 +290,31 @@ class _SeamlessHeader extends ConsumerWidget {
                       context.l10n.appName.toUpperCase(),
                       style: context.moniaryTypography.metadataStrong.copyWith(
                         color: AppTheme.terracotta,
-                        fontSize: 8.5,
-                        letterSpacing: 2.1,
+                        fontSize: 11,
+                        letterSpacing: 2.4,
                       ),
                     ),
                     const SizedBox(height: 4),
+                    Text(
+                      userName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.moniaryTypography.displaySmall.copyWith(
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Flexible(
-                          child: Text(
-                            userName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.moniaryTypography.displaySmall
-                                .copyWith(color: colors.textPrimary),
-                          ),
-                        ),
                         if (streak != null) ...[
-                          const SizedBox(width: 8),
                           _StreakBadge(
                             count: streak.currentDays,
                             onTap: () =>
                                 context.push(RecordingStreakScreen.routePath),
                           ),
+                          const SizedBox(width: 8),
                         ],
-                        const SizedBox(width: 6),
                         _MiniHeaderAction(
                           icon: Icons.auto_stories_outlined,
                           tooltip: context.l10n.journalRecapTitle,
@@ -512,28 +511,28 @@ class _StreakBadge extends StatelessWidget {
       child: Material(
         color: AppTheme.terracotta.withValues(alpha: 0.09),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
           side: BorderSide(color: AppTheme.terracotta.withValues(alpha: 0.18)),
         ),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(
                   Icons.local_fire_department_outlined,
-                  size: 14,
+                  size: 18,
                   color: AppTheme.terracotta,
                 ),
-                const SizedBox(width: 3),
+                const SizedBox(width: 5),
                 Text(
                   '$count',
                   style: context.moniaryTypography.metadataStrong.copyWith(
                     color: colors.primary,
-                    fontSize: 9,
+                    fontSize: 12,
                     letterSpacing: 0,
                   ),
                 ),
@@ -565,19 +564,19 @@ class _MiniHeaderAction extends StatelessWidget {
       child: Material(
         color: AppTheme.terracotta.withValues(alpha: 0.08),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
           side: BorderSide(color: AppTheme.terracotta.withValues(alpha: 0.18)),
         ),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
           child: SizedBox(
-            width: 30,
-            height: 28,
+            width: 40,
+            height: 34,
             child: Icon(
               icon,
               color: colors.primary.withValues(alpha: 0.9),
-              size: 15,
+              size: 20,
             ),
           ),
         ),

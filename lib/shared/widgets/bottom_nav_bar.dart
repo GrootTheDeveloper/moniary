@@ -13,7 +13,7 @@ import '../../features/settings/presentation/profile_screen.dart';
 enum MoniaryTab { calendar, stats, groups, profile }
 
 const _bottomNavHeight = 72.0;
-const _cameraLift = 16.0;
+const _cameraLift = 6.0;
 
 class MoniaryBottomNavBar extends ConsumerWidget {
   const MoniaryBottomNavBar({
