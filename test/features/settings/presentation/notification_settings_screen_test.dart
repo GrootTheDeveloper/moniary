@@ -54,6 +54,8 @@ void main() {
     );
 
     expect(systemSwitch, findsOneWidget);
+    await tester.ensureVisible(systemSwitch);
+    await tester.pumpAndSettle();
     await tester.tap(systemSwitch);
     await tester.pumpAndSettle();
 
@@ -67,7 +69,7 @@ class _FakePushPreferencesRepository
 
   @override
   Future<NotificationDeliveryPreferences> getPreferences() async =>
-      const NotificationDeliveryPreferences();
+      const NotificationDeliveryPreferences(pushEnabled: true);
 
   @override
   Future<void> updatePreferences(

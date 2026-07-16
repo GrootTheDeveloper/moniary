@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -7,6 +6,7 @@ import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/utils/integer_money_input_formatter.dart';
 import '../../../../shared/widgets/moniary_design.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_roadmap.dart';
@@ -373,7 +373,11 @@ class _RecurringFormState extends State<_RecurringForm> {
           TextField(
             controller: _amount,
             keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              IntegerMoneyInputFormatter(
+                locale: Localizations.localeOf(context).toString(),
+              ),
+            ],
             decoration: InputDecoration(
               labelText: context.l10n.groupRecurringAmount,
             ),
@@ -451,8 +455,8 @@ class _RecurringFormState extends State<_RecurringForm> {
 
   void _submit() {
     final title = _title.text.trim();
-    final amount = int.tryParse(_amount.text.trim());
-    if (title.isEmpty || amount == null || amount <= 0) return;
+    final amount = parseIntegerMoney(_amount.text);
+    if (title.isEmpty || amount <= 0) return;
     Navigator.pop(
       context,
       _RecurringFormValue(

@@ -60,6 +60,7 @@ class _FailingMarkReadRepository implements NotificationRepository {
   @override
   Future<List<AppNotification>> fetchNotifications({
     AppNotificationCategory? category,
+    String? groupId,
   }) async => [
     AppNotification(
       id: 'notification-1',
@@ -78,7 +79,7 @@ class _FailingMarkReadRepository implements NotificationRepository {
   }
 
   @override
-  Future<void> markAllRead() async {}
+  Future<void> markAllRead({String? groupId}) async {}
 
   @override
   Future<void> registerDevice({

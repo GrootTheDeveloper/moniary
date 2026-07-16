@@ -1,6 +1,6 @@
 class NotificationDeliveryPreferences {
   const NotificationDeliveryPreferences({
-    this.pushEnabled = true,
+    this.pushEnabled = false,
     this.personalEnabled = true,
     this.groupEnabled = true,
     this.communityEnabled = true,
@@ -15,7 +15,7 @@ class NotificationDeliveryPreferences {
 
   factory NotificationDeliveryPreferences.fromJson(Map<String, dynamic> json) {
     return NotificationDeliveryPreferences(
-      pushEnabled: json['push_enabled'] as bool? ?? true,
+      pushEnabled: json['push_enabled'] as bool? ?? false,
       personalEnabled: json['personal_enabled'] as bool? ?? true,
       groupEnabled: json['group_enabled'] as bool? ?? true,
       communityEnabled: json['community_enabled'] as bool? ?? true,

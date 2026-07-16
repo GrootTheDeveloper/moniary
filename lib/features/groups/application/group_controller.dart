@@ -4,6 +4,7 @@ import '../../../shared/utils/app_logger.dart';
 import '../data/repositories/group_repository_impl.dart';
 import '../domain/entities/group_community.dart';
 import '../domain/entities/group_community_feed.dart';
+import '../domain/entities/group_enums.dart';
 import '../domain/entities/group_roadmap.dart';
 import '../domain/entities/group_settlement.dart';
 import '../domain/entities/group_transaction.dart';
@@ -128,11 +129,14 @@ final groupCommunityPostsProvider =
 final groupCommunityFeedProvider =
     FutureProvider.family<GroupCommunityFeed, String>((ref, groupId) async {
       final repository = ref.watch(groupRepositoryProvider);
-      final posts = await repository.fetchCommunityPosts(groupId: groupId);
-      final polls = await repository.fetchPolls(groupId);
-      final challenges = await repository.fetchSavingsChallenges(groupId);
-      final activities = await repository.fetchActivities(groupId);
-      final transactions = await repository.fetchTransactions(groupId);
+      final responses = await Future.wait<Object?>([
+        repository.fetchCommunityPosts(groupId: groupId),
+        repository.fetchPolls(groupId),
+        repository.fetchSavingsChallenges(groupId),
+      ]);
+      final posts = responses[0] as List<GroupCommunityPost>;
+      final polls = responses[1] as List<GroupPoll>;
+      final challenges = responses[2] as List<GroupSavingsChallenge>;
       final items = <GroupCommunityFeedItem>[
         ...posts.map(
           (post) => GroupCommunityFeedItem(
@@ -161,26 +165,6 @@ final groupCommunityFeedProvider =
             challenge: challenge,
           ),
         ),
-        ...activities.map(
-          (activity) => GroupCommunityFeedItem(
-            id: 'activity-${activity.id}',
-            groupId: groupId,
-            type: GroupCommunityFeedItemType.activity,
-            createdAt: activity.createdAt,
-            activity: activity,
-          ),
-        ),
-        ...transactions
-            .take(20)
-            .map(
-              (transaction) => GroupCommunityFeedItem(
-                id: 'transaction-${transaction.id}',
-                groupId: groupId,
-                type: GroupCommunityFeedItemType.transaction,
-                createdAt: transaction.createdAt,
-                transaction: transaction,
-              ),
-            ),
       ]..sort((left, right) => right.createdAt.compareTo(left.createdAt));
       return GroupCommunityFeed(items: items.take(40).toList(growable: false));
     });
@@ -414,6 +398,8 @@ class GroupActionController extends AsyncNotifier<void> {
           .read(groupRepositoryProvider)
           .votePoll(pollId: pollId, optionId: optionId);
       ref.invalidate(groupPollsProvider(groupId));
+      ref.invalidate(groupCommunityFeedProvider(groupId));
+      ref.invalidate(groupActivitiesProvider(groupId));
     });
   }
 
@@ -427,6 +413,8 @@ class GroupActionController extends AsyncNotifier<void> {
           .read(groupRepositoryProvider)
           .createPoll(groupId: groupId, title: title, options: options);
       ref.invalidate(groupPollsProvider(groupId));
+      ref.invalidate(groupCommunityFeedProvider(groupId));
+      ref.invalidate(groupActivitiesProvider(groupId));
       return id;
     });
   }
@@ -449,6 +437,8 @@ class GroupActionController extends AsyncNotifier<void> {
             endDate: endDate,
           );
       ref.invalidate(groupSavingsChallengesProvider(groupId));
+      ref.invalidate(groupCommunityFeedProvider(groupId));
+      ref.invalidate(groupActivitiesProvider(groupId));
       return id;
     });
   }
@@ -468,6 +458,8 @@ class GroupActionController extends AsyncNotifier<void> {
             note: note,
           );
       ref.invalidate(groupSavingsChallengesProvider(groupId));
+      ref.invalidate(groupCommunityFeedProvider(groupId));
+      ref.invalidate(groupActivitiesProvider(groupId));
     });
   }
 
@@ -736,6 +728,19 @@ class GroupActionController extends AsyncNotifier<void> {
     });
   }
 
+  Future<void> updateMemberRole({
+    required String groupId,
+    required String userId,
+    required GroupRole role,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .updateMemberRole(groupId: groupId, userId: userId, role: role);
+      _invalidateGroup(groupId);
+    });
+  }
+
   Future<void> leaveGroup(String groupId) {
     return _run(() async {
       await ref.read(groupRepositoryProvider).leaveGroup(groupId);
@@ -803,6 +808,58 @@ class GroupActionController extends AsyncNotifier<void> {
       ref.invalidate(groupCommunityPostsProvider(groupId));
       ref.invalidate(groupCommunityFeedProvider(groupId));
       ref.invalidate(groupActivitiesProvider(groupId));
+    });
+  }
+
+  Future<void> updateCommunityPost({
+    required String groupId,
+    required String postId,
+    required String content,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .updateCommunityPost(postId: postId, content: content);
+      ref.invalidate(groupCommunityPostsProvider(groupId));
+      ref.invalidate(groupCommunityFeedProvider(groupId));
+    });
+  }
+
+  Future<void> updateCommunityPostComment({
+    required String groupId,
+    required String commentId,
+    required String content,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .updateCommunityPostComment(commentId: commentId, content: content);
+      ref.invalidate(groupCommunityPostsProvider(groupId));
+      ref.invalidate(groupCommunityFeedProvider(groupId));
+    });
+  }
+
+  Future<void> deleteCommunityPostComment({
+    required String groupId,
+    required String commentId,
+  }) {
+    return _run(() async {
+      await ref
+          .read(groupRepositoryProvider)
+          .deleteCommunityPostComment(commentId);
+      ref.invalidate(groupCommunityPostsProvider(groupId));
+      ref.invalidate(groupCommunityFeedProvider(groupId));
+    });
+  }
+
+  Future<void> deleteCommunityPost({
+    required String groupId,
+    required String postId,
+  }) {
+    return _run(() async {
+      await ref.read(groupRepositoryProvider).deleteCommunityPost(postId);
+      ref.invalidate(groupCommunityPostsProvider(groupId));
+      ref.invalidate(groupCommunityFeedProvider(groupId));
     });
   }
 

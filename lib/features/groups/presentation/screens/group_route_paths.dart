@@ -27,6 +27,7 @@ abstract final class GroupRoutePaths {
   static const auditLogPattern = '$managementPattern/audit-log';
   static const settingsPattern = '$managementPattern/settings';
   static const invitePattern = '$managementPattern/invite';
+  static const membersPattern = '$managementPattern/members';
 
   static String _segment(String value) => Uri.encodeComponent(value);
 
@@ -81,4 +82,6 @@ abstract final class GroupRoutePaths {
   static String settings(String groupId) => '${management(groupId)}/settings';
 
   static String invite(String groupId) => '${management(groupId)}/invite';
+
+  static String members(String groupId) => '${management(groupId)}/members';
 }

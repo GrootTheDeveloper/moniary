@@ -20,6 +20,13 @@ class _FakePushMessagingGateway implements PushMessagingGateway {
   int permissionRequestCount = 0;
 
   @override
+  Future<PushPermissionStatus> getPermissionStatus() async {
+    return permissionGranted
+        ? PushPermissionStatus.authorized
+        : PushPermissionStatus.denied;
+  }
+
+  @override
   Stream<String> get tokenRefreshes => tokenRefreshController.stream;
 
   @override
@@ -205,6 +212,23 @@ void main() {
 
     expect(registeredTokens, isEmpty);
   });
+
+  test(
+    'startup listener initialization never prompts or registers when off',
+    () async {
+      final registeredTokens = <String>[];
+
+      await service.initialize(
+        onToken: (token) async => registeredTokens.add(token),
+        onTap: (_) async {},
+        requestPermission: false,
+        registerDevice: false,
+      );
+
+      expect(gateway.permissionRequestCount, 0);
+      expect(registeredTokens, isEmpty);
+    },
+  );
 
   test(
     'concurrent initialization requests permission and token once',

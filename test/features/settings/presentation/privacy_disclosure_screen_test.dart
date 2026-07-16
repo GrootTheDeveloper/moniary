@@ -40,7 +40,7 @@ void main() {
     await tester.pumpWidget(_localizedApp(const PrivacyPolicyScreen()));
 
     final disclosure = find.textContaining(
-      'When you choose Google or Facebook (Meta) sign-in',
+      'Cloudflare Turnstile processes security signals',
     );
     await tester.scrollUntilVisible(
       disclosure,
@@ -49,8 +49,8 @@ void main() {
     );
     expect(disclosure, findsOneWidget);
 
-    final personalInfo = find.textContaining(
-      'email, Google, or Facebook (Meta)',
+    final personalInfo = find.text(
+      'Personal info: processed when users log in with email, Google, or Facebook (Meta).',
     );
     await tester.scrollUntilVisible(
       personalInfo,

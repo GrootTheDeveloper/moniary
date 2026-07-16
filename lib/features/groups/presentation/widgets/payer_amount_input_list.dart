@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
+import '../../../../shared/utils/integer_money_input_formatter.dart';
 import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/spending_group.dart';
 
@@ -71,6 +72,11 @@ class PayerAmountInputList extends ConsumerWidget {
                   key: ValueKey('payer-amount-${member.userId}'),
                   controller: controllers[member.userId],
                   keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    IntegerMoneyInputFormatter(
+                      locale: Localizations.localeOf(context).toString(),
+                    ),
+                  ],
                   decoration: InputDecoration(
                     labelText: context.l10n.groupTransactionTotal,
                     suffixText: ref.currencySymbol,

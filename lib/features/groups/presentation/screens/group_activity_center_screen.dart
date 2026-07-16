@@ -4,11 +4,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../../../shared/utils/error_helpers.dart';
-import '../../application/group_controller.dart';
-import '../../domain/entities/group_community.dart';
+import '../../../notifications/application/notification_controller.dart';
+import '../../../notifications/domain/entities/app_notification.dart';
+import '../../../notifications/presentation/notification_presentation_resolver.dart';
+import '../../../notifications/presentation/notification_route_resolver.dart';
+import '../../../notifications/presentation/screens/notification_center_screen.dart';
 import 'group_community_screen.dart';
-import 'group_route_paths.dart';
 
 class GroupActivityCenterScreen extends ConsumerWidget {
   const GroupActivityCenterScreen({
@@ -25,54 +28,63 @@ class GroupActivityCenterScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final groupId = this.groupId;
-    final unreadCount = ref.watch(unreadGroupNotificationCountProvider);
-    final actionState = ref.watch(groupActionControllerProvider);
-
     if (groupId != null && !notificationOnly) {
       return GroupCommunityScreen(groupId: groupId);
     }
+    if (groupId == null) return const NotificationCenterScreen();
 
-    final tabs = <Tab>[
-      Tab(text: context.l10n.groupActivityTabNotifications),
-      Tab(text: context.l10n.groupActivityTabCommunityNotifications),
-    ];
-    final views = <Widget>[
-      const _NotificationsTab(category: 'group'),
-      const _NotificationsTab(category: 'community'),
-    ];
+    final unreadCount = ref.watch(
+      groupUnreadNotificationCountProvider(groupId),
+    );
+    final actionState = ref.watch(notificationActionControllerProvider);
 
     return DefaultTabController(
-      length: tabs.length,
+      length: 2,
       child: Scaffold(
+        backgroundColor: context.moniaryColors.backgroundSoft,
         appBar: AppBar(
-          title: Text(
-            notificationOnly
-                ? context.l10n.groupNotificationsTitle
-                : groupId == null
-                ? context.l10n.groupActivityCenterTitle
-                : context.l10n.groupCommunityTab,
-          ),
+          title: Text(context.l10n.groupNotificationsTitle),
           actions: [
             if (unreadCount > 0)
               TextButton(
                 onPressed: actionState.isLoading
                     ? null
-                    : () => _markAllRead(context, ref),
+                    : () => _markAllRead(context, ref, groupId),
                 child: Text(context.l10n.notificationsMarkAllRead),
               ),
           ],
-          bottom: TabBar(tabs: tabs),
+          bottom: TabBar(
+            tabs: [
+              Tab(text: context.l10n.groupActivityTabNotifications),
+              Tab(text: context.l10n.groupActivityTabCommunityNotifications),
+            ],
+          ),
         ),
-        body: TabBarView(children: views),
+        body: TabBarView(
+          children: [
+            _NotificationsTab(
+              groupId: groupId,
+              category: AppNotificationCategory.group,
+            ),
+            _NotificationsTab(
+              groupId: groupId,
+              category: AppNotificationCategory.community,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Future<void> _markAllRead(BuildContext context, WidgetRef ref) async {
+  Future<void> _markAllRead(
+    BuildContext context,
+    WidgetRef ref,
+    String groupId,
+  ) async {
     try {
       await ref
-          .read(groupActionControllerProvider.notifier)
-          .markAllNotificationsRead();
+          .read(notificationActionControllerProvider.notifier)
+          .markAllGroupRead(groupId);
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -83,179 +95,238 @@ class GroupActivityCenterScreen extends ConsumerWidget {
 }
 
 class _NotificationsTab extends ConsumerWidget {
-  const _NotificationsTab({required this.category});
+  const _NotificationsTab({required this.groupId, required this.category});
 
-  final String category;
+  final String groupId;
+  final AppNotificationCategory category;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notificationsAsync = category == 'community'
-        ? ref.watch(communityNotificationsProvider)
-        : ref.watch(groupNotificationsProvider);
+    final query = GroupNotificationQuery(groupId: groupId, category: category);
+    final notificationsAsync = ref.watch(groupNotificationInboxProvider(query));
     final colors = context.moniaryColors;
 
     return notificationsAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => Center(
+      loading: () => const _NotificationLoadingList(),
+      error: (error, _) => Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Text(
-            userFriendlyMessage(context, error),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-      data: (notifications) {
-        return RefreshIndicator(
-          onRefresh: () async => category == 'community'
-              ? ref.invalidate(communityNotificationsProvider)
-              : ref.invalidate(groupNotificationsProvider),
-          child: notifications.isEmpty
-              ? ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: [
-                    SizedBox(
-                      height: 320,
-                      child: Center(
-                        child: Text(
-                          category == 'community'
-                              ? context.l10n.communityNotificationsEmptyState
-                              : context.l10n.groupNotificationsEmptyState,
-                          style: TextStyle(color: colors.textDim),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-                  itemCount: notifications.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 4),
-                  itemBuilder: (context, index) =>
-                      _NotificationRow(notification: notifications[index]),
-                ),
-        );
-      },
-    );
-  }
-}
-
-class _NotificationRow extends ConsumerWidget {
-  const _NotificationRow({required this.notification});
-
-  final GroupNotification notification;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colors = context.moniaryColors;
-    return Material(
-      color: notification.isRead
-          ? Colors.transparent
-          : colors.primary.withValues(alpha: 0.05),
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: () => _handleTap(context, ref),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 8,
-                height: 8,
-                margin: const EdgeInsets.only(top: 5),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: notification.isRead
-                      ? Colors.transparent
-                      : AppTheme.terracotta,
-                ),
+              Icon(Icons.notifications_none_outlined, color: colors.textDim),
+              const SizedBox(height: 10),
+              Text(
+                userFriendlyMessage(context, error),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _notificationLabel(context, notification.type),
-                      style: TextStyle(
-                        color: colors.textPrimary,
-                        fontWeight: notification.isRead
-                            ? FontWeight.w500
-                            : FontWeight.w700,
-                        fontSize: 13.5,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      '${notification.groupName} · '
-                      '${_timeAgo(context, notification.createdAt)}',
-                      style: TextStyle(color: colors.textDim, fontSize: 11),
-                    ),
-                  ],
-                ),
+              const SizedBox(height: 14),
+              OutlinedButton.icon(
+                onPressed: () =>
+                    ref.invalidate(groupNotificationInboxProvider(query)),
+                icon: const Icon(Icons.refresh_outlined),
+                label: Text(context.l10n.commonRetry),
               ),
             ],
           ),
         ),
       ),
+      data: (notifications) => RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(groupNotificationInboxProvider(query));
+          await ref.read(groupNotificationInboxProvider(query).future);
+        },
+        child: notifications.isEmpty
+            ? ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: 320,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.notifications_none_outlined,
+                            size: 36,
+                            color: colors.textDim,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            category == AppNotificationCategory.community
+                                ? context.l10n.communityNotificationsEmptyState
+                                : context.l10n.groupNotificationsEmptyState,
+                            style: TextStyle(color: colors.textDim),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : ListView.separated(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+                itemCount: notifications.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
+                itemBuilder: (context, index) => _NotificationRow(
+                  groupId: groupId,
+                  notification: notifications[index],
+                ),
+              ),
+      ),
     );
+  }
+}
+
+class _NotificationRow extends ConsumerWidget {
+  const _NotificationRow({required this.groupId, required this.notification});
+
+  final String groupId;
+  final AppNotification notification;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.moniaryColors;
+    final languageCode = Localizations.localeOf(context).languageCode;
+    return Semantics(
+      button: true,
+      label: NotificationPresentationResolver.title(
+        context.l10n,
+        notification,
+        languageCode,
+      ),
+      child: Material(
+        color: notification.isRead
+            ? colors.surface
+            : colors.primary.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => _handleTap(context, ref),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 68),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: colors.primary.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      NotificationPresentationResolver.iconFor(notification),
+                      color: colors.primary,
+                      size: 21,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          NotificationPresentationResolver.title(
+                            context.l10n,
+                            notification,
+                            languageCode,
+                          ),
+                          style: TextStyle(
+                            color: colors.textPrimary,
+                            fontWeight: notification.isRead
+                                ? FontWeight.w600
+                                : FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _subtitle(context, languageCode),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: colors.textDim),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (!notification.isRead) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 8,
+                      height: 8,
+                      margin: const EdgeInsets.only(top: 6),
+                      decoration: BoxDecoration(
+                        color: colors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _subtitle(BuildContext context, String languageCode) {
+    final actor = notification.metadata['actor_name'] as String?;
+    final base = NotificationPresentationResolver.subtitle(
+      context.l10n,
+      notification,
+      languageCode,
+    );
+    final time = _timeAgo(context, notification.createdAt);
+    return actor == null || actor.trim().isEmpty
+        ? '$base · $time'
+        : '${actor.trim()} · $base · $time';
   }
 
   Future<void> _handleTap(BuildContext context, WidgetRef ref) async {
     if (!notification.isRead) {
-      await ref
-          .read(groupActionControllerProvider.notifier)
-          .markNotificationRead(notification.id);
+      try {
+        await ref
+            .read(notificationActionControllerProvider.notifier)
+            .markGroupRead(groupId: groupId, notification: notification);
+      } catch (error, stackTrace) {
+        AppLogger.error(
+          'Failed to sync scoped group notification read state',
+          error,
+          stackTrace,
+        );
+      }
     }
-    final transactionId = notification.groupTransactionId;
-    if (transactionId != null && context.mounted) {
-      await context.push(
-        GroupRoutePaths.transactionDetail(
-          groupId: notification.groupId,
-          transactionId: transactionId,
-        ),
-      );
-    } else if (context.mounted) {
-      context.go(GroupRoutePaths.home(notification.groupId));
+    if (!context.mounted) return;
+    final destination = NotificationRouteResolver.resolveNotification(
+      notification,
+    );
+    if (destination != NotificationCenterScreen.routePath) {
+      await context.push(destination);
     }
   }
+}
 
-  String _notificationLabel(BuildContext context, String type) {
-    switch (type) {
-      case 'transaction_posted':
-        return context.l10n.groupNotificationTransactionPosted;
-      case 'member_amount_required':
-        return context.l10n.groupNotificationMemberAmountRequired;
-      case 'debt_settled':
-        return context.l10n.groupNotificationDebtSettled;
-      case 'group_invite':
-        return context.l10n.groupNotificationGroupInvite;
-      case 'settlement_marked_paid':
-        return context.l10n.groupNotificationSettlementMarkedPaid;
-      case 'settlement_completed':
-        return context.l10n.groupNotificationSettlementCompleted;
-      case 'settlement_disputed':
-        return context.l10n.groupNotificationSettlementDisputed;
-      case 'member_removed':
-        return context.l10n.groupNotificationMemberRemoved;
-      case 'member_left':
-        return context.l10n.groupNotificationMemberLeft;
-      case 'member_leave_blocked_warning':
-        return context.l10n.groupNotificationLeaveBlocked;
-      case 'comment_added':
-      case 'transaction_commented':
-        return context.l10n.groupNotificationCommentAdded;
-      case 'transaction_reacted':
-        return context.l10n.groupNotificationReactionAdded;
-      case 'comment_mention':
-      case 'mention':
-        return context.l10n.groupNotificationMention;
-      default:
-        return context.l10n.groupNotificationGeneric;
-    }
-  }
+class _NotificationLoadingList extends StatelessWidget {
+  const _NotificationLoadingList();
+
+  @override
+  Widget build(BuildContext context) => ListView.separated(
+    padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+    itemCount: 5,
+    separatorBuilder: (_, _) => const SizedBox(height: 8),
+    itemBuilder: (_, _) => Container(
+      height: 76,
+      decoration: BoxDecoration(
+        color: context.moniaryColors.surface,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      alignment: Alignment.center,
+      child: const LinearProgressIndicator(),
+    ),
+  );
 }
 
 String _timeAgo(BuildContext context, DateTime dateTime) {

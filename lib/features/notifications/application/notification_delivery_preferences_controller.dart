@@ -40,7 +40,8 @@ class NotificationDeliveryPreferencesController
 
   Future<void> _update(NotificationDeliveryPreferences? updated) async {
     if (updated == null) return;
-    state = const AsyncLoading();
+    final previous = state.asData?.value;
+    state = AsyncData(updated);
     try {
       await ref
           .read(notificationDeliveryPreferencesRepositoryProvider)
@@ -52,7 +53,9 @@ class NotificationDeliveryPreferencesController
         error,
         stackTrace,
       );
-      state = AsyncError(error, stackTrace);
+      state = previous == null
+          ? AsyncError(error, stackTrace)
+          : AsyncData(previous);
       rethrow;
     }
   }

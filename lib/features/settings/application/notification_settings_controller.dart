@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../shared/utils/app_logger.dart';
 import '../domain/models/notification_settings.dart';
 import '../data/repositories/notification_settings_repository.dart';
 
@@ -56,13 +57,19 @@ class NotificationSettingsController
   }
 
   Future<void> _update(NotificationSettings newSettings) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+    final previous = state.asData?.value;
+    state = AsyncData(newSettings);
+    try {
       await ref
           .read(notificationSettingsRepositoryProvider)
           .updateSettings(newSettings);
-      return newSettings;
-    });
+    } catch (error, stackTrace) {
+      AppLogger.error('Notification settings update failed', error, stackTrace);
+      state = previous == null
+          ? AsyncError(error, stackTrace)
+          : AsyncData(previous);
+      rethrow;
+    }
   }
 }
 

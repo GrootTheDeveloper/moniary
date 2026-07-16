@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../application/group_controller.dart';
+import '../../../notifications/application/notification_controller.dart';
 import 'group_route_paths.dart';
 
 class GroupShellScreen extends ConsumerWidget {
@@ -24,7 +24,9 @@ class GroupShellScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
-    final unreadCount = ref.watch(unreadGroupNotificationCountProvider);
+    final unreadCount = ref.watch(
+      groupUnreadNotificationCountProvider(groupId),
+    );
     final currentIndex = navigationShell.currentIndex;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -73,7 +75,7 @@ class _GroupBottomNavigationBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        height: 74,
+        height: 80,
         decoration: BoxDecoration(
           color: colors.navBar.withValues(alpha: 0.98),
           border: Border(
@@ -127,8 +129,17 @@ class _GroupNavItem extends StatelessWidget {
       label: label,
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 7),
+          decoration: BoxDecoration(
+            color: selected
+                ? colors.button.withValues(alpha: 0.09)
+                : colors.navBar.withValues(alpha: 0),
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -141,20 +152,18 @@ class _GroupNavItem extends StatelessWidget {
                       top: -7,
                       right: -10,
                       child: Container(
-                        constraints: const BoxConstraints(minWidth: 16),
+                        constraints: const BoxConstraints(minWidth: 18),
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         decoration: BoxDecoration(
-                          color: context.moniaryColors.danger,
+                          color: colors.danger,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: context.moniaryColors.navBar,
-                          ),
+                          border: Border.all(color: colors.navBar),
                         ),
                         child: Text(
                           badgeCount > 99 ? '99+' : '$badgeCount',
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: colors.surfaceRaised,
                             fontSize: 9,
                             fontWeight: FontWeight.w800,
                           ),
@@ -163,15 +172,17 @@ class _GroupNavItem extends StatelessWidget {
                     ),
                 ],
               ),
-              const SizedBox(height: 3),
-              Text(
-                label.toUpperCase(),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.moniaryTypography.metadataStrong.copyWith(
-                  color: color,
-                  fontSize: 8,
-                  letterSpacing: 0.45,
+              const SizedBox(height: 4),
+              Flexible(
+                child: Text(
+                  label.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.moniaryTypography.metadataStrong.copyWith(
+                    color: color,
+                    fontSize: 10,
+                    letterSpacing: 0.15,
+                  ),
                 ),
               ),
             ],

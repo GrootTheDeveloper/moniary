@@ -13,9 +13,14 @@ class _FakeNotificationRepository implements NotificationRepository {
   @override
   Future<List<AppNotification>> fetchNotifications({
     AppNotificationCategory? category,
+    String? groupId,
   }) async {
     return items
-        .where((item) => category == null || item.category == category)
+        .where(
+          (item) =>
+              (category == null || item.category == category) &&
+              (groupId == null || item.groupId == groupId),
+        )
         .toList();
   }
 
@@ -30,8 +35,14 @@ class _FakeNotificationRepository implements NotificationRepository {
   }
 
   @override
-  Future<void> markAllRead() async {
-    items = items.map((item) => item.copyWith(isRead: true)).toList();
+  Future<void> markAllRead({String? groupId}) async {
+    items = items
+        .map(
+          (item) => groupId == null || item.groupId == groupId
+              ? item.copyWith(isRead: true)
+              : item,
+        )
+        .toList();
   }
 
   @override
@@ -103,5 +114,37 @@ void main() {
     await container.read(notificationsProvider.future);
 
     expect(container.read(unreadNotificationCountProvider), 0);
+  });
+
+  test('global unread badge is independent from the selected filter', () async {
+    final repository = _FakeNotificationRepository([
+      AppNotification(
+        id: 'personal',
+        category: AppNotificationCategory.personal,
+        type: 'friend_request',
+        isRead: false,
+        createdAt: DateTime(2026, 7, 14),
+      ),
+      AppNotification(
+        id: 'group',
+        category: AppNotificationCategory.group,
+        type: 'transaction_posted',
+        isRead: false,
+        createdAt: DateTime(2026, 7, 14),
+      ),
+    ]);
+    final container = ProviderContainer(
+      overrides: [notificationRepositoryProvider.overrideWithValue(repository)],
+    );
+    addTearDown(container.dispose);
+
+    await container.read(notificationUnreadSummaryProvider.future);
+    container
+        .read(notificationCategoryProvider.notifier)
+        .setCategory(AppNotificationCategory.personal);
+    await container.read(notificationsProvider.future);
+
+    expect(container.read(unreadNotificationCountProvider), 2);
+    expect(container.read(notificationsProvider).requireValue, hasLength(1));
   });
 }

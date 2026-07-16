@@ -368,9 +368,9 @@ class _SearchResultAction extends StatelessWidget {
           );
         }
         if (request == null) {
-          return const Icon(
+          return Icon(
             Icons.check_circle_outline,
-            color: AppTheme.success,
+            color: context.moniaryColors.success,
           );
         }
         return Wrap(
@@ -391,7 +391,10 @@ class _SearchResultAction extends StatelessWidget {
       case FriendRelationStatus.friends:
       case FriendRelationStatus.outgoingPending:
       case FriendRelationStatus.self:
-        return const Icon(Icons.check_circle_outline, color: AppTheme.success);
+        return Icon(
+          Icons.check_circle_outline,
+          color: context.moniaryColors.success,
+        );
     }
   }
 }

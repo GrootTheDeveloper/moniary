@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/utils/integer_money_input_formatter.dart';
 import '../../application/group_controller.dart';
 
 class MemberAmountInputArgs {
@@ -64,6 +65,11 @@ class _MemberAmountInputScreenState
             controller: _amountController,
             autofocus: true,
             keyboardType: TextInputType.number,
+            inputFormatters: [
+              IntegerMoneyInputFormatter(
+                locale: Localizations.localeOf(context).toString(),
+              ),
+            ],
             decoration: InputDecoration(
               labelText: context.l10n.groupAmountUsedLabel,
               suffixText: ref.currencySymbol,
@@ -85,15 +91,13 @@ class _MemberAmountInputScreenState
   }
 
   Future<void> _submit() async {
-    final amount = int.tryParse(
-      _amountController.text.replaceAll(RegExp(r'[^0-9]'), ''),
-    );
-    if (amount == null || amount < 0) {
+    if (_amountController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.groupAmountNonNegative)),
       );
       return;
     }
+    final amount = parseIntegerMoney(_amountController.text);
     try {
       await ref
           .read(groupActionControllerProvider.notifier)

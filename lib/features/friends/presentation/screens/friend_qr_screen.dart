@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/friend_controller.dart';
 import '../../domain/friend_qr_payload.dart';
+import '../../domain/entities/friend_profile.dart';
 import 'friend_invite_accept_screen.dart';
 
 enum _FriendQrMode { myCode, scan }
@@ -28,6 +31,8 @@ class _FriendQrScreenState extends ConsumerState<FriendQrScreen> {
   );
   _FriendQrMode _mode = _FriendQrMode.myCode;
   bool _handlingScan = false;
+  bool _loadingInvite = false;
+  FriendInviteLink? _inviteLink;
 
   @override
   void dispose() {
@@ -76,43 +81,69 @@ class _FriendQrScreenState extends ConsumerState<FriendQrScreen> {
   }
 
   Widget _buildMyCode() {
-    final inviteAsync = ref.watch(friendInviteLinkProvider);
-    return inviteAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) {
-        return Center(
+    final invite = _inviteLink;
+    if (_loadingInvite) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (invite == null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(28),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(userFriendlyMessage(context, error)),
-              const SizedBox(height: 12),
+              Icon(
+                Icons.qr_code_2_outlined,
+                size: 64,
+                color: context.moniaryColors.textDim,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                context.l10n.friendInviteShareDescription,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 18),
               FilledButton.icon(
-                onPressed: () => ref.invalidate(friendInviteLinkProvider),
-                icon: const Icon(Icons.refresh_outlined),
-                label: Text(context.l10n.friendQrRetry),
+                onPressed: _createInviteLink,
+                icon: const Icon(Icons.qr_code_2_outlined),
+                label: Text(context.l10n.friendQrGenerate),
               ),
             ],
           ),
-        );
-      },
-      data: (invite) {
-        return Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+        ),
+      );
+    }
+
+    final expires = MaterialLocalizations.of(
+      context,
+    ).formatMediumDate(invite.expiresAt);
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Semantics(
+              label: context.l10n.friendQrMyCode,
+              child: QrImageView(
+                data: invite.link,
+                version: QrVersions.auto,
+                size: 260,
+                backgroundColor: context.moniaryColors.surfaceRaised,
+                padding: const EdgeInsets.all(18),
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              context.l10n.friendInviteExpires(expires),
+              style: context.moniaryTypography.metadata,
+            ),
+            const SizedBox(height: 20),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              runSpacing: 10,
               children: [
-                Semantics(
-                  label: context.l10n.friendQrMyCode,
-                  child: QrImageView(
-                    data: invite.link,
-                    version: QrVersions.auto,
-                    size: 260,
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.all(18),
-                  ),
-                ),
-                const SizedBox(height: 24),
                 FilledButton.icon(
                   onPressed: () => Share.share(
                     context.l10n.friendInviteShareMessage(invite.link),
@@ -121,12 +152,86 @@ class _FriendQrScreenState extends ConsumerState<FriendQrScreen> {
                   icon: const Icon(Icons.ios_share_outlined),
                   label: Text(context.l10n.friendQrShare),
                 ),
+                OutlinedButton.icon(
+                  onPressed: () => _copyInviteLink(invite.link),
+                  icon: const Icon(Icons.content_copy_outlined),
+                  label: Text(context.l10n.friendQrCopy),
+                ),
+                TextButton.icon(
+                  onPressed: _revokeInviteLink,
+                  icon: const Icon(Icons.link_off_outlined),
+                  label: Text(context.l10n.friendQrRevoke),
+                ),
               ],
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
+  }
+
+  Future<void> _createInviteLink() async {
+    setState(() => _loadingInvite = true);
+    try {
+      final invite = await ref
+          .read(friendActionControllerProvider.notifier)
+          .createInviteLink();
+      if (!mounted) return;
+      setState(() => _inviteLink = invite);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    } finally {
+      if (mounted) setState(() => _loadingInvite = false);
+    }
+  }
+
+  Future<void> _copyInviteLink(String link) async {
+    await Clipboard.setData(ClipboardData(text: link));
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(context.l10n.friendQrCopied)));
+  }
+
+  Future<void> _revokeInviteLink() async {
+    final invite = _inviteLink;
+    if (invite == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.friendQrRevoke),
+        content: Text(context.l10n.friendQrRevokeConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.friendQrRevoke),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await ref
+          .read(friendActionControllerProvider.notifier)
+          .revokeInviteLink(invite.token);
+      if (!mounted) return;
+      setState(() => _inviteLink = null);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.friendQrRevoked)));
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
   }
 
   Widget _buildScanner() {

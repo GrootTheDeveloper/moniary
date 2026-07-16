@@ -1087,6 +1087,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupMembersHeader => 'Members';
 
   @override
+  String get groupRoleOwner => 'Owner';
+
+  @override
+  String get groupRoleAdmin => 'Administrator';
+
+  @override
+  String get groupRoleMember => 'Member';
+
+  @override
+  String get groupMemberActions => 'Member actions';
+
+  @override
+  String get groupPromoteAdminAction => 'Make administrator';
+
+  @override
+  String get groupDemoteMemberAction => 'Change to member';
+
+  @override
+  String groupMemberActionConfirm(String member, String action) {
+    return 'Perform “$action” for $member?';
+  }
+
+  @override
+  String get groupMemberActionDone => 'Member updated.';
+
+  @override
   String get groupExpenseHistory => 'Expense history';
 
   @override
@@ -3764,7 +3790,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyShareItem4 =>
-      'When you choose Google or Facebook (Meta) sign-in, that provider and Supabase process authentication data. Cloudflare Turnstile processes security signals for protected guest sign-in.';
+      'When you choose email, Google, or Facebook (Meta) sign-in, Supabase and the selected provider process authentication data. Cloudflare Turnstile processes security signals for protected email sign-in, sign-up, password reset, and guest sign-in.';
 
   @override
   String get privacyPolicyDeleteTitle => 'Data deletion';
@@ -4498,6 +4524,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupManageAccessSection => 'Access and safety';
 
   @override
+  String get groupManagePeopleSection => 'Members and invitations';
+
+  @override
+  String get groupManageMembersSubtitle =>
+      'Review members, roles, and management access';
+
+  @override
+  String get groupManageInviteSubtitle =>
+      'Invite friends, usernames, or share a link';
+
+  @override
   String get groupActivityTabTimeline => 'Activity';
 
   @override
@@ -5066,13 +5103,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupCommunityAllTab => 'All';
 
   @override
+  String get groupCommunityPostTab => 'Posts';
+
+  @override
   String get groupCommunityPollTab => 'Polls';
+
+  @override
+  String get groupCommunityChallengeTab => 'Challenges';
+
+  @override
+  String get groupCommunityExpenseTab => 'Expenses';
 
   @override
   String get groupCommunityActivityTab => 'Activity';
 
   @override
   String get groupCommunityPostText => 'Post';
+
+  @override
+  String get groupCommunityPostActions => 'Post actions';
+
+  @override
+  String get groupCommunityEditPost => 'Edit post';
+
+  @override
+  String get groupCommunityDeletePost => 'Delete post';
+
+  @override
+  String get groupCommunityDeletePostConfirm =>
+      'The post and its related interactions will no longer be shown. Delete it anyway?';
 
   @override
   String get groupCommunityPostPhoto => 'Photos';
@@ -5162,7 +5221,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Set a savings goal for members to contribute together.';
 
   @override
-  String get groupCommunityChallengeDuration => 'Default duration: 30 days';
+  String get groupCommunityChallengeDuration => 'Choose a challenge duration';
+
+  @override
+  String groupCommunityDurationDays(int days) {
+    return '$days days';
+  }
 
   @override
   String get groupCommunityChallengeMembers =>
@@ -5203,8 +5267,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupCommunityContributionAmount => 'Contribution amount';
 
   @override
+  String groupCommunityContributionLimit(String amount) {
+    return 'You can contribute up to $amount';
+  }
+
+  @override
   String get groupCommunityContributionInvalid =>
       'Enter an amount greater than 0.';
+
+  @override
+  String get groupCommunityContributionExceedsRemaining =>
+      'The contribution exceeds the remaining target.';
+
+  @override
+  String groupCommunityContributionTooHigh(String amount) {
+    return 'The amount exceeds the remaining $amount.';
+  }
 
   @override
   String get groupCommunityPublish => 'Share with group';
@@ -5228,11 +5306,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupCommunityCommentEmpty => 'No comments yet';
 
   @override
+  String get groupCommunityCommentAdded => 'Comment added';
+
+  @override
+  String get groupCommunityCommentRequired => 'Enter a comment before sending.';
+
+  @override
+  String get groupCommunityCommentActions => 'Comment actions';
+
+  @override
+  String get groupCommunityEditComment => 'Edit comment';
+
+  @override
+  String get groupCommunityDeleteComment => 'Delete comment';
+
+  @override
+  String get groupCommunityDeleteCommentConfirm =>
+      'Are you sure you want to delete this comment? This action cannot be undone.';
+
+  @override
   String get groupCommunityActivityTransaction => 'added a new expense';
 
   @override
-  String get groupCommunityActivitySettlement =>
-      'completed their settlement 🎉';
+  String get groupCommunityActivitySettlement => 'completed their settlement';
 
   @override
   String get groupCommunityActivityMemberLeft => 'left the group';
@@ -5257,6 +5353,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupCommunityNoFeed => 'No updates yet. Be the first to share!';
+
+  @override
+  String get groupCommunityFilterEmpty =>
+      'There is no content for this filter yet.';
+
+  @override
+  String get groupCommunityAddExpense => 'Add expense';
+
+  @override
+  String get groupCommunityViewSettlements => 'Balances';
+
+  @override
+  String get groupCommunitySummaryAction => 'Summary';
+
+  @override
+  String get groupCommunityOpenExpense => 'Open expense details';
+
+  @override
+  String get groupCommunityReactionLove => 'Love';
+
+  @override
+  String get groupCommunityReactionLike => 'Like';
+
+  @override
+  String get groupCommunityReactionCelebrate => 'Celebrate';
 
   @override
   String get groupCommunityOpenNotifications => 'Open group notifications';
@@ -5536,6 +5657,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String friendSharedGroups(int count) {
     return '$count shared groups';
   }
+
+  @override
+  String get friendSharedGroupsLabel => 'Shared groups';
+
+  @override
+  String get friendActions => 'Friend actions';
+
+  @override
+  String get friendDetailTitle => 'Friend details';
+
+  @override
+  String get friendFriendsSince => 'Friends since';
+
+  @override
+  String get friendBalance => 'Current balance';
 
   @override
   String get friendOwesYou => 'Owes you';
@@ -6437,6 +6573,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendQrShare => 'Share code';
 
   @override
+  String get friendQrGenerate => 'Create QR code';
+
+  @override
+  String get friendQrCopy => 'Copy link';
+
+  @override
+  String get friendQrCopied => 'Friend link copied.';
+
+  @override
+  String get friendQrRevoke => 'Revoke current code';
+
+  @override
+  String get friendQrRevokeConfirm =>
+      'The old link will stop working. Revoke it anyway?';
+
+  @override
+  String get friendQrRevoked => 'Friend code revoked.';
+
+  @override
+  String friendInviteExpires(String date) {
+    return 'Valid until $date';
+  }
+
+  @override
   String get friendQrLoadError => 'The camera could not be started.';
 
   @override
@@ -6941,7 +7101,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsMarkAllRead => 'Mark all read';
 
   @override
+  String get notificationsMarkRead => 'Mark as read';
+
+  @override
+  String get notificationsMarkUnread => 'Mark as unread';
+
+  @override
+  String get notificationsReadStateSuccess => 'Notification status updated';
+
+  @override
+  String get notificationsReadStateError =>
+      'Notification status could not be updated';
+
+  @override
   String get notificationsEmpty => 'No notifications in the last 30 days';
+
+  @override
+  String get notificationsEmptyCategory =>
+      'No notifications in this category during the last 30 days';
+
+  @override
+  String notificationsUnreadCount(int count) {
+    return '$count unread notifications';
+  }
+
+  @override
+  String get notificationsAllCaughtUp => 'You are all caught up';
+
+  @override
+  String get notificationsRetentionHint =>
+      'Updates remain in your inbox for 30 days';
+
+  @override
+  String get notificationsToday => 'Today';
+
+  @override
+  String get notificationsYesterday => 'Yesterday';
+
+  @override
+  String get notificationsEarlier => 'Earlier';
+
+  @override
+  String get notificationsLoadMore => 'Load more notifications';
+
+  @override
+  String get notificationsLoadMoreError =>
+      'More notifications could not be loaded. Please try again.';
+
+  @override
+  String get notificationsMarkAllSuccess =>
+      'All notifications were marked as read';
+
+  @override
+  String get notificationsMarkAllError =>
+      'All notifications could not be updated';
+
+  @override
+  String get notificationsOpenSettings => 'Open notification settings';
+
+  @override
+  String get notificationsUnreadSemantics => 'Unread';
+
+  @override
+  String get notificationsOpenSemantics => 'Open notification details';
 
   @override
   String get notificationFriendRequest => 'You have a new friend request';
@@ -6957,10 +7179,65 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationAmountRequired => 'Your share amount is needed';
 
   @override
+  String get notificationAmountMismatch =>
+      'Member shares do not match the transaction total';
+
+  @override
   String get notificationGroupInvite => 'You were invited to a group';
 
   @override
   String get notificationDebtSettled => 'A group debt was settled';
+
+  @override
+  String get notificationSettlementMarkedPaid =>
+      'A settlement was marked as paid';
+
+  @override
+  String get notificationSettlementCompleted =>
+      'A group settlement was completed';
+
+  @override
+  String get notificationSettlementDisputed => 'A settlement has a new dispute';
+
+  @override
+  String get notificationSettlementDisputeReset =>
+      'A settlement dispute was reopened for review';
+
+  @override
+  String get notificationMemberJoined => 'A new member joined the group';
+
+  @override
+  String get notificationMemberInviteAccepted =>
+      'A group invitation was accepted';
+
+  @override
+  String get notificationMemberInviteDeclined =>
+      'A group invitation was declined';
+
+  @override
+  String get notificationMemberLeft => 'A member left the group';
+
+  @override
+  String get notificationMemberRemoved => 'A member was removed from the group';
+
+  @override
+  String get notificationMemberRoleUpdated =>
+      'Your role in the group was updated';
+
+  @override
+  String get notificationMemberLeaveBlocked =>
+      'Resolve pending balances before leaving the group';
+
+  @override
+  String get notificationOwnerTransferred => 'Group ownership was transferred';
+
+  @override
+  String get notificationOwnerTransferRequired =>
+      'Transfer ownership before leaving the group';
+
+  @override
+  String get notificationRecurringDue =>
+      'A recurring group transaction is due soon';
 
   @override
   String get notificationCommunityComment =>
@@ -6973,6 +7250,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notificationCommunityMention =>
       'You were mentioned in the community';
+
+  @override
+  String get notificationChallengeContribution =>
+      'A savings challenge received a new contribution';
 
   @override
   String get notificationGeneric => 'You have a new update';
@@ -6994,6 +7275,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pushNotificationCategorySubtitle =>
       'Notifications remain in the inbox for 30 days.';
+
+  @override
+  String get pushNotificationUnavailable =>
+      'Firebase push is not configured in this build.';
+
+  @override
+  String get pushNotificationPermissionAllowed =>
+      'System permission is enabled on this device.';
+
+  @override
+  String get pushNotificationPermissionDenied =>
+      'System permission is off. You can enable it again in device settings.';
+
+  @override
+  String get pushNotificationPermissionNotRequested =>
+      'Moniary asks for system permission only after you enable push notifications.';
+
+  @override
+  String get pushNotificationSaved => 'Notification preference saved';
+
+  @override
+  String get pushNotificationSaveError =>
+      'The preference could not be saved. Your change was reverted.';
 
   @override
   String get loginAnonymous => 'Continue as guest';

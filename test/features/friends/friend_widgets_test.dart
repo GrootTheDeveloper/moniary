@@ -49,6 +49,7 @@ void main() {
     Widget child, {
     required FakeFriendRepository friendRepository,
     FakeGroupRepository? groupRepository,
+    NotificationRepository? notificationRepository,
   }) {
     return ProviderScope(
       overrides: [
@@ -56,6 +57,10 @@ void main() {
         friendRepositoryProvider.overrideWithValue(friendRepository),
         if (groupRepository != null)
           groupRepositoryProvider.overrideWithValue(groupRepository),
+        if (notificationRepository != null)
+          notificationRepositoryProvider.overrideWithValue(
+            notificationRepository,
+          ),
       ],
       child: MaterialApp(
         locale: const Locale('vi'),
@@ -204,10 +209,10 @@ void main() {
                   routes: [
                     GoRoute(
                       path: 'notifications',
-                      builder: (context, state) =>
-                          const GroupActivityCenterScreen(
-                            notificationOnly: true,
-                          ),
+                      builder: (context, state) => GroupActivityCenterScreen(
+                        groupId: state.pathParameters['groupId']!,
+                        notificationOnly: true,
+                      ),
                     ),
                   ],
                 ),
@@ -232,6 +237,9 @@ void main() {
         sharedPreferencesProvider.overrideWithValue(prefs),
         friendRepositoryProvider.overrideWithValue(FakeFriendRepository()),
         groupRepositoryProvider.overrideWithValue(groupRepository),
+        notificationRepositoryProvider.overrideWithValue(
+          FakeNotificationRepository(notifications: []),
+        ),
       ],
       child: MaterialApp.router(
         locale: const Locale('vi'),
@@ -355,7 +363,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final iconRect = tester.getRect(find.byIcon(Icons.people_outline_rounded));
+    final iconRect = tester.getRect(find.byIcon(Icons.people_outline));
     final titleRect = tester.getRect(find.text('Bạn chưa có bạn bè nào.'));
     final subtitleRect = tester.getRect(
       find.text('Thêm bạn bè để mời vào nhóm chi tiêu nhanh hơn.'),
@@ -441,6 +449,10 @@ void main() {
 
     expect(find.text('Mã của tôi'), findsOneWidget);
     expect(find.text('Quét mã'), findsOneWidget);
+    expect(find.text('Tạo mã QR'), findsOneWidget);
+
+    await tester.tap(find.text('Tạo mã QR'));
+    await tester.pumpAndSettle();
     expect(find.text('Chia sẻ mã'), findsOneWidget);
   });
 
@@ -739,16 +751,18 @@ void main() {
   testWidgets('GroupActivityCenterScreen mở thông báo không cần nhóm', (
     tester,
   ) async {
-    final groupRepository = FakeGroupRepository(
+    final notificationRepository = FakeNotificationRepository(
       notifications: [
-        GroupNotification(
+        AppNotification(
           id: 'notification-1',
-          groupId: 'group-1',
-          groupName: 'Chuyến đi Đà Lạt',
+          category: AppNotificationCategory.group,
           type: 'transaction_posted',
           isRead: false,
           createdAt: DateTime(2026, 7, 1),
+          groupId: 'group-1',
+          groupName: 'Chuyến đi Đà Lạt',
           groupTransactionId: 'transaction-1',
+          source: 'test',
         ),
       ],
     );
@@ -757,13 +771,14 @@ void main() {
       app(
         const GroupActivityCenterScreen(),
         friendRepository: FakeFriendRepository(),
-        groupRepository: groupRepository,
+        groupRepository: FakeGroupRepository(),
+        notificationRepository: notificationRepository,
       ),
     );
     await tester.pumpAndSettle();
 
     expect(find.text('Thông báo'), findsWidgets);
-    expect(find.text('Có giao dịch mới'), findsOneWidget);
+    expect(find.text('Có giao dịch mới trong group'), findsOneWidget);
     expect(find.text('Hoạt động'), findsNothing);
   });
 
@@ -793,9 +808,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Group'), findsOneWidget);
-    expect(find.byIcon(Icons.more_vert_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.more_vert_outlined), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.more_vert_rounded));
+    await tester.tap(find.byIcon(Icons.more_vert_outlined));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Hoạt động nhóm').last);
@@ -1234,6 +1249,13 @@ class FakeGroupRepository implements GroupRepository {
   }
 
   @override
+  Future<void> updateMemberRole({
+    required String groupId,
+    required String userId,
+    required GroupRole role,
+  }) async {}
+
+  @override
   Future<List<GroupTransaction>> fetchTransactions(String groupId) async =>
       const [];
 
@@ -1315,10 +1337,28 @@ class FakeGroupRepository implements GroupRepository {
   }) async => 'mock-community-post';
 
   @override
+  Future<void> updateCommunityPost({
+    required String postId,
+    required String content,
+  }) async {}
+
+  @override
+  Future<void> deleteCommunityPost(String postId) async {}
+
+  @override
   Future<void> addCommunityPostComment({
     required String postId,
     required String content,
   }) async {}
+
+  @override
+  Future<void> updateCommunityPostComment({
+    required String commentId,
+    required String content,
+  }) async {}
+
+  @override
+  Future<void> deleteCommunityPostComment(String commentId) async {}
 
   @override
   Future<void> toggleCommunityPostReaction({
@@ -1606,10 +1646,14 @@ class FakeNotificationRepository implements NotificationRepository {
   @override
   Future<List<AppNotification>> fetchNotifications({
     AppNotificationCategory? category,
+    String? groupId,
   }) async {
-    if (category == null) return List.unmodifiable(notifications);
     return List.unmodifiable(
-      notifications.where((item) => item.category == category),
+      notifications.where(
+        (item) =>
+            (category == null || item.category == category) &&
+            (groupId == null || item.groupId == groupId),
+      ),
     );
   }
 
@@ -1622,9 +1666,11 @@ class FakeNotificationRepository implements NotificationRepository {
   }
 
   @override
-  Future<void> markAllRead() async {
+  Future<void> markAllRead({String? groupId}) async {
     for (var index = 0; index < notifications.length; index++) {
-      notifications[index] = notifications[index].copyWith(isRead: true);
+      if (groupId == null || notifications[index].groupId == groupId) {
+        notifications[index] = notifications[index].copyWith(isRead: true);
+      }
     }
   }
 

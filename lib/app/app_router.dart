@@ -49,6 +49,7 @@ import '../features/groups/presentation/screens/group_shell_screen.dart';
 import '../features/groups/presentation/screens/group_route_paths.dart';
 import '../features/groups/presentation/screens/group_invite_accept_screen.dart';
 import '../features/groups/presentation/screens/group_invitations_screen.dart';
+import '../features/groups/presentation/screens/group_members_screen.dart';
 import '../features/groups/presentation/screens/group_notifications_screen.dart';
 import '../features/groups/presentation/screens/group_social_screen.dart';
 import '../features/groups/presentation/screens/group_statistics_screen.dart';
@@ -591,13 +592,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                       ),
                       GoRoute(
                         path: 'participation',
-                        pageBuilder: (context, state) =>
-                            buildSlideTransitionPage(
-                              state: state,
-                              child: GroupParticipationScreen(
-                                groupId: state.pathParameters['groupId']!,
-                              ),
-                            ),
+                        redirect: (context, state) => GroupRoutePaths.community(
+                          state.pathParameters['groupId']!,
+                        ),
                       ),
                     ],
                   ),
@@ -607,8 +604,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'notifications',
-                    pageBuilder: (context, state) => const NoTransitionPage(
-                      child: GroupActivityCenterScreen(notificationOnly: true),
+                    pageBuilder: (context, state) => NoTransitionPage(
+                      child: GroupActivityCenterScreen(
+                        groupId: state.pathParameters['groupId']!,
+                        notificationOnly: true,
+                      ),
                     ),
                   ),
                 ],
@@ -689,6 +689,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                             buildSlideUpTransitionPage(
                               state: state,
                               child: InviteMemberScreen(
+                                groupId: state.pathParameters['groupId']!,
+                              ),
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'members',
+                        pageBuilder: (context, state) =>
+                            buildSlideTransitionPage(
+                              state: state,
+                              child: GroupMembersScreen(
                                 groupId: state.pathParameters['groupId']!,
                               ),
                             ),
@@ -787,6 +797,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: GroupStatisticsScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null ? null : GroupRoutePaths.summary(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -797,6 +811,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: GroupSocialScreen.routePath,
+        redirect: (context, state) {
+          final groupId = state.extra as String?;
+          return groupId == null ? null : GroupRoutePaths.community(groupId);
+        },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
           final child = groupId == null
@@ -965,9 +983,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: GroupParticipationScreen.routePath,
         redirect: (context, state) {
           final groupId = state.extra as String?;
-          return groupId == null
-              ? null
-              : GroupRoutePaths.participation(groupId);
+          return groupId == null ? null : GroupRoutePaths.community(groupId);
         },
         pageBuilder: (context, state) {
           final groupId = state.extra as String?;
@@ -1037,10 +1053,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: GroupNotificationsScreen.routePath,
-        pageBuilder: (context, state) => buildSlideTransitionPage(
-          state: state,
-          child: const GroupNotificationsScreen(),
-        ),
+        redirect: (context, state) => NotificationCenterScreen.routePath,
       ),
       GoRoute(
         path: PrivacyCenterScreen.routePath,

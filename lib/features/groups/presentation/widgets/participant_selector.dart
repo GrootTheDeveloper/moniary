@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
+import '../../../../shared/utils/integer_money_input_formatter.dart';
 import '../../domain/entities/spending_group.dart';
 
 class ParticipantSelector extends StatelessWidget {
@@ -220,6 +221,11 @@ class ExactShareInputList extends ConsumerWidget {
               key: ValueKey('share-amount-${member.userId}'),
               controller: controllers[member.userId],
               keyboardType: TextInputType.number,
+              inputFormatters: [
+                IntegerMoneyInputFormatter(
+                  locale: Localizations.localeOf(context).toString(),
+                ),
+              ],
               decoration: InputDecoration(
                 labelText: member.resolvedName,
                 suffixText: ref.currencySymbol,

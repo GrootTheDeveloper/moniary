@@ -7,13 +7,15 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../../../l10n/l10n_extension.dart';
-import '../../../../shared/utils/error_helpers.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
+import '../../../../shared/utils/error_helpers.dart';
+import '../../../../shared/utils/integer_money_input_formatter.dart';
 import '../../../../shared/widgets/moniary_design.dart';
 import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/group_community.dart';
 import '../../domain/entities/group_community_feed.dart';
+import '../../domain/entities/group_enums.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
 import 'group_route_paths.dart';
@@ -28,7 +30,7 @@ class GroupCommunityScreen extends ConsumerStatefulWidget {
       _GroupCommunityScreenState();
 }
 
-enum _CommunityFilter { all, polls, activity }
+enum _CommunityFilter { all, posts, polls, challenges }
 
 class _GroupCommunityScreenState extends ConsumerState<GroupCommunityScreen> {
   _CommunityFilter _filter = _CommunityFilter.all;
@@ -43,58 +45,96 @@ class _GroupCommunityScreenState extends ConsumerState<GroupCommunityScreen> {
       backgroundColor: colors.backgroundSoft,
       body: SafeArea(
         child: feedAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const _CommunityLoadingState(),
           error: (error, _) => _ErrorState(
             message: userFriendlyMessage(context, error),
             onRetry: () =>
                 ref.invalidate(groupCommunityFeedProvider(widget.groupId)),
           ),
-          data: (feed) => RefreshIndicator(
-            onRefresh: () async {
-              ref.invalidate(groupCommunityFeedProvider(widget.groupId));
-              await ref.read(groupCommunityFeedProvider(widget.groupId).future);
-            },
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
-              children: [
-                _CommunityTopBar(groupId: widget.groupId),
-                const SizedBox(height: 10),
-                if (detail != null) _CommunityGroupHeader(detail: detail),
-                if (detail != null) const SizedBox(height: 12),
-                _ComposerLauncher(onTap: () => _openComposer(context)),
-                const SizedBox(height: 14),
-                _FilterBar(
-                  filter: _filter,
-                  onChanged: (value) => setState(() => _filter = value),
-                ),
-                const SizedBox(height: 14),
-                ..._filteredItems(feed.items).map(
-                  (item) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _FeedItemCard(
-                      key: ValueKey(item.id),
-                      item: item,
-                      groupId: widget.groupId,
-                      onCommentPost: (post) => _showComments(context, post),
-                      onVote: (poll, optionId) => _votePoll(poll, optionId),
-                      onContribute: (challenge) =>
-                          _contributeToChallenge(context, challenge),
+          data: (feed) {
+            final filteredItems = _filteredItems(feed.items);
+            return RefreshIndicator(
+              onRefresh: () async {
+                ref.invalidate(groupCommunityFeedProvider(widget.groupId));
+                await ref.read(
+                  groupCommunityFeedProvider(widget.groupId).future,
+                );
+              },
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const _CommunityTopBar(),
+                          const SizedBox(height: 12),
+                          if (detail != null) ...[
+                            _CommunityGroupHeader(detail: detail),
+                            const SizedBox(height: 12),
+                          ],
+                          _CommunityQuickActions(
+                            groupId: widget.groupId,
+                            canCreateChallenge:
+                                detail?.canCreateChallenge ?? false,
+                            onCreatePost: () => _openPostComposer(context),
+                            onCreatePoll: () => _createPoll(context),
+                            onCreateChallenge: () => _createChallenge(context),
+                          ),
+                          const SizedBox(height: 14),
+                          _ComposerLauncher(
+                            onTap: () => _openPostComposer(context),
+                          ),
+                          const SizedBox(height: 14),
+                          _FilterBar(
+                            filter: _filter,
+                            onChanged: (value) =>
+                                setState(() => _filter = value),
+                          ),
+                          const SizedBox(height: 14),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                if (_filteredItems(feed.items).isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 64),
-                    child: Text(
-                      context.l10n.groupCommunityNoFeed,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: colors.textDim),
+                  if (filteredItems.isEmpty)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _EmptyFeedState(
+                        filter: _filter,
+                        onCreate: () => _openPostComposer(context),
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      sliver: SliverList.builder(
+                        itemCount: filteredItems.length,
+                        itemBuilder: (context, index) {
+                          final item = filteredItems[index];
+                          return Padding(
+                            key: ValueKey(item.id),
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _FeedItemCard(
+                              item: item,
+                              groupId: widget.groupId,
+                              onCommentPost: (post) =>
+                                  _showComments(context, post),
+                              onVote: (poll, optionId) =>
+                                  _votePoll(poll, optionId),
+                              onContribute: (challenge) =>
+                                  _contributeToChallenge(context, challenge),
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-              ],
-            ),
-          ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 28)),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
@@ -108,47 +148,15 @@ class _GroupCommunityScreenState extends ConsumerState<GroupCommunityScreen> {
           switch (_filter) {
             case _CommunityFilter.all:
               return true;
+            case _CommunityFilter.posts:
+              return item.type == GroupCommunityFeedItemType.post;
             case _CommunityFilter.polls:
               return item.type == GroupCommunityFeedItemType.poll;
-            case _CommunityFilter.activity:
-              return item.type == GroupCommunityFeedItemType.activity ||
-                  item.type == GroupCommunityFeedItemType.transaction;
+            case _CommunityFilter.challenges:
+              return item.type == GroupCommunityFeedItemType.challenge;
           }
         })
         .toList(growable: false);
-  }
-
-  Future<void> _openComposer(BuildContext context) async {
-    final action = await showModalBottomSheet<_CommunityCreationAction>(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) => _CommunityCreateActivitySheet(
-        canCreateChallenge:
-            ref
-                .read(groupDetailProvider(widget.groupId))
-                .asData
-                ?.value
-                .canInvite ??
-            false,
-      ),
-    );
-    if (action == null || !context.mounted) return;
-
-    // The previous implementation opened a Dialog immediately after popping
-    // the BottomSheet. Waiting for the overlay tree to finish deactivation
-    // prevents Flutter's InheritedElement `_dependents.isEmpty` assertion.
-    await _waitForOverlayToSettle();
-    if (!context.mounted) return;
-
-    if (action == _CommunityCreationAction.poll) {
-      await _createPoll(context);
-      return;
-    }
-    if (action == _CommunityCreationAction.challenge) {
-      await _createChallenge(context);
-      return;
-    }
-    await _openPostComposer(context);
   }
 
   Future<void> _openPostComposer(BuildContext context) async {
@@ -187,7 +195,6 @@ class _GroupCommunityScreenState extends ConsumerState<GroupCommunityScreen> {
       useRootNavigator: true,
       builder: (_) => const _PollDialog(),
     );
-    await _waitForOverlayToSettle();
     if (result == null || !context.mounted) return;
     try {
       await ref
@@ -208,12 +215,11 @@ class _GroupCommunityScreenState extends ConsumerState<GroupCommunityScreen> {
   }
 
   Future<void> _createChallenge(BuildContext context) async {
-    final result = await showDialog<(String, int)>(
+    final result = await showDialog<_ChallengeDraft>(
       context: context,
       useRootNavigator: true,
       builder: (_) => const _ChallengeDialog(),
     );
-    await _waitForOverlayToSettle();
     if (result == null || !context.mounted) return;
     final now = DateTime.now();
     try {
@@ -221,10 +227,10 @@ class _GroupCommunityScreenState extends ConsumerState<GroupCommunityScreen> {
           .read(groupActionControllerProvider.notifier)
           .createSavingsChallenge(
             groupId: widget.groupId,
-            title: result.$1,
-            targetAmount: result.$2,
+            title: result.title,
+            targetAmount: result.targetAmount,
             startDate: now,
-            endDate: now.add(const Duration(days: 30)),
+            endDate: now.add(Duration(days: result.durationDays)),
           );
       if (context.mounted) {
         _showMessage(context, context.l10n.groupCommunityChallengeCreated);
@@ -253,35 +259,24 @@ class _GroupCommunityScreenState extends ConsumerState<GroupCommunityScreen> {
     }
   }
 
-  Future<void> _waitForOverlayToSettle() async {
-    await WidgetsBinding.instance.endOfFrame;
-    await Future<void>.delayed(const Duration(milliseconds: 250));
-  }
-
   Future<void> _contributeToChallenge(
     BuildContext context,
     GroupSavingsChallenge challenge,
   ) async {
-    final controller = TextEditingController();
+    final remainingAmount =
+        (challenge.targetAmount - challenge.totalContributed).clamp(
+          0,
+          challenge.targetAmount,
+        );
     final amount = await showDialog<int>(
       context: context,
-      builder: (dialogContext) => _ContributionDialog(
+      builder: (_) => _ContributionDialog(
         challenge: challenge,
-        remainingText: ref.formatAmount(
-          (challenge.targetAmount - challenge.totalContributed).clamp(
-            0,
-            challenge.targetAmount,
-          ),
-        ),
-        controller: controller,
-        onCancel: () => Navigator.pop(dialogContext),
-        onSubmit: () => Navigator.pop(
-          dialogContext,
-          int.tryParse(controller.text.replaceAll(',', '')),
-        ),
+        remainingAmount: remainingAmount,
+        remainingText: ref.formatAmount(remainingAmount),
+        currencySymbol: ref.currencySymbol,
       ),
     );
-    controller.dispose();
     if (amount == null || amount <= 0 || !context.mounted) return;
     try {
       await ref
@@ -305,98 +300,13 @@ class _GroupCommunityScreenState extends ConsumerState<GroupCommunityScreen> {
     BuildContext context,
     GroupCommunityPost post,
   ) async {
-    final controller = TextEditingController();
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (sheetContext) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          20,
-          4,
-          20,
-          MediaQuery.viewInsetsOf(sheetContext).bottom + 20,
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                context.l10n.groupCommunityComment,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 12),
-              if (post.comments.isEmpty)
-                Text(
-                  context.l10n.groupCommunityCommentEmpty,
-                  style: TextStyle(color: context.moniaryColors.textDim),
-                )
-              else
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 240),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: post.comments.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 8),
-                    itemBuilder: (_, index) {
-                      final comment = post.comments[index];
-                      return Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text:
-                                  '${comment.displayName ?? comment.userId}: ',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            TextSpan(text: comment.content),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              const SizedBox(height: 14),
-              TextField(
-                controller: controller,
-                textInputAction: TextInputAction.send,
-                decoration: InputDecoration(
-                  hintText: context.l10n.groupCommunityCommentHint,
-                  suffixIcon: IconButton(
-                    tooltip: context.l10n.groupCommunityComment,
-                    icon: const Icon(Icons.send_outlined),
-                    onPressed: () async {
-                      final value = controller.text.trim();
-                      if (value.isEmpty) return;
-                      try {
-                        await ref
-                            .read(groupActionControllerProvider.notifier)
-                            .addCommunityPostComment(
-                              groupId: widget.groupId,
-                              postId: post.id,
-                              content: value,
-                            );
-                        if (sheetContext.mounted) Navigator.pop(sheetContext);
-                      } catch (error) {
-                        if (sheetContext.mounted) {
-                          _showMessage(
-                            sheetContext,
-                            userFriendlyMessage(sheetContext, error),
-                          );
-                        }
-                      }
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      builder: (_) =>
+          _CommunityCommentsSheet(groupId: widget.groupId, initialPost: post),
     );
-    controller.dispose();
   }
 
   void _showMessage(BuildContext context, String message) {
@@ -406,25 +316,306 @@ class _GroupCommunityScreenState extends ConsumerState<GroupCommunityScreen> {
   }
 }
 
-class _CommunityTopBar extends StatelessWidget {
-  const _CommunityTopBar({required this.groupId});
+class _CommunityCommentsSheet extends ConsumerStatefulWidget {
+  const _CommunityCommentsSheet({
+    required this.groupId,
+    required this.initialPost,
+  });
 
   final String groupId;
+  final GroupCommunityPost initialPost;
+
+  @override
+  ConsumerState<_CommunityCommentsSheet> createState() =>
+      _CommunityCommentsSheetState();
+}
+
+class _CommunityCommentsSheetState
+    extends ConsumerState<_CommunityCommentsSheet> {
+  final _controller = TextEditingController();
+  bool _isSending = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final feed = ref.watch(groupCommunityFeedProvider(widget.groupId));
+    final post =
+        feed.asData?.value.items
+            .where((item) => item.post?.id == widget.initialPost.id)
+            .map((item) => item.post!)
+            .firstOrNull ??
+        widget.initialPost;
+
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.62,
+      minChildSize: 0.4,
+      maxChildSize: 0.92,
+      builder: (context, scrollController) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          20,
+          4,
+          20,
+          MediaQuery.viewInsetsOf(context).bottom + 16,
+        ),
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.groupCommunityComment,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: post.comments.isEmpty
+                    ? Center(
+                        child: Text(
+                          context.l10n.groupCommunityCommentEmpty,
+                          style: TextStyle(
+                            color: context.moniaryColors.textDim,
+                          ),
+                        ),
+                      )
+                    : ListView.separated(
+                        controller: scrollController,
+                        itemCount: post.comments.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 12),
+                        itemBuilder: (_, index) => _CommunityCommentRow(
+                          groupId: widget.groupId,
+                          comment: post.comments[index],
+                        ),
+                      ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _controller,
+                enabled: !_isSending,
+                minLines: 1,
+                maxLines: 3,
+                textInputAction: TextInputAction.send,
+                onSubmitted: (_) => _send(),
+                onChanged: (_) {
+                  if (_error != null) setState(() => _error = null);
+                },
+                decoration: InputDecoration(
+                  labelText: context.l10n.groupCommunityCommentHint,
+                  errorText: _error,
+                  suffixIcon: IconButton(
+                    tooltip: context.l10n.groupCommunityComment,
+                    onPressed: _isSending ? null : _send,
+                    icon: _isSending
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.send_outlined),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _send() async {
+    final value = _controller.text.trim();
+    if (value.isEmpty || _isSending) {
+      if (value.isEmpty) {
+        setState(() => _error = context.l10n.groupCommunityCommentRequired);
+      }
+      return;
+    }
+    setState(() {
+      _isSending = true;
+      _error = null;
+    });
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .addCommunityPostComment(
+            groupId: widget.groupId,
+            postId: widget.initialPost.id,
+            content: value,
+          );
+      if (!mounted) return;
+      _controller.clear();
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _error = userFriendlyMessage(context, error));
+    } finally {
+      if (mounted) setState(() => _isSending = false);
+    }
+  }
+}
+
+class _CommunityCommentRow extends ConsumerWidget {
+  const _CommunityCommentRow({required this.groupId, required this.comment});
+
+  final String groupId;
+  final GroupCommunityComment comment;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canManage =
+        comment.userId == ref.watch(currentGroupUserIdProvider) ||
+        (ref.watch(groupDetailProvider(groupId)).asData?.value.canManageGroup ??
+            false);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SupabaseImage(
+          imagePath: comment.avatarPath,
+          width: 32,
+          height: 32,
+          borderRadius: BorderRadius.circular(16),
+          fallbackBuilder: (_) => _MemberAvatarFallback(
+            label: comment.displayName ?? comment.userId,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                comment.displayName ?? comment.userId,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 2),
+              Text(comment.content),
+              const SizedBox(height: 3),
+              Text(
+                MaterialLocalizations.of(
+                  context,
+                ).formatShortDate(comment.createdAt),
+                style: context.moniaryTypography.metadata,
+              ),
+            ],
+          ),
+        ),
+        if (canManage)
+          PopupMenuButton<_CommentAction>(
+            tooltip: context.l10n.groupCommunityCommentActions,
+            icon: const Icon(Icons.more_horiz_outlined, size: 20),
+            onSelected: (action) => _handleAction(context, ref, action),
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                value: _CommentAction.edit,
+                child: Text(context.l10n.groupCommunityEditComment),
+              ),
+              PopupMenuItem(
+                value: _CommentAction.delete,
+                child: Text(context.l10n.groupCommunityDeleteComment),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+
+  Future<void> _handleAction(
+    BuildContext context,
+    WidgetRef ref,
+    _CommentAction action,
+  ) async {
+    if (action == _CommentAction.edit) {
+      final controller = TextEditingController(text: comment.content);
+      final content = await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(context.l10n.groupCommunityEditComment),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            minLines: 2,
+            maxLines: 5,
+            decoration: InputDecoration(
+              labelText: context.l10n.groupCommunityCommentHint,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(context.l10n.commonCancel),
+            ),
+            FilledButton(
+              onPressed: () {
+                final value = controller.text.trim();
+                if (value.isNotEmpty) Navigator.pop(dialogContext, value);
+              },
+              child: Text(context.l10n.commonSave),
+            ),
+          ],
+        ),
+      );
+      controller.dispose();
+      if (content == null || !context.mounted) return;
+      try {
+        await ref
+            .read(groupActionControllerProvider.notifier)
+            .updateCommunityPostComment(
+              groupId: groupId,
+              commentId: comment.id,
+              content: content,
+            );
+      } catch (error) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
+        );
+      }
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.groupCommunityDeleteComment),
+        content: Text(context.l10n.groupCommunityDeleteCommentConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(context.l10n.commonDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .deleteCommunityPostComment(groupId: groupId, commentId: comment.id);
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
+  }
+}
+
+enum _CommentAction { edit, delete }
+
+class _CommunityTopBar extends StatelessWidget {
+  const _CommunityTopBar();
 
   @override
   Widget build(BuildContext context) => Row(
     children: [
-      IconButton(
-        tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-        onPressed: () {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.go(GroupRoutePaths.home(groupId));
-          }
-        },
-        icon: const Icon(Icons.arrow_back_rounded),
-      ),
       Expanded(
         child: Text(
           context.l10n.groupCommunityTab,
@@ -433,47 +624,71 @@ class _CommunityTopBar extends StatelessWidget {
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
         ),
       ),
-      IconButton(
-        tooltip: context.l10n.groupCommunityOpenNotifications,
-        onPressed: () => context.go(GroupRoutePaths.notifications(groupId)),
-        icon: const Icon(Icons.notifications_none_rounded),
-      ),
-      IconButton(
-        tooltip: context.l10n.groupCommunityOpenManagement,
-        onPressed: () => _openMore(context),
-        icon: const Icon(Icons.more_vert_rounded),
-      ),
     ],
   );
+}
 
-  Future<void> _openMore(BuildContext context) async {
-    final action = await showModalBottomSheet<String>(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: Text(context.l10n.groupCommunityAlbumAction),
-              onTap: () => Navigator.pop(sheetContext, 'album'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.manage_accounts_outlined),
-              title: Text(context.l10n.groupCommunityOpenManagement),
-              onTap: () => Navigator.pop(sheetContext, 'management'),
-            ),
-          ],
+class _CommunityQuickActions extends StatelessWidget {
+  const _CommunityQuickActions({
+    required this.groupId,
+    required this.canCreateChallenge,
+    required this.onCreatePost,
+    required this.onCreatePoll,
+    required this.onCreateChallenge,
+  });
+
+  final String groupId;
+  final bool canCreateChallenge;
+  final VoidCallback onCreatePost;
+  final VoidCallback onCreatePoll;
+  final VoidCallback onCreateChallenge;
+
+  @override
+  Widget build(BuildContext context) {
+    final actions = [
+      (
+        context.l10n.groupCommunityWriteUpdate,
+        Icons.edit_note_outlined,
+        onCreatePost,
+      ),
+      (
+        context.l10n.groupCommunityCreatePoll,
+        Icons.poll_outlined,
+        onCreatePoll,
+      ),
+      if (canCreateChallenge)
+        (
+          context.l10n.groupCommunityCreateChallenge,
+          Icons.savings_outlined,
+          onCreateChallenge,
         ),
+      (
+        context.l10n.groupCommunityAlbumAction,
+        Icons.photo_library_outlined,
+        () => context.push(GroupRoutePaths.album(groupId)),
+      ),
+    ];
+
+    return SizedBox(
+      height: 46,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: actions.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final action = actions[index];
+          return Semantics(
+            button: true,
+            label: action.$1,
+            child: MoniaryPill(
+              label: action.$1,
+              leading: Icon(action.$2),
+              onTap: action.$3,
+            ),
+          );
+        },
       ),
     );
-    if (!context.mounted) return;
-    if (action == 'album') {
-      await context.push(GroupRoutePaths.album(groupId));
-    } else if (action == 'management') {
-      context.go(GroupRoutePaths.management(groupId));
-    }
   }
 }
 
@@ -559,34 +774,49 @@ class _ComposerLauncher extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => InkWell(
-    onTap: onTap,
-    borderRadius: BorderRadius.circular(24),
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-      decoration: BoxDecoration(
-        color: context.moniaryColors.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: context.moniaryColors.outline),
-      ),
-      child: Row(
-        children: [
-          const CircleAvatar(
-            radius: 17,
-            child: Icon(Icons.person_outline, size: 18),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              context.l10n.groupCommunityComposerHint,
-              style: TextStyle(color: context.moniaryColors.textDim),
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Semantics(
+      button: true,
+      label: context.l10n.groupCommunityComposerHint,
+      child: Material(
+        color: colors.surface.withValues(alpha: 0),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 56),
+            child: Ink(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: colors.outline),
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 17,
+                    backgroundColor: colors.primary.withValues(alpha: 0.12),
+                    foregroundColor: colors.primary,
+                    child: const Icon(Icons.person_outline, size: 18),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      context.l10n.groupCommunityComposerHint,
+                      style: TextStyle(color: colors.textDim),
+                    ),
+                  ),
+                  Icon(Icons.add_circle_outline, color: colors.primary),
+                ],
+              ),
             ),
           ),
-          Icon(Icons.add_circle_outline, color: context.moniaryColors.primary),
-        ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _FilterBar extends StatelessWidget {
@@ -596,67 +826,74 @@ class _FilterBar extends StatelessWidget {
   final ValueChanged<_CommunityFilter> onChanged;
 
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Expanded(
-        child: _FilterPill(
-          label: context.l10n.groupCommunityAllTab,
-          selected: filter == _CommunityFilter.all,
-          onTap: () => onChanged(_CommunityFilter.all),
-        ),
+  Widget build(BuildContext context) {
+    final items = [
+      (context.l10n.groupCommunityAllTab, _CommunityFilter.all),
+      (context.l10n.groupCommunityPostTab, _CommunityFilter.posts),
+      (context.l10n.groupCommunityPollTab, _CommunityFilter.polls),
+      (context.l10n.groupCommunityChallengeTab, _CommunityFilter.challenges),
+    ];
+
+    return SizedBox(
+      height: 46,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: items.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return Semantics(
+            button: true,
+            selected: filter == item.$2,
+            label: item.$1,
+            child: MoniaryPill(
+              label: item.$1,
+              selected: filter == item.$2,
+              onTap: () => onChanged(item.$2),
+            ),
+          );
+        },
       ),
-      const SizedBox(width: 8),
-      Expanded(
-        child: _FilterPill(
-          label: context.l10n.groupCommunityPollTab,
-          selected: filter == _CommunityFilter.polls,
-          onTap: () => onChanged(_CommunityFilter.polls),
-        ),
-      ),
-      const SizedBox(width: 8),
-      Expanded(
-        child: _FilterPill(
-          label: context.l10n.groupCommunityActivityTab,
-          selected: filter == _CommunityFilter.activity,
-          onTap: () => onChanged(_CommunityFilter.activity),
-        ),
-      ),
-    ],
-  );
+    );
+  }
 }
 
-class _FilterPill extends StatelessWidget {
-  const _FilterPill({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
+class _EmptyFeedState extends StatelessWidget {
+  const _EmptyFeedState({required this.filter, required this.onCreate});
 
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
+  final _CommunityFilter filter;
+  final VoidCallback onCreate;
 
   @override
-  Widget build(BuildContext context) => OutlinedButton(
-    onPressed: onTap,
-    style: OutlinedButton.styleFrom(
-      minimumSize: const Size.fromHeight(42),
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      backgroundColor: selected
-          ? context.moniaryColors.primary
-          : context.moniaryColors.surface,
-      foregroundColor: selected
-          ? Colors.white
-          : context.moniaryColors.textSecondary,
-      side: BorderSide(
-        color: selected
-            ? context.moniaryColors.primary
-            : context.moniaryColors.outline,
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final message = filter == _CommunityFilter.all
+        ? context.l10n.groupCommunityNoFeed
+        : context.l10n.groupCommunityFilterEmpty;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(28, 24, 28, 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.forum_outlined, size: 32, color: colors.textDim),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colors.textDim),
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: onCreate,
+              icon: const Icon(Icons.add_outlined),
+              label: Text(context.l10n.groupCommunityCreateActivity),
+            ),
+          ],
+        ),
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-    ),
-    child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
-  );
+    );
+  }
 }
 
 class _FeedItemCard extends ConsumerWidget {
@@ -666,7 +903,6 @@ class _FeedItemCard extends ConsumerWidget {
     required this.onCommentPost,
     required this.onVote,
     required this.onContribute,
-    super.key,
   });
 
   final GroupCommunityFeedItem item;
@@ -714,47 +950,175 @@ class _PostCard extends ConsumerWidget {
   final ValueChanged<GroupCommunityPost> onComment;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => MoniaryEditorialCard(
-    padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _PostAuthorRow(post: post),
-        if (post.content?.trim().isNotEmpty == true) ...[
-          const SizedBox(height: 11),
-          Text(post.content!),
-        ],
-        if (post.media.isNotEmpty) ...[
-          const SizedBox(height: 11),
-          _PostMediaGrid(media: post.media),
-        ],
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            for (final emoji in const ['❤️', '👍', '🎉'])
-              _ReactionButton(
-                emoji: emoji,
-                count: _reactionCount(post.reactions, emoji),
-                selected: _reactionSelected(post.reactions, emoji),
-                onTap: () => ref
-                    .read(groupActionControllerProvider.notifier)
-                    .toggleCommunityPostReaction(
-                      groupId: groupId,
-                      postId: post.id,
-                      emoji: emoji,
-                    ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUserId = ref.watch(currentGroupUserIdProvider);
+    final canManage =
+        post.authorUserId == currentUserId ||
+        (ref.watch(groupDetailProvider(groupId)).asData?.value.canManageGroup ??
+            false);
+    return MoniaryEditorialCard(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _PostAuthorRow(
+            post: post,
+            trailing: canManage
+                ? PopupMenuButton<_PostAction>(
+                    tooltip: context.l10n.groupCommunityPostActions,
+                    icon: const Icon(Icons.more_vert_outlined),
+                    onSelected: (action) =>
+                        _handlePostAction(context, ref, action),
+                    itemBuilder: (_) => [
+                      PopupMenuItem(
+                        value: _PostAction.edit,
+                        child: Text(context.l10n.commonEdit),
+                      ),
+                      PopupMenuItem(
+                        value: _PostAction.delete,
+                        child: Text(context.l10n.commonDelete),
+                      ),
+                    ],
+                  )
+                : null,
+          ),
+          if (post.content?.trim().isNotEmpty == true) ...[
+            const SizedBox(height: 11),
+            Text(post.content!),
+          ],
+          if (post.media.isNotEmpty) ...[
+            const SizedBox(height: 11),
+            _PostMediaGrid(media: post.media),
+          ],
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              for (final reaction in [
+                (
+                  '❤️',
+                  Icons.favorite_outline,
+                  context.l10n.groupCommunityReactionLove,
+                ),
+                (
+                  '👍',
+                  Icons.thumb_up_outlined,
+                  context.l10n.groupCommunityReactionLike,
+                ),
+                (
+                  '🎉',
+                  Icons.celebration_outlined,
+                  context.l10n.groupCommunityReactionCelebrate,
+                ),
+              ])
+                _ReactionButton(
+                  icon: reaction.$2,
+                  label: reaction.$3,
+                  count: _reactionCount(post.reactions, reaction.$1),
+                  selected: _reactionSelected(post.reactions, reaction.$1),
+                  onTap: () => ref
+                      .read(groupActionControllerProvider.notifier)
+                      .toggleCommunityPostReaction(
+                        groupId: groupId,
+                        postId: post.id,
+                        emoji: reaction.$1,
+                      ),
+                ),
+              const Spacer(),
+              TextButton.icon(
+                onPressed: () => onComment(post),
+                icon: const Icon(Icons.mode_comment_outlined, size: 16),
+                label: Text('${post.comments.length}'),
               ),
-            const Spacer(),
-            TextButton.icon(
-              onPressed: () => onComment(post),
-              icon: const Icon(Icons.mode_comment_outlined, size: 16),
-              label: Text('${post.comments.length}'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handlePostAction(
+    BuildContext context,
+    WidgetRef ref,
+    _PostAction action,
+  ) async {
+    if (action == _PostAction.edit) {
+      final controller = TextEditingController(text: post.content ?? '');
+      final content = await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(context.l10n.groupCommunityEditPost),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            minLines: 2,
+            maxLines: 6,
+            decoration: InputDecoration(
+              labelText: context.l10n.groupCommunityComposerHint,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(context.l10n.commonCancel),
+            ),
+            FilledButton(
+              onPressed: () {
+                final value = controller.text.trim();
+                if (value.isNotEmpty) Navigator.pop(dialogContext, value);
+              },
+              child: Text(context.l10n.commonSave),
             ),
           ],
         ),
-      ],
-    ),
-  );
+      );
+      controller.dispose();
+      if (content == null || !context.mounted) return;
+      try {
+        await ref
+            .read(groupActionControllerProvider.notifier)
+            .updateCommunityPost(
+              groupId: groupId,
+              postId: post.id,
+              content: content,
+            );
+      } catch (error) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(userFriendlyMessage(context, error))),
+        );
+      }
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.groupCommunityDeletePost),
+        content: Text(context.l10n.groupCommunityDeletePostConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(context.l10n.commonDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await ref
+          .read(groupActionControllerProvider.notifier)
+          .deleteCommunityPost(groupId: groupId, postId: post.id);
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(userFriendlyMessage(context, error))),
+      );
+    }
+  }
 
   int _reactionCount(List<GroupCommunityReactionSummary> items, String emoji) =>
       items
@@ -766,6 +1130,8 @@ class _PostCard extends ConsumerWidget {
     String emoji,
   ) => items.any((item) => item.emoji == emoji && item.reactedByCurrentUser);
 }
+
+enum _PostAction { edit, delete }
 
 class _PollFeedCard extends StatefulWidget {
   const _PollFeedCard({required this.poll, required this.onVote});
@@ -782,6 +1148,20 @@ class _PollFeedCardState extends State<_PollFeedCard> {
   bool _isVoting = false;
 
   @override
+  void initState() {
+    super.initState();
+    _selectedOptionId = widget.poll.selectedOptionId;
+  }
+
+  @override
+  void didUpdateWidget(covariant _PollFeedCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.poll.selectedOptionId != widget.poll.selectedOptionId) {
+      _selectedOptionId = widget.poll.selectedOptionId;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final poll = widget.poll;
     final totalVotes = poll.options.fold<int>(
@@ -791,7 +1171,7 @@ class _PollFeedCardState extends State<_PollFeedCard> {
     final selectedOption = poll.options
         .where((option) => option.id == _selectedOptionId)
         .firstOrNull;
-    final hasVoted = selectedOption != null && !_isVoting;
+    final hasVoted = poll.selectedOptionId != null;
 
     return MoniaryEditorialCard(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
@@ -836,7 +1216,7 @@ class _PollFeedCardState extends State<_PollFeedCard> {
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: InkWell(
-                onTap: poll.isClosed || _isVoting
+                onTap: poll.isClosed || _isVoting || hasVoted
                     ? null
                     : () => setState(() => _selectedOptionId = option.id),
                 borderRadius: BorderRadius.circular(8),
@@ -861,8 +1241,8 @@ class _PollFeedCardState extends State<_PollFeedCard> {
                         children: [
                           Icon(
                             _selectedOptionId == option.id
-                                ? Icons.radio_button_checked_rounded
-                                : Icons.radio_button_unchecked_rounded,
+                                ? Icons.radio_button_checked_outlined
+                                : Icons.radio_button_unchecked_outlined,
                             size: 20,
                             color: _selectedOptionId == option.id
                                 ? context.moniaryColors.primary
@@ -909,7 +1289,11 @@ class _PollFeedCardState extends State<_PollFeedCard> {
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
-              onPressed: poll.isClosed || _selectedOptionId == null || _isVoting
+              onPressed:
+                  poll.isClosed ||
+                      _selectedOptionId == null ||
+                      _isVoting ||
+                      hasVoted
                   ? null
                   : _submitVote,
               icon: _isVoting
@@ -920,7 +1304,7 @@ class _PollFeedCardState extends State<_PollFeedCard> {
                     )
                   : Icon(
                       hasVoted
-                          ? Icons.check_circle_outline_rounded
+                          ? Icons.check_circle_outline
                           : Icons.how_to_vote_outlined,
                     ),
               label: Text(
@@ -1115,7 +1499,7 @@ class _ActivityFeedCard extends StatelessWidget {
               alpha: 0.18,
             ),
             child: Icon(
-              Icons.check_rounded,
+              Icons.check_outlined,
               color: context.moniaryColors.success,
             ),
           ),
@@ -1163,49 +1547,61 @@ class _TransactionFeedCard extends ConsumerWidget {
       ),
     ),
     borderRadius: BorderRadius.circular(18),
-    child: MoniaryEditorialCard(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: SupabaseImage(
-              imagePath: transaction.imagePath,
-              width: 52,
-              height: 52,
-              fallbackIcon: Icons.receipt_long_outlined,
+    child: Semantics(
+      button: true,
+      label: context.l10n.groupCommunityOpenExpense,
+      child: MoniaryEditorialCard(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SupabaseImage(
+                imagePath: transaction.imagePath,
+                width: 52,
+                height: 52,
+                fallbackIcon: Icons.receipt_long_outlined,
+              ),
             ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  transaction.caption ?? context.l10n.groupTransactionFallback,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  transaction.creatorName ?? context.l10n.groupMemberFallback,
-                  style: context.moniaryTypography.metadata,
-                ),
-              ],
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    transaction.caption ??
+                        context.l10n.groupTransactionFallback,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    transaction.creatorName ?? context.l10n.groupMemberFallback,
+                    style: context.moniaryTypography.metadata,
+                  ),
+                  const SizedBox(height: 6),
+                  _TransactionStatusBadge(status: transaction.splitStatus),
+                ],
+              ),
             ),
-          ),
-          Text(ref.formatAmount(transaction.totalAmount)),
-        ],
+            const SizedBox(width: 8),
+            Text(
+              ref.formatAmount(transaction.totalAmount),
+              style: context.moniaryTypography.metadataStrong,
+            ),
+          ],
+        ),
       ),
     ),
   );
 }
 
 class _PostAuthorRow extends StatelessWidget {
-  const _PostAuthorRow({required this.post});
+  const _PostAuthorRow({required this.post, this.trailing});
 
   final GroupCommunityPost post;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) => Row(
@@ -1230,13 +1626,13 @@ class _PostAuthorRow extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.w800),
             ),
             Text(
-              context.l10n.groupCommunityPostText,
+              '${context.l10n.groupCommunityPostText} · ${MaterialLocalizations.of(context).formatShortDate(post.createdAt)}',
               style: context.moniaryTypography.metadata,
             ),
           ],
         ),
       ),
-      const Icon(Icons.more_horiz_rounded),
+      ?trailing,
     ],
   );
 }
@@ -1272,29 +1668,87 @@ class _PostMediaGrid extends StatelessWidget {
 
 class _ReactionButton extends StatelessWidget {
   const _ReactionButton({
-    required this.emoji,
+    required this.icon,
+    required this.label,
     required this.count,
     required this.selected,
     required this.onTap,
   });
 
-  final String emoji;
+  final IconData icon;
+  final String label;
   final int count;
   final bool selected;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(right: 5),
-    child: ActionChip(
-      label: Text('$emoji${count > 0 ? ' $count' : ''}'),
-      onPressed: onTap,
-      backgroundColor: selected
-          ? context.moniaryColors.primary.withValues(alpha: 0.12)
-          : null,
-      side: BorderSide(color: context.moniaryColors.outline),
-    ),
-  );
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return Padding(
+      padding: const EdgeInsets.only(right: 5),
+      child: Semantics(
+        button: true,
+        label: count > 0 ? '$label, $count' : label,
+        selected: selected,
+        child: ActionChip(
+          avatar: Icon(icon, size: 17),
+          label: Text(count > 0 ? '$count' : ''),
+          onPressed: onTap,
+          backgroundColor: selected
+              ? colors.primary.withValues(alpha: 0.12)
+              : colors.surface,
+          side: BorderSide(color: colors.outline),
+          labelStyle: TextStyle(
+            color: selected ? colors.primary : colors.textSecondary,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TransactionStatusBadge extends StatelessWidget {
+  const _TransactionStatusBadge({required this.status});
+
+  final GroupSplitStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    final (label, color) = switch (status) {
+      GroupSplitStatus.posted => (
+        context.l10n.groupTransactionPostedStatus,
+        colors.success,
+      ),
+      GroupSplitStatus.amountMismatch => (
+        context.l10n.groupTransactionMismatchStatus,
+        colors.danger,
+      ),
+      GroupSplitStatus.pendingMemberAmountInput => (
+        context.l10n.groupTransactionPendingShort,
+        colors.warning,
+      ),
+      _ => (context.l10n.groupTransactionPendingShort, colors.textDim),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: context.moniaryTypography.metadataStrong.copyWith(
+          color: color,
+          fontSize: 9,
+          letterSpacing: 0.2,
+        ),
+      ),
+    );
+  }
 }
 
 class _CommunityComposerSheet extends StatefulWidget {
@@ -1308,6 +1762,7 @@ class _CommunityComposerSheet extends StatefulWidget {
 class _CommunityComposerSheetState extends State<_CommunityComposerSheet> {
   final _contentController = TextEditingController();
   final _images = <XFile>[];
+  String? _error;
 
   @override
   void dispose() {
@@ -1324,217 +1779,122 @@ class _CommunityComposerSheetState extends State<_CommunityComposerSheet> {
       MediaQuery.viewInsetsOf(context).bottom + 20,
     ),
     child: SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            context.l10n.groupCommunityWriteUpdate,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            context.l10n.groupCommunityWriteUpdateHelp,
-            style: TextStyle(color: context.moniaryColors.textDim),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _contentController,
-            maxLines: 4,
-            decoration: InputDecoration(
-              hintText: context.l10n.groupCommunityComposerHint,
-              alignLabelWithHint: true,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              context.l10n.groupCommunityWriteUpdate,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-          ),
-          if (_images.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 72,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _images.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 8),
-                itemBuilder: (_, index) => Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.file(
-                        File(_images[index].path),
-                        width: 72,
-                        height: 72,
-                        fit: BoxFit.cover,
+            const SizedBox(height: 12),
+            Text(
+              context.l10n.groupCommunityWriteUpdateHelp,
+              style: TextStyle(color: context.moniaryColors.textDim),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _contentController,
+              maxLines: 4,
+              onChanged: (_) {
+                if (_error != null) setState(() => _error = null);
+              },
+              decoration: InputDecoration(
+                hintText: context.l10n.groupCommunityComposerHint,
+                alignLabelWithHint: true,
+                errorText: _error,
+              ),
+            ),
+            if (_images.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 72,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _images.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 8),
+                  itemBuilder: (_, index) => Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.file(
+                          File(_images[index].path),
+                          width: 72,
+                          height: 72,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: IconButton(
-                        visualDensity: VisualDensity.compact,
-                        onPressed: () =>
-                            setState(() => _images.removeAt(index)),
-                        icon: const Icon(Icons.cancel, color: Colors.white),
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: IconButton(
+                          tooltip: context.l10n.commonDelete,
+                          onPressed: () =>
+                              setState(() => _images.removeAt(index)),
+                          icon: Icon(
+                            Icons.close_outlined,
+                            color: context.moniaryColors.surfaceRaised,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+              ),
+            ],
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _images.length >= 6 ? null : _pickImages,
+              icon: const Icon(Icons.photo_library_outlined),
+              label: Text(
+                context.l10n.groupCommunityPhotoCount(_images.length),
+              ),
+            ),
+            const SizedBox(height: 14),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: _submit,
+                child: Text(context.l10n.groupCommunityPublish),
               ),
             ),
           ],
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: _pickImages,
-            icon: const Icon(Icons.photo_library_outlined),
-            label: Text(context.l10n.groupCommunityPostPhoto),
-          ),
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: () => Navigator.pop(
-                context,
-                _CommunityComposerResult(
-                  action: _CommunityComposerAction.publish,
-                  content: _contentController.text,
-                  media: [
-                    for (final image in _images)
-                      GroupCommunityMediaDraft(localPath: image.path),
-                  ],
-                ),
-              ),
-              child: Text(context.l10n.groupCommunityPublish),
-            ),
-          ),
-        ],
+        ),
       ),
     ),
   );
+
+  void _submit() {
+    if (_contentController.text.trim().isEmpty && _images.isEmpty) {
+      setState(() => _error = context.l10n.groupCommunityPostEmpty);
+      return;
+    }
+    Navigator.pop(
+      context,
+      _CommunityComposerResult(
+        action: _CommunityComposerAction.publish,
+        content: _contentController.text.trim(),
+        media: [
+          for (final image in _images)
+            GroupCommunityMediaDraft(localPath: image.path),
+        ],
+      ),
+    );
+  }
 
   Future<void> _pickImages() async {
     final images = await ImagePicker().pickMultiImage(imageQuality: 85);
     if (!mounted) return;
     setState(() {
-      _images
-        ..clear()
-        ..addAll(images.take(6));
+      final available = 6 - _images.length;
+      _images.addAll(images.take(available));
+      _error = null;
     });
   }
 }
 
-enum _CommunityCreationAction { post, poll, challenge }
-
 enum _CommunityComposerAction { publish }
-
-class _CommunityCreateActivitySheet extends StatelessWidget {
-  const _CommunityCreateActivitySheet({required this.canCreateChallenge});
-
-  final bool canCreateChallenge;
-
-  @override
-  Widget build(BuildContext context) => SafeArea(
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            context.l10n.groupCommunityCreateActivity,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            context.l10n.groupCommunityCreateActivityHelp,
-            style: TextStyle(color: context.moniaryColors.textDim),
-          ),
-          const SizedBox(height: 14),
-          _ActivityCreationTile(
-            icon: Icons.edit_note_rounded,
-            title: context.l10n.groupCommunityWriteUpdate,
-            description: context.l10n.groupCommunityWriteUpdateHelp,
-            color: context.moniaryColors.primary,
-            onTap: () => Navigator.pop(context, _CommunityCreationAction.post),
-          ),
-          const SizedBox(height: 10),
-          _ActivityCreationTile(
-            icon: Icons.poll_outlined,
-            title: context.l10n.groupCommunityCreatePoll,
-            description: context.l10n.groupCommunityCreatePollHelp,
-            color: context.moniaryColors.primary,
-            onTap: () => Navigator.pop(context, _CommunityCreationAction.poll),
-          ),
-          if (canCreateChallenge) ...[
-            const SizedBox(height: 10),
-            _ActivityCreationTile(
-              icon: Icons.savings_outlined,
-              title: context.l10n.groupCommunityCreateChallenge,
-              description: context.l10n.groupCommunityCreateChallengeHelp,
-              color: context.moniaryColors.success,
-              onTap: () =>
-                  Navigator.pop(context, _CommunityCreationAction.challenge),
-            ),
-          ],
-        ],
-      ),
-    ),
-  );
-}
-
-class _ActivityCreationTile extends StatelessWidget {
-  const _ActivityCreationTile({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.color,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String description;
-  final Color color;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => InkWell(
-    onTap: onTap,
-    borderRadius: BorderRadius.circular(16),
-    child: Ink(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.24)),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: color.withValues(alpha: 0.16),
-            foregroundColor: color,
-            child: Icon(icon),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  description,
-                  style: TextStyle(color: context.moniaryColors.textDim),
-                ),
-              ],
-            ),
-          ),
-          const Icon(Icons.chevron_right_rounded),
-        ],
-      ),
-    ),
-  );
-}
 
 class _CommunityComposerResult {
   const _CommunityComposerResult({
@@ -1551,24 +1911,29 @@ class _CommunityComposerResult {
 class _ContributionDialog extends StatefulWidget {
   const _ContributionDialog({
     required this.challenge,
+    required this.remainingAmount,
     required this.remainingText,
-    required this.controller,
-    required this.onCancel,
-    required this.onSubmit,
+    required this.currencySymbol,
   });
 
   final GroupSavingsChallenge challenge;
+  final int remainingAmount;
   final String remainingText;
-  final TextEditingController controller;
-  final VoidCallback onCancel;
-  final VoidCallback onSubmit;
+  final String currencySymbol;
 
   @override
   State<_ContributionDialog> createState() => _ContributionDialogState();
 }
 
 class _ContributionDialogState extends State<_ContributionDialog> {
+  final _controller = TextEditingController();
   String? _error;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) => AlertDialog(
@@ -1589,11 +1954,22 @@ class _ContributionDialogState extends State<_ContributionDialog> {
           ),
           const SizedBox(height: 14),
           TextField(
-            controller: widget.controller,
+            controller: _controller,
             autofocus: true,
             keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.done,
+            inputFormatters: [
+              IntegerMoneyInputFormatter(
+                locale: Localizations.localeOf(context).toString(),
+              ),
+            ],
+            onSubmitted: (_) => _submit(),
             decoration: InputDecoration(
               labelText: context.l10n.groupCommunityContributionAmount,
+              suffixText: widget.currencySymbol,
+              helperText: context.l10n.groupCommunityContributionLimit(
+                widget.remainingText,
+              ),
               errorText: _error,
             ),
           ),
@@ -1602,7 +1978,7 @@ class _ContributionDialogState extends State<_ContributionDialog> {
     ),
     actions: [
       TextButton(
-        onPressed: widget.onCancel,
+        onPressed: () => Navigator.pop(context),
         child: Text(context.l10n.commonCancel),
       ),
       FilledButton(
@@ -1613,12 +1989,20 @@ class _ContributionDialogState extends State<_ContributionDialog> {
   );
 
   void _submit() {
-    final amount = int.tryParse(widget.controller.text.replaceAll(',', ''));
-    if (amount == null || amount <= 0) {
+    final amount = parseIntegerMoney(_controller.text);
+    if (amount <= 0) {
       setState(() => _error = context.l10n.groupCommunityContributionInvalid);
       return;
     }
-    widget.onSubmit();
+    if (amount > widget.remainingAmount) {
+      setState(
+        () => _error = context.l10n.groupCommunityContributionTooHigh(
+          widget.remainingText,
+        ),
+      );
+      return;
+    }
+    Navigator.pop(context, amount);
   }
 }
 
@@ -1751,7 +2135,7 @@ class _PollDialogState extends State<_PollDialog> {
                             index + 1,
                           ),
                           prefixIcon: const Icon(
-                            Icons.radio_button_unchecked_rounded,
+                            Icons.radio_button_unchecked_outlined,
                           ),
                         ),
                       ),
@@ -1769,7 +2153,7 @@ class _PollDialogState extends State<_PollDialog> {
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: _optionControllers.length >= 6 ? null : _addOption,
-                icon: const Icon(Icons.add_rounded),
+                icon: const Icon(Icons.add_outlined),
                 label: Text(context.l10n.groupCommunityPollAddOption),
               ),
             ),
@@ -1873,6 +2257,18 @@ class _PollDialogState extends State<_PollDialog> {
   }
 }
 
+class _ChallengeDraft {
+  const _ChallengeDraft({
+    required this.title,
+    required this.targetAmount,
+    required this.durationDays,
+  });
+
+  final String title;
+  final int targetAmount;
+  final int durationDays;
+}
+
 class _ChallengeDialog extends ConsumerStatefulWidget {
   const _ChallengeDialog();
 
@@ -1885,6 +2281,7 @@ class _ChallengeDialogState extends ConsumerState<_ChallengeDialog> {
   final _amount = TextEditingController();
   String? _error;
   int _step = 0;
+  int _durationDays = 30;
 
   @override
   void dispose() {
@@ -1976,19 +2373,39 @@ class _ChallengeDialogState extends ConsumerState<_ChallengeDialog> {
             TextField(
               controller: _amount,
               keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              inputFormatters: [
+                IntegerMoneyInputFormatter(
+                  locale: Localizations.localeOf(context).toString(),
+                ),
+              ],
               decoration: InputDecoration(
                 labelText: context.l10n.groupChallengeTarget,
+                suffixText: ref.currencySymbol,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Text(
               context.l10n.groupCommunityChallengeDuration,
               style: context.moniaryTypography.metadata,
             ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final days in const [30, 60, 90])
+                  ChoiceChip(
+                    label: Text(context.l10n.groupCommunityDurationDays(days)),
+                    selected: _durationDays == days,
+                    onSelected: (_) => setState(() => _durationDays = days),
+                  ),
+              ],
+            ),
           ],
         );
       default:
-        final amount = int.tryParse(_amount.text.replaceAll(',', '')) ?? 0;
+        final amount = parseIntegerMoney(_amount.text);
         return Column(
           key: const ValueKey('challenge-preview'),
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2012,7 +2429,10 @@ class _ChallengeDialogState extends ConsumerState<_ChallengeDialog> {
                     '${context.l10n.groupCommunityChallengeSaved}: ${ref.formatAmount(amount)}',
                   ),
                   const SizedBox(height: 4),
-                  Text(context.l10n.groupCommunityChallengeDuration),
+                  Text(
+                    '${context.l10n.groupCommunityChallengeEnds}: '
+                    '${MaterialLocalizations.of(context).formatShortDate(DateTime.now().add(Duration(days: _durationDays)))}',
+                  ),
                   const SizedBox(height: 4),
                   Text(context.l10n.groupCommunityChallengeMembers),
                 ],
@@ -2036,8 +2456,8 @@ class _ChallengeDialogState extends ConsumerState<_ChallengeDialog> {
       return;
     }
     if (_step == 1) {
-      final amount = int.tryParse(_amount.text.replaceAll(',', ''));
-      if (amount == null || amount <= 0) {
+      final amount = parseIntegerMoney(_amount.text);
+      if (amount <= 0) {
         setState(() => _error = context.l10n.groupCommunityChallengeValidation);
         return;
       }
@@ -2047,9 +2467,16 @@ class _ChallengeDialogState extends ConsumerState<_ChallengeDialog> {
       });
       return;
     }
-    final amount = int.tryParse(_amount.text.replaceAll(',', ''));
-    if (amount == null || amount <= 0) return;
-    Navigator.pop(context, (_title.text.trim(), amount));
+    final amount = parseIntegerMoney(_amount.text);
+    if (amount <= 0) return;
+    Navigator.pop(
+      context,
+      _ChallengeDraft(
+        title: _title.text.trim(),
+        targetAmount: amount,
+        durationDays: _durationDays,
+      ),
+    );
   }
 }
 
@@ -2106,6 +2533,92 @@ class _ErrorState extends StatelessWidget {
           ),
         ],
       ),
+    ),
+  );
+}
+
+class _CommunityLoadingState extends StatelessWidget {
+  const _CommunityLoadingState();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.moniaryColors;
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+      children: [
+        Row(
+          children: [
+            Expanded(child: _LoadingLine(width: 120, color: colors.outline)),
+            _LoadingLine(width: 36, color: colors.outline),
+            const SizedBox(width: 8),
+            _LoadingLine(width: 36, color: colors.outline),
+          ],
+        ),
+        const SizedBox(height: 20),
+        MoniaryEditorialCard(
+          child: Row(
+            children: [
+              _LoadingLine(width: 64, height: 64, color: colors.outline),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _LoadingLine(width: 160, color: colors.outline),
+                    const SizedBox(height: 8),
+                    _LoadingLine(width: 96, color: colors.outline),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
+        for (var index = 0; index < 3; index++) ...[
+          MoniaryEditorialCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    _LoadingLine(width: 38, height: 38, color: colors.outline),
+                    const SizedBox(width: 10),
+                    _LoadingLine(width: 128, color: colors.outline),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                _LoadingLine(width: double.infinity, color: colors.outline),
+                const SizedBox(height: 8),
+                _LoadingLine(width: 190, color: colors.outline),
+              ],
+            ),
+          ),
+          if (index < 2) const SizedBox(height: 12),
+        ],
+      ],
+    );
+  }
+}
+
+class _LoadingLine extends StatelessWidget {
+  const _LoadingLine({
+    required this.width,
+    required this.color,
+    this.height = 12,
+  });
+
+  final double width;
+  final double height;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: width,
+    height: height,
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: 0.38),
+      borderRadius: BorderRadius.circular(height / 2),
     ),
   );
 }

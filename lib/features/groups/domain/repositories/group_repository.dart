@@ -1,5 +1,6 @@
 import '../entities/group_community.dart';
 import '../entities/group_community_feed.dart';
+import '../entities/group_enums.dart';
 import '../entities/group_invite.dart';
 import '../entities/group_roadmap.dart';
 import '../entities/group_settlement.dart';
@@ -143,6 +144,12 @@ abstract interface class GroupRepository {
 
   Future<void> removeMember({required String groupId, required String userId});
 
+  Future<void> updateMemberRole({
+    required String groupId,
+    required String userId,
+    required GroupRole role,
+  });
+
   Future<void> leaveGroup(String groupId);
 
   Future<void> transferOwnership({
@@ -183,10 +190,24 @@ abstract interface class GroupRepository {
     List<GroupCommunityMediaDraft> media = const [],
   });
 
+  Future<void> updateCommunityPost({
+    required String postId,
+    required String content,
+  });
+
+  Future<void> deleteCommunityPost(String postId);
+
   Future<void> addCommunityPostComment({
     required String postId,
     required String content,
   });
+
+  Future<void> updateCommunityPostComment({
+    required String commentId,
+    required String content,
+  });
+
+  Future<void> deleteCommunityPostComment(String commentId);
 
   Future<void> toggleCommunityPostReaction({
     required String postId,

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
-import '../../../../core/constants/app_constants.dart';
-import '../../../../core/notifications/local_notification_service.dart';
+import '../../../../core/notifications/fcm_push_notification_service.dart';
 import '../../../../core/notifications/notification_providers.dart';
-import '../../../../core/preferences/preferences_providers.dart';
 import '../../application/notification_settings_controller.dart';
 import '../../application/reminder_controller.dart';
 import '../../domain/models/reminder_settings.dart';
@@ -42,6 +39,7 @@ class _PushNotificationSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(notificationDeliveryPreferencesControllerProvider);
+    final pushService = ref.watch(fcmPushNotificationServiceProvider);
     final controller = ref.read(
       notificationDeliveryPreferencesControllerProvider.notifier,
     );
@@ -55,9 +53,9 @@ class _PushNotificationSection extends ConsumerWidget {
         const SizedBox(height: 8),
         Text(
           context.l10n.pushNotificationSectionDesc,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: AppTheme.mint),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: context.moniaryColors.textSecondary,
+          ),
         ),
         const SizedBox(height: 20),
         state.when(
@@ -75,9 +73,12 @@ class _PushNotificationSection extends ConsumerWidget {
                   title: context.l10n.pushNotificationAllTitle,
                   subtitle: context.l10n.pushNotificationAllSubtitle,
                   value: preferences.pushEnabled,
-                  onChanged: (value) =>
-                      _togglePush(context, ref, controller, value),
+                  onChanged: pushService.isAvailable
+                      ? (value) => _togglePush(context, ref, controller, value)
+                      : null,
                 ),
+                const _SettingsDivider(),
+                _PushPermissionTile(service: pushService),
                 const _SettingsDivider(),
                 _PushCategoryTile(
                   icon: Icons.person_outline,
@@ -85,7 +86,7 @@ class _PushNotificationSection extends ConsumerWidget {
                   value: preferences.personalEnabled,
                   enabled: preferences.pushEnabled,
                   onChanged: (value) =>
-                      controller.setCategoryEnabled('personal', value),
+                      _toggleCategory(context, controller, 'personal', value),
                 ),
                 const _SettingsDivider(),
                 _PushCategoryTile(
@@ -94,7 +95,7 @@ class _PushNotificationSection extends ConsumerWidget {
                   value: preferences.groupEnabled,
                   enabled: preferences.pushEnabled,
                   onChanged: (value) =>
-                      controller.setCategoryEnabled('group', value),
+                      _toggleCategory(context, controller, 'group', value),
                 ),
                 const _SettingsDivider(),
                 _PushCategoryTile(
@@ -103,7 +104,7 @@ class _PushNotificationSection extends ConsumerWidget {
                   value: preferences.communityEnabled,
                   enabled: preferences.pushEnabled,
                   onChanged: (value) =>
-                      controller.setCategoryEnabled('community', value),
+                      _toggleCategory(context, controller, 'community', value),
                 ),
                 const _SettingsDivider(),
                 _PushCategoryTile(
@@ -112,7 +113,7 @@ class _PushNotificationSection extends ConsumerWidget {
                   value: preferences.systemEnabled,
                   enabled: preferences.pushEnabled,
                   onChanged: (value) =>
-                      controller.setCategoryEnabled('system', value),
+                      _toggleCategory(context, controller, 'system', value),
                 ),
               ],
             ),
@@ -128,37 +129,119 @@ class _PushNotificationSection extends ConsumerWidget {
     NotificationDeliveryPreferencesController controller,
     bool value,
   ) async {
-    if (!value) {
-      await controller.setPushEnabled(false);
-      return;
-    }
-
     final l10n = context.l10n;
     final messenger = ScaffoldMessenger.of(context);
-    final granted = await LocalNotificationService.instance.requestPermission();
-    if (!granted) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.reminderPermissionDenied)),
-      );
-      return;
-    }
-
-    await controller.setPushEnabled(true);
-    await ref
-        .read(fcmPushNotificationServiceProvider)
-        .initialize(
-          onToken: (token) => ref
-              .read(notificationRepositoryProvider)
-              .registerDevice(
-                token: token,
-                platform: defaultTargetPlatform == TargetPlatform.iOS
-                    ? 'ios'
-                    : 'android',
-                locale: ref.read(preferredLocaleProvider),
-                timezone: AppConstants.defaultTimezone,
-              ),
-          onTap: (_) async {},
+    final service = ref.read(fcmPushNotificationServiceProvider);
+    try {
+      if (!value) {
+        await controller.setPushEnabled(false);
+        await service.unregisterCurrentToken(
+          onToken: ref.read(notificationRepositoryProvider).unregisterDevice,
         );
+        if (!context.mounted) return;
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.pushNotificationSaved)),
+        );
+        return;
+      }
+
+      final granted = await service.requestPermissionAndRegister();
+      if (!granted) {
+        if (!context.mounted) return;
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.reminderPermissionDenied)),
+        );
+        return;
+      }
+
+      await controller.setPushEnabled(true);
+      if (!context.mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.pushNotificationSaved)),
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.pushNotificationSaveError)),
+      );
+    }
+  }
+
+  Future<void> _toggleCategory(
+    BuildContext context,
+    NotificationDeliveryPreferencesController controller,
+    String category,
+    bool value,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await controller.setCategoryEnabled(category, value);
+      if (!context.mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(context.l10n.pushNotificationSaved)),
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(context.l10n.pushNotificationSaveError)),
+      );
+    }
+  }
+}
+
+class _PushPermissionTile extends StatelessWidget {
+  const _PushPermissionTile({required this.service});
+
+  final FcmPushNotificationService service;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<PushPermissionStatus>(
+      future: service.permissionStatus(),
+      builder: (context, snapshot) {
+        final status =
+            snapshot.data ??
+            (service.isAvailable
+                ? PushPermissionStatus.notDetermined
+                : PushPermissionStatus.unavailable);
+        final (icon, label) = switch (status) {
+          PushPermissionStatus.authorized => (
+            Icons.verified_outlined,
+            context.l10n.pushNotificationPermissionAllowed,
+          ),
+          PushPermissionStatus.denied => (
+            Icons.notifications_off_outlined,
+            context.l10n.pushNotificationPermissionDenied,
+          ),
+          PushPermissionStatus.notDetermined => (
+            Icons.privacy_tip_outlined,
+            context.l10n.pushNotificationPermissionNotRequested,
+          ),
+          PushPermissionStatus.unavailable => (
+            Icons.info_outline,
+            context.l10n.pushNotificationUnavailable,
+          ),
+        };
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, color: context.moniaryColors.primary, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: context.moniaryColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -208,9 +291,9 @@ class _ReminderSection extends ConsumerWidget {
         const SizedBox(height: 8),
         Text(
           context.l10n.reminderSectionDesc,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: AppTheme.mint),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: context.moniaryColors.textSecondary,
+          ),
         ),
         const SizedBox(height: 20),
         _SettingsCard(
@@ -294,9 +377,9 @@ class _EmailReportsSection extends ConsumerWidget {
         const SizedBox(height: 8),
         Text(
           context.l10n.emailReportsDesc,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: AppTheme.mint),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: context.moniaryColors.textSecondary,
+          ),
         ),
         const SizedBox(height: 20),
         state.when(
@@ -310,7 +393,10 @@ class _EmailReportsSection extends ConsumerWidget {
                     _formatTime(context, settings.dailyReminderTime),
                   ),
                   value: settings.dailyReminderEnabled,
-                  onChanged: (val) => notifier.updateDailyReminder(val, null),
+                  onChanged: (val) => _update(
+                    context,
+                    () => notifier.updateDailyReminder(val, null),
+                  ),
                 ),
                 const _SettingsDivider(),
                 _NotificationTile(
@@ -318,7 +404,10 @@ class _EmailReportsSection extends ConsumerWidget {
                   title: context.l10n.weeklyReport,
                   subtitle: context.l10n.weeklyReportDesc,
                   value: settings.weeklySummaryEnabled,
-                  onChanged: notifier.updateWeeklySummary,
+                  onChanged: (value) => _update(
+                    context,
+                    () => notifier.updateWeeklySummary(value),
+                  ),
                 ),
                 const _SettingsDivider(),
                 _NotificationTile(
@@ -326,7 +415,10 @@ class _EmailReportsSection extends ConsumerWidget {
                   title: context.l10n.monthlyReport,
                   subtitle: context.l10n.monthlyReportDesc,
                   value: settings.monthlySummaryEnabled,
-                  onChanged: notifier.updateMonthlySummary,
+                  onChanged: (value) => _update(
+                    context,
+                    () => notifier.updateMonthlySummary(value),
+                  ),
                 ),
                 const _SettingsDivider(),
                 _NotificationTile(
@@ -334,7 +426,10 @@ class _EmailReportsSection extends ConsumerWidget {
                   title: context.l10n.yearlyReport,
                   subtitle: context.l10n.yearlyReportDesc,
                   value: settings.yearlySummaryEnabled,
-                  onChanged: notifier.updateYearlySummary,
+                  onChanged: (value) => _update(
+                    context,
+                    () => notifier.updateYearlySummary(value),
+                  ),
                 ),
               ],
             ),
@@ -351,6 +446,23 @@ class _EmailReportsSection extends ConsumerWidget {
       ],
     );
   }
+
+  Future<void> _update(
+    BuildContext context,
+    Future<void> Function() action,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await action();
+      if (!context.mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(context.l10n.commonSaved)));
+    } catch (_) {
+      if (!context.mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(context.l10n.errorGeneric)),
+      );
+    }
+  }
 }
 
 class _SettingsCard extends StatelessWidget {
@@ -362,9 +474,9 @@ class _SettingsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: context.moniaryColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.outline),
+        border: Border.all(color: context.moniaryColors.outline),
       ),
       child: child,
     );
@@ -401,10 +513,10 @@ class _NotificationTile extends StatelessWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: AppTheme.mint.withValues(alpha: 0.14),
+                color: context.moniaryColors.primary.withValues(alpha: 0.14),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: AppTheme.mint, size: 22),
+              child: Icon(icon, color: context.moniaryColors.primary, size: 22),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -421,7 +533,7 @@ class _NotificationTile extends StatelessWidget {
             Switch(
               value: value,
               onChanged: onChanged,
-              activeThumbColor: AppTheme.mint,
+              activeThumbColor: context.moniaryColors.primary,
             ),
           ],
         ),
@@ -469,11 +581,11 @@ class _SettingsDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Divider(
+    return Divider(
       height: 1,
       indent: 72,
       endIndent: 16,
-      color: AppTheme.outline,
+      color: context.moniaryColors.outline,
     );
   }
 }
