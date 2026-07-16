@@ -642,6 +642,7 @@ void main() {
         const GroupListScreen(),
         friendRepository: FakeFriendRepository(),
         groupRepository: groupRepository,
+        notificationRepository: FakeNotificationRepository(notifications: []),
       ),
     );
     await tester.pumpAndSettle();
@@ -670,6 +671,18 @@ void main() {
         const GroupListScreen(),
         friendRepository: FakeFriendRepository(),
         groupRepository: groupRepository,
+        notificationRepository: FakeNotificationRepository(
+          notifications: [
+            AppNotification(
+              id: 'notification-1',
+              category: AppNotificationCategory.group,
+              type: 'transaction_posted',
+              isRead: false,
+              createdAt: DateTime(2026, 7, 1),
+              groupId: 'group-1',
+            ),
+          ],
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -1130,6 +1143,13 @@ class FakeGroupRepository implements GroupRepository {
   Future<List<SpendingGroup>> fetchGroups() async => const [];
 
   @override
+  Future<SpendingGroupPage> fetchGroupsPage({
+    int limit = 20,
+    DateTime? beforeUpdatedAt,
+    String? beforeId,
+  }) async => const SpendingGroupPage(items: [], hasMore: false);
+
+  @override
   Future<SpendingGroupDetail> fetchGroupDetail(String groupId) async {
     final now = DateTime(2026);
     return SpendingGroupDetail(
@@ -1329,11 +1349,27 @@ class FakeGroupRepository implements GroupRepository {
   }) async => const [];
 
   @override
+  Future<GroupCommunityPage> fetchCommunityFeedPage({
+    required String groupId,
+    int limit = 20,
+    GroupCommunityCursor? before,
+  }) async => const GroupCommunityPage(items: [], hasMore: false);
+
+  @override
+  Future<GroupCommunityCommentsPage> fetchCommunityCommentsPage({
+    required String postId,
+    int limit = 30,
+    DateTime? beforeCreatedAt,
+    String? beforeId,
+  }) async => const GroupCommunityCommentsPage(items: [], hasMore: false);
+
+  @override
   Future<String> createCommunityPost({
     required String groupId,
     required String type,
     String? content,
     List<GroupCommunityMediaDraft> media = const [],
+    void Function(int completed, int total)? onMediaUploadProgress,
   }) async => 'mock-community-post';
 
   @override

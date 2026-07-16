@@ -39,102 +39,151 @@ class _GroupCommunityScreenState extends ConsumerState<GroupCommunityScreen> {
   Widget build(BuildContext context) {
     final feedAsync = ref.watch(groupCommunityFeedProvider(widget.groupId));
     final detail = ref.watch(groupDetailProvider(widget.groupId)).asData?.value;
+    final uploadProgress = ref.watch(groupMediaUploadProgressProvider);
     final colors = context.moniaryColors;
 
     return Scaffold(
       backgroundColor: colors.backgroundSoft,
       body: SafeArea(
-        child: feedAsync.when(
-          loading: () => const _CommunityLoadingState(),
-          error: (error, _) => _ErrorState(
-            message: userFriendlyMessage(context, error),
-            onRetry: () =>
-                ref.invalidate(groupCommunityFeedProvider(widget.groupId)),
-          ),
-          data: (feed) {
-            final filteredItems = _filteredItems(feed.items);
-            return RefreshIndicator(
-              onRefresh: () async {
-                ref.invalidate(groupCommunityFeedProvider(widget.groupId));
-                await ref.read(
-                  groupCommunityFeedProvider(widget.groupId).future,
-                );
-              },
-              child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    sliver: SliverToBoxAdapter(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const _CommunityTopBar(),
-                          const SizedBox(height: 12),
-                          if (detail != null) ...[
-                            _CommunityGroupHeader(detail: detail),
-                            const SizedBox(height: 12),
-                          ],
-                          _CommunityQuickActions(
-                            groupId: widget.groupId,
-                            canCreateChallenge:
-                                detail?.canCreateChallenge ?? false,
-                            onCreatePost: () => _openPostComposer(context),
-                            onCreatePoll: () => _createPoll(context),
-                            onCreateChallenge: () => _createChallenge(context),
-                          ),
-                          const SizedBox(height: 14),
-                          _ComposerLauncher(
-                            onTap: () => _openPostComposer(context),
-                          ),
-                          const SizedBox(height: 14),
-                          _FilterBar(
-                            filter: _filter,
-                            onChanged: (value) =>
-                                setState(() => _filter = value),
-                          ),
-                          const SizedBox(height: 14),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (filteredItems.isEmpty)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: _EmptyFeedState(
-                        filter: _filter,
-                        onCreate: () => _openPostComposer(context),
-                      ),
-                    )
-                  else
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      sliver: SliverList.builder(
-                        itemCount: filteredItems.length,
-                        itemBuilder: (context, index) {
-                          final item = filteredItems[index];
-                          return Padding(
-                            key: ValueKey(item.id),
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _FeedItemCard(
-                              item: item,
-                              groupId: widget.groupId,
-                              onCommentPost: (post) =>
-                                  _showComments(context, post),
-                              onVote: (poll, optionId) =>
-                                  _votePoll(poll, optionId),
-                              onContribute: (challenge) =>
-                                  _contributeToChallenge(context, challenge),
+        child: Column(
+          children: [
+            if (uploadProgress?.groupId == widget.groupId &&
+                uploadProgress!.total > 0)
+              _CommunityUploadProgress(progress: uploadProgress),
+            Expanded(
+              child: feedAsync.when(
+                loading: () => const _CommunityLoadingState(),
+                error: (error, _) => _ErrorState(
+                  message: userFriendlyMessage(context, error),
+                  onRetry: () => ref
+                      .read(groupCommunityFeedProvider(widget.groupId).notifier)
+                      .refresh(),
+                ),
+                data: (feed) {
+                  final filteredItems = _filteredItems(feed.items);
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      await ref
+                          .read(
+                            groupCommunityFeedProvider(widget.groupId).notifier,
+                          )
+                          .refresh();
+                    },
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        SliverPadding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                          sliver: SliverToBoxAdapter(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const _CommunityTopBar(),
+                                const SizedBox(height: 12),
+                                if (detail != null) ...[
+                                  _CommunityGroupHeader(detail: detail),
+                                  const SizedBox(height: 12),
+                                ],
+                                _CommunityQuickActions(
+                                  groupId: widget.groupId,
+                                  canCreateChallenge:
+                                      detail?.canCreateChallenge ?? false,
+                                  onCreatePost: () =>
+                                      _openPostComposer(context),
+                                  onCreatePoll: () => _createPoll(context),
+                                  onCreateChallenge: () =>
+                                      _createChallenge(context),
+                                ),
+                                const SizedBox(height: 14),
+                                _ComposerLauncher(
+                                  onTap: () => _openPostComposer(context),
+                                ),
+                                const SizedBox(height: 14),
+                                _FilterBar(
+                                  filter: _filter,
+                                  onChanged: (value) =>
+                                      setState(() => _filter = value),
+                                ),
+                                const SizedBox(height: 14),
+                              ],
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                        if (filteredItems.isEmpty)
+                          SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: _EmptyFeedState(
+                              filter: _filter,
+                              onCreate: () => _openPostComposer(context),
+                            ),
+                          )
+                        else
+                          SliverPadding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            sliver: SliverList.builder(
+                              itemCount: filteredItems.length,
+                              itemBuilder: (context, index) {
+                                final item = filteredItems[index];
+                                return Padding(
+                                  key: ValueKey(item.id),
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: _FeedItemCard(
+                                    item: item,
+                                    groupId: widget.groupId,
+                                    onCommentPost: (post) =>
+                                        _showComments(context, post),
+                                    onVote: (poll, optionId) =>
+                                        _votePoll(poll, optionId),
+                                    onContribute: (challenge) =>
+                                        _contributeToChallenge(
+                                          context,
+                                          challenge,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        if (feed.hasMore)
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
+                              child: OutlinedButton.icon(
+                                onPressed: feed.isLoadingMore
+                                    ? null
+                                    : () => ref
+                                          .read(
+                                            groupCommunityFeedProvider(
+                                              widget.groupId,
+                                            ).notifier,
+                                          )
+                                          .loadMore(),
+                                icon: feed.isLoadingMore
+                                    ? const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Icon(Icons.expand_more_outlined),
+                                label: Text(
+                                  feed.isLoadingMore
+                                      ? context.l10n.commonLoading
+                                      : context.l10n.groupCommunityLoadMore,
+                                ),
+                              ),
+                            ),
+                          )
+                        else
+                          const SliverToBoxAdapter(child: SizedBox(height: 28)),
+                      ],
                     ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 28)),
-                ],
+                  );
+                },
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
     );
@@ -344,13 +393,9 @@ class _CommunityCommentsSheetState
 
   @override
   Widget build(BuildContext context) {
-    final feed = ref.watch(groupCommunityFeedProvider(widget.groupId));
-    final post =
-        feed.asData?.value.items
-            .where((item) => item.post?.id == widget.initialPost.id)
-            .map((item) => item.post!)
-            .firstOrNull ??
-        widget.initialPost;
+    final commentsAsync = ref.watch(
+      groupCommunityCommentsProvider(widget.initialPost.id),
+    );
 
     return DraggableScrollableSheet(
       expand: false,
@@ -374,24 +419,65 @@ class _CommunityCommentsSheetState
               ),
               const SizedBox(height: 12),
               Expanded(
-                child: post.comments.isEmpty
-                    ? Center(
-                        child: Text(
-                          context.l10n.groupCommunityCommentEmpty,
-                          style: TextStyle(
-                            color: context.moniaryColors.textDim,
+                child: commentsAsync.when(
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  error: (error, _) => _ErrorState(
+                    message: userFriendlyMessage(context, error),
+                    onRetry: () => ref.invalidate(
+                      groupCommunityCommentsProvider(widget.initialPost.id),
+                    ),
+                  ),
+                  data: (page) => page.items.isEmpty
+                      ? Center(
+                          child: Text(
+                            context.l10n.groupCommunityCommentEmpty,
+                            style: TextStyle(
+                              color: context.moniaryColors.textDim,
+                            ),
                           ),
+                        )
+                      : ListView.separated(
+                          controller: scrollController,
+                          itemCount: page.items.length + (page.hasMore ? 1 : 0),
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (_, index) {
+                            if (index == page.items.length) {
+                              return OutlinedButton.icon(
+                                onPressed: page.isLoadingMore
+                                    ? null
+                                    : () => ref
+                                          .read(
+                                            groupCommunityCommentsProvider(
+                                              widget.initialPost.id,
+                                            ).notifier,
+                                          )
+                                          .loadMore(),
+                                icon: page.isLoadingMore
+                                    ? const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Icon(Icons.expand_more_outlined),
+                                label: Text(
+                                  page.isLoadingMore
+                                      ? context.l10n.commonLoading
+                                      : context.l10n.groupCommunityLoadMore,
+                                ),
+                              );
+                            }
+                            return _CommunityCommentRow(
+                              groupId: widget.groupId,
+                              comment: page.items[index],
+                            );
+                          },
                         ),
-                      )
-                    : ListView.separated(
-                        controller: scrollController,
-                        itemCount: post.comments.length,
-                        separatorBuilder: (_, _) => const SizedBox(height: 12),
-                        itemBuilder: (_, index) => _CommunityCommentRow(
-                          groupId: widget.groupId,
-                          comment: post.comments[index],
-                        ),
-                      ),
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
@@ -565,6 +651,7 @@ class _CommunityCommentRow extends ConsumerWidget {
             .read(groupActionControllerProvider.notifier)
             .updateCommunityPostComment(
               groupId: groupId,
+              postId: comment.postId,
               commentId: comment.id,
               content: content,
             );
@@ -598,7 +685,11 @@ class _CommunityCommentRow extends ConsumerWidget {
     try {
       await ref
           .read(groupActionControllerProvider.notifier)
-          .deleteCommunityPostComment(groupId: groupId, commentId: comment.id);
+          .deleteCommunityPostComment(
+            groupId: groupId,
+            postId: comment.postId,
+            commentId: comment.id,
+          );
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1027,7 +1118,7 @@ class _PostCard extends ConsumerWidget {
               TextButton.icon(
                 onPressed: () => onComment(post),
                 icon: const Icon(Icons.mode_comment_outlined, size: 16),
-                label: Text('${post.comments.length}'),
+                label: Text('${post.commentCount}'),
               ),
             ],
           ),
@@ -1611,6 +1702,8 @@ class _PostAuthorRow extends StatelessWidget {
           imagePath: post.authorAvatarPath,
           width: 38,
           height: 38,
+          cacheWidth: 96,
+          cacheHeight: 96,
           fallbackBuilder: (_) => _MemberAvatarFallback(
             label: post.authorName ?? context.l10n.groupMemberFallback,
           ),
@@ -1659,6 +1752,7 @@ class _PostMediaGrid extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: SupabaseImage(
           imagePath: visible[index].storagePath,
+          cacheWidth: 800,
           fallbackIcon: Icons.photo_outlined,
         ),
       ),
@@ -1884,13 +1978,44 @@ class _CommunityComposerSheetState extends State<_CommunityComposerSheet> {
   }
 
   Future<void> _pickImages() async {
-    final images = await ImagePicker().pickMultiImage(imageQuality: 85);
+    final images = await ImagePicker().pickMultiImage(
+      imageQuality: 82,
+      maxWidth: 1600,
+      maxHeight: 1600,
+    );
     if (!mounted) return;
     setState(() {
       final available = 6 - _images.length;
       _images.addAll(images.take(available));
       _error = null;
     });
+  }
+}
+
+class _CommunityUploadProgress extends StatelessWidget {
+  const _CommunityUploadProgress({required this.progress});
+
+  final GroupMediaUploadProgress progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.groupCommunityUploadProgress(
+              progress.completed,
+              progress.total,
+            ),
+            style: context.moniaryTypography.metadataStrong,
+          ),
+          const SizedBox(height: 6),
+          LinearProgressIndicator(value: progress.fraction),
+        ],
+      ),
+    );
   }
 }
 

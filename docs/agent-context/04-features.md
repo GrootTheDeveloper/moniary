@@ -88,6 +88,13 @@
   supported; exact shares must sum to the integer transaction total.
 - **Layers**: `GroupController`, repository contract/implementation, Supabase
   data sources, model mappers, and pure split/settlement services.
+- **Performance reads**: the Group list uses a cursor-paginated summary RPC so
+  member counts, posted totals, current-user balance, avatars, and unresolved
+  settlement state are returned in one bounded request instead of per-group
+  member/transaction/settlement queries. Community uses a cursor-paginated
+  mixed feed RPC; reactions and savings are aggregated server-side, poll reads
+  return only the current member's selected option, and comments load through a
+  separate paginated RPC.
 - **Backend**: versioned group tables, RPCs, RLS, Storage policies, and views are
   defined in `20260611000000_groups_community.sql`.
 - **Invite links**: owner/admin can create a shared link that multiple people
@@ -133,6 +140,10 @@
   directly from the stable screen tree; no delayed bottom-sheet-to-dialog
   overlay chain is used. Money inputs use a shared locale-aware integer
   formatter and keep integer domain values.
+- **Community media stability**: selected images are bounded to 1600 px, upload
+  at most two at a time with a visible progress state and timeouts, and persist
+  `pending`, `uploading`, `uploaded`, or `failed` status. Feed images request
+  decode-cache sizes appropriate to their rendered cards.
 - **Scoped notification inbox**: Group Shell notification tabs query the same
   unified notification model as the global inbox, filtered by `group_id`.
   Group badge/read-all actions affect only that group. Community updates are

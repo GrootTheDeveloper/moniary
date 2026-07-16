@@ -78,6 +78,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonLoading => 'Loading...';
 
   @override
+  String get groupListLoadMore => 'Load more groups';
+
+  @override
+  String get groupCommunityLoadMore => 'Load more activity';
+
+  @override
+  String groupCommunityUploadProgress(int completed, int total) {
+    return 'Uploading $completed/$total photos';
+  }
+
+  @override
   String get commonCopy => 'Copy';
 
   @override

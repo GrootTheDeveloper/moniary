@@ -210,15 +210,18 @@ class GroupModelMapper {
       byEmoji.putIfAbsent(emoji, () => []).add(reaction);
     }
     final reactions = byEmoji.entries
-        .map(
-          (entry) => GroupCommunityReactionSummary(
+        .map((entry) {
+          final summary = entry.value.first;
+          return GroupCommunityReactionSummary(
             emoji: entry.key,
-            count: entry.value.length,
-            reactedByCurrentUser: entry.value.any(
-              (item) => item['user_id'] == currentUserId,
-            ),
-          ),
-        )
+            count:
+                (summary['reaction_count'] as num?)?.toInt() ??
+                entry.value.length,
+            reactedByCurrentUser:
+                summary['reacted_by_current_user'] as bool? ??
+                entry.value.any((item) => item['user_id'] == currentUserId),
+          );
+        })
         .toList(growable: false);
     final comments = (row['comments'] as List? ?? const [])
         .whereType<Map>()
@@ -247,10 +250,60 @@ class GroupModelMapper {
       media: mediaRows,
       reactions: reactions,
       comments: comments,
+      commentCount: (row['comment_count'] as num?)?.toInt() ?? comments.length,
       linkedTransactionId: row['linked_transaction_id'] as String?,
       linkedPollId: row['linked_poll_id'] as String?,
       linkedChallengeId: row['linked_challenge_id'] as String?,
       createdAt: _date(row['created_at']),
+    );
+  }
+
+  static GroupPoll poll(Map<String, dynamic> row) {
+    final options = (row['options'] as List? ?? const [])
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .map(
+          (item) => GroupPollOption(
+            id: item['id'] as String,
+            label: item['label'] as String,
+            voteCount: (item['vote_count'] as num?)?.toInt() ?? 0,
+          ),
+        )
+        .toList(growable: false);
+    return GroupPoll(
+      id: row['id'] as String,
+      groupId: row['group_id'] as String,
+      title: row['title'] as String,
+      options: options,
+      isClosed: row['is_closed'] as bool? ?? false,
+      createdAt: _date(row['created_at']),
+      selectedOptionId: row['selected_option_id'] as String?,
+    );
+  }
+
+  static GroupSavingsChallenge savingsChallenge(Map<String, dynamic> row) {
+    return GroupSavingsChallenge(
+      id: row['id'] as String,
+      groupId: row['group_id'] as String,
+      title: row['title'] as String,
+      targetAmount: _money(row['target_amount']),
+      startDate: _date(row['start_date']),
+      endDate: _date(row['end_date']),
+      totalContributed: _money(row['total_contributed']),
+      isActive: row['is_active'] as bool? ?? true,
+    );
+  }
+
+  static GroupCommunityComment communityComment(Map<String, dynamic> row) {
+    final profile = row['profile'] as Map<String, dynamic>?;
+    return GroupCommunityComment(
+      id: row['id'] as String,
+      postId: row['post_id'] as String,
+      userId: row['user_id'] as String,
+      content: row['content'] as String,
+      createdAt: _date(row['created_at']),
+      displayName: profile?['full_name'] as String?,
+      avatarPath: profile?['avatar_url'] as String?,
     );
   }
 

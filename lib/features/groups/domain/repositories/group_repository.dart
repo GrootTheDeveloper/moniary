@@ -12,6 +12,12 @@ abstract interface class GroupRepository {
 
   Future<List<SpendingGroup>> fetchGroups();
 
+  Future<SpendingGroupPage> fetchGroupsPage({
+    int limit = 20,
+    DateTime? beforeUpdatedAt,
+    String? beforeId,
+  });
+
   Future<SpendingGroupDetail> fetchGroupDetail(String groupId);
 
   Future<String> createGroup({
@@ -183,11 +189,25 @@ abstract interface class GroupRepository {
     int limit = 30,
   });
 
+  Future<GroupCommunityPage> fetchCommunityFeedPage({
+    required String groupId,
+    int limit = 20,
+    GroupCommunityCursor? before,
+  });
+
+  Future<GroupCommunityCommentsPage> fetchCommunityCommentsPage({
+    required String postId,
+    int limit = 30,
+    DateTime? beforeCreatedAt,
+    String? beforeId,
+  });
+
   Future<String> createCommunityPost({
     required String groupId,
     required String type,
     String? content,
     List<GroupCommunityMediaDraft> media = const [],
+    void Function(int completed, int total)? onMediaUploadProgress,
   });
 
   Future<void> updateCommunityPost({

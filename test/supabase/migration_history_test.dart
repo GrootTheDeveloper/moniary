@@ -89,4 +89,18 @@ void main() {
     expect(walletNotificationIntegrity, contains('pg_advisory_xact_lock'));
     expect(walletNotificationIntegrity, contains('list_all_notifications_v3'));
   });
+
+  test('group performance migration keeps bounded versioned RPCs', () {
+    final performance = File(
+      'supabase/migrations/'
+      '20260716050500_group_community_performance.sql',
+    ).readAsStringSync();
+
+    expect(performance, contains('list_my_group_summaries_v1'));
+    expect(performance, contains('list_group_community_feed_v1'));
+    expect(performance, contains('list_group_community_comments_v1'));
+    expect(performance, contains('group_savings_contributions_challenge_idx'));
+    expect(performance, contains("limit least(greatest(coalesce(p_limit"));
+    expect(performance, contains("upload_status = 'uploaded'"));
+  });
 }

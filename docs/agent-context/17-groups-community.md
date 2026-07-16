@@ -30,6 +30,28 @@ The requirements below remain useful for business rules and calculation intent.
 The integrity/inbox schema update is
 `20260716030000_group_community_inbox_integrity.sql`.
 
+The bounded-read and upload-state performance update is
+`20260716050500_group_community_performance.sql`. Deploy it before the client
+that calls `list_my_group_summaries_v1`, `list_group_community_feed_v1`, and
+`list_group_community_comments_v1`.
+
+## Group and Community performance invariants (2026-07-16)
+
+- Opening the Group list must not fetch full member, transaction, settlement,
+  and balance collections once per group. It reads 20 aggregate summaries per
+  cursor page from `list_my_group_summaries_v1`.
+- Community returns at most 20 mixed feed items per cursor page. Post cards
+  include no comment bodies, at most four media rows, aggregate reaction counts,
+  and the current member's reaction state.
+- Poll cards do not expose or download every member vote. Challenge cards read
+  a server-side contribution total instead of all contribution rows.
+- Comment bodies load only when the comment sheet opens, 30 per cursor page.
+- Reaction, vote, contribution, edit, delete, and comment-count changes patch
+  the affected in-memory feed item after the mutation succeeds; they must not
+  invalidate and reload the complete feed.
+- Community image uploads resize to 1600 px, run with concurrency two, expose
+  progress, enforce compression/upload timeouts, and persist failure state.
+
 ## 1. Role and Objective
 
 You are a senior Flutter engineer working on the Moniary mobile app.

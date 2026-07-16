@@ -79,6 +79,17 @@ class AppLocalizationsVi extends AppLocalizations {
   String get commonLoading => 'Đang tải...';
 
   @override
+  String get groupListLoadMore => 'Tải thêm nhóm';
+
+  @override
+  String get groupCommunityLoadMore => 'Tải thêm hoạt động';
+
+  @override
+  String groupCommunityUploadProgress(int completed, int total) {
+    return 'Đang tải $completed/$total ảnh';
+  }
+
+  @override
   String get commonCopy => 'Sao chép';
 
   @override

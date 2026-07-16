@@ -11,6 +11,7 @@ import '../../../../shared/widgets/supabase_image.dart';
 import '../../application/group_controller.dart';
 import '../../domain/entities/spending_group.dart';
 import '../../../notifications/presentation/screens/notification_center_screen.dart';
+import '../../../notifications/application/notification_controller.dart';
 import 'create_group_screen.dart';
 import 'group_invitations_screen.dart';
 import 'group_route_paths.dart';
@@ -25,9 +26,13 @@ class GroupListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final groupsAsync = ref.watch(groupsControllerProvider);
     final pendingInviteCount = ref.watch(pendingGroupInviteCountProvider);
-    final unreadNotificationCount = ref.watch(
-      unreadGroupNotificationCountProvider,
-    );
+    final notificationSummary = ref
+        .watch(notificationUnreadSummaryProvider)
+        .asData
+        ?.value;
+    final unreadNotificationCount =
+        (notificationSummary?.group ?? 0) +
+        (notificationSummary?.community ?? 0);
     final colors = context.moniaryColors;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark.copyWith(
@@ -46,13 +51,17 @@ class GroupListScreen extends ConsumerWidget {
                   ref.read(groupsControllerProvider.notifier).refresh(),
             );
           },
-          data: (groups) => _GroupListContent(
-            groups: groups,
+          data: (groupsState) => _GroupListContent(
+            groups: groupsState.items,
+            hasMore: groupsState.hasMore,
+            isLoadingMore: groupsState.isLoadingMore,
             pendingInviteCount: pendingInviteCount,
             unreadNotificationCount: unreadNotificationCount,
             onCreate: () => _openCreateGroup(context, ref),
             onRefresh: () =>
                 ref.read(groupsControllerProvider.notifier).refresh(),
+            onLoadMore: () =>
+                ref.read(groupsControllerProvider.notifier).loadMore(),
           ),
         ),
       ),
@@ -80,17 +89,23 @@ class GroupListScreen extends ConsumerWidget {
 class _GroupListContent extends StatelessWidget {
   const _GroupListContent({
     required this.groups,
+    required this.hasMore,
+    required this.isLoadingMore,
     required this.pendingInviteCount,
     required this.unreadNotificationCount,
     required this.onCreate,
     required this.onRefresh,
+    required this.onLoadMore,
   });
 
   final List<SpendingGroup> groups;
+  final bool hasMore;
+  final bool isLoadingMore;
   final int pendingInviteCount;
   final int unreadNotificationCount;
   final VoidCallback onCreate;
   final Future<void> Function() onRefresh;
+  final Future<void> Function() onLoadMore;
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +162,7 @@ class _GroupListContent extends StatelessWidget {
                     ),
                   ),
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 132),
+                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 16),
                     sliver: SliverList.separated(
                       itemCount: groups.length,
                       separatorBuilder: (_, _) => const SizedBox(height: 10),
@@ -160,6 +175,31 @@ class _GroupListContent extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (hasMore)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 0, 14, 132),
+                        child: OutlinedButton.icon(
+                          onPressed: isLoadingMore ? null : onLoadMore,
+                          icon: isLoadingMore
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.expand_more_outlined),
+                          label: Text(
+                            isLoadingMore
+                                ? context.l10n.commonLoading
+                                : context.l10n.groupListLoadMore,
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    const SliverToBoxAdapter(child: SizedBox(height: 116)),
                 ],
               ],
             ),

@@ -82,10 +82,11 @@ class GroupCommunityPost {
     this.media = const [],
     this.reactions = const [],
     this.comments = const [],
+    int? commentCount,
     this.linkedTransactionId,
     this.linkedPollId,
     this.linkedChallengeId,
-  });
+  }) : commentCount = commentCount ?? comments.length;
 
   final String id;
   final String groupId;
@@ -97,6 +98,7 @@ class GroupCommunityPost {
   final List<GroupCommunityMedia> media;
   final List<GroupCommunityReactionSummary> reactions;
   final List<GroupCommunityComment> comments;
+  final int commentCount;
   final String? linkedTransactionId;
   final String? linkedPollId;
   final String? linkedChallengeId;
@@ -108,6 +110,7 @@ class GroupCommunityPost {
     String? content,
     List<GroupCommunityReactionSummary>? reactions,
     List<GroupCommunityComment>? comments,
+    int? commentCount,
   }) {
     return GroupCommunityPost(
       id: id,
@@ -120,6 +123,7 @@ class GroupCommunityPost {
       media: media,
       reactions: reactions ?? this.reactions,
       comments: comments ?? this.comments,
+      commentCount: commentCount ?? this.commentCount,
       linkedTransactionId: linkedTransactionId,
       linkedPollId: linkedPollId,
       linkedChallengeId: linkedChallengeId,
@@ -133,6 +137,7 @@ enum GroupCommunityFeedItemType { post, poll, activity, challenge, transaction }
 class GroupCommunityFeedItem {
   const GroupCommunityFeedItem({
     required this.id,
+    required this.sourceId,
     required this.groupId,
     required this.type,
     required this.createdAt,
@@ -144,6 +149,7 @@ class GroupCommunityFeedItem {
   });
 
   final String id;
+  final String sourceId;
   final String groupId;
   final GroupCommunityFeedItemType type;
   final DateTime createdAt;
@@ -155,7 +161,78 @@ class GroupCommunityFeedItem {
 }
 
 class GroupCommunityFeed {
-  const GroupCommunityFeed({required this.items});
+  const GroupCommunityFeed({
+    required this.items,
+    this.hasMore = false,
+    this.isLoadingMore = false,
+    this.nextCursor,
+  });
 
   final List<GroupCommunityFeedItem> items;
+  final bool hasMore;
+  final bool isLoadingMore;
+  final GroupCommunityCursor? nextCursor;
+
+  GroupCommunityFeed copyWith({
+    List<GroupCommunityFeedItem>? items,
+    bool? hasMore,
+    bool? isLoadingMore,
+    GroupCommunityCursor? nextCursor,
+    bool clearCursor = false,
+  }) {
+    return GroupCommunityFeed(
+      items: items ?? this.items,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      nextCursor: clearCursor ? null : nextCursor ?? this.nextCursor,
+    );
+  }
+}
+
+class GroupCommunityCursor {
+  const GroupCommunityCursor({
+    required this.createdAt,
+    required this.itemType,
+    required this.itemId,
+  });
+
+  final DateTime createdAt;
+  final String itemType;
+  final String itemId;
+}
+
+class GroupCommunityPage {
+  const GroupCommunityPage({
+    required this.items,
+    required this.hasMore,
+    this.nextCursor,
+  });
+
+  final List<GroupCommunityFeedItem> items;
+  final bool hasMore;
+  final GroupCommunityCursor? nextCursor;
+}
+
+class GroupCommunityCommentsPage {
+  const GroupCommunityCommentsPage({
+    required this.items,
+    required this.hasMore,
+    this.isLoadingMore = false,
+  });
+
+  final List<GroupCommunityComment> items;
+  final bool hasMore;
+  final bool isLoadingMore;
+
+  GroupCommunityCommentsPage copyWith({
+    List<GroupCommunityComment>? items,
+    bool? hasMore,
+    bool? isLoadingMore,
+  }) {
+    return GroupCommunityCommentsPage(
+      items: items ?? this.items,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+    );
+  }
 }

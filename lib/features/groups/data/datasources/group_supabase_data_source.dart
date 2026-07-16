@@ -15,12 +15,34 @@ class GroupSupabaseDataSource {
 
   final SupabaseClient client;
 
+  static const readTimeout = Duration(seconds: 15);
+  static const mutationTimeout = Duration(seconds: 15);
+  static const uploadTimeout = Duration(seconds: 30);
+
   Future<List<Map<String, dynamic>>> fetchGroups() async {
     final rows = await client
         .from('groups')
         .select()
         .eq('status', 'active')
         .order('updated_at', ascending: false);
+    return _rows(rows);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchGroupsPage({
+    required int limit,
+    DateTime? beforeUpdatedAt,
+    String? beforeId,
+  }) async {
+    final rows = await client
+        .rpc(
+          'list_my_group_summaries_v1',
+          params: {
+            'p_limit': limit,
+            'p_before_updated_at': beforeUpdatedAt?.toUtc().toIso8601String(),
+            'p_before_id': beforeId,
+          },
+        )
+        .timeout(readTimeout);
     return _rows(rows);
   }
 
@@ -31,7 +53,8 @@ class GroupSupabaseDataSource {
           '*, profile:profiles!group_members_user_id_profiles_fkey(full_name,username,avatar_url,payment_qr_path)',
         )
         .eq('group_id', groupId)
-        .order('joined_at');
+        .order('joined_at')
+        .timeout(readTimeout);
     return _rows(rows);
   }
 
@@ -80,7 +103,12 @@ class GroupSupabaseDataSource {
   }
 
   Future<Map<String, dynamic>> fetchGroup(String groupId) async {
-    return await client.from('groups').select().eq('id', groupId).single();
+    return await client
+        .from('groups')
+        .select()
+        .eq('id', groupId)
+        .single()
+        .timeout(readTimeout);
   }
 
   Future<Map<String, dynamic>> fetchTransaction(String transactionId) async {
@@ -597,6 +625,48 @@ class GroupSupabaseDataSource {
     return _rows(rows);
   }
 
+  Future<List<Map<String, dynamic>>> fetchCommunityFeedPage({
+    required String groupId,
+    required int limit,
+    DateTime? beforeCreatedAt,
+    String? beforeType,
+    String? beforeId,
+  }) async {
+    final rows = await client
+        .rpc(
+          'list_group_community_feed_v1',
+          params: {
+            'p_group_id': groupId,
+            'p_limit': limit,
+            'p_before_created_at': beforeCreatedAt?.toUtc().toIso8601String(),
+            'p_before_type': beforeType,
+            'p_before_id': beforeId,
+          },
+        )
+        .timeout(readTimeout);
+    return _rows(rows);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchCommunityCommentsPage({
+    required String postId,
+    required int limit,
+    DateTime? beforeCreatedAt,
+    String? beforeId,
+  }) async {
+    final rows = await client
+        .rpc(
+          'list_group_community_comments_v1',
+          params: {
+            'p_post_id': postId,
+            'p_limit': limit,
+            'p_before_created_at': beforeCreatedAt?.toUtc().toIso8601String(),
+            'p_before_id': beforeId,
+          },
+        )
+        .timeout(readTimeout);
+    return _rows(rows);
+  }
+
   Future<String> createCommunityPost({
     required String groupId,
     required String type,
@@ -611,7 +681,8 @@ class GroupSupabaseDataSource {
           'content': content?.trim().isEmpty == true ? null : content?.trim(),
         })
         .select('id')
-        .single();
+        .single()
+        .timeout(mutationTimeout);
     return row['id'] as String;
   }
 
@@ -622,14 +693,16 @@ class GroupSupabaseDataSource {
     return client
         .from('group_community_posts')
         .update({'content': content.trim()})
-        .eq('id', postId);
+        .eq('id', postId)
+        .timeout(mutationTimeout);
   }
 
   Future<void> deleteCommunityPost(String postId) {
     return client
         .from('group_community_posts')
         .update({'deleted_at': DateTime.now().toUtc().toIso8601String()})
-        .eq('id', postId);
+        .eq('id', postId)
+        .timeout(mutationTimeout);
   }
 
   Future<String> createCommunityMedia({
@@ -646,9 +719,11 @@ class GroupSupabaseDataSource {
           'created_by': client.auth.currentUser!.id,
           'media_kind': kind,
           'caption': caption?.trim().isEmpty == true ? null : caption?.trim(),
+          'upload_status': 'pending',
         })
         .select('id')
-        .single();
+        .single()
+        .timeout(mutationTimeout);
     return row['id'] as String;
   }
 
@@ -658,23 +733,40 @@ class GroupSupabaseDataSource {
     required String filePath,
   }) async {
     final path = 'group-community/$groupId/$mediaId.jpg';
+    await client
+        .from('group_community_media')
+        .update({'upload_status': 'uploading'})
+        .eq('id', mediaId)
+        .timeout(mutationTimeout);
     await _uploadCompressed(path: path, filePath: filePath);
     await client
         .from('group_community_media')
-        .update({'storage_path': path})
-        .eq('id', mediaId);
+        .update({'storage_path': path, 'upload_status': 'uploaded'})
+        .eq('id', mediaId)
+        .timeout(mutationTimeout);
     return path;
+  }
+
+  Future<void> markCommunityMediaUploadFailed(String mediaId) {
+    return client
+        .from('group_community_media')
+        .update({'upload_status': 'failed'})
+        .eq('id', mediaId)
+        .timeout(mutationTimeout);
   }
 
   Future<void> addCommunityPostComment({
     required String postId,
     required String content,
   }) {
-    return client.from('group_community_post_comments').insert({
-      'post_id': postId,
-      'user_id': client.auth.currentUser!.id,
-      'content': content.trim(),
-    });
+    return client
+        .from('group_community_post_comments')
+        .insert({
+          'post_id': postId,
+          'user_id': client.auth.currentUser!.id,
+          'content': content.trim(),
+        })
+        .timeout(mutationTimeout);
   }
 
   Future<void> updateCommunityPostComment({
@@ -684,24 +776,28 @@ class GroupSupabaseDataSource {
     return client
         .from('group_community_post_comments')
         .update({'content': content.trim()})
-        .eq('id', commentId);
+        .eq('id', commentId)
+        .timeout(mutationTimeout);
   }
 
   Future<void> deleteCommunityPostComment(String commentId) {
     return client
         .from('group_community_post_comments')
         .delete()
-        .eq('id', commentId);
+        .eq('id', commentId)
+        .timeout(mutationTimeout);
   }
 
   Future<void> toggleCommunityPostReaction({
     required String postId,
     required String emoji,
   }) {
-    return client.rpc(
-      'toggle_group_community_post_reaction',
-      params: {'p_post_id': postId, 'p_emoji': emoji},
-    );
+    return client
+        .rpc(
+          'toggle_group_community_post_reaction',
+          params: {'p_post_id': postId, 'p_emoji': emoji},
+        )
+        .timeout(mutationTimeout);
   }
 
   Future<List<Map<String, dynamic>>> fetchAuditLogs(String groupId) async {
@@ -729,18 +825,26 @@ class GroupSupabaseDataSource {
     required String title,
     required List<String> options,
   }) async {
-    final result = await client.rpc(
-      'create_group_poll',
-      params: {'p_group_id': groupId, 'p_title': title, 'p_options': options},
-    );
+    final result = await client
+        .rpc(
+          'create_group_poll',
+          params: {
+            'p_group_id': groupId,
+            'p_title': title,
+            'p_options': options,
+          },
+        )
+        .timeout(mutationTimeout);
     return result as String;
   }
 
   Future<void> votePoll({required String pollId, required String optionId}) {
-    return client.rpc(
-      'vote_group_poll',
-      params: {'p_poll_id': pollId, 'p_option_id': optionId},
-    );
+    return client
+        .rpc(
+          'vote_group_poll',
+          params: {'p_poll_id': pollId, 'p_option_id': optionId},
+        )
+        .timeout(mutationTimeout);
   }
 
   Future<List<Map<String, dynamic>>> fetchSavingsChallenges(
@@ -761,16 +865,18 @@ class GroupSupabaseDataSource {
     required DateTime startDate,
     required DateTime endDate,
   }) async {
-    final result = await client.rpc(
-      'create_group_savings_challenge',
-      params: {
-        'p_group_id': groupId,
-        'p_title': title,
-        'p_target_amount': targetAmount,
-        'p_start_date': startDate.toIso8601String().split('T').first,
-        'p_end_date': endDate.toIso8601String().split('T').first,
-      },
-    );
+    final result = await client
+        .rpc(
+          'create_group_savings_challenge',
+          params: {
+            'p_group_id': groupId,
+            'p_title': title,
+            'p_target_amount': targetAmount,
+            'p_start_date': startDate.toIso8601String().split('T').first,
+            'p_end_date': endDate.toIso8601String().split('T').first,
+          },
+        )
+        .timeout(mutationTimeout);
     return result as String;
   }
 
@@ -779,14 +885,16 @@ class GroupSupabaseDataSource {
     required int amount,
     String? note,
   }) {
-    return client.rpc(
-      'add_group_savings_contribution',
-      params: {
-        'p_challenge_id': challengeId,
-        'p_amount': amount,
-        'p_note': note,
-      },
-    );
+    return client
+        .rpc(
+          'add_group_savings_contribution',
+          params: {
+            'p_challenge_id': challengeId,
+            'p_amount': amount,
+            'p_note': note,
+          },
+        )
+        .timeout(mutationTimeout);
   }
 
   Future<List<Map<String, dynamic>>> fetchNotifications({
@@ -931,7 +1039,7 @@ class GroupSupabaseDataSource {
       minHeight: 1600,
       quality: AppConstants.imageCompressQuality,
       format: CompressFormat.jpeg,
-    );
+    ).timeout(uploadTimeout);
     final bytes = compressed ?? await File(filePath).readAsBytes();
     await client.storage
         .from(AppConstants.storageBucket)
@@ -942,7 +1050,8 @@ class GroupSupabaseDataSource {
             contentType: 'image/jpeg',
             upsert: true,
           ),
-        );
+        )
+        .timeout(uploadTimeout);
   }
 
   List<Map<String, dynamic>> _rows(dynamic rows) =>

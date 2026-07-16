@@ -42,6 +42,15 @@
   "commonClose": "Close",
   "commonSaving": "Saving...",
   "commonLoading": "Loading...",
+  "groupListLoadMore": "Load more groups",
+  "groupCommunityLoadMore": "Load more activity",
+  "groupCommunityUploadProgress": "Uploading {completed}/{total} photos",
+  "@groupCommunityUploadProgress": {
+    "placeholders": {
+      "completed": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
   "commonCopy": "Copy",
   "commonShare": "Share",
   "commonOpen": "Open",

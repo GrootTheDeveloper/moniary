@@ -13,9 +13,31 @@ import '../domain/entities/spending_group.dart';
 import '../domain/services/group_split_calculator.dart';
 
 final groupsControllerProvider =
-    AsyncNotifierProvider<GroupsController, List<SpendingGroup>>(
-      GroupsController.new,
+    AsyncNotifierProvider<GroupsController, GroupsState>(GroupsController.new);
+
+class GroupsState {
+  const GroupsState({
+    required this.items,
+    required this.hasMore,
+    this.isLoadingMore = false,
+  });
+
+  final List<SpendingGroup> items;
+  final bool hasMore;
+  final bool isLoadingMore;
+
+  GroupsState copyWith({
+    List<SpendingGroup>? items,
+    bool? hasMore,
+    bool? isLoadingMore,
+  }) {
+    return GroupsState(
+      items: items ?? this.items,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
     );
+  }
+}
 
 final groupDetailProvider = FutureProvider.family<SpendingGroupDetail, String>((
   ref,
@@ -127,47 +149,18 @@ final groupCommunityPostsProvider =
     });
 
 final groupCommunityFeedProvider =
-    FutureProvider.family<GroupCommunityFeed, String>((ref, groupId) async {
-      final repository = ref.watch(groupRepositoryProvider);
-      final responses = await Future.wait<Object?>([
-        repository.fetchCommunityPosts(groupId: groupId),
-        repository.fetchPolls(groupId),
-        repository.fetchSavingsChallenges(groupId),
-      ]);
-      final posts = responses[0] as List<GroupCommunityPost>;
-      final polls = responses[1] as List<GroupPoll>;
-      final challenges = responses[2] as List<GroupSavingsChallenge>;
-      final items = <GroupCommunityFeedItem>[
-        ...posts.map(
-          (post) => GroupCommunityFeedItem(
-            id: 'post-${post.id}',
-            groupId: groupId,
-            type: GroupCommunityFeedItemType.post,
-            createdAt: post.createdAt,
-            post: post,
-          ),
-        ),
-        ...polls.map(
-          (poll) => GroupCommunityFeedItem(
-            id: 'poll-${poll.id}',
-            groupId: groupId,
-            type: GroupCommunityFeedItemType.poll,
-            createdAt: poll.createdAt,
-            poll: poll,
-          ),
-        ),
-        ...challenges.map(
-          (challenge) => GroupCommunityFeedItem(
-            id: 'challenge-${challenge.id}',
-            groupId: groupId,
-            type: GroupCommunityFeedItemType.challenge,
-            createdAt: challenge.startDate,
-            challenge: challenge,
-          ),
-        ),
-      ]..sort((left, right) => right.createdAt.compareTo(left.createdAt));
-      return GroupCommunityFeed(items: items.take(40).toList(growable: false));
-    });
+    AsyncNotifierProvider.family<
+      GroupCommunityFeedController,
+      GroupCommunityFeed,
+      String
+    >(GroupCommunityFeedController.new);
+
+final groupCommunityCommentsProvider =
+    AsyncNotifierProvider.family<
+      GroupCommunityCommentsController,
+      GroupCommunityCommentsPage,
+      String
+    >(GroupCommunityCommentsController.new);
 
 final groupAuditLogsProvider =
     FutureProvider.family<List<GroupAuditLog>, String>(
@@ -304,15 +297,300 @@ final groupActionControllerProvider =
       GroupActionController.new,
     );
 
-class GroupsController extends AsyncNotifier<List<SpendingGroup>> {
+class GroupMediaUploadProgress {
+  const GroupMediaUploadProgress({
+    required this.groupId,
+    required this.completed,
+    required this.total,
+  });
+
+  final String groupId;
+  final int completed;
+  final int total;
+
+  double get fraction => total == 0 ? 0 : completed / total;
+}
+
+final groupMediaUploadProgressProvider =
+    NotifierProvider<
+      GroupMediaUploadProgressController,
+      GroupMediaUploadProgress?
+    >(GroupMediaUploadProgressController.new);
+
+class GroupMediaUploadProgressController
+    extends Notifier<GroupMediaUploadProgress?> {
   @override
-  Future<List<SpendingGroup>> build() {
-    return ref.read(groupRepositoryProvider).fetchGroups();
+  GroupMediaUploadProgress? build() => null;
+
+  void update(GroupMediaUploadProgress progress) => state = progress;
+
+  void clear() => state = null;
+}
+
+class GroupsController extends AsyncNotifier<GroupsState> {
+  @override
+  Future<GroupsState> build() async {
+    final page = await ref
+        .read(groupRepositoryProvider)
+        .fetchGroupsPage(limit: 20);
+    return GroupsState(items: page.items, hasMore: page.hasMore);
   }
 
   Future<void> refresh() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(build);
+  }
+
+  Future<void> loadMore() async {
+    final current = state.asData?.value;
+    if (current == null || !current.hasMore || current.isLoadingMore) return;
+    state = AsyncData(current.copyWith(isLoadingMore: true));
+    try {
+      final last = current.items.last;
+      final page = await ref
+          .read(groupRepositoryProvider)
+          .fetchGroupsPage(
+            limit: 20,
+            beforeUpdatedAt: last.updatedAt,
+            beforeId: last.id,
+          );
+      state = AsyncData(
+        GroupsState(
+          items: [...current.items, ...page.items],
+          hasMore: page.hasMore,
+        ),
+      );
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to load more groups', error, stackTrace);
+      state = AsyncData(current.copyWith(isLoadingMore: false));
+      rethrow;
+    }
+  }
+}
+
+class GroupCommunityFeedController extends AsyncNotifier<GroupCommunityFeed> {
+  GroupCommunityFeedController(this.groupId);
+
+  final String groupId;
+
+  @override
+  Future<GroupCommunityFeed> build() async {
+    final page = await ref
+        .read(groupRepositoryProvider)
+        .fetchCommunityFeedPage(groupId: groupId, limit: 20);
+    return GroupCommunityFeed(
+      items: page.items,
+      hasMore: page.hasMore,
+      nextCursor: page.nextCursor,
+    );
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(build);
+  }
+
+  Future<void> loadMore() async {
+    final current = state.asData?.value;
+    if (current == null ||
+        !current.hasMore ||
+        current.isLoadingMore ||
+        current.nextCursor == null) {
+      return;
+    }
+    state = AsyncData(current.copyWith(isLoadingMore: true));
+    try {
+      final page = await ref
+          .read(groupRepositoryProvider)
+          .fetchCommunityFeedPage(
+            groupId: groupId,
+            limit: 20,
+            before: current.nextCursor,
+          );
+      state = AsyncData(
+        GroupCommunityFeed(
+          items: [...current.items, ...page.items],
+          hasMore: page.hasMore,
+          nextCursor: page.nextCursor,
+        ),
+      );
+    } catch (error, stackTrace) {
+      AppLogger.error('Failed to load more community feed', error, stackTrace);
+      state = AsyncData(current.copyWith(isLoadingMore: false));
+      rethrow;
+    }
+  }
+
+  void updatePost(
+    String postId,
+    GroupCommunityPost Function(GroupCommunityPost post) update,
+  ) {
+    _replaceItem(postId, (item) {
+      final post = item.post;
+      return post == null ? item : _copyItem(item, post: update(post));
+    });
+  }
+
+  void togglePostReaction(String postId, String emoji) {
+    updatePost(postId, (post) {
+      final existing = post.reactions
+          .where((reaction) => reaction.emoji == emoji)
+          .firstOrNull;
+      final selected = existing?.reactedByCurrentUser ?? false;
+      final nextCount = selected
+          ? ((existing?.count ?? 1) - 1).clamp(0, existing?.count ?? 1)
+          : (existing?.count ?? 0) + 1;
+      final updated = <GroupCommunityReactionSummary>[
+        for (final reaction in post.reactions)
+          if (reaction.emoji != emoji) reaction,
+        if (nextCount > 0)
+          GroupCommunityReactionSummary(
+            emoji: emoji,
+            count: nextCount,
+            reactedByCurrentUser: !selected,
+          ),
+      ];
+      return post.copyWith(reactions: updated);
+    });
+  }
+
+  void removePost(String postId) {
+    final current = state.asData?.value;
+    if (current == null) return;
+    state = AsyncData(
+      current.copyWith(
+        items: current.items
+            .where((item) => item.sourceId != postId)
+            .toList(growable: false),
+      ),
+    );
+  }
+
+  void applyPollVote(String pollId, String optionId) {
+    _replaceItem(pollId, (item) {
+      final poll = item.poll;
+      if (poll == null || poll.selectedOptionId == optionId) return item;
+      final options = poll.options
+          .map(
+            (option) => GroupPollOption(
+              id: option.id,
+              label: option.label,
+              voteCount: option.id == optionId
+                  ? option.voteCount + 1
+                  : option.id == poll.selectedOptionId
+                  ? (option.voteCount - 1).clamp(0, option.voteCount)
+                  : option.voteCount,
+            ),
+          )
+          .toList(growable: false);
+      return _copyItem(
+        item,
+        poll: poll.copyWith(options: options, selectedOptionId: optionId),
+      );
+    });
+  }
+
+  void addChallengeContribution(String challengeId, int amount) {
+    _replaceItem(challengeId, (item) {
+      final challenge = item.challenge;
+      if (challenge == null) return item;
+      final total = (challenge.totalContributed + amount).clamp(
+        0,
+        challenge.targetAmount,
+      );
+      return _copyItem(
+        item,
+        challenge: challenge.copyWith(
+          totalContributed: total,
+          isActive: total < challenge.targetAmount,
+        ),
+      );
+    });
+  }
+
+  void _replaceItem(
+    String sourceId,
+    GroupCommunityFeedItem Function(GroupCommunityFeedItem item) update,
+  ) {
+    final current = state.asData?.value;
+    if (current == null) return;
+    state = AsyncData(
+      current.copyWith(
+        items: current.items
+            .map((item) => item.sourceId == sourceId ? update(item) : item)
+            .toList(growable: false),
+      ),
+    );
+  }
+
+  GroupCommunityFeedItem _copyItem(
+    GroupCommunityFeedItem item, {
+    GroupCommunityPost? post,
+    GroupPoll? poll,
+    GroupSavingsChallenge? challenge,
+  }) {
+    return GroupCommunityFeedItem(
+      id: item.id,
+      sourceId: item.sourceId,
+      groupId: item.groupId,
+      type: item.type,
+      createdAt: item.createdAt,
+      post: post ?? item.post,
+      poll: poll ?? item.poll,
+      activity: item.activity,
+      challenge: challenge ?? item.challenge,
+      transaction: item.transaction,
+    );
+  }
+}
+
+class GroupCommunityCommentsController
+    extends AsyncNotifier<GroupCommunityCommentsPage> {
+  GroupCommunityCommentsController(this.postId);
+
+  final String postId;
+
+  @override
+  Future<GroupCommunityCommentsPage> build() {
+    return ref
+        .read(groupRepositoryProvider)
+        .fetchCommunityCommentsPage(postId: postId, limit: 30);
+  }
+
+  Future<void> loadMore() async {
+    final current = state.asData?.value;
+    if (current == null ||
+        !current.hasMore ||
+        current.isLoadingMore ||
+        current.items.isEmpty) {
+      return;
+    }
+    state = AsyncData(current.copyWith(isLoadingMore: true));
+    try {
+      final last = current.items.last;
+      final page = await ref
+          .read(groupRepositoryProvider)
+          .fetchCommunityCommentsPage(
+            postId: postId,
+            limit: 30,
+            beforeCreatedAt: last.createdAt,
+            beforeId: last.id,
+          );
+      state = AsyncData(
+        GroupCommunityCommentsPage(
+          items: [...current.items, ...page.items],
+          hasMore: page.hasMore,
+        ),
+      );
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to load more community comments',
+        error,
+        stackTrace,
+      );
+      state = AsyncData(current.copyWith(isLoadingMore: false));
+      rethrow;
+    }
   }
 }
 
@@ -397,8 +675,10 @@ class GroupActionController extends AsyncNotifier<void> {
       await ref
           .read(groupRepositoryProvider)
           .votePoll(pollId: pollId, optionId: optionId);
+      ref
+          .read(groupCommunityFeedProvider(groupId).notifier)
+          .applyPollVote(pollId, optionId);
       ref.invalidate(groupPollsProvider(groupId));
-      ref.invalidate(groupCommunityFeedProvider(groupId));
       ref.invalidate(groupActivitiesProvider(groupId));
     });
   }
@@ -413,7 +693,7 @@ class GroupActionController extends AsyncNotifier<void> {
           .read(groupRepositoryProvider)
           .createPoll(groupId: groupId, title: title, options: options);
       ref.invalidate(groupPollsProvider(groupId));
-      ref.invalidate(groupCommunityFeedProvider(groupId));
+      await ref.read(groupCommunityFeedProvider(groupId).notifier).refresh();
       ref.invalidate(groupActivitiesProvider(groupId));
       return id;
     });
@@ -437,7 +717,7 @@ class GroupActionController extends AsyncNotifier<void> {
             endDate: endDate,
           );
       ref.invalidate(groupSavingsChallengesProvider(groupId));
-      ref.invalidate(groupCommunityFeedProvider(groupId));
+      await ref.read(groupCommunityFeedProvider(groupId).notifier).refresh();
       ref.invalidate(groupActivitiesProvider(groupId));
       return id;
     });
@@ -457,8 +737,10 @@ class GroupActionController extends AsyncNotifier<void> {
             amount: amount,
             note: note,
           );
+      ref
+          .read(groupCommunityFeedProvider(groupId).notifier)
+          .addChallengeContribution(challengeId, amount);
       ref.invalidate(groupSavingsChallengesProvider(groupId));
-      ref.invalidate(groupCommunityFeedProvider(groupId));
       ref.invalidate(groupActivitiesProvider(groupId));
     });
   }
@@ -781,18 +1063,33 @@ class GroupActionController extends AsyncNotifier<void> {
     List<GroupCommunityMediaDraft> media = const [],
   }) {
     return _run(() async {
-      final id = await ref
-          .read(groupRepositoryProvider)
-          .createCommunityPost(
-            groupId: groupId,
-            type: type,
-            content: content,
-            media: media,
-          );
-      ref.invalidate(groupCommunityPostsProvider(groupId));
-      ref.invalidate(groupCommunityFeedProvider(groupId));
-      ref.invalidate(groupActivitiesProvider(groupId));
-      return id;
+      try {
+        final id = await ref
+            .read(groupRepositoryProvider)
+            .createCommunityPost(
+              groupId: groupId,
+              type: type,
+              content: content,
+              media: media,
+              onMediaUploadProgress: (completed, total) {
+                ref
+                    .read(groupMediaUploadProgressProvider.notifier)
+                    .update(
+                      GroupMediaUploadProgress(
+                        groupId: groupId,
+                        completed: completed,
+                        total: total,
+                      ),
+                    );
+              },
+            );
+        ref.invalidate(groupCommunityPostsProvider(groupId));
+        await ref.read(groupCommunityFeedProvider(groupId).notifier).refresh();
+        ref.invalidate(groupActivitiesProvider(groupId));
+        return id;
+      } finally {
+        ref.read(groupMediaUploadProgressProvider.notifier).clear();
+      }
     });
   }
 
@@ -806,7 +1103,13 @@ class GroupActionController extends AsyncNotifier<void> {
           .read(groupRepositoryProvider)
           .addCommunityPostComment(postId: postId, content: content);
       ref.invalidate(groupCommunityPostsProvider(groupId));
-      ref.invalidate(groupCommunityFeedProvider(groupId));
+      ref.invalidate(groupCommunityCommentsProvider(postId));
+      ref
+          .read(groupCommunityFeedProvider(groupId).notifier)
+          .updatePost(
+            postId,
+            (post) => post.copyWith(commentCount: post.commentCount + 1),
+          );
       ref.invalidate(groupActivitiesProvider(groupId));
     });
   }
@@ -821,12 +1124,15 @@ class GroupActionController extends AsyncNotifier<void> {
           .read(groupRepositoryProvider)
           .updateCommunityPost(postId: postId, content: content);
       ref.invalidate(groupCommunityPostsProvider(groupId));
-      ref.invalidate(groupCommunityFeedProvider(groupId));
+      ref
+          .read(groupCommunityFeedProvider(groupId).notifier)
+          .updatePost(postId, (post) => post.copyWith(content: content));
     });
   }
 
   Future<void> updateCommunityPostComment({
     required String groupId,
+    required String postId,
     required String commentId,
     required String content,
   }) {
@@ -835,12 +1141,13 @@ class GroupActionController extends AsyncNotifier<void> {
           .read(groupRepositoryProvider)
           .updateCommunityPostComment(commentId: commentId, content: content);
       ref.invalidate(groupCommunityPostsProvider(groupId));
-      ref.invalidate(groupCommunityFeedProvider(groupId));
+      ref.invalidate(groupCommunityCommentsProvider(postId));
     });
   }
 
   Future<void> deleteCommunityPostComment({
     required String groupId,
+    required String postId,
     required String commentId,
   }) {
     return _run(() async {
@@ -848,7 +1155,15 @@ class GroupActionController extends AsyncNotifier<void> {
           .read(groupRepositoryProvider)
           .deleteCommunityPostComment(commentId);
       ref.invalidate(groupCommunityPostsProvider(groupId));
-      ref.invalidate(groupCommunityFeedProvider(groupId));
+      ref.invalidate(groupCommunityCommentsProvider(postId));
+      ref
+          .read(groupCommunityFeedProvider(groupId).notifier)
+          .updatePost(
+            postId,
+            (post) => post.copyWith(
+              commentCount: (post.commentCount - 1).clamp(0, post.commentCount),
+            ),
+          );
     });
   }
 
@@ -859,7 +1174,7 @@ class GroupActionController extends AsyncNotifier<void> {
     return _run(() async {
       await ref.read(groupRepositoryProvider).deleteCommunityPost(postId);
       ref.invalidate(groupCommunityPostsProvider(groupId));
-      ref.invalidate(groupCommunityFeedProvider(groupId));
+      ref.read(groupCommunityFeedProvider(groupId).notifier).removePost(postId);
     });
   }
 
@@ -868,13 +1183,19 @@ class GroupActionController extends AsyncNotifier<void> {
     required String postId,
     required String emoji,
   }) {
+    final feed = ref.read(groupCommunityFeedProvider(groupId).notifier);
+    feed.togglePostReaction(postId, emoji);
     return _run(() async {
-      await ref
-          .read(groupRepositoryProvider)
-          .toggleCommunityPostReaction(postId: postId, emoji: emoji);
-      ref.invalidate(groupCommunityPostsProvider(groupId));
-      ref.invalidate(groupCommunityFeedProvider(groupId));
-      ref.invalidate(groupActivitiesProvider(groupId));
+      try {
+        await ref
+            .read(groupRepositoryProvider)
+            .toggleCommunityPostReaction(postId: postId, emoji: emoji);
+        ref.invalidate(groupCommunityPostsProvider(groupId));
+        ref.invalidate(groupActivitiesProvider(groupId));
+      } catch (_) {
+        feed.togglePostReaction(postId, emoji);
+        rethrow;
+      }
     });
   }
 

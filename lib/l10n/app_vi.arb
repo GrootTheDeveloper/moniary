@@ -42,6 +42,15 @@
   "commonClose": "Đóng",
   "commonSaving": "Đang lưu...",
   "commonLoading": "Đang tải...",
+  "groupListLoadMore": "Tải thêm nhóm",
+  "groupCommunityLoadMore": "Tải thêm hoạt động",
+  "groupCommunityUploadProgress": "Đang tải {completed}/{total} ảnh",
+  "@groupCommunityUploadProgress": {
+    "placeholders": {
+      "completed": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
   "commonCopy": "Sao chép",
   "commonShare": "Chia sẻ",
   "commonOpen": "Mở",

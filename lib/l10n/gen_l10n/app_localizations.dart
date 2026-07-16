@@ -224,6 +224,24 @@ abstract class AppLocalizations {
   /// **'Đang tải...'**
   String get commonLoading;
 
+  /// No description provided for @groupListLoadMore.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tải thêm nhóm'**
+  String get groupListLoadMore;
+
+  /// No description provided for @groupCommunityLoadMore.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tải thêm hoạt động'**
+  String get groupCommunityLoadMore;
+
+  /// No description provided for @groupCommunityUploadProgress.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải {completed}/{total} ảnh'**
+  String groupCommunityUploadProgress(int completed, int total);
+
   /// No description provided for @commonCopy.
   ///
   /// In vi, this message translates to:
