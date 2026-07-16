@@ -17,7 +17,7 @@ class NotificationDeliveryPreferencesController
   @override
   FutureOr<NotificationDeliveryPreferences> build() {
     return ref
-        .read(notificationDeliveryPreferencesRepositoryProvider)
+        .watch(notificationDeliveryPreferencesRepositoryProvider)
         .getPreferences();
   }
 

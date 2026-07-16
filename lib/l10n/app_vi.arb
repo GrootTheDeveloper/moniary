@@ -93,6 +93,7 @@
   "loginHaveAccount": "Đã có tài khoản?",
   "loginSocialDivider": "Hoặc đăng nhập bằng",
   "loginGuestCta": "Dùng thử ngay — không cần tài khoản →",
+  "loginAppIntroCta": "Xem giới thiệu ứng dụng",
   "anonymousCaptchaTitle": "Xác minh trước khi tiếp tục",
   "anonymousCaptchaDescription": "Hoàn tất bước kiểm tra bảo mật để tiếp tục an toàn.",
   "anonymousCaptchaVerified": "Đã xác minh",

@@ -6,7 +6,7 @@ import 'app_theme.dart';
 import '../core/preferences/preferences_providers.dart';
 import '../core/providers/camera_provider.dart';
 import '../core/supabase/supabase_providers.dart';
-import '../features/assistant/presentation/assistant_home_screen.dart';
+import '../features/assistant/presentation/assistant_intro_screen.dart';
 import '../features/calendar/application/month/calendar_month_provider.dart';
 import '../features/calendar/application/month/calendar_visible_month_provider.dart';
 import '../features/recurring/presentation/recurring_auto_post_runner.dart';
@@ -76,7 +76,7 @@ class MainShellScreen extends ConsumerWidget {
               child: _AssistantChatBubble(
                 color: colors.button,
                 foregroundColor: colors.surfaceRaised,
-                onPressed: () => context.push(AssistantHomeScreen.routePath),
+                onPressed: () => context.push(AssistantIntroScreen.routePath),
               ),
             ),
           Positioned(
@@ -187,6 +187,7 @@ class _AssistantChatBubble extends StatelessWidget {
         elevation: 6,
         shadowColor: color.withValues(alpha: 0.22),
         child: InkWell(
+          key: const ValueKey('assistant_chat_bubble'),
           customBorder: const CircleBorder(),
           onTap: onPressed,
           child: SizedBox(

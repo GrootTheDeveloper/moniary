@@ -93,6 +93,7 @@
   "loginHaveAccount": "Already have an account?",
   "loginSocialDivider": "Or sign in with",
   "loginGuestCta": "Try it now — no account needed →",
+  "loginAppIntroCta": "View app introduction",
   "anonymousCaptchaTitle": "Verify before continuing",
   "anonymousCaptchaDescription": "Complete this security check to continue securely.",
   "anonymousCaptchaVerified": "Verification complete",

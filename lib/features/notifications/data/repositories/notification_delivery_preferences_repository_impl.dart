@@ -9,6 +9,7 @@ import '../../domain/repositories/notification_delivery_preferences_repository.d
 
 final notificationDeliveryPreferencesRepositoryProvider =
     Provider<NotificationDeliveryPreferencesRepository>((ref) {
+      ref.watch(currentSessionProvider);
       if (ref.watch(useMockDataModeProvider)) {
         return MockNotificationDeliveryPreferencesRepository();
       }

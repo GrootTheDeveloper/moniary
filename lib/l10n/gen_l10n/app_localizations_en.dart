@@ -227,6 +227,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginGuestCta => 'Try it now — no account needed →';
 
   @override
+  String get loginAppIntroCta => 'View app introduction';
+
+  @override
   String get anonymousCaptchaTitle => 'Verify before continuing';
 
   @override

@@ -376,7 +376,7 @@ class GroupCommunityFeedController extends AsyncNotifier<GroupCommunityFeed> {
   @override
   Future<GroupCommunityFeed> build() async {
     final page = await ref
-        .read(groupRepositoryProvider)
+        .watch(groupRepositoryProvider)
         .fetchCommunityFeedPage(groupId: groupId, limit: 20);
     return GroupCommunityFeed(
       items: page.items,
@@ -553,7 +553,7 @@ class GroupCommunityCommentsController
   @override
   Future<GroupCommunityCommentsPage> build() {
     return ref
-        .read(groupRepositoryProvider)
+        .watch(groupRepositoryProvider)
         .fetchCommunityCommentsPage(postId: postId, limit: 30);
   }
 

@@ -144,34 +144,40 @@ class _SlideLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.moniaryColors;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 34),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          illustration,
-          const SizedBox(height: 28),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: context.moniaryTypography.displayMedium.copyWith(
-              fontSize: 27,
-              height: 1.18,
-            ),
-          ),
-          if (subtitle != null) ...[
-            const SizedBox(height: 12),
-            Text(
-              subtitle!,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: colors.textSecondary,
-                fontSize: 13,
-                height: 1.55,
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 34),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              illustration,
+              const SizedBox(height: 28),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: context.moniaryTypography.displayMedium.copyWith(
+                  fontSize: 27,
+                  height: 1.18,
+                ),
               ),
-            ),
-          ],
-        ],
+              if (subtitle != null) ...[
+                const SizedBox(height: 12),
+                Text(
+                  subtitle!,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colors.textSecondary,
+                    fontSize: 13,
+                    height: 1.55,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -386,8 +392,8 @@ class _ReceiptScanIllustrationState extends State<_ReceiptScanIllustration>
       builder: (context, _) {
         return SizedBox(
           width: cameraW,
-          height: 360, // Increased overall height from 310 to 360
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               // ── Camera frame
               Opacity(
