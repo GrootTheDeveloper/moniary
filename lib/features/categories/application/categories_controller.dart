@@ -11,7 +11,7 @@ final categoriesControllerProvider =
 class CategoriesController extends AsyncNotifier<List<Category>> {
   @override
   Future<List<Category>> build() {
-    return ref.read(categoryRepositoryProvider).fetchCategories();
+    return ref.watch(categoryRepositoryProvider).fetchCategories();
   }
 
   Future<void> refresh() async {

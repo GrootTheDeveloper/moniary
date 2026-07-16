@@ -7,6 +7,7 @@ import '../../../../shared/utils/app_logger.dart';
 import '../../domain/models/category.dart';
 
 final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
+  ref.watch(currentSessionProvider);
   if (ref.watch(useMockDataModeProvider)) {
     return CategoryRepository.mock();
   }

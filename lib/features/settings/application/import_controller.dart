@@ -61,6 +61,9 @@ final importControllerProvider =
 class ImportController extends Notifier<ImportState> {
   @override
   ImportState build() {
+    // Parsed rows may contain another account's transaction details. Rebuild
+    // this ephemeral state whenever the authenticated account changes.
+    ref.watch(currentSessionProvider);
     return ImportState();
   }
 

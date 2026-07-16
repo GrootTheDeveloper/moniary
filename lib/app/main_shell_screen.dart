@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'app_theme.dart';
 import '../core/preferences/preferences_providers.dart';
 import '../core/providers/camera_provider.dart';
+import '../core/supabase/supabase_providers.dart';
 import '../features/assistant/presentation/assistant_home_screen.dart';
 import '../features/calendar/application/month/calendar_month_provider.dart';
 import '../features/calendar/application/month/calendar_visible_month_provider.dart';
@@ -22,7 +23,13 @@ final _widgetBootstrapRunProvider = NotifierProvider<_BootstrapNotifier, bool>(
 
 class _BootstrapNotifier extends Notifier<bool> {
   @override
-  bool build() => false;
+  bool build() {
+    // A native widget stores its last values outside Flutter. Ensure its
+    // bootstrap update runs again after an OAuth account switch.
+    ref.watch(currentSessionProvider)?.user.id;
+    return false;
+  }
+
   void markRun() => state = true;
 }
 
@@ -35,7 +42,7 @@ class MainShellScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.moniaryColors;
 
-    final bootstrapRun = ref.read(_widgetBootstrapRunProvider);
+    final bootstrapRun = ref.watch(_widgetBootstrapRunProvider);
     if (!bootstrapRun) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(_widgetBootstrapRunProvider.notifier).markRun();

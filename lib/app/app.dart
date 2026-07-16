@@ -20,6 +20,7 @@ import '../features/auth/application/pending_email_link_controller.dart';
 import '../features/auth/application/auth_controller.dart';
 import '../features/auth/application/pending_facebook_link_controller.dart';
 import '../features/auth/application/pending_google_link_controller.dart';
+import '../features/calendar/application/month/calendar_filter_provider.dart';
 import '../features/auth/presentation/email_account_link_completion_screen.dart';
 import '../features/calendar/presentation/month/calendar_screen.dart';
 import '../features/friends/presentation/widgets/friend_invite_prompt_host.dart';
@@ -33,6 +34,7 @@ import 'app_theme.dart';
 import '../features/settings/application/privacy_controller.dart';
 import '../features/notifications/data/repositories/notification_repository_impl.dart';
 import '../features/notifications/application/notification_delivery_preferences_controller.dart';
+import '../features/notifications/application/notification_controller.dart';
 import '../features/notifications/presentation/notification_route_resolver.dart';
 
 class MoniaryApp extends ConsumerStatefulWidget {
@@ -62,6 +64,10 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
       previous,
       next,
     ) {
+      final didChangeAccount = previous?.user.id != next?.user.id;
+      if (didChangeAccount) {
+        _resetAccountScopedUiState();
+      }
       if (next == null && previous != null) {
         unawaited(
           ref
@@ -80,6 +86,14 @@ class _MoniaryAppState extends ConsumerState<MoniaryApp>
       _initializeDeepLinks();
       _initializePushNotifications();
     });
+  }
+
+  void _resetAccountScopedUiState() {
+    // Filters and pagination can contain IDs from the previous account. They
+    // must never be applied to a new account after an OAuth session change.
+    ref.read(calendarFilterProvider.notifier).reset();
+    ref.read(notificationCategoryProvider.notifier).setCategory(null);
+    ref.read(notificationPaginationProvider.notifier).reset();
   }
 
   @override

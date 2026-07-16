@@ -11,7 +11,7 @@ final activeSessionsControllerProvider =
 class ActiveSessionsController extends AsyncNotifier<List<ActiveSession>> {
   @override
   Future<List<ActiveSession>> build() async {
-    return _fetchSessions();
+    return ref.watch(accountRepositoryProvider).getActiveSessions();
   }
 
   Future<List<ActiveSession>> _fetchSessions() async {

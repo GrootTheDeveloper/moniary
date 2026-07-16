@@ -16,7 +16,9 @@ class RecurringController extends AsyncNotifier<List<RecurringTransaction>> {
 
   @override
   Future<List<RecurringTransaction>> build() {
-    return _repository.fetchRecurringTransactions();
+    return ref
+        .watch(recurringTransactionRepositoryProvider)
+        .fetchRecurringTransactions();
   }
 
   Future<void> refresh() async {

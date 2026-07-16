@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/preferences/preferences_providers.dart';
+import '../../../core/supabase/supabase_providers.dart';
 
 /// Persisted list of the user's recent transaction searches, most recent first.
 final recentSearchesProvider =
@@ -9,12 +10,17 @@ final recentSearchesProvider =
     );
 
 class RecentSearchesNotifier extends Notifier<List<String>> {
-  static const _key = 'recent_transaction_searches';
+  static const _keyPrefix = 'recent_transaction_searches';
   static const _maxEntries = 8;
+  late String _storageKey;
 
   @override
   List<String> build() {
-    return ref.read(sharedPreferencesProvider).getStringList(_key) ??
+    final userId = ref.watch(currentSessionProvider)?.user.id;
+    _storageKey = userId == null || userId.isEmpty
+        ? _keyPrefix
+        : '${_keyPrefix}_$userId';
+    return ref.read(sharedPreferencesProvider).getStringList(_storageKey) ??
         const <String>[];
   }
 
@@ -30,16 +36,16 @@ class RecentSearchesNotifier extends Notifier<List<String>> {
       next.removeRange(_maxEntries, next.length);
     }
     state = next;
-    await ref.read(sharedPreferencesProvider).setStringList(_key, next);
+    await ref.read(sharedPreferencesProvider).setStringList(_storageKey, next);
   }
 
   Future<void> remove(String query) async {
     state = state.where((entry) => entry != query).toList();
-    await ref.read(sharedPreferencesProvider).setStringList(_key, state);
+    await ref.read(sharedPreferencesProvider).setStringList(_storageKey, state);
   }
 
   Future<void> clear() async {
     state = const <String>[];
-    await ref.read(sharedPreferencesProvider).remove(_key);
+    await ref.read(sharedPreferencesProvider).remove(_storageKey);
   }
 }

@@ -12,6 +12,7 @@ import '../datasources/friend_mock_data_source.dart';
 import 'friend_mock_repository.dart';
 
 final friendRepositoryProvider = Provider<FriendRepository>((ref) {
+  ref.watch(currentSessionProvider);
   final client = ref.watch(supabaseClientProvider);
   if (ref.watch(useMockDataModeProvider)) {
     return FriendMockRepository(

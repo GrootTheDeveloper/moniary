@@ -12,7 +12,7 @@ final walletsControllerProvider =
 class WalletsController extends AsyncNotifier<List<Wallet>> {
   @override
   Future<List<Wallet>> build() {
-    return ref.read(walletRepositoryProvider).fetchWallets();
+    return ref.watch(walletRepositoryProvider).fetchWallets();
   }
 
   Future<void> refresh() async {

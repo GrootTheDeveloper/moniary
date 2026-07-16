@@ -21,6 +21,7 @@ import '../models/group_model_mapper.dart';
 import 'group_mock_repository.dart';
 
 final groupRepositoryProvider = Provider<GroupRepository>((ref) {
+  ref.watch(currentSessionProvider);
   final client = ref.watch(supabaseClientProvider);
   if (ref.watch(useMockDataModeProvider)) {
     return GroupMockRepository(

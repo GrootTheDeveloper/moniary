@@ -195,8 +195,10 @@ class _FriendInvitePromptBody extends ConsumerWidget {
     // Already responded / no longer actionable: show the status + a Close.
     if (!preview.canAccept) {
       return _DialogMessage(
-        icon: Icons.how_to_reg_outlined,
-        title: _statusMessage(context, preview.status),
+        icon: preview.isAlreadyFriends
+            ? Icons.how_to_reg_outlined
+            : Icons.link_off_outlined,
+        title: _statusMessage(context, preview),
         actions: [
           FilledButton(
             onPressed: onClose,
@@ -290,10 +292,17 @@ class _FriendInvitePromptBody extends ConsumerWidget {
     }
   }
 
-  String _statusMessage(BuildContext context, FriendInviteStatus status) {
-    switch (status) {
-      case FriendInviteStatus.active:
-        return context.l10n.friendInviteAcceptTitle;
+  String _statusMessage(BuildContext context, FriendInvitePreview preview) {
+    // Friendship/self are derived from both the link status and the relation
+    // status, so they take priority over whatever the raw link status is
+    // (e.g. a `used` link between two people who are already friends).
+    if (preview.isAlreadyFriends) {
+      return context.l10n.friendInviteAlreadyFriends;
+    }
+    if (preview.isSelf) {
+      return context.l10n.friendInviteSelf;
+    }
+    switch (preview.status) {
       case FriendInviteStatus.used:
         return context.l10n.friendInviteUsed;
       case FriendInviteStatus.revoked:
@@ -302,8 +311,8 @@ class _FriendInvitePromptBody extends ConsumerWidget {
         return context.l10n.friendInviteExpired;
       case FriendInviteStatus.invalid:
         return context.l10n.friendInviteInvalid;
+      case FriendInviteStatus.active:
       case FriendInviteStatus.self:
-        return context.l10n.friendInviteSelf;
       case FriendInviteStatus.alreadyFriends:
         return context.l10n.friendInviteAlreadyFriends;
     }

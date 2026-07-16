@@ -331,7 +331,7 @@ class GroupsController extends AsyncNotifier<GroupsState> {
   @override
   Future<GroupsState> build() async {
     final page = await ref
-        .read(groupRepositoryProvider)
+        .watch(groupRepositoryProvider)
         .fetchGroupsPage(limit: 20);
     return GroupsState(items: page.items, hasMore: page.hasMore);
   }
