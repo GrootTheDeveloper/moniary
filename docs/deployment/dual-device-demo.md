@@ -63,6 +63,15 @@ Install a signed Debug build on the real iPhone. The signing profile must allow
 Associated Domains; a simulator build cannot prove that Universal Links work on
 the physical device.
 
+Before the first physical install, sign in to Xcode with an Apple Developer
+account that belongs to team `FLHU923LV8`. In the Apple Developer identifier
+`com.moniary.moniary`, enable **Associated Domains**, **Push Notifications**,
+and the App Group `group.com.moniary`; regenerate/download the development
+provisioning profile after changing any capability. The profile must contain
+`aps-environment` and `com.apple.developer.associated-domains`. If Xcode says
+"No Accounts" or that either capability is absent, stop and repair this
+provisioning state before retrying the command above.
+
 ## 4. Two-phone smoke script
 
 Create two different accounts. Use one account per phone; do not share an
