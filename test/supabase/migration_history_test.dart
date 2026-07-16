@@ -103,4 +103,20 @@ void main() {
     expect(performance, contains("limit least(greatest(coalesce(p_limit"));
     expect(performance, contains("upload_status = 'uploaded'"));
   });
+
+  test('group detail summary avoids loading complete transaction history', () {
+    final detailSummary = File(
+      'supabase/migrations/'
+      '20260716050600_group_detail_summary.sql',
+    ).readAsStringSync();
+
+    expect(detailSummary, contains('get_group_summary_v1'));
+    expect(detailSummary, contains('GROUP_MEMBER_REQUIRED'));
+    expect(detailSummary, contains('count(*)::bigint'));
+    expect(detailSummary, contains('sum(gt.total_amount)'));
+    expect(
+      detailSummary,
+      contains('grant execute on function public.get_group_summary_v1'),
+    );
+  });
 }
