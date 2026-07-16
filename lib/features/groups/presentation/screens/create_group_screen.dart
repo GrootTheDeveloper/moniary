@@ -144,9 +144,9 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
       final groupId = await ref
           .read(groupActionControllerProvider.notifier)
           .createGroup(
-            name: _nameController.text,
-            description: _descriptionController.text,
-            type: _typeController.text,
+            name: _nameController.text.trim(),
+            description: _descriptionController.text.trim(),
+            type: _typeController.text.trim(),
             avatarFilePath: _avatarPath,
           );
       if (!mounted) return;

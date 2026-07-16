@@ -147,10 +147,18 @@ class GroupRepositoryImpl implements GroupRepository {
         type: type,
       );
       if (avatarFilePath != null) {
-        await _remote.uploadGroupAvatar(
-          groupId: groupId,
-          filePath: avatarFilePath,
-        );
+        try {
+          await _remote.uploadGroupAvatar(
+            groupId: groupId,
+            filePath: avatarFilePath,
+          );
+        } catch (error, stackTrace) {
+          AppLogger.error(
+            'Group created but optional avatar upload failed',
+            error,
+            stackTrace,
+          );
+        }
       }
       return groupId;
     });

@@ -292,10 +292,16 @@ class GroupSupabaseDataSource {
     String? description,
     String? type,
   }) async {
-    final result = await client.rpc(
-      'create_expense_group',
-      params: {'p_name': name, 'p_description': description, 'p_type': type},
-    );
+    final result = await client
+        .rpc(
+          'create_expense_group',
+          params: {
+            'p_name': name,
+            'p_description': description,
+            'p_type': type,
+          },
+        )
+        .timeout(mutationTimeout);
     return result as String;
   }
 
@@ -1011,7 +1017,11 @@ class GroupSupabaseDataSource {
   }) async {
     final path = 'groups/$groupId/avatar.jpg';
     await _uploadCompressed(path: path, filePath: filePath);
-    await client.from('groups').update({'avatar_path': path}).eq('id', groupId);
+    await client
+        .from('groups')
+        .update({'avatar_path': path})
+        .eq('id', groupId)
+        .timeout(mutationTimeout);
     return path;
   }
 
