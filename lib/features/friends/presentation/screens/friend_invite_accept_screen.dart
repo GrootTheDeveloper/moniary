@@ -67,6 +67,7 @@ class FriendInviteAcceptScreen extends ConsumerWidget {
               preview: preview,
               actionLoading: action.isLoading,
               onAccept: () => _accept(context, ref),
+              onDecline: () => _decline(context),
               onOpenFriends: () => context.go(FriendsScreen.routePath),
             ),
           ),
@@ -92,6 +93,14 @@ class FriendInviteAcceptScreen extends ConsumerWidget {
       // The listener above maps AppException codes to localized SnackBars.
     }
   }
+
+  void _decline(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    context.go(FriendsScreen.routePath);
+  }
 }
 
 class _InviteBody extends StatelessWidget {
@@ -99,12 +108,14 @@ class _InviteBody extends StatelessWidget {
     required this.preview,
     required this.actionLoading,
     required this.onAccept,
+    required this.onDecline,
     required this.onOpenFriends,
   });
 
   final FriendInvitePreview preview;
   final bool actionLoading;
   final VoidCallback onAccept;
+  final VoidCallback onDecline;
   final VoidCallback onOpenFriends;
 
   @override
@@ -128,47 +139,99 @@ class _InviteBody extends StatelessWidget {
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SizedBox(height: 24),
-        Icon(
-          Icons.person_add_alt_1_outlined,
-          color: context.moniaryColors.primary,
-          size: 64,
-        ),
-        const SizedBox(height: 20),
-        Text(
-          context.l10n.friendInviteAcceptTitle,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
-        const SizedBox(height: 12),
-        Text(
-          context.l10n.friendInviteAcceptSubtitle(
-            inviter?.displayName ?? context.l10n.friendsTitle,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final contentWidth = constraints.maxWidth > 560
+            ? 560.0
+            : constraints.maxWidth;
+        return Align(
+          alignment: Alignment.topCenter,
+          child: SizedBox(
+            width: contentWidth,
+            height: constraints.maxHeight,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(0, 24, 0, 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Icon(
+                          Icons.person_add_alt_1_outlined,
+                          color: context.moniaryColors.primary,
+                          size: 64,
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          context.l10n.friendInviteAcceptTitle,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          context.l10n.friendInviteAcceptSubtitle(
+                            inviter?.displayName ?? context.l10n.friendsTitle,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        if (inviter != null) ...[
+                          const SizedBox(height: 28),
+                          FriendProfileTile(
+                            profile: inviter,
+                            subtitle: inviter.displayUsername,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 48),
+                        child: FilledButton.icon(
+                          onPressed: actionLoading ? null : onAccept,
+                          icon: actionLoading
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.person_add_alt_1_outlined),
+                          label: Text(
+                            context.l10n.friendInviteAcceptButton,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 48),
+                        child: OutlinedButton.icon(
+                          onPressed: actionLoading ? null : onDecline,
+                          icon: const Icon(Icons.person_remove_outlined),
+                          label: Text(
+                            context.l10n.friendDecline,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 28),
-        if (inviter != null)
-          FriendProfileTile(
-            profile: inviter,
-            subtitle: inviter.displayUsername,
-          ),
-        const Spacer(),
-        FilledButton.icon(
-          onPressed: actionLoading ? null : onAccept,
-          icon: actionLoading
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Icon(Icons.person_add_alt_1_outlined),
-          label: Text(context.l10n.friendInviteAcceptButton),
-        ),
-      ],
+        );
+      },
     );
   }
 

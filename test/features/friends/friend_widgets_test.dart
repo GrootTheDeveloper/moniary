@@ -930,6 +930,8 @@ void main() {
       find.text('An Nguyen muốn kết bạn với bạn trên Moniary.'),
       findsOneWidget,
     );
+    expect(find.widgetWithText(FilledButton, 'Kết bạn'), findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, 'Từ chối'), findsOneWidget);
 
     await tester.tap(find.widgetWithText(FilledButton, 'Kết bạn'));
     await tester.pumpAndSettle();
@@ -937,6 +939,74 @@ void main() {
     expect(repository.acceptedInviteTokens, ['token-1']);
     expect(find.text('Bạn bè'), findsWidgets);
     expect(find.text('An Nguyen'), findsOneWidget);
+  });
+
+  testWidgets('FriendInviteAcceptScreen từ chối mà không kết bạn', (
+    tester,
+  ) async {
+    final repository = FakeFriendRepository(
+      invitePreview: const FriendInvitePreview(
+        status: FriendInviteStatus.active,
+        relationStatus: FriendRelationStatus.none,
+        inviter: FriendProfile(
+          userId: 'user-an',
+          fullName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(
+      routerApp(
+        friendRepository: repository,
+        initialLocation: '/friends/invite/token-1',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Từ chối'));
+    await tester.pumpAndSettle();
+
+    expect(repository.acceptedInviteTokens, isEmpty);
+    expect(find.text('Bạn bè'), findsWidgets);
+  });
+
+  testWidgets('FriendInviteAcceptScreen giữ hai nút trên màn hình thấp', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 480);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final repository = FakeFriendRepository(
+      invitePreview: const FriendInvitePreview(
+        status: FriendInviteStatus.active,
+        relationStatus: FriendRelationStatus.none,
+        inviter: FriendProfile(
+          userId: 'user-an',
+          fullName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(
+      routerApp(
+        friendRepository: repository,
+        initialLocation: '/friends/invite/token-1',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final acceptButton = find.widgetWithText(FilledButton, 'Kết bạn');
+    final declineButton = find.widgetWithText(OutlinedButton, 'Từ chối');
+    expect(acceptButton, findsOneWidget);
+    expect(declineButton, findsOneWidget);
+    expect(tester.getSize(acceptButton).height, greaterThanOrEqualTo(48));
+    expect(tester.getSize(declineButton).height, greaterThanOrEqualTo(48));
+    expect(tester.getBottomLeft(acceptButton).dy, lessThanOrEqualTo(480));
+    expect(tester.getBottomRight(declineButton).dy, lessThanOrEqualTo(480));
   });
 
   testWidgets('FriendInvitePromptHost hiện popup và accept invite', (
