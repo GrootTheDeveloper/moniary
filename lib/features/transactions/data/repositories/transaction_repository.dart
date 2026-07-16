@@ -12,6 +12,10 @@ import '../../domain/models/transaction_entry.dart';
 import '../../domain/models/transaction_search_filter.dart';
 
 final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
+  // The Supabase client instance is shared between sessions. Keep this
+  // provider scoped to the authenticated user so every query provider that
+  // watches it is rebuilt when OAuth changes accounts.
+  ref.watch(currentSessionProvider);
   return TransactionRepository(ref.watch(supabaseClientProvider));
 });
 

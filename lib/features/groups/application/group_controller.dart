@@ -307,7 +307,7 @@ final groupActionControllerProvider =
 class GroupsController extends AsyncNotifier<List<SpendingGroup>> {
   @override
   Future<List<SpendingGroup>> build() {
-    return ref.read(groupRepositoryProvider).fetchGroups();
+    return ref.watch(groupRepositoryProvider).fetchGroups();
   }
 
   Future<void> refresh() async {

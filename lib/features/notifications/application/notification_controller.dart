@@ -53,6 +53,10 @@ class NotificationPaginationController
       isLoadingMore: isLoadingMore,
     );
   }
+
+  void reset() {
+    state = const NotificationPaginationState();
+  }
 }
 
 class GroupNotificationQuery {
@@ -118,7 +122,7 @@ class NotificationsController extends AsyncNotifier<List<AppNotification>> {
   Future<List<AppNotification>> build() async {
     final category = ref.watch(notificationCategoryProvider);
     final page = await _fetchPage(
-      ref.read(notificationRepositoryProvider),
+      ref.watch(notificationRepositoryProvider),
       category: category,
     );
     _nextCursor = page.nextCursor;
