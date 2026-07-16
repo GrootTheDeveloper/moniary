@@ -380,6 +380,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                           child: Text(context.l10n.loginGuestCta),
                         ),
+                        const SizedBox(height: 6),
+                        OutlinedButton.icon(
+                          key: const ValueKey('login_app_intro_button'),
+                          onPressed: isBusy
+                              ? null
+                              : () => context.push(OnboardingScreen.routePath),
+                          icon: const Icon(Icons.slideshow_outlined, size: 18),
+                          label: Text(context.l10n.loginAppIntroCta),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(44),
+                            foregroundColor: colors.primary,
+                            side: BorderSide(
+                              color: colors.primary.withValues(alpha: 0.45),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
                         if (kDebugMode && AppConstants.devToolsEnabled) ...[
                           const SizedBox(height: 10),
                           OutlinedButton.icon(

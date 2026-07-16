@@ -494,6 +494,12 @@ abstract class AppLocalizations {
   /// **'Dùng thử ngay — không cần tài khoản →'**
   String get loginGuestCta;
 
+  /// No description provided for @loginAppIntroCta.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem giới thiệu ứng dụng'**
+  String get loginAppIntroCta;
+
   /// No description provided for @anonymousCaptchaTitle.
   ///
   /// In vi, this message translates to:

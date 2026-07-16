@@ -227,6 +227,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginGuestCta => 'Dùng thử ngay — không cần tài khoản →';
 
   @override
+  String get loginAppIntroCta => 'Xem giới thiệu ứng dụng';
+
+  @override
   String get anonymousCaptchaTitle => 'Xác minh trước khi tiếp tục';
 
   @override
