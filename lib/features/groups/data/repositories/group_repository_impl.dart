@@ -98,10 +98,23 @@ class GroupRepositoryImpl implements GroupRepository {
   @override
   Future<SpendingGroupDetail> fetchGroupDetail(String groupId) async {
     return _guard('fetch group detail', () async {
-      final group = GroupModelMapper.group(await _remote.fetchGroup(groupId));
-      final members = (await _remote.fetchMembers(
-        groupId,
-      )).map(GroupModelMapper.member).toList();
+      final results = await Future.wait<Object>([
+        _remote.fetchGroupSummary(groupId),
+        _remote.fetchMembers(groupId),
+      ]);
+      final summary = results[0] as Map<String, dynamic>;
+      final memberRows = results[1] as List<Map<String, dynamic>>;
+      final group = GroupModelMapper.group(
+        summary,
+        memberCount: (summary['member_count'] as num?)?.toInt() ?? 0,
+        transactionCount: (summary['transaction_count'] as num?)?.toInt() ?? 0,
+        totalSpent: (summary['total_spent'] as num?)?.toInt() ?? 0,
+        currentUserBalance:
+            (summary['current_user_balance'] as num?)?.toInt() ?? 0,
+        hasUnresolvedSettlements:
+            summary['has_unresolved_settlements'] as bool? ?? false,
+      );
+      final members = memberRows.map(GroupModelMapper.member).toList();
       final currentMember = members.where(
         (member) =>
             member.userId == currentUserId &&
@@ -327,7 +340,7 @@ class GroupRepositoryImpl implements GroupRepository {
       final rows = await _remote.fetchTransactionsPage(
         groupId: groupId,
         offset: offset,
-        limit: limit,
+        limit: limit + 1,
         query: query,
         status: status,
       );
@@ -450,11 +463,16 @@ class GroupRepositoryImpl implements GroupRepository {
   @override
   Future<GroupSettlementOverview> fetchSettlementOverview(String groupId) {
     return _guard('fetch group settlements', () async {
-      final detail = await fetchGroupDetail(groupId);
+      final results = await Future.wait<List<Map<String, dynamic>>>([
+        _remote.fetchMembers(groupId),
+        _remote.fetchBalances(groupId),
+        _remote.fetchSettlements(groupId),
+      ]);
+      final members = results[0].map(GroupModelMapper.member).toList();
       final names = {
-        for (final member in detail.members) member.userId: member.resolvedName,
+        for (final member in members) member.userId: member.resolvedName,
       };
-      final balances = (await _remote.fetchBalances(groupId)).map((row) {
+      final balances = results[1].map((row) {
         final balance = GroupModelMapper.balance(row);
         return GroupBalance(
           groupId: balance.groupId,
@@ -465,9 +483,7 @@ class GroupRepositoryImpl implements GroupRepository {
           displayName: names[balance.userId],
         );
       }).toList();
-      final settlements = (await _remote.fetchSettlements(
-        groupId,
-      )).map(GroupModelMapper.settlement).toList();
+      final settlements = results[2].map(GroupModelMapper.settlement).toList();
       return GroupSettlementOverview(
         balances: balances,
         suggestions: settlements,

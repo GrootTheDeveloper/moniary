@@ -66,7 +66,8 @@ class GroupSupabaseDataSource {
         )
         .eq('group_id', groupId)
         .neq('split_status', 'cancelled')
-        .order('transaction_date', ascending: false);
+        .order('transaction_date', ascending: false)
+        .timeout(readTimeout);
     return _rows(rows);
   }
 
@@ -98,7 +99,8 @@ class GroupSupabaseDataSource {
     }
     final rows = await request
         .order('transaction_date', ascending: false)
-        .range(offset, offset + limit);
+        .range(offset, offset + limit - 1)
+        .timeout(readTimeout);
     return _rows(rows);
   }
 
@@ -107,6 +109,13 @@ class GroupSupabaseDataSource {
         .from('groups')
         .select()
         .eq('id', groupId)
+        .single()
+        .timeout(readTimeout);
+  }
+
+  Future<Map<String, dynamic>> fetchGroupSummary(String groupId) async {
+    return await client
+        .rpc('get_group_summary_v1', params: {'p_group_id': groupId})
         .single()
         .timeout(readTimeout);
   }
@@ -159,7 +168,8 @@ class GroupSupabaseDataSource {
         .from('group_balance_summary')
         .select()
         .eq('group_id', groupId)
-        .order('balance', ascending: false);
+        .order('balance', ascending: false)
+        .timeout(readTimeout);
     return _rows(rows);
   }
 
@@ -170,7 +180,8 @@ class GroupSupabaseDataSource {
           '*, from_profile:profiles!group_settlements_from_user_profiles_fkey(full_name), to_profile:profiles!group_settlements_to_user_profiles_fkey(full_name)',
         )
         .eq('group_id', groupId)
-        .order('created_at', ascending: false);
+        .order('created_at', ascending: false)
+        .timeout(readTimeout);
     return _rows(rows);
   }
 

@@ -35,11 +35,18 @@ The bounded-read and upload-state performance update is
 that calls `list_my_group_summaries_v1`, `list_group_community_feed_v1`, and
 `list_group_community_comments_v1`.
 
+Group Home header aggregation is provided by
+`20260716050600_group_detail_summary.sql`. Deploy it before the client that
+calls `get_group_summary_v1`; the screen uses that bounded aggregate together
+with a five-row transaction preview instead of downloading transaction history.
+
 ## Group and Community performance invariants (2026-07-16)
 
 - Opening the Group list must not fetch full member, transaction, settlement,
   and balance collections once per group. It reads 20 aggregate summaries per
   cursor page from `list_my_group_summaries_v1`.
+- Opening Group Home reads one aggregate header, members, a five-row transaction
+  preview, balances, and settlements. It must not fetch all group transactions.
 - Community returns at most 20 mixed feed items per cursor page. Post cards
   include no comment bodies, at most four media rows, aggregate reaction counts,
   and the current member's reaction state.

@@ -30,7 +30,6 @@ class GroupDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final detailAsync = ref.watch(groupDetailProvider(groupId));
-    final transactionsAsync = ref.watch(groupTransactionsProvider(groupId));
     final settlementsAsync = ref.watch(
       groupSettlementOverviewProvider(groupId),
     );
@@ -53,11 +52,10 @@ class GroupDetailScreen extends ConsumerWidget {
           data: (detail) => _GroupDetailContent(
             groupId: groupId,
             detail: detail,
-            transactionsAsync: transactionsAsync,
             settlementsAsync: settlementsAsync,
             onRefresh: () async {
               ref.invalidate(groupDetailProvider(groupId));
-              ref.invalidate(groupTransactionsProvider(groupId));
+              ref.invalidate(groupTransactionsPageProvider);
               ref.invalidate(groupSettlementOverviewProvider(groupId));
             },
             onActions: () => _showGroupActions(context, ref, detail),
@@ -373,7 +371,6 @@ class _GroupDetailContent extends StatelessWidget {
   const _GroupDetailContent({
     required this.groupId,
     required this.detail,
-    required this.transactionsAsync,
     required this.settlementsAsync,
     required this.onRefresh,
     required this.onActions,
@@ -385,7 +382,6 @@ class _GroupDetailContent extends StatelessWidget {
 
   final String groupId;
   final SpendingGroupDetail detail;
-  final AsyncValue<List<GroupTransaction>> transactionsAsync;
   final AsyncValue<GroupSettlementOverview> settlementsAsync;
   final Future<void> Function() onRefresh;
   final VoidCallback onActions;
@@ -415,7 +411,6 @@ class _GroupDetailContent extends StatelessWidget {
                     const SizedBox(height: 16),
                     _GroupHero(
                       detail: detail,
-                      transactionsAsync: transactionsAsync,
                       onSettle: onSettle,
                       onSummary: onSummary,
                     ),
@@ -423,29 +418,16 @@ class _GroupDetailContent extends StatelessWidget {
                     _GroupCollapsibleSection(
                       title: context.l10n.groupTransactionsTitle,
                       subtitle: context.l10n.groupTransactionCount(
-                        transactionsAsync.asData?.value.length ??
-                            detail.group.transactionCount,
+                        detail.group.transactionCount,
                       ),
                       icon: Icons.receipt_long_outlined,
                       initiallyExpanded: true,
-                      child: transactionsAsync.when(
-                        loading: () => const Padding(
-                          padding: EdgeInsets.all(18),
-                          child: Center(child: CircularProgressIndicator()),
-                        ),
-                        error: (_, _) => _InlineNotice(
-                          text: context.l10n.groupTransactionLoadError,
-                          color: context.moniaryColors.danger,
-                        ),
-                        data: (transactions) => _TransactionHistory(
-                          groupId: groupId,
-                          transactions: transactions,
-                          memberCount: detail.activeMembers.length,
-                          isPreview: true,
-                          onViewAll: () => context.push(
-                            GroupRoutePaths.transactions(groupId),
-                          ),
-                        ),
+                      child: _TransactionHistory(
+                        groupId: groupId,
+                        memberCount: detail.activeMembers.length,
+                        isPreview: true,
+                        onViewAll: () =>
+                            context.push(GroupRoutePaths.transactions(groupId)),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -632,13 +614,11 @@ class _TopIconButton extends StatelessWidget {
 class _GroupHero extends ConsumerWidget {
   const _GroupHero({
     required this.detail,
-    required this.transactionsAsync,
     required this.onSettle,
     required this.onSummary,
   });
 
   final SpendingGroupDetail detail;
-  final AsyncValue<List<GroupTransaction>> transactionsAsync;
   final VoidCallback onSettle;
   final VoidCallback onSummary;
 
@@ -658,12 +638,8 @@ class _GroupHero extends ConsumerWidget {
         : balance > 0
         ? context.l10n.groupDetailYouPay
         : context.l10n.groupDetailReceiveBack;
-    final transactions = transactionsAsync.asData?.value;
-    final total = transactions
-        ?.where((item) => item.splitStatus == GroupSplitStatus.posted)
-        .fold<int>(0, (sum, item) => sum + item.totalAmount);
-    final transactionCount = transactions?.length ?? group.transactionCount;
-    final totalText = ref.formatAmount(total ?? group.totalSpent);
+    final transactionCount = group.transactionCount;
+    final totalText = ref.formatAmount(group.totalSpent);
 
     return MoniaryEditorialCard(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 15),
@@ -1019,14 +995,12 @@ class _BalanceRow extends ConsumerWidget {
 class _TransactionHistory extends ConsumerStatefulWidget {
   const _TransactionHistory({
     required this.groupId,
-    required this.transactions,
     required this.memberCount,
     this.isPreview = false,
     this.onViewAll,
   });
 
   final String groupId;
-  final List<GroupTransaction> transactions;
   final int memberCount;
   final bool isPreview;
   final VoidCallback? onViewAll;

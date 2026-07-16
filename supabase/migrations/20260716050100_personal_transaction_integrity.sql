@@ -3,13 +3,14 @@
 alter table public.transactions
     alter column image_upload_status set default 'none';
 
+alter table public.transactions
+    drop constraint if exists transactions_image_path_pairing;
+
 update public.transactions
 set image_upload_status = 'none'
 where image_path is null
   and image_upload_status = 'pending';
 
-alter table public.transactions
-    drop constraint if exists transactions_image_path_pairing;
 alter table public.transactions
     add constraint transactions_image_path_pairing check (
         (image_path is null and image_upload_status in ('none', 'pending', 'failed'))
@@ -19,13 +20,22 @@ alter table public.transactions
 alter table public.group_transactions
     alter column image_upload_status set default 'none';
 
+alter table public.group_transactions
+    drop constraint if exists group_transactions_image_path_pairing;
+
+-- This is a metadata-only backfill. Temporarily bypass the immutable-history
+-- guard so settled transactions can adopt the explicit no-image state.
+alter table public.group_transactions
+    disable trigger prevent_locked_group_transaction_mutation;
+
 update public.group_transactions
 set image_upload_status = 'none'
 where image_path is null
   and image_upload_status = 'pending';
 
 alter table public.group_transactions
-    drop constraint if exists group_transactions_image_path_pairing;
+    enable trigger prevent_locked_group_transaction_mutation;
+
 alter table public.group_transactions
     add constraint group_transactions_image_path_pairing check (
         (image_path is null and image_upload_status in ('none', 'pending', 'uploading', 'failed'))
