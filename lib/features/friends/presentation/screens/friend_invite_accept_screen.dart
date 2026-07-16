@@ -110,10 +110,10 @@ class _InviteBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final inviter = preview.inviter;
-    final statusMessage = _statusMessage(context, preview.status);
+    final statusMessage = _statusMessage(context, preview);
     if (!preview.canAccept) {
       return _MessageState(
-        icon: _statusIcon(preview.status),
+        icon: _statusIcon(preview),
         title: statusMessage,
         action: FilledButton(
           onPressed: onOpenFriends,
@@ -172,10 +172,17 @@ class _InviteBody extends StatelessWidget {
     );
   }
 
-  String _statusMessage(BuildContext context, FriendInviteStatus status) {
-    switch (status) {
-      case FriendInviteStatus.active:
-        return context.l10n.friendInviteAcceptTitle;
+  String _statusMessage(BuildContext context, FriendInvitePreview preview) {
+    // Friendship/self are derived from both the link status and the relation
+    // status, so they take priority over the raw link status (e.g. a `used`
+    // link between two people who are already friends).
+    if (preview.isAlreadyFriends) {
+      return context.l10n.friendInviteAlreadyFriends;
+    }
+    if (preview.isSelf) {
+      return context.l10n.friendInviteSelf;
+    }
+    switch (preview.status) {
       case FriendInviteStatus.used:
         return context.l10n.friendInviteUsed;
       case FriendInviteStatus.revoked:
@@ -184,26 +191,17 @@ class _InviteBody extends StatelessWidget {
         return context.l10n.friendInviteExpired;
       case FriendInviteStatus.invalid:
         return context.l10n.friendInviteInvalid;
+      case FriendInviteStatus.active:
       case FriendInviteStatus.self:
-        return context.l10n.friendInviteSelf;
       case FriendInviteStatus.alreadyFriends:
         return context.l10n.friendInviteAlreadyFriends;
     }
   }
 
-  IconData _statusIcon(FriendInviteStatus status) {
-    switch (status) {
-      case FriendInviteStatus.alreadyFriends:
-        return Icons.people_alt_outlined;
-      case FriendInviteStatus.self:
-        return Icons.person_off_outlined;
-      case FriendInviteStatus.used:
-      case FriendInviteStatus.revoked:
-      case FriendInviteStatus.expired:
-      case FriendInviteStatus.invalid:
-      case FriendInviteStatus.active:
-        return Icons.link_off_outlined;
-    }
+  IconData _statusIcon(FriendInvitePreview preview) {
+    if (preview.isAlreadyFriends) return Icons.people_alt_outlined;
+    if (preview.isSelf) return Icons.person_off_outlined;
+    return Icons.link_off_outlined;
   }
 }
 

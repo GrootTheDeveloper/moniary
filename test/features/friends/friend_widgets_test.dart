@@ -964,6 +964,47 @@ void main() {
 
     expect(repository.acceptedInviteTokens, ['token-1']);
   });
+
+  testWidgets(
+    'FriendInvitePromptHost báo đã là bạn bè khi mở lại link đã dùng',
+    (tester) async {
+      // The real-world already-friends case: the link that formed the
+      // friendship is now marked `used`, so the invite status is `used` while
+      // the relation status is `friends`. The prompt must key off the
+      // friendship relation and show the informational message + Close, never
+      // the accept flow.
+      final repository = FakeFriendRepository(
+        invitePreview: const FriendInvitePreview(
+          status: FriendInviteStatus.used,
+          relationStatus: FriendRelationStatus.friends,
+          inviter: FriendProfile(
+            userId: 'user-an',
+            fullName: 'An Nguyen',
+            username: 'an_nguyen',
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(
+        app(
+          const _PromptSeed(
+            token: 'token-1',
+            child: FriendInvitePromptHost(
+              child: Scaffold(body: Text('calendar surface')),
+            ),
+          ),
+          friendRepository: repository,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Hai bạn đã là bạn bè.'), findsOneWidget);
+      expect(find.widgetWithText(FilledButton, 'Đóng'), findsOneWidget);
+      expect(find.widgetWithText(FilledButton, 'Đồng ý'), findsNothing);
+      expect(find.widgetWithText(OutlinedButton, 'Từ chối'), findsNothing);
+      expect(repository.acceptedInviteTokens, isEmpty);
+    },
+  );
 }
 
 class _PromptSeed extends ConsumerStatefulWidget {

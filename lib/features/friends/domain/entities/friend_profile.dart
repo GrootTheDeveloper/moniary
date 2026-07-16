@@ -182,7 +182,28 @@ class FriendInvitePreview {
   final FriendProfile? inviter;
   final DateTime? expiresAt;
 
-  bool get canAccept => status == FriendInviteStatus.active;
+  /// Whether the viewer is already friends with the inviter.
+  ///
+  /// The preview RPC can surface this two different ways: through [status]
+  /// when the link is still active, or only through [relationStatus] when the
+  /// link was already marked `used` at the moment the friendship formed (the
+  /// `used` branch is evaluated before `already_friends` server-side). Both
+  /// signals must be checked, otherwise a re-opened link between existing
+  /// friends looks like a plain "used" or "active" link.
+  bool get isAlreadyFriends =>
+      status == FriendInviteStatus.alreadyFriends ||
+      relationStatus == FriendRelationStatus.friends;
+
+  /// Whether the link belongs to the viewer themselves.
+  bool get isSelf =>
+      status == FriendInviteStatus.self ||
+      relationStatus == FriendRelationStatus.self;
+
+  /// Only a live link pointing at someone who is not yet a friend can be
+  /// accepted. Already-friends and self links are terminal, informational
+  /// states.
+  bool get canAccept =>
+      status == FriendInviteStatus.active && !isAlreadyFriends && !isSelf;
 }
 
 class FriendInviteAcceptResult {
