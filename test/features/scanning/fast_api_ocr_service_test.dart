@@ -26,6 +26,7 @@ void main() {
       expect(request.method, 'POST');
       expect(request.url.toString(), 'http://localhost:8000/extract');
       expect(request.headers['content-type'], contains('multipart/form-data'));
+      expect(request.headers['authorization'], 'Bearer test-access-token');
 
       return http.Response(
         jsonEncode({
@@ -67,6 +68,7 @@ void main() {
     final service = FastApiOcrService(
       baseUrl: 'http://localhost:8000/',
       client: client,
+      accessTokenProvider: () => 'test-access-token',
       timeout: const Duration(seconds: 1),
     );
 
@@ -102,6 +104,7 @@ void main() {
     final service = FastApiOcrService(
       baseUrl: 'http://localhost:8000',
       client: client,
+      accessTokenProvider: () => 'test-access-token',
       timeout: const Duration(seconds: 1),
     );
 
@@ -132,6 +135,7 @@ void main() {
     final service = FastApiOcrService(
       baseUrl: 'http://localhost:8000',
       client: client,
+      accessTokenProvider: () => 'test-access-token',
       timeout: const Duration(seconds: 1),
     );
 
@@ -156,6 +160,7 @@ void main() {
     final service = FastApiOcrService(
       baseUrl: 'http://localhost:8000',
       client: client,
+      accessTokenProvider: () => 'test-access-token',
       timeout: const Duration(seconds: 1),
     );
 
@@ -166,6 +171,59 @@ void main() {
           (error) => error.code,
           'code',
           'OCR_IMAGE_NOT_FOUND',
+        ),
+      ),
+    );
+  });
+
+  test(
+    'rejects OCR before sending when there is no authenticated session',
+    () async {
+      final client = MockClient((request) async {
+        fail('HTTP request should not be sent without an access token.');
+      });
+      addTearDown(client.close);
+
+      final service = FastApiOcrService(
+        baseUrl: 'http://localhost:8000',
+        client: client,
+        accessTokenProvider: () => null,
+        timeout: const Duration(seconds: 1),
+      );
+
+      await expectLater(
+        service.extractFromImage(imageFile.path),
+        throwsA(
+          isA<AppException>().having(
+            (error) => error.code,
+            'code',
+            'AUTH_REQUIRED',
+          ),
+        ),
+      );
+    },
+  );
+
+  test('maps backend rate limiting to a stable OCR error code', () async {
+    final client = MockClient((request) async {
+      return http.Response(jsonEncode({'detail': 'Rate limit exceeded'}), 429);
+    });
+    addTearDown(client.close);
+
+    final service = FastApiOcrService(
+      baseUrl: 'http://localhost:8000',
+      client: client,
+      accessTokenProvider: () => 'test-access-token',
+      timeout: const Duration(seconds: 1),
+    );
+
+    await expectLater(
+      service.extractFromImage(imageFile.path),
+      throwsA(
+        isA<AppException>().having(
+          (error) => error.code,
+          'code',
+          'OCR_RATE_LIMITED',
         ),
       ),
     );

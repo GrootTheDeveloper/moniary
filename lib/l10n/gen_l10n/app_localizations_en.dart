@@ -2429,7 +2429,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyFaqDeletionFailAnswer =>
-      'You can create a manual data deletion request file and send it to the privacy support channel.';
+      'Create a secure data deletion request in the Privacy contact screen and track its server status in the request history.';
 
   @override
   String get privacyFaqExportLocationQuestion =>
@@ -2453,12 +2453,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyRequestCreated => 'Request created';
-
-  @override
-  String get privacyCopyEmail => 'Copy email';
-
-  @override
-  String get privacyCopyInstructions => 'Copy instructions';
 
   @override
   String get privacyPolicyTitle => 'Privacy Policy';
@@ -2931,18 +2925,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyContactProcessTimeline => 'Response Process';
 
   @override
-  String get privacyContactProcessStep1 => 'Create request in app';
+  String get privacyContactProcessStep1 => 'Review request in app';
 
   @override
   String get privacyContactProcessStep1Desc =>
-      'The app prepares the content for you to send to support.';
+      'Review the request type and content before submitting it.';
 
   @override
-  String get privacyContactProcessStep2 => 'Send request manually';
+  String get privacyContactProcessStep2 => 'Submit securely';
 
   @override
   String privacyContactProcessStep2Desc(String email) {
-    return 'Send the request via email to $email.';
+    return 'The request is sent directly to $email.';
   }
 
   @override
@@ -2975,21 +2969,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'If something cannot be handled in the app, contact Moniary support for help with your data.';
 
   @override
-  String get privacyContactEmailTitle => 'Support Email';
-
-  @override
-  String get privacyContactEmailDesc =>
-      'Used for data deletion, export requests, or privacy questions.';
-
-  @override
   String get privacyContactInfoTitle => 'Information to Send';
 
   @override
-  String get privacyContactInfoValue => 'Account ID or login email';
+  String get privacyContactInfoValue => 'Request type and a clear description';
 
   @override
   String get privacyContactInfoDesc =>
-      'Do not send passwords, access codes, sensitive receipt photos, or detailed amounts via email.';
+      'Do not include passwords, access codes, sensitive receipt photos, or unnecessary detailed amounts.';
 
   @override
   String get privacyContactTimeTitle => 'Response Time';
@@ -3012,7 +2999,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyRequestSuccessDesc =>
-      'Request created. Please check history and send the request manually.';
+      'Your request was submitted securely. You can track its server status in request history.';
+
+  @override
+  String get privacyRequestRateLimited =>
+      'You have submitted several requests recently. Please wait up to 24 hours before trying again.';
+
+  @override
+  String get privacyDetailResponseTitle => 'Response from Moniary';
 
   @override
   String get privacyAndAccountTitle => 'Privacy & Account';
@@ -7322,4 +7316,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteGuestDataAction => 'Delete guest data';
+
+  @override
+  String get transactionImageUploadWarning =>
+      'Transaction saved, but the image could not be attached. You can add it again by editing the transaction.';
+
+  @override
+  String get privacyInAppChannelTitle => 'Secure in-app channel';
+
+  @override
+  String get privacyInAppChannelValue => 'Moniary request center';
+
+  @override
+  String get privacyInAppChannelDesc =>
+      'Requests are stored in Moniary\'s protected server queue and can only be processed by authorized operators.';
+
+  @override
+  String get privacyStatusSubmitted => 'Submitted';
+
+  @override
+  String get privacyStatusSubmittedDesc =>
+      'The request was received by Moniary\'s server queue.';
+
+  @override
+  String get privacyStatusInReview => 'In review';
+
+  @override
+  String get privacyStatusInReviewDesc =>
+      'An authorized operator is reviewing the request.';
+
+  @override
+  String get privacyStatusRejected => 'Cannot process';
+
+  @override
+  String get privacyStatusRejectedDesc =>
+      'The request could not be processed. Review the operator response before submitting another request.';
+
+  @override
+  String get legalOpenRequestCenter => 'Open secure request center';
 }

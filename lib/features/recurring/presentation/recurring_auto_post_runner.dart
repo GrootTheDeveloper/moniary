@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../shared/utils/app_logger.dart';
 import '../../calendar/application/month/calendar_month_provider.dart';
 import '../../statistics/presentation/statistics_view.dart';
 import '../../transactions/application/queries/transaction_queries.dart';
@@ -27,9 +28,13 @@ class _RecurringAutoPostRunnerState
   }
 
   Future<void> _run() async {
-    final posted = await ref
-        .read(recurringMaterializationServiceProvider)
-        .run();
+    int posted;
+    try {
+      posted = await ref.read(recurringMaterializationServiceProvider).run();
+    } catch (error, stackTrace) {
+      AppLogger.error('Recurring launch auto-post failed', error, stackTrace);
+      return;
+    }
     if (posted == 0 || !mounted) return;
     ref.invalidate(recurringControllerProvider);
     ref.invalidate(calendarMonthProvider);

@@ -11,6 +11,7 @@ import 'package:moniary/features/wallets/domain/models/wallet.dart';
 import 'package:moniary/features/categories/domain/models/category.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:moniary/core/supabase/supabase_providers.dart';
+import 'package:moniary/core/supabase/app_exception.dart';
 
 class MockImportRepository extends Mock implements ImportRepository {}
 
@@ -171,15 +172,16 @@ void main() {
     );
 
     when(
-      () => mockTransactionRepo.createTransaction(
-        amount: any(named: 'amount'),
-        type: any(named: 'type'),
+      () => mockTransactionRepo.importTransactionsAtomically(
+        batchKey: any(named: 'batchKey'),
         walletId: any(named: 'walletId'),
-        categoryId: any(named: 'categoryId'),
-        transactionDate: any(named: 'transactionDate'),
-        note: any(named: 'note'),
+        rows: any(named: 'rows'),
       ),
-    ).thenAnswer((_) async => 'mock-id');
+    ).thenAnswer((invocation) async {
+      final rows =
+          invocation.namedArguments[#rows] as List<Map<String, Object?>>;
+      return rows.length;
+    });
     when(
       () => mockImportRepo.createPendingImport(
         fileName: any(named: 'fileName'),
@@ -217,15 +219,12 @@ void main() {
     final count = await controller.confirmImport(wallet);
     expect(count, 2); // 2 valid rows
     verify(
-      () => mockTransactionRepo.createTransaction(
-        amount: any(named: 'amount'),
-        type: any(named: 'type'),
+      () => mockTransactionRepo.importTransactionsAtomically(
+        batchKey: any(named: 'batchKey'),
         walletId: any(named: 'walletId'),
-        categoryId: any(named: 'categoryId'),
-        transactionDate: any(named: 'transactionDate'),
-        note: any(named: 'note'),
+        rows: any(named: 'rows'),
       ),
-    ).called(2);
+    ).called(1);
 
     final state = container.read(importControllerProvider);
     expect(state.parsedRows, isEmpty); // Clears rows on success
@@ -273,15 +272,12 @@ void main() {
         ],
       );
       when(
-        () => mockTransactionRepo.createTransaction(
-          amount: any(named: 'amount'),
-          type: any(named: 'type'),
+        () => mockTransactionRepo.importTransactionsAtomically(
+          batchKey: any(named: 'batchKey'),
           walletId: any(named: 'walletId'),
-          categoryId: any(named: 'categoryId'),
-          transactionDate: any(named: 'transactionDate'),
-          note: any(named: 'note'),
+          rows: any(named: 'rows'),
         ),
-      ).thenAnswer((_) async => 'mock-id');
+      ).thenAnswer((_) async => 1);
       when(
         () => mockImportRepo.createPendingImport(
           fileName: any(named: 'fileName'),
@@ -377,13 +373,10 @@ void main() {
       expect(state.error, 'IMPORT_HISTORY_CREATE_ERROR');
       expect(state.parsedRows, isNotEmpty);
       verifyNever(
-        () => mockTransactionRepo.createTransaction(
-          amount: any(named: 'amount'),
-          type: any(named: 'type'),
+        () => mockTransactionRepo.importTransactionsAtomically(
+          batchKey: any(named: 'batchKey'),
           walletId: any(named: 'walletId'),
-          categoryId: any(named: 'categoryId'),
-          transactionDate: any(named: 'transactionDate'),
-          note: any(named: 'note'),
+          rows: any(named: 'rows'),
         ),
       );
       verifyNever(
@@ -394,4 +387,88 @@ void main() {
       );
     },
   );
+
+  test('confirmImport reuses the batch key after a lost response', () async {
+    final date = DateTime(2026, 6, 2);
+    when(() => mockImportRepo.parseCsv(any())).thenAnswer(
+      (_) async => [
+        CsvTransactionRow(
+          typeStr: 'Expense',
+          categoryName: 'Food',
+          note: 'Lunch',
+          isValid: true,
+          amount: 100,
+          date: date,
+        ),
+      ],
+    );
+    when(() => mockCategoryRepo.fetchCategories()).thenAnswer(
+      (_) async => [
+        Category(
+          id: 'c1',
+          name: 'Food',
+          type: TransactionType.expense,
+          icon: '',
+          color: '',
+          isDefault: false,
+          isActive: true,
+          createdAt: date,
+        ),
+      ],
+    );
+    when(
+      () => mockImportRepo.createPendingImport(
+        fileName: any(named: 'fileName'),
+        walletName: any(named: 'walletName'),
+      ),
+    ).thenAnswer((_) async => historyEntry());
+    when(
+      () => mockImportRepo.failImport(
+        id: any(named: 'id'),
+        importedCount: any(named: 'importedCount'),
+        errorMessage: any(named: 'errorMessage'),
+      ),
+    ).thenAnswer((_) async {});
+    var attempts = 0;
+    final batchKeys = <String>[];
+    when(
+      () => mockTransactionRepo.importTransactionsAtomically(
+        batchKey: any(named: 'batchKey'),
+        walletId: any(named: 'walletId'),
+        rows: any(named: 'rows'),
+      ),
+    ).thenAnswer((invocation) async {
+      batchKeys.add(invocation.namedArguments[#batchKey] as String);
+      attempts++;
+      if (attempts == 1) {
+        throw const AppException('Response was lost', code: 'errorConnection');
+      }
+      return 1;
+    });
+    when(
+      () => mockImportRepo.completeImport(
+        id: any(named: 'id'),
+        importedCount: any(named: 'importedCount'),
+      ),
+    ).thenAnswer((_) async {});
+
+    final controller = container.read(importControllerProvider.notifier);
+    await controller.pickAndParseFile('test.csv');
+    final wallet = Wallet(
+      id: 'w1',
+      name: 'Wallet',
+      type: WalletType.bank,
+      icon: null,
+      color: null,
+      initialBalance: 0,
+      isDefault: true,
+      isActive: true,
+      createdAt: date,
+    );
+
+    expect(await controller.confirmImport(wallet), isNull);
+    expect(await controller.confirmImport(wallet), 1);
+    expect(batchKeys, hasLength(2));
+    expect(batchKeys.first, batchKeys.last);
+  });
 }

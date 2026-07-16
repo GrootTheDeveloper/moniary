@@ -21,23 +21,28 @@ schedule, or the public policy URL required for production.
 - **Settings/account operations**: notification/report preferences, active
   sessions, deletion status/feedback, privacy-request history, app lock and
   hidden-balance preferences.
-- **Local assistant state**: assistant enablement/consent flags and deterministic
-  summaries calculated from repository transactions. The current assistant does
-  not send prompts or finance data to an AI model.
-- **Device files**: selected CSV imports, generated CSV/XLSX/PDF exports, journal
-  recap PNGs, and local import/export/privacy-request history JSON.
+- **Assistant state and prompts**: assistant enablement/consent flags, user
+  questions, limited chat history, profile name, and allowlisted financial
+  summaries selected by those flags. When the assistant is enabled, this data
+  is sent through a Supabase Edge Function to Google Gemini for a response.
+- **Device files**: selected CSV imports, generated CSV/XLSX/PDF exports,
+  journal recap PNGs, and local import/export history JSON. Privacy request
+  history is stored in Supabase, not in a local JSON file.
 
 ## Purposes
 
 Data is used to authenticate users, sync and display their finance records,
-calculate calendar/statistics/budgets/recaps, provide deterministic assistant
-insights, manage friends/shared expenses, process user-requested OCR, send
+calculate calendar/statistics/budgets/recaps, provide verified assistant facts
+and optional Gemini-generated explanations, manage friends/shared expenses, process user-requested OCR, send
 configured reports, support exports/imports, and handle privacy/account actions.
 
 ## Service providers and disclosures
 
 - **Supabase**: authentication, PostgreSQL data, private object Storage, RPCs,
   and Edge Functions.
+- **Google Gemini**: receives the assistant question, limited history, profile
+  context, and only the financial snapshot fields permitted by the user's
+  server-side assistant settings when the AI assistant is enabled.
 - **Configured OCR host**: receives a receipt image when the user starts OCR.
   The repository implementation is FastAPI/Tesseract; the production host and
   its operational retention policy must be disclosed.

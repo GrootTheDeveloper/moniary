@@ -215,46 +215,31 @@ class AccountRepository {
 
   Future<List<PrivacyRequestHistoryEntry>> fetchPrivacyRequestHistory() async {
     try {
-      final file = await _privacyRequestHistoryFile();
-      if (!await file.exists()) {
-        return const [];
+      final session = _client.auth.currentSession;
+      if (session == null) {
+        throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
       }
-
-      final raw = await file.readAsString();
-      final decoded = jsonDecode(raw) as List<dynamic>;
-      return decoded
+      final rows = await _client
+          .from('privacy_requests')
+          .select(
+            'id,request_type,message,status,admin_note,submitted_at,resolved_at',
+          )
+          .eq('user_id', session.user.id)
+          .order('submitted_at', ascending: false)
+          .limit(50);
+      return (rows as List<dynamic>)
           .cast<Map<String, dynamic>>()
           .map(PrivacyRequestHistoryEntry.fromMap)
-          .toList()
-        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          .toList(growable: false);
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Failed to read privacy request history', e, st);
+      throw AppException(e.message, code: e.code);
     } catch (e, st) {
+      if (e is AppException) rethrow;
       AppLogger.error('Failed to read privacy request history', e, st);
       throw const AppException(
-        'Failed to read privacy request history',
+        'errorConnection',
         code: 'PRIVACY_HISTORY_READ_ERROR',
-      );
-    }
-  }
-
-  Future<void> updatePrivacyRequestStatus({
-    required String id,
-    required String status,
-  }) async {
-    final history = await fetchPrivacyRequestHistory();
-    final updated = history
-        .map((entry) => entry.id == id ? entry.copyWith(status: status) : entry)
-        .map((entry) => entry.toMap())
-        .toList();
-    try {
-      final historyFile = await _privacyRequestHistoryFile();
-      await historyFile.writeAsString(
-        const JsonEncoder.withIndent('  ').convert(updated),
-      );
-    } catch (e, st) {
-      AppLogger.error('Failed to write privacy request history file', e, st);
-      throw const AppException(
-        'Failed to write privacy request history file',
-        code: 'FILE_IO_ERROR',
       );
     }
   }
@@ -433,21 +418,7 @@ class AccountRepository {
   }
 
   Future<void> createDeletionRequest({required String reason}) async {
-    final session = _client.auth.currentSession;
-    if (session == null) {
-      throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
-    }
-
-    final timestamp = DateTime.now();
-
-    // We just record it in local history as a privacy request for manual processing.
-    // For now, we just record it in local history as 'requested'.
-    await _recordPrivacyRequest(
-      requestType: 'data_deletion',
-      message: reason,
-      status: 'sent_manually',
-      timestamp: timestamp,
-    );
+    await createPrivacyRequest(requestType: 'data_deletion', message: reason);
   }
 
   Future<void> createPrivacyRequest({
@@ -459,14 +430,48 @@ class AccountRepository {
       throw const AppException('User not logged in', code: 'AUTH_REQUIRED');
     }
 
-    final timestamp = DateTime.now();
-
-    await _recordPrivacyRequest(
-      requestType: requestType,
-      message: message,
-      status: 'sent_manually',
-      timestamp: timestamp,
-    );
+    const allowedTypes = {
+      'data_access',
+      'data_export_help',
+      'data_correction',
+      'data_deletion',
+      'privacy_complaint',
+    };
+    final normalizedMessage = message.trim();
+    if (!allowedTypes.contains(requestType)) {
+      throw const AppException(
+        'Invalid privacy request type',
+        code: 'PRIVACY_REQUEST_TYPE_INVALID',
+      );
+    }
+    if (normalizedMessage.isEmpty || normalizedMessage.length > 4000) {
+      throw const AppException(
+        'Privacy request message must contain 1 to 4000 characters',
+        code: 'PRIVACY_REQUEST_MESSAGE_INVALID',
+      );
+    }
+    try {
+      await _client.rpc(
+        'submit_privacy_request',
+        params: {'p_request_type': requestType, 'p_message': normalizedMessage},
+      );
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Failed to submit privacy request', e, st);
+      if (e.message.contains('PRIVACY_REQUEST_RATE_LIMITED')) {
+        throw const AppException(
+          'Privacy request rate limit exceeded',
+          code: 'PRIVACY_REQUEST_RATE_LIMITED',
+        );
+      }
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to submit privacy request', e, st);
+      throw const AppException(
+        'Failed to submit privacy request',
+        code: 'PRIVACY_REQUEST_SUBMIT_FAILED',
+      );
+    }
   }
 
   static String _formatDate(String? value) {
@@ -688,12 +693,6 @@ class AccountRepository {
     return File('${directory.path}/moniary_export_history.json');
   }
 
-  Future<File> _privacyRequestHistoryFile() async {
-    final directory =
-        _documentsDirectory ?? await getApplicationDocumentsDirectory();
-    return File('${directory.path}/moniary_privacy_request_history.json');
-  }
-
   Future<void> clearLocalUserFiles() async {
     try {
       final directory = await _getExportDirectory();
@@ -712,41 +711,6 @@ class AccountRepository {
       throw const AppException(
         'Failed to clear local account files',
         code: 'ACCOUNT_LOCAL_DATA_CLEAR_ERROR',
-      );
-    }
-  }
-
-  Future<void> _recordPrivacyRequest({
-    required String requestType,
-    required String message,
-    required String status,
-    File? file,
-    required DateTime timestamp,
-  }) async {
-    final history = await fetchPrivacyRequestHistory();
-    final entry = PrivacyRequestHistoryEntry(
-      id: DateFormat('yyyyMMddHHmmss').format(timestamp),
-      requestType: requestType,
-      message: message.trim(),
-      status: status,
-      createdAt: timestamp,
-      path: file?.path,
-    );
-
-    try {
-      final historyFile = await _privacyRequestHistoryFile();
-      final next = [
-        entry,
-        ...history,
-      ].take(50).map((item) => item.toMap()).toList();
-      await historyFile.writeAsString(
-        const JsonEncoder.withIndent('  ').convert(next),
-      );
-    } catch (e, st) {
-      AppLogger.error('Failed to write privacy request history file', e, st);
-      throw const AppException(
-        'Failed to write privacy request history file',
-        code: 'FILE_IO_ERROR',
       );
     }
   }

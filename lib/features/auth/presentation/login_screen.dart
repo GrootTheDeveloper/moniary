@@ -380,7 +380,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                           child: Text(context.l10n.loginGuestCta),
                         ),
-                        if (kDebugMode) ...[
+                        if (kDebugMode && AppConstants.devToolsEnabled) ...[
                           const SizedBox(height: 10),
                           OutlinedButton.icon(
                             key: const ValueKey('login_reset_onboarding_dev'),

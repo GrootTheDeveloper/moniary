@@ -44,7 +44,7 @@ class SupabaseNotificationRepository
   Future<NotificationPage> fetchNotificationPage({
     AppNotificationCategory? category,
     String? groupId,
-    DateTime? before,
+    NotificationCursor? before,
     int limit = 30,
   }) async {
     try {
@@ -59,7 +59,7 @@ class SupabaseNotificationRepository
           .toList(growable: false);
       return NotificationPage(
         items: items,
-        nextCursor: items.isEmpty ? null : items.last.createdAt,
+        nextCursor: items.isEmpty ? null : items.last.cursor,
         hasMore: items.length >= limit,
       );
     } catch (error, stackTrace) {

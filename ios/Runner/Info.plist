@@ -49,8 +49,6 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Moniary uses the camera so you can capture receipt photos for transactions.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Moniary uses the microphone when recording videos for scanning or profile purposes.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Moniary uses Face ID to unlock the app when privacy lock is enabled.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

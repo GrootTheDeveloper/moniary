@@ -88,6 +88,10 @@ class AppConstants {
     'ENABLE_FACEBOOK_AUTH',
     defaultValue: false,
   );
+  static const devToolsEnabled = bool.fromEnvironment(
+    'ENABLE_DEV_TOOLS',
+    defaultValue: false,
+  );
 
   static const turnstileSiteKey = String.fromEnvironment('TURNSTILE_SITE_KEY');
   static const turnstileBaseUrl = String.fromEnvironment('TURNSTILE_BASE_URL');
@@ -141,9 +145,4 @@ class AppConstants {
     return '$inviteLinkScheme://$inviteLinkHost/$groupInviteHost/'
         '$groupInvitePath/${Uri.encodeComponent(token)}';
   }
-
-  // --- Contact ---
-  static const privacyEmail = 'privacy@moniary.app';
-  static const supportEmail = 'support@moniary.app';
-  static const legalEmail = 'legal@moniary.app';
 }

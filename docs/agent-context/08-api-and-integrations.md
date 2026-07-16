@@ -72,13 +72,16 @@ from Supabase Vault and are never committed to migrations.
 ## OCR service
 
 - Flutter flow: `ScanningController -> OcrRepository -> FastApiOcrService`.
-- Request: multipart field `file` to `POST {OCR_API_URL}/extract`.
+- Request: multipart field `file` plus the current Supabase bearer session to
+  `POST {OCR_API_URL}/extract`.
 - Backend: `backend/ocr/`, using FastAPI, Tesseract, OpenCV, Pillow, regex, and
   keyword matching.
 - The backend also exposes `GET /health` and `POST /extract/base64`.
 - It does not use Ollama, an LLM, or cloud OCR.
-- OCR configuration is independent of Supabase. There is no fake OCR fallback;
-  the service must be reachable for scanning extraction.
+- The backend verifies the bearer session with Supabase Auth before accepting
+  an image, rate-limits per user, bounds concurrent OCR execution, and keeps
+  raw OCR debug output disabled by default. There is no fake OCR fallback; the
+  service and Supabase Auth must both be reachable for scanning extraction.
 
 ## Device integrations
 
@@ -92,6 +95,8 @@ from Supabase Vault and are never committed to migrations.
 
 ## Financial assistant
 
-The assistant is local deterministic analysis over repository data. It does not
-call an external AI provider. Any future model/API integration must be documented
-as a new external data processor and remain behind a repository/service boundary.
+The app calculates exact financial facts locally/repository-side, then calls the
+authenticated `assistant-chat` Supabase Edge Function for optional natural-
+language interpretation. The function revalidates server-side assistant access,
+allowlists snapshot fields, rate-limits the user, and calls Google Gemini. Gemini
+keys remain server-side and the in-app privacy disclosure names this processor.

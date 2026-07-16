@@ -238,6 +238,7 @@ class TransactionRepository {
     String source = 'manual',
     bool isImportant = false,
     String? recurringTransactionId,
+    String imageUploadStatus = 'none',
   }) async {
     try {
       final uid = _userId;
@@ -254,7 +255,7 @@ class TransactionRepository {
             'merchant_name': merchantName,
             'transaction_date': transactionDate.toUtc().toIso8601String(),
             'source': source,
-            'image_upload_status': 'pending',
+            'image_upload_status': imageUploadStatus,
             'is_important': isImportant,
             'recurring_transaction_id': recurringTransactionId,
           })
@@ -308,6 +309,40 @@ class TransactionRepository {
     }
   }
 
+  /// Imports a validated batch in one database transaction.
+  ///
+  /// [batchKey] is stable for retries of the same confirmation attempt. The
+  /// server returns the original count if a committed response was lost.
+  Future<int> importTransactionsAtomically({
+    required String batchKey,
+    required String walletId,
+    required List<Map<String, Object?>> rows,
+  }) async {
+    try {
+      final response = await _client.rpc(
+        'import_personal_transactions',
+        params: {
+          'p_wallet_id': walletId,
+          'p_batch_key': batchKey,
+          'p_rows': rows,
+        },
+      );
+      if (response is int) return response;
+      if (response is num) return response.toInt();
+      throw const AppException(
+        'Invalid import response',
+        code: 'IMPORT_INVALID_RESPONSE',
+      );
+    } on PostgrestException catch (e, st) {
+      AppLogger.error('Atomic transaction import failed', e, st);
+      throw AppException(e.message, code: e.code);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Atomic transaction import failed', e, st);
+      throw const AppException('errorConnection');
+    }
+  }
+
   Future<void> toggleTransactionImportance(
     String transactionId,
     bool isImportant,
@@ -334,30 +369,24 @@ class TransactionRepository {
     try {
       final uid = _userId;
 
-      // 1. Fetch transaction to get image path
+      // Remove storage first. If storage cleanup fails, keep the financial
+      // record so the user can retry without leaving an unreachable object.
       final transaction = await fetchTransactionById(transactionId);
+      final deterministicPath = transactionImagePath(transactionId);
+      final paths = <String>{deterministicPath};
+      if (transaction.imagePath case final imagePath?) {
+        paths.add(imagePath);
+      }
+      await _client.storage
+          .from(AppConstants.storageBucket)
+          .remove(paths.toList(growable: false));
 
-      // 2. Delete from database
+      // Delete the financial record only after its private attachment is gone.
       await _client
           .from('transactions')
           .delete()
           .eq('id', transactionId)
           .eq('user_id', uid);
-
-      // 3. Cleanup storage if needed
-      if (transaction.imagePath != null) {
-        try {
-          await _client.storage.from('transaction-images').remove([
-            transaction.imagePath!,
-          ]);
-        } catch (e, st) {
-          AppLogger.error(
-            'Failed to delete transaction image from storage',
-            e,
-            st,
-          );
-        }
-      }
     } on PostgrestException catch (e, st) {
       AppLogger.error('Lá»—i cÆ¡ sá»Ÿ dá»¯ liá»‡u', e, st);
       throw AppException(e.message, code: e.code);
@@ -445,12 +474,10 @@ class TransactionRepository {
     Uint8List bytes,
   ) async {
     try {
-      final uid = _userId;
-
-      final path = 'transactions/$uid/$transactionId.jpg';
+      final path = transactionImagePath(transactionId);
 
       await _client.storage
-          .from('transaction-images')
+          .from(AppConstants.storageBucket)
           .uploadBinary(
             path,
             bytes,
@@ -468,6 +495,28 @@ class TransactionRepository {
       if (e is AppException) rethrow;
       AppLogger.error('Lá»—i káº¿t ná»‘i', e, st);
       throw const AppException('errorConnection');
+    }
+  }
+
+  String transactionImagePath(String transactionId) {
+    return 'transactions/$_userId/$transactionId.jpg';
+  }
+
+  Future<void> removeTransactionImage(String transactionId) async {
+    try {
+      await _client.storage.from(AppConstants.storageBucket).remove([
+        transactionImagePath(transactionId),
+      ]);
+    } on StorageException catch (e, st) {
+      AppLogger.error('Failed to remove transaction image', e, st);
+      throw AppException(e.message, code: e.statusCode);
+    } catch (e, st) {
+      if (e is AppException) rethrow;
+      AppLogger.error('Failed to remove transaction image', e, st);
+      throw const AppException(
+        'Failed to remove transaction image',
+        code: 'TRANSACTION_IMAGE_DELETE_FAILED',
+      );
     }
   }
 
@@ -500,7 +549,7 @@ class TransactionRepository {
       // but to be consistent with wrapping Má»ŒI public method and duplicate check,
       // let's wrap it. Since _userId isn't required by the client call, we just try/catch.
       return await _client.storage
-          .from('transaction-images')
+          .from(AppConstants.storageBucket)
           .createSignedUrl(path, AppConstants.signedUrlTtlSeconds);
     } on PostgrestException catch (e, st) {
       AppLogger.error('Lá»—i cÆ¡ sá»Ÿ dá»¯ liá»‡u', e, st);

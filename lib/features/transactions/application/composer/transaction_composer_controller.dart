@@ -6,7 +6,9 @@ import '../../../calendar/application/month/calendar_month_provider.dart';
 import '../../../categories/domain/models/category.dart';
 import '../../../wallets/application/wallets_controller.dart';
 import '../../../../core/widgets/widget_update_service.dart';
+import '../../../../shared/utils/app_logger.dart';
 import '../../data/repositories/transaction_repository.dart';
+import '../../domain/models/transaction_mutation_result.dart';
 import '../queries/transaction_queries.dart';
 
 final transactionComposerProvider =
@@ -18,7 +20,7 @@ class TransactionComposerController extends AsyncNotifier<void> {
   @override
   Future<void> build() async {}
 
-  Future<void> createTransaction({
+  Future<TransactionSaveResult> createTransaction({
     required double amount,
     required TransactionType type,
     required String walletId,
@@ -46,50 +48,26 @@ class TransactionComposerController extends AsyncNotifier<void> {
         merchantName: merchantName,
         source: source,
         isImportant: isImportant,
+        imageUploadStatus: imageBytes == null ? 'none' : 'pending',
       );
 
-      // 2. If no image, we are done (but status is pending, maybe we should update to uploaded if no image?
-      // The constraint says image_path null and status pending/failed is ok.
-      // Actually image_path is null and status pending is fine for "no image" or "uploading".)
-      if (imageBytes == null) {
-        // Update to 'uploaded' even if no image? Or just leave it?
-        // PRD says: image_path is null and status pending/failed is allowed.
-        _triggerUpdates();
-        state = const AsyncData(null);
-        return;
-      }
-
-      // 3. Upload image
-      try {
-        final imagePath = await repo.uploadTransactionImage(
-          transactionId,
-          imageBytes,
-        );
-
-        // 4. Update metadata
-        await repo.updateTransactionImageMetadata(
-          transactionId: transactionId,
-          imagePath: imagePath,
-          status: 'uploaded',
-        );
-      } catch (e) {
-        // 5. If failed, update status to failed
-        await repo.updateTransactionImageMetadata(
-          transactionId: transactionId,
-          imagePath: null,
-          status: 'failed',
-        );
-        rethrow;
-      }
+      final imageUploadFailed =
+          imageBytes != null &&
+          !await _attachNewImage(
+            repo: repo,
+            transactionId: transactionId,
+            imageBytes: imageBytes,
+          );
       _triggerUpdates();
       state = const AsyncData(null);
+      return TransactionSaveResult(imageUploadFailed: imageUploadFailed);
     } catch (e, st) {
       state = AsyncError(e, st);
       rethrow;
     }
   }
 
-  Future<void> updateTransaction({
+  Future<TransactionSaveResult> updateTransaction({
     required String transactionId,
     required double amount,
     required TransactionType type,
@@ -104,6 +82,9 @@ class TransactionComposerController extends AsyncNotifier<void> {
     final repo = ref.read(transactionRepositoryProvider);
 
     try {
+      final previousImagePath = imageBytes == null
+          ? null
+          : (await repo.fetchTransactionById(transactionId)).imagePath;
       await repo.updateTransaction(
         transactionId: transactionId,
         amount: amount,
@@ -115,31 +96,133 @@ class TransactionComposerController extends AsyncNotifier<void> {
         isImportant: isImportant,
       );
 
-      if (imageBytes != null) {
-        try {
-          final imagePath = await repo.uploadTransactionImage(
-            transactionId,
-            imageBytes,
-          );
-          await repo.updateTransactionImageMetadata(
+      final imageUploadFailed =
+          imageBytes != null &&
+          !await _replaceImage(
+            repo: repo,
             transactionId: transactionId,
-            imagePath: imagePath,
-            status: 'uploaded',
+            imageBytes: imageBytes,
+            previousImagePath: previousImagePath,
           );
-        } catch (e) {
-          await repo.updateTransactionImageMetadata(
-            transactionId: transactionId,
-            imagePath: null,
-            status: 'failed',
-          );
-          rethrow;
-        }
-      }
       _triggerUpdates();
       state = const AsyncData(null);
+      return TransactionSaveResult(imageUploadFailed: imageUploadFailed);
     } catch (e, st) {
       state = AsyncError(e, st);
       rethrow;
+    }
+  }
+
+  Future<bool> _attachNewImage({
+    required TransactionRepository repo,
+    required String transactionId,
+    required Uint8List imageBytes,
+  }) async {
+    try {
+      final imagePath = await repo.uploadTransactionImage(
+        transactionId,
+        imageBytes,
+      );
+      await repo.updateTransactionImageMetadata(
+        transactionId: transactionId,
+        imagePath: imagePath,
+        status: 'uploaded',
+      );
+      return true;
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Transaction saved but image attachment failed',
+        error,
+        stackTrace,
+      );
+      await _cleanupFailedNewImage(repo, transactionId);
+      return false;
+    }
+  }
+
+  Future<bool> _replaceImage({
+    required TransactionRepository repo,
+    required String transactionId,
+    required Uint8List imageBytes,
+    required String? previousImagePath,
+  }) async {
+    String? uploadedImagePath;
+    try {
+      final imagePath = await repo.uploadTransactionImage(
+        transactionId,
+        imageBytes,
+      );
+      uploadedImagePath = imagePath;
+      try {
+        await repo.updateTransactionImageMetadata(
+          transactionId: transactionId,
+          imagePath: imagePath,
+          status: 'uploaded',
+        );
+      } catch (error, stackTrace) {
+        // Existing images use the same deterministic path. The new bytes are
+        // already referenced by the old metadata, so do not delete them.
+        if (previousImagePath == imagePath) {
+          AppLogger.warning(
+            'Image bytes replaced; metadata refresh will retry on next edit',
+          );
+          return true;
+        }
+        Error.throwWithStackTrace(error, stackTrace);
+      }
+      return true;
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Transaction updated but replacement image failed',
+        error,
+        stackTrace,
+      );
+      if (previousImagePath == null) {
+        await _cleanupFailedNewImage(repo, transactionId);
+      } else if (uploadedImagePath != null &&
+          previousImagePath != uploadedImagePath) {
+        // A legacy attachment may use a different path. If uploading the new
+        // deterministic object succeeded but its metadata update failed, keep
+        // the referenced legacy image and remove the otherwise orphaned object.
+        try {
+          await repo.removeTransactionImage(transactionId);
+        } catch (cleanupError, cleanupStackTrace) {
+          AppLogger.error(
+            'Failed to clean up unreferenced replacement image',
+            cleanupError,
+            cleanupStackTrace,
+          );
+        }
+      }
+      return false;
+    }
+  }
+
+  Future<void> _cleanupFailedNewImage(
+    TransactionRepository repo,
+    String transactionId,
+  ) async {
+    try {
+      await repo.removeTransactionImage(transactionId);
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to clean up unattached transaction image',
+        error,
+        stackTrace,
+      );
+    }
+    try {
+      await repo.updateTransactionImageMetadata(
+        transactionId: transactionId,
+        imagePath: null,
+        status: 'failed',
+      );
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to mark transaction image attachment as failed',
+        error,
+        stackTrace,
+      );
     }
   }
 

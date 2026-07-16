@@ -4467,7 +4467,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyFaqDeletionFailAnswer.
   ///
   /// In vi, this message translates to:
-  /// **'Bạn có thể tạo file yêu cầu xóa dữ liệu thủ công và gửi cho kênh hỗ trợ quyền riêng tư.'**
+  /// **'Hãy tạo yêu cầu xóa dữ liệu an toàn trong màn hình Liên hệ quyền riêng tư và theo dõi trạng thái máy chủ trong lịch sử yêu cầu.'**
   String get privacyFaqDeletionFailAnswer;
 
   /// No description provided for @privacyFaqExportLocationQuestion.
@@ -4511,18 +4511,6 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Đã tạo yêu cầu'**
   String get privacyRequestCreated;
-
-  /// No description provided for @privacyCopyEmail.
-  ///
-  /// In vi, this message translates to:
-  /// **'Sao chép email'**
-  String get privacyCopyEmail;
-
-  /// No description provided for @privacyCopyInstructions.
-  ///
-  /// In vi, this message translates to:
-  /// **'Sao chép hướng dẫn'**
-  String get privacyCopyInstructions;
 
   /// No description provided for @privacyPolicyTitle.
   ///
@@ -5373,25 +5361,25 @@ abstract class AppLocalizations {
   /// No description provided for @privacyContactProcessStep1.
   ///
   /// In vi, this message translates to:
-  /// **'Tạo request trong app'**
+  /// **'Kiểm tra yêu cầu trong app'**
   String get privacyContactProcessStep1;
 
   /// No description provided for @privacyContactProcessStep1Desc.
   ///
   /// In vi, this message translates to:
-  /// **'App chuẩn bị nội dung để bạn gửi cho kênh hỗ trợ.'**
+  /// **'Kiểm tra loại và nội dung yêu cầu trước khi gửi.'**
   String get privacyContactProcessStep1Desc;
 
   /// No description provided for @privacyContactProcessStep2.
   ///
   /// In vi, this message translates to:
-  /// **'Gửi request thủ công'**
+  /// **'Gửi an toàn'**
   String get privacyContactProcessStep2;
 
   /// No description provided for @privacyContactProcessStep2Desc.
   ///
   /// In vi, this message translates to:
-  /// **'Gửi yêu cầu qua email {email}.'**
+  /// **'Yêu cầu được gửi trực tiếp tới {email}.'**
   String privacyContactProcessStep2Desc(String email);
 
   /// No description provided for @privacyContactProcessStep3.
@@ -5442,18 +5430,6 @@ abstract class AppLocalizations {
   /// **'Nếu không thể xử lý trực tiếp trong app, bạn có thể liên hệ nhóm hỗ trợ Moniary để được hỗ trợ về dữ liệu.'**
   String get privacyContactHeroDesc;
 
-  /// No description provided for @privacyContactEmailTitle.
-  ///
-  /// In vi, this message translates to:
-  /// **'Email hỗ trợ'**
-  String get privacyContactEmailTitle;
-
-  /// No description provided for @privacyContactEmailDesc.
-  ///
-  /// In vi, this message translates to:
-  /// **'Dùng cho yêu cầu xóa dữ liệu, xuất dữ liệu hoặc câu hỏi về quyền riêng tư.'**
-  String get privacyContactEmailDesc;
-
   /// No description provided for @privacyContactInfoTitle.
   ///
   /// In vi, this message translates to:
@@ -5463,13 +5439,13 @@ abstract class AppLocalizations {
   /// No description provided for @privacyContactInfoValue.
   ///
   /// In vi, this message translates to:
-  /// **'Mã tài khoản hoặc email đăng nhập'**
+  /// **'Loại yêu cầu và mô tả rõ ràng'**
   String get privacyContactInfoValue;
 
   /// No description provided for @privacyContactInfoDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Không gửi mật khẩu, mã truy cập, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.'**
+  /// **'Không đưa mật khẩu, mã truy cập, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết không cần thiết vào yêu cầu.'**
   String get privacyContactInfoDesc;
 
   /// No description provided for @privacyContactTimeTitle.
@@ -5511,8 +5487,20 @@ abstract class AppLocalizations {
   /// No description provided for @privacyRequestSuccessDesc.
   ///
   /// In vi, this message translates to:
-  /// **'Yêu cầu đã được tạo. Vui lòng kiểm tra lịch sử và gửi yêu cầu thủ công.'**
+  /// **'Yêu cầu đã được gửi an toàn. Bạn có thể theo dõi trạng thái trên máy chủ trong lịch sử yêu cầu.'**
   String get privacyRequestSuccessDesc;
+
+  /// No description provided for @privacyRequestRateLimited.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đã gửi nhiều yêu cầu gần đây. Vui lòng chờ tối đa 24 giờ trước khi thử lại.'**
+  String get privacyRequestRateLimited;
+
+  /// No description provided for @privacyDetailResponseTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phản hồi từ Moniary'**
+  String get privacyDetailResponseTitle;
 
   /// No description provided for @privacyAndAccountTitle.
   ///
@@ -13003,6 +12991,72 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Xóa dữ liệu khách'**
   String get deleteGuestDataAction;
+
+  /// No description provided for @transactionImageUploadWarning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch đã được lưu nhưng chưa thể đính kèm ảnh. Bạn có thể thêm lại ảnh khi sửa giao dịch.'**
+  String get transactionImageUploadWarning;
+
+  /// No description provided for @privacyInAppChannelTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kênh an toàn trong ứng dụng'**
+  String get privacyInAppChannelTitle;
+
+  /// No description provided for @privacyInAppChannelValue.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trung tâm yêu cầu Moniary'**
+  String get privacyInAppChannelValue;
+
+  /// No description provided for @privacyInAppChannelDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu được lưu trong hàng đợi máy chủ được bảo vệ của Moniary và chỉ người vận hành được ủy quyền mới có thể xử lý.'**
+  String get privacyInAppChannelDesc;
+
+  /// No description provided for @privacyStatusSubmitted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tiếp nhận'**
+  String get privacyStatusSubmitted;
+
+  /// No description provided for @privacyStatusSubmittedDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu đã được hàng đợi máy chủ Moniary tiếp nhận.'**
+  String get privacyStatusSubmittedDesc;
+
+  /// No description provided for @privacyStatusInReview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang xem xét'**
+  String get privacyStatusInReview;
+
+  /// No description provided for @privacyStatusInReviewDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người vận hành được ủy quyền đang xem xét yêu cầu.'**
+  String get privacyStatusInReviewDesc;
+
+  /// No description provided for @privacyStatusRejected.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể xử lý'**
+  String get privacyStatusRejected;
+
+  /// No description provided for @privacyStatusRejectedDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu chưa thể xử lý. Hãy xem phản hồi của người vận hành trước khi gửi yêu cầu khác.'**
+  String get privacyStatusRejectedDesc;
+
+  /// No description provided for @legalOpenRequestCenter.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở trung tâm yêu cầu an toàn'**
+  String get legalOpenRequestCenter;
 }
 
 class _AppLocalizationsDelegate

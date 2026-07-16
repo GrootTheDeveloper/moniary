@@ -115,10 +115,17 @@ class AuthController extends AsyncNotifier<void> {
     state = const AsyncLoading();
     try {
       final pendingLink = ref.read(pendingEmailAccountLinkProvider);
-      if (pendingLink == null) {
+      final session = ref.read(currentSessionProvider);
+      if (pendingLink == null ||
+          session == null ||
+          !pendingLink.matches(
+            userId: session.user.id,
+            email: session.user.email,
+            isAnonymous: session.user.isAnonymous,
+          )) {
         throw const AppException(
-          'Email account linking is not pending',
-          code: 'AUTH_LINK_EMAIL_NOT_PENDING',
+          'Email account linking does not match the current session',
+          code: 'AUTH_LINK_EMAIL_SESSION_MISMATCH',
         );
       }
       await ref

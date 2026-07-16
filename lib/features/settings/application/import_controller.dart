@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/core/supabase/supabase_providers.dart';
@@ -7,7 +10,6 @@ import 'package:moniary/features/transactions/data/repositories/transaction_repo
 import 'package:moniary/features/categories/data/repositories/category_repository.dart';
 import 'package:moniary/features/wallets/domain/models/wallet.dart';
 import 'package:moniary/features/categories/domain/models/category.dart';
-import 'dart:io';
 import 'package:moniary/features/settings/domain/models/csv_transaction_row.dart';
 import 'package:moniary/features/settings/domain/import/import_history_entry.dart';
 
@@ -21,6 +23,7 @@ class ImportState {
   final List<CsvTransactionRow> parsedRows;
   final String? selectedFilePath;
   final String? error;
+  final String? batchKey;
 
   ImportState({
     this.isParsing = false,
@@ -28,6 +31,7 @@ class ImportState {
     this.parsedRows = const [],
     this.selectedFilePath,
     this.error,
+    this.batchKey,
   });
 
   ImportState copyWith({
@@ -36,6 +40,7 @@ class ImportState {
     List<CsvTransactionRow>? parsedRows,
     String? Function()? selectedFilePath,
     String? Function()? error,
+    String? Function()? batchKey,
   }) {
     return ImportState(
       isParsing: isParsing ?? this.isParsing,
@@ -45,6 +50,7 @@ class ImportState {
           ? selectedFilePath()
           : this.selectedFilePath,
       error: error != null ? error() : this.error,
+      batchKey: batchKey != null ? batchKey() : this.batchKey,
     );
   }
 }
@@ -75,12 +81,14 @@ class ImportController extends Notifier<ImportState> {
         parsedRows: validatedRows,
         isParsing: false,
         selectedFilePath: () => filePath,
+        batchKey: () => _newBatchKey(),
       );
     } on AppException catch (e, st) {
       AppLogger.error('Failed to parse file', e, st);
       state = state.copyWith(
         isParsing: false,
         parsedRows: [],
+        batchKey: () => null,
         error: () => e.code ?? 'IMPORT_PARSE_ERROR',
       );
     } catch (e, st) {
@@ -121,11 +129,9 @@ class ImportController extends Notifier<ImportState> {
       );
 
       final categoryRepo = ref.read(categoryRepositoryProvider);
-      final transactionRepo = ref.read(transactionRepositoryProvider);
-
       final categories = await categoryRepo.fetchCategories();
-
-      for (var row in validRows) {
+      final importRows = <Map<String, Object?>>[];
+      for (final row in validRows) {
         final type = _transactionTypeFor(row.typeStr);
         if (type == null) {
           AppLogger.warning('Skipping row because type is invalid');
@@ -140,16 +146,23 @@ class ImportController extends Notifier<ImportState> {
           continue;
         }
 
-        await transactionRepo.createTransaction(
-          amount: row.amount ?? 0.0,
-          type: type,
-          walletId: targetWallet.id,
-          categoryId: matchedCat.id,
-          transactionDate: row.date ?? DateTime.now(),
-          note: row.note,
-        );
-        importCount++;
+        importRows.add({
+          'amount': row.amount,
+          'type': type.value,
+          'category_id': matchedCat.id,
+          'transaction_date': row.date!.toUtc().toIso8601String(),
+          'note': row.note.trim().isEmpty ? null : row.note.trim(),
+        });
       }
+
+      final batchKey = state.batchKey ?? _newBatchKey();
+      importCount = await ref
+          .read(transactionRepositoryProvider)
+          .importTransactionsAtomically(
+            batchKey: batchKey,
+            walletId: targetWallet.id,
+            rows: importRows,
+          );
 
       isTransactionSuccess = true;
 
@@ -159,7 +172,11 @@ class ImportController extends Notifier<ImportState> {
         importedCount: importCount,
       );
 
-      state = state.copyWith(isImporting: false, parsedRows: []);
+      state = state.copyWith(
+        isImporting: false,
+        parsedRows: [],
+        batchKey: () => null,
+      );
       return importCount;
     } on AppException catch (e, st) {
       if (!isTransactionSuccess) {
@@ -186,6 +203,7 @@ class ImportController extends Notifier<ImportState> {
       state = state.copyWith(
         isImporting: false,
         parsedRows: isTransactionSuccess ? [] : state.parsedRows,
+        batchKey: isTransactionSuccess ? () => null : null,
         error: () => isTransactionSuccess
             ? (e.code ?? 'IMPORT_HISTORY_COMPLETE_ERROR')
             : (e.code ?? 'IMPORT_FAILED'),
@@ -216,12 +234,21 @@ class ImportController extends Notifier<ImportState> {
       state = state.copyWith(
         isImporting: false,
         parsedRows: isTransactionSuccess ? [] : state.parsedRows,
+        batchKey: isTransactionSuccess ? () => null : null,
         error: () => isTransactionSuccess
             ? 'IMPORT_HISTORY_COMPLETE_ERROR'
             : 'IMPORT_FAILED',
       );
       return isTransactionSuccess ? importCount : null;
     }
+  }
+
+  static String _newBatchKey() {
+    final random = Random.secure();
+    return List<int>.generate(
+      24,
+      (_) => random.nextInt(256),
+    ).map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
   }
 
   String _selectedFileName() {

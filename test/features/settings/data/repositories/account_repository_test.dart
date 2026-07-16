@@ -7,6 +7,7 @@ import 'package:moniary/features/settings/data/account/account_repository.dart';
 import 'package:moniary/features/settings/domain/data_transfer/spreadsheet_data_format.dart';
 import 'package:moniary/features/settings/domain/export/export_file_text.dart';
 import 'package:moniary/features/settings/domain/export/export_filters.dart';
+import 'package:moniary/features/settings/domain/privacy_requests/privacy_request_history_entry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FakeSupabaseClient extends Fake implements SupabaseClient {}
@@ -213,5 +214,21 @@ void main() {
     expect(history.single.endDate, isNull);
     expect(history.single.legacyDateRange, 'Tất cả thời gian');
     expect(history.single.toMap()['date_range'], 'Tất cả thời gian');
+  });
+
+  test('privacy request mapping preserves the server response', () {
+    final entry = PrivacyRequestHistoryEntry.fromMap({
+      'id': 'request-1',
+      'request_type': 'data_access',
+      'message': 'Please provide my data.',
+      'status': 'resolved',
+      'admin_note': '  Your export is ready.  ',
+      'submitted_at': '2026-07-16T01:00:00Z',
+      'resolved_at': '2026-07-16T03:00:00Z',
+    });
+
+    expect(entry.adminNote, 'Your export is ready.');
+    expect(entry.resolvedAt, DateTime.parse('2026-07-16T03:00:00Z'));
+    expect(entry.toMap()['admin_note'], 'Your export is ready.');
   });
 }

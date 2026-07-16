@@ -2424,7 +2424,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyFaqDeletionFailAnswer =>
-      'Bạn có thể tạo file yêu cầu xóa dữ liệu thủ công và gửi cho kênh hỗ trợ quyền riêng tư.';
+      'Hãy tạo yêu cầu xóa dữ liệu an toàn trong màn hình Liên hệ quyền riêng tư và theo dõi trạng thái máy chủ trong lịch sử yêu cầu.';
 
   @override
   String get privacyFaqExportLocationQuestion => 'File xuất dữ liệu nằm ở đâu?';
@@ -2447,12 +2447,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyRequestCreated => 'Đã tạo yêu cầu';
-
-  @override
-  String get privacyCopyEmail => 'Sao chép email';
-
-  @override
-  String get privacyCopyInstructions => 'Sao chép hướng dẫn';
 
   @override
   String get privacyPolicyTitle => 'Chính sách bảo mật';
@@ -2925,18 +2919,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get privacyContactProcessTimeline => 'Quy trình phản hồi';
 
   @override
-  String get privacyContactProcessStep1 => 'Tạo request trong app';
+  String get privacyContactProcessStep1 => 'Kiểm tra yêu cầu trong app';
 
   @override
   String get privacyContactProcessStep1Desc =>
-      'App chuẩn bị nội dung để bạn gửi cho kênh hỗ trợ.';
+      'Kiểm tra loại và nội dung yêu cầu trước khi gửi.';
 
   @override
-  String get privacyContactProcessStep2 => 'Gửi request thủ công';
+  String get privacyContactProcessStep2 => 'Gửi an toàn';
 
   @override
   String privacyContactProcessStep2Desc(String email) {
-    return 'Gửi yêu cầu qua email $email.';
+    return 'Yêu cầu được gửi trực tiếp tới $email.';
   }
 
   @override
@@ -2970,21 +2964,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Nếu không thể xử lý trực tiếp trong app, bạn có thể liên hệ nhóm hỗ trợ Moniary để được hỗ trợ về dữ liệu.';
 
   @override
-  String get privacyContactEmailTitle => 'Email hỗ trợ';
-
-  @override
-  String get privacyContactEmailDesc =>
-      'Dùng cho yêu cầu xóa dữ liệu, xuất dữ liệu hoặc câu hỏi về quyền riêng tư.';
-
-  @override
   String get privacyContactInfoTitle => 'Thông tin cần gửi';
 
   @override
-  String get privacyContactInfoValue => 'Mã tài khoản hoặc email đăng nhập';
+  String get privacyContactInfoValue => 'Loại yêu cầu và mô tả rõ ràng';
 
   @override
   String get privacyContactInfoDesc =>
-      'Không gửi mật khẩu, mã truy cập, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết qua email.';
+      'Không đưa mật khẩu, mã truy cập, ảnh hóa đơn nhạy cảm hoặc số tiền chi tiết không cần thiết vào yêu cầu.';
 
   @override
   String get privacyContactTimeTitle => 'Thời gian phản hồi';
@@ -3007,7 +2994,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyRequestSuccessDesc =>
-      'Yêu cầu đã được tạo. Vui lòng kiểm tra lịch sử và gửi yêu cầu thủ công.';
+      'Yêu cầu đã được gửi an toàn. Bạn có thể theo dõi trạng thái trên máy chủ trong lịch sử yêu cầu.';
+
+  @override
+  String get privacyRequestRateLimited =>
+      'Bạn đã gửi nhiều yêu cầu gần đây. Vui lòng chờ tối đa 24 giờ trước khi thử lại.';
+
+  @override
+  String get privacyDetailResponseTitle => 'Phản hồi từ Moniary';
 
   @override
   String get privacyAndAccountTitle => 'Quyền riêng tư & tài khoản';
@@ -7322,4 +7316,42 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get deleteGuestDataAction => 'Xóa dữ liệu khách';
+
+  @override
+  String get transactionImageUploadWarning =>
+      'Giao dịch đã được lưu nhưng chưa thể đính kèm ảnh. Bạn có thể thêm lại ảnh khi sửa giao dịch.';
+
+  @override
+  String get privacyInAppChannelTitle => 'Kênh an toàn trong ứng dụng';
+
+  @override
+  String get privacyInAppChannelValue => 'Trung tâm yêu cầu Moniary';
+
+  @override
+  String get privacyInAppChannelDesc =>
+      'Yêu cầu được lưu trong hàng đợi máy chủ được bảo vệ của Moniary và chỉ người vận hành được ủy quyền mới có thể xử lý.';
+
+  @override
+  String get privacyStatusSubmitted => 'Đã tiếp nhận';
+
+  @override
+  String get privacyStatusSubmittedDesc =>
+      'Yêu cầu đã được hàng đợi máy chủ Moniary tiếp nhận.';
+
+  @override
+  String get privacyStatusInReview => 'Đang xem xét';
+
+  @override
+  String get privacyStatusInReviewDesc =>
+      'Người vận hành được ủy quyền đang xem xét yêu cầu.';
+
+  @override
+  String get privacyStatusRejected => 'Không thể xử lý';
+
+  @override
+  String get privacyStatusRejectedDesc =>
+      'Yêu cầu chưa thể xử lý. Hãy xem phản hồi của người vận hành trước khi gửi yêu cầu khác.';
+
+  @override
+  String get legalOpenRequestCenter => 'Mở trung tâm yêu cầu an toàn';
 }

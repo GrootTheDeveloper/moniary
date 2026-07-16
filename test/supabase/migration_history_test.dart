@@ -54,4 +54,39 @@ void main() {
     expect(lifecycle, contains("add value if not exists 'recurring'"));
     expect(lifecycle, contains('notify_group_settlement_change'));
   });
+
+  test('20260716 integrity migrations retain their server-side safeguards', () {
+    final transactionIntegrity = File(
+      'supabase/migrations/'
+      '20260716050100_personal_transaction_integrity.sql',
+    ).readAsStringSync();
+    final recurringIntegrity = File(
+      'supabase/migrations/'
+      '20260716050200_recurring_integrity.sql',
+    ).readAsStringSync();
+    final privacyInbox = File(
+      'supabase/migrations/'
+      '20260716050300_privacy_request_inbox.sql',
+    ).readAsStringSync();
+    final walletNotificationIntegrity = File(
+      'supabase/migrations/'
+      '20260716050400_wallet_notification_integrity.sql',
+    ).readAsStringSync();
+
+    expect(transactionIntegrity, contains('jsonb_typeof(p_rows) <> \'array\''));
+    expect(transactionIntegrity, contains('import_personal_transactions'));
+    expect(recurringIntegrity, contains('personal_recurring_postings'));
+    expect(recurringIntegrity, contains('pg_catalog.pg_timezone_names'));
+    expect(
+      recurringIntegrity,
+      contains('post_due_personal_recurring_transactions'),
+    );
+    expect(privacyInbox, contains('submit_privacy_request'));
+    expect(
+      privacyInbox,
+      isNot(contains('create policy "privacy_requests_insert_own"')),
+    );
+    expect(walletNotificationIntegrity, contains('pg_advisory_xact_lock'));
+    expect(walletNotificationIntegrity, contains('list_all_notifications_v3'));
+  });
 }

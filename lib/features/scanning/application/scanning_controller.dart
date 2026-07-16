@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../core/constants/app_constants.dart';
+import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
 
 import '../data/fast_api_ocr_service.dart';
@@ -19,6 +20,7 @@ final ocrServiceProvider = Provider<OcrService>((ref) {
   return FastApiOcrService(
     baseUrl: AppConstants.ocrApiUrl,
     client: ref.watch(ocrHttpClientProvider),
+    accessTokenProvider: () => ref.read(currentSessionProvider)?.accessToken,
     timeout: AppConstants.ocrRequestTimeout,
   );
 });

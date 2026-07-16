@@ -53,17 +53,15 @@ class WalletRepository {
     }
 
     try {
-      if (isDefault) {
-        await _clearDefaultWallets(userId: session.user.id);
-      }
-
-      await _client.from('wallets').insert({
-        'user_id': session.user.id,
-        'name': name,
-        'type': type.value,
-        'initial_balance': initialBalance,
-        'is_default': isDefault,
-      });
+      await _client.rpc(
+        'create_personal_wallet',
+        params: {
+          'p_name': name,
+          'p_type': type.value,
+          'p_initial_balance': initialBalance,
+          'p_is_default': isDefault,
+        },
+      );
     } on PostgrestException catch (e, st) {
       AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
@@ -88,24 +86,17 @@ class WalletRepository {
     }
 
     try {
-      if (isDefault) {
-        await _clearDefaultWallets(
-          userId: session.user.id,
-          exceptWalletId: walletId,
-        );
-      }
-
-      await _client
-          .from('wallets')
-          .update({
-            'name': name,
-            'type': type.value,
-            'initial_balance': initialBalance,
-            'is_default': isDefault,
-            'is_active': isActive,
-          })
-          .eq('id', walletId)
-          .eq('user_id', session.user.id);
+      await _client.rpc(
+        'update_personal_wallet',
+        params: {
+          'p_wallet_id': walletId,
+          'p_name': name,
+          'p_type': type.value,
+          'p_initial_balance': initialBalance,
+          'p_is_default': isDefault,
+          'p_is_active': isActive,
+        },
+      );
     } on PostgrestException catch (e, st) {
       AppLogger.error('Lỗi cơ sở dữ liệu', e, st);
       throw AppException(e.message, code: e.code);
@@ -114,16 +105,5 @@ class WalletRepository {
       AppLogger.error('Lỗi kết nối', e, st);
       throw const AppException('errorConnection');
     }
-  }
-
-  Future<void> _clearDefaultWallets({
-    required String userId,
-    String? exceptWalletId,
-  }) async {
-    var query = _client.from('wallets').update({'is_default': false});
-    if (exceptWalletId != null) {
-      query = query.neq('id', exceptWalletId);
-    }
-    await query.eq('user_id', userId).eq('is_default', true);
   }
 }

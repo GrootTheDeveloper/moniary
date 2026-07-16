@@ -13,12 +13,14 @@ class FastApiOcrService implements OcrService {
   FastApiOcrService({
     required String baseUrl,
     required http.Client client,
+    required this.accessTokenProvider,
     required this.timeout,
   }) : _baseUrl = baseUrl.replaceFirst(RegExp(r'/+$'), ''),
        _client = client;
 
   final String _baseUrl;
   final http.Client _client;
+  final FutureOr<String?> Function() accessTokenProvider;
   final Duration timeout;
 
   @override
@@ -28,23 +30,34 @@ class FastApiOcrService implements OcrService {
       throw const AppException('errorGeneric', code: 'OCR_IMAGE_NOT_FOUND');
     }
 
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse('$_baseUrl/extract'),
-    );
-    request.files.add(
-      await http.MultipartFile.fromPath(
-        'file',
-        imagePath,
-        contentType: _mediaTypeForPath(imagePath),
-      ),
-    );
-
     try {
+      final accessToken = (await accessTokenProvider())?.trim();
+      if (accessToken == null || accessToken.isEmpty) {
+        throw const AppException('errorNotLoggedIn', code: 'AUTH_REQUIRED');
+      }
+
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$_baseUrl/extract'),
+      )..headers['authorization'] = 'Bearer $accessToken';
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          imagePath,
+          contentType: _mediaTypeForPath(imagePath),
+        ),
+      );
+
       final streamedResponse = await _client.send(request).timeout(timeout);
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
+        if (response.statusCode == 401 || response.statusCode == 403) {
+          throw const AppException('errorNotLoggedIn', code: 'AUTH_REQUIRED');
+        }
+        if (response.statusCode == 429) {
+          throw const AppException('errorConnection', code: 'OCR_RATE_LIMITED');
+        }
         if (response.statusCode == 504) {
           throw const AppException(
             'errorConnection',

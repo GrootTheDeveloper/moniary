@@ -6,6 +6,8 @@ class PrivacyRequestHistoryEntry {
     required this.status,
     required this.createdAt,
     this.path,
+    this.adminNote,
+    this.resolvedAt,
   });
 
   final String id;
@@ -14,28 +16,23 @@ class PrivacyRequestHistoryEntry {
   final String status;
   final DateTime createdAt;
   final String? path;
-
-  PrivacyRequestHistoryEntry copyWith({String? status}) {
-    return PrivacyRequestHistoryEntry(
-      id: id,
-      requestType: requestType,
-      message: message,
-      status: status ?? this.status,
-      createdAt: createdAt,
-      path: path,
-    );
-  }
+  final String? adminNote;
+  final DateTime? resolvedAt;
 
   factory PrivacyRequestHistoryEntry.fromMap(Map<String, dynamic> map) {
     return PrivacyRequestHistoryEntry(
       id: map['id'] as String? ?? '',
       requestType: map['request_type'] as String? ?? '',
       message: map['message'] as String? ?? '',
-      status: map['status'] as String? ?? 'ready_to_send',
+      status: map['status'] as String? ?? 'submitted',
       createdAt:
-          DateTime.tryParse(map['created_at'] as String? ?? '') ??
+          DateTime.tryParse(
+            (map['submitted_at'] ?? map['created_at']) as String? ?? '',
+          ) ??
           DateTime.fromMillisecondsSinceEpoch(0),
       path: map['path'] as String?,
+      adminNote: _trimmedOrNull(map['admin_note']),
+      resolvedAt: DateTime.tryParse(map['resolved_at'] as String? ?? ''),
     );
   }
 
@@ -47,7 +44,15 @@ class PrivacyRequestHistoryEntry {
       'status': status,
       'created_at': createdAt.toIso8601String(),
       if (path != null) 'path': path,
+      if (adminNote != null) 'admin_note': adminNote,
+      if (resolvedAt != null) 'resolved_at': resolvedAt!.toIso8601String(),
     };
+  }
+
+  static String? _trimmedOrNull(Object? value) {
+    if (value is! String) return null;
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
   }
 }
 
@@ -58,9 +63,10 @@ class PrivacyRequestStatusOption {
 }
 
 const privacyRequestStatusOptions = [
-  PrivacyRequestStatusOption(id: 'ready_to_send'),
-  PrivacyRequestStatusOption(id: 'sent_manually'),
+  PrivacyRequestStatusOption(id: 'submitted'),
+  PrivacyRequestStatusOption(id: 'in_review'),
   PrivacyRequestStatusOption(id: 'resolved'),
+  PrivacyRequestStatusOption(id: 'rejected'),
 ];
 
 PrivacyRequestStatusOption privacyRequestStatusById(String id) {

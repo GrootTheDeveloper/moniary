@@ -2,12 +2,10 @@ import '../../../../l10n/l10n_extension.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
-import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/utils/error_helpers.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../../domain/privacy_requests/privacy_request_history_entry.dart';
@@ -72,10 +70,10 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                 const _ContactHero(),
                 const SizedBox(height: 16),
                 _ContactInfoTile(
-                  icon: Icons.email_outlined,
-                  title: context.l10n.privacyContactEmailTitle,
-                  value: AppConstants.privacyEmail,
-                  description: context.l10n.privacyContactEmailDesc,
+                  icon: Icons.verified_user_outlined,
+                  title: context.l10n.privacyInAppChannelTitle,
+                  value: context.l10n.privacyInAppChannelValue,
+                  description: context.l10n.privacyInAppChannelDesc,
                 ),
                 _ContactInfoTile(
                   icon: Icons.info_outline,
@@ -90,8 +88,6 @@ class _PrivacyContactScreenState extends ConsumerState<PrivacyContactScreen> {
                   description: context.l10n.privacyContactTimeDesc,
                 ),
                 const SizedBox(height: 8),
-                const _SupportShortcutsCard(),
-                const SizedBox(height: 12),
                 const _ResponseTimelineCard(),
                 const SizedBox(height: 12),
                 _PrivacyRequestHistorySection(historyAsync: historyAsync),
@@ -286,7 +282,7 @@ class _ResponseTimelineCard extends StatelessWidget {
           _TimelineStep(
             label: context.l10n.privacyContactProcessStep2,
             description: context.l10n.privacyContactProcessStep2Desc(
-              AppConstants.privacyEmail,
+              context.l10n.privacyInAppChannelValue,
             ),
           ),
           _TimelineStep(
@@ -298,70 +294,6 @@ class _ResponseTimelineCard extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class _SupportShortcutsCard extends StatelessWidget {
-  const _SupportShortcutsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppTheme.outline),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.contact_support_outlined, color: AppTheme.mint),
-              const SizedBox(width: 8),
-              Text(
-                context.l10n.privacyContactShortcuts,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Column(
-            children: [
-              OutlinedButton.icon(
-                onPressed: () => _copy(
-                  context,
-                  AppConstants.privacyEmail,
-                  context.l10n.privacyContactCopyEmailSuccess,
-                ),
-                icon: const Icon(Icons.email_outlined),
-                label: Text(context.l10n.privacyCopyEmail),
-              ),
-              const SizedBox(height: 10),
-              OutlinedButton.icon(
-                onPressed: () => _copy(
-                  context,
-                  context.l10n.privacyContactCopyGuide(
-                    AppConstants.privacyEmail,
-                  ),
-                  context.l10n.privacyContactCopyGuideSuccess,
-                ),
-                icon: const Icon(Icons.content_copy_outlined),
-                label: Text(context.l10n.privacyCopyInstructions),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _copy(BuildContext context, String value, String message) {
-    Clipboard.setData(ClipboardData(text: value));
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 

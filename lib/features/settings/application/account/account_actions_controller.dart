@@ -127,17 +127,4 @@ class AccountActionsController extends AsyncNotifier<void> {
     });
     ref.invalidate(privacyRequestHistoryProvider);
   }
-
-  Future<void> updatePrivacyRequestStatus({
-    required String id,
-    required String status,
-  }) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref
-          .read(accountRepositoryProvider)
-          .updatePrivacyRequestStatus(id: id, status: status),
-    );
-    ref.invalidate(privacyRequestHistoryProvider);
-  }
 }

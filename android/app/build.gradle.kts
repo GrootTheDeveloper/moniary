@@ -1,8 +1,41 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     id("com.google.gms.google-services")
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+val releaseSigningProperties = Properties()
+val releaseSigningPropertiesFile = rootProject.file("key.properties")
+if (releaseSigningPropertiesFile.exists()) {
+    FileInputStream(releaseSigningPropertiesFile).use(releaseSigningProperties::load)
+}
+val releaseSigningKeys = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+val hasReleaseSigning = releaseSigningPropertiesFile.exists() &&
+    releaseSigningKeys.all { !releaseSigningProperties.getProperty(it).isNullOrBlank() }
+
+if (releaseSigningPropertiesFile.exists() && !hasReleaseSigning) {
+    throw GradleException(
+        "android/key.properties exists but is incomplete. Copy key.properties.example and set all four values."
+    )
+}
+
+gradle.taskGraph.whenReady {
+    val requestsReleaseArtifact = allTasks.any {
+        it.name.contains("release", ignoreCase = true) &&
+            (it.name.contains("assemble", ignoreCase = true) ||
+                it.name.contains("bundle", ignoreCase = true) ||
+                it.name.contains("package", ignoreCase = true))
+    }
+    if (requestsReleaseArtifact && !hasReleaseSigning) {
+        throw GradleException(
+            "Release signing is not configured. Create android/key.properties from " +
+                "android/key.properties.example. Use a debug build for a local demo."
+        )
+    }
 }
 
 android {
@@ -30,9 +63,22 @@ android {
         manifestPlaceholders["appLinkHost"] = "go.vuivethoima.id.vn"
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                keyAlias = releaseSigningProperties.getProperty("keyAlias")
+                keyPassword = releaseSigningProperties.getProperty("keyPassword")
+                storeFile = file(releaseSigningProperties.getProperty("storeFile"))
+                storePassword = releaseSigningProperties.getProperty("storePassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("debug")
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

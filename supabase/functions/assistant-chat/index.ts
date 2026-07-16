@@ -1,4 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  allowedAssistantKinds,
+  financialKinds,
+  sanitizeAssistantSnapshot,
+} from './logic.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -6,15 +11,6 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
-
-const financialKinds = new Set([
-  'monthlyTotal',
-  'weeklyComparison',
-  'dailyAverage',
-  'topCategory',
-  'recurringExpenses',
-  'savingSuggestion',
-]);
 
 type AssistantHistoryItem = {
   role: 'user' | 'assistant';
@@ -85,10 +81,9 @@ Deno.serve(async (req) => {
   const locale = normalizeText(payload.locale, 16) || 'vi';
   const currencyCode = normalizeText(payload.currencyCode, 8) || 'VND';
   const profileName = normalizeNullableText(payload.profileName, 120);
-  const snapshot = sanitizeSnapshot(payload.snapshot);
   const history = sanitizeHistory(payload.history);
 
-  if (!question || !kind) {
+  if (!question || !allowedAssistantKinds.has(kind)) {
     return json({ error: 'Missing question context' }, 400);
   }
 
@@ -109,12 +104,15 @@ Deno.serve(async (req) => {
   if (financialKinds.has(kind) && !access.transactions) {
     return json({ error: 'Transaction access is disabled' }, 403);
   }
-  if (snapshot?.walletsIncluded === true && !access.wallets) {
-    return json({ error: 'Wallet access is disabled' }, 403);
-  }
-  if (snapshot?.budgetsIncluded === true && !access.budgets) {
-    return json({ error: 'Budget access is disabled' }, 403);
-  }
+  const snapshot = sanitizeAssistantSnapshot(
+    payload.snapshot,
+    {
+      transactions: access.transactions === true,
+      wallets: access.wallets === true,
+      budgets: access.budgets === true,
+    },
+    kind,
+  );
 
   const bucketStart = new Date(Math.floor(Date.now() / 60000) * 60000)
     .toISOString();
@@ -162,15 +160,23 @@ async function generateGeminiAnswer(args: {
   const uri = new URL(
     `https://generativelanguage.googleapis.com/v1beta/models/${args.model}:generateContent`,
   );
-  uri.searchParams.set('key', args.apiKey);
 
   for (let attempt = 0; attempt < 2; attempt++) {
-    const response = await fetch(uri, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(buildGeminiRequest(args)),
-    });
+    let response: Response;
+    try {
+      response = await fetch(uri, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': args.apiKey,
+        },
+        body: JSON.stringify(buildGeminiRequest(args)),
+      });
+    } catch {
+      continue;
+    }
     if (!response.ok) {
+      if (response.status === 429 || response.status >= 500) continue;
       return null;
     }
 
@@ -191,9 +197,15 @@ async function generateGeminiAnswer(args: {
       .join('\n')
       .trim();
     const answer = parseJsonAnswer(text);
-    if (answer) return answer;
+    if (answer && (!financialKinds.has(args.kind) || isNumberFree(answer))) {
+      return answer;
+    }
   }
   return null;
+}
+
+function isNumberFree(value: string) {
+  return !/[0-9₫$€£¥%]/.test(value);
 }
 
 function buildGeminiRequest(args: {
@@ -305,26 +317,6 @@ function sanitizeHistory(value: unknown): AssistantHistoryItem[] {
       return text ? { role, text } : null;
     })
     .filter((item): item is AssistantHistoryItem => item !== null);
-}
-
-function sanitizeSnapshot(value: unknown) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return null;
-  }
-  const input = value as Record<string, unknown>;
-  const output: Record<string, unknown> = {};
-  for (const [key, raw] of Object.entries(input)) {
-    if (typeof raw === 'number' && Number.isFinite(raw)) {
-      output[key] = raw;
-    } else if (typeof raw === 'boolean') {
-      output[key] = raw;
-    } else if (typeof raw === 'string') {
-      output[key] = raw.replace(/\s+/g, ' ').trim().slice(0, 120);
-    } else if (raw === null) {
-      output[key] = null;
-    }
-  }
-  return output;
 }
 
 function parseJsonAnswer(text: string) {

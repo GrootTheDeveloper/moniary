@@ -49,6 +49,21 @@ Widget _testApp(
       authRepositoryProvider.overrideWithValue(repository),
       sharedPreferencesProvider.overrideWithValue(preferences),
       supabaseClientProvider.overrideWithValue(_FakeSupabaseClient()),
+      currentSessionProvider.overrideWithValue(
+        Session(
+          accessToken: 'access-token',
+          tokenType: 'bearer',
+          user: const User(
+            id: 'test-user-id',
+            appMetadata: {},
+            userMetadata: {},
+            aud: 'authenticated',
+            email: 'bee@moniary.app',
+            createdAt: '2026-07-16T00:00:00Z',
+            isAnonymous: false,
+          ),
+        ),
+      ),
     ],
     child: MaterialApp.router(
       theme: AppTheme.lightTheme,

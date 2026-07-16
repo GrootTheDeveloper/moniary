@@ -58,6 +58,42 @@ class _FakeNotificationRepository implements NotificationRepository {
 }
 
 void main() {
+  test('composite cursor keeps notifications that share a timestamp', () {
+    final timestamp = DateTime.utc(2026, 7, 16, 10);
+    final cursor = NotificationCursor(
+      createdAt: timestamp,
+      source: 'group',
+      id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+    );
+
+    expect(
+      cursor.containsAfter(
+        AppNotification(
+          id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+          category: AppNotificationCategory.group,
+          type: 'transaction_posted',
+          isRead: false,
+          createdAt: timestamp,
+          source: 'group',
+        ),
+      ),
+      isTrue,
+    );
+    expect(
+      cursor.containsAfter(
+        AppNotification(
+          id: 'ffffffff-ffff-ffff-ffff-ffffffffffff',
+          category: AppNotificationCategory.group,
+          type: 'transaction_posted',
+          isRead: false,
+          createdAt: timestamp,
+          source: 'group',
+        ),
+      ),
+      isFalse,
+    );
+  });
+
   test('unread count is calculated from all categories', () async {
     final repository = _FakeNotificationRepository([
       AppNotification(

@@ -98,26 +98,28 @@ class RecurringTransactionRepository {
     DateTime? endDate,
     String? note,
     bool autoPost = false,
+    RecurringApplyMode applyMode = RecurringApplyMode.futureOnly,
   }) async {
     try {
-      await _client
-          .from('recurring_transactions')
-          .update({
-            'wallet_id': walletId,
-            'category_id': categoryId,
-            'amount': amount,
-            'type': type.value,
-            'note': note,
-            'frequency': frequency.value,
-            'interval': interval,
-            'start_date': _dateOnly(startDate),
-            'next_run_date': _dateOnly(nextRunDate),
-            'end_date': endDate == null ? null : _dateOnly(endDate),
-            'auto_post': autoPost,
-            'is_active': isActive,
-          })
-          .eq('id', id)
-          .eq('user_id', _userId);
+      await _client.rpc(
+        'update_personal_recurring_transaction',
+        params: {
+          'p_id': id,
+          'p_amount': amount,
+          'p_type': type.value,
+          'p_wallet_id': walletId,
+          'p_category_id': categoryId,
+          'p_frequency': frequency.value,
+          'p_interval': interval,
+          'p_start_date': _dateOnly(startDate),
+          'p_next_run_date': _dateOnly(nextRunDate),
+          'p_is_active': isActive,
+          'p_end_date': endDate == null ? null : _dateOnly(endDate),
+          'p_note': note,
+          'p_auto_post': autoPost,
+          'p_apply_mode': applyMode.name.toSnakeCase(),
+        },
+      );
     } on PostgrestException catch (e, st) {
       AppLogger.error('Update recurring transaction failed', e, st);
       throw AppException(e.message, code: e.code);
@@ -128,43 +130,32 @@ class RecurringTransactionRepository {
     }
   }
 
-  /// Moves a rule's schedule forward after the auto-post engine has
-  /// materialized its due occurrences. Only touches the scheduling columns.
-  Future<void> advanceSchedule({
-    required String id,
-    required DateTime nextRunDate,
-    required DateTime? lastRunDate,
-    required bool isActive,
-  }) async {
+  Future<int> postDueTransactions({required DateTime through}) async {
     try {
-      await _client
-          .from('recurring_transactions')
-          .update({
-            'next_run_date': _dateOnly(nextRunDate),
-            'last_run_date': lastRunDate == null
-                ? null
-                : _dateOnly(lastRunDate),
-            'is_active': isActive,
-          })
-          .eq('id', id)
-          .eq('user_id', _userId);
+      final response = await _client.rpc(
+        'post_due_personal_recurring_transactions',
+        params: {'p_limit': 500, 'p_through': _dateOnly(through)},
+      );
+      return (response as num?)?.toInt() ?? 0;
     } on PostgrestException catch (e, st) {
-      AppLogger.error('Advance recurring schedule failed', e, st);
+      AppLogger.error('Post due recurring transactions failed', e, st);
       throw AppException(e.message, code: e.code);
     } catch (e, st) {
       if (e is AppException) rethrow;
-      AppLogger.error('Advance recurring schedule failed', e, st);
+      AppLogger.error('Post due recurring transactions failed', e, st);
       throw const AppException('errorConnection');
     }
   }
 
-  Future<void> deleteRecurringTransaction(String id) async {
+  Future<void> deleteRecurringTransaction(
+    String id, {
+    bool deleteGeneratedTransactions = false,
+  }) async {
     try {
-      await _client
-          .from('recurring_transactions')
-          .delete()
-          .eq('id', id)
-          .eq('user_id', _userId);
+      await _client.rpc(
+        'delete_personal_recurring_transaction',
+        params: {'p_id': id, 'p_delete_generated': deleteGeneratedTransactions},
+      );
     } on PostgrestException catch (e, st) {
       AppLogger.error('Delete recurring transaction failed', e, st);
       throw AppException(e.message, code: e.code);
@@ -207,5 +198,14 @@ class RecurringTransactionRepository {
         .cast<Map<String, dynamic>>()
         .map(RecurringTransaction.fromMap)
         .toList();
+  }
+}
+
+extension on String {
+  String toSnakeCase() {
+    return replaceAllMapped(
+      RegExp('[A-Z]'),
+      (match) => '_${match.group(0)!.toLowerCase()}',
+    );
   }
 }

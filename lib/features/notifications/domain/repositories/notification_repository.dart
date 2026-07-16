@@ -24,7 +24,7 @@ abstract interface class AdvancedNotificationRepository {
   Future<NotificationPage> fetchNotificationPage({
     AppNotificationCategory? category,
     String? groupId,
-    DateTime? before,
+    NotificationCursor? before,
     int limit = 30,
   });
 

@@ -111,7 +111,7 @@ final notificationsProvider =
     );
 
 class NotificationsController extends AsyncNotifier<List<AppNotification>> {
-  DateTime? _nextCursor;
+  NotificationCursor? _nextCursor;
   bool _hasMore = false;
 
   @override
@@ -326,7 +326,7 @@ Future<NotificationPage> _fetchPage(
   NotificationRepository repository, {
   AppNotificationCategory? category,
   String? groupId,
-  DateTime? before,
+  NotificationCursor? before,
   int limit = 30,
 }) async {
   if (repository is AdvancedNotificationRepository) {
@@ -343,11 +343,11 @@ Future<NotificationPage> _fetchPage(
   );
   final filtered = before == null
       ? all
-      : all.where((item) => item.createdAt.isBefore(before)).toList();
+      : all.where(before.containsAfter).toList();
   final items = filtered.take(limit).toList(growable: false);
   return NotificationPage(
     items: items,
-    nextCursor: items.isEmpty ? null : items.last.createdAt,
+    nextCursor: items.isEmpty ? null : items.last.cursor,
     hasMore: filtered.length > items.length,
   );
 }

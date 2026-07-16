@@ -617,40 +617,43 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       }
 
       final previousDate = widget.initialTransaction?.transactionDate;
-      if (_isEditing) {
-        await ref
-            .read(transactionComposerProvider.notifier)
-            .updateTransaction(
-              transactionId: widget.initialTransaction!.id,
-              amount: amount,
-              type: _type,
-              walletId: _selectedWalletId!,
-              categoryId: _selectedCategoryId!,
-              transactionDate: _selectedDate,
-              note: _noteController.text.trim().isEmpty
-                  ? null
-                  : _noteController.text.trim(),
-              imageBytes: imageBytes,
-              isImportant: _isImportant,
-            );
-      } else {
-        await ref
-            .read(transactionComposerProvider.notifier)
-            .createTransaction(
-              amount: amount,
-              type: _type,
-              walletId: _selectedWalletId!,
-              categoryId: _selectedCategoryId!,
-              transactionDate: _selectedDate,
-              note: _noteController.text.trim().isEmpty
-                  ? null
-                  : _noteController.text.trim(),
-              imageBytes: imageBytes,
-              isImportant: _isImportant,
-            );
-      }
+      final saveResult = _isEditing
+          ? await ref
+                .read(transactionComposerProvider.notifier)
+                .updateTransaction(
+                  transactionId: widget.initialTransaction!.id,
+                  amount: amount,
+                  type: _type,
+                  walletId: _selectedWalletId!,
+                  categoryId: _selectedCategoryId!,
+                  transactionDate: _selectedDate,
+                  note: _noteController.text.trim().isEmpty
+                      ? null
+                      : _noteController.text.trim(),
+                  imageBytes: imageBytes,
+                  isImportant: _isImportant,
+                )
+          : await ref
+                .read(transactionComposerProvider.notifier)
+                .createTransaction(
+                  amount: amount,
+                  type: _type,
+                  walletId: _selectedWalletId!,
+                  categoryId: _selectedCategoryId!,
+                  transactionDate: _selectedDate,
+                  note: _noteController.text.trim().isEmpty
+                      ? null
+                      : _noteController.text.trim(),
+                  imageBytes: imageBytes,
+                  isImportant: _isImportant,
+                );
 
       if (!mounted) return;
+      if (saveResult.imageUploadFailed) {
+        messenger.showSnackBar(
+          SnackBar(content: Text(context.l10n.transactionImageUploadWarning)),
+        );
+      }
       context.pop(
         TransactionMutationResult(
           previousDate: previousDate,

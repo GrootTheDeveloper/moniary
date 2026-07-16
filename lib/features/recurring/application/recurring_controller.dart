@@ -91,34 +91,8 @@ class RecurringController extends AsyncNotifier<List<RecurringTransaction>> {
         endDate: endDate,
         note: note,
         autoPost: autoPost,
+        applyMode: applyMode,
       );
-
-      switch (applyMode) {
-        case RecurringApplyMode.futureOnly:
-          break;
-        case RecurringApplyMode.updateExisting:
-          await ref
-              .read(transactionRepositoryProvider)
-              .updateGeneratedTransactions(
-                recurringTransactionId: id,
-                amount: amount,
-                type: type,
-                walletId: walletId,
-                categoryId: categoryId,
-                note: note,
-              );
-        case RecurringApplyMode.deleteAndRegenerate:
-          await ref
-              .read(transactionRepositoryProvider)
-              .deleteGeneratedTransactions(id);
-          // Rewind the schedule so materialization reposts from the start.
-          await _repository.advanceSchedule(
-            id: id,
-            nextRunDate: startDate,
-            lastRunDate: null,
-            isActive: isActive,
-          );
-      }
 
       state = AsyncData(await _repository.fetchRecurringTransactions());
     } catch (error, stackTrace) {
@@ -139,12 +113,10 @@ class RecurringController extends AsyncNotifier<List<RecurringTransaction>> {
   }) async {
     state = const AsyncLoading();
     try {
-      if (deleteGeneratedTransactions) {
-        await ref
-            .read(transactionRepositoryProvider)
-            .deleteGeneratedTransactions(id);
-      }
-      await _repository.deleteRecurringTransaction(id);
+      await _repository.deleteRecurringTransaction(
+        id,
+        deleteGeneratedTransactions: deleteGeneratedTransactions,
+      );
       state = AsyncData(await _repository.fetchRecurringTransactions());
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);

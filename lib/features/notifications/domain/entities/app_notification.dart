@@ -44,6 +44,8 @@ class AppNotification {
   final String source;
 
   String get identity => '$source:$id';
+  NotificationCursor get cursor =>
+      NotificationCursor(createdAt: createdAt, source: source, id: id);
 
   AppNotification copyWith({bool? isRead}) {
     return AppNotification(
@@ -62,6 +64,28 @@ class AppNotification {
   }
 }
 
+class NotificationCursor {
+  const NotificationCursor({
+    required this.createdAt,
+    required this.source,
+    required this.id,
+  });
+
+  final DateTime createdAt;
+  final String source;
+  final String id;
+
+  /// Whether an item belongs after this cursor in the inbox's descending
+  /// `(createdAt, source, id)` order.
+  bool containsAfter(AppNotification item) {
+    final dateComparison = item.createdAt.compareTo(createdAt);
+    if (dateComparison != 0) return dateComparison < 0;
+    final sourceComparison = item.source.compareTo(source);
+    if (sourceComparison != 0) return sourceComparison < 0;
+    return item.id.compareTo(id) < 0;
+  }
+}
+
 class NotificationPage {
   const NotificationPage({
     required this.items,
@@ -70,7 +94,7 @@ class NotificationPage {
   });
 
   final List<AppNotification> items;
-  final DateTime? nextCursor;
+  final NotificationCursor? nextCursor;
   final bool hasMore;
 }
 

@@ -5,6 +5,7 @@ import 'package:moniary/core/notifications/local_notification_service.dart';
 import 'package:moniary/core/notifications/notification_providers.dart';
 import 'package:moniary/core/preferences/preferences_providers.dart';
 import 'package:moniary/core/supabase/supabase_providers.dart';
+import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/features/auth/application/auth_controller.dart';
 import 'package:moniary/features/auth/application/pending_email_link_controller.dart';
 import 'package:moniary/features/auth/application/pending_google_link_controller.dart';
@@ -137,7 +138,11 @@ class _FakeAuthRepository extends AuthRepository {
   }
 }
 
-Session _session({bool googleLinked = false}) {
+Session _session({
+  bool googleLinked = false,
+  String? email,
+  bool isAnonymous = false,
+}) {
   final identities = googleLinked
       ? const [
           UserIdentity(
@@ -156,9 +161,10 @@ Session _session({bool googleLinked = false}) {
     appMetadata: const {},
     userMetadata: const {},
     aud: 'authenticated',
-    email: googleLinked ? 'bee@gmail.com' : null,
+    email: email ?? (googleLinked ? 'bee@gmail.com' : null),
     identities: identities,
     createdAt: '2026-05-28T00:00:00Z',
+    isAnonymous: isAnonymous,
   );
   return Session(
     accessToken: 'access-token',
@@ -286,7 +292,9 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
-          currentSessionProvider.overrideWithValue(_session()),
+          currentSessionProvider.overrideWithValue(
+            _session(email: 'Bee@Moniary.app'),
+          ),
           notificationRepositoryProvider.overrideWithValue(
             notificationRepository,
           ),
@@ -304,6 +312,43 @@ void main() {
   );
 
   test(
+    'email account upgrade refuses a pending link from another session',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'pending_email_account_link_user_id': 'user-id',
+        'pending_email_account_link_email': 'bee@moniary.app',
+      });
+      final preferences = await SharedPreferences.getInstance();
+      final repository = _FakeAuthRepository();
+      final container = ProviderContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          currentSessionProvider.overrideWithValue(
+            _session(email: 'other@moniary.app'),
+          ),
+          sharedPreferencesProvider.overrideWithValue(preferences),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await expectLater(
+        container
+            .read(authControllerProvider.notifier)
+            .completeEmailAccountLink(password: 'password123'),
+        throwsA(
+          isA<AppException>().having(
+            (error) => error.code,
+            'code',
+            'AUTH_LINK_EMAIL_SESSION_MISMATCH',
+          ),
+        ),
+      );
+      expect(repository.completeEmailLinkCount, 0);
+      expect(container.read(pendingEmailAccountLinkProvider), isNotNull);
+    },
+  );
+
+  test(
     'email account upgrade persists then clears its pending state',
     () async {
       SharedPreferences.setMockInitialValues({});
@@ -314,7 +359,9 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
-          currentSessionProvider.overrideWithValue(_session()),
+          currentSessionProvider.overrideWithValue(
+            _session(email: 'Bee@Moniary.app'),
+          ),
           sharedPreferencesProvider.overrideWithValue(preferences),
         ],
       );

@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../domain/entities/app_notification.dart';
+
 class NotificationSupabaseDataSource {
   NotificationSupabaseDataSource(this.client);
 
@@ -26,29 +28,45 @@ class NotificationSupabaseDataSource {
   Future<List<Map<String, dynamic>>> fetchNotificationPage({
     String? category,
     String? groupId,
-    DateTime? before,
+    NotificationCursor? before,
     required int limit,
   }) async {
     try {
       final rows = await client.rpc(
-        'list_all_notifications_v2',
+        'list_all_notifications_v3',
         params: {
           'p_category': category,
           'p_group_id': groupId,
-          'p_before': before?.toUtc().toIso8601String(),
+          'p_before_created_at': before?.createdAt.toUtc().toIso8601String(),
+          'p_before_source': before?.source,
+          'p_before_id': before?.id,
           'p_limit': limit,
         },
       );
       return _rows(rows);
     } on PostgrestException catch (error) {
       if (!_isMissingFunction(error)) rethrow;
-      if (before != null) return const [];
-      final legacy = await fetchNotifications(category: category);
-      return groupId == null
-          ? legacy
-          : legacy
-                .where((item) => item['group_id'] == groupId)
-                .toList(growable: false);
+      try {
+        final rows = await client.rpc(
+          'list_all_notifications_v2',
+          params: {
+            'p_category': category,
+            'p_group_id': groupId,
+            'p_before': before?.createdAt.toUtc().toIso8601String(),
+            'p_limit': limit,
+          },
+        );
+        return _rows(rows);
+      } on PostgrestException catch (legacyError) {
+        if (!_isMissingFunction(legacyError)) rethrow;
+        if (before != null) return const [];
+        final legacy = await fetchNotifications(category: category);
+        return groupId == null
+            ? legacy
+            : legacy
+                  .where((item) => item['group_id'] == groupId)
+                  .toList(growable: false);
+      }
     }
   }
 

@@ -57,11 +57,14 @@
 - **Purpose**: answer a fixed catalog of finance questions using the user's
   transaction history: monthly totals, week comparison, daily average, top
   category, repeated spending, and saving suggestions.
-- **Important limitation**: this is deterministic on-device/repository logic,
-  not a chat model, external AI API, or free-form financial adviser.
-- **Consent**: intro/enablement and transaction/wallet/budget access flags are
-  stored in `SharedPreferences`. The current snapshot calculation reads
-  transactions; wallet/budget flags are reserved for future expansion.
+- **Implementation**: verified financial snapshots are calculated in the
+  repository, rendered locally for exact figures, and may be sent through the
+  authenticated `assistant-chat` Supabase Edge Function to Google Gemini for a
+  short explanatory response. It is not a free-form financial adviser.
+- **Consent**: enablement and transaction/wallet/budget flags are persisted in
+  `assistant_preferences`. The Edge Function re-reads those server-side flags,
+  validates the question kind, and allowlists snapshot fields before calling
+  Gemini; it does not trust client-provided consent markers.
 - **Access**: opened as a global route from the floating assistant button, not a
   bottom-navigation tab.
 
@@ -163,14 +166,18 @@
   FastApiOcrService`.
 - **Backend**: `backend/ocr/` is rule-based Tesseract + OpenCV + regex/keyword
   matching behind FastAPI. It does not use Ollama, an LLM, or cloud OCR.
+- **Security**: every extraction sends the current Supabase bearer session;
+  the backend resolves that session through Supabase Auth, rate-limits each
+  user, bounds concurrent OCR work, and disables raw OCR debug output unless
+  the server explicitly opts in.
 - **Suggestions**: OCR fields include per-field confidence, source, processing
   time, and a lightweight keyword category suggestion. Autofilled fields are
   visibly marked as AI suggestions and low-confidence values require review.
 - **Latency**: camera/gallery input is compressed to 1600 px at quality 72 and
   client extraction times out after eight seconds to keep OCR a utility flow.
-- **Environment**: Android emulator default is `http://10.0.2.2:8000`;
-  override `OCR_API_URL` for devices or deployment. There is no mock OCR
-  response fallback.
+- **Environment**: the app defaults to the hosted OCR endpoint. Override
+  `OCR_API_URL=http://10.0.2.2:8000` for an Android emulator running a local
+  backend. There is no mock OCR response fallback.
 
 ## Settings, Privacy, and Data Portability
 
@@ -178,8 +185,8 @@
   sessions, notification/report preferences, CSV import, CSV/XLSX/PDF export,
   privacy requests, account deletion, legal/support/store-compliance screens.
 - **Data layer**:
-  - `AccountRepository`: account lifecycle, sessions, exports, privacy
-    requests, and local export/privacy history.
+  - `AccountRepository`: account lifecycle, sessions, exports, the server-side
+    privacy request inbox, and local export history.
   - `ImportRepository`: CSV parsing and local import history.
   - `NotificationSettingsRepository`: Supabase notification settings.
   - `PrivacyRepository`: app lock and hidden-balance preferences.
@@ -200,8 +207,9 @@
 - **Privacy/retention**: lock-screen copy must not include people names or
   amounts; database queries and cleanup policy retain notification history for
   30 days.
-- **Local histories**: import/export/privacy-request histories are JSON files in
-  the application documents directory. Corrupt existing history is surfaced and
+- **Histories**: import/export histories are JSON files in the application
+  documents directory. Privacy requests and their administrator responses live
+  in the RLS-protected server inbox. Corrupt local histories are surfaced and
   not silently overwritten.
 - **Import invariant**: a pending history entry must be created before
   transaction creation begins; completion/failure updates the same entry.

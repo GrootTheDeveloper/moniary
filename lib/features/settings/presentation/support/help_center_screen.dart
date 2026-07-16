@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
-import '../../../../core/constants/app_constants.dart';
 import '../../domain/store/app_release_info.dart';
 import '../account/delete_account_help_screen.dart';
 import '../export/export_data_screen.dart';
@@ -119,8 +118,7 @@ class _DiagnosticCard extends StatelessWidget {
         'Version: ${appReleaseInfo.version}\n'
         'Build: ${appReleaseInfo.buildNumber}\n'
         'Channel: ${appReleaseInfo.releaseChannel}\n'
-        'Support: ${AppConstants.supportEmail}\n'
-        'Privacy: ${AppConstants.privacyEmail}';
+        'Support: ${context.l10n.privacyInAppChannelValue}';
 
     return Container(
       padding: const EdgeInsets.all(16),

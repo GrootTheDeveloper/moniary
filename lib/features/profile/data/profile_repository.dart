@@ -328,6 +328,20 @@ class ProfileRepository {
   Future<UserProfile> clearPaymentQrImage() async {
     try {
       final uid = _userId;
+      final profile = await _client
+          .from('profiles')
+          .select('payment_qr_path')
+          .eq('id', uid)
+          .single();
+      final storedPath = profile['payment_qr_path'] as String?;
+      final paths = <String>{'payment-qr/$uid/qr.jpg'};
+      if (storedPath?.startsWith('payment-qr/$uid/') == true) {
+        paths.add(storedPath!);
+      }
+      // Abort before clearing metadata if private storage cleanup fails.
+      await _client.storage
+          .from(AppConstants.storageBucket)
+          .remove(paths.toList(growable: false));
       final row = await _client
           .from('profiles')
           .update({'payment_qr_path': null})

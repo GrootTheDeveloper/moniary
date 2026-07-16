@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/app_theme.dart';
-import '../../../../shared/utils/error_helpers.dart';
 import '../../application/account/account_actions_controller.dart';
 import '../../domain/privacy_requests/privacy_request_history_entry.dart';
 import '../../domain/privacy_requests/privacy_request_sla.dart';
@@ -21,18 +20,7 @@ class PrivacyRequestDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen(accountActionsControllerProvider, (previous, next) {
-      next.whenOrNull(
-        error: (error, stackTrace) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(userFriendlyMessage(context, error))),
-          );
-        },
-      );
-    });
-
     final historyAsync = ref.watch(privacyRequestHistoryProvider);
-    final actionState = ref.watch(accountActionsControllerProvider);
     final currentEntry = historyAsync.maybeWhen(
       data: (history) => history.firstWhere(
         (item) => item.id == entry.id,
@@ -52,85 +40,68 @@ class PrivacyRequestDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.privacyRequestDetailTitle)),
       body: SafeArea(
-        child: Stack(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: [
-            ListView(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-              children: [
-                if (historyAsync.hasError) ...[
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surface,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppTheme.danger),
+            if (historyAsync.hasError) ...[
+              Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppTheme.danger),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      context.l10n.errorGeneric,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: AppTheme.danger),
+                      textAlign: TextAlign.center,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          context.l10n.errorGeneric,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: AppTheme.danger),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        TextButton.icon(
-                          onPressed: () =>
-                              ref.invalidate(privacyRequestHistoryProvider),
-                          icon: const Icon(Icons.refresh_outlined),
-                          label: Text(context.l10n.commonRetry),
-                        ),
-                      ],
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: () =>
+                          ref.invalidate(privacyRequestHistoryProvider),
+                      icon: const Icon(Icons.refresh_outlined),
+                      label: Text(context.l10n.commonRetry),
                     ),
-                  ),
-                ],
-                _DetailHero(entry: currentEntry, createdAt: createdAt),
-                const SizedBox(height: 16),
-                _DueDateTile(dueDate: dueDate),
-                const SizedBox(height: 12),
-                _StatusTile(
-                  label: status.label(context),
-                  description: status.description(context),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                _StatusActions(
-                  entry: currentEntry,
-                  isBusy: actionState.isLoading,
-                  onStatusChange: (status) {
-                    ref
-                        .read(accountActionsControllerProvider.notifier)
-                        .updatePrivacyRequestStatus(
-                          id: currentEntry.id,
-                          status: status,
-                        );
-                  },
-                ),
-                const SizedBox(height: 12),
-                _RequestCopyActions(entry: currentEntry),
-                const SizedBox(height: 12),
-                _DetailTile(
-                  icon: Icons.notes_outlined,
-                  title: context.l10n.privacyDetailContentTitle,
-                  value: currentEntry.message.trim().isEmpty
-                      ? context.l10n.privacyDetailContentEmpty
-                      : currentEntry.message.trim(),
-                ),
-                if (path != null)
-                  _DetailTile(
-                    icon: Icons.folder_outlined,
-                    title: context.l10n.privacyDetailFileTitle,
-                    value: path,
-                  ),
-              ],
+              ),
+            ],
+            _DetailHero(entry: currentEntry, createdAt: createdAt),
+            const SizedBox(height: 16),
+            _DueDateTile(dueDate: dueDate),
+            const SizedBox(height: 12),
+            _StatusTile(
+              label: status.label(context),
+              description: status.description(context),
             ),
-            if (actionState.isLoading)
-              const Positioned.fill(
-                child: ColoredBox(
-                  color: Color(0x66000000),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
+            const SizedBox(height: 12),
+            _RequestCopyActions(entry: currentEntry),
+            const SizedBox(height: 12),
+            _DetailTile(
+              icon: Icons.notes_outlined,
+              title: context.l10n.privacyDetailContentTitle,
+              value: currentEntry.message.trim().isEmpty
+                  ? context.l10n.privacyDetailContentEmpty
+                  : currentEntry.message.trim(),
+            ),
+            if (currentEntry.adminNote case final response?)
+              _DetailTile(
+                icon: Icons.support_agent_outlined,
+                title: context.l10n.privacyDetailResponseTitle,
+                value: response,
+              ),
+            if (path != null)
+              _DetailTile(
+                icon: Icons.folder_outlined,
+                title: context.l10n.privacyDetailFileTitle,
+                value: path,
               ),
           ],
         ),
@@ -261,39 +232,6 @@ class _DueDateTile extends StatelessWidget {
   }
 }
 
-class _StatusActions extends StatelessWidget {
-  const _StatusActions({
-    required this.entry,
-    required this.isBusy,
-    required this.onStatusChange,
-  });
-
-  final PrivacyRequestHistoryEntry entry;
-  final bool isBusy;
-  final ValueChanged<String> onStatusChange;
-
-  @override
-  Widget build(BuildContext context) {
-    final nextStatus = switch (entry.status) {
-      'ready_to_send' => 'sent_manually',
-      'sent_manually' => 'resolved',
-      _ => null,
-    };
-
-    if (nextStatus == null) {
-      return const SizedBox.shrink();
-    }
-
-    final next = privacyRequestStatusById(nextStatus);
-
-    return OutlinedButton.icon(
-      onPressed: isBusy ? null : () => onStatusChange(nextStatus),
-      icon: const Icon(Icons.task_alt_outlined),
-      label: Text(context.l10n.privacyDetailMarkStatus(next.label(context))),
-    );
-  }
-}
-
 class _RequestCopyActions extends StatelessWidget {
   const _RequestCopyActions({required this.entry});
 
@@ -306,6 +244,7 @@ class _RequestCopyActions extends StatelessWidget {
         '${context.l10n.privacyContactRequestType}: ${privacyRequestTypeByStoredValue(entry.requestType).label(context)}\n'
         '${context.l10n.privacyContactRequestStatus}: ${privacyRequestStatusById(entry.status).label(context)}\n'
         '${context.l10n.privacyContactRequestContent}: ${entry.message.trim()}\n'
+        '${entry.adminNote == null ? '' : '${context.l10n.privacyDetailResponseTitle}: ${entry.adminNote}\n'}'
         '${path != null ? '${context.l10n.privacyContactRequestFile}: $path' : ''}';
 
     return Column(

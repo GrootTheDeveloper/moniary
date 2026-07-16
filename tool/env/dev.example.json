@@ -1,10 +1,17 @@
 {
   "SUPABASE_URL": "https://your-project-ref.supabase.co",
   "SUPABASE_ANON_KEY": "replace-with-your-supabase-anon-key",
-  "FIREBASE_API_KEY": "replace-with-firebase-api-key",
-  "FIREBASE_APP_ID": "replace-with-firebase-app-id",
+  "FIREBASE_IOS_API_KEY": "replace-with-ios-firebase-api-key",
+  "FIREBASE_IOS_APP_ID": "replace-with-ios-firebase-app-id",
+  "FIREBASE_ANDROID_API_KEY": "replace-with-android-firebase-api-key",
+  "FIREBASE_ANDROID_APP_ID": "replace-with-android-firebase-app-id",
   "FIREBASE_MESSAGING_SENDER_ID": "replace-with-messaging-sender-id",
   "FIREBASE_PROJECT_ID": "replace-with-firebase-project-id",
   "FIREBASE_IOS_BUNDLE_ID": "com.moniary.moniary",
-  "OCR_API_URL": "https://your-ocr-api.example.com"
+  "OCR_API_URL": "https://your-ocr-api.example.com",
+  "ENABLE_GOOGLE_AUTH": "true",
+  "ENABLE_FACEBOOK_AUTH": "false",
+  "ENABLE_DEV_TOOLS": "false",
+  "TURNSTILE_SITE_KEY": "replace-with-public-turnstile-site-key",
+  "TURNSTILE_BASE_URL": "https://auth.example.com/"
 }

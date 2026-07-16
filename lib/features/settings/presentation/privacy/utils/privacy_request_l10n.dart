@@ -59,12 +59,14 @@ extension PrivacyRequestTypeL10n on PrivacyRequestType {
 extension PrivacyRequestStatusOptionL10n on PrivacyRequestStatusOption {
   String label(BuildContext context) {
     switch (id) {
-      case 'ready_to_send':
-        return context.l10n.privacyStatusReady;
-      case 'sent_manually':
-        return context.l10n.privacyStatusSent;
+      case 'submitted':
+        return context.l10n.privacyStatusSubmitted;
+      case 'in_review':
+        return context.l10n.privacyStatusInReview;
       case 'resolved':
         return context.l10n.privacyStatusResolved;
+      case 'rejected':
+        return context.l10n.privacyStatusRejected;
       default:
         return id;
     }
@@ -72,12 +74,14 @@ extension PrivacyRequestStatusOptionL10n on PrivacyRequestStatusOption {
 
   String description(BuildContext context) {
     switch (id) {
-      case 'ready_to_send':
-        return context.l10n.privacyStatusReadyDesc;
-      case 'sent_manually':
-        return context.l10n.privacyStatusSentDesc;
+      case 'submitted':
+        return context.l10n.privacyStatusSubmittedDesc;
+      case 'in_review':
+        return context.l10n.privacyStatusInReviewDesc;
       case 'resolved':
         return context.l10n.privacyStatusResolvedDesc;
+      case 'rejected':
+        return context.l10n.privacyStatusRejectedDesc;
       default:
         return id;
     }
