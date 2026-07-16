@@ -4,6 +4,14 @@ param location string
 param environmentName string
 param resourceSuffix string
 param tags object = {}
+param supabaseUrl string
+@secure()
+param supabaseAnonKey string
+@secure()
+param geminiApiKey string
+param geminiModel string
+@secure()
+param geminiBlockedKeySha256 string = ''
 
 var serviceName = 'ocr'
 var registryName = replace('cr${environmentName}${resourceSuffix}', '-', '')
@@ -76,6 +84,21 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     managedEnvironmentId: containerAppsEnvironment.id
     configuration: {
       activeRevisionsMode: 'Single'
+      secrets: concat([
+        {
+          name: 'supabase-anon-key'
+          value: supabaseAnonKey
+        }
+        {
+          name: 'gemini-api-key'
+          value: geminiApiKey
+        }
+      ], empty(geminiBlockedKeySha256) ? [] : [
+        {
+          name: 'gemini-blocked-key-sha256'
+          value: geminiBlockedKeySha256
+        }
+      ])
       ingress: {
         external: true
         targetPort: 8000
@@ -88,7 +111,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         {
           name: serviceName
           image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
-          env: [
+          env: concat([
             {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
               value: appInsights.properties.ConnectionString
@@ -105,7 +128,52 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               name: 'MAX_IMAGE_PX'
               value: '2000'
             }
-          ]
+            {
+              name: 'SUPABASE_URL'
+              value: supabaseUrl
+            }
+            {
+              name: 'SUPABASE_ANON_KEY'
+              secretRef: 'supabase-anon-key'
+            }
+            {
+              name: 'GEMINI_API_KEY'
+              secretRef: 'gemini-api-key'
+            }
+            {
+              name: 'GEMINI_MODEL'
+              value: geminiModel
+            }
+            {
+              name: 'OCR_ALLOW_DEBUG'
+              value: 'false'
+            }
+            {
+              name: 'OCR_LLM_ENABLED'
+              value: 'true'
+            }
+            {
+              name: 'OCR_LLM_TIMEOUT_SECONDS'
+              value: '8'
+            }
+            {
+              name: 'OCR_REQUESTS_PER_MINUTE'
+              value: '10'
+            }
+            {
+              name: 'OCR_MAX_CONCURRENT'
+              value: '2'
+            }
+            {
+              name: 'OCR_QUEUE_TIMEOUT_SECONDS'
+              value: '2'
+            }
+          ], empty(geminiBlockedKeySha256) ? [] : [
+            {
+              name: 'GEMINI_BLOCKED_KEY_SHA256'
+              secretRef: 'gemini-blocked-key-sha256'
+            }
+          ])
           resources: {
             cpu: json('1.0')
             memory: '2Gi'

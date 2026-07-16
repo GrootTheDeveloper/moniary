@@ -94,7 +94,11 @@ signing secrets, AI provider keys, database URLs, or production credentials.
 The OCR container separately requires `SUPABASE_URL` and
 `SUPABASE_ANON_KEY` as server environment variables so it can resolve the
 mobile bearer session through Supabase Auth. It must never receive the service
-role key. OCR debug output is disabled by default, and extraction endpoints are
+role key. When semantic enrichment is enabled, `GEMINI_API_KEY`, optional
+`GEMINI_MODEL`, and `GEMINI_BLOCKED_KEY_SHA256` are configured in the OCR
+server runtime as well as the assistant Edge Function. OCR sends only cleaned
+receipt text and deterministic candidates to Gemini, not the original image.
+OCR debug output is disabled by default, and extraction endpoints are
 rate/concurrency limited.
 
 The financial assistant must call Gemini only from the `assistant-chat` Edge

@@ -32,7 +32,7 @@ def positive_float_env(name: str, default: float) -> float:
 
 
 class SupabaseAuthVerifier:
-    """Resolve a bearer token through Supabase Auth instead of trusting JWT data."""
+    """Resolve bearer tokens through Supabase Auth instead of trusting JWT data."""
 
     def __init__(
         self,
@@ -94,7 +94,7 @@ class SupabaseAuthVerifier:
 
 
 class SlidingWindowRateLimiter:
-    """Process-local per-user limiter; the gateway remains the cross-replica layer."""
+    """Process-local per-user limiter; the gateway remains cross-replica control."""
 
     def __init__(self, max_requests: int, window_seconds: int = 60) -> None:
         if max_requests <= 0 or window_seconds <= 0:
@@ -122,7 +122,10 @@ class SlidingWindowRateLimiter:
             while timestamps and timestamps[0] <= cutoff:
                 timestamps.popleft()
             if len(timestamps) >= self._max_requests:
-                retry_after = max(1, int(timestamps[0] + self._window_seconds - now) + 1)
+                retry_after = max(
+                    1,
+                    int(timestamps[0] + self._window_seconds - now) + 1,
+                )
                 raise HTTPException(
                     status_code=429,
                     detail="OCR rate limit exceeded",

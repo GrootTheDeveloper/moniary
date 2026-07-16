@@ -2,6 +2,14 @@ targetScope = 'subscription'
 
 param environmentName string
 param location string
+param supabaseUrl string
+@secure()
+param supabaseAnonKey string
+@secure()
+param geminiApiKey string
+param geminiModel string = 'gemini-2.5-flash'
+@secure()
+param geminiBlockedKeySha256 string = ''
 
 var resourceSuffix = take(uniqueString(subscription().id, environmentName, location), 6)
 var tags = {
@@ -23,6 +31,11 @@ module platform './modules/platform.bicep' = {
     environmentName: environmentName
     resourceSuffix: resourceSuffix
     tags: tags
+    supabaseUrl: supabaseUrl
+    supabaseAnonKey: supabaseAnonKey
+    geminiApiKey: geminiApiKey
+    geminiModel: geminiModel
+    geminiBlockedKeySha256: geminiBlockedKeySha256
   }
 }
 

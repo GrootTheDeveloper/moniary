@@ -15,11 +15,21 @@ import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
 import '../../domain/repositories/group_repository.dart';
+import '../datasources/group_mock_data_source.dart';
 import '../datasources/group_supabase_data_source.dart';
 import '../models/group_model_mapper.dart';
+import 'group_mock_repository.dart';
 
 final groupRepositoryProvider = Provider<GroupRepository>((ref) {
   final client = ref.watch(supabaseClientProvider);
+  if (ref.watch(useMockDataModeProvider)) {
+    return GroupMockRepository(
+      GroupMockDataSource(
+        currentUserId:
+            ref.watch(currentSessionProvider)?.user.id ?? 'mock-user-id',
+      ),
+    );
+  }
   return GroupRepositoryImpl(client);
 });
 

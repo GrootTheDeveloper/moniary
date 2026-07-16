@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
 import 'package:moniary/features/scanning/data/fast_api_ocr_service.dart';
+import 'package:moniary/features/scanning/domain/ocr_result.dart';
 
 void main() {
   late Directory tempDirectory;
@@ -57,6 +58,15 @@ void main() {
             'address': 0.7,
             'category': 0.79,
           },
+          'field_sources': {
+            'merchant': 'llm',
+            'total': 'llm',
+            'date': 'llm',
+            'address': 'llm',
+            'category': 'llm',
+          },
+          'extraction_method': 'ocr+gemini',
+          'llm_model': 'gemini-2.5-flash',
           'processing_ms': 420,
         }),
         200,
@@ -89,6 +99,12 @@ void main() {
     expect(result.confidence, 0.92);
     expect(result.categoryKey, 'food');
     expect(result.categorySuggestion?.confidence, 0.79);
+    expect(result.merchantSuggestion?.source, OcrSuggestionSource.llm);
+    expect(result.totalSuggestion?.source, OcrSuggestionSource.llm);
+    expect(result.categorySuggestion?.source, OcrSuggestionSource.llm);
+    expect(result.extractionMethod, 'ocr+gemini');
+    expect(result.llmModel, 'gemini-2.5-flash');
+    expect(result.usesLlm, isTrue);
     expect(result.processingTime, const Duration(milliseconds: 420));
   });
 

@@ -75,13 +75,15 @@ from Supabase Vault and are never committed to migrations.
 - Request: multipart field `file` plus the current Supabase bearer session to
   `POST {OCR_API_URL}/extract`.
 - Backend: `backend/ocr/`, using FastAPI, Tesseract, OpenCV, Pillow, regex, and
-  keyword matching.
+  keyword matching, followed by optional Gemini semantic normalization over
+  cleaned OCR text and deterministic candidate JSON.
 - The backend also exposes `GET /health` and `POST /extract/base64`.
-- It does not use Ollama, an LLM, or cloud OCR.
 - The backend verifies the bearer session with Supabase Auth before accepting
   an image, rate-limits per user, bounds concurrent OCR execution, and keeps
-  raw OCR debug output disabled by default. There is no fake OCR fallback; the
-  service and Supabase Auth must both be reachable for scanning extraction.
+  raw OCR debug output disabled by default.
+- Gemini does not receive the original receipt image. If Gemini is unavailable,
+  the backend returns the validated rule-based result. There is no fake OCR
+  fallback; the service and Supabase Auth must both be reachable.
 
 ## Device integrations
 

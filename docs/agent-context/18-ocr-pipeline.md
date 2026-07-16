@@ -1,17 +1,20 @@
-# Rule-based Receipt OCR Pipeline — Detailed Reference
+# Receipt OCR Rule Foundation — Detailed Reference
 
 **Document type**: `IMPLEMENTATION REFERENCE`
 **Current implementation audit**: `2026-07-10`
 
 The pipeline is implemented under `backend/ocr/`. Use the executable Python
 source, tests, and `19-ocr-backend.md` for current run instructions. The task
-sections below preserve the original design constraints and expected rules.
+sections below preserve the original deterministic foundation. The current
+implementation adds an optional Gemini semantic-normalization stage after OCR
+and rules; the historical no-LLM constraints below are superseded by that
+server-side, validated, fallback-safe stage.
 
 ## Tổng quan dự án
 
 Pipeline đọc ảnh bill/receipt chụp bằng camera, trích xuất dữ liệu có cấu trúc (items, VAT, discount, total, ...) và trả về JSON thông qua FastAPI.
 
-**Phương pháp:** Hoàn toàn rule-based — không dùng AI, không dùng LLM, không dùng cloud API.  
+**Phương pháp nền tảng:** Rule-based; triển khai hiện tại có bước Gemini tùy chọn sau rules.
 **Stack:** Python 3.10+ · OpenCV · Pillow · Tesseract OCR (vie + eng) · Regex · FastAPI · Uvicorn  
 **Ngôn ngữ bill hỗ trợ:** Tiếng Việt và Tiếng Anh (song ngữ)
 
@@ -602,7 +605,8 @@ export API_PORT=8000
 
 ## Ghi chú cho Codex
 
-- **Không** dùng AI API, LLM, cloud service, Docling, EasyOCR, PaddleOCR
+- Phần rule foundation ban đầu không dùng AI API/LLM. Bản hiện tại có Gemini
+  enrichment tùy chọn theo mô tả ở đầu tài liệu và `19-ocr-backend.md`.
 - Chỉ dùng **Tesseract + regex + keyword matching thuần Python**
 - Tất cả hàm phải **stateless**
 - Encoding **UTF-8** toàn bộ — đặc biệt quan trọng cho tiếng Việt

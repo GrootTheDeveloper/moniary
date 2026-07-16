@@ -41,5 +41,8 @@ class ReceiptResponse(BaseModel):
     validation_issues: list[str] = Field(default_factory=list)
     confidence: float = 0.0
     field_confidence: dict[str, float] = Field(default_factory=dict)
+    field_sources: dict[str, str] = Field(default_factory=dict)
+    extraction_method: str = "ocr+rules"
+    llm_model: str | None = None
     processing_ms: int = 0
     error: str | None = None

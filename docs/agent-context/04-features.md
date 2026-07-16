@@ -175,20 +175,24 @@
   transaction creation.
 - **Flow**: `ScanningController -> OcrRepository -> OcrService ->
   FastApiOcrService`.
-- **Backend**: `backend/ocr/` is rule-based Tesseract + OpenCV + regex/keyword
-  matching behind FastAPI. It does not use Ollama, an LLM, or cloud OCR.
+- **Backend**: `backend/ocr/` uses Tesseract + OpenCV + regex/keyword matching
+  behind FastAPI, then optionally asks Gemini to normalize the cleaned OCR text
+  and deterministic candidate fields. The original receipt image is not sent
+  to Gemini, and provider failure falls back to rules.
 - **Security**: every extraction sends the current Supabase bearer session;
   the backend resolves that session through Supabase Auth, rate-limits each
   user, bounds concurrent OCR work, and disables raw OCR debug output unless
   the server explicitly opts in.
-- **Suggestions**: OCR fields include per-field confidence, source, processing
-  time, and a lightweight keyword category suggestion. Autofilled fields are
-  visibly marked as AI suggestions and low-confidence values require review.
+- **Suggestions**: OCR fields include per-field confidence and provenance,
+  extraction method, processing time, and a category suggestion. The review UI
+  distinguishes deterministic OCR from OCR + AI suggestions.
 - **Latency**: camera/gallery input is compressed to 1600 px at quality 72 and
-  client extraction times out after eight seconds to keep OCR a utility flow.
+  the client allows up to 30 seconds for OCR plus optional semantic enrichment.
 - **Environment**: the app defaults to the hosted OCR endpoint. Override
   `OCR_API_URL=http://10.0.2.2:8000` for an Android emulator running a local
-  backend. There is no mock OCR response fallback.
+  backend. Hosted OCR requires Supabase public project configuration for bearer
+  verification and server-only Gemini configuration when enrichment is enabled.
+  There is no mock OCR response fallback.
 
 ## Settings, Privacy, and Data Portability
 
