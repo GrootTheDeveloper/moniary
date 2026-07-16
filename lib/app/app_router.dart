@@ -457,6 +457,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return buildSlideUpTransitionPage(state: state, child: child);
         },
       ),
+      // Static /groups routes must be declared before /groups/:groupId.
+      // Otherwise "create" is parsed as a group UUID by the dynamic route.
+      GoRoute(
+        path: CreateGroupScreen.routePath,
+        pageBuilder: (context, state) => buildSlideUpTransitionPage(
+          state: state,
+          child: const CreateGroupScreen(),
+        ),
+      ),
       GoRoute(
         path: GroupRoutePaths.groupPattern,
         redirect: (context, state) {
@@ -728,13 +737,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ? GroupsScreen.routePath
               : GroupRoutePaths.home(groupId);
         },
-      ),
-      GoRoute(
-        path: CreateGroupScreen.routePath,
-        pageBuilder: (context, state) => buildSlideUpTransitionPage(
-          state: state,
-          child: const CreateGroupScreen(),
-        ),
       ),
       GoRoute(
         path: InviteMemberScreen.routePath,
