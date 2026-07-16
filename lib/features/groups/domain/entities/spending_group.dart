@@ -69,6 +69,13 @@ class SpendingGroup {
   }
 }
 
+class SpendingGroupPage {
+  const SpendingGroupPage({required this.items, required this.hasMore});
+
+  final List<SpendingGroup> items;
+  final bool hasMore;
+}
+
 class SpendingGroupMember {
   const SpendingGroupMember({
     required this.id,

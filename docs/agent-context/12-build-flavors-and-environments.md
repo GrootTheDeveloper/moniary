@@ -71,8 +71,10 @@ OCR has no mock result fallback.
 ## Backend setup
 
 - Supabase schema/functions: `supabase/`.
-- AI Chat runs through the `assistant-chat` Supabase Edge Function. Gemini
-  credentials are Edge Function secrets, not Flutter `--dart-define` values:
+- AI Chat runs through the `assistant-chat` Supabase Edge Function. OCR uses
+  the same provider configuration in its own server environment for semantic
+  receipt normalization. Gemini credentials are never Flutter
+  `--dart-define` values:
   `GEMINI_API_KEY`, optional `GEMINI_MODEL`, and optional
   `GEMINI_BLOCKED_KEY_SHA256` for comma-separated SHA-256 digests of exposed
   keys that the function must refuse to use.
@@ -86,6 +88,10 @@ to Supabase with:
 supabase secrets set --env-file .env
 supabase functions deploy assistant-chat
 ```
+
+For OCR, set `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `GEMINI_API_KEY` on the
+selected `azd` environment, then run `azd provision` before `azd deploy ocr`.
+Provisioning updates the existing Container App secrets and environment values.
 
 Do not put real credentials in documentation, launch configurations committed to
 Git, or test fixtures.

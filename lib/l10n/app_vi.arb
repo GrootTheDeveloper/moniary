@@ -42,6 +42,15 @@
   "commonClose": "Đóng",
   "commonSaving": "Đang lưu...",
   "commonLoading": "Đang tải...",
+  "groupListLoadMore": "Tải thêm nhóm",
+  "groupCommunityLoadMore": "Tải thêm hoạt động",
+  "groupCommunityUploadProgress": "Đang tải {completed}/{total} ảnh",
+  "@groupCommunityUploadProgress": {
+    "placeholders": {
+      "completed": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
   "commonCopy": "Sao chép",
   "commonShare": "Chia sẻ",
   "commonOpen": "Mở",
@@ -1417,7 +1426,7 @@
   "thirdPartyMetaDescription": "Chỉ dùng khi bạn chọn đăng nhập bằng Facebook. Meta có thể cung cấp mã tài khoản, email, tên và ảnh đại diện theo các quyền bạn chấp thuận.",
   "thirdPartyCloudflareTitle": "Cloudflare Turnstile",
   "thirdPartyCloudflareDescription": "Dùng để ngăn lạm dụng tự động đối với đăng nhập khách bằng cách xử lý các tín hiệu bảo mật cần thiết cho thử thách CAPTCHA.",
-  "thirdPartyGeminiDescription": "Chỉ dùng khi bạn bật trợ lý AI. Moniary gửi ngữ cảnh tài chính đã chọn qua Supabase Edge Function để tạo câu trả lời.",
+  "thirdPartyGeminiDescription": "Dùng cho trợ lý AI và để hiểu ngữ nghĩa hóa đơn khi bạn chủ động quét. OCR chỉ gửi văn bản đã nhận dạng và các trường gợi ý; ảnh hóa đơn gốc không được gửi tới Gemini.",
   "thirdPartyFlutterDescription": "Framework giao diện chính của app, kèm các package hỗ trợ điều hướng, trạng thái, camera, chọn ảnh và xử lý file.",
   "thirdPartyDeviceStorageTitle": "Bộ nhớ thiết bị",
   "thirdPartyDeviceStorageDescription": "File export, request privacy và lịch sử export/request được ghi trong thư mục tài liệu của app trên thiết bị.",
@@ -1655,7 +1664,7 @@
   "privacyPolicyShareTitle": "Chia sẻ dữ liệu",
   "privacyPolicyShareItem1": "Moniary không bán dữ liệu cá nhân hoặc dữ liệu tài chính của người dùng.",
   "privacyPolicyShareItem2": "Dữ liệu được lưu trên hạ tầng bảo mật để cung cấp đăng nhập, đồng bộ dữ liệu, lưu trữ ảnh và các tính năng trợ lý AI đã bật.",
-  "privacyPolicyShareItem3": "Khi bật trợ lý AI, ngữ cảnh tài chính đã chọn có thể được gửi qua Supabase Edge Functions tới Google Gemini để tạo câu trả lời. Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.",
+  "privacyPolicyShareItem3": "Khi bật trợ lý AI, ngữ cảnh tài chính đã chọn có thể được gửi qua Supabase Edge Functions tới Google Gemini. Khi bạn quét hóa đơn, văn bản OCR và các trường gợi ý có thể được gửi tới Gemini để chuẩn hóa; ảnh gốc không được gửi. Moniary không tự động đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng.",
   "privacyPolicyShareItem4": "Khi bạn chọn đăng nhập bằng email, Google hoặc Facebook (Meta), Supabase và nhà cung cấp được chọn sẽ xử lý dữ liệu xác thực. Cloudflare Turnstile xử lý tín hiệu bảo mật cho đăng nhập email, đăng ký, đặt lại mật khẩu và đăng nhập khách được bảo vệ.",
   "privacyPolicyDeleteTitle": "Xóa dữ liệu",
   "privacyPolicyDeleteItem1": "Người dùng có thể xóa từng giao dịch trong app.",
@@ -3014,8 +3023,11 @@
   "cameraFallbackPermissionDenied": "Không có quyền truy cập camera. Bạn có thể nhập giao dịch thủ công.",
   "cameraFallbackGenericError": "Không thể mở camera. Bạn có thể nhập giao dịch thủ công.",
   "scanSuggestionNotice": "Thông tin trên hóa đơn đã được tự động điền. Hãy kiểm tra trước khi lưu.",
+  "scanLlmSuggestionNotice": "OCR và AI đã hiểu, chuẩn hóa thông tin trên hóa đơn. Hãy kiểm tra trước khi lưu.",
   "scanAiSuggestion": "Từ hóa đơn",
   "scanSuggestionNeedsReview": "Từ hóa đơn - nên kiểm tra lại",
+  "scanLlmSuggestion": "OCR + AI gợi ý",
+  "scanLlmSuggestionNeedsReview": "OCR + AI gợi ý - nên kiểm tra lại",
   "scanDetectedSummary": "Thông tin nhận diện từ hóa đơn",
   "scanDetectedItemsCount": "Đã nhận diện {count} mặt hàng",
   "@scanDetectedItemsCount": {

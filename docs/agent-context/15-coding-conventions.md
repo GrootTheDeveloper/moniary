@@ -13,8 +13,9 @@
 
 ## Runtime data
 
-- Runtime repositories use Supabase; do not add demo/mock branches.
-- Missing required Supabase configuration must fail closed at startup.
+- Configured/release runtime repositories use Supabase. Debug builds may use
+  the in-memory mock mode when dart-defines are absent.
+- Missing required Supabase configuration must fail closed for release builds.
 - Anonymous users are real Supabase users and remain subject to RLS.
 
 ## Localization

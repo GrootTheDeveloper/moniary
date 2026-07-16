@@ -15,6 +15,10 @@ schedule, or the public policy URL required for production.
 - **Personal finance**: wallets, categories, transactions, dates, amounts,
   notes, importance state, category budget limits/warning ratios, and optional
   receipt images.
+- **Receipt semantic extraction**: when the user starts OCR and Gemini is
+  configured, cleaned receipt text and deterministic candidate fields are sent
+  from the OCR backend to Gemini. The original receipt image is not sent to
+  Gemini by this pipeline.
 - **Friends/groups**: searches and requests, friendships/invite links, group
   membership/roles, shared transactions, payers, shares, balances, settlements,
   comments, invitations, activities/notifications, and group images.
@@ -42,10 +46,12 @@ configured reports, support exports/imports, and handle privacy/account actions.
   and Edge Functions.
 - **Google Gemini**: receives the assistant question, limited history, profile
   context, and only the financial snapshot fields permitted by the user's
-  server-side assistant settings when the AI assistant is enabled.
-- **Configured OCR host**: receives a receipt image when the user starts OCR.
-  The repository implementation is FastAPI/Tesseract; the production host and
-  its operational retention policy must be disclosed.
+  server-side assistant settings when the AI assistant is enabled. During a
+  user-requested OCR scan it can also receive cleaned receipt text and
+  deterministic candidate fields, but not the original receipt image.
+- **Configured OCR host**: receives a receipt image when the user starts OCR,
+  verifies the Supabase session, runs FastAPI/Tesseract/rules, and may invoke
+  Gemini as described above. Its operational retention policy must be disclosed.
 - **Resend**: receives report email content/recipient data when scheduled email
   reports are enabled and the Edge Function is configured.
 - **Operating-system share/open targets**: receive files only when the user

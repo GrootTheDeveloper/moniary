@@ -79,6 +79,17 @@ class AppLocalizationsVi extends AppLocalizations {
   String get commonLoading => 'Đang tải...';
 
   @override
+  String get groupListLoadMore => 'Tải thêm nhóm';
+
+  @override
+  String get groupCommunityLoadMore => 'Tải thêm hoạt động';
+
+  @override
+  String groupCommunityUploadProgress(int completed, int total) {
+    return 'Đang tải $completed/$total ảnh';
+  }
+
+  @override
   String get commonCopy => 'Sao chép';
 
   @override
@@ -3124,7 +3135,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get thirdPartyGeminiDescription =>
-      'Chỉ dùng khi bạn bật trợ lý AI. Moniary gửi ngữ cảnh tài chính đã chọn qua Supabase Edge Function để tạo câu trả lời.';
+      'Dùng cho trợ lý AI và để hiểu ngữ nghĩa hóa đơn khi bạn chủ động quét. OCR chỉ gửi văn bản đã nhận dạng và các trường gợi ý; ảnh hóa đơn gốc không được gửi tới Gemini.';
 
   @override
   String get thirdPartyFlutterDescription =>
@@ -3773,7 +3784,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get privacyPolicyShareItem3 =>
-      'Khi bật trợ lý AI, ngữ cảnh tài chính đã chọn có thể được gửi qua Supabase Edge Functions tới Google Gemini để tạo câu trả lời. Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.';
+      'Khi bật trợ lý AI, ngữ cảnh tài chính đã chọn có thể được gửi qua Supabase Edge Functions tới Google Gemini. Khi bạn quét hóa đơn, văn bản OCR và các trường gợi ý có thể được gửi tới Gemini để chuẩn hóa; ảnh gốc không được gửi. Moniary không tự động đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng.';
 
   @override
   String get privacyPolicyShareItem4 =>
@@ -6515,10 +6526,21 @@ class AppLocalizationsVi extends AppLocalizations {
       'Thông tin trên hóa đơn đã được tự động điền. Hãy kiểm tra trước khi lưu.';
 
   @override
+  String get scanLlmSuggestionNotice =>
+      'OCR và AI đã hiểu, chuẩn hóa thông tin trên hóa đơn. Hãy kiểm tra trước khi lưu.';
+
+  @override
   String get scanAiSuggestion => 'Từ hóa đơn';
 
   @override
   String get scanSuggestionNeedsReview => 'Từ hóa đơn - nên kiểm tra lại';
+
+  @override
+  String get scanLlmSuggestion => 'OCR + AI gợi ý';
+
+  @override
+  String get scanLlmSuggestionNeedsReview =>
+      'OCR + AI gợi ý - nên kiểm tra lại';
 
   @override
   String get scanDetectedSummary => 'Thông tin nhận diện từ hóa đơn';

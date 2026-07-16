@@ -642,6 +642,7 @@ void main() {
         const GroupListScreen(),
         friendRepository: FakeFriendRepository(),
         groupRepository: groupRepository,
+        notificationRepository: FakeNotificationRepository(notifications: []),
       ),
     );
     await tester.pumpAndSettle();
@@ -670,6 +671,18 @@ void main() {
         const GroupListScreen(),
         friendRepository: FakeFriendRepository(),
         groupRepository: groupRepository,
+        notificationRepository: FakeNotificationRepository(
+          notifications: [
+            AppNotification(
+              id: 'notification-1',
+              category: AppNotificationCategory.group,
+              type: 'transaction_posted',
+              isRead: false,
+              createdAt: DateTime(2026, 7, 1),
+              groupId: 'group-1',
+            ),
+          ],
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -917,6 +930,8 @@ void main() {
       find.text('An Nguyen muốn kết bạn với bạn trên Moniary.'),
       findsOneWidget,
     );
+    expect(find.widgetWithText(FilledButton, 'Kết bạn'), findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, 'Từ chối'), findsOneWidget);
 
     await tester.tap(find.widgetWithText(FilledButton, 'Kết bạn'));
     await tester.pumpAndSettle();
@@ -924,6 +939,74 @@ void main() {
     expect(repository.acceptedInviteTokens, ['token-1']);
     expect(find.text('Bạn bè'), findsWidgets);
     expect(find.text('An Nguyen'), findsOneWidget);
+  });
+
+  testWidgets('FriendInviteAcceptScreen từ chối mà không kết bạn', (
+    tester,
+  ) async {
+    final repository = FakeFriendRepository(
+      invitePreview: const FriendInvitePreview(
+        status: FriendInviteStatus.active,
+        relationStatus: FriendRelationStatus.none,
+        inviter: FriendProfile(
+          userId: 'user-an',
+          fullName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(
+      routerApp(
+        friendRepository: repository,
+        initialLocation: '/friends/invite/token-1',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Từ chối'));
+    await tester.pumpAndSettle();
+
+    expect(repository.acceptedInviteTokens, isEmpty);
+    expect(find.text('Bạn bè'), findsWidgets);
+  });
+
+  testWidgets('FriendInviteAcceptScreen giữ hai nút trên màn hình thấp', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 480);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final repository = FakeFriendRepository(
+      invitePreview: const FriendInvitePreview(
+        status: FriendInviteStatus.active,
+        relationStatus: FriendRelationStatus.none,
+        inviter: FriendProfile(
+          userId: 'user-an',
+          fullName: 'An Nguyen',
+          username: 'an_nguyen',
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(
+      routerApp(
+        friendRepository: repository,
+        initialLocation: '/friends/invite/token-1',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final acceptButton = find.widgetWithText(FilledButton, 'Kết bạn');
+    final declineButton = find.widgetWithText(OutlinedButton, 'Từ chối');
+    expect(acceptButton, findsOneWidget);
+    expect(declineButton, findsOneWidget);
+    expect(tester.getSize(acceptButton).height, greaterThanOrEqualTo(48));
+    expect(tester.getSize(declineButton).height, greaterThanOrEqualTo(48));
+    expect(tester.getBottomLeft(acceptButton).dy, lessThanOrEqualTo(480));
+    expect(tester.getBottomRight(declineButton).dy, lessThanOrEqualTo(480));
   });
 
   testWidgets('FriendInvitePromptHost hiện popup và accept invite', (
@@ -1171,6 +1254,13 @@ class FakeGroupRepository implements GroupRepository {
   Future<List<SpendingGroup>> fetchGroups() async => const [];
 
   @override
+  Future<SpendingGroupPage> fetchGroupsPage({
+    int limit = 20,
+    DateTime? beforeUpdatedAt,
+    String? beforeId,
+  }) async => const SpendingGroupPage(items: [], hasMore: false);
+
+  @override
   Future<SpendingGroupDetail> fetchGroupDetail(String groupId) async {
     final now = DateTime(2026);
     return SpendingGroupDetail(
@@ -1370,11 +1460,27 @@ class FakeGroupRepository implements GroupRepository {
   }) async => const [];
 
   @override
+  Future<GroupCommunityPage> fetchCommunityFeedPage({
+    required String groupId,
+    int limit = 20,
+    GroupCommunityCursor? before,
+  }) async => const GroupCommunityPage(items: [], hasMore: false);
+
+  @override
+  Future<GroupCommunityCommentsPage> fetchCommunityCommentsPage({
+    required String postId,
+    int limit = 30,
+    DateTime? beforeCreatedAt,
+    String? beforeId,
+  }) async => const GroupCommunityCommentsPage(items: [], hasMore: false);
+
+  @override
   Future<String> createCommunityPost({
     required String groupId,
     required String type,
     String? content,
     List<GroupCommunityMediaDraft> media = const [],
+    void Function(int completed, int total)? onMediaUploadProgress,
   }) async => 'mock-community-post';
 
   @override

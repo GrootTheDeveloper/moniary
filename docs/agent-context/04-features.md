@@ -88,6 +88,13 @@
   supported; exact shares must sum to the integer transaction total.
 - **Layers**: `GroupController`, repository contract/implementation, Supabase
   data sources, model mappers, and pure split/settlement services.
+- **Performance reads**: the Group list uses a cursor-paginated summary RPC so
+  member counts, posted totals, current-user balance, avatars, and unresolved
+  settlement state are returned in one bounded request instead of per-group
+  member/transaction/settlement queries. Community uses a cursor-paginated
+  mixed feed RPC; reactions and savings are aggregated server-side, poll reads
+  return only the current member's selected option, and comments load through a
+  separate paginated RPC.
 - **Backend**: versioned group tables, RPCs, RLS, Storage policies, and views are
   defined in `20260611000000_groups_community.sql`.
 - **Invite links**: owner/admin can create a shared link that multiple people
@@ -133,6 +140,10 @@
   directly from the stable screen tree; no delayed bottom-sheet-to-dialog
   overlay chain is used. Money inputs use a shared locale-aware integer
   formatter and keep integer domain values.
+- **Community media stability**: selected images are bounded to 1600 px, upload
+  at most two at a time with a visible progress state and timeouts, and persist
+  `pending`, `uploading`, `uploaded`, or `failed` status. Feed images request
+  decode-cache sizes appropriate to their rendered cards.
 - **Scoped notification inbox**: Group Shell notification tabs query the same
   unified notification model as the global inbox, filtered by `group_id`.
   Group badge/read-all actions affect only that group. Community updates are
@@ -164,20 +175,24 @@
   transaction creation.
 - **Flow**: `ScanningController -> OcrRepository -> OcrService ->
   FastApiOcrService`.
-- **Backend**: `backend/ocr/` is rule-based Tesseract + OpenCV + regex/keyword
-  matching behind FastAPI. It does not use Ollama, an LLM, or cloud OCR.
+- **Backend**: `backend/ocr/` uses Tesseract + OpenCV + regex/keyword matching
+  behind FastAPI, then optionally asks Gemini to normalize the cleaned OCR text
+  and deterministic candidate fields. The original receipt image is not sent
+  to Gemini, and provider failure falls back to rules.
 - **Security**: every extraction sends the current Supabase bearer session;
   the backend resolves that session through Supabase Auth, rate-limits each
   user, bounds concurrent OCR work, and disables raw OCR debug output unless
   the server explicitly opts in.
-- **Suggestions**: OCR fields include per-field confidence, source, processing
-  time, and a lightweight keyword category suggestion. Autofilled fields are
-  visibly marked as AI suggestions and low-confidence values require review.
+- **Suggestions**: OCR fields include per-field confidence and provenance,
+  extraction method, processing time, and a category suggestion. The review UI
+  distinguishes deterministic OCR from OCR + AI suggestions.
 - **Latency**: camera/gallery input is compressed to 1600 px at quality 72 and
-  client extraction times out after eight seconds to keep OCR a utility flow.
+  the client allows up to 30 seconds for OCR plus optional semantic enrichment.
 - **Environment**: the app defaults to the hosted OCR endpoint. Override
   `OCR_API_URL=http://10.0.2.2:8000` for an Android emulator running a local
-  backend. There is no mock OCR response fallback.
+  backend. Hosted OCR requires Supabase public project configuration for bearer
+  verification and server-only Gemini configuration when enrichment is enabled.
+  There is no mock OCR response fallback.
 
 ## Settings, Privacy, and Data Portability
 

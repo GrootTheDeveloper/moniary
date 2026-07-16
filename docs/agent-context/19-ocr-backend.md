@@ -4,7 +4,9 @@
 **Last source audit**: `2026-07-10`
 
 The OCR backend in `backend/ocr` uses Tesseract, OpenCV, regex, and keyword
-matching. It does not use Ollama, an LLM, a cloud OCR API, or another AI model.
+matching as its deterministic foundation. When configured, Gemini receives the
+cleaned OCR text and rule candidates to normalize field meaning. The original
+image is not sent to Gemini, and provider failure falls back to rules.
 
 ## Install system dependencies
 
@@ -43,10 +45,13 @@ Required hosted environment variables:
 ```bash
 export SUPABASE_URL=https://your-project-ref.supabase.co
 export SUPABASE_ANON_KEY=your-publishable-or-anon-key
+export GEMINI_API_KEY=your-server-only-key
 ```
 
-The OCR service uses these public project values to resolve the mobile bearer
+The Supabase public project values are used only to resolve the mobile bearer
 session through `GET /auth/v1/user`; do not configure a service-role key.
+`GEMINI_API_KEY` enables semantic enrichment, while provider failure still
+falls back to deterministic extraction.
 
 Optional environment variables:
 
@@ -55,6 +60,10 @@ export TESSERACT_CMD=/usr/bin/tesseract
 export OCR_LANG=vie+eng
 export OCR_PSM=6
 export MAX_IMAGE_PX=2000
+export GEMINI_MODEL=gemini-2.5-flash
+export GEMINI_BLOCKED_KEY_SHA256=
+export OCR_LLM_ENABLED=true
+export OCR_LLM_TIMEOUT_SECONDS=8
 export OCR_MAX_FILE_MB=15
 export OCR_REQUESTS_PER_MINUTE=10
 export OCR_MAX_CONCURRENT=2
@@ -71,8 +80,9 @@ export OCR_ALLOW_DEBUG=false
   `Authorization: Bearer <SUPABASE_ACCESS_TOKEN>`.
 - `POST /extract?debug=true`: also returns raw Tesseract text only when the
   server explicitly sets `OCR_ALLOW_DEBUG=true`.
-- Responses include `field_confidence`, `processing_ms`, and a stable
-  `suggested_category` key when the local keyword classifier has a match.
+- Responses include `field_confidence`, `field_sources`, `extraction_method`,
+  `processing_ms`, and a stable `suggested_category` key. `field_sources`
+  identifies values normalized by Gemini so Flutter can preserve provenance.
 - `POST /extract/base64`: accepts base64 image JSON.
 - Supported images: JPEG, PNG, WEBP, maximum 15 MB by default.
 - Extraction is limited per authenticated user and by a process-wide OCR
@@ -116,10 +126,12 @@ azd auth login
 azd env select <team-environment>
 azd env set SUPABASE_URL https://<same-project-as-mobile-env>.supabase.co
 azd env set SUPABASE_ANON_KEY <same-public-anon-or-publishable-key-as-mobile-env>
+azd env set GEMINI_API_KEY <server-only-gemini-key>
 azd env set OCR_ALLOW_DEBUG false
 azd env set OCR_REQUESTS_PER_MINUTE 10
 azd env set OCR_MAX_CONCURRENT 2
 azd env set OCR_QUEUE_TIMEOUT_SECONDS 2
+azd provision
 azd deploy ocr
 ```
 
@@ -127,3 +139,6 @@ Set `OCR_ALLOWED_ORIGINS` only to explicit HTTPS web origins when a browser
 client is enabled. Native Android/iOS clients do not require a permissive CORS
 origin. After deploy, test `/health`, then make a multipart `POST /extract`
 without `Authorization`; it must return HTTP 401 before any image processing.
+Then verify an authenticated scan reports `extraction_method: ocr+gemini` when
+enrichment is enabled. `azd deploy` alone does not apply changed Bicep
+environment settings, so run `azd provision` when configuration changes.

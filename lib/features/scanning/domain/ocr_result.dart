@@ -1,4 +1,4 @@
-enum OcrSuggestionSource { ocr, derived, classifier }
+enum OcrSuggestionSource { ocr, derived, classifier, llm }
 
 class OcrSuggestion<T> {
   const OcrSuggestion({
@@ -28,6 +28,8 @@ class OcrResult {
     this.processingTime = Duration.zero,
     this.validationIssues = const [],
     this.fieldConfidence = const {},
+    this.extractionMethod = 'ocr+rules',
+    this.llmModel,
   });
 
   final OcrSuggestion<String>? merchantSuggestion;
@@ -42,6 +44,8 @@ class OcrResult {
   final Duration processingTime;
   final List<String> validationIssues;
   final Map<String, double> fieldConfidence;
+  final String extractionMethod;
+  final String? llmModel;
 
   String? get merchantName => merchantSuggestion?.value;
   int? get totalAmount => totalSuggestion?.value;
@@ -49,6 +53,7 @@ class OcrResult {
   String? get note => noteSuggestion?.value;
   String? get categoryKey => categorySuggestion?.value;
   bool get needsReview => validationIssues.isNotEmpty || confidence < 0.75;
+  bool get usesLlm => llmModel != null;
 }
 
 class OcrLineItem {

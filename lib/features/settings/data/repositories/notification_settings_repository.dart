@@ -115,9 +115,25 @@ class SupabaseNotificationSettingsRepository
 final notificationSettingsRepositoryProvider =
     Provider<NotificationSettingsRepository>((ref) {
       ref.watch(currentSessionProvider);
+      if (ref.watch(useMockDataModeProvider)) {
+        return MockNotificationSettingsRepository();
+      }
       return SupabaseNotificationSettingsRepository(
         SupabaseNotificationSettingsDataSource(
           ref.watch(supabaseClientProvider),
         ),
       );
     });
+
+class MockNotificationSettingsRepository
+    implements NotificationSettingsRepository {
+  NotificationSettings _settings = const NotificationSettings();
+
+  @override
+  Future<NotificationSettings> getSettings() async => _settings;
+
+  @override
+  Future<void> updateSettings(NotificationSettings settings) async {
+    _settings = settings.normalized();
+  }
+}

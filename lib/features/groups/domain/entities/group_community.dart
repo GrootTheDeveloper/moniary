@@ -110,6 +110,22 @@ class GroupPoll {
   final bool isClosed;
   final DateTime createdAt;
   final String? selectedOptionId;
+
+  GroupPoll copyWith({
+    List<GroupPollOption>? options,
+    bool? isClosed,
+    String? selectedOptionId,
+  }) {
+    return GroupPoll(
+      id: id,
+      groupId: groupId,
+      title: title,
+      options: options ?? this.options,
+      isClosed: isClosed ?? this.isClosed,
+      createdAt: createdAt,
+      selectedOptionId: selectedOptionId ?? this.selectedOptionId,
+    );
+  }
 }
 
 class GroupSavingsChallenge {
@@ -131,4 +147,17 @@ class GroupSavingsChallenge {
   final DateTime endDate;
   final int totalContributed;
   final bool isActive;
+
+  GroupSavingsChallenge copyWith({int? totalContributed, bool? isActive}) {
+    return GroupSavingsChallenge(
+      id: id,
+      groupId: groupId,
+      title: title,
+      targetAmount: targetAmount,
+      startDate: startDate,
+      endDate: endDate,
+      totalContributed: totalContributed ?? this.totalContributed,
+      isActive: isActive ?? this.isActive,
+    );
+  }
 }

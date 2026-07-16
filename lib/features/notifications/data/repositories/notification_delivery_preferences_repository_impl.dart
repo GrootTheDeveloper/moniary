@@ -9,10 +9,31 @@ import '../../domain/repositories/notification_delivery_preferences_repository.d
 
 final notificationDeliveryPreferencesRepositoryProvider =
     Provider<NotificationDeliveryPreferencesRepository>((ref) {
+      ref.watch(currentSessionProvider);
+      if (ref.watch(useMockDataModeProvider)) {
+        return MockNotificationDeliveryPreferencesRepository();
+      }
       return SupabaseNotificationDeliveryPreferencesRepository(
         ref.watch(supabaseClientProvider),
       );
     });
+
+class MockNotificationDeliveryPreferencesRepository
+    implements NotificationDeliveryPreferencesRepository {
+  NotificationDeliveryPreferences _preferences =
+      const NotificationDeliveryPreferences();
+
+  @override
+  Future<NotificationDeliveryPreferences> getPreferences() async =>
+      _preferences;
+
+  @override
+  Future<void> updatePreferences(
+    NotificationDeliveryPreferences preferences,
+  ) async {
+    _preferences = preferences;
+  }
+}
 
 class SupabaseNotificationDeliveryPreferencesRepository
     implements NotificationDeliveryPreferencesRepository {

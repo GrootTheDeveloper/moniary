@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 
 from security import authorize_ocr_request, positive_float_env, positive_int_env
 from src.extractor import extract_receipt_with_metadata
+from src.llm import llm_health
 from src.models import ReceiptResponse
 from src.ocr import ocr_health
 from src.validator import field_confidence, validate
@@ -108,6 +109,18 @@ def _process_image(image_path: Path, debug: bool) -> ReceiptResponse:
     started_at = time.perf_counter()
     extracted = extract_receipt_with_metadata(str(image_path))
     validated, issues, confidence = validate(extracted.data)
+    confidence_by_field = field_confidence(validated, issues)
+    confidence_by_field.update(extracted.field_confidence)
+    if any(issue.startswith("Total ") for issue in issues):
+        confidence_by_field["total"] = min(
+            confidence_by_field.get("total", 0.55),
+            0.55,
+        )
+    if any(issue.startswith("Items ") for issue in issues):
+        confidence_by_field["items"] = min(
+            confidence_by_field.get("items", 0.62),
+            0.62,
+        )
     return ReceiptResponse(
         success=True,
         data=validated,
@@ -116,7 +129,12 @@ def _process_image(image_path: Path, debug: bool) -> ReceiptResponse:
         ocr_lines=extracted.ocr_lines if debug else None,
         validation_issues=issues,
         confidence=confidence,
-        field_confidence=field_confidence(validated, issues),
+        field_confidence=confidence_by_field,
+        field_sources=extracted.field_sources,
+        extraction_method=(
+            "ocr+gemini" if extracted.llm_model is not None else "ocr+rules"
+        ),
+        llm_model=extracted.llm_model,
         processing_ms=round((time.perf_counter() - started_at) * 1000),
     )
 
@@ -151,7 +169,7 @@ def _validate_debug_access(debug: bool) -> None:
 
 @app.get("/health")
 def health() -> dict[str, object]:
-    return ocr_health()
+    return {**ocr_health(), **llm_health()}
 
 
 @app.post("/extract", response_model=ReceiptResponse)

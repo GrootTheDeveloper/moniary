@@ -8,10 +8,20 @@ import '../../domain/entities/friend_profile.dart';
 import '../../domain/repositories/friend_repository.dart';
 import '../datasources/friend_supabase_data_source.dart';
 import '../models/friend_model_mapper.dart';
+import '../datasources/friend_mock_data_source.dart';
+import 'friend_mock_repository.dart';
 
 final friendRepositoryProvider = Provider<FriendRepository>((ref) {
   ref.watch(currentSessionProvider);
   final client = ref.watch(supabaseClientProvider);
+  if (ref.watch(useMockDataModeProvider)) {
+    return FriendMockRepository(
+      FriendMockDataSource(
+        currentUserId:
+            ref.watch(currentSessionProvider)?.user.id ?? 'mock-user-id',
+      ),
+    );
+  }
   return FriendRepositoryImpl(client);
 });
 

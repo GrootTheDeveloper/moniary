@@ -13,6 +13,8 @@ class SupabaseImage extends ConsumerWidget {
     this.borderRadius,
     this.fallbackIcon = Icons.photo_outlined,
     this.fallbackBuilder,
+    this.cacheWidth,
+    this.cacheHeight,
     super.key,
   });
 
@@ -23,6 +25,8 @@ class SupabaseImage extends ConsumerWidget {
   final BorderRadius? borderRadius;
   final IconData fallbackIcon;
   final Widget Function(BuildContext context)? fallbackBuilder;
+  final int? cacheWidth;
+  final int? cacheHeight;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,6 +43,8 @@ class SupabaseImage extends ConsumerWidget {
           width: width,
           height: height,
           fit: fit,
+          cacheWidth: cacheWidth,
+          cacheHeight: cacheHeight,
           errorBuilder: (context, error, stackTrace) => _buildFallback(context),
         ),
       );
@@ -53,6 +59,8 @@ class SupabaseImage extends ConsumerWidget {
           width: width,
           height: height,
           fit: fit,
+          cacheWidth: cacheWidth,
+          cacheHeight: cacheHeight,
           errorBuilder: (context, error, stackTrace) => _buildFallback(context),
         ),
       );
@@ -74,6 +82,8 @@ class SupabaseImage extends ConsumerWidget {
           width: width,
           height: height,
           fit: fit,
+          cacheWidth: cacheWidth,
+          cacheHeight: cacheHeight,
           errorBuilder: (context, error, stackTrace) => _buildFallback(context),
         ),
       );
@@ -89,6 +99,8 @@ class SupabaseImage extends ConsumerWidget {
           width: width,
           height: height,
           fit: fit,
+          cacheWidth: cacheWidth,
+          cacheHeight: cacheHeight,
           errorBuilder: (context, error, stackTrace) => _buildFallback(context),
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;

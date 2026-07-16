@@ -118,7 +118,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
-          const _SuggestionNotice(),
+          _SuggestionNotice(result: widget.args.result),
           const SizedBox(height: 12),
           _DetectedReceiptSummary(result: widget.args.result),
           const SizedBox(height: 18),
@@ -293,15 +293,31 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
 
   String? _suggestedCategoryId(List<Category> categories, String? categoryKey) {
     if (categoryKey == null) return null;
-    final expectedIcon = switch (categoryKey) {
-      'food' => 'restaurant',
-      'transport' => 'directions_car',
-      'shopping' => 'shopping_bag',
-      _ => null,
+    final expectedIcons = switch (categoryKey) {
+      'food' => {'restaurant'},
+      'transport' => {'directions_car', 'directions_bus'},
+      'shopping' => {'shopping_bag'},
+      'bills' => {'receipt_long'},
+      'education' => {'school', 'menu_book'},
+      'housing' => {'home'},
+      'utilities' => {'local_laundry_service'},
+      'coffee' => {'coffee'},
+      'family' => {'family_restroom'},
+      'health' => {'health_and_safety'},
+      'work_tools' => {'laptop_mac'},
+      'internet' => {'wifi'},
+      'workspace' => {'desk'},
+      'inventory' => {'inventory_2'},
+      'rent' => {'storefront'},
+      'marketing' => {'campaign'},
+      'shipping' => {'local_shipping'},
+      'hospitality' => {'groups'},
+      'entertainment' => {'movie'},
+      _ => const <String>{},
     };
-    if (expectedIcon == null) return null;
+    if (expectedIcons.isEmpty) return null;
     for (final category in categories) {
-      if (category.icon == expectedIcon) return category.id;
+      if (expectedIcons.contains(category.icon)) return category.id;
     }
     return null;
   }
@@ -311,6 +327,11 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
     required bool edited,
   }) {
     if (suggestion == null || edited) return null;
+    if (suggestion.source == OcrSuggestionSource.llm) {
+      return suggestion.needsReview
+          ? context.l10n.scanLlmSuggestionNeedsReview
+          : context.l10n.scanLlmSuggestion;
+    }
     return suggestion.needsReview
         ? context.l10n.scanSuggestionNeedsReview
         : context.l10n.scanAiSuggestion;
@@ -456,7 +477,9 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
 }
 
 class _SuggestionNotice extends StatelessWidget {
-  const _SuggestionNotice();
+  const _SuggestionNotice({required this.result});
+
+  final OcrResult result;
 
   @override
   Widget build(BuildContext context) {
@@ -473,7 +496,9 @@ class _SuggestionNotice extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              context.l10n.scanSuggestionNotice,
+              result.usesLlm
+                  ? context.l10n.scanLlmSuggestionNotice
+                  : context.l10n.scanSuggestionNotice,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),

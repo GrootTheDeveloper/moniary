@@ -224,6 +224,24 @@ abstract class AppLocalizations {
   /// **'Đang tải...'**
   String get commonLoading;
 
+  /// No description provided for @groupListLoadMore.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tải thêm nhóm'**
+  String get groupListLoadMore;
+
+  /// No description provided for @groupCommunityLoadMore.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tải thêm hoạt động'**
+  String get groupCommunityLoadMore;
+
+  /// No description provided for @groupCommunityUploadProgress.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải {completed}/{total} ảnh'**
+  String groupCommunityUploadProgress(int completed, int total);
+
   /// No description provided for @commonCopy.
   ///
   /// In vi, this message translates to:
@@ -5703,7 +5721,7 @@ abstract class AppLocalizations {
   /// No description provided for @thirdPartyGeminiDescription.
   ///
   /// In vi, this message translates to:
-  /// **'Chỉ dùng khi bạn bật trợ lý AI. Moniary gửi ngữ cảnh tài chính đã chọn qua Supabase Edge Function để tạo câu trả lời.'**
+  /// **'Dùng cho trợ lý AI và để hiểu ngữ nghĩa hóa đơn khi bạn chủ động quét. OCR chỉ gửi văn bản đã nhận dạng và các trường gợi ý; ảnh hóa đơn gốc không được gửi tới Gemini.'**
   String get thirdPartyGeminiDescription;
 
   /// No description provided for @thirdPartyFlutterDescription.
@@ -6801,7 +6819,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyShareItem3.
   ///
   /// In vi, this message translates to:
-  /// **'Khi bật trợ lý AI, ngữ cảnh tài chính đã chọn có thể được gửi qua Supabase Edge Functions tới Google Gemini để tạo câu trả lời. Moniary không đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng tự động.'**
+  /// **'Khi bật trợ lý AI, ngữ cảnh tài chính đã chọn có thể được gửi qua Supabase Edge Functions tới Google Gemini. Khi bạn quét hóa đơn, văn bản OCR và các trường gợi ý có thể được gửi tới Gemini để chuẩn hóa; ảnh gốc không được gửi. Moniary không tự động đọc vị trí, danh bạ, SMS, email cá nhân hoặc dữ liệu ngân hàng.'**
   String get privacyPolicyShareItem3;
 
   /// No description provided for @privacyPolicyShareItem4.
@@ -11594,6 +11612,12 @@ abstract class AppLocalizations {
   /// **'Thông tin trên hóa đơn đã được tự động điền. Hãy kiểm tra trước khi lưu.'**
   String get scanSuggestionNotice;
 
+  /// No description provided for @scanLlmSuggestionNotice.
+  ///
+  /// In vi, this message translates to:
+  /// **'OCR và AI đã hiểu, chuẩn hóa thông tin trên hóa đơn. Hãy kiểm tra trước khi lưu.'**
+  String get scanLlmSuggestionNotice;
+
   /// No description provided for @scanAiSuggestion.
   ///
   /// In vi, this message translates to:
@@ -11605,6 +11629,18 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Từ hóa đơn - nên kiểm tra lại'**
   String get scanSuggestionNeedsReview;
+
+  /// No description provided for @scanLlmSuggestion.
+  ///
+  /// In vi, this message translates to:
+  /// **'OCR + AI gợi ý'**
+  String get scanLlmSuggestion;
+
+  /// No description provided for @scanLlmSuggestionNeedsReview.
+  ///
+  /// In vi, this message translates to:
+  /// **'OCR + AI gợi ý - nên kiểm tra lại'**
+  String get scanLlmSuggestionNeedsReview;
 
   /// No description provided for @scanDetectedSummary.
   ///

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -13,12 +15,22 @@ import '../../domain/entities/group_settlement.dart';
 import '../../domain/entities/group_transaction.dart';
 import '../../domain/entities/spending_group.dart';
 import '../../domain/repositories/group_repository.dart';
+import '../datasources/group_mock_data_source.dart';
 import '../datasources/group_supabase_data_source.dart';
 import '../models/group_model_mapper.dart';
+import 'group_mock_repository.dart';
 
 final groupRepositoryProvider = Provider<GroupRepository>((ref) {
   ref.watch(currentSessionProvider);
   final client = ref.watch(supabaseClientProvider);
+  if (ref.watch(useMockDataModeProvider)) {
+    return GroupMockRepository(
+      GroupMockDataSource(
+        currentUserId:
+            ref.watch(currentSessionProvider)?.user.id ?? 'mock-user-id',
+      ),
+    );
+  }
   return GroupRepositoryImpl(client);
 });
 
@@ -41,55 +53,45 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<List<SpendingGroup>> fetchGroups() async {
-    return _guard('fetch groups', () async {
-      final groups = await _remote.fetchGroups();
-      final result = <SpendingGroup>[];
-      for (final row in groups) {
-        final groupId = row['id'] as String;
-        final members = await _remote.fetchMembers(groupId);
-        final transactions = await _remote.fetchTransactions(groupId);
-        final settlements = await _remote.fetchSettlements(groupId);
-        final balances = await _remote.fetchBalances(groupId);
-        final ownBalance = balances
-            .where((item) => item['user_id'] == currentUserId)
-            .fold<int>(
-              0,
-              (sum, item) => sum + (item['balance'] as num).toInt(),
+    return (await fetchGroupsPage(limit: 50)).items;
+  }
+
+  @override
+  Future<SpendingGroupPage> fetchGroupsPage({
+    int limit = 20,
+    DateTime? beforeUpdatedAt,
+    String? beforeId,
+  }) {
+    return _guard('fetch group summaries', () async {
+      final pageSize = limit.clamp(1, 50);
+      final rows = await _remote.fetchGroupsPage(
+        limit: pageSize + 1,
+        beforeUpdatedAt: beforeUpdatedAt,
+        beforeId: beforeId,
+      );
+      final hasMore = rows.length > pageSize;
+      final items = rows
+          .take(pageSize)
+          .map((row) {
+            final avatarValues =
+                row['member_avatar_paths'] as List? ?? const [];
+            return GroupModelMapper.group(
+              row,
+              memberCount: (row['member_count'] as num?)?.toInt() ?? 0,
+              memberAvatarPaths: avatarValues
+                  .map((item) => item as String?)
+                  .toList(growable: false),
+              transactionCount:
+                  (row['transaction_count'] as num?)?.toInt() ?? 0,
+              totalSpent: (row['total_spent'] as num?)?.toInt() ?? 0,
+              currentUserBalance:
+                  (row['current_user_balance'] as num?)?.toInt() ?? 0,
+              hasUnresolvedSettlements:
+                  row['has_unresolved_settlements'] as bool? ?? false,
             );
-        result.add(
-          GroupModelMapper.group(
-            row,
-            memberCount: members
-                .where((item) => item['status'] == 'active')
-                .length,
-            memberAvatarPaths: members
-                .where((item) => item['status'] == 'active')
-                .map((item) {
-                  final profile = item['profile'] as Map<String, dynamic>?;
-                  return profile?['avatar_url'] as String?;
-                })
-                .take(5)
-                .toList(growable: false),
-            transactionCount: transactions
-                .where((item) => item['split_status'] == 'posted')
-                .length,
-            totalSpent: transactions
-                .where((item) => item['split_status'] == 'posted')
-                .fold<int>(
-                  0,
-                  (sum, item) => sum + (item['total_amount'] as num).toInt(),
-                ),
-            currentUserBalance: ownBalance,
-            hasUnresolvedSettlements: settlements.any(
-              (item) =>
-                  item['status'] == 'pending' ||
-                  item['status'] == 'payer_marked_paid' ||
-                  item['status'] == 'disputed',
-            ),
-          ),
-        );
-      }
-      return result;
+          })
+          .toList(growable: false);
+      return SpendingGroupPage(items: items, hasMore: hasMore);
     });
   }
 
@@ -838,11 +840,114 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
+  Future<GroupCommunityPage> fetchCommunityFeedPage({
+    required String groupId,
+    int limit = 20,
+    GroupCommunityCursor? before,
+  }) {
+    return _guard('fetch group community feed page', () async {
+      final pageSize = limit.clamp(1, 50);
+      final rows = await _remote.fetchCommunityFeedPage(
+        groupId: groupId,
+        limit: pageSize + 1,
+        beforeCreatedAt: before?.createdAt,
+        beforeType: before?.itemType,
+        beforeId: before?.itemId,
+      );
+      final pageRows = rows.take(pageSize).toList(growable: false);
+      final items = pageRows
+          .map((row) {
+            final type = row['item_type'] as String;
+            final sourceId = row['item_id'] as String;
+            final payload = Map<String, dynamic>.from(row['payload'] as Map);
+            final createdAt = DateTime.parse(
+              row['created_at'] as String,
+            ).toLocal();
+            return switch (type) {
+              'post' => GroupCommunityFeedItem(
+                id: 'post-$sourceId',
+                sourceId: sourceId,
+                groupId: groupId,
+                type: GroupCommunityFeedItemType.post,
+                createdAt: createdAt,
+                post: GroupModelMapper.communityPost(
+                  payload,
+                  currentUserId: currentUserId,
+                ),
+              ),
+              'poll' => GroupCommunityFeedItem(
+                id: 'poll-$sourceId',
+                sourceId: sourceId,
+                groupId: groupId,
+                type: GroupCommunityFeedItemType.poll,
+                createdAt: createdAt,
+                poll: GroupModelMapper.poll(payload),
+              ),
+              'challenge' => GroupCommunityFeedItem(
+                id: 'challenge-$sourceId',
+                sourceId: sourceId,
+                groupId: groupId,
+                type: GroupCommunityFeedItemType.challenge,
+                createdAt: createdAt,
+                challenge: GroupModelMapper.savingsChallenge(payload),
+              ),
+              _ => throw const AppException(
+                'Unsupported group feed item',
+                code: 'GROUP_FEED_ITEM_INVALID',
+              ),
+            };
+          })
+          .toList(growable: false);
+      final lastRow = pageRows.lastOrNull;
+      final nextCursor = lastRow == null
+          ? null
+          : GroupCommunityCursor(
+              createdAt: DateTime.parse(
+                lastRow['created_at'] as String,
+              ).toLocal(),
+              itemType: lastRow['item_type'] as String,
+              itemId: lastRow['item_id'] as String,
+            );
+      return GroupCommunityPage(
+        items: items,
+        hasMore: rows.length > pageSize,
+        nextCursor: nextCursor,
+      );
+    });
+  }
+
+  @override
+  Future<GroupCommunityCommentsPage> fetchCommunityCommentsPage({
+    required String postId,
+    int limit = 30,
+    DateTime? beforeCreatedAt,
+    String? beforeId,
+  }) {
+    return _guard('fetch group community comments page', () async {
+      final pageSize = limit.clamp(1, 50);
+      final rows = await _remote.fetchCommunityCommentsPage(
+        postId: postId,
+        limit: pageSize + 1,
+        beforeCreatedAt: beforeCreatedAt,
+        beforeId: beforeId,
+      );
+      return GroupCommunityCommentsPage(
+        items: rows
+            .take(pageSize)
+            .map(GroupModelMapper.communityComment)
+            .toList(growable: false),
+        hasMore: rows.length > pageSize,
+      );
+    });
+  }
+
+  @override
   Future<String> createCommunityPost({
     required String groupId,
     required String type,
     String? content,
     List<GroupCommunityMediaDraft> media = const [],
+    void Function(int completed, int total)? onMediaUploadProgress,
   }) {
     return _guard('create group community post', () async {
       final postId = await _remote.createCommunityPost(
@@ -850,27 +955,45 @@ class GroupRepositoryImpl implements GroupRepository {
         type: type,
         content: content,
       );
-      for (final item in media) {
-        final mediaId = await _remote.createCommunityMedia(
-          groupId: groupId,
-          postId: postId,
-          kind: item.kind,
-          caption: item.caption,
+      var completed = 0;
+      onMediaUploadProgress?.call(completed, media.length);
+      for (var offset = 0; offset < media.length; offset += 2) {
+        final batch = media.skip(offset).take(2);
+        await Future.wait(
+          batch.map((item) async {
+            final mediaId = await _remote.createCommunityMedia(
+              groupId: groupId,
+              postId: postId,
+              kind: item.kind,
+              caption: item.caption,
+            );
+            try {
+              await _remote.uploadCommunityMedia(
+                groupId: groupId,
+                mediaId: mediaId,
+                filePath: item.localPath,
+              );
+              completed += 1;
+              onMediaUploadProgress?.call(completed, media.length);
+            } catch (error, stackTrace) {
+              AppLogger.error(
+                'Group community media upload failed',
+                error,
+                stackTrace,
+              );
+              try {
+                await _remote.markCommunityMediaUploadFailed(mediaId);
+              } catch (statusError, statusStackTrace) {
+                AppLogger.error(
+                  'Failed to persist group community media failure',
+                  statusError,
+                  statusStackTrace,
+                );
+              }
+              rethrow;
+            }
+          }),
         );
-        try {
-          await _remote.uploadCommunityMedia(
-            groupId: groupId,
-            mediaId: mediaId,
-            filePath: item.localPath,
-          );
-        } catch (error, stackTrace) {
-          AppLogger.error(
-            'Group community media upload failed',
-            error,
-            stackTrace,
-          );
-          rethrow;
-        }
       }
       return postId;
     });
@@ -1277,8 +1400,12 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   Future<T> _guard<T>(String operation, Future<T> Function() action) async {
+    final stopwatch = Stopwatch()..start();
     try {
       return await action();
+    } on TimeoutException catch (error, stackTrace) {
+      AppLogger.error(operation, error, stackTrace);
+      throw const AppException('errorConnection', code: 'GROUP_TIMEOUT');
     } on PostgrestException catch (error, stackTrace) {
       AppLogger.error(operation, error, stackTrace);
       if (error.message.startsWith('GROUP_') ||
@@ -1298,6 +1425,15 @@ class GroupRepositoryImpl implements GroupRepository {
       }
       AppLogger.error(operation, error, stackTrace);
       throw const AppException('errorConnection');
+    } finally {
+      stopwatch.stop();
+      final message =
+          'Group operation "$operation" took ${stopwatch.elapsedMilliseconds}ms';
+      if (stopwatch.elapsedMilliseconds >= 1000) {
+        AppLogger.warning(message);
+      } else {
+        AppLogger.info(message);
+      }
     }
   }
 
