@@ -5,6 +5,7 @@ from pathlib import Path
 
 from src.cleaner import clean_text
 from src.classifier import classify_category
+from src.llm import enhance_receipt
 from src.models import OCRTextLine, ReceiptData, ReceiptItem
 from src.ocr import recognize_image
 from src.preprocess import preprocess
@@ -19,6 +20,9 @@ class ExtractedReceipt:
     raw_text: str
     ocr_engine: str
     ocr_lines: list[OCRTextLine]
+    field_sources: dict[str, str]
+    field_confidence: dict[str, float]
+    llm_model: str | None
 
 
 def extract_receipt_with_metadata(image_path: str) -> ExtractedReceipt:
@@ -47,6 +51,16 @@ def extract_receipt_with_metadata(image_path: str) -> ExtractedReceipt:
             suggested_category=suggested_category,
             **totals,
         )
+        enhancement = enhance_receipt(cleaned_text, data)
+        if enhancement is not None:
+            data = enhancement.data
+            field_sources = enhancement.field_sources
+            semantic_confidence = enhancement.field_confidence
+            llm_model = enhancement.model
+        else:
+            field_sources = {}
+            semantic_confidence = {}
+            llm_model = None
         return ExtractedReceipt(
             data=data,
             raw_text=raw_text,
@@ -55,6 +69,9 @@ def extract_receipt_with_metadata(image_path: str) -> ExtractedReceipt:
                 OCRTextLine(**line.to_dict())
                 for line in ocr_result.lines
             ],
+            field_sources=field_sources,
+            field_confidence=semantic_confidence,
+            llm_model=llm_model,
         )
     finally:
         if processed_path:

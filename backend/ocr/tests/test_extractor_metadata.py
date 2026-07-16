@@ -37,6 +37,7 @@ def test_extractor_preserves_ocr_engine_and_line_layout(monkeypatch, tmp_path):
 
     monkeypatch.setattr("src.extractor.preprocess", fake_preprocess)
     monkeypatch.setattr("src.extractor.recognize_image", fake_recognize)
+    monkeypatch.setattr("src.extractor.enhance_receipt", lambda *_: None)
 
     result = extract_receipt_with_metadata(str(source))
 

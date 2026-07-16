@@ -13,12 +13,14 @@ class FastApiOcrService implements OcrService {
   FastApiOcrService({
     required String baseUrl,
     required http.Client client,
+    required this.accessTokenProvider,
     required this.timeout,
   }) : _baseUrl = baseUrl.replaceFirst(RegExp(r'/+$'), ''),
        _client = client;
 
   final String _baseUrl;
   final http.Client _client;
+  final FutureOr<String?> Function() accessTokenProvider;
   final Duration timeout;
 
   @override
@@ -28,23 +30,34 @@ class FastApiOcrService implements OcrService {
       throw const AppException('errorGeneric', code: 'OCR_IMAGE_NOT_FOUND');
     }
 
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse('$_baseUrl/extract'),
-    );
-    request.files.add(
-      await http.MultipartFile.fromPath(
-        'file',
-        imagePath,
-        contentType: _mediaTypeForPath(imagePath),
-      ),
-    );
-
     try {
+      final accessToken = (await accessTokenProvider())?.trim();
+      if (accessToken == null || accessToken.isEmpty) {
+        throw const AppException('errorNotLoggedIn', code: 'AUTH_REQUIRED');
+      }
+
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$_baseUrl/extract'),
+      )..headers['authorization'] = 'Bearer $accessToken';
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          imagePath,
+          contentType: _mediaTypeForPath(imagePath),
+        ),
+      );
+
       final streamedResponse = await _client.send(request).timeout(timeout);
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
+        if (response.statusCode == 401 || response.statusCode == 403) {
+          throw const AppException('errorNotLoggedIn', code: 'AUTH_REQUIRED');
+        }
+        if (response.statusCode == 429) {
+          throw const AppException('errorConnection', code: 'OCR_RATE_LIMITED');
+        }
         if (response.statusCode == 504) {
           throw const AppException(
             'errorConnection',
@@ -96,6 +109,7 @@ class FastApiOcrService implements OcrService {
         validationIssues is List && validationIssues.isNotEmpty;
     final items = data['items'];
     final confidenceByField = _fieldConfidence(payload['field_confidence']);
+    final sourcesByField = _fieldSources(payload['field_sources']);
     final merchant = _stringOrNull(data['merchant']);
     final total = _positiveIntOrNull(data['total']);
     final date = _dateOrNull(data['date']);
@@ -113,35 +127,50 @@ class FastApiOcrService implements OcrService {
           : OcrSuggestion(
               value: merchant,
               confidence: confidenceByField['merchant'] ?? 0.65,
-              source: OcrSuggestionSource.ocr,
+              source: _sourceFor(
+                sourcesByField['merchant'],
+                OcrSuggestionSource.ocr,
+              ),
             ),
       totalSuggestion: total == null
           ? null
           : OcrSuggestion(
               value: total,
               confidence: confidenceByField['total'] ?? 0.65,
-              source: OcrSuggestionSource.ocr,
+              source: _sourceFor(
+                sourcesByField['total'],
+                OcrSuggestionSource.ocr,
+              ),
             ),
       dateSuggestion: date == null
           ? null
           : OcrSuggestion(
               value: date,
               confidence: confidenceByField['date'] ?? 0.65,
-              source: OcrSuggestionSource.ocr,
+              source: _sourceFor(
+                sourcesByField['date'],
+                OcrSuggestionSource.ocr,
+              ),
             ),
       noteSuggestion: address == null
           ? null
           : OcrSuggestion(
               value: address,
               confidence: confidenceByField['address'] ?? 0.60,
-              source: OcrSuggestionSource.ocr,
+              source: _sourceFor(
+                sourcesByField['address'],
+                OcrSuggestionSource.ocr,
+              ),
             ),
       categorySuggestion: category == null
           ? null
           : OcrSuggestion(
               value: category,
               confidence: confidenceByField['category'] ?? 0.55,
-              source: OcrSuggestionSource.classifier,
+              source: _sourceFor(
+                sourcesByField['category'],
+                OcrSuggestionSource.classifier,
+              ),
             ),
       paymentMethod: paymentMethod,
       currency: currency,
@@ -160,6 +189,9 @@ class FastApiOcrService implements OcrService {
       ),
       validationIssues: issues,
       fieldConfidence: confidenceByField,
+      extractionMethod:
+          _stringOrNull(payload['extraction_method']) ?? 'ocr+rules',
+      llmModel: _stringOrNull(payload['llm_model']),
     );
   }
 
@@ -181,6 +213,28 @@ class FastApiOcrService implements OcrService {
       for (final entry in value.entries)
         if (_positiveDoubleOrNull(entry.value) case final confidence?)
           entry.key: confidence.clamp(0.0, 1.0).toDouble(),
+    };
+  }
+
+  Map<String, String> _fieldSources(Object? value) {
+    if (value is! Map<String, dynamic>) return const {};
+    final result = <String, String>{};
+    for (final entry in value.entries) {
+      final source = _stringOrNull(entry.value);
+      if (source != null) {
+        result[entry.key] = source;
+      }
+    }
+    return result;
+  }
+
+  OcrSuggestionSource _sourceFor(String? source, OcrSuggestionSource fallback) {
+    return switch (source) {
+      'llm' => OcrSuggestionSource.llm,
+      'derived' => OcrSuggestionSource.derived,
+      'classifier' => OcrSuggestionSource.classifier,
+      'ocr' => OcrSuggestionSource.ocr,
+      _ => fallback,
     };
   }
 

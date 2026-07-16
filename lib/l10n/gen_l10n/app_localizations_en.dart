@@ -3099,7 +3099,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get thirdPartyGeminiDescription =>
-      'Used only when the AI assistant is enabled. Moniary sends the selected financial context through a Supabase Edge Function to generate assistant replies.';
+      'Used for the AI assistant and semantic receipt understanding when you start a scan. OCR sends only recognized text and candidate fields; the original receipt image is not sent to Gemini.';
 
   @override
   String get thirdPartyFlutterDescription =>
@@ -3750,7 +3750,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyShareItem3 =>
-      'When the AI assistant is enabled, selected financial context may be sent through Supabase Edge Functions to Google Gemini to generate replies. Moniary does not automatically read location, contacts, SMS, personal email, or bank data.';
+      'When the AI assistant is enabled, selected financial context may be sent through Supabase Edge Functions to Google Gemini. When you scan a receipt, OCR text and candidate fields may be sent to Gemini for normalization; the original image is not sent. Moniary does not automatically read location, contacts, SMS, personal email, or bank data.';
 
   @override
   String get privacyPolicyShareItem4 =>
@@ -6479,10 +6479,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'Receipt details were filled automatically. Review them before saving.';
 
   @override
+  String get scanLlmSuggestionNotice =>
+      'OCR and AI interpreted and normalized the receipt details. Review them before saving.';
+
+  @override
   String get scanAiSuggestion => 'From receipt';
 
   @override
   String get scanSuggestionNeedsReview => 'From receipt - review recommended';
+
+  @override
+  String get scanLlmSuggestion => 'OCR + AI suggestion';
+
+  @override
+  String get scanLlmSuggestionNeedsReview =>
+      'OCR + AI suggestion - review recommended';
 
   @override
   String get scanDetectedSummary => 'Detected from receipt';

@@ -47,9 +47,9 @@ There are 16 feature directories under `lib/features/`:
   Supabase anonymous user after CAPTCHA verification. It uses the same backend
   repositories as other users and can later be upgraded to email, Google, or
   Facebook.
-- **OCR service**: a separate FastAPI service using Tesseract, OpenCV, regex,
-  and keyword rules. It is not an LLM service and has no Flutter-side mock
-  result fallback.
+- **OCR service**: a separate authenticated FastAPI service using Tesseract,
+  OpenCV, regex, and keyword rules, plus optional Gemini semantic normalization
+  over cleaned OCR text. It has no Flutter-side mock result fallback.
 - **Scheduled email reports**: a Supabase Edge Function integrates with Resend.
 
 ## Product defaults

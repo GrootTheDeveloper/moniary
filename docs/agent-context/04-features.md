@@ -161,16 +161,19 @@
   transaction creation.
 - **Flow**: `ScanningController -> OcrRepository -> OcrService ->
   FastApiOcrService`.
-- **Backend**: `backend/ocr/` is rule-based Tesseract + OpenCV + regex/keyword
-  matching behind FastAPI. It does not use Ollama, an LLM, or cloud OCR.
+- **Backend**: `backend/ocr/` runs Tesseract/OpenCV and deterministic rules,
+  then optionally sends cleaned OCR text plus rule candidates to Gemini for
+  semantic field normalization. Gemini never receives the original image and
+  failures fall back to the deterministic result.
 - **Suggestions**: OCR fields include per-field confidence, source, processing
   time, and a lightweight keyword category suggestion. Autofilled fields are
   visibly marked as AI suggestions and low-confidence values require review.
 - **Latency**: camera/gallery input is compressed to 1600 px at quality 72 and
-  client extraction times out after eight seconds to keep OCR a utility flow.
-- **Environment**: Android emulator default is `http://10.0.2.2:8000`;
-  override `OCR_API_URL` for devices or deployment. There is no mock OCR
-  response fallback.
+  the client allows up to 30 seconds for OCR plus optional semantic enrichment.
+- **Environment**: override `OCR_API_URL` for devices/deployment. Hosted OCR
+  requires Supabase public project configuration for bearer verification and
+  uses server-only Gemini configuration when enrichment is enabled. There is
+  no mock OCR response fallback.
 
 ## Settings, Privacy, and Data Portability
 

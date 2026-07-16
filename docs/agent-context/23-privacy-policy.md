@@ -15,32 +15,41 @@ schedule, or the public policy URL required for production.
 - **Personal finance**: wallets, categories, transactions, dates, amounts,
   notes, importance state, category budget limits/warning ratios, and optional
   receipt images.
+- **Receipt semantic extraction**: when the user starts OCR and Gemini is
+  configured, cleaned receipt text and deterministic candidate fields are sent
+  from the OCR backend to Gemini. The original receipt image is not sent to
+  Gemini by this pipeline.
 - **Friends/groups**: searches and requests, friendships/invite links, group
   membership/roles, shared transactions, payers, shares, balances, settlements,
   comments, invitations, activities/notifications, and group images.
 - **Settings/account operations**: notification/report preferences, active
   sessions, deletion status/feedback, privacy-request history, app lock and
   hidden-balance preferences.
-- **Local assistant state**: assistant enablement/consent flags and deterministic
-  summaries calculated from repository transactions. The current assistant does
-  not send prompts or finance data to an AI model.
+- **Assistant state and prompts**: assistant enablement/consent flags, user
+  questions, limited history, profile context, and allowlisted financial
+  summaries can be sent through a Supabase Edge Function to Gemini when the
+  assistant is enabled.
 - **Device files**: selected CSV imports, generated CSV/XLSX/PDF exports, journal
   recap PNGs, and local import/export/privacy-request history JSON.
 
 ## Purposes
 
 Data is used to authenticate users, sync and display their finance records,
-calculate calendar/statistics/budgets/recaps, provide deterministic assistant
-insights, manage friends/shared expenses, process user-requested OCR, send
+calculate calendar/statistics/budgets/recaps, provide assistant insights,
+manage friends/shared expenses, process user-requested OCR, send
 configured reports, support exports/imports, and handle privacy/account actions.
 
 ## Service providers and disclosures
 
 - **Supabase**: authentication, PostgreSQL data, private object Storage, RPCs,
   and Edge Functions.
-- **Configured OCR host**: receives a receipt image when the user starts OCR.
-  The repository implementation is FastAPI/Tesseract; the production host and
-  its operational retention policy must be disclosed.
+- **Google Gemini**: receives assistant context when the AI assistant is
+  enabled. During user-requested OCR it can also receive cleaned receipt text
+  and deterministic candidate fields for semantic normalization, but not the
+  original receipt image.
+- **Configured OCR host**: receives a receipt image when the user starts OCR,
+  verifies the Supabase session, runs FastAPI/Tesseract/rules, and may invoke
+  Gemini as described above. Its operational retention policy must be disclosed.
 - **Resend**: receives report email content/recipient data when scheduled email
   reports are enabled and the Edge Function is configured.
 - **Operating-system share/open targets**: receive files only when the user
