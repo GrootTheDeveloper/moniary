@@ -10,6 +10,7 @@ import '../datasources/friend_supabase_data_source.dart';
 import '../models/friend_model_mapper.dart';
 
 final friendRepositoryProvider = Provider<FriendRepository>((ref) {
+  ref.watch(currentSessionProvider);
   final client = ref.watch(supabaseClientProvider);
   return FriendRepositoryImpl(client);
 });

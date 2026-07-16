@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moniary/core/supabase/app_exception.dart';
+import 'package:moniary/core/supabase/supabase_providers.dart';
 import 'package:moniary/features/settings/domain/data_transfer/spreadsheet_data_format.dart';
 import 'package:moniary/shared/utils/app_logger.dart';
 import 'package:moniary/features/settings/domain/models/csv_transaction_row.dart';
@@ -10,14 +11,17 @@ import 'package:path_provider/path_provider.dart';
 import 'package:moniary/features/settings/domain/import/import_history_entry.dart';
 
 final importRepositoryProvider = Provider<ImportRepository>((ref) {
-  return ImportRepository();
+  final session = ref.watch(currentSessionProvider);
+  return ImportRepository(historyScopeId: session?.user.id);
 });
 
 class ImportRepository {
-  ImportRepository({Directory? documentsDirectory})
-    : _documentsDirectory = documentsDirectory;
+  ImportRepository({Directory? documentsDirectory, String? historyScopeId})
+    : _documentsDirectory = documentsDirectory,
+      _historyScopeId = historyScopeId;
 
   final Directory? _documentsDirectory;
+  final String? _historyScopeId;
 
   /// Parses Moniary exports and legacy five-column CSV transaction files.
   ///
@@ -294,7 +298,14 @@ class ImportRepository {
   Future<File> _importHistoryFile() async {
     final directory =
         _documentsDirectory ?? await getApplicationDocumentsDirectory();
-    return File('${directory.path}/moniary_import_history.json');
+    return File('${directory.path}/$_importHistoryFileName');
+  }
+
+  String get _importHistoryFileName {
+    final scope = _historyScopeId;
+    if (scope == null || scope.isEmpty) return 'moniary_import_history.json';
+    final safeScope = scope.replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+    return 'moniary_import_history_$safeScope.json';
   }
 
   Future<List<ImportHistoryEntry>> fetchImportHistory() async {

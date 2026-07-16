@@ -9,6 +9,7 @@ import '../datasources/notification_supabase_data_source.dart';
 import '../models/notification_model_mapper.dart';
 
 final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
+  ref.watch(currentSessionProvider);
   return SupabaseNotificationRepository(
     NotificationSupabaseDataSource(ref.watch(supabaseClientProvider)),
   );

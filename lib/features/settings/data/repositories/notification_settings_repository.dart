@@ -114,6 +114,7 @@ class SupabaseNotificationSettingsRepository
 
 final notificationSettingsRepositoryProvider =
     Provider<NotificationSettingsRepository>((ref) {
+      ref.watch(currentSessionProvider);
       return SupabaseNotificationSettingsRepository(
         SupabaseNotificationSettingsDataSource(
           ref.watch(supabaseClientProvider),

@@ -87,9 +87,13 @@ FLHU923LV8.com.moniary.moniary
 If the Apple Team ID or iOS bundle ID changes, update both:
 
 - `ios/Runner/Runner.entitlements`
-- `ios/Runner/Runner.debug.entitlements`
 - `deploy/app-links/go.vuivethoima.id.vn/apple-app-site-association`
 - `deploy/app-links/go.vuivethoima.id.vn/.well-known/apple-app-site-association`
+
+`Runner.debug.entitlements` intentionally omits Associated Domains for the
+physical Debug demo, which uses `moniary://` invite links instead. The release
+target retains the Associated Domains entitlement and requires an appropriately
+provisioned Apple Developer profile before HTTPS Universal Links are enabled.
 
 After deploying the Vercel app-link host, verify the AASA response has no
 redirect and uses JSON content:
@@ -98,14 +102,14 @@ redirect and uses JSON content:
 Invoke-WebRequest "https://go.vuivethoima.id.vn/.well-known/apple-app-site-association" -UseBasicParsing
 ```
 
-On macOS, verify the same response and the signed Debug entitlement with:
+On macOS, verify the same response and the signed release entitlement with:
 
 ```bash
 curl -i https://go.vuivethoima.id.vn/.well-known/apple-app-site-association
 codesign -d --entitlements :- build/ios/iphoneos/Runner.app
 ```
 
-The signed entitlements must contain
+The signed release entitlements must contain
 `applinks:go.vuivethoima.id.vn`. An unsigned `--no-codesign` build can validate
 the Xcode project but cannot prove the provisioning profile allows Associated
 Domains; use a signed install on the physical iPhone for that final check.

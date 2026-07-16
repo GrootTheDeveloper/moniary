@@ -7,6 +7,7 @@ import '../../../../shared/utils/app_logger.dart';
 import '../../domain/models/wallet.dart';
 
 final walletRepositoryProvider = Provider<WalletRepository>((ref) {
+  ref.watch(currentSessionProvider);
   return WalletRepository(ref.watch(supabaseClientProvider));
 });
 

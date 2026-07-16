@@ -17,6 +17,7 @@ import '../datasources/group_supabase_data_source.dart';
 import '../models/group_model_mapper.dart';
 
 final groupRepositoryProvider = Provider<GroupRepository>((ref) {
+  ref.watch(currentSessionProvider);
   final client = ref.watch(supabaseClientProvider);
   return GroupRepositoryImpl(client);
 });

@@ -59,18 +59,20 @@ flutter devices
 flutter run -d IOS_DEVICE_ID --dart-define-from-file=mobile.env
 ```
 
-Install a signed Debug build on the real iPhone. The signing profile must allow
-Associated Domains; a simulator build cannot prove that Universal Links work on
-the physical device.
+The Debug demo deliberately omits **Push Notifications** and HTTPS **Universal
+Links**, so it does not require those two Apple Developer capabilities. Test
+friend/group invites with the custom schemes instead:
 
-Before the first physical install, sign in to Xcode with an Apple Developer
-account that belongs to team `FLHU923LV8`. In the Apple Developer identifier
-`com.moniary.moniary`, enable **Associated Domains**, **Push Notifications**,
-and the App Group `group.com.moniary`; regenerate/download the development
-provisioning profile after changing any capability. The profile must contain
-`aps-environment` and `com.apple.developer.associated-domains`. If Xcode says
-"No Accounts" or that either capability is absent, stop and repair this
-provisioning state before retrying the command above.
+```text
+moniary://friends/invite/<token>
+moniary://groups/invite/<token>
+```
+
+A physical iPhone still needs a normal signing identity. If Xcode says "No
+Accounts", sign in with an Apple ID in Xcode Settings > Accounts, then retry
+the command above. The release entitlement file remains unchanged; a later
+release that re-enables push/HTTPS links must use a profile with the relevant
+capabilities.
 
 ## 4. Two-phone smoke script
 
@@ -81,7 +83,8 @@ anonymous session.
    transaction stays private, then create a group and invite the Android user.
 2. Open the real HTTPS group invite on Android. It must open Moniary rather
    than only the browser fallback. Accept it and add one group expense.
-3. On both phones, verify group balance/activity and the matching notification.
+3. On both phones, verify group balance/activity. Push notification delivery
+   is outside this Debug iPhone demo.
 4. Add a recurring transaction with a due date in the device owner's local
    timezone. Relaunch the app on both phones and confirm it posts once only.
 5. Scan a receipt on one phone while signed in. Sign out, retry scanning, and
@@ -92,9 +95,9 @@ anonymous session.
    demo account.
 7. Grant assistant consent, ask a non-financial budgeting question, then turn
    consent off and confirm the assistant no longer sends context.
-8. On iOS, test an HTTPS friend/group invite after installing the signed build.
-   On Android, verify the installed APK certificate against `assetlinks.json`
-   as described in [android-app-links.md](android-app-links.md).
+8. On iOS, test the `moniary://` friend/group invite after installing the
+   signed build. On Android, verify the installed APK certificate against
+   `assetlinks.json` as described in [android-app-links.md](android-app-links.md).
 
 ## Stop conditions
 

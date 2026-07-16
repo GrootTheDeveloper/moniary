@@ -49,7 +49,7 @@ final friendActionControllerProvider =
 class FriendsController extends AsyncNotifier<List<FriendProfile>> {
   @override
   Future<List<FriendProfile>> build() {
-    return ref.read(friendRepositoryProvider).fetchFriends();
+    return ref.watch(friendRepositoryProvider).fetchFriends();
   }
 
   Future<void> refresh() async {

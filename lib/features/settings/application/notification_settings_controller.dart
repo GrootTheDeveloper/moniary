@@ -10,7 +10,7 @@ class NotificationSettingsController
     extends AsyncNotifier<NotificationSettings> {
   @override
   FutureOr<NotificationSettings> build() {
-    return ref.read(notificationSettingsRepositoryProvider).getSettings();
+    return ref.watch(notificationSettingsRepositoryProvider).getSettings();
   }
 
   Future<void> updateDailyReminder(bool enabled, [TimeOfDay? time]) async {

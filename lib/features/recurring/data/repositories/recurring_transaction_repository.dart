@@ -9,6 +9,7 @@ import '../../domain/models/recurring_transaction.dart';
 
 final recurringTransactionRepositoryProvider =
     Provider<RecurringTransactionRepository>((ref) {
+      ref.watch(currentSessionProvider);
       return RecurringTransactionRepository(ref.watch(supabaseClientProvider));
     });
 
