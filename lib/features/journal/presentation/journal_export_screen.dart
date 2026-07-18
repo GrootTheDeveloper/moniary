@@ -12,10 +12,13 @@ import 'package:share_plus/share_plus.dart';
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/currency_formatting_ref.dart';
+import '../../../shared/utils/app_logger.dart';
 import '../../../shared/widgets/supabase_image.dart';
 import '../../transactions/domain/models/transaction_entry.dart';
 import '../../transactions/presentation/utils/transaction_image_source.dart';
 import '../domain/journal_models.dart';
+
+const _fileActionsChannel = MethodChannel('moniary/file_actions');
 
 class JournalExportScreen extends StatefulWidget {
   const JournalExportScreen({required this.recap, super.key});
@@ -122,6 +125,19 @@ class _JournalExportScreenState extends State<JournalExportScreen> {
   Future<void> _save() async {
     final file = await _renderToFile(permanent: true);
     if (file == null || !mounted) return;
+    try {
+      await _fileActionsChannel.invokeMethod<bool>('saveImageToGallery', {
+        'fileName': file.uri.pathSegments.last,
+        'bytes': await file.readAsBytes(),
+      });
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to save Money Story image locally',
+        error,
+        stackTrace,
+      );
+    }
+    if (!mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(context.l10n.journalExportSaved)));

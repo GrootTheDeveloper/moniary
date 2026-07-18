@@ -11075,7 +11075,7 @@ abstract class AppLocalizations {
   /// No description provided for @journalExportSaved.
   ///
   /// In vi, this message translates to:
-  /// **'Đã tạo ảnh Money Story để bạn chia sẻ.'**
+  /// **'Đã lưu ảnh Money Story vào thư viện ảnh.'**
   String get journalExportSaved;
 
   /// No description provided for @journalExportWholeMonth.

@@ -2,6 +2,7 @@ package com.moniary.moniary
 
 import android.content.ContentValues
 import android.content.Intent
+import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -62,6 +63,15 @@ class MainActivity : FlutterFragmentActivity() {
                             return@setMethodCallHandler
                         }
                         result.success(saveToDownloads(fileName, mimeType, bytes))
+                    }
+                    "saveImageToGallery" -> {
+                        val fileName = call.argument<String>("fileName")
+                        val bytes = call.argument<ByteArray>("bytes")
+                        if (fileName.isNullOrBlank() || bytes == null) {
+                            result.success(false)
+                            return@setMethodCallHandler
+                        }
+                        result.success(saveImageToGallery(fileName, bytes))
                     }
                     else -> result.notImplemented()
                 }
@@ -158,6 +168,49 @@ class MainActivity : FlutterFragmentActivity() {
             }
         } catch (_: Exception) {
             null
+        }
+    }
+
+    private fun saveImageToGallery(fileName: String, bytes: ByteArray): Boolean {
+        return try {
+            val safeFileName = if (fileName.endsWith(".png", ignoreCase = true)) fileName else "$fileName.png"
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val values = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, safeFileName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/Moniary")
+                    put(MediaStore.MediaColumns.IS_PENDING, 1)
+                }
+
+                val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                    ?: return false
+
+                contentResolver.openOutputStream(uri)?.use { output ->
+                    output.write(bytes)
+                } ?: return false
+
+                values.clear()
+                values.put(MediaStore.MediaColumns.IS_PENDING, 0)
+                contentResolver.update(uri, values, null, null)
+                true
+            } else {
+                val picturesDir = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                    "Moniary"
+                )
+                picturesDir.mkdirs()
+                val imageFile = File(picturesDir, safeFileName)
+                imageFile.writeBytes(bytes)
+                MediaScannerConnection.scanFile(
+                    this,
+                    arrayOf(imageFile.absolutePath),
+                    arrayOf("image/png"),
+                    null
+                )
+                true
+            }
+        } catch (_: Exception) {
+            false
         }
     }
 }
