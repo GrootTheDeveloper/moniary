@@ -6212,7 +6212,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get journalExportBrand => 'Moniary · Money Story';
 
   @override
-  String get journalExportSaved => 'Đã tạo ảnh Money Story để bạn chia sẻ.';
+  String get journalExportSaved => 'Đã lưu ảnh Money Story vào thư viện ảnh.';
 
   @override
   String get journalExportWholeMonth => 'Cả tháng';

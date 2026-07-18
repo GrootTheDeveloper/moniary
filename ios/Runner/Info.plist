@@ -53,6 +53,8 @@
 	<string>Moniary uses Face ID to unlock the app when privacy lock is enabled.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Moniary uses your photo library so you can attach receipt photos to transactions, profiles, and groups.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Moniary saves Money Story images to your photo library when you choose Save image.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

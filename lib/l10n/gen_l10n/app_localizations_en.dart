@@ -6211,7 +6211,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get journalExportBrand => 'Moniary · Money Story';
 
   @override
-  String get journalExportSaved => 'Your Money Story image is ready to share.';
+  String get journalExportSaved =>
+      'Your Money Story image was saved to your photos.';
 
   @override
   String get journalExportWholeMonth => 'Whole month';
