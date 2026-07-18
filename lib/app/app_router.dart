@@ -458,12 +458,30 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       // Static /groups routes must be declared before /groups/:groupId.
-      // Otherwise "create" is parsed as a group UUID by the dynamic route.
+      // Otherwise static segments such as "create" and "invite" are parsed as
+      // group ids by the dynamic route.
       GoRoute(
         path: CreateGroupScreen.routePath,
         pageBuilder: (context, state) => buildSlideUpTransitionPage(
           state: state,
           child: const CreateGroupScreen(),
+        ),
+      ),
+      GoRoute(
+        path: GroupInviteAcceptScreen.routePath,
+        pageBuilder: (context, state) {
+          final token = state.pathParameters['token'];
+          final child = token == null
+              ? const GroupsScreen()
+              : GroupInviteAcceptScreen(token: token);
+          return buildSlideTransitionPage(state: state, child: child);
+        },
+      ),
+      GoRoute(
+        path: GroupInvitationsScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const GroupInvitationsScreen(),
         ),
       ),
       GoRoute(
@@ -1035,23 +1053,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               : FriendInviteAcceptScreen(token: token);
           return buildSlideTransitionPage(state: state, child: child);
         },
-      ),
-      GoRoute(
-        path: GroupInviteAcceptScreen.routePath,
-        pageBuilder: (context, state) {
-          final token = state.pathParameters['token'];
-          final child = token == null
-              ? const GroupsScreen()
-              : GroupInviteAcceptScreen(token: token);
-          return buildSlideTransitionPage(state: state, child: child);
-        },
-      ),
-      GoRoute(
-        path: GroupInvitationsScreen.routePath,
-        pageBuilder: (context, state) => buildSlideTransitionPage(
-          state: state,
-          child: const GroupInvitationsScreen(),
-        ),
       ),
       GoRoute(
         path: GroupNotificationsScreen.routePath,
