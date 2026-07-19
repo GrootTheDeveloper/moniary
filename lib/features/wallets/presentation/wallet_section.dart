@@ -5,12 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../core/preferences/preferences_providers.dart';
-import '../../../shared/utils/currency_formatter.dart';
+import '../../../shared/utils/currency_formatter.dart' show currencySymbolFor;
 import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/widgets/obscurable_amount_text.dart';
+import '../../profile/domain/currency_data.dart' show kCurrencies;
 import '../domain/models/wallet.dart';
 import '../application/wallets_controller.dart';
 
@@ -336,12 +337,12 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
               DropdownButtonFormField<String>(
                 initialValue: _selectedCurrency,
                 isExpanded: true,
-                items: supportedCurrencies
+                items: kCurrencies
                     .map(
                       (info) => DropdownMenuItem(
                         value: info.code,
                         child: Text(
-                          '${info.code} (${info.symbol})',
+                          '${info.flag} ${info.code} — ${info.name}',
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),

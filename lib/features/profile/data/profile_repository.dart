@@ -231,7 +231,7 @@ class ProfileRepository {
   }
 
   Future<UserProfile> completeSurvey({
-    required String occupation,
+    required String? occupation,
     required String preferredCurrency,
   }) async {
     try {

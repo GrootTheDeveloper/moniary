@@ -83,7 +83,7 @@ class _CurrencyPickerScreenState extends ConsumerState<CurrencyPickerScreen> {
         await ref
             .read(profileRepositoryProvider)
             .completeSurvey(
-              occupation: profile.occupation ?? '',
+              occupation: profile.occupation,
               preferredCurrency: currency.code,
             );
         ref.invalidate(currentProfileProvider);
