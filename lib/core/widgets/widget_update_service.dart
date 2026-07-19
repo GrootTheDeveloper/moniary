@@ -12,6 +12,7 @@ import '../../features/budgets/application/budget_controller.dart';
 import '../../features/profile/application/profile_setup_controller.dart';
 import '../../features/transactions/data/repositories/transaction_repository.dart';
 import '../../features/wallets/data/repositories/wallet_repository.dart';
+import '../currency/exchange_rate_repository.dart';
 import '../preferences/preferences_providers.dart';
 import '../../shared/utils/currency_formatter.dart';
 import '../../shared/utils/app_logger.dart';
@@ -58,9 +59,17 @@ class WidgetUpdateService {
 
       // 2. Fetch all wallets directly from repository to ensure fresh real data
       final wallets = await _ref.read(walletRepositoryProvider).fetchWallets();
-      final totalBalance = wallets
-          .where((w) => w.isActive)
-          .fold(0.0, (sum, w) => sum + w.initialBalance);
+      final exchangeRates = _ref.read(exchangeRatesProvider).value;
+      final currencyCode = _ref.read(preferredCurrencyProvider);
+      final totalBalance = wallets.where((w) => w.isActive).fold(0.0, (sum, w) {
+        final converted = exchangeRates?.convert(
+          amount: w.initialBalance,
+          from: w.currency,
+          to: currencyCode,
+          date: DateTime.now(),
+        );
+        return sum + (converted ?? w.initialBalance);
+      });
 
       // 3. Fetch today's transactions directly from repository
       final today = DateTime.now();
@@ -103,8 +112,7 @@ class WidgetUpdateService {
       );
       final budgetProgress = budgetVal?.progress ?? 0.0;
 
-      // 4. Retrieve preferred user currency and locale
-      final currencyCode = _ref.read(preferredCurrencyProvider);
+      // 4. Retrieve preferred user locale (currency already read above)
       final locale = _ref.read(preferredLocaleProvider);
 
       final l10n = lookupAppLocalizations(Locale(locale));

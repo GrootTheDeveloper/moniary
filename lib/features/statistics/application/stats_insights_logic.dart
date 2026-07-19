@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../../shared/utils/exchange_rates.dart';
 import '../../transactions/domain/models/transaction_entry.dart';
 
 enum InsightType { info, warning, success }
@@ -21,15 +22,17 @@ class StatsInsightsLogic {
     BuildContext context,
     List<TransactionEntry> currentMonth,
     List<TransactionEntry> previousMonth,
+    String currency,
+    ExchangeRates? rates,
   ) {
     final insights = <StatsInsight>[];
 
     final currentIncome = currentMonth
         .where((t) => t.isIncome)
-        .fold<double>(0, (sum, t) => sum + t.amount);
+        .fold<double>(0, (sum, t) => sum + _amountOf(t, currency, rates));
     final currentExpense = currentMonth
         .where((t) => t.isExpense)
-        .fold<double>(0, (sum, t) => sum + t.amount);
+        .fold<double>(0, (sum, t) => sum + _amountOf(t, currency, rates));
 
     if (currentIncome > 0) {
       final savingsRate =
@@ -54,7 +57,7 @@ class StatsInsightsLogic {
               (t.transactionDate.weekday == DateTime.saturday ||
                   t.transactionDate.weekday == DateTime.sunday),
         )
-        .fold<double>(0, (sum, t) => sum + t.amount);
+        .fold<double>(0, (sum, t) => sum + _amountOf(t, currency, rates));
 
     if (currentExpense > 0) {
       final weekendPercent = (weekendExpense / currentExpense) * 100;
@@ -74,6 +77,8 @@ class StatsInsightsLogic {
     final categorySurge = _findLargestCategorySurge(
       currentMonth,
       previousMonth,
+      currency,
+      rates,
     );
     if (categorySurge != null && categorySurge.percent > 20) {
       insights.add(
@@ -104,9 +109,19 @@ class StatsInsightsLogic {
   static _CategorySurge? _findLargestCategorySurge(
     List<TransactionEntry> current,
     List<TransactionEntry> prev,
+    String currency,
+    ExchangeRates? rates,
   ) {
-    final currentSums = _sumByCategory(current.where((t) => t.isExpense));
-    final prevSums = _sumByCategory(prev.where((t) => t.isExpense));
+    final currentSums = _sumByCategory(
+      current.where((t) => t.isExpense),
+      currency,
+      rates,
+    );
+    final prevSums = _sumByCategory(
+      prev.where((t) => t.isExpense),
+      currency,
+      rates,
+    );
 
     _CategorySurge? largest;
 
@@ -126,12 +141,27 @@ class StatsInsightsLogic {
     return largest;
   }
 
-  static Map<String, double> _sumByCategory(Iterable<TransactionEntry> txs) {
+  static Map<String, double> _sumByCategory(
+    Iterable<TransactionEntry> txs,
+    String currency,
+    ExchangeRates? rates,
+  ) {
     final sums = <String, double>{};
     for (final tx in txs) {
-      sums[tx.categoryId] = (sums[tx.categoryId] ?? 0) + tx.amount;
+      sums[tx.categoryId] =
+          (sums[tx.categoryId] ?? 0) + _amountOf(tx, currency, rates);
     }
     return sums;
+  }
+
+  /// Converts to [currency] using [rates] when available, falling back to the
+  /// raw amount (e.g. rates still loading) rather than dropping data.
+  static double _amountOf(
+    TransactionEntry t,
+    String currency,
+    ExchangeRates? rates,
+  ) {
+    return rates == null ? t.amount : t.amountIn(currency, rates);
   }
 }
 

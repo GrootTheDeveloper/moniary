@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/currency/exchange_rate_repository.dart';
+import '../../../core/preferences/preferences_providers.dart';
 import '../../../core/supabase/supabase_providers.dart';
+import '../../../shared/utils/exchange_rates.dart';
 import '../../categories/data/repositories/category_repository.dart';
 import '../../categories/domain/models/category.dart';
 import '../../transactions/data/repositories/transaction_repository.dart';
@@ -15,6 +18,8 @@ final budgetRepositoryProvider = Provider<BudgetRepository>((ref) {
     ),
     categoryRepository: ref.watch(categoryRepositoryProvider),
     transactionRepository: ref.watch(transactionRepositoryProvider),
+    exchangeRates: ref.watch(exchangeRatesProvider).value,
+    preferredCurrency: ref.watch(preferredCurrencyProvider),
   );
 });
 
@@ -23,13 +28,22 @@ class BudgetRepositoryImpl implements BudgetRepository {
     required BudgetLimitDataSource dataSource,
     required CategoryRepository categoryRepository,
     required TransactionRepository transactionRepository,
+    ExchangeRates? exchangeRates,
+    required String preferredCurrency,
   }) : _dataSource = dataSource,
        _categoryRepository = categoryRepository,
-       _transactionRepository = transactionRepository;
+       _transactionRepository = transactionRepository,
+       _exchangeRates = exchangeRates,
+       _preferredCurrency = preferredCurrency;
 
   final BudgetLimitDataSource _dataSource;
   final CategoryRepository _categoryRepository;
   final TransactionRepository _transactionRepository;
+  // Budget limits are always entered by the user in their preferred currency
+  // (see budget_limit_editor.dart), so spending must be converted to the same
+  // currency to stay comparable — same amountIn() pattern as phase 1.
+  final ExchangeRates? _exchangeRates;
+  final String _preferredCurrency;
 
   @override
   Future<MonthlyBudget> fetchMonthlyBudget(DateTime month) async {
@@ -50,7 +64,7 @@ class BudgetRepositoryImpl implements BudgetRepository {
       if (transaction.isExpense) {
         final categoryId = transaction.categoryId;
         spentByCategory[categoryId] =
-            (spentByCategory[categoryId] ?? 0) + transaction.amount;
+            (spentByCategory[categoryId] ?? 0) + _amountOf(transaction);
         transactionsByCategory
             .putIfAbsent(categoryId, () => <TransactionEntry>[])
             .add(transaction);
@@ -99,5 +113,13 @@ class BudgetRepositoryImpl implements BudgetRepository {
       amount: amount,
       warningRatio: warningRatio,
     );
+  }
+
+  /// [transaction.amount] converted to the preferred currency, falling back
+  /// to the raw amount when a required rate isn't available yet.
+  double _amountOf(TransactionEntry transaction) {
+    return _exchangeRates == null
+        ? transaction.amount
+        : transaction.amountIn(_preferredCurrency, _exchangeRates);
   }
 }

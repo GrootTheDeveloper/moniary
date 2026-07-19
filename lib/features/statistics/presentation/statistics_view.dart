@@ -6,10 +6,13 @@ import 'package:intl/intl.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
+import '../../../core/currency/exchange_rate_repository.dart';
+import '../../../core/preferences/preferences_providers.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
+import '../../../shared/utils/exchange_rates.dart';
 import '../../../shared/widgets/obscurable_amount_text.dart';
 import '../application/stats_insights_logic.dart';
 import '../../budgets/application/budget_controller.dart';
@@ -100,6 +103,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     );
     final budgetAsync = ref.watch(monthlyBudgetProvider(month));
     final trendAsync = ref.watch(statisticsTrendProvider(month));
+    final exchangeRatesAsync = ref.watch(exchangeRatesProvider);
+    final preferredCurrency = ref.watch(preferredCurrencyProvider);
     final colors = context.moniaryColors;
 
     return Scaffold(
@@ -111,6 +116,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           previousTransactions: previousStatsAsync.value,
           trendTransactions: trendAsync.value,
           budget: budgetAsync.value,
+          currency: preferredCurrency,
+          rates: exchangeRatesAsync.value,
           touchedCategoryId: _touchedCategoryId,
           viewMode: _viewMode,
           onChangeMonth: _changeMonth,
@@ -184,6 +191,8 @@ class _StatisticsBody extends StatelessWidget {
     required this.previousTransactions,
     required this.trendTransactions,
     required this.budget,
+    required this.currency,
+    required this.rates,
     required this.touchedCategoryId,
     required this.viewMode,
     required this.onChangeMonth,
@@ -200,6 +209,8 @@ class _StatisticsBody extends StatelessWidget {
   final List<TransactionEntry>? previousTransactions;
   final List<TransactionEntry>? trendTransactions;
   final MonthlyBudget? budget;
+  final String currency;
+  final ExchangeRates? rates;
   final String? touchedCategoryId;
   final _StatsViewMode viewMode;
   final ValueChanged<int> onChangeMonth;
@@ -220,31 +231,46 @@ class _StatisticsBody extends StatelessWidget {
         .toList();
     final expense = expenseTransactions.fold<double>(
       0,
-      (sum, transaction) => sum + transaction.amount,
+      (sum, transaction) => sum + _amountOf(transaction, currency, rates),
     );
     final income = incomeTransactions.fold<double>(
       0,
-      (sum, transaction) => sum + transaction.amount,
+      (sum, transaction) => sum + _amountOf(transaction, currency, rates),
     );
     final netBalance = income - expense;
     final previousExpense =
         previousTransactions
             ?.where((transaction) => transaction.isExpense)
-            .fold<double>(0, (sum, transaction) => sum + transaction.amount) ??
+            .fold<double>(
+              0,
+              (sum, transaction) =>
+                  sum + _amountOf(transaction, currency, rates),
+            ) ??
         0;
     final activeTransactions = viewMode == _StatsViewMode.expense
         ? expenseTransactions
         : incomeTransactions;
-    final categories = _CategorySummary.fromTransactions(activeTransactions);
+    final categories = _CategorySummary.fromTransactions(
+      activeTransactions,
+      currency,
+      rates,
+    );
     final selectedCategories = touchedCategoryId == null
         ? categories
         : categories
               .where((category) => category.categoryId == touchedCategoryId)
               .toList();
-    final weekly = _WeeklySummary.fromTransactions(month, expenseTransactions);
+    final weekly = _WeeklySummary.fromTransactions(
+      month,
+      expenseTransactions,
+      currency,
+      rates,
+    );
     final trend = _MonthlyTrendPoint.fromTransactions(
       month,
       trendTransactions ?? const [],
+      currency,
+      rates,
     );
     final largestExpenses = List<TransactionEntry>.from(expenseTransactions)
       ..sort((a, b) => b.amount.compareTo(a.amount));
@@ -253,6 +279,8 @@ class _StatisticsBody extends StatelessWidget {
       context,
       transactions,
       previousTransactions ?? const [],
+      currency,
+      rates,
     );
 
     return SafeArea(
@@ -1501,6 +1529,8 @@ class _CategorySummary {
 
   static List<_CategorySummary> fromTransactions(
     List<TransactionEntry> transactions,
+    String currency,
+    ExchangeRates? rates,
   ) {
     final grouped = <String, List<TransactionEntry>>{};
     for (final transaction in transactions) {
@@ -1516,7 +1546,7 @@ class _CategorySummary {
         categoryColor: first.categoryColor,
         amount: items.fold<double>(
           0,
-          (sum, transaction) => sum + transaction.amount,
+          (sum, transaction) => sum + _amountOf(transaction, currency, rates),
         ),
         transactions: List<TransactionEntry>.from(items)
           ..sort((a, b) => b.amount.compareTo(a.amount)),
@@ -1536,6 +1566,8 @@ class _WeeklySummary {
   static List<_WeeklySummary> fromTransactions(
     DateTime month,
     List<TransactionEntry> transactions,
+    String currency,
+    ExchangeRates? rates,
   ) {
     final buckets = List<double>.filled(4, 0);
     for (final transaction in transactions) {
@@ -1544,7 +1576,7 @@ class _WeeklySummary {
         continue;
       }
       final index = ((transaction.transactionDate.day - 1) ~/ 7).clamp(0, 3);
-      buckets[index] += transaction.amount;
+      buckets[index] += _amountOf(transaction, currency, rates);
     }
     return List.generate(
       4,
@@ -1567,6 +1599,8 @@ class _MonthlyTrendPoint {
   static List<_MonthlyTrendPoint> fromTransactions(
     DateTime month,
     List<TransactionEntry> transactions,
+    String currency,
+    ExchangeRates? rates,
   ) {
     return List.generate(6, (index) {
       final offset = 5 - index;
@@ -1578,7 +1612,10 @@ class _MonthlyTrendPoint {
                 transaction.transactionDate.year == bucketMonth.year &&
                 transaction.transactionDate.month == bucketMonth.month,
           )
-          .fold<double>(0, (sum, transaction) => sum + transaction.amount);
+          .fold<double>(
+            0,
+            (sum, transaction) => sum + _amountOf(transaction, currency, rates),
+          );
       return _MonthlyTrendPoint(
         month: bucketMonth,
         amount: amount,
@@ -1595,6 +1632,12 @@ String _categoryLabel(BuildContext context, String value) {
 
 String _money(WidgetRef ref, double amount) {
   return ref.formatAmount(amount);
+}
+
+/// Converts to [currency] using [rates] when available, falling back to the
+/// raw amount (e.g. rates still loading) rather than dropping data.
+double _amountOf(TransactionEntry t, String currency, ExchangeRates? rates) {
+  return rates == null ? t.amount : t.amountIn(currency, rates);
 }
 
 String _compactAmount(BuildContext context, double amount) {

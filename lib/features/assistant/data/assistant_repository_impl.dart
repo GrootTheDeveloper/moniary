@@ -4,10 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/currency/exchange_rate_repository.dart';
 import '../../../core/preferences/preferences_providers.dart';
 import '../../../core/supabase/app_exception.dart';
 import '../../../core/supabase/supabase_providers.dart';
 import '../../../shared/utils/app_logger.dart';
+import '../../../shared/utils/exchange_rates.dart';
 import '../../budgets/data/budget_repository_impl.dart';
 import '../../budgets/domain/budget_repository.dart';
 import '../../budgets/domain/monthly_budget.dart';
@@ -24,6 +26,8 @@ final assistantRepositoryProvider = Provider<AssistantRepository>((ref) {
     walletRepository: ref.watch(walletRepositoryProvider),
     budgetRepository: ref.watch(budgetRepositoryProvider),
     client: ref.watch(supabaseClientProvider),
+    exchangeRates: ref.watch(exchangeRatesProvider).value,
+    preferredCurrency: ref.watch(preferredCurrencyProvider),
   );
 });
 
@@ -34,11 +38,15 @@ class AssistantRepositoryImpl implements AssistantRepository {
     required WalletRepository walletRepository,
     required BudgetRepository budgetRepository,
     required SupabaseClient client,
+    ExchangeRates? exchangeRates,
+    required String preferredCurrency,
   }) : _preferences = preferences,
        _transactions = transactionRepository,
        _wallets = walletRepository,
        _budgets = budgetRepository,
-       _client = client;
+       _client = client,
+       _exchangeRates = exchangeRates,
+       _preferredCurrency = preferredCurrency;
 
   static const _introSeenKey = 'assistant_intro_seen';
   static const _enabledKey = 'assistant_enabled';
@@ -51,6 +59,8 @@ class AssistantRepositoryImpl implements AssistantRepository {
   final WalletRepository _wallets;
   final BudgetRepository _budgets;
   final SupabaseClient _client;
+  final ExchangeRates? _exchangeRates;
+  final String _preferredCurrency;
 
   @override
   Future<AssistantAccess> loadAccess() async {
@@ -370,12 +380,18 @@ class AssistantRepositoryImpl implements AssistantRepository {
     try {
       final wallets = await _wallets.fetchWallets();
       final active = wallets.where((wallet) => wallet.isActive).toList();
+      final now = DateTime.now();
       return _WalletSummary(
         included: true,
-        totalBalance: active.fold(
-          0,
-          (sum, wallet) => sum + wallet.initialBalance,
-        ),
+        totalBalance: active.fold(0, (sum, wallet) {
+          final converted = _exchangeRates?.convert(
+            amount: wallet.initialBalance,
+            from: wallet.currency,
+            to: _preferredCurrency,
+            date: now,
+          );
+          return sum + (converted ?? wallet.initialBalance);
+        }),
         activeCount: active.length,
       );
     } catch (error, stackTrace) {
