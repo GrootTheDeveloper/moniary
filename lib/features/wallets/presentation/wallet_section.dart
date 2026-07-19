@@ -5,13 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../core/preferences/preferences_providers.dart';
-import '../../../shared/utils/currency_formatter.dart' show currencySymbolFor;
+import '../../../shared/utils/currency_formatter.dart'
+    show currencySymbolFor, supportedCurrencies;
 import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/app_logger.dart';
 import '../../../l10n/l10n_extension.dart';
 import '../../../shared/widgets/obscurable_amount_text.dart';
-import '../../profile/domain/currency_data.dart' show kCurrencies;
 import '../domain/models/wallet.dart';
 import '../application/wallets_controller.dart';
 
@@ -271,8 +271,18 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
       text: widget.wallet?.initialBalance.toString() ?? '0',
     );
     _selectedType = widget.wallet?.type ?? WalletType.cash;
+    // New wallets can only be created in a currency exchange_rates actually
+    // has rates for (see supportedCurrencies) — otherwise its balance can
+    // never be converted and silently pollutes totals denominated in other
+    // currencies. Falls back to VND if the cached preferred currency isn't
+    // one of those (e.g. a corrupted local cache), rather than crashing the
+    // dropdown by pre-selecting a value that isn't in its item list.
+    final preferredCurrency = ref.read(preferredCurrencyProvider);
     _selectedCurrency =
-        widget.wallet?.currency ?? ref.read(preferredCurrencyProvider);
+        widget.wallet?.currency ??
+        (supportedCurrencies.any((info) => info.code == preferredCurrency)
+            ? preferredCurrency
+            : 'VND');
     _isDefault = widget.wallet?.isDefault ?? false;
     _isActive = widget.wallet?.isActive ?? true;
   }
@@ -337,12 +347,12 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
               DropdownButtonFormField<String>(
                 initialValue: _selectedCurrency,
                 isExpanded: true,
-                items: kCurrencies
+                items: supportedCurrencies
                     .map(
                       (info) => DropdownMenuItem(
                         value: info.code,
                         child: Text(
-                          '${info.flag} ${info.code} — ${info.name}',
+                          '${info.code} (${info.symbol})',
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
