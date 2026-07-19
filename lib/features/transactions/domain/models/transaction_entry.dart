@@ -1,3 +1,4 @@
+import '../../../../shared/utils/exchange_rates.dart';
 import '../../../categories/domain/models/category.dart';
 
 class TransactionEntry {
@@ -11,6 +12,7 @@ class TransactionEntry {
     required this.walletId,
     required this.walletName,
     required this.walletColor,
+    required this.walletCurrency,
     required this.categoryId,
     required this.categoryName,
     required this.categoryColor,
@@ -27,6 +29,7 @@ class TransactionEntry {
   final String walletId;
   final String walletName;
   final String? walletColor;
+  final String walletCurrency;
   final String categoryId;
   final String categoryName;
   final String? categoryColor;
@@ -37,6 +40,19 @@ class TransactionEntry {
 
   bool get isExpense => type == TransactionType.expense;
   bool get isIncome => type == TransactionType.income;
+
+  /// [amount] converted to [targetCurrency] using the rate for
+  /// [transactionDate]. Falls back to the raw [amount] when a required rate
+  /// isn't available yet, rather than dropping the transaction from a total.
+  double amountIn(String targetCurrency, ExchangeRates rates) {
+    return rates.convert(
+          amount: amount,
+          from: walletCurrency,
+          to: targetCurrency,
+          date: transactionDate,
+        ) ??
+        amount;
+  }
 
   factory TransactionEntry.fromMap(Map<String, dynamic> map) {
     final wallet = map['wallet'] as Map<String, dynamic>? ?? const {};
@@ -54,6 +70,7 @@ class TransactionEntry {
       walletId: (wallet['id'] ?? '') as String,
       walletName: (wallet['name'] ?? '') as String,
       walletColor: wallet['color'] as String?,
+      walletCurrency: (wallet['currency'] ?? 'VND') as String,
       categoryId: (category['id'] ?? '') as String,
       categoryName: (category['name'] ?? '') as String,
       categoryColor: category['color'] as String?,

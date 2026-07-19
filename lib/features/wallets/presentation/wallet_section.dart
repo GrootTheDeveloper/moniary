@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../core/constants/app_color.dart';
+import '../../../core/preferences/preferences_providers.dart';
+import '../../../shared/utils/currency_formatter.dart';
 import '../../../shared/utils/currency_formatting_ref.dart';
 import '../../../shared/utils/error_helpers.dart';
 import '../../../shared/utils/app_logger.dart';
@@ -255,6 +257,7 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
   late final TextEditingController _nameController;
   late final TextEditingController _balanceController;
   late WalletType _selectedType;
+  late String _selectedCurrency;
   late bool _isDefault;
   late bool _isActive;
   bool _isSubmitting = false;
@@ -267,6 +270,8 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
       text: widget.wallet?.initialBalance.toString() ?? '0',
     );
     _selectedType = widget.wallet?.type ?? WalletType.cash;
+    _selectedCurrency =
+        widget.wallet?.currency ?? ref.read(preferredCurrencyProvider);
     _isDefault = widget.wallet?.isDefault ?? false;
     _isActive = widget.wallet?.isActive ?? true;
   }
@@ -325,6 +330,33 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
               decoration: InputDecoration(labelText: context.l10n.walletType),
             ),
             const SizedBox(height: 12),
+            if (isEditing)
+              _LockedCurrencyField(currency: _selectedCurrency)
+            else
+              DropdownButtonFormField<String>(
+                initialValue: _selectedCurrency,
+                isExpanded: true,
+                items: supportedCurrencies
+                    .map(
+                      (info) => DropdownMenuItem(
+                        value: info.code,
+                        child: Text(
+                          '${info.code} (${info.symbol})',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() => _selectedCurrency = value);
+                },
+                decoration: InputDecoration(
+                  labelText: context.l10n.walletCurrency,
+                  helperText: context.l10n.walletCurrencyLockedHint,
+                ),
+              ),
+            const SizedBox(height: 12),
             TextField(
               controller: _balanceController,
               keyboardType: const TextInputType.numberWithOptions(
@@ -332,7 +364,10 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
               ),
               decoration: InputDecoration(
                 labelText: context.l10n.walletInitialBalance,
-                suffixText: ref.currencySymbol,
+                suffixText: currencySymbolFor(
+                  currencyCode: _selectedCurrency,
+                  locale: ref.watch(preferredLocaleProvider),
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -384,6 +419,7 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
           name: name,
           type: _selectedType,
           initialBalance: balance,
+          currency: _selectedCurrency,
           isDefault: _isDefault,
         );
       } else {
@@ -408,6 +444,23 @@ class _WalletFormSheetState extends ConsumerState<_WalletFormSheet> {
       );
       setState(() => _isSubmitting = false);
     }
+  }
+}
+
+class _LockedCurrencyField extends StatelessWidget {
+  const _LockedCurrencyField({required this.currency});
+
+  final String currency;
+
+  @override
+  Widget build(BuildContext context) {
+    return InputDecorator(
+      decoration: InputDecoration(
+        labelText: context.l10n.walletCurrency,
+        helperText: context.l10n.walletCurrencyLockedHint,
+      ),
+      child: Text(currency),
+    );
   }
 }
 

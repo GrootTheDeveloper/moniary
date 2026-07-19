@@ -68,6 +68,7 @@ class _FakeTransactionRepository extends TransactionRepository {
       walletId: 'wallet-1',
       walletName: 'Cash',
       walletColor: null,
+      walletCurrency: 'VND',
       categoryId: 'category-1',
       categoryName: 'Food',
       categoryColor: null,

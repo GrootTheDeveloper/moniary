@@ -26,6 +26,7 @@ class WalletsController extends AsyncNotifier<List<Wallet>> {
     required String name,
     required WalletType type,
     required double initialBalance,
+    required String currency,
     required bool isDefault,
   }) async {
     state = const AsyncLoading();
@@ -37,6 +38,7 @@ class WalletsController extends AsyncNotifier<List<Wallet>> {
             name: name,
             type: type,
             initialBalance: initialBalance,
+            currency: currency,
             isDefault: isDefault,
           );
       state = AsyncData(

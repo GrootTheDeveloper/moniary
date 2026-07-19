@@ -54,6 +54,7 @@ class AvailableWalletsController extends WalletsController {
         icon: null,
         color: null,
         initialBalance: 0,
+        currency: 'VND',
         isDefault: true,
         isActive: true,
         createdAt: DateTime(2026, 6, 2),

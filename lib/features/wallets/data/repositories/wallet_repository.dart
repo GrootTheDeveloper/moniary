@@ -46,6 +46,7 @@ class WalletRepository {
     required String name,
     required WalletType type,
     required double initialBalance,
+    required String currency,
     bool isDefault = false,
   }) async {
     final session = _client.auth.currentSession;
@@ -60,6 +61,7 @@ class WalletRepository {
           'p_name': name,
           'p_type': type.value,
           'p_initial_balance': initialBalance,
+          'p_currency': currency,
           'p_is_default': isDefault,
         },
       );

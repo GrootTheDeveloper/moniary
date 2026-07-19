@@ -356,6 +356,8 @@
   "walletEditTitle": "Sửa ví",
   "walletName": "Tên ví",
   "walletType": "Loại ví",
+  "walletCurrency": "Tiền tệ",
+  "walletCurrencyLockedHint": "Không thể đổi sau khi tạo ví.",
   "walletInitialBalance": "Số dư ban đầu",
   "walletSetDefault": "Đặt làm ví mặc định",
   "walletActivated": "Đang kích hoạt",

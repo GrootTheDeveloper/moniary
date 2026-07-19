@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../l10n/l10n_extension.dart';
 import '../../../../app/app_theme.dart';
 import '../../../../core/constants/app_color.dart';
+import '../../../../core/currency/exchange_rate_repository.dart';
 import '../../../../core/preferences/preferences_providers.dart';
 import '../../../../shared/utils/currency_formatting_ref.dart';
 import '../../../profile/application/profile_setup_controller.dart';
@@ -273,6 +274,8 @@ class _SeamlessHeader extends ConsumerWidget {
       pendingIncomingFriendRequestCountProvider,
     );
     final unreadNotificationCount = ref.watch(unreadNotificationCountProvider);
+    final exchangeRatesAsync = ref.watch(exchangeRatesProvider);
+    final preferredCurrency = ref.watch(preferredCurrencyProvider);
     final colors = context.moniaryColors;
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
@@ -379,10 +382,17 @@ class _SeamlessHeader extends ConsumerWidget {
           const SizedBox(height: 28),
           walletsAsync.when(
             data: (wallets) {
-              final totalBalance = wallets.fold(
-                0.0,
-                (sum, w) => sum + w.initialBalance,
-              );
+              final exchangeRates = exchangeRatesAsync.value;
+              final now = DateTime.now();
+              final totalBalance = wallets.fold(0.0, (sum, w) {
+                final converted = exchangeRates?.convert(
+                  amount: w.initialBalance,
+                  from: w.currency,
+                  to: preferredCurrency,
+                  date: now,
+                );
+                return sum + (converted ?? w.initialBalance);
+              });
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -429,12 +439,16 @@ class _SeamlessHeader extends ConsumerWidget {
           const SizedBox(height: 18),
           monthAsync.when(
             data: (monthData) {
+              final exchangeRates = exchangeRatesAsync.value;
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
                     child: _IncomeExpensePill(
-                      amount: monthData.totalIncome,
+                      amount: monthData.totalIncome(
+                        preferredCurrency,
+                        exchangeRates,
+                      ),
                       color: colors.success,
                       icon: Icons.south_west_outlined,
                     ),
@@ -442,7 +456,10 @@ class _SeamlessHeader extends ConsumerWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: _IncomeExpensePill(
-                      amount: monthData.totalExpense,
+                      amount: monthData.totalExpense(
+                        preferredCurrency,
+                        exchangeRates,
+                      ),
                       color: colors.danger,
                       icon: Icons.north_east_outlined,
                     ),

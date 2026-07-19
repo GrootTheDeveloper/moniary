@@ -356,6 +356,8 @@
   "walletEditTitle": "Edit wallet",
   "walletName": "Wallet name",
   "walletType": "Wallet type",
+  "walletCurrency": "Currency",
+  "walletCurrencyLockedHint": "Cannot be changed after the wallet is created.",
   "walletInitialBalance": "Initial balance",
   "walletSetDefault": "Set as default wallet",
   "walletActivated": "Activated",

@@ -34,6 +34,7 @@ TransactionEntry _transaction({
     walletId: 'wallet-1',
     walletName: 'Cash',
     walletColor: null,
+    walletCurrency: 'VND',
     categoryId: categoryId,
     categoryName: 'Food',
     categoryColor: null,

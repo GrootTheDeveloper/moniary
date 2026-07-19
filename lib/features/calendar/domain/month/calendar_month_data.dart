@@ -1,3 +1,4 @@
+import '../../../../shared/utils/exchange_rates.dart';
 import '../../../transactions/domain/models/transaction_entry.dart';
 
 class CalendarDayData {
@@ -18,13 +19,33 @@ class CalendarDayData {
         now.day == date.day;
   }
 
-  late final double incomeTotal = transactions
-      .where((transaction) => transaction.isIncome)
-      .fold(0, (sum, transaction) => sum + transaction.amount);
+  /// Sums income converted to [currency]. Pass null for [rates] (e.g. rates
+  /// still loading) to get the raw, unconverted sum instead.
+  double incomeTotal(String currency, ExchangeRates? rates) {
+    return transactions
+        .where((transaction) => transaction.isIncome)
+        .fold(
+          0,
+          (sum, transaction) =>
+              sum +
+              (rates == null
+                  ? transaction.amount
+                  : transaction.amountIn(currency, rates)),
+        );
+  }
 
-  late final double expenseTotal = transactions
-      .where((transaction) => transaction.isExpense)
-      .fold(0, (sum, transaction) => sum + transaction.amount);
+  double expenseTotal(String currency, ExchangeRates? rates) {
+    return transactions
+        .where((transaction) => transaction.isExpense)
+        .fold(
+          0,
+          (sum, transaction) =>
+              sum +
+              (rates == null
+                  ? transaction.amount
+                  : transaction.amountIn(currency, rates)),
+        );
+  }
 
   bool get hasImportant => transactions.any((t) => t.isImportant);
 }
@@ -40,13 +61,33 @@ class CalendarMonthData {
   final List<List<CalendarDayData>> weeks;
   final List<TransactionEntry> transactions;
 
-  double get totalIncome => transactions
-      .where((transaction) => transaction.isIncome)
-      .fold(0, (sum, transaction) => sum + transaction.amount);
+  /// Sums income converted to [currency]. Pass null for [rates] (e.g. rates
+  /// still loading) to get the raw, unconverted sum instead.
+  double totalIncome(String currency, ExchangeRates? rates) {
+    return transactions
+        .where((transaction) => transaction.isIncome)
+        .fold(
+          0,
+          (sum, transaction) =>
+              sum +
+              (rates == null
+                  ? transaction.amount
+                  : transaction.amountIn(currency, rates)),
+        );
+  }
 
-  double get totalExpense => transactions
-      .where((transaction) => transaction.isExpense)
-      .fold(0, (sum, transaction) => sum + transaction.amount);
+  double totalExpense(String currency, ExchangeRates? rates) {
+    return transactions
+        .where((transaction) => transaction.isExpense)
+        .fold(
+          0,
+          (sum, transaction) =>
+              sum +
+              (rates == null
+                  ? transaction.amount
+                  : transaction.amountIn(currency, rates)),
+        );
+  }
 
   int get transactionCount => transactions.length;
 

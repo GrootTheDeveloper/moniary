@@ -67,6 +67,7 @@ TransactionEntry _transaction(String id) {
     walletId: 'wallet',
     walletName: 'Wallet',
     walletColor: null,
+    walletCurrency: 'VND',
     categoryId: 'category',
     categoryName: 'Food',
     categoryColor: null,

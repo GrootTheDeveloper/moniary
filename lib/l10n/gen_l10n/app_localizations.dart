@@ -1658,6 +1658,18 @@ abstract class AppLocalizations {
   /// **'Loại ví'**
   String get walletType;
 
+  /// No description provided for @walletCurrency.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiền tệ'**
+  String get walletCurrency;
+
+  /// No description provided for @walletCurrencyLockedHint.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể đổi sau khi tạo ví.'**
+  String get walletCurrencyLockedHint;
+
   /// No description provided for @walletInitialBalance.
   ///
   /// In vi, this message translates to:

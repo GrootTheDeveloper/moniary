@@ -857,6 +857,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get walletType => 'Loại ví';
 
   @override
+  String get walletCurrency => 'Tiền tệ';
+
+  @override
+  String get walletCurrencyLockedHint => 'Không thể đổi sau khi tạo ví.';
+
+  @override
   String get walletInitialBalance => 'Số dư ban đầu';
 
   @override

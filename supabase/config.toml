@@ -14,6 +14,11 @@ verify_jwt = false
 [functions.admin-notifications]
 verify_jwt = false
 
+# Called only by the invoke_fetch_exchange_rates() cron job through
+# x-fetch-exchange-rates-secret, never by a mobile client.
+[functions.fetch-exchange-rates]
+verify_jwt = false
+
 [api]
 enabled = true
 # Port to use for the API URL.

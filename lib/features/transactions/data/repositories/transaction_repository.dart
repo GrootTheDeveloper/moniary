@@ -594,7 +594,7 @@ class TransactionRepository {
           transaction_date,
           is_important,
           recurring_transaction_id,
-          wallet:wallets!inner(id,name,color),
+          wallet:wallets!inner(id,name,color,currency),
           category:categories!inner(id,name,color)
         ''');
   }

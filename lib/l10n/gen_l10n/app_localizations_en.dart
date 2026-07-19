@@ -859,6 +859,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get walletType => 'Wallet type';
 
   @override
+  String get walletCurrency => 'Currency';
+
+  @override
+  String get walletCurrencyLockedHint =>
+      'Cannot be changed after the wallet is created.';
+
+  @override
   String get walletInitialBalance => 'Initial balance';
 
   @override
