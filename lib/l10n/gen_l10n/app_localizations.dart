@@ -13099,6 +13099,240 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Mở trung tâm yêu cầu an toàn'**
   String get legalOpenRequestCenter;
+
+  /// No description provided for @settingsBankLinkTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết ngân hàng'**
+  String get settingsBankLinkTitle;
+
+  /// No description provided for @settingsBankLinkSubtitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự động ghi nhận chi tiêu từ tài khoản ngân hàng'**
+  String get settingsBankLinkSubtitle;
+
+  /// No description provided for @bankLinkTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Liên kết ngân hàng'**
+  String get bankLinkTitle;
+
+  /// No description provided for @bankLinkEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa liên kết ngân hàng nào.'**
+  String get bankLinkEmpty;
+
+  /// No description provided for @bankLinkAddButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm ngân hàng'**
+  String get bankLinkAddButton;
+
+  /// No description provided for @bankLinkStatusPending.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang xử lý'**
+  String get bankLinkStatusPending;
+
+  /// No description provided for @bankLinkStatusConnected.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã liên kết'**
+  String get bankLinkStatusConnected;
+
+  /// No description provided for @bankLinkStatusError.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lỗi liên kết'**
+  String get bankLinkStatusError;
+
+  /// No description provided for @bankLinkStatusRevoked.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hủy liên kết'**
+  String get bankLinkStatusRevoked;
+
+  /// No description provided for @bankLinkLastSynced.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng bộ lần cuối: {date}'**
+  String bankLinkLastSynced(String date);
+
+  /// No description provided for @bankLinkNeverSynced.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa đồng bộ'**
+  String get bankLinkNeverSynced;
+
+  /// No description provided for @bankLinkSyncAction.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng bộ ngay'**
+  String get bankLinkSyncAction;
+
+  /// No description provided for @bankLinkSyncing.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang đồng bộ...'**
+  String get bankLinkSyncing;
+
+  /// No description provided for @bankLinkSyncSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tìm thấy {count} giao dịch mới cần xác nhận.'**
+  String bankLinkSyncSuccess(int count);
+
+  /// No description provided for @bankLinkSyncNotConfigured.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng bộ tự động sẽ khả dụng khi Moniary tích hợp một nhà cung cấp dữ liệu ngân hàng. Kết nối của bạn đã được lưu và sẽ tự động hoạt động khi tính năng này ra mắt.'**
+  String get bankLinkSyncNotConfigured;
+
+  /// No description provided for @bankLinkUnlink.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hủy liên kết'**
+  String get bankLinkUnlink;
+
+  /// No description provided for @bankLinkUnlinkConfirmTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hủy liên kết ngân hàng?'**
+  String get bankLinkUnlinkConfirmTitle;
+
+  /// No description provided for @bankLinkUnlinkConfirmBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Moniary sẽ ngừng đồng bộ giao dịch từ tài khoản này. Các giao dịch đã lưu trước đó sẽ không bị xóa.'**
+  String get bankLinkUnlinkConfirmBody;
+
+  /// No description provided for @bankLinkReviewEntry.
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} giao dịch mới cần xác nhận'**
+  String bankLinkReviewEntry(int count);
+
+  /// No description provided for @bankLinkConnectTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn ngân hàng'**
+  String get bankLinkConnectTitle;
+
+  /// No description provided for @bankLinkConnectEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có ngân hàng khả dụng.'**
+  String get bankLinkConnectEmpty;
+
+  /// No description provided for @bankLinkConnectConsentTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cho phép Moniary truy cập'**
+  String get bankLinkConnectConsentTitle;
+
+  /// No description provided for @bankLinkConnectConsentBody.
+  ///
+  /// In vi, this message translates to:
+  /// **'Moniary sẽ chỉ đọc thông tin giao dịch để ghi nhận chi tiêu. Bạn có thể hủy liên kết bất cứ lúc nào.'**
+  String get bankLinkConnectConsentBody;
+
+  /// No description provided for @bankLinkConnectConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng ý liên kết'**
+  String get bankLinkConnectConfirm;
+
+  /// No description provided for @bankLinkConnectSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã liên kết {bank} thành công.'**
+  String bankLinkConnectSuccess(String bank);
+
+  /// No description provided for @bankSyncReviewTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch chờ xác nhận'**
+  String get bankSyncReviewTitle;
+
+  /// No description provided for @bankSyncReviewEmpty.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có giao dịch nào chờ xác nhận.'**
+  String get bankSyncReviewEmpty;
+
+  /// No description provided for @bankSyncReviewConfirm.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xác nhận'**
+  String get bankSyncReviewConfirm;
+
+  /// No description provided for @bankSyncReviewDismiss.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bỏ qua'**
+  String get bankSyncReviewDismiss;
+
+  /// No description provided for @bankSyncReviewSelectWallet.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn ví nhận giao dịch'**
+  String get bankSyncReviewSelectWallet;
+
+  /// No description provided for @bankSyncReviewSelectCategory.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn danh mục'**
+  String get bankSyncReviewSelectCategory;
+
+  /// No description provided for @bankSyncReviewConfirmButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu giao dịch'**
+  String get bankSyncReviewConfirmButton;
+
+  /// No description provided for @bankSyncReviewConfirmSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu giao dịch.'**
+  String get bankSyncReviewConfirmSuccess;
+
+  /// No description provided for @bankSyncReviewDismissSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã bỏ qua giao dịch.'**
+  String get bankSyncReviewDismissSuccess;
+
+  /// No description provided for @bankSyncReviewMissingSelection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng chọn ví và danh mục.'**
+  String get bankSyncReviewMissingSelection;
+
+  /// No description provided for @errorBankLinkConsentRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn cần đồng ý để tiếp tục liên kết.'**
+  String get errorBankLinkConsentRequired;
+
+  /// No description provided for @errorBankLinkInstitutionNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy ngân hàng này.'**
+  String get errorBankLinkInstitutionNotFound;
+
+  /// No description provided for @errorBankLinkConnectionNotFound.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy liên kết ngân hàng này.'**
+  String get errorBankLinkConnectionNotFound;
+
+  /// No description provided for @errorBankSyncNotConfigured.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng bộ tự động chưa khả dụng. Tính năng sẽ hoạt động khi Moniary tích hợp nhà cung cấp dữ liệu ngân hàng.'**
+  String get errorBankSyncNotConfigured;
 }
 
 class _AppLocalizationsDelegate

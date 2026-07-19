@@ -20,6 +20,9 @@ import '../features/assistant/presentation/assistant_intro_screen.dart';
 import '../features/assistant/presentation/assistant_permission_screen.dart';
 import '../features/assistant/presentation/assistant_question_catalog.dart';
 import '../features/assistant/presentation/assistant_question_library_screen.dart';
+import '../features/bank_linking/presentation/bank_link_connect_screen.dart';
+import '../features/bank_linking/presentation/bank_link_list_screen.dart';
+import '../features/bank_linking/presentation/bank_sync_review_screen.dart';
 import '../features/budgets/presentation/budget_category_detail_screen.dart';
 import '../features/budgets/presentation/budget_screen.dart';
 import '../features/recurring/presentation/recurring_transactions_screen.dart';
@@ -1235,6 +1238,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => buildSlideTransitionPage(
           state: state,
           child: const ImportDataScreen(),
+        ),
+      ),
+      GoRoute(
+        path: BankLinkListScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const BankLinkListScreen(),
+        ),
+      ),
+      GoRoute(
+        path: BankLinkConnectScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const BankLinkConnectScreen(),
+        ),
+      ),
+      GoRoute(
+        path: BankSyncReviewScreen.routePath,
+        pageBuilder: (context, state) => buildSlideTransitionPage(
+          state: state,
+          child: const BankSyncReviewScreen(),
         ),
       ),
       GoRoute(

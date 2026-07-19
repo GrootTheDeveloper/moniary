@@ -171,6 +171,14 @@ String userFriendlyMessage(BuildContext context, Object error) {
         return l10n.friendInviteSelf;
       case 'FRIEND_INVITE_NOT_FOUND':
         return l10n.friendInviteInvalid;
+      case 'BANK_LINK_CONSENT_REQUIRED':
+        return l10n.errorBankLinkConsentRequired;
+      case 'BANK_LINK_INSTITUTION_NOT_FOUND':
+        return l10n.errorBankLinkInstitutionNotFound;
+      case 'BANK_LINK_CONNECTION_NOT_FOUND':
+        return l10n.errorBankLinkConnectionNotFound;
+      case 'BANK_SYNC_NOT_CONFIGURED':
+        return l10n.errorBankSyncNotConfigured;
     }
 
     switch (error.message) {

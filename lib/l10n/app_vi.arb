@@ -3355,5 +3355,64 @@
   "privacyStatusInReviewDesc": "Người vận hành được ủy quyền đang xem xét yêu cầu.",
   "privacyStatusRejected": "Không thể xử lý",
   "privacyStatusRejectedDesc": "Yêu cầu chưa thể xử lý. Hãy xem phản hồi của người vận hành trước khi gửi yêu cầu khác.",
-  "legalOpenRequestCenter": "Mở trung tâm yêu cầu an toàn"
+  "legalOpenRequestCenter": "Mở trung tâm yêu cầu an toàn",
+  "settingsBankLinkTitle": "Liên kết ngân hàng",
+  "settingsBankLinkSubtitle": "Tự động ghi nhận chi tiêu từ tài khoản ngân hàng",
+  "bankLinkTitle": "Liên kết ngân hàng",
+  "bankLinkEmpty": "Chưa liên kết ngân hàng nào.",
+  "bankLinkAddButton": "Thêm ngân hàng",
+  "bankLinkStatusPending": "Đang xử lý",
+  "bankLinkStatusConnected": "Đã liên kết",
+  "bankLinkStatusError": "Lỗi liên kết",
+  "bankLinkStatusRevoked": "Đã hủy liên kết",
+  "bankLinkLastSynced": "Đồng bộ lần cuối: {date}",
+  "@bankLinkLastSynced": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "bankLinkNeverSynced": "Chưa đồng bộ",
+  "bankLinkSyncAction": "Đồng bộ ngay",
+  "bankLinkSyncing": "Đang đồng bộ...",
+  "bankLinkSyncSuccess": "Tìm thấy {count} giao dịch mới cần xác nhận.",
+  "@bankLinkSyncSuccess": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "bankLinkSyncNotConfigured": "Đồng bộ tự động sẽ khả dụng khi Moniary tích hợp một nhà cung cấp dữ liệu ngân hàng. Kết nối của bạn đã được lưu và sẽ tự động hoạt động khi tính năng này ra mắt.",
+  "bankLinkUnlink": "Hủy liên kết",
+  "bankLinkUnlinkConfirmTitle": "Hủy liên kết ngân hàng?",
+  "bankLinkUnlinkConfirmBody": "Moniary sẽ ngừng đồng bộ giao dịch từ tài khoản này. Các giao dịch đã lưu trước đó sẽ không bị xóa.",
+  "bankLinkReviewEntry": "{count} giao dịch mới cần xác nhận",
+  "@bankLinkReviewEntry": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "bankLinkConnectTitle": "Chọn ngân hàng",
+  "bankLinkConnectEmpty": "Chưa có ngân hàng khả dụng.",
+  "bankLinkConnectConsentTitle": "Cho phép Moniary truy cập",
+  "bankLinkConnectConsentBody": "Moniary sẽ chỉ đọc thông tin giao dịch để ghi nhận chi tiêu. Bạn có thể hủy liên kết bất cứ lúc nào.",
+  "bankLinkConnectConfirm": "Đồng ý liên kết",
+  "bankLinkConnectSuccess": "Đã liên kết {bank} thành công.",
+  "@bankLinkConnectSuccess": {
+    "placeholders": {
+      "bank": {"type": "String"}
+    }
+  },
+  "bankSyncReviewTitle": "Giao dịch chờ xác nhận",
+  "bankSyncReviewEmpty": "Không có giao dịch nào chờ xác nhận.",
+  "bankSyncReviewConfirm": "Xác nhận",
+  "bankSyncReviewDismiss": "Bỏ qua",
+  "bankSyncReviewSelectWallet": "Chọn ví nhận giao dịch",
+  "bankSyncReviewSelectCategory": "Chọn danh mục",
+  "bankSyncReviewConfirmButton": "Lưu giao dịch",
+  "bankSyncReviewConfirmSuccess": "Đã lưu giao dịch.",
+  "bankSyncReviewDismissSuccess": "Đã bỏ qua giao dịch.",
+  "bankSyncReviewMissingSelection": "Vui lòng chọn ví và danh mục.",
+  "errorBankLinkConsentRequired": "Bạn cần đồng ý để tiếp tục liên kết.",
+  "errorBankLinkInstitutionNotFound": "Không tìm thấy ngân hàng này.",
+  "errorBankLinkConnectionNotFound": "Không tìm thấy liên kết ngân hàng này.",
+  "errorBankSyncNotConfigured": "Đồng bộ tự động chưa khả dụng. Tính năng sẽ hoạt động khi Moniary tích hợp nhà cung cấp dữ liệu ngân hàng."
 }

@@ -60,7 +60,10 @@ class TransactionComposerController extends AsyncNotifier<void> {
           );
       _triggerUpdates();
       state = const AsyncData(null);
-      return TransactionSaveResult(imageUploadFailed: imageUploadFailed);
+      return TransactionSaveResult(
+        transactionId: transactionId,
+        imageUploadFailed: imageUploadFailed,
+      );
     } catch (e, st) {
       state = AsyncError(e, st);
       rethrow;
@@ -106,7 +109,10 @@ class TransactionComposerController extends AsyncNotifier<void> {
           );
       _triggerUpdates();
       state = const AsyncData(null);
-      return TransactionSaveResult(imageUploadFailed: imageUploadFailed);
+      return TransactionSaveResult(
+        transactionId: transactionId,
+        imageUploadFailed: imageUploadFailed,
+      );
     } catch (e, st) {
       state = AsyncError(e, st);
       rethrow;

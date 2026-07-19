@@ -11,7 +11,11 @@ class TransactionMutationResult {
 /// make callers retry the whole transaction and accidentally create a
 /// duplicate financial entry.
 class TransactionSaveResult {
-  const TransactionSaveResult({this.imageUploadFailed = false});
+  const TransactionSaveResult({
+    required this.transactionId,
+    this.imageUploadFailed = false,
+  });
 
+  final String transactionId;
   final bool imageUploadFailed;
 }

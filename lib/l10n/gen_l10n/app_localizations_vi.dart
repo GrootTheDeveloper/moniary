@@ -7379,4 +7379,137 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get legalOpenRequestCenter => 'Mở trung tâm yêu cầu an toàn';
+
+  @override
+  String get settingsBankLinkTitle => 'Liên kết ngân hàng';
+
+  @override
+  String get settingsBankLinkSubtitle =>
+      'Tự động ghi nhận chi tiêu từ tài khoản ngân hàng';
+
+  @override
+  String get bankLinkTitle => 'Liên kết ngân hàng';
+
+  @override
+  String get bankLinkEmpty => 'Chưa liên kết ngân hàng nào.';
+
+  @override
+  String get bankLinkAddButton => 'Thêm ngân hàng';
+
+  @override
+  String get bankLinkStatusPending => 'Đang xử lý';
+
+  @override
+  String get bankLinkStatusConnected => 'Đã liên kết';
+
+  @override
+  String get bankLinkStatusError => 'Lỗi liên kết';
+
+  @override
+  String get bankLinkStatusRevoked => 'Đã hủy liên kết';
+
+  @override
+  String bankLinkLastSynced(String date) {
+    return 'Đồng bộ lần cuối: $date';
+  }
+
+  @override
+  String get bankLinkNeverSynced => 'Chưa đồng bộ';
+
+  @override
+  String get bankLinkSyncAction => 'Đồng bộ ngay';
+
+  @override
+  String get bankLinkSyncing => 'Đang đồng bộ...';
+
+  @override
+  String bankLinkSyncSuccess(int count) {
+    return 'Tìm thấy $count giao dịch mới cần xác nhận.';
+  }
+
+  @override
+  String get bankLinkSyncNotConfigured =>
+      'Đồng bộ tự động sẽ khả dụng khi Moniary tích hợp một nhà cung cấp dữ liệu ngân hàng. Kết nối của bạn đã được lưu và sẽ tự động hoạt động khi tính năng này ra mắt.';
+
+  @override
+  String get bankLinkUnlink => 'Hủy liên kết';
+
+  @override
+  String get bankLinkUnlinkConfirmTitle => 'Hủy liên kết ngân hàng?';
+
+  @override
+  String get bankLinkUnlinkConfirmBody =>
+      'Moniary sẽ ngừng đồng bộ giao dịch từ tài khoản này. Các giao dịch đã lưu trước đó sẽ không bị xóa.';
+
+  @override
+  String bankLinkReviewEntry(int count) {
+    return '$count giao dịch mới cần xác nhận';
+  }
+
+  @override
+  String get bankLinkConnectTitle => 'Chọn ngân hàng';
+
+  @override
+  String get bankLinkConnectEmpty => 'Chưa có ngân hàng khả dụng.';
+
+  @override
+  String get bankLinkConnectConsentTitle => 'Cho phép Moniary truy cập';
+
+  @override
+  String get bankLinkConnectConsentBody =>
+      'Moniary sẽ chỉ đọc thông tin giao dịch để ghi nhận chi tiêu. Bạn có thể hủy liên kết bất cứ lúc nào.';
+
+  @override
+  String get bankLinkConnectConfirm => 'Đồng ý liên kết';
+
+  @override
+  String bankLinkConnectSuccess(String bank) {
+    return 'Đã liên kết $bank thành công.';
+  }
+
+  @override
+  String get bankSyncReviewTitle => 'Giao dịch chờ xác nhận';
+
+  @override
+  String get bankSyncReviewEmpty => 'Không có giao dịch nào chờ xác nhận.';
+
+  @override
+  String get bankSyncReviewConfirm => 'Xác nhận';
+
+  @override
+  String get bankSyncReviewDismiss => 'Bỏ qua';
+
+  @override
+  String get bankSyncReviewSelectWallet => 'Chọn ví nhận giao dịch';
+
+  @override
+  String get bankSyncReviewSelectCategory => 'Chọn danh mục';
+
+  @override
+  String get bankSyncReviewConfirmButton => 'Lưu giao dịch';
+
+  @override
+  String get bankSyncReviewConfirmSuccess => 'Đã lưu giao dịch.';
+
+  @override
+  String get bankSyncReviewDismissSuccess => 'Đã bỏ qua giao dịch.';
+
+  @override
+  String get bankSyncReviewMissingSelection => 'Vui lòng chọn ví và danh mục.';
+
+  @override
+  String get errorBankLinkConsentRequired =>
+      'Bạn cần đồng ý để tiếp tục liên kết.';
+
+  @override
+  String get errorBankLinkInstitutionNotFound =>
+      'Không tìm thấy ngân hàng này.';
+
+  @override
+  String get errorBankLinkConnectionNotFound =>
+      'Không tìm thấy liên kết ngân hàng này.';
+
+  @override
+  String get errorBankSyncNotConfigured =>
+      'Đồng bộ tự động chưa khả dụng. Tính năng sẽ hoạt động khi Moniary tích hợp nhà cung cấp dữ liệu ngân hàng.';
 }

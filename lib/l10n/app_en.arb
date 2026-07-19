@@ -3355,5 +3355,64 @@
   "privacyStatusInReviewDesc": "An authorized operator is reviewing the request.",
   "privacyStatusRejected": "Cannot process",
   "privacyStatusRejectedDesc": "The request could not be processed. Review the operator response before submitting another request.",
-  "legalOpenRequestCenter": "Open secure request center"
+  "legalOpenRequestCenter": "Open secure request center",
+  "settingsBankLinkTitle": "Bank linking",
+  "settingsBankLinkSubtitle": "Automatically record spending from a linked bank account",
+  "bankLinkTitle": "Bank linking",
+  "bankLinkEmpty": "No banks linked yet.",
+  "bankLinkAddButton": "Add a bank",
+  "bankLinkStatusPending": "Processing",
+  "bankLinkStatusConnected": "Connected",
+  "bankLinkStatusError": "Connection error",
+  "bankLinkStatusRevoked": "Disconnected",
+  "bankLinkLastSynced": "Last synced: {date}",
+  "@bankLinkLastSynced": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "bankLinkNeverSynced": "Never synced",
+  "bankLinkSyncAction": "Sync now",
+  "bankLinkSyncing": "Syncing...",
+  "bankLinkSyncSuccess": "Found {count} new transactions to review.",
+  "@bankLinkSyncSuccess": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "bankLinkSyncNotConfigured": "Automatic sync will be available once Moniary integrates a real bank data provider. Your connection is saved and will start working automatically when this ships.",
+  "bankLinkUnlink": "Unlink",
+  "bankLinkUnlinkConfirmTitle": "Unlink this bank?",
+  "bankLinkUnlinkConfirmBody": "Moniary will stop syncing transactions from this account. Transactions already saved will not be deleted.",
+  "bankLinkReviewEntry": "{count} new transactions to review",
+  "@bankLinkReviewEntry": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "bankLinkConnectTitle": "Choose a bank",
+  "bankLinkConnectEmpty": "No banks available yet.",
+  "bankLinkConnectConsentTitle": "Allow Moniary to access",
+  "bankLinkConnectConsentBody": "Moniary only reads transaction data to record your spending. You can unlink at any time.",
+  "bankLinkConnectConfirm": "Agree and link",
+  "bankLinkConnectSuccess": "{bank} linked successfully.",
+  "@bankLinkConnectSuccess": {
+    "placeholders": {
+      "bank": {"type": "String"}
+    }
+  },
+  "bankSyncReviewTitle": "Transactions to review",
+  "bankSyncReviewEmpty": "No transactions waiting for review.",
+  "bankSyncReviewConfirm": "Confirm",
+  "bankSyncReviewDismiss": "Dismiss",
+  "bankSyncReviewSelectWallet": "Select a wallet",
+  "bankSyncReviewSelectCategory": "Select a category",
+  "bankSyncReviewConfirmButton": "Save transaction",
+  "bankSyncReviewConfirmSuccess": "Transaction saved.",
+  "bankSyncReviewDismissSuccess": "Transaction dismissed.",
+  "bankSyncReviewMissingSelection": "Please select a wallet and a category.",
+  "errorBankLinkConsentRequired": "You need to agree before linking can continue.",
+  "errorBankLinkInstitutionNotFound": "This bank could not be found.",
+  "errorBankLinkConnectionNotFound": "This bank connection could not be found.",
+  "errorBankSyncNotConfigured": "Automatic sync isn't available yet. It will start working once Moniary integrates a bank data provider."
 }

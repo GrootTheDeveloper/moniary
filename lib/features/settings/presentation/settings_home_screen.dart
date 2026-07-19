@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../l10n/l10n_extension.dart';
+import '../../bank_linking/presentation/bank_link_list_screen.dart';
 import 'account/active_sessions_screen.dart';
 import 'account/delete_account_screen.dart';
 import 'export/export_data_screen.dart';
@@ -77,6 +78,13 @@ class SettingsHomeScreen extends StatelessWidget {
                   subtitle: '',
                   onTap: () =>
                       context.push(NotificationSettingsScreen.routePath),
+                ),
+                SettingsActionTile(
+                  grouped: true,
+                  icon: Icons.account_balance_outlined,
+                  title: context.l10n.settingsBankLinkTitle,
+                  subtitle: context.l10n.settingsBankLinkSubtitle,
+                  onTap: () => context.push(BankLinkListScreen.routePath),
                 ),
               ],
             ),

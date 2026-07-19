@@ -7380,4 +7380,138 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalOpenRequestCenter => 'Open secure request center';
+
+  @override
+  String get settingsBankLinkTitle => 'Bank linking';
+
+  @override
+  String get settingsBankLinkSubtitle =>
+      'Automatically record spending from a linked bank account';
+
+  @override
+  String get bankLinkTitle => 'Bank linking';
+
+  @override
+  String get bankLinkEmpty => 'No banks linked yet.';
+
+  @override
+  String get bankLinkAddButton => 'Add a bank';
+
+  @override
+  String get bankLinkStatusPending => 'Processing';
+
+  @override
+  String get bankLinkStatusConnected => 'Connected';
+
+  @override
+  String get bankLinkStatusError => 'Connection error';
+
+  @override
+  String get bankLinkStatusRevoked => 'Disconnected';
+
+  @override
+  String bankLinkLastSynced(String date) {
+    return 'Last synced: $date';
+  }
+
+  @override
+  String get bankLinkNeverSynced => 'Never synced';
+
+  @override
+  String get bankLinkSyncAction => 'Sync now';
+
+  @override
+  String get bankLinkSyncing => 'Syncing...';
+
+  @override
+  String bankLinkSyncSuccess(int count) {
+    return 'Found $count new transactions to review.';
+  }
+
+  @override
+  String get bankLinkSyncNotConfigured =>
+      'Automatic sync will be available once Moniary integrates a real bank data provider. Your connection is saved and will start working automatically when this ships.';
+
+  @override
+  String get bankLinkUnlink => 'Unlink';
+
+  @override
+  String get bankLinkUnlinkConfirmTitle => 'Unlink this bank?';
+
+  @override
+  String get bankLinkUnlinkConfirmBody =>
+      'Moniary will stop syncing transactions from this account. Transactions already saved will not be deleted.';
+
+  @override
+  String bankLinkReviewEntry(int count) {
+    return '$count new transactions to review';
+  }
+
+  @override
+  String get bankLinkConnectTitle => 'Choose a bank';
+
+  @override
+  String get bankLinkConnectEmpty => 'No banks available yet.';
+
+  @override
+  String get bankLinkConnectConsentTitle => 'Allow Moniary to access';
+
+  @override
+  String get bankLinkConnectConsentBody =>
+      'Moniary only reads transaction data to record your spending. You can unlink at any time.';
+
+  @override
+  String get bankLinkConnectConfirm => 'Agree and link';
+
+  @override
+  String bankLinkConnectSuccess(String bank) {
+    return '$bank linked successfully.';
+  }
+
+  @override
+  String get bankSyncReviewTitle => 'Transactions to review';
+
+  @override
+  String get bankSyncReviewEmpty => 'No transactions waiting for review.';
+
+  @override
+  String get bankSyncReviewConfirm => 'Confirm';
+
+  @override
+  String get bankSyncReviewDismiss => 'Dismiss';
+
+  @override
+  String get bankSyncReviewSelectWallet => 'Select a wallet';
+
+  @override
+  String get bankSyncReviewSelectCategory => 'Select a category';
+
+  @override
+  String get bankSyncReviewConfirmButton => 'Save transaction';
+
+  @override
+  String get bankSyncReviewConfirmSuccess => 'Transaction saved.';
+
+  @override
+  String get bankSyncReviewDismissSuccess => 'Transaction dismissed.';
+
+  @override
+  String get bankSyncReviewMissingSelection =>
+      'Please select a wallet and a category.';
+
+  @override
+  String get errorBankLinkConsentRequired =>
+      'You need to agree before linking can continue.';
+
+  @override
+  String get errorBankLinkInstitutionNotFound =>
+      'This bank could not be found.';
+
+  @override
+  String get errorBankLinkConnectionNotFound =>
+      'This bank connection could not be found.';
+
+  @override
+  String get errorBankSyncNotConfigured =>
+      'Automatic sync isn\'t available yet. It will start working once Moniary integrates a bank data provider.';
 }
